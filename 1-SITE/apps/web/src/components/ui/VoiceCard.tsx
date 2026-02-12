@@ -154,9 +154,10 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
               )}
               {voice.ai_tags && (
                 <div className="flex flex-wrap gap-2">
-                  {voice.ai_tags.split(',').map((tag, i) => {
-                    const isAi = tag.trim().startsWith('ai:');
-                    const label = isAi ? tag.trim().replace('ai:', '') : tag.trim();
+                  {(typeof voice.ai_tags === 'string' ? voice.ai_tags.split(',') : (Array.isArray(voice.ai_tags) ? voice.ai_tags : [])).map((tag: any, i: number) => {
+                    const tagStr = String(tag).trim();
+                    const isAi = tagStr.startsWith('ai:');
+                    const label = isAi ? tagStr.replace('ai:', '') : tagStr;
                     return (
                       <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1 bg-va-off-white rounded-full text-[8px] font-black uppercase tracking-widest text-va-black/40 border border-black/5">
                         <VoiceglotText translationKey={`common.tag.${label.toLowerCase()}`} defaultText={label} />
