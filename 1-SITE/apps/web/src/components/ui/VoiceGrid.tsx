@@ -18,7 +18,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors }) => {
     // Dit stelt de klant in staat om direct een script in te voeren voor die specifieke stem.
     if (typeof window !== 'undefined') {
       const targetSlug = actor.slug || actor.first_name?.toLowerCase() || actor.display_name?.toLowerCase()?.split(' ')[0] || 'unknown';
-      window.location.href = `/voice/${targetSlug}`;
+      window.location.href = `/artist/${targetSlug}`;
     }
   };
 

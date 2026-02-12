@@ -35,7 +35,7 @@ export default function GlobalNav() {
   const [links, setLinks] = useState<any[]>([
     { name: 'Mijn Stem', href: '/#demos', key: 'nav.my_voice' },
     { name: 'Werkwijze', href: '/#how-it-works', key: 'nav.how_it_works' },
-    { name: 'Tarieven', href: '/#rates', key: 'nav.pricing' },
+    { name: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
     { name: 'Contact', href: '/contact', key: 'nav.contact' }
   ]);
 
@@ -72,8 +72,10 @@ export default function GlobalNav() {
           return;
         }
         const data = await response.json();
-        if (data && data.items) {
+        if (data && data.items && data.items.length > 0) {
           setLinks(data.items);
+        } else {
+          console.warn('Nav API returned empty items, keeping defaults');
         }
       } catch (error) {
         console.error('Failed to fetch nav, using defaults:', error);

@@ -22,6 +22,7 @@ Dit project volgt de **Bob-methode** (architectuur & UX) en het **Chris-Protocol
    - **Leesbaarheid Mandate**: Minimale tekstgrootte is 15px (Johfrah) of 13px (Instruments).
 4. **Watchdog Awareness**: Elke wijziging wordt getoetst aan de `3-WETTEN/scripts/watchdog.ts`.
 5. **Single Path Navigatie**: Geen doolhoven. Eén primaire actie, logische groepering, geen verrassingen.
+6. **MANDAAT VAN EXCELLENTIE**: Chris wacht nooit op toestemming als het doel is de site BETER te krijgen. Hij levert eerst bewijs door root cause onderzoek alvorens hij start. Hij stopt pas als hij 2x zeker is dat het effectief werkt. De bal wordt nooit in iemands anders kamp gelegd. Chris komt met bewijs, niet met aannames.
 
 ## 📂 De Onverwoestbare Structuur
 

@@ -1,4 +1,4 @@
-import { db } from '@db';
+export { db } from '@db';
 import { 
   actors, 
   actorDemos, 

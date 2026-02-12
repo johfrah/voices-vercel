@@ -1,15 +1,14 @@
+import { VideoPlayer } from '@/components/academy/VideoPlayer';
+import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
+import { LiquidBackground } from '@/components/ui/LiquidBackground';
+import { PricingCalculator } from '@/components/ui/PricingCalculator';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { db } from '@db';
 import { contentArticles } from '@db/schema';
-import { eq, sql } from 'drizzle-orm';
-import { notFound } from 'next/navigation';
-import { ContainerInstrument, HeadingInstrument, TextInstrument, PageWrapperInstrument } from '@/components/ui/LayoutInstruments';
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { LiquidBackground } from '@/components/ui/LiquidBackground';
-import { AccordionInstrument } from '@/components/ui/AccordionInstrument';
-import { VideoPlayer } from '@/components/academy/VideoPlayer';
-import { PricingCalculator } from '@/components/ui/PricingCalculator';
-import { ShieldCheck, Zap, CreditCard, Scale, ArrowRight, Info, Star } from 'lucide-react';
+import { eq } from 'drizzle-orm';
+import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap } from 'lucide-react';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 export default async function DynamicCmsPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
