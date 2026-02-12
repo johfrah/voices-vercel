@@ -1,33 +1,29 @@
 "use client";
 
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  ButtonInstrument,
-  InputInstrument,
-  LabelInstrument
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import {
     Activity,
+    ArrowRight,
+    Bell,
+    Brain,
+    Clock,
     Database,
     Layout,
+    Mail,
     Mic,
     Settings,
     ShieldCheck,
-    ShoppingCart,
     Sparkles,
-    TrendingUp,
     Users,
-    Mail,
-    Bell,
-    ArrowRight,
-    Brain,
-    Clock,
     Zap
 } from 'lucide-react';
 import Link from 'next/link';

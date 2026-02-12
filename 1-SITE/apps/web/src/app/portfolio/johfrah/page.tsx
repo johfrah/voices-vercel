@@ -217,7 +217,7 @@ async function JohfrahContent() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {artistData?.demos?.map((demo: any, i: number) => (
+              {artistData?.demos?.map((demo: { category: string; title: string }, i: number) => (
                 <div 
                   key={i}
                   className="group p-8 rounded-[20px] bg-va-off-white border border-black/[0.03] hover:border-primary/20 hover:bg-white hover:shadow-aura transition-all duration-700 va-bezier flex flex-col justify-between min-h-[200px] cursor-pointer"

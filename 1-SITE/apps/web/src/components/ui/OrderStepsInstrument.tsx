@@ -24,10 +24,10 @@ export const OrderStepsInstrument: React.FC<{ currentStep?: string, isTelephony?
   isTelephony = false 
 }) => {
   const steps: OrderStep[] = [
-    { id: 'voice', icon: Mic, titleKey: 'order_steps.voice', defaultTitle: 'Kies stem' },
-    { id: 'text', icon: FileText, titleKey: 'order_steps.text', defaultTitle: 'Voeg tekst toe' },
-    ...(isTelephony ? [{ id: 'music', icon: Music, titleKey: 'order_steps.music', defaultTitle: 'Muziek' }] : []),
-    { id: 'cart', icon: ShoppingCart, titleKey: 'order_steps.cart', defaultTitle: 'Winkelmandje' },
+    { id: 'voice', icon: null, titleKey: 'order_steps.voice', defaultTitle: '01 Kies stem' },
+    { id: 'text', icon: null, titleKey: 'order_steps.text', defaultTitle: '02 Voeg tekst toe' },
+    ...(isTelephony ? [{ id: 'music', icon: null, titleKey: 'order_steps.music', defaultTitle: '03 Muziek' }] : []),
+    { id: 'cart', icon: null, titleKey: 'order_steps.cart', defaultTitle: '04 Winkelmandje' },
   ];
 
   return (
@@ -41,24 +41,24 @@ export const OrderStepsInstrument: React.FC<{ currentStep?: string, isTelephony?
             <React.Fragment key={step.id}>
               <div className="flex flex-col items-center gap-3 group">
                 <div className={cn(
-                  "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-aura",
+                  "w-14 h-14 rounded-[10px] flex items-center justify-center transition-all duration-500 shadow-aura",
                   isActive 
                     ? "bg-primary text-white scale-110" 
                     : "bg-va-off-white text-va-black/20 group-hover:bg-va-black/5 group-hover:text-va-black/40"
                 )}>
-                  <step.icon size={24} strokeWidth={1.5} />
+                  <span className="text-xl font-light Raleway">0{index + 1}</span>
                 </div>
                 <TextInstrument className={cn(
-                  "text-[11px] font-medium tracking-wide text-center whitespace-nowrap",
+                  "text-[11px] font-light tracking-wide text-center whitespace-nowrap",
                   isActive ? "text-va-black" : "text-va-black/40"
                 )}>
-                  <VoiceglotText translationKey={step.titleKey} defaultText={step.defaultTitle} />
+                  <VoiceglotText translationKey={step.titleKey} defaultText={step.defaultTitle.split(' ').slice(1).join(' ')} />
                 </TextInstrument>
               </div>
 
               {!isLast && (
                 <div className="flex-1 flex justify-center items-center px-4 opacity-10">
-                  <ArrowRight size={16} className="text-va-black" />
+                  <div className="w-8 h-[1px] bg-va-black" />
                 </div>
               )}
             </React.Fragment>

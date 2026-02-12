@@ -395,14 +395,27 @@ export const voicejarSessions = pgTable("voicejar_sessions", {
 	visitorHash: text("visitor_hash"),
 	url: text(),
 	status: text().default('active'),
+	eventCount: integer("event_count").default(0),
+	userAgent: text("user_agent"),
+	iapContext: jsonb("iap_context"),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	foreignKey({
 			columns: [table.userId],
 			foreignColumns: [users.id],
 			name: "voicejar_sessions_user_id_users_id_fk"
 		}),
+	unique("voicejar_sessions_visitor_hash_unique").on(table.visitorHash),
 ]);
+
+export const voicejarEvents = pgTable("voicejar_events", {
+	id: serial().primaryKey().notNull(),
+	sessionId: text("session_id").notNull(),
+	eventData: jsonb("event_data").notNull(),
+	sequenceOrder: integer("sequence_order").notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
 
 export const voucherBatches = pgTable("voucher_batches", {
 	id: serial().primaryKey().notNull(),

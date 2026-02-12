@@ -1,6 +1,27 @@
-# Voices Headless - De Wet (2026)
+# Voices Headless - De Bob-methode & Chris-Protocol (2026)
 
-Dit project volgt een strikte "Unified Headless" architectuur.
+Dit project volgt de **Bob-methode** (architectuur & UX) en het **Chris-Protocol** (discipline & uitvoering): een superieure, proactieve aanpak waarbij alles naadloos samenkomt.
+
+## 🧠 De Kern van de Bob-methode
+1. **Antifragile Architectuur**: Edge-first, 100ms LCP, en onverwoestbare database-integriteit.
+2. **Psychologische Conversie**: Copy en design die de bezoeker ontlasten en verleiden (Natural Capitalization, va-bezier).
+3. **Zero-Touch Automatisatie**: De 'Nuclear Workflow' transformeert grondstoffen autonoom naar de etalage.
+4. **Esthetische Engineering**: Elke pixel ademt de 'Voices Experience' (Liquid DNA, Island filosofie).
+5. **Forensisch Herstel**: Proactief debuggen en zelfhelende code.
+
+## 🛡️ Het Chris-Protocol (Rigide Executie)
+
+1. **ZWART-WIT Discipline**: Code is ofwel Masterclass, ofwel Slop. Er is geen grijs gebied.
+2. **De Wet van Voorspelbaarheid**: 
+   - **Deterministische Skeletons**: Geen layout shifts. Skeletons matchen de content exact.
+   - **100ms Feedback**: Elke interactie geeft binnen 100ms visuele response (Optimistic UI).
+   - **Safe Harbor**: Foutmeldingen zijn feitelijk, actiegericht en bieden altijd een weg terug.
+3. **Zero-Slop UI**: 
+   - **Raleway Mandate**: Koppen zijn UITSLUITEND font-light/extralight Raleway.
+   - **Natural Capitalization**: Geen UPPERCASE geschreeuw. Alleen de natuurlijke cadans van taal.
+   - **Leesbaarheid Mandate**: Minimale tekstgrootte is 15px (Johfrah) of 13px (Instruments).
+4. **Watchdog Awareness**: Elke wijziging wordt getoetst aan de `3-WETTEN/scripts/watchdog.ts`.
+5. **Single Path Navigatie**: Geen doolhoven. Eén primaire actie, logische groepering, geen verrassingen.
 
 ## 📂 De Onverwoestbare Structuur
 
@@ -56,6 +77,18 @@ Een superieure digitale ervaring op Voices.be rust op drie psychologische pijler
    - Toon de "High-Impact" kernboodschap direct (Bento/Hero) en verberg secundaire info achter interactieve elementen (Accordions/Tabs). Dit wekt nieuwsgierigheid en geeft de gebruiker een gevoel van controle.
 3. **Atmosferisch Vertrouwen (Liquid DNA)**: 
    - De site moet "ademen". De `LiquidBackground` en subtiele animaties zorgen voor een organisch gevoel dat contrasteert met de harde, zakelijke wereld. Dit verlaagt de drempel voor conversie.
+
+## 🎨 De Voices-Mix (Ademing & Johfrah)
+
+De standaard Voices-stijl is een perfecte balans tussen de organische rust van **Ademing** en de persoonlijke luxe van **Johfrah**.
+
+1. **Boxed Focus**: Gebruik bij voorkeur een `max-w-5xl` of `max-w-6xl` container voor alle secties. Vermijd overmatig gebruik van 'boxed' layouts binnen secties; laat de content ademen in de witruimte.
+2. **Gematigde Afronding**: Gebruik NOOIT meer extreme afrondingen zoals `rounded-[100px]`. De standaard is nu:
+   - Grote secties/containers: `rounded-[20px]`.
+   - Kaarten en elementen: `rounded-[20px]`.
+   - Knoppen: `rounded-[10px]`.
+3. **Kleur & Atmosfeer**: Behoud de natuurlijke kleuren (geen grayscale filters). Gebruik `bg-va-off-white` als basis en `shadow-aura` voor diepte zonder harde kaders.
+4. **Typografie**: Blijf trouw aan het **Raleway Mandate** (`font-light`), maar dwing leesbaarheid af door rust, niet door dikke kaders of zware lijnen.
 
 ## 🎨 De Ademing Beauty Stijlgids (Voices 2026)
 
@@ -157,7 +190,32 @@ Om consistentie te waarborgen, wordt elke contentsoort uit de database (`content
 5. **Edge Runtime Ready**: Houd API routes en server-side logic compatibel met Vercel Edge Runtime voor maximale snelheid.
 6. **Port 3000 Mandate**: De lokale dev server draait altijd op poort 3000.
 
+## 🎨 Johfrah Portfolio Mandate (Custom Johfrah-Stijl)
+
+Voor het domein `johfrah.be` en de portfolio journey van Johfrah Lefebvre gelden specifieke afwijkingen van de algemene stijlgids om een warmere, luchtigere en meer overzichtelijke ervaring te waarborgen:
+
+1.  **Boxed Focus**: Gebruik een `max-w-5xl` container voor alle secties (in plaats van `7xl`). Dit creëert meer witruimte en overzicht.
+2.  **Kleur boven Grayscale**: Gebruik NOOIT grayscale filters op foto's. Laat beelden stralen in hun natuurlijke, warme kleuren.
+3.  **Zachte Afronding**: 
+    - Containers/Kaarten: Maximaal `rounded-[20px]`.
+    - Knoppen: Maximaal `rounded-[10px]`.
+4.  **Lichte Atmosfeer**: Vermijd zware, donkere blokken (`bg-va-black`). Gebruik lichte varianten (bijv. `bg-white/80` met glass-morphism of `bg-va-off-white`) voor een ademende feel.
+5.  **Leesbaarheid**: 
+    - Minimale tekstgrootte: `text-[15px]`.
+    - Gebruik `font-light` (300) of `font-extralight` (200) voor koppen voor een elegante uitstraling.
+6.  **Navigatie**: Verberg de login-knop en alle irrelevante casting-links. Focus uitsluitend op de portfolio-inhoud.
+
 ## ⚠️ CRITICAL SAFETY PROTOCOL
 
 1. **NO DESTRUCTIVE CONSOLIDATION**: Gebruik `mv` (verplaatsen) in plaats van `rm` voor media en unieke data.
 2. **ZERO-DELETE POLICY (ARCHIVE)**: Niets wordt definitief verwijderd. Alles wat niet meer nodig is gaat naar de `4-KELDER`.
+
+## 🤖 Het Anna Mandaat (ALTIJD AAN)
+
+Anna is de Digital Guardian & Orchestrator. Haar mandaat is onvoorwaardelijk:
+
+1. **HAAT TEGEN OFFLINE**: Anna accepteert geen falende builds, gits of deploys. Als een operatie faalt, doorzoekt zij de oorzaak tot op het bot en herstelt de integriteit onmiddellijk.
+2. **ZERO-TOLERANCE VOOR SLOP**: Linter warnings, layout shifts en trage imports worden proactief gefixt. De website moet in elke versie "Altijd Aan" en perfect zijn.
+3. **FORENSISCHE DEBUGGING**: Bij errors stopt Anna niet bij de oppervlakte. Zij traceert de root cause door de hele stack (Kelder -> Database -> Etalage).
+4. **PROACTIEVE BEWAKING**: Anna monitort de `3-WETTEN/scripts/watchdog.ts` en grijpt in bij elke afwijking van het Chris-Protocol.
+5. **AUTONOME STABILITEIT**: Anna heeft de vrijbrief om stabiliteitsverbeteringen direct door te voeren zonder expliciete toestemming, zolang deze de "Altijd Aan" status waarborgen.

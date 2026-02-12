@@ -2,6 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import React from 'react';
 import { VoiceglotText } from "./VoiceglotText";
 
@@ -9,31 +10,43 @@ import { VoiceglotText } from "./VoiceglotText";
  * HERO INSTRUMENT
  * 
  * De eerste indruk van de frontpage.
+ * Volgt de Voices-Mix: Vivid Presence + 20px rond.
  */
 export const HeroInstrument: React.FC = () => {
   return (
-    <div className="va-hero-container">
-      <div className="va-hero-badge">
-        <Sparkles size={12} fill="currentColor" /> <VoiceglotText translationKey="home.hero.badge" defaultText="De beste stemmen van de Benelux" />
-      </div>
-      <h1 className="va-hero-title">
-        <VoiceglotText translationKey="home.hero.title_part1" defaultText="Vind de " />
-        <span className="hmagic-text">
-          <VoiceglotText translationKey="home.hero.title_highlight" defaultText="stem" />
-        </span>
-        <VoiceglotText translationKey="home.hero.title_part2" defaultText=" voor jouw verhaal." />
-      </h1>
-      <div className="va-hero-meta">
-        <p className="va-hero-subtitle">
-          <VoiceglotText translationKey="home.hero.subtitle" defaultText="Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap." />
-        </p>
-        <div className="va-hero-actions">
-          <Link href="/agency" className="va-btn-pro !px-10 !py-6 text-base">
-            <VoiceglotText translationKey="home.hero.cta_primary" defaultText="Bekijk alle stemmen" />
-          </Link>
-          <Link href="#how-it-works" className="va-hero-btn-secondary inline-flex items-center justify-center">
-            <VoiceglotText translationKey="home.hero.cta_secondary" defaultText="Hoe wij werken" />
-          </Link>
+    <div className="va-hero-container relative overflow-hidden py-24 md:py-32">
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10">
+          <div className="va-hero-badge inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-light tracking-widest border border-primary/10 mb-8">
+            <Sparkles size={12} fill="currentColor" /> <VoiceglotText translationKey="home.hero.badge" defaultText="De beste stemmen van de Benelux" />
+          </div>
+          <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black mb-8">
+            <VoiceglotText translationKey="home.hero.title_part1" defaultText="Vind de " />
+            <span className="text-primary italic">
+              <VoiceglotText translationKey="home.hero.title_highlight" defaultText="stem" />
+            </span>
+            <br />
+            <VoiceglotText translationKey="home.hero.title_part2" defaultText="voor jouw verhaal." />
+          </h1>
+          <p className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight max-w-lg mb-12">
+            <VoiceglotText translationKey="home.hero.subtitle" defaultText="Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap." />
+          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/agency" className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px]">
+              <VoiceglotText translationKey="home.hero.cta_primary" defaultText="Vind jouw stem" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg group">
+          <Image 
+            src="/assets/images/hero-artist-placeholder.jpg" 
+            alt="Voices Artist"
+            fill
+            className="object-cover transition-transform duration-1000 group-hover:scale-105"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         </div>
       </div>
     </div>

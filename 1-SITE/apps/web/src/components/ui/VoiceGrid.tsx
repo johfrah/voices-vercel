@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
 import { Actor, Demo } from '@/types';
+import React, { useState } from 'react';
 import { BentoGrid } from './BentoGrid';
-import { VoiceCard } from './VoiceCard';
 import { MediaMaster } from './MediaMaster';
+import { VoiceCard } from './VoiceCard';
 
 interface VoiceGridProps {
   actors: Actor[];

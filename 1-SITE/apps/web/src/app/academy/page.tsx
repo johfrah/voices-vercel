@@ -8,6 +8,7 @@ import {
   TextInstrument,
   ButtonInstrument
 } from "@/components/ui/LayoutInstruments";
+import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { AcademyTipWidget } from "@/components/academy/AcademyTipWidget";
@@ -140,7 +141,7 @@ async function LessonGrid() {
 
 async function AcademyReviews() {
   const dbReviewsRaw = await db.execute(sql`SELECT * FROM reviews WHERE business_slug = 'academy' LIMIT 3`);
-  const dbReviews = (dbReviewsRaw as any) || [];
+  const dbReviews = (dbReviewsRaw as unknown as any[]) || [];
 
   const mappedReviews = dbReviews.map((r: any) => ({
     name: r.author_name || r.authorName,

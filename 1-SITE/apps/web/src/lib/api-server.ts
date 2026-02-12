@@ -25,9 +25,12 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     .limit(50);
 
   const actorIds = dbResults.map(a => a.id);
-  const demos = actorIds.length > 0 
-    ? await db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN ${actorIds}`)
-    : [];
+  const [demos, dbReviews] = await Promise.all([
+    actorIds.length > 0 
+      ? db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN ${actorIds}`)
+      : Promise.resolve([]),
+    db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(10)
+  ]);
 
   const mappedResults = await Promise.all(dbResults.map(async (actor) => {
     const photoUrl = actor.dropboxUrl || '';
@@ -81,7 +84,13 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       styles: ['Corporate', 'Commercial', 'Narrative', 'Energetic', 'Warm']
     },
     _nuclear: true,
-    _source: 'supabase'
+    _source: 'supabase',
+    reviews: dbReviews.map(r => ({
+      name: r.authorName,
+      text: r.textNl || r.textEn || '',
+      rating: r.rating,
+      date: r.createdAt ? new Date(r.createdAt).toLocaleDateString('nl-BE') : ''
+    }))
   };
 }
 

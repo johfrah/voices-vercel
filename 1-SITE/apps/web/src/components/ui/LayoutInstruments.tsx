@@ -122,7 +122,7 @@ export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumen
       className={cn(
         noTranslate && "notranslate",
         className.includes('va-text-soft') && "text-va-black/40 font-medium",
-        className.includes('va-text-xs') && "text-[10px] font-black uppercase tracking-widest",
+        className.includes('va-text-xs') && "text-[10px] font-light tracking-widest",
         className
       )} 
       translate={noTranslate ? "no" : undefined}
@@ -161,7 +161,7 @@ export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({
       className={cn(
         noTranslate && "notranslate",
         className.includes('va-text-soft') && "text-va-black/40 font-medium",
-        className.includes('va-text-xs') && "text-[10px] font-black uppercase tracking-widest",
+        className.includes('va-text-xs') && "text-[10px] font-light tracking-widest",
         className
       )} 
       translate={noTranslate ? "no" : undefined}
@@ -201,7 +201,7 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
       ref={ref}
       type={Component === 'button' ? type : undefined}
       href={Component === 'a' ? href : undefined}
-      className={cn(className, noTranslate && "notranslate")}
+      className={cn(className, noTranslate && "notranslate", "rounded-[10px]")}
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
       {...otherProps}
@@ -224,7 +224,7 @@ export const InputInstrument = forwardRef<HTMLInputElement, InputHTMLAttributes<
     <input 
       ref={ref}
       className={cn(
-        "bg-va-off-white border-none rounded-2xl px-6 py-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20",
+        "bg-va-off-white border-none rounded-[10px] px-6 py-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20",
         className
       )}
       {...props}
@@ -242,7 +242,7 @@ export const SelectInstrument = forwardRef<HTMLSelectElement, SelectHTMLAttribut
   ...props
 }, ref) => {
   return (
-    <select ref={ref} className={className} {...props}>
+    <select ref={ref} className={cn(className, "rounded-[10px]")} {...props}>
       {children}
     </select>
   );
@@ -289,7 +289,7 @@ export const LabelInstrument = ({
 }: HTMLAttributes<HTMLLabelElement>) => {
   return (
     <label 
-      className={cn("text-[10px] font-black uppercase tracking-widest text-va-black/40 ml-4 mb-2 block", className)} 
+      className={cn("text-[10px] font-light tracking-widest text-va-black/40 ml-4 mb-2 block", className)} 
       {...props}
     >
       {children}

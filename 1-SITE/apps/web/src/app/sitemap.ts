@@ -1,7 +1,7 @@
-import { MetadataRoute } from 'next';
 import { db } from '@db';
 import { actors, contentArticles } from '@db/schema';
 import { eq } from 'drizzle-orm';
+import { MetadataRoute } from 'next';
 
 /**
  * 🗺️ NUCLEAR SITEMAP (2026)
