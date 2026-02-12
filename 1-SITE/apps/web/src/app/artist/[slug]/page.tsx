@@ -100,14 +100,14 @@ async function ArtistDetailContent({ params }: { params: { slug: string } }) {
             />
             <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent" />
             <ContainerInstrument className="absolute bottom-8 left-8 right-8">
-              <HeadingInstrument level={1} className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
+              <HeadingInstrument level={1} className="text-3xl font-light text-white tracking-tighter mb-2">
                 <VoiceglotText translationKey={`artist.${artist.id}.name`} defaultText={artist.display_name} noTranslate={true} />
               </HeadingInstrument>
               <ContainerInstrument className="flex items-center gap-2">
-                <ContainerInstrument className="px-3 py-1 bg-primary rounded-full text-[8px] font-black text-white uppercase tracking-widest">
+                <ContainerInstrument className="px-3 py-1 bg-primary rounded-full text-[8px] font-medium text-white uppercase tracking-widest">
                   <VoiceglotText translationKey="artist.badge.featured" defaultText="Stem" />
                 </ContainerInstrument>
-                <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[10px] font-bold uppercase tracking-widest">
+                <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[10px] font-medium uppercase tracking-widest">
                   <Star size={10} className="text-primary" fill="currentColor" /> 
                   <VoiceglotText translationKey="artist.score" defaultText="9.8" />
                 </ContainerInstrument>
@@ -118,9 +118,9 @@ async function ArtistDetailContent({ params }: { params: { slug: string } }) {
 
         <BentoCard span="xl" className="bg-va-off-white/50 backdrop-blur-md border-white/20 shadow-aura p-12">
           <ContainerInstrument className="flex justify-between items-center mb-12">
-            <HeadingInstrument level={2} className="text-3xl font-black uppercase tracking-tight">
+            <HeadingInstrument level={2} className="text-3xl font-light tracking-tight">
               <VoiceglotText translationKey="artist.portfolio.title" defaultText="Portfolio & " />
-              <TextInstrument as="span" className="text-primary">
+              <TextInstrument as="span" className="text-primary italic">
                 <VoiceglotText translationKey="artist.portfolio.subtitle" defaultText="Werken" />
               </TextInstrument>
             </HeadingInstrument>
@@ -137,12 +137,12 @@ async function ArtistDetailContent({ params }: { params: { slug: string } }) {
                     <Play size={20} fill="currentColor" className="ml-1" />
                   </ContainerInstrument>
                   <ContainerInstrument>
-                    <HeadingInstrument level={4} className="font-black uppercase tracking-tight text-sm">
+                    <HeadingInstrument level={4} className="font-medium tracking-tight text-sm">
                       <VoiceglotText translationKey={`artist.demo.${i}.title`} defaultText={demo.title} />
                     </HeadingInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
-                <TextInstrument className="text-[10px] font-black text-va-black/20 uppercase tracking-widest">
+                <TextInstrument className="text-[10px] font-medium text-va-black/20 uppercase tracking-widest">
                   <VoiceglotText translationKey={`artist.demo.${i}.category`} defaultText={demo.category} />
                 </TextInstrument>
               </ContainerInstrument>
@@ -152,7 +152,7 @@ async function ArtistDetailContent({ params }: { params: { slug: string } }) {
 
         <ContainerInstrument className="space-y-8">
           <BentoCard span="sm" className="bg-va-black text-white p-8">
-            <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-6">
+            <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-6">
               <VoiceglotText translationKey="artist.booking.title" defaultText="Boeking" />
             </HeadingInstrument>
             <ButtonInstrument className="va-btn-pro w-full mt-8 !bg-primary flex items-center justify-center gap-2 group">
@@ -161,11 +161,11 @@ async function ArtistDetailContent({ params }: { params: { slug: string } }) {
           </BentoCard>
 
           <BentoCard span="sm" className="hred text-white p-8">
-            <HeadingInstrument level={4} className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 flex items-center gap-2">
+            <HeadingInstrument level={4} className="text-[10px] font-medium uppercase tracking-widest text-white/40 mb-4 flex items-center gap-2">
               <ShieldCheck size={14} /> 
               <VoiceglotText translationKey="artist.guarantee.title" defaultText="Kwaliteit" />
             </HeadingInstrument>
-            <TextInstrument className="text-xs font-medium leading-relaxed">
+            <TextInstrument className="text-xs font-light leading-relaxed">
               <VoiceglotText 
                 translationKey="artist.guarantee.text" 
                 defaultText="Elke stem op ons platform is zorgvuldig gescreend op kwaliteit en professionaliteit." 

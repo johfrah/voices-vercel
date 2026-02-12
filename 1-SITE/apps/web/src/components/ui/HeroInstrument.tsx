@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import React from 'react';
 import { VoiceglotText } from "./VoiceglotText";
+import { MarketManager } from "@config/market-manager";
 
 /**
  * HERO INSTRUMENT
@@ -13,6 +14,10 @@ import { VoiceglotText } from "./VoiceglotText";
  * Volgt de Voices-Mix: Vivid Presence + 20px rond.
  */
 export const HeroInstrument: React.FC = () => {
+  const market = MarketManager.getCurrentMarket();
+  const isPortfolio = market.market_code === 'JOHFRAH';
+  const ctaHref = isPortfolio ? '/#demos' : '/agency';
+
   return (
     <div className="va-hero-container relative overflow-hidden py-24 md:py-32">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -32,8 +37,8 @@ export const HeroInstrument: React.FC = () => {
             <VoiceglotText translationKey="home.hero.subtitle" defaultText="Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap." />
           </p>
           <div className="flex items-center gap-4">
-            <Link href="/agency" className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px]">
-              <VoiceglotText translationKey="home.hero.cta_primary" defaultText="Vind jouw stem" />
+            <Link href={ctaHref} className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px]">
+              <VoiceglotText translationKey="home.hero.cta_primary" defaultText={isPortfolio ? "Bekijk mijn stemmen" : "Vind jouw stem"} />
             </Link>
           </div>
         </div>

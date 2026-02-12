@@ -72,10 +72,12 @@ export default function GlobalNav() {
           return;
         }
         const data = await response.json();
-        if (data && data.items && data.items.length > 0) {
+        
+        // 🛡️ CHRIS-FIX: Overschrijf alleen als we data hebben EN we niet in een specifieke journey zitten die eigen links heeft
+        if (data && data.items && data.items.length > 0 && market.market_code !== 'ADEMING' && market.market_code !== 'JOHFRAH') {
           setLinks(data.items);
         } else {
-          console.warn('Nav API returned empty items, keeping defaults');
+          console.log('🛡️ Keeping journey-specific or default links');
         }
       } catch (error) {
         console.error('Failed to fetch nav, using defaults:', error);
