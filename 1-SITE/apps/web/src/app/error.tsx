@@ -23,6 +23,26 @@ export default function Error({
 }) {
   useEffect(() => {
     console.error('App error:', error);
+    
+    // 🕵️ WATCHDOG NOTIFICATION
+    const notifyWatchdog = async () => {
+      try {
+        await fetch('/api/watchdog/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: error.message,
+            cause: String(error.cause || ''),
+            digest: error.digest,
+            url: window.location.href
+          })
+        });
+      } catch (e) {
+        console.error('Watchdog notification failed:', e);
+      }
+    };
+
+    notifyWatchdog();
   }, [error]);
 
   return (
