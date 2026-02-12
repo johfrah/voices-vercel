@@ -31,10 +31,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // 2. Dynamische Routes: Actors (Voice-overs)
-  const allActors = await db.select({ slug: actors.slug }).from(actors).where(eq(actors.status, 'live'));
-  
-  // 3. Dynamische Routes: Articles (Blog/Stories)
-  const allArticles = await db.select({ slug: contentArticles.slug }).from(contentArticles);
+  let allActors: { slug: string }[] = [];
+  let allArticles: { slug: string }[] = [];
+
+  try {
+    allActors = await db.select({ slug: actors.slug }).from(actors).where(eq(actors.status, 'live'));
+    allArticles = await db.select({ slug: contentArticles.slug }).from(contentArticles);
+  } catch (error) {
+    console.error('Sitemap generation error (database unreachable):', error);
+    // We gaan door met alleen de core routes als de database niet bereikbaar is
+  }
 
   const sitemapEntries: MetadataRoute.Sitemap = [];
 
