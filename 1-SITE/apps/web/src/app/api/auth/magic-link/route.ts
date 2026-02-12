@@ -5,6 +5,10 @@ export async function POST(request: Request) {
   try {
     const { email, redirect } = await request.json();
 
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
+
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !key) {
@@ -46,7 +50,10 @@ export async function POST(request: Request) {
     });
 
     const emailData = await emailRes.json();
-    if (!emailRes.ok) throw new Error(emailData.error || 'Email service error');
+    if (!emailRes.ok) {
+      console.error('📧 EMAIL SERVICE FAILURE:', emailData);
+      throw new Error(emailData.error || 'Email service error');
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
