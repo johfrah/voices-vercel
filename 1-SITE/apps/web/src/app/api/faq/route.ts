@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@db';
 import { faq } from '@db/schema';
-import { eq, or, like, desc } from 'drizzle-orm';
+import { desc, eq, or } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

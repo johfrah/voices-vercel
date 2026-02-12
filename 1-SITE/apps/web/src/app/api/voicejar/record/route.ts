@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@db';
-import { voicejarSessions, voicejarEvents } from '@db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { voicejarEvents, voicejarSessions } from '@db/schema';
+import { eq } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * 🏺 NUCLEAR VOICEJAR API (2026)
