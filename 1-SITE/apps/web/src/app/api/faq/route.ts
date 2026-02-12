@@ -8,6 +8,10 @@ export async function GET(request: NextRequest) {
   const journey = searchParams.get('journey') || 'general';
   const limit = parseInt(searchParams.get('limit') || '3');
 
+  if (isNaN(limit) || limit < 1 || limit > 50) {
+    return NextResponse.json({ error: 'Invalid limit parameter' }, { status: 400 });
+  }
+
   try {
     // Fetch FAQs based on journey or general
     const results = await db.select()
@@ -26,12 +30,13 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(faq.helpfulCount))
       .limit(limit);
 
-    // Filter out any potential null results if necessary, though select() should return an array
-    const safeResults = results || [];
-
-    return NextResponse.json(safeResults);
-  } catch (error) {
-    console.error('FAQ API Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(results || []);
+  } catch (error: any) {
+    console.error('❌ FAQ API FAILURE:', {
+      message: error.message,
+      journey,
+      limit
+    });
+    return NextResponse.json({ error: 'Failed to fetch FAQs' }, { status: 500 });
   }
 }

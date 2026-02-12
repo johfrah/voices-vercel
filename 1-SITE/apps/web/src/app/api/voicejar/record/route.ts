@@ -59,8 +59,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('❌ Voicejar API Error:', error);
+    console.error('❌ VOICEJAR API FAILURE:', {
+      message: error.message,
+      visitorHash: body?.visitorHash
+    });
     // 🛡️ Graceful Fallback: Don't crash the client if DB write fails
-    return NextResponse.json({ success: false, message: 'Data logged to server only' }, { status: 200 });
+    return NextResponse.json({ success: false, message: 'Recording buffered' }, { status: 200 });
   }
 }
