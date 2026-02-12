@@ -1,3 +1,5 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 import { VoicejarTracker } from "@/components/ui/VoicejarTracker";
 import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
 import { CodyPreviewBanner } from "@/components/admin/CodyPreviewBanner";
@@ -136,6 +138,8 @@ export default function RootLayout({
         <CodyPreviewBanner />
         <VoicejarTracker />
         <GlobalNav />
+        <SpeedInsights />
+        <Analytics />
         <CommandPalette />
         {/* <VoicyProactiveIntelligence /> */}
         <Toaster position="bottom-right" />
