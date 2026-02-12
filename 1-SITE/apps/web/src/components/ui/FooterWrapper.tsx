@@ -24,9 +24,10 @@ export default function FooterWrapper() {
   }
 
   // Verberg footer als we in "Under Construction" modus zijn
-  if (!isEditMode && window.location.pathname === '/') {
-    return null;
-  }
+  // Maar we laten hem nu wel zien voor de navigatie naar Studio, Academy etc.
+  // if (!isEditMode && window.location.pathname === '/') {
+  //   return null;
+  // }
 
   return <GlobalFooter />;
 }
