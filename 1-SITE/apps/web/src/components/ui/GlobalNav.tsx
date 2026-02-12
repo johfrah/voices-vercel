@@ -83,10 +83,7 @@ export default function GlobalNav() {
     return null;
   }
 
-  // Verberg navigatie op frontpage als we niet in Edit Mode zijn
-  if (!isEditMode && pathname === '/') {
-    return null;
-  }
+  // Navigatie is altijd zichtbaar voor alle gebruikers op alle pagina's
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 px-8 py-6 flex justify-between items-center bg-white/50 backdrop-blur-xl border-b border-black/5 golden-curve">
