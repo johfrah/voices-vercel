@@ -1,22 +1,22 @@
-import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
 import { HostCardLink } from "@/components/portfolio/HostCardLink";
-import { PricingCalculator } from "@/components/ui/PricingCalculator";
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  LoadingScreenInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  ButtonInstrument
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    LoadingScreenInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { Award, Mic, ArrowRight } from "lucide-react";
+import { PricingCalculator } from "@/components/ui/PricingCalculator";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { getActor } from "@/lib/api-server";
+import { ArrowRight, Award, Mic } from "lucide-react";
 import { Metadata } from "next";
 import Image from 'next/image';
 import { Suspense } from 'react';
-import { getActor } from "@/lib/api-server";
 
 export const metadata: Metadata = {
   title: "Johfrah | De Stem achter het Verhaal",

@@ -1,24 +1,23 @@
+import { AcademyTipWidget } from "@/components/academy/AcademyTipWidget";
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  LoadingScreenInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  ButtonInstrument
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    LoadingScreenInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
-import { AcademyTipWidget } from "@/components/academy/AcademyTipWidget";
 import { db } from '@db';
 import { lessons as lessonsTable } from '@db/schema';
 import { asc, sql } from 'drizzle-orm';
-import { headers } from 'next/headers';
-import { Suspense } from 'react';
 import { Play } from "lucide-react";
+import { headers } from 'next/headers';
 import Link from "next/link";
+import { Suspense } from 'react';
 
 /**
  * ACADEMY

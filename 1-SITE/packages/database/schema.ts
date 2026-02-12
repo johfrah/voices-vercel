@@ -1,5 +1,4 @@
-import { pgTable, foreignKey, unique, serial, integer, text, boolean, timestamp, jsonb, numeric, bigint, uniqueIndex, vector, pgEnum } from "drizzle-orm/pg-core"
-import { sql } from "drizzle-orm"
+import { bigint, boolean, foreignKey, integer, jsonb, numeric, pgEnum, pgTable, serial, text, timestamp, unique, uniqueIndex, vector } from "drizzle-orm/pg-core"
 
 export const deliveryStatus = pgEnum("delivery_status", ['waiting', 'uploaded', 'admin_review', 'client_review', 'approved', 'rejected', 'revision'])
 export const leadVibe = pgEnum("lead_vibe", ['cold', 'warm', 'hot', 'burning'])

@@ -2,18 +2,17 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useEditMode } from '@/contexts/EditModeContext';
-import { MarketManager } from '@config/market-manager';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { Lock, Unlock, Bell, Mail, Activity, Brain } from 'lucide-react';
-import Image from 'next/image';
+import { MarketManager } from '@config/market-manager';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Activity, Bell, Brain, Lock, Mail, Unlock } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 import { TextInstrument } from './LayoutInstruments';
-import { VoiceglotText } from './VoiceglotText';
 import { VoiceglotImage } from './VoiceglotImage';
+import { VoiceglotText } from './VoiceglotText';
 
 import { LanguageSwitcher } from './LanguageSwitcher';
 

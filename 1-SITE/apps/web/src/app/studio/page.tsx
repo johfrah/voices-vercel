@@ -1,24 +1,22 @@
-import { workshops, instructors } from '@db/schema';
-import { desc, eq } from 'drizzle-orm';
-import { db } from '@db';
-import { Suspense } from 'react';
-import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  LoadingScreenInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  ButtonInstrument
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import { HitlActionCardInstrument } from '@/components/ui/HitlActionCardInstrument';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { HitlActionCardInstrument } from '@/components/ui/HitlActionCardInstrument';
-import { Play, Calendar, MapPin, Users, ArrowRight, Star, MessageSquare, Info, GraduationCap } from "lucide-react";
+import { Instructor, Workshop } from '@/types';
+import { db } from '@db';
+import { workshops } from '@db/schema';
+import { desc } from 'drizzle-orm';
+import { ArrowRight, Calendar, GraduationCap, MessageSquare, Play, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Workshop, Instructor } from '@/types';
 
 /**
  * STUDIO

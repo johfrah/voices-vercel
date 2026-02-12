@@ -16,21 +16,22 @@ import {
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
   const { language, search, gender, style } = params;
   
-  let query = db.select().from(actors);
-  const conditions = [eq(actors.status, 'live')];
+  try {
+    console.log('🔍 ATTEMPTING DB SELECT FROM actors');
+    const dbResults = await db.select().from(actors)
+      .where(eq(actors.status, 'live'))
+      .orderBy(desc(actors.voiceScore))
+      .limit(50);
+    
+    console.log('✅ ACTORS FETCH SUCCESS:', { count: dbResults.length });
 
-  const dbResults = await query
-    .where(and(...conditions))
-    .orderBy(desc(actors.voiceScore))
-    .limit(50);
-
-  const actorIds = dbResults.map(a => a.id);
-  const [demos, dbReviews] = await Promise.all([
-    actorIds.length > 0 
-      ? db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN ${actorIds}`)
-      : Promise.resolve([]),
-    db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(10)
-  ]);
+    const actorIds = dbResults.map(a => a.id);
+    const [demos, dbReviews] = await Promise.all([
+      actorIds.length > 0 
+        ? db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN (${sql.join(actorIds, sql`, `)})`)
+        : Promise.resolve([]),
+      db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(10)
+    ]);
 
   const mappedResults = await Promise.all(dbResults.map(async (actor) => {
     const photoUrl = actor.dropboxUrl || '';
@@ -75,23 +76,27 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
   const langs = await db.select({ lang: actors.nativeLang }).from(actors).where(eq(actors.status, 'live')).groupBy(actors.nativeLang);
   const uniqueLangs: string[] = Array.from(new Set(langs.map(l => l.lang))).filter((l): l is string => l !== null).sort();
 
-  return {
-    count: mappedResults.length,
-    results: mappedResults as any,
-    filters: {
-      genders: ['Mannelijke stem', 'Vrouwelijke stem'],
-      languages: uniqueLangs,
-      styles: ['Corporate', 'Commercial', 'Narrative', 'Energetic', 'Warm']
-    },
-    _nuclear: true,
-    _source: 'supabase',
-    reviews: dbReviews.map(r => ({
-      name: r.authorName,
-      text: r.textNl || r.textEn || '',
-      rating: r.rating,
-      date: r.createdAt ? new Date(r.createdAt).toLocaleDateString('nl-BE') : ''
-    }))
-  };
+    return {
+      count: mappedResults.length,
+      results: mappedResults as any,
+      filters: {
+        genders: ['Mannelijke stem', 'Vrouwelijke stem'],
+        languages: uniqueLangs,
+        styles: ['Corporate', 'Commercial', 'Narrative', 'Energetic', 'Warm']
+      },
+      _nuclear: true,
+      _source: 'supabase',
+      reviews: dbReviews.map(r => ({
+        name: r.authorName,
+        text: r.textNl || r.textEn || '',
+        rating: r.rating,
+        date: r.createdAt ? new Date(r.createdAt).toLocaleDateString('nl-BE') : ''
+      }))
+    };
+  } catch (error: any) {
+    console.error('❌ getActors FATAL ERROR:', error);
+    throw error;
+  }
 }
 
 export async function getArticle(slug: string, lang: string = 'nl'): Promise<any> {

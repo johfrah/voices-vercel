@@ -1,5 +1,5 @@
-import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/utils/supabase/middleware'
+import { type NextRequest, NextResponse } from 'next/server'
 
 /**
  * ⚡ NUCLEAR MIDDLEWARE (GOD MODE 2026)

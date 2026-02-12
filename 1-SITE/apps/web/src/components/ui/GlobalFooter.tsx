@@ -1,17 +1,17 @@
 "use client";
 
 import { useTranslation } from '@/contexts/TranslationContext';
-import { MarketManager } from '@config/market-manager';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { MarketManager } from '@config/market-manager';
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
-import { VoiceglotText } from './VoiceglotText';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { JourneyCta } from './JourneyCta';
 import { JourneyFaq } from './JourneyFaq';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
+import { VoiceglotText } from './VoiceglotText';
 
 export default function GlobalFooter() {
   const { t } = useTranslation();
