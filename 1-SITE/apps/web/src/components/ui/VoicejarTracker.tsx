@@ -69,7 +69,10 @@ export const VoicejarTracker: React.FC = () => {
           keepalive: true 
         });
       } catch (e) {
-        console.error('🏺 Voicejar Flush Error:', e);
+        // 🛡️ CHRIS-PROTOCOL: SILENCE IN DEV
+        if (process.env.NODE_ENV !== 'development') {
+          console.error('🏺 Voicejar Flush Error:', e);
+        }
       }
     };
 

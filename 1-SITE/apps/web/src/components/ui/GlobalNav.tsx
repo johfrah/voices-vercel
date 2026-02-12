@@ -117,6 +117,7 @@ export default function GlobalNav() {
             journey="common"
             category="branding"
             className="h-14 w-auto transition-transform duration-500 group-hover:scale-105"
+            style={{ width: 'auto', height: 'auto' }}
           />
         )}
       </Link>
