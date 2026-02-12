@@ -51,8 +51,8 @@ export default function ContactPage() {
   };
 
   return (
-    <PageWrapperInstrument className="pt-32 pb-40 px-6 md:px-12 bg-va-off-white min-h-screen">
-      <ContainerInstrument className="max-w-7xl mx-auto">
+    <PageWrapperInstrument className="pt-32 pb-40 bg-va-off-white min-h-screen">
+      <ContainerInstrument>
         
         {/* Header */}
         <SectionInstrument className="mb-16 text-center">

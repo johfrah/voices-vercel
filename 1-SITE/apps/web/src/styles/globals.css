@@ -125,7 +125,7 @@ body {
 
 /* 🏗️ BENTO SYSTEM */
 .va-container {
-  @apply max-w-7xl mx-auto;
+  @apply max-w-7xl mx-auto px-6 md:px-12 lg:px-16;
 }
 
 .va-flex-center {

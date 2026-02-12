@@ -17,7 +17,10 @@ export async function GET(request: NextRequest) {
           eq(faq.category, journey),
           eq(faq.category, 'general'),
           eq(faq.category, 'pricing'),
-          eq(faq.category, 'service')
+          eq(faq.category, 'service'),
+          eq(faq.category, 'agency'),
+          eq(faq.category, 'studio'),
+          eq(faq.category, 'academy')
         )
       )
       .orderBy(desc(faq.helpfulCount))

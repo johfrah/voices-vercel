@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     // 2. Sla events op in batches
     const eventInserts = events.map((event: any, index: number) => ({
-      sessionId,
+      sessionId: visitorHash,
       eventData: event,
       sequenceOrder: (existingSession?.eventCount || 0) + index
     }));

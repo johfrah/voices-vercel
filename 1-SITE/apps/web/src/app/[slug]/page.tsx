@@ -239,13 +239,12 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
       }
     };
 
-    return (
-      <PageWrapperInstrument className="bg-va-off-white">
-        <LiquidBackground />
-        
-        <ContainerInstrument className="py-48 relative z-10 max-w-6xl mx-auto">
-          {/* 🚀 GLOBAL HERO MANDATE */}
-          <header className="mb-64 max-w-5xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
+    <PageWrapperInstrument className="bg-va-off-white">
+      <LiquidBackground />
+      
+      <ContainerInstrument className="py-48 relative z-10">
+        {/* 🚀 GLOBAL HERO MANDATE */}
+        <header className="mb-64 max-w-5xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
             <TextInstrument className="text-[12px] font-medium tracking-[0.4em] text-primary/60 mb-12 block">
               {journey}
             </TextInstrument>

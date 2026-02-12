@@ -82,7 +82,10 @@ export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentPr
   return (
     <Component 
       ref={ref} 
-      className={cn(className, noTranslate && "notranslate")} 
+      className={cn(
+        className.includes('max-w-') ? className : cn("va-container", className),
+        noTranslate && "notranslate"
+      )} 
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
       role={role}

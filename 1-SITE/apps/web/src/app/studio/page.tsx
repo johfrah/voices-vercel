@@ -160,12 +160,11 @@ export const dynamic = 'force-dynamic';
 export default async function StudioPage() {
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white">
+      <LiquidBackground />
       
       {/* 🧪 LIQUID DNA HEADER */}
-      <SectionInstrument className="relative pt-40 pb-24 px-6 md:px-12 overflow-hidden">
-        <ContainerInstrument className="absolute top-0 right-0 w-[600px] h-[600px] hmagic opacity-10 blur-[120px] -z-10 animate-slow-pulse" />
-        
-        <ContainerInstrument className="max-w-7xl mx-auto">
+      <SectionInstrument className="relative pt-40 pb-24 overflow-hidden">
+        <ContainerInstrument>
           <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full mb-12 shadow-sm border border-black/[0.03]">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <span className="text-[10px] font-black uppercase tracking-widest text-black/60">
@@ -189,10 +188,11 @@ export default async function StudioPage() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      <SectionInstrument className="max-w-7xl mx-auto px-6 md:px-12 pb-40">
-        <BentoGrid columns={3}>
-          {/* 🎯 DE GIDS BENTO */}
-          <BentoCard span="lg" className="hblue p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[500px] rounded-[48px]">
+      <SectionInstrument className="pb-40">
+        <ContainerInstrument>
+          <BentoGrid columns={3}>
+            {/* 🎯 DE GIDS BENTO */}
+            <BentoCard span="lg" className="hblue p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[500px] rounded-[48px]">
             <ContainerInstrument className="relative z-10">
               <ContainerInstrument className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-8">
                 <Star size={24} fill="currentColor" />

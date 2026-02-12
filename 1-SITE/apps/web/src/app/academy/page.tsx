@@ -197,13 +197,10 @@ export default async function AcademyPage() {
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-24 pb-24 bg-va-off-white">
-      {/* 🧪 LIQUID BACKGROUND LAYER */}
-      <ContainerInstrument className="fixed inset-0 -z-10 opacity-[0.01] pointer-events-none">
-        <ContainerInstrument className="absolute inset-0 hred"></ContainerInstrument>
-      </ContainerInstrument>
+      <LiquidBackground />
 
-      <SectionInstrument className="px-8 mb-16">
-        <ContainerInstrument className="max-w-5xl">
+      <SectionInstrument className="mb-16">
+        <ContainerInstrument>
           <ContainerInstrument className="inline-block bg-black text-white text-[10px] font-black px-3 py-1 rounded-full mb-6 tracking-widest uppercase">
             <VoiceglotText translationKey="academy.hero.badge" defaultText="Academy" />
           </ContainerInstrument>
@@ -224,7 +221,7 @@ export default async function AcademyPage() {
 
       {/* 🚀 DYNAMIC BLOCKS FROM PAGE ARCHITECT */}
       {pageData?.blocks?.map((block: any, i: number) => (
-        <SectionInstrument key={i} className="px-8 mb-12">
+        <SectionInstrument key={i} className="mb-12">
           <ContainerInstrument className="max-w-4xl prose prose-va">
             <VoiceglotText 
               translationKey={`page.academy.block.${i}`} 
