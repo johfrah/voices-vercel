@@ -31,7 +31,9 @@ export async function GET(request: NextRequest) {
     if (results.length === 0 && lang !== 'nl') {
       console.log(`🏥 [HEAL] Triggering translation generation for: ${lang}`);
       // We doen dit async zodat de gebruiker niet hoeft te wachten
-      fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/translations/heal`, {
+      // In een server context gebruiken we de interne URL
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+      fetch(`${baseUrl}/api/translations/heal`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lang, reason: 'missing_translations' })

@@ -37,6 +37,15 @@ export const TranslationProvider: React.FC<{ children: ReactNode; lang?: string 
     
     // 🛡️ STABILITEIT: Als de vertaling ontbreekt of leeg is, gebruik de defaultText (NL)
     if (!translation || translation.trim() === '') {
+      // 🏥 SELF-HEALING TRIGGER (Silent)
+      // We triggeren de healing alleen als we niet al aan het healen zijn
+      if (typeof window !== 'undefined' && !isHealing) {
+        fetch('/api/translations/heal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key, originalText: defaultText, currentLang: lang })
+        }).catch(() => {}); // Silent failure
+      }
       return defaultText;
     }
     
