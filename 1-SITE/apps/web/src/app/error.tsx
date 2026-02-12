@@ -27,6 +27,13 @@ export default function Error({
 
   return (
     <ContainerInstrument className="min-h-[60vh] flex flex-col items-center justify-center gap-8 py-20 px-6">
+      {/* 🕵️ Diagnostic Error Layer (Visible for debugging) */}
+      <div className="bg-red-50 p-4 rounded-xl border border-red-100 mb-4 max-w-2xl overflow-auto animate-in fade-in duration-700">
+        <p className="text-red-800 font-mono text-xs font-bold mb-1">Diagnostic Info:</p>
+        <p className="text-red-800 font-mono text-xs">{error.message || 'Unknown error'}</p>
+        {error.cause && <p className="text-red-600 font-mono text-[10px] mt-2 border-t border-red-100 pt-2">Cause: {String(error.cause)}</p>}
+        <p className="text-red-400 font-mono text-[9px] mt-2">Digest: {error.digest || 'no-digest'}</p>
+      </div>
       <ContainerInstrument className="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center">
         <AlertCircle size={40} />
       </ContainerInstrument>
