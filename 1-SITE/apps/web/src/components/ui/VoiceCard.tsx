@@ -172,7 +172,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
         </div>
 
         {/* Footer: Price & Action */}
-        <div className="pt-6 border-t border-black/5 flex items-center justify-between">
+        <div className="pt-6 border-t border-black/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-1.5 text-[9px] font-black text-va-black/30 uppercase tracking-widest mb-1">
               <Calendar size={10} className="text-primary" />
@@ -188,7 +188,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 window.location.href = `/voice/${voice.slug}`;
               }
             }}
-            className="bg-va-dark text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-xl shadow-black/5 flex items-center gap-2"
+            className="w-full sm:w-auto bg-va-dark text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-xl shadow-black/5 flex items-center justify-center gap-2"
           >
             <VoiceglotText translationKey="common.order_fast" defaultText="Snel Bestellen" />
             <ChevronRight size={14} />

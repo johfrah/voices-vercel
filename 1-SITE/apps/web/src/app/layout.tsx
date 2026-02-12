@@ -3,6 +3,7 @@ import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import FooterWrapper from "@/components/ui/FooterWrapper";
 import GlobalNav from "@/components/ui/GlobalNav";
+import { MobileFloatingDock } from "@/components/ui/MobileFloatingDock";
 import { LoadingScreenInstrument, PageWrapperInstrument, RootLayoutInstrument } from "@/components/ui/LayoutInstruments";
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { SonicDNAHandler } from "@/components/ui/SonicDNA";
@@ -137,6 +138,7 @@ export default function RootLayout({
           <CodyPreviewBanner />
           <VoicejarTracker />
           <GlobalNav />
+          <MobileFloatingDock />
           <Analytics />
           <CommandPalette />
           <Toaster position="bottom-right" />

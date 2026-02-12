@@ -110,8 +110,10 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         gender: 'Mannelijke stem',
         native_lang: 'nl',
         photo_url: '/assets/images/hero-artist-placeholder.jpg',
-        starting_price: 0,
-        voice_score: 10,
+        starting_price: 149,
+        price_unpaid_media: 149,
+        price_ivr: 49,
+        voice_score: 98,
         ai_enabled: false,
         bio: 'Systeem in herstelmodus. Neem contact op voor boekingen.',
         demos: []

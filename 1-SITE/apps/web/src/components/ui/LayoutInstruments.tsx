@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from '@/lib/utils';
+import { useSonicDNA } from '@/lib/sonic-dna';
 import React, { ButtonHTMLAttributes, ElementType, FormHTMLAttributes, forwardRef, HTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
 
 /**
@@ -18,7 +19,7 @@ export const RootLayoutInstrument = ({
 }) => {
   return (
     <html lang={lang}>
-      <body className={className}>
+      <body className={cn(className, "pb-24 md:pb-0 select-none touch-manipulation")}>
         {children}
       </body>
     </html>
@@ -195,15 +196,20 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
   ariaLabel,
   ...props
 }, ref) => {
+  const { playClick } = useSonicDNA();
   const { href, ...otherProps } = props;
   return (
     <Component 
       ref={ref}
       type={Component === 'button' ? type : undefined}
       href={Component === 'a' ? href : undefined}
-      className={cn(className, noTranslate && "notranslate", "rounded-[10px]")}
+      className={cn(className, noTranslate && "notranslate", "rounded-[10px] active:scale-95 transition-transform duration-100")}
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
+      onClick={(e: any) => {
+        playClick('soft');
+        if (props.onClick) props.onClick(e);
+      }}
       {...otherProps}
     >
       {children}

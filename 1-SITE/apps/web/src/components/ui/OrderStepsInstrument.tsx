@@ -1,10 +1,9 @@
 "use client";
 
+import { cn } from '@/lib/utils';
 import React from 'react';
-import { Mic, FileText, Music, ShoppingCart, ArrowRight } from 'lucide-react';
 import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
-import { cn } from '@/lib/utils';
 
 interface OrderStep {
   id: string;

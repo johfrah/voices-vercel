@@ -1,0 +1,89 @@
+"use client";
+
+import { Mic, BookOpen, Calendar, Star, PlayCircle, Users } from "lucide-react";
+import React from 'react';
+import { BentoCard, BentoGrid } from "./BentoGrid";
+import { VoiceglotText } from "./VoiceglotText";
+import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
+
+/**
+ * STUDIO & ACADEMY BENTO
+ * Focus: Vakmanschap & Groei (Mark's Content x Moby's UI)
+ * Verpakt de content uit 'studio.md' en 'academy.md' in een high-impact Bento Grid.
+ */
+export const StudioAcademyBento = () => {
+  return (
+    <BentoGrid className="mb-32">
+      {/* 🎙️ MAIN CARD: Workshops */}
+      <BentoCard span="xl" className="h-[450px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
+        <ContainerInstrument className="relative z-10">
+          <ContainerInstrument className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
+            <Mic size={32} fill="currentColor" />
+          </ContainerInstrument>
+          <HeadingInstrument level={3} className="text-5xl font-black uppercase tracking-tighter mb-6 leading-none text-primary">
+            <VoiceglotText translationKey="studio.hero.title" defaultText="Master je Stem" />
+          </HeadingInstrument>
+          <TextInstrument className="text-white/40 font-medium max-w-md text-lg">
+            <VoiceglotText 
+              translationKey="studio.hero.description" 
+              defaultText="Van basisuitspraak tot professionele voice-over technieken. Leer van de besten in onze maandelijkse workshops." 
+            />
+          </TextInstrument>
+        </ContainerInstrument>
+        <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
+      </BentoCard>
+
+      {/* 🎓 Academy Quick-Link */}
+      <BentoCard span="sm" className="bg-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
+        <ContainerInstrument>
+          <BookOpen className="text-primary mb-4" size={24} />
+          <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-2 text-va-black">
+            <VoiceglotText translationKey="academy.title" defaultText="Voices Academy" />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/40 text-xs font-medium leading-relaxed">
+            <VoiceglotText translationKey="academy.description" defaultText="Online leertrajecten voor wie op eigen tempo wil groeien als stemacteur." />
+          </TextInstrument>
+        </ContainerInstrument>
+      </BentoCard>
+
+      {/* 📅 Kalender */}
+      <BentoCard span="sm" className="bg-va-dark-soft text-white p-8 flex flex-col justify-between h-[280px] border-none">
+        <ContainerInstrument>
+          <Calendar className="text-primary mb-4" size={24} />
+          <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-2 text-primary">
+            <VoiceglotText translationKey="studio.calendar.title" defaultText="Volgende Sessies" />
+          </HeadingInstrument>
+          <TextInstrument className="text-white/60 text-xs font-medium leading-relaxed">
+            <VoiceglotText translationKey="studio.calendar.description" defaultText="Bekijk de data voor 'Perfect spreken' en 'Voice-overs voor beginners'." />
+          </TextInstrument>
+        </ContainerInstrument>
+      </BentoCard>
+
+      {/* 🌟 De Coaches (Bernadette & Johfrah) */}
+      <BentoCard span="md" className="bg-va-off-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
+        <ContainerInstrument>
+          <Users className="text-va-black/20 mb-4" size={24} />
+          <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-2 text-va-black">
+            <VoiceglotText translationKey="studio.coaches.title" defaultText="Topcoaches" />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/40 text-xs font-medium leading-relaxed">
+            <VoiceglotText translationKey="studio.coaches.description" defaultText="Bernadette Timmermans (VRT) & Johfrah Lefebvre delen hun jarenlange ervaring." />
+          </TextInstrument>
+        </ContainerInstrument>
+      </BentoCard>
+
+      {/* 🎬 Video Quiz */}
+      <BentoCard span="sm" className="bg-primary text-va-black p-8 flex flex-col justify-between h-[280px] border-none">
+        <ContainerInstrument>
+          <PlayCircle className="mb-4" size={24} fill="currentColor" />
+          <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-2">
+            <VoiceglotText translationKey="studio.quiz.title" defaultText="Welke Workshop?" />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/60 text-xs font-medium leading-relaxed">
+            <VoiceglotText translationKey="studio.quiz.description" defaultText="Doe de interactieve video-quiz en ontdek jouw ideale traject." />
+          </TextInstrument>
+        </ContainerInstrument>
+      </BentoCard>
+    </BentoGrid>
+  );
+};

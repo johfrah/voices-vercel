@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
 import React, { useState } from 'react';
 import { BentoGrid } from './BentoGrid';
@@ -8,9 +9,10 @@ import { VoiceCard } from './VoiceCard';
 
 interface VoiceGridProps {
   actors: Actor[];
+  featured?: boolean;
 }
 
-export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors }) => {
+export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false }) => {
   const [activeDemo, setActiveDemo] = useState<Demo | null>(null);
 
   const handleSelect = (actor: Actor) => {
@@ -24,15 +26,23 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors }) => {
 
   return (
     <>
-      <BentoGrid>
-        {actors.map((actor) => (
-          <VoiceCard 
-            key={actor.id} 
-            voice={actor} 
-            onSelect={handleSelect}
-          />
-        ))}
-      </BentoGrid>
+      <div className={cn(
+        "w-full",
+        featured && "md:block flex overflow-x-auto pb-12 -mx-6 px-6 snap-x snap-mandatory no-scrollbar"
+      )}>
+        <div className={cn(
+          featured ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-w-max md:min-w-full" : ""
+        )}>
+          {actors.map((actor) => (
+            <div key={actor.id} className={cn(featured && "w-[85vw] md:w-auto snap-center")}>
+              <VoiceCard 
+                voice={actor} 
+                onSelect={handleSelect}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
 
       {activeDemo && (
         <MediaMaster 

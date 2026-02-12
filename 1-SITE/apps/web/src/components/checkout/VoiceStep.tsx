@@ -5,7 +5,7 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { Actor } from '@/types';
 import { VoiceCard } from '../ui/VoiceCard';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, CheckCircle2 } from 'lucide-react';
 
 export const VoiceStep: React.FC = () => {
   const { state, selectActor, setStep } = useCheckout();
@@ -76,7 +76,7 @@ export const VoiceStep: React.FC = () => {
           <Loader2 className="animate-spin text-primary" size={40} />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+        <div className="grid grid-cols-1 gap-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
           {filteredActors.map((actor) => (
             <div 
               key={actor.id}
@@ -84,7 +84,7 @@ export const VoiceStep: React.FC = () => {
                 playClick('light');
                 selectActor(actor);
               }}
-              className={`relative rounded-[32px] border-4 transition-all cursor-pointer ${
+              className={`relative rounded-[44px] border-4 transition-all cursor-pointer ${
                 state.selectedActor?.id === actor.id 
                   ? 'border-primary shadow-xl scale-[0.98]' 
                   : 'border-transparent hover:border-black/5'
@@ -92,8 +92,8 @@ export const VoiceStep: React.FC = () => {
             >
                <VoiceCard voice={actor} />
               {state.selectedActor?.id === actor.id && (
-                <div className="absolute top-4 right-4 bg-primary text-white p-2 rounded-full shadow-lg">
-                  <Search size={16} className="rotate-45" />
+                <div className="absolute top-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg z-20 animate-in zoom-in duration-300">
+                  <CheckCircle2 size={20} />
                 </div>
               )}
             </div>
