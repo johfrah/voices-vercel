@@ -93,6 +93,10 @@ export default function Home() {
     fetch('/api/actors')
       .then(res => res.json())
       .then(resData => {
+        if (!resData || !resData.results) {
+          console.error('🛡️ Home Data: Invalid response format', resData);
+          return;
+        }
         const mappedActors = resData.results.map((actor: any) => ({
           id: actor.id,
           display_name: actor.display_name,

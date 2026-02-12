@@ -95,7 +95,32 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     };
   } catch (error: any) {
     console.error('❌ getActors FATAL ERROR:', error);
-    throw error;
+    
+    // 🛡️ CHRIS-PROTOCOL: EMERGENCY FALLBACK
+    // Als de database ontploft, leveren we een 'Safe Harbor' ervaring.
+    // De site mag NOOIT dood aanvoelen.
+    return {
+      count: 1,
+      results: [{
+        id: 'fallback-johfrah',
+        display_name: 'Johfrah',
+        first_name: 'Johfrah',
+        last_name: 'Lefebvre',
+        slug: 'johfrah',
+        gender: 'Mannelijke stem',
+        native_lang: 'nl',
+        photo_url: '/assets/images/hero-artist-placeholder.jpg',
+        starting_price: 0,
+        voice_score: 10,
+        ai_enabled: false,
+        bio: 'Systeem in herstelmodus. Neem contact op voor boekingen.',
+        demos: []
+      }] as any,
+      filters: { genders: [], languages: ['nl'], styles: [] },
+      _nuclear: true,
+      _source: 'emergency_fallback',
+      reviews: []
+    };
   }
 }
 

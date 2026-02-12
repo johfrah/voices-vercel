@@ -96,10 +96,10 @@ export default function GlobalNav() {
   // Navigatie is altijd zichtbaar voor alle gebruikers op alle pagina's
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 px-8 py-6 flex justify-between items-center bg-white/50 backdrop-blur-xl border-b border-black/5 golden-curve">
+    <nav className="fixed top-0 left-0 right-0 z-40 px-8 py-6 flex justify-between items-center bg-white/50 backdrop-blur-xl border-b border-black/5 golden-curve md:px-8 md:py-6 px-4 py-4">
       <Link 
         href="/" 
-        className="flex items-center gap-3 group"
+        className="flex items-center gap-2 md:gap-3 group"
         onClick={() => playClick('soft')}
         onMouseEnter={() => playSwell()}
       >
@@ -113,6 +113,7 @@ export default function GlobalNav() {
             alt={market.name} 
             width={142}
             height={56}
+            priority={true}
             journey="common"
             category="branding"
             className="h-14 w-auto transition-transform duration-500 group-hover:scale-105"
@@ -242,12 +243,12 @@ export default function GlobalNav() {
         )}
         <LanguageSwitcher />
         {!isPortfolio && (
-          <Link 
-            href={isAdmin ? "/admin/dashboard" : "/auth/login"}
-            onClick={() => playClick('pro')}
-            onMouseEnter={() => playSwell()}
-            className="va-btn-nav"
-          >
+        <Link 
+          href={isAdmin ? "/admin/dashboard" : "/auth/login"}
+          onClick={() => playClick('pro')}
+          onMouseEnter={() => playSwell()}
+          className="va-btn-nav hidden md:flex"
+        >
             {isAdmin ? (
               <VoiceglotText translationKey="nav.dashboard" defaultText="Dashboard" />
             ) : (
