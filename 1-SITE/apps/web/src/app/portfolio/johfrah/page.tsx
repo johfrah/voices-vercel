@@ -11,22 +11,21 @@ import {
   ButtonInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { Award, Mic } from "lucide-react";
+import { LiquidBackground } from "@/components/ui/LiquidBackground";
+import { Award, Mic, ArrowRight } from "lucide-react";
 import { Metadata } from "next";
 import Image from 'next/image';
 import { Suspense } from 'react';
 import { getActor } from "@/lib/api-server";
 
-// ... existing sonic DNA helper ...
-
 export const metadata: Metadata = {
-  title: "Johfrah | Warme Vlaamse Voice-over",
-  description: "Regisseur en voice-over talent voor documentaires, commercials en host content.",
+  title: "Johfrah | De Stem achter het Verhaal",
+  description: "Warme Vlaamse voice-over & International Emmy Award winnend regisseur.",
 };
 
 export default function JohfrahPortfolioPage() {
   return (
-    <PageWrapperInstrument>
+    <PageWrapperInstrument className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white">
       <Suspense fallback={<LoadingScreenInstrument />}>
         <JohfrahContent />
       </Suspense>
@@ -35,7 +34,6 @@ export default function JohfrahPortfolioPage() {
 }
 
 async function JohfrahContent() {
-  // 🚀 Intelligence Layer: Haal echte data op uit de database
   let artistData;
   try {
     artistData = await getActor("Johfrah");
@@ -47,198 +45,246 @@ async function JohfrahContent() {
     name: artistData?.display_name || "Johfrah Lefebvre",
     title: "Vlaamse Voice-over & Regisseur",
     image: artistData?.photo_url || "/assets/common/branding/johfrah/johfrah-hero.jpg",
-    extended_bio: artistData?.bio || "Ik ben Johfrah Lefebvre, een Vlaamse voice-over uit België. Mijn stem klinkt diep, warm, naturel en vertrouwd. Perfect voor docu’s en meditatie-apps. Ik kan e-learning teksten heel helder en begrijpbaar inspreken. Maar mijn stem kan ook energiek en dynamisch klinken. Perfect voor commercials die eruit moeten springen.",
+    extended_bio: artistData?.bio || "Mijn stem klinkt diep, warm, naturel en vertrouwd. Perfect voor documentaires en meditatie-apps. Ik breng verhalen tot leven met een heldere, begrijpbare toon, maar kan ook de energie leveren die een commercial nodig heeft om eruit te springen.",
     host_content: {
-      title: "Vlaamse presentator & tv-reporter",
-      intro: "Ik ben Johfrah Lefebvre. Ik breng uw verhaal op een authentieke en boeiende manier tot leven.",
-      experience: "Als reporter ben ik er een beetje vanzelf ingerold. Mijn ervaring als televisieregisseur, cameraman, editor en voice-over helpt mij om uw boodschap op een warme, spontane en authentieke manier over te brengen.",
-      award: "International Emmy Award winnaar als regisseur."
+      title: "Presentator & Reporter",
+      intro: "Ik breng uw verhaal op een authentieke en boeiende manier tot leven.",
+      experience: "Mijn ervaring als televisieregisseur helpt mij om uw boodschap op een warme, spontane en authentieke manier over te brengen.",
+      award: "International Emmy Award winnaar."
     },
     reporter_videos: {
       unizo: "fma3fyhhz",
       zorg_leuven: "frraoowha"
     },
-    // 💰 Dynamische tarieven uit de database
     rates: [
       { label: "Online Media", price: artistData?.starting_price || 250, desc: "Social media, YouTube, Web" },
       { label: "E-learning", price: 350, desc: "Per 1000 woorden" },
       { label: "Commercial", price: 450, desc: "Regionaal / Nationaal" }
-    ],
-    studio_specs: {
-      mic: "Neumann TLM 103",
-      interface: "Universal Audio Apollo",
-      remote: "SourceConnect, CleanFeed"
-    }
+    ]
   };
 
   return (
-    <PageWrapperInstrument className="min-h-screen bg-va-off-white">
-      <SectionInstrument className="relative overflow-hidden">
-        <ContainerInstrument className="max-w-7xl mx-auto px-6 pt-20 pb-32">
-          <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <ContainerInstrument className="relative group">
-              <ContainerInstrument className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-[0_40px_40px_-20px_rgba(0,0,0,0.06)] relative">
+    <>
+      <LiquidBackground />
+      
+      {/* 🎭 JOHFRAH-STIJL HERO (7/5 SPLIT, BOXED) */}
+      <SectionInstrument className="relative pt-40 pb-32 overflow-hidden">
+        <ContainerInstrument className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+            <div className="lg:col-span-7 space-y-10">
+              <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-md rounded-[20px] shadow-sm border border-black/[0.03]">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-black/40">
+                  <VoiceglotText translationKey="portfolio.badge" defaultText="The Voice behind the Story" />
+                </span>
+              </ContainerInstrument>
+              
+              <HeadingInstrument level={1} className="text-6xl md:text-8xl font-extralight leading-[0.9] tracking-tighter text-va-black">
+                Johfrah <br />
+                <span className="text-primary/40">Lefebvre</span>
+              </HeadingInstrument>
+              
+              <TextInstrument className="text-2xl font-light text-va-black/40 leading-tight tracking-tight max-w-xl">
+                <VoiceglotText translationKey="portfolio.johfrah.title" defaultText={data.title} />
+              </TextInstrument>
+
+              <ContainerInstrument className="max-w-lg text-[15px] text-va-black/60 leading-relaxed font-light">
+                <VoiceglotText translationKey="portfolio.johfrah.bio" defaultText={data.extended_bio} />
+              </ContainerInstrument>
+
+              <div className="flex flex-wrap items-center gap-8 pt-4">
+                <ButtonInstrument as="a" href="#demos" className="va-btn-pro !rounded-[10px] px-10 py-5">
+                  <VoiceglotText translationKey="portfolio.johfrah.cta.demos" defaultText="Beluister Demo's" />
+                </ButtonInstrument>
+                <a href="#contact" className="text-[11px] font-black uppercase tracking-[0.2em] text-va-black/30 hover:text-primary transition-all duration-500 flex items-center gap-3 group">
+                  <VoiceglotText translationKey="portfolio.johfrah.cta.contact" defaultText="Laten we praten" />
+                  <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
+                </a>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 relative group">
+              <div className="aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg relative transition-all duration-700 va-bezier">
                 <Image 
                   src={data.image} 
                   alt={data.name}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="object-cover transition-transform duration-[2000ms] group-hover:scale-105 va-bezier"
+                  priority
                 />
-                <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              </ContainerInstrument>
-            </ContainerInstrument>
-
-            <ContainerInstrument className="space-y-8">
-              <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest">
-                <Mic size={12} fill="currentColor" /> 
-                <VoiceglotText translationKey="portfolio.badge" defaultText="Portfolio" />
-              </ContainerInstrument>
+                <div className="absolute inset-0 bg-gradient-to-t from-va-black/10 to-transparent opacity-30" />
+              </div>
               
-              <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter">
-                <VoiceglotText translationKey="portfolio.johfrah.name" defaultText={data.name} />
-              </HeadingInstrument>
-              
-              <TextInstrument className="text-2xl font-medium text-va-black/60">
-                <VoiceglotText translationKey="portfolio.johfrah.title" defaultText={data.title} />
-              </TextInstrument>
-
-              <ContainerInstrument className="prose prose-va max-w-none text-va-black/70 leading-relaxed">
-                <VoiceglotText translationKey="portfolio.johfrah.bio" defaultText={data.extended_bio} />
-              </ContainerInstrument>
-
-            <ContainerInstrument className="flex flex-wrap items-center gap-6 pt-4">
-              <ButtonInstrument as="a" href="#demos" className="va-btn-pro">
-                <VoiceglotText translationKey="portfolio.johfrah.cta.demos" defaultText="Beluister Demo's" />
-              </ButtonInstrument>
-              <ButtonInstrument as="a" href="/contact" className="px-10 py-5 rounded-[24px] font-bold uppercase tracking-widest text-[13px] border-2 border-black/5 hover:border-primary transition-all">
-                <VoiceglotText translationKey="portfolio.johfrah.cta.contact" defaultText="Contact" />
-              </ButtonInstrument>
-            </ContainerInstrument>
-            </ContainerInstrument>
-          </ContainerInstrument>
+              {/* Floating Award Badge */}
+              <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-[20px] shadow-aura flex items-center gap-4 max-w-[200px] animate-float border border-black/[0.03]">
+                <Award className="text-primary shrink-0" size={32} strokeWidth={1.5} />
+                <TextInstrument className="text-[10px] font-black leading-tight uppercase tracking-wider text-va-black/60">
+                  Emmy Award Winnaar
+                </TextInstrument>
+              </div>
+            </div>
+          </div>
         </ContainerInstrument>
-        <ContainerInstrument className="absolute top-0 left-0 w-full h-full -z-10 hmagic opacity-5" />
       </SectionInstrument>
 
-      <SectionInstrument className="max-w-7xl mx-auto px-6 py-20">
-        <BentoGrid>
-          <HostCardLink span="xl" className="hblue text-white p-12 relative overflow-hidden group cursor-pointer">
-            <ContainerInstrument className="relative z-10 space-y-6">
-              <ContainerInstrument className="flex items-center gap-3">
-                <Award size={24} fill="currentColor" />
-                <HeadingInstrument level={2} className="text-4xl font-black uppercase tracking-tighter">
-                  <VoiceglotText translationKey="portfolio.johfrah.host.title" defaultText="Host Content" />
-                </HeadingInstrument>
-              </ContainerInstrument>
-              <ContainerInstrument className="space-y-4 text-white/90">
-                <HeadingInstrument level={3} className="text-2xl font-black">
-                  <VoiceglotText translationKey="portfolio.johfrah.host.subtitle" defaultText={data.host_content.title} />
-                </HeadingInstrument>
-                <TextInstrument className="leading-relaxed">
-                  <VoiceglotText translationKey="portfolio.johfrah.host.intro" defaultText={data.host_content.intro} />
-                </TextInstrument>
-                <TextInstrument className="leading-relaxed">
-                  <VoiceglotText translationKey="portfolio.johfrah.host.experience" defaultText={data.host_content.experience} />
-                </TextInstrument>
-                <ContainerInstrument className="pt-4 border-t border-white/20">
-                  <TextInstrument className="font-bold">
-                    <VoiceglotText translationKey="portfolio.johfrah.host.award" defaultText={data.host_content.award} />
-                  </TextInstrument>
-                </ContainerInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
-            <ContainerInstrument className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-[100px]" />
+      {/* 🧩 BENTO GRID (Boxed & Soft) */}
+      <SectionInstrument className="max-w-5xl mx-auto px-6 py-20">
+        <BentoGrid columns={3}>
+          <HostCardLink span="lg" className="hblue text-white p-12 relative overflow-hidden group cursor-pointer rounded-[20px] shadow-aura-lg min-h-[500px] flex flex-col justify-between border border-white/10">
+            <div className="relative z-10 space-y-6">
+              <div className="w-14 h-14 rounded-[12px] bg-white/10 backdrop-blur-md flex items-center justify-center">
+                <Award size={28} strokeWidth={1.5} className="text-white/60" />
+              </div>
+              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter leading-none uppercase">
+                <VoiceglotText translationKey="portfolio.johfrah.host.title" defaultText="Host & Reporter" />
+              </HeadingInstrument>
+              <TextInstrument className="text-lg text-white/70 font-light leading-relaxed max-w-sm">
+                <VoiceglotText translationKey="portfolio.johfrah.host.intro" defaultText={data.host_content.intro} />
+              </TextInstrument>
+            </div>
+            
+            <div className="relative z-10">
+              <TextInstrument className="text-[15px] font-light text-white/50 leading-relaxed mb-8 border-l-2 border-white/10 pl-6">
+                <VoiceglotText translationKey="portfolio.johfrah.host.experience" defaultText={data.host_content.experience} />
+              </TextInstrument>
+              <ButtonInstrument className="va-btn-pro !bg-white !text-va-black !rounded-[10px] px-8">
+                Bekijk Host Werk
+              </ButtonInstrument>
+            </div>
+            
+            <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-white/5 rounded-full blur-[100px]" />
           </HostCardLink>
 
-          {Object.entries(data.reporter_videos).map(([key, videoId]) => (
-            <BentoCard key={key} span="lg" className="aspect-video p-0 overflow-hidden relative group">
-              <iframe
-                src={`https://www.videoask.com/${videoId}`}
-                className="w-full h-full border-0"
-                allow="camera; microphone; autoplay; encrypted-media;"
-                title={`VideoAsk ${key}`}
-              />
-            </BentoCard>
-          ))}
+          <div className="md:col-span-1 space-y-8">
+            {Object.entries(data.reporter_videos).map(([key, videoId]) => (
+              <div key={key} className="aspect-[9/16] rounded-[20px] overflow-hidden relative group shadow-aura border border-black/5">
+                <iframe
+                  src={`https://www.videoask.com/${videoId}`}
+                  className="w-full h-full border-0"
+                  allow="camera; microphone; autoplay; encrypted-media;"
+                  title={`VideoAsk ${key}`}
+                />
+              </div>
+            ))}
+          </div>
 
-          <BentoCard span="md" className="bg-va-black text-white p-8">
-            <HeadingInstrument level={3} className="text-2xl font-black uppercase tracking-tighter mb-6">
-              <VoiceglotText translationKey="portfolio.johfrah.rates.title" defaultText="Tarieven" />
-            </HeadingInstrument>
-            <ContainerInstrument className="space-y-4">
-              {data.rates.map((rate, i) => (
-                <ContainerInstrument key={i} className="border-t border-white/10 pt-4">
-                  <ContainerInstrument className="flex justify-between items-start mb-2">
-                    <TextInstrument as="span" className="font-bold uppercase text-[11px] tracking-widest">
-                      <VoiceglotText translationKey={`portfolio.johfrah.rates.${i}.label`} defaultText={rate.label} />
-                    </TextInstrument>
-                    <TextInstrument as="span" className="text-xl font-black">€{rate.price}</TextInstrument>
-                  </ContainerInstrument>
-                  <TextInstrument className="text-white/60 text-[10px] uppercase tracking-wider">
-                    <VoiceglotText translationKey={`portfolio.johfrah.rates.${i}.desc`} defaultText={rate.desc} />
-                  </TextInstrument>
-                </ContainerInstrument>
-              ))}
-            </ContainerInstrument>
-          </BentoCard>
-
-          <BentoCard span="sm" className="bg-white/50 backdrop-blur-sm">
-            <HeadingInstrument level={3} className="text-lg font-black uppercase tracking-tighter mb-4">
-              <VoiceglotText translationKey="portfolio.johfrah.studio.title" defaultText="Studio" />
-            </HeadingInstrument>
-            <ContainerInstrument className="space-y-2 text-[11px] uppercase tracking-wider text-va-black/60">
-              <TextInstrument>
-                <VoiceglotText translationKey="portfolio.johfrah.studio.mic" defaultText={`Mic: ${data.studio_specs.mic}`} />
-              </TextInstrument>
-              <TextInstrument>
-                <VoiceglotText translationKey="portfolio.johfrah.studio.interface" defaultText={`Interface: ${data.studio_specs.interface}`} />
-              </TextInstrument>
-              <TextInstrument>
-                <VoiceglotText translationKey="portfolio.johfrah.studio.remote" defaultText={`Remote: ${data.studio_specs.remote}`} />
-              </TextInstrument>
-            </ContainerInstrument>
-          </BentoCard>
-
-          {/* Pricing Calculator Integration */}
-          <PricingCalculator />
-
-          {/* 🎙️ DEMOS SECTIE */}
-          <BentoCard id="demos" span="xl" className="bg-white p-12 shadow-aura">
-            <HeadingInstrument level={2} className="text-3xl font-black uppercase tracking-tight mb-12">
-              <VoiceglotText translationKey="portfolio.johfrah.demos.title" defaultText="Stem" />
-              <TextInstrument as="span" className="text-primary">
-                <VoiceglotText translationKey="portfolio.johfrah.demos.subtitle" defaultText=" Demo's" />
-              </TextInstrument>
-            </HeadingInstrument>
-
-            <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {artistData?.demos?.map((demo: any, i: number) => (
-                <ContainerInstrument 
-                  key={i}
-                  className="group p-6 rounded-[24px] bg-va-off-white border border-black/5 hover:border-primary/20 transition-all flex items-center justify-between cursor-pointer"
-                >
-                  <ContainerInstrument className="flex items-center gap-4">
-                    <ContainerInstrument className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                      <Mic size={20} />
-                    </ContainerInstrument>
-                    <ContainerInstrument>
-                      <HeadingInstrument level={4} className="font-black uppercase tracking-tight text-sm">
-                        <VoiceglotText translationKey={`portfolio.johfrah.demo.${i}.title`} defaultText={demo.title} />
-                      </HeadingInstrument>
-                      <TextInstrument className="text-[10px] font-black text-va-black/20 uppercase tracking-widest">
-                        <VoiceglotText translationKey={`portfolio.johfrah.demo.${i}.category`} defaultText={demo.category} />
+          <BentoCard id="rates" span="md" className="bg-white p-10 rounded-[20px] shadow-aura flex flex-col justify-between border border-black/[0.03]">
+            <div>
+              <HeadingInstrument level={3} className="text-2xl font-light uppercase tracking-tighter text-va-black mb-10">
+                <VoiceglotText translationKey="portfolio.johfrah.rates.title" defaultText="Investering" />
+              </HeadingInstrument>
+              <div className="space-y-8">
+                {data.rates.map((rate, i) => (
+                  <div key={i} className="group">
+                    <div className="flex justify-between items-end mb-2">
+                      <TextInstrument as="span" className="font-bold uppercase text-[10px] tracking-[0.2em] text-va-black/20 group-hover:text-primary transition-colors">
+                        <VoiceglotText translationKey={`portfolio.johfrah.rates.${i}.label`} defaultText={rate.label} />
                       </TextInstrument>
-                    </ContainerInstrument>
-                  </ContainerInstrument>
-                  <ContainerInstrument className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-all">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                  </ContainerInstrument>
-                </ContainerInstrument>
+                      <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black">€{rate.price}</TextInstrument>
+                    </div>
+                    <TextInstrument className="text-va-black/40 text-[13px] font-medium leading-relaxed">
+                      <VoiceglotText translationKey={`portfolio.johfrah.rates.${i}.desc`} defaultText={rate.desc} />
+                    </TextInstrument>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="pt-10 border-t border-black/[0.03] mt-10">
+              <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/20 mb-2">
+                Studio Setup
+              </TextInstrument>
+              <TextInstrument className="text-[13px] text-va-black/40 font-light">
+                Neumann TLM 103 • Apollo Interface • SourceConnect
+              </TextInstrument>
+            </div>
+          </BentoCard>
+
+          <div className="md:col-span-3 pt-8">
+            <PricingCalculator />
+          </div>
+
+          {/* 🎙️ DEMOS SECTIE (Overzichtelijk) */}
+          <BentoCard id="demos" span="full" className="bg-white p-16 rounded-[20px] shadow-aura border border-black/[0.02]">
+            <div className="max-w-2xl mb-16">
+              <HeadingInstrument level={2} className="text-5xl md:text-6xl font-light tracking-tighter leading-none mb-8 text-va-black">
+                De <span className="text-primary/60 italic">Stem</span> <br />
+                achter het verhaal.
+              </HeadingInstrument>
+              <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
+                Beluister mijn meest recente werk. Van high-energy commercials tot diepe, rustgevende documentaires.
+              </TextInstrument>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {artistData?.demos?.map((demo: any, i: number) => (
+                <div 
+                  key={i}
+                  className="group p-8 rounded-[20px] bg-va-off-white border border-black/[0.03] hover:border-primary/20 hover:bg-white hover:shadow-aura transition-all duration-700 va-bezier flex flex-col justify-between min-h-[200px] cursor-pointer"
+                >
+                  <div>
+                    <div className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 group-hover:bg-primary group-hover:text-white transition-all duration-700 shadow-sm mb-6">
+                      <Mic size={20} strokeWidth={1.5} />
+                    </div>
+                    <TextInstrument className="font-bold uppercase tracking-widest text-[10px] text-va-black/30 group-hover:text-primary transition-colors mb-2">
+                      <VoiceglotText translationKey={`portfolio.johfrah.demo.${i}.category`} defaultText={demo.category} />
+                    </TextInstrument>
+                    <HeadingInstrument level={3} className="text-lg font-light tracking-tight text-va-black">
+                      <VoiceglotText translationKey={`portfolio.johfrah.demo.${i}.title`} defaultText={demo.title} />
+                    </HeadingInstrument>
+                  </div>
+                  
+                  <div className="flex justify-end">
+                    <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-all duration-700 translate-x-4 group-hover:translate-x-0">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </ContainerInstrument>
+            </div>
           </BentoCard>
         </BentoGrid>
       </SectionInstrument>
-    </PageWrapperInstrument>
+
+      {/* 🏆 LIGHT SIGNATURE CTA */}
+      <SectionInstrument id="contact" className="py-32 bg-white relative overflow-hidden border-t border-black/[0.03]">
+        <div className="absolute inset-0 opacity-5 pointer-events-none hmagic" />
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 text-center relative z-10">
+          <HeadingInstrument level={2} className="text-5xl md:text-7xl font-extralight text-va-black tracking-tighter leading-none mb-12">
+            Klaar voor <br />
+            <span className="text-primary/60 italic">jouw verhaal?</span>
+          </HeadingInstrument>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-10">
+            <a href="mailto:hallo@johfrah.be">
+              <ButtonInstrument className="va-btn-pro !rounded-[10px] px-16 py-6 text-lg shadow-aura-lg hover:scale-105 transition-transform">
+                Start een project
+              </ButtonInstrument>
+            </a>
+            <a href="tel:+32475123456" className="text-va-black/30 hover:text-primary transition-colors font-light tracking-[0.2em] text-[11px] uppercase">
+              BEL DIRECT: +32 475 12 34 56
+            </a>
+          </div>
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      {/* 🧠 LLM CONTEXT (Compliance) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Johfrah Portfolio",
+            "description": "De stem achter het verhaal. Warme Vlaamse voice-over & regisseur.",
+            "_llm_context": {
+              "persona": "Johfrah",
+              "journey": "portfolio",
+              "intent": "showcase",
+              "visual_dna": ["Boxed Focus", "Warm Colors", "Soft Rounding", "Liquid DNA"]
+            }
+          })
+        }}
+      />
+    </>
   );
 }

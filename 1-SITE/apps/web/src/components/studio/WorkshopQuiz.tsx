@@ -1,8 +1,7 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Play, RotateCcw, CheckCircle2 } from 'lucide-react';
-import { ButtonInstrument } from '@/components/ui/LayoutInstruments';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface QuizOption {
   text: string;
@@ -21,7 +20,7 @@ interface QuizStep {
 const QUIZ_DATA: QuizStep[] = [
   {
     id: 'welkom',
-    video: 'https://www.voices.be/wp-content/uploads/quiz-videos/welkom.mp4',
+    video: 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/assets/studio/workshops/videos/welkom.mp4',
     question: 'Welke workshop past bij mij? Doe de quiz!',
     choices: [
       { text: 'Start de quiz', next: 'ervaring' }
@@ -29,7 +28,7 @@ const QUIZ_DATA: QuizStep[] = [
   },
   {
     id: 'ervaring',
-    video: 'https://www.voices.be/wp-content/uploads/quiz-videos/ervaring.mp4',
+    video: 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/assets/studio/workshops/videos/ervaring.mp4',
     question: 'Wat is jouw ervaring met stemwerk?',
     choices: [
       { text: 'Geen ervaring', next: 'doel' },
@@ -39,7 +38,7 @@ const QUIZ_DATA: QuizStep[] = [
   },
   {
     id: 'doel',
-    video: 'https://www.voices.be/wp-content/uploads/quiz-videos/doel.mp4',
+    video: 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/assets/studio/workshops/videos/doel.mp4',
     question: 'Wat is je belangrijkste doel?',
     choices: [
       { text: 'Mijn eigen stem ontdekken', next: 'resultaat_basis' },
@@ -49,7 +48,7 @@ const QUIZ_DATA: QuizStep[] = [
   },
   {
     id: 'resultaat_basis',
-    video: 'https://www.voices.be/wp-content/uploads/quiz-videos/resultaat.mp4',
+    video: 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/assets/studio/workshops/videos/resultaat.mp4',
     question: 'De "Stem & Presentatie" workshop is perfect voor jou!',
     choices: [
       { text: 'Bekijk workshop', url: '/studio/workshop/stem-presentatie' },
@@ -58,7 +57,7 @@ const QUIZ_DATA: QuizStep[] = [
   },
   {
     id: 'resultaat_pro',
-    video: 'https://www.voices.be/wp-content/uploads/quiz-videos/resultaat.mp4',
+    video: 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/assets/studio/workshops/videos/resultaat.mp4',
     question: 'De "Voice-over Masterclass" is jouw volgende stap.',
     choices: [
       { text: 'Bekijk masterclass', url: '/studio/workshop/masterclass' },
@@ -67,7 +66,7 @@ const QUIZ_DATA: QuizStep[] = [
   },
   {
     id: 'resultaat_presentatie',
-    video: 'https://www.voices.be/wp-content/uploads/quiz-videos/resultaat.mp4',
+    video: 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/assets/studio/workshops/videos/resultaat.mp4',
     question: 'Onze "Spreken met Impact" training past het best.',
     choices: [
       { text: 'Bekijk training', url: '/studio/workshop/impact' },

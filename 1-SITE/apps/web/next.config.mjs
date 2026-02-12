@@ -14,10 +14,6 @@ const nextConfig = {
         source: '/voicy.png',
         destination: '/assets/common/branding/voicy/voicy-avatar.png',
       },
-      {
-        source: '/wp-content/uploads/:path*',
-        destination: 'https://johfrah.be/wp-content/uploads/:path*',
-      },
     ];
   },
   // Skip linting during build to speed up

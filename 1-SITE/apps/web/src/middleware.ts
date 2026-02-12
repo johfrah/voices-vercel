@@ -99,6 +99,7 @@ export async function middleware(request: NextRequest) {
     '/prices': '/price',
     '/tarieven': '/price',
     '/prijzen': '/price',
+    '/price': '/agency', // 🩹 TEMP FIX: Redirect /price to agency until dedicated page exists
   }
   const normalizedPath = pathname.replace(/\/$/, '') || '/'
   
@@ -142,8 +143,15 @@ export async function middleware(request: NextRequest) {
       url.pathname = '/'
       return NextResponse.redirect(url)
     }
-    url.pathname = `/portfolio/johfrah${pathname === '/' ? '' : pathname}`
-    return NextResponse.rewrite(url)
+    
+    // 🛡️ EXCLUDE SYSTEM PATHS FROM PORTFOLIO REWRITE
+    if (!pathname.startsWith('/auth') && !pathname.startsWith('/api') && !pathname.startsWith('/admin')) {
+      url.pathname = `/portfolio/johfrah${pathname === '/' ? '' : pathname}`
+      const portfolioResponse = NextResponse.rewrite(url)
+      portfolioResponse.headers.set('x-voices-market', 'JOHFRAH')
+      portfolioResponse.headers.set('x-voices-lang', 'nl')
+      return portfolioResponse
+    }
   }
 
   // 🤖 JOHFRAI AI DOMAIN

@@ -216,8 +216,12 @@ async function handleSendMessage(params: any) {
         conversationId: convId
       });
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Core Chat Send Error]:', error);
+    // 🛡️ Graceful Fallback for Chat: Allow AI to respond even if DB write fails
+    if (!params.conversationId) {
+      return handleSendMessage({ ...params, mode: 'ask', _db_fallback: true });
+    }
     return NextResponse.json({ error: 'Message delivery failed' }, { status: 500 });
   }
 }

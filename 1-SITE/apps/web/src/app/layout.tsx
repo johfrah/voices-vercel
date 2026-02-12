@@ -1,4 +1,3 @@
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { VoicejarTracker } from "@/components/ui/VoicejarTracker";
 import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
@@ -135,28 +134,26 @@ export default function RootLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Providers>
-        <CodyPreviewBanner />
-        <VoicejarTracker />
-        <GlobalNav />
-        <SpeedInsights />
-        <Analytics />
-        <CommandPalette />
-        {/* <VoicyProactiveIntelligence /> */}
-        <Toaster position="bottom-right" />
-        <SonicDNAHandler />
-        <Suspense fallback={null}>
-          <VoicyBridge />
-        </Suspense>
-        {market.has_voicy !== false && <VoicyChat />}
         <EditModeOverlay>
+          <CodyPreviewBanner />
+          <VoicejarTracker />
+          <GlobalNav />
+          <Analytics />
+          <CommandPalette />
+          <Toaster position="bottom-right" />
+          <SonicDNAHandler />
+          <Suspense fallback={null}>
+            <VoicyBridge />
+          </Suspense>
+          {market.has_voicy !== false && <VoicyChat />}
           <PageWrapperInstrument>
             <Suspense fallback={<LoadingScreenInstrument />}>
               {children}
             </Suspense>
           </PageWrapperInstrument>
+          <CookieBanner />
+          <FooterWrapper />
         </EditModeOverlay>
-        <CookieBanner />
-        <FooterWrapper />
       </Providers>
     </RootLayoutInstrument>
   );

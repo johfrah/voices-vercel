@@ -97,6 +97,7 @@ export default function GlobalFooter() {
         { name: market.phone, href: `tel:${market.phone.replace(/\s+/g, '')}` },
         { name: market.email, href: `mailto:${market.email}` },
         { name: t('footer.contact', 'Contact'), href: '/contact' },
+        { name: t('footer.edit_portfolio', 'Bewerk portfolio'), href: '/auth/login' },
       ]
     }
   ];

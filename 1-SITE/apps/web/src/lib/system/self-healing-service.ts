@@ -25,4 +25,15 @@ export class SelfHealingService {
       console.error('❌ [HEAL] Kon event niet loggen:', e);
     }
   }
+
+  static async handle404(path: string, referrer: string): Promise<{ suggestion?: string }> {
+    await this.logEvent('warn', `404 Error op pad: ${path}`, { referrer });
+    
+    // Simpele logica voor suggesties
+    if (path.includes('login')) return { suggestion: '/auth/login' };
+    if (path.includes('studio')) return { suggestion: '/studio' };
+    if (path.includes('agency')) return { suggestion: '/agency' };
+    
+    return {};
+  }
 }

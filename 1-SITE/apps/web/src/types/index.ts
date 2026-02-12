@@ -22,11 +22,30 @@ export interface WorkshopStats {
   cancelled_workshops: number;
 }
 
+export interface Media {
+  id: number;
+  fileName: string;
+  filePath: string;
+  fileType?: string | null;
+}
+
+export interface Instructor {
+  id: number;
+  name: string;
+  tagline?: string | null;
+  bio?: string | null;
+  photo?: Media | null;
+}
+
 export interface Workshop {
   id: number;
   title: string;
+  description?: string | null;
   date: string;
+  price: string | number;
   status: string;
+  media?: Media | null;
+  instructor?: Instructor | null;
 }
 
 export interface StudioDashboardData {

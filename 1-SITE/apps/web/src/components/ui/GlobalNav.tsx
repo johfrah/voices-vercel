@@ -30,12 +30,13 @@ export default function GlobalNav() {
   const isAdmin = auth.isAdmin;
   const market = MarketManager.getCurrentMarket(); 
   const showVoicy = market.has_voicy || market.market_code === 'BE' || market.market_code === 'NLNL' || market.market_code === 'JOHFRAI';
+  const isPortfolio = market.market_code === 'JOHFRAH';
   const [mounted, setMounted] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [links, setLinks] = useState<any[]>([
-    { name: 'Onze stemmen', href: '/agency', key: 'nav.voices' },
-    { name: 'Hoe werkt het', href: '/#how-it-works', key: 'nav.how_it_works' },
-    { name: 'Hoeveel kost het', href: '/price', key: 'nav.pricing' },
+    { name: 'Mijn Stem', href: '/#demos', key: 'nav.my_voice' },
+    { name: 'Werkwijze', href: '/#how-it-works', key: 'nav.how_it_works' },
+    { name: 'Tarieven', href: '/#rates', key: 'nav.pricing' },
     { name: 'Contact', href: '/contact', key: 'nav.contact' }
   ]);
 
@@ -45,6 +46,13 @@ export default function GlobalNav() {
         { name: 'Meditaties', href: '/ademing', key: 'nav.meditations' },
         { name: 'Mijn Rust', href: '/account/ademing', key: 'nav.my_rest' },
         { name: 'Voices', href: 'https://voices.be', key: 'nav.voices_back' }
+      ]);
+    } else if (market.market_code === 'JOHFRAH') {
+      setLinks([
+        { name: 'Mijn Stem', href: '/#demos', key: 'nav.my_voice' },
+        { name: 'Host & Reporter', href: '/host', key: 'nav.host' },
+        { name: 'Over Johfrah', href: '/over-mij', key: 'nav.about' },
+        { name: 'Contact', href: '/contact', key: 'nav.contact' }
       ]);
     }
   }, [market.market_code]);
@@ -92,8 +100,8 @@ export default function GlobalNav() {
         onClick={() => playClick('soft')}
         onMouseEnter={() => playSwell()}
       >
-        {market.market_code === 'JOHFRAH' ? (
-          <span className="text-xl font-black tracking-tighter uppercase transition-transform duration-500 group-hover:scale-105 text-va-black">
+        {market.market_code === 'JOHFRAH' || (typeof window !== 'undefined' && window.location.host.includes('johfrah.be')) ? (
+          <span className="text-xl font-black tracking-tighter uppercase transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap">
             JOHFRAH LEFEBVRE
           </span>
         ) : (
@@ -230,18 +238,20 @@ export default function GlobalNav() {
           </button>
         )}
         <LanguageSwitcher />
-        <Link 
-          href={isAdmin ? "/admin/dashboard" : "/auth/login"}
-          onClick={() => playClick('pro')}
-          onMouseEnter={() => playSwell()}
-          className="va-btn-nav"
-        >
-          {isAdmin ? (
-            <VoiceglotText translationKey="nav.dashboard" defaultText="Dashboard" />
-          ) : (
-            <VoiceglotText translationKey="nav.login" defaultText="Inloggen" />
-          )}
-        </Link>
+        {!isPortfolio && (
+          <Link 
+            href={isAdmin ? "/admin/dashboard" : "/auth/login"}
+            onClick={() => playClick('pro')}
+            onMouseEnter={() => playSwell()}
+            className="va-btn-nav"
+          >
+            {isAdmin ? (
+              <VoiceglotText translationKey="nav.dashboard" defaultText="Dashboard" />
+            ) : (
+              <VoiceglotText translationKey="nav.login" defaultText="Inloggen" />
+            )}
+          </Link>
+        )}
       </div>
     </nav>
   );
