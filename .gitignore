@@ -69,3 +69,6 @@ next-env.d.ts
 4-KELDER/0-GRONDSTOFFEN-FABRIEK/
 **/nuclear-content/
 **/nuclear-content-relevant/
+
+# WordPress CLI slop
+.wp-cli/
