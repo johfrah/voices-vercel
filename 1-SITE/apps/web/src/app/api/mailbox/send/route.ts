@@ -9,7 +9,12 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   // 1. Admin Check
-  if (!user || user.email !== 'johfrah@voices.be') {
+  // We allow requests if they are authenticated as admin OR if they provide a system secret
+  const systemSecret = process.env.SYSTEM_SECRET;
+  const authHeader = request.headers.get('x-system-secret');
+  const isSystemAction = systemSecret && authHeader === systemSecret;
+
+  if (!isSystemAction && (!user || user.email !== 'johfrah@voices.be')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -21,9 +26,9 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Call Email Service
-    const emailServiceUrl = process.env.EMAIL_SERVICE_URL || 'http://localhost:3001';
+    const emailServiceUrl = process.env.EMAIL_SERVICE_URL || 'https://voices-vercel.vercel.app';
     
-    const response = await fetch(`${emailServiceUrl}/api/v2/emails/send`, {
+    const response = await fetch(`${emailServiceUrl}/api/mailbox/send`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -31,11 +36,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         to,
         subject,
-        template: 'raw',
-        context: {
-          content: body,
-          skip_approval: true // Admin sends directly
-        }
+        body
       }),
     });
 

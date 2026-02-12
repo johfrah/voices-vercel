@@ -1,6 +1,6 @@
-import { db } from '@db';
 import { workshops, instructors } from '@db/schema';
 import { desc, eq } from 'drizzle-orm';
+import { db } from '@db';
 import { Suspense } from 'react';
 import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
 import { 
@@ -10,9 +10,9 @@ import {
   LoadingScreenInstrument,
   HeadingInstrument,
   TextInstrument,
-  ButtonInstrument,
-  LiquidBackground
+  ButtonInstrument
 } from "@/components/ui/LayoutInstruments";
+import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { HitlActionCardInstrument } from '@/components/ui/HitlActionCardInstrument';
 import { Play, Calendar, MapPin, Users, ArrowRight, Star, MessageSquare, Info, GraduationCap } from "lucide-react";
@@ -160,7 +160,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function StudioPage() {
   return (
-    <PageWrapperInstrument className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white">
+    <div className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white">
       <LiquidBackground />
       
       {/* 🧪 LIQUID DNA HEADER */}
@@ -183,7 +183,7 @@ export default async function StudioPage() {
           <TextInstrument className="text-2xl md:text-3xl text-black/40 font-medium leading-tight tracking-tight max-w-3xl">
             <VoiceglotText 
               translationKey="studio.hero.subtitle" 
-              defaultText="Voices Studio is de fysieke plek voor directe begeleiding. Samen in de studio staan. Direct horen wat werkt. Leren van de experts in het vak." 
+              defaultText="Voices Studio is de fysieke plek voor directe begeleiding. Samen in de studio staan. Direct horen what werkt. Leren van de experts in het vak." 
             />
           </TextInstrument>
         </ContainerInstrument>
@@ -316,6 +316,6 @@ export default async function StudioPage() {
           })
         }}
       />
-    </PageWrapperInstrument>
+    </div>
   );
 }

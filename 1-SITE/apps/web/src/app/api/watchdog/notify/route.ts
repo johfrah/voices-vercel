@@ -30,23 +30,23 @@ export async function POST(request: Request) {
     `;
 
     // 2. Call Internal Email Service (Bypass auth for system alerts)
-    const emailServiceUrl = process.env.EMAIL_SERVICE_URL || 'http://localhost:3001';
+    const emailServiceUrl = process.env.EMAIL_SERVICE_URL || 'https://voices-vercel.vercel.app';
     
     // We loggen het voor nu ook naar de server console
     console.log('📧 Sending Watchdog Alert to:', recipient);
 
     try {
-      const response = await fetch(`${emailServiceUrl}/api/v2/emails/send`, {
+      // We gebruiken de interne mailbox route met de SYSTEM_SECRET
+      const response = await fetch(`${emailServiceUrl}/api/mailbox/send`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-system-secret': process.env.SYSTEM_SECRET || ''
+        },
         body: JSON.stringify({
           to: recipient,
           subject: `🚨 VOICES ALERT: ${message.substring(0, 50)}`,
-          template: 'raw',
-          context: {
-            content: emailBody,
-            skip_approval: true
-          }
+          body: emailBody
         }),
       });
 

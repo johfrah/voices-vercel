@@ -20,12 +20,13 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Check of sessie bestaat of maak nieuwe
-    const [existingSession] = await db.select()
+    // We gebruiken visitorHash als de unieke identifier voor sessies
+    const existingSessions = await db.select()
       .from(voicejarSessions)
       .where(eq(voicejarSessions.visitorHash, visitorHash))
       .limit(1);
-
-    let sessionId = visitorHash;
+    
+    const existingSession = existingSessions[0];
 
     if (!existingSession) {
       await db.insert(voicejarSessions).values({
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
       // Update session stats
       await db.update(voicejarSessions)
         .set({
-          eventCount: sql`${voicejarSessions.eventCount} + ${events.length}`,
+          eventCount: (existingSession.eventCount || 0) + events.length,
           updatedAt: new Date()
         })
         .where(eq(voicejarSessions.visitorHash, visitorHash));

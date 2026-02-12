@@ -92,15 +92,21 @@ export default function GlobalNav() {
         onClick={() => playClick('soft')}
         onMouseEnter={() => playSwell()}
       >
-        <VoiceglotImage 
-          src={market.logo_url} 
-          alt={market.name} 
-          width={142}
-          height={56}
-          journey="common"
-          category="branding"
-          className="h-14 w-auto transition-transform duration-500 group-hover:scale-105"
-        />
+        {market.market_code === 'JOHFRAH' ? (
+          <span className="text-xl font-black tracking-tighter uppercase transition-transform duration-500 group-hover:scale-105 text-va-black">
+            JOHFRAH LEFEBVRE
+          </span>
+        ) : (
+          <VoiceglotImage 
+            src={market.logo_url} 
+            alt={market.name} 
+            width={142}
+            height={56}
+            journey="common"
+            category="branding"
+            className="h-14 w-auto transition-transform duration-500 group-hover:scale-105"
+          />
+        )}
       </Link>
 
       <div className="hidden md:flex gap-8">

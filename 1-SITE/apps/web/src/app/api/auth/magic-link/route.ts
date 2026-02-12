@@ -28,20 +28,20 @@ export async function POST(request: Request) {
     const magicLink = data.properties.action_link;
 
     // 3. Verstuur de mail via onze EIGEN Email Service (Server-to-Server)
-    // We gebruiken de universele /send route van de email service
-    const emailServiceUrl = process.env.EMAIL_SERVICE_URL || 'http://localhost:3001';
+    const emailServiceUrl = process.env.EMAIL_SERVICE_URL || 'https://voices-vercel.vercel.app';
     
-    const emailRes = await fetch(`${emailServiceUrl}/api/emails/send`, {
+    // We gebruiken de interne mailbox route om de mail te versturen
+    // We voegen de SYSTEM_SECRET toe om de auth te bypassen voor deze systeemactie
+    const emailRes = await fetch(`${emailServiceUrl}/api/mailbox/send`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-system-secret': process.env.SYSTEM_SECRET || ''
+      },
       body: JSON.stringify({
         to: email,
         subject: 'Inloggen op Voices.be',
-        template: 'magic-link',
-        context: {
-          content: magicLink,
-          skip_approval: true // Inloglinks moeten direct verstuurd worden
-        }
+        body: `Klik op de volgende link om in te loggen: ${magicLink}`
       }),
     });
 

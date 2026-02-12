@@ -26,7 +26,10 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(faq.helpfulCount))
       .limit(limit);
 
-    return NextResponse.json(results);
+    // Filter out any potential null results if necessary, though select() should return an array
+    const safeResults = results || [];
+
+    return NextResponse.json(safeResults);
   } catch (error) {
     console.error('FAQ API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
