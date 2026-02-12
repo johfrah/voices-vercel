@@ -12,7 +12,8 @@ export class KnowledgeService {
   private bijbelPath: string;
 
   constructor() {
-    this.bijbelPath = path.join(process.cwd(), '../../docs/Bijbel');
+    // 🎯 NUCLEAR FIX: Gebruik het absolute pad naar de WETTEN/docs/1-BIJBEL map
+    this.bijbelPath = '/Users/voices/Library/CloudStorage/Dropbox/voices-headless/3-WETTEN/docs/1-BIJBEL';
   }
 
   public static getInstance(): KnowledgeService {

@@ -239,51 +239,52 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
       }
     };
 
-    <PageWrapperInstrument className="bg-va-off-white">
-      <LiquidBackground />
-      
-      <ContainerInstrument className="py-48 relative z-10">
-        {/* 🚀 GLOBAL HERO MANDATE */}
-        <header className="mb-64 max-w-5xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
-            <TextInstrument className="text-[12px] font-medium tracking-[0.4em] text-primary/60 mb-12 block">
-              {journey}
-            </TextInstrument>
-            <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black">
-              <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
-            </HeadingInstrument>
-            <div className="w-48 h-1 bg-black/5 rounded-full" />
-          </header>
+    return (
+      <PageWrapperInstrument className="bg-va-off-white">
+        <LiquidBackground />
+        
+        <ContainerInstrument className="py-48 relative z-10">
+          {/* 🚀 GLOBAL HERO MANDATE */}
+          <header className="mb-64 max-w-5xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
+              <TextInstrument className="text-[12px] font-medium tracking-[0.4em] text-primary/60 mb-12 block">
+                {journey}
+              </TextInstrument>
+              <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black">
+                <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
+              </HeadingInstrument>
+              <div className="w-48 h-1 bg-black/5 rounded-full" />
+            </header>
 
-          {/* 🏗️ SECTIONAL ORCHESTRATION */}
-          <div className="space-y-24">
-            {page.blocks.map((block, index) => renderBlock(block, index))}
-          </div>
-
-          {/* 🏁 GLOBAL SIGNATURE CTA MANDATE */}
-          <footer className="mt-80 text-center">
-            <div className="bg-va-black text-white p-32 rounded-[100px] shadow-aura-lg relative overflow-hidden group">
-              <div className="relative z-10">
-                <TextInstrument className="text-[11px] font-medium tracking-[0.4em] text-primary/60 mb-10 block">
-                  <VoiceglotText translationKey="cta.next_step" defaultText="volgende stap" />
-                </TextInstrument>
-                <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9]">
-                  <VoiceglotText translationKey="cta.ready_title" defaultText="wil je onze stemmen beluisteren?" />
-                </HeadingInstrument>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-10">
-                  <Link href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[40px] font-medium text-base tracking-tight hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white">
-                    <VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" />
-                  </Link>
-                  <Link href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-tight flex items-center gap-4 group transition-all duration-700">
-                    <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" /> <ArrowRight size={24} strokeWidth={1.5} className="group-hover:translate-x-3 transition-transform duration-700" />
-                  </Link>
-                </div>
-              </div>
-              <div className="absolute -bottom-60 -right-60 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[200px] group-hover:bg-primary/10 transition-all duration-1000" />
+            {/* 🏗️ SECTIONAL ORCHESTRATION */}
+            <div className="space-y-24">
+              {page.blocks.map((block: any, index: number) => renderBlock(block, index))}
             </div>
-          </footer>
-        </ContainerInstrument>
-      </PageWrapperInstrument>
-    );
+
+            {/* 🏁 GLOBAL SIGNATURE CTA MANDATE */}
+            <footer className="mt-80 text-center">
+              <div className="bg-va-black text-white p-32 rounded-[100px] shadow-aura-lg relative overflow-hidden group">
+                <div className="relative z-10">
+                  <TextInstrument className="text-[11px] font-medium tracking-[0.4em] text-primary/60 mb-10 block">
+                    <VoiceglotText translationKey="cta.next_step" defaultText="volgende stap" />
+                  </TextInstrument>
+                  <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9]">
+                    <VoiceglotText translationKey="cta.ready_title" defaultText="wil je onze stemmen beluisteren?" />
+                  </HeadingInstrument>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-10">
+                    <Link href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[40px] font-medium text-base tracking-tight hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white">
+                      <VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" />
+                    </Link>
+                    <Link href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-tight flex items-center gap-4 group transition-all duration-700">
+                      <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" /> <ArrowRight size={24} strokeWidth={1.5} className="group-hover:translate-x-3 transition-transform duration-700" />
+                    </Link>
+                  </div>
+                </div>
+                <div className="absolute -bottom-60 -right-60 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[200px] group-hover:bg-primary/10 transition-all duration-1000" />
+              </div>
+            </footer>
+          </ContainerInstrument>
+        </PageWrapperInstrument>
+      );
   } catch (error: any) {
     return <div className="p-32 text-center font-light text-va-black/10 text-2xl italic tracking-widest">Voices is calibrating...</div>;
   }

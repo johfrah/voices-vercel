@@ -10,7 +10,8 @@ import {
   LoadingScreenInstrument,
   HeadingInstrument,
   TextInstrument,
-  ButtonInstrument
+  ButtonInstrument,
+  LiquidBackground
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { HitlActionCardInstrument } from '@/components/ui/HitlActionCardInstrument';
@@ -47,7 +48,7 @@ async function WorkshopGrid() {
 
   return (
     <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {activeWorkshops.map((workshop) => (
+      {activeWorkshops.map((workshop: any) => (
         <ContainerInstrument 
           key={workshop.id} 
           className="group relative bg-white rounded-[32px] overflow-hidden shadow-aura hover:scale-[1.01] transition-all duration-500 border border-black/[0.02] flex flex-col"
@@ -127,7 +128,7 @@ async function InstructorFocus() {
 
   return (
     <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-12">
-      {teachers.map((t) => (
+      {teachers.map((t: any) => (
         <ContainerInstrument key={t.id} className="group space-y-6">
           <ContainerInstrument className="relative aspect-[4/5] rounded-[40px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
             <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
