@@ -33,11 +33,10 @@ export default function GlobalNav() {
   const [mounted, setMounted] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [links, setLinks] = useState<any[]>([
-    { name: 'Stemmen', href: '/agency', key: 'nav.voices' },
-    { name: 'Coaching', href: '/studio', key: 'nav.coaching' },
-    { name: 'Leren', href: '/academy', key: 'nav.learning' },
-    { name: 'Rust', href: '/ademing', key: 'nav.rest' },
-    { name: 'Portfolio', href: '/artist', key: 'nav.portfolio' }
+    { name: 'Onze stemmen', href: '/agency', key: 'nav.voices' },
+    { name: 'Hoe werkt het', href: '/#how-it-works', key: 'nav.how_it_works' },
+    { name: 'Hoeveel kost het', href: '/price', key: 'nav.pricing' },
+    { name: 'Contact', href: '/contact', key: 'nav.contact' }
   ]);
 
   useEffect(() => {
