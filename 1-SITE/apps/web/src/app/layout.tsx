@@ -1,24 +1,23 @@
-import { Analytics } from "@vercel/analytics/react";
-import { VoicejarTracker } from "@/components/ui/VoicejarTracker";
-import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
 import { CodyPreviewBanner } from "@/components/admin/CodyPreviewBanner";
+import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
+import { CommandPalette } from "@/components/ui/CommandPalette";
 import FooterWrapper from "@/components/ui/FooterWrapper";
 import GlobalNav from "@/components/ui/GlobalNav";
-import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { LoadingScreenInstrument, PageWrapperInstrument, RootLayoutInstrument } from "@/components/ui/LayoutInstruments";
+import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { SonicDNAHandler } from "@/components/ui/SonicDNA";
+import { VoicejarTracker } from "@/components/ui/VoicejarTracker";
 import { VoicyBridge } from "@/components/ui/VoicyBridge";
 import { VoicyChat } from "@/components/ui/VoicyChat";
-import { CommandPalette } from "@/components/ui/CommandPalette";
-import { VoicyProactiveIntelligence } from "@/components/ui/VoicyProactiveIntelligence";
+import { MarketManager } from "@config/market-manager";
+import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
-import { Toaster } from 'react-hot-toast';
 import { Inter, Raleway } from "next/font/google";
+import { headers } from "next/headers";
 import { Suspense } from "react";
+import { Toaster } from 'react-hot-toast';
 import "../styles/globals.css";
 import { Providers } from "./Providers";
-import { headers } from "next/headers";
-import { MarketManager } from "@config/market-manager";
 
 const inter = Inter({ subsets: ["latin"] });
 
