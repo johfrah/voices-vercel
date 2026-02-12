@@ -70,14 +70,6 @@ export default function PhotoMatcherPage() {
     return !isWpThumbnail && !isWpScaled && !hasOriginal;
   });
 
-  // 📄 Pagination Logic
-  const totalItems = showAutoMatched ? autoMatchedItems.length : goldItems.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedItems = showAutoMatched 
-    ? autoMatchedItems.slice(startIndex, startIndex + itemsPerPage)
-    : goldItems.slice(startIndex, startIndex + itemsPerPage);
-
   // 🧠 Visual Grouping Logic
   const groupedItems = paginatedItems.reduce((groups: { [key: string]: PhotoItem[] }, item) => {
     const context = item.legacyContext?.post_title || item.legacyContext?.parent_id || 'Geen Context';
@@ -307,7 +299,14 @@ export default function PhotoMatcherPage() {
     </ContainerInstrument>
   );
 
-  // 📄 Pagination Logic (reused from above)
+  // 📄 Pagination Logic
+  const totalItems = showAutoMatched ? autoMatchedItems.length : goldItems.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedItems = showAutoMatched 
+    ? autoMatchedItems.slice(startIndex, startIndex + itemsPerPage)
+    : goldItems.slice(startIndex, startIndex + itemsPerPage);
+
   if (goldItems.length === 0 && !loading && !showAutoMatched) {
     return (
       <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 font-sans pt-32">
