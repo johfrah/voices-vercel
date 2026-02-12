@@ -27,6 +27,17 @@ export async function GET(request: NextRequest) {
       }
     });
 
+    // 🏥 SELF-HEALING: Als er geen vertalingen zijn voor deze taal, trigger een 'Heal' event
+    if (results.length === 0 && lang !== 'nl') {
+      console.log(`🏥 [HEAL] Triggering translation generation for: ${lang}`);
+      // We doen dit async zodat de gebruiker niet hoeft te wachten
+      fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/translations/heal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lang, reason: 'missing_translations' })
+      }).catch(err => console.error('Failed to trigger translation healing:', err));
+    }
+
     return NextResponse.json({
       success: true,
       lang,
@@ -36,6 +47,12 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('[API Translations Error]:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    // 🛡️ STABILITEIT: Geef nooit een 500, maar een lege map zodat de site blijft draaien
+    return NextResponse.json({ 
+      success: false, 
+      lang, 
+      translations: {},
+      error: 'Database connection issue, falling back to default text'
+    });
   }
 }

@@ -31,9 +31,9 @@ export const HeroInstrument: React.FC = () => {
           <Link href="/agency" className="va-btn-pro !px-10 !py-6 text-base">
             <VoiceglotText translationKey="home.hero.cta_primary" defaultText="Bekijk alle stemmen" />
           </Link>
-          <button className="va-hero-btn-secondary">
+          <Link href="#how-it-works" className="va-hero-btn-secondary inline-flex items-center justify-center">
             <VoiceglotText translationKey="home.hero.cta_secondary" defaultText="Hoe wij werken" />
-          </button>
+          </Link>
         </div>
       </div>
     </div>

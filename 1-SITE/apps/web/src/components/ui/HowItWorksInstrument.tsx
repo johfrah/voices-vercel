@@ -35,7 +35,7 @@ export const HowItWorksInstrument: React.FC<{ steps: any[] }> = ({ steps }) => {
   };
 
   return (
-    <ContainerInstrument className="mb-32">
+    <ContainerInstrument id="how-it-works" className="mb-32 scroll-mt-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

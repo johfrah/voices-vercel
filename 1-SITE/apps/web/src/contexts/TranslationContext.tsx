@@ -34,7 +34,12 @@ export const TranslationProvider: React.FC<{ children: ReactNode; lang?: string 
   const t = (key: string, defaultText: string): string => {
     if (lang === 'nl') return defaultText;
     const translation = translations[key];
-    if (!translation || translation === '') return defaultText;
+    
+    // 🛡️ STABILITEIT: Als de vertaling ontbreekt of leeg is, gebruik de defaultText (NL)
+    if (!translation || translation.trim() === '') {
+      return defaultText;
+    }
+    
     return translation;
   };
 
