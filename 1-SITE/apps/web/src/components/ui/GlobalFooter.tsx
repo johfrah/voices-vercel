@@ -47,13 +47,20 @@ export default function GlobalFooter() {
 
   const standardSections = [
     {
-      title: t('footer.journeys', 'Ontdekken'),
+      title: t('footer.agency', 'Castingbureau'),
       links: [
-        { name: t('nav.agency', 'Stemmen'), href: '/agency' },
-        { name: t('nav.studio', 'Coaching'), href: '/studio' },
-        { name: t('nav.academy', 'Leren'), href: '/academy' },
-        { name: t('nav.meditation', 'Rust'), href: 'https://ademing.be' },
-        { name: t('nav.ai', 'AI Stem'), href: 'https://johfrai.be' },
+        { name: t('nav.voices', 'Onze stemmen'), href: '/agency' },
+        { name: t('nav.how_it_works', 'Hoe werkt het'), href: '/#how-it-works' },
+        { name: t('nav.pricing', 'Hoeveel kost het'), href: '/price' },
+        { name: t('nav.contact', 'Contact'), href: '/contact' },
+      ]
+    },
+    {
+      title: t('footer.actors', 'Voor voice-overs'),
+      links: [
+        { name: t('nav.studio', 'Voices Studio (workshops)'), href: '/studio' },
+        { name: t('nav.academy', 'Academy (online leertraject)'), href: '/academy' },
+        { name: t('nav.signup', 'Aanmelden als stemacteur'), href: '/auth/signup' },
       ]
     },
     {
@@ -69,7 +76,7 @@ export default function GlobalFooter() {
       title: t('footer.company', 'Over Voices'),
       links: [
         { name: t('footer.about', 'Ons verhaal'), href: '/about' },
-        { name: t('footer.artists', 'Voices Artists'), href: '/artist' },
+        { name: t('footer.ademing', 'Ademing (Rust)'), href: 'https://ademing.be' },
         { name: t('footer.blog', 'Blog'), href: '/blog' },
       ]
     }
