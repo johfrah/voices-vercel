@@ -1,0 +1,126 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+/**
+ * 🧠 GEMINI INTELLIGENCE SERVICE (2026)
+ * 
+ * Doel: Snelle, bulk-analyse van mails op sentiment, intentie en klant-DNA.
+ * Gebruikt Google Gemini 1.5 Flash voor optimale snelheid/kosten ratio.
+ */
+export class GeminiService {
+  private genAI: GoogleGenerativeAI;
+  private static instance: GeminiService;
+
+  constructor() {
+    this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+  }
+
+  public static getInstance(): GeminiService {
+    if (!GeminiService.instance) {
+      GeminiService.instance = new GeminiService();
+    }
+    return GeminiService.instance;
+  }
+
+  /**
+   * Analyseert een mail en geeft gestructureerde AI data terug.
+   */
+  async analyzeMail(subject: string, body: string) {
+    try {
+      const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const prompt = `
+        Analyseer de volgende e-mail voor een voice-over bureau (Voices.be).
+        Geef het resultaat terug in strikt JSON formaat.
+
+        Onderwerp: ${subject}
+        Inhoud: ${body.substring(0, 5000)}
+
+        JSON structuur:
+        {
+          "sentiment": "positive" | "neutral" | "negative",
+          "intent": "order" | "quote_request" | "complaint" | "info" | "other",
+          "urgency": 0-1,
+          "summary": "Korte samenvatting in 1 zin",
+          "customer_needs": ["behoefte 1", "behoefte 2"],
+          "suggested_action": "Wat moet Johfrah doen?"
+        }
+      `;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      
+      // Clean JSON from potential markdown fences
+      const jsonStr = text.replace(/```json|```/g, '').trim();
+      return JSON.parse(jsonStr);
+    } catch (error) {
+      console.error('❌ Gemini Analysis Error:', error);
+      return {
+        sentiment: 'neutral',
+        intent: 'other',
+        urgency: 0.5,
+        summary: 'Analyse mislukt',
+        customer_needs: [],
+        suggested_action: 'Handmatig controleren'
+      };
+    }
+  }
+
+  /**
+   * Analyseert een afbeelding en geeft een vision beschrijving terug.
+   * Nu met extra context (metadata, bestandsnaam, etc.) voor diepere intelligentie.
+   */
+  async analyzeImage(imageBuffer: Buffer, mimeType: string, context?: any) {
+    try {
+      const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const contextPrompt = context ? `
+        Aanvullende context over deze afbeelding:
+        - Bestandsnaam: ${context.fileName || 'onbekend'}
+        - Pad: ${context.path || 'onbekend'}
+        - Gekoppeld aan: ${context.legacyContext?.parent_title || 'onbekend'} (${context.legacyContext?.parent_type || 'onbekend'})
+        - Bron: ${context.source || 'onbekend'}
+        
+        Gebruik deze info om specifieke personen (zoals Johfrah, Mark, etc.) of locaties te herkennen indien relevant.
+      ` : '';
+
+      const prompt = `
+        Analyseer deze afbeelding voor een high-end voice-over bureau (Voices.be).
+        ${contextPrompt}
+        
+        Beschrijf wat je ziet in een menselijke, zachte tone-of-voice (Voices-vibe).
+        Focus op: sfeer, menselijkheid, vakmanschap, studio-elementen.
+        Houd de beschrijving kort (max 2 zinnen).
+        Geef het resultaat terug in strikt JSON formaat.
+
+        JSON structuur:
+        {
+          "description": "De beschrijving",
+          "labels": ["label1", "label2"],
+          "vibe": "warm" | "zakelijk" | "creatief" | "rustig"
+        }
+      `;
+
+      const imagePart = {
+        inlineData: {
+          data: imageBuffer.toString("base64"),
+          mimeType
+        },
+      };
+
+      const result = await model.generateContent([prompt, imagePart]);
+      const response = await result.response;
+      const text = response.text();
+      
+      const jsonStr = text.replace(/```json|```/g, '').trim();
+      return JSON.parse(jsonStr);
+    } catch (error) {
+      console.error('❌ Gemini Vision Error:', error);
+      return {
+        description: 'Geen beschrijving beschikbaar',
+        labels: [],
+        vibe: 'onbekend'
+      };
+    }
+  }
+}

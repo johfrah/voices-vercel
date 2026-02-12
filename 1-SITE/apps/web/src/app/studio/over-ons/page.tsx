@@ -1,0 +1,103 @@
+import React from 'react';
+import { 
+  PageWrapperInstrument, 
+  SectionInstrument, 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument 
+} from "@/components/ui/LayoutInstruments";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, Star, Award, ShieldCheck } from "lucide-react";
+
+export default function OverOnsPage() {
+  return (
+    <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-32 pb-40 px-6">
+      <ContainerInstrument className="max-w-5xl mx-auto">
+        
+        {/* HEADER */}
+        <SectionInstrument className="mb-20 space-y-4">
+          <Link 
+            href="/studio" 
+            className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-all mb-4"
+          >
+            <ArrowLeft size={14} /> 
+            <VoiceglotText translationKey="studio.back_to_studio" defaultText="Terug naar Studio" />
+          </Link>
+          <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter leading-none">
+            <VoiceglotText translationKey="studio.about.title" defaultText="Vakmanschap achter" /> <br />
+            <span className="text-primary">het geluid.</span>
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/40 font-medium text-xl max-w-2xl">
+            <VoiceglotText 
+              translationKey="studio.about.subtitle" 
+              defaultText="Bij Voices.be verkopen we geen audiobestanden. We verkopen retentie, autoriteit en emotie." 
+            />
+          </TextInstrument>
+        </SectionInstrument>
+
+        {/* FOUNDER SECTION */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mb-32">
+          <ContainerInstrument className="relative aspect-square rounded-[48px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
+            <Image 
+              src="/assets/common/founder/johfrah-avatar-be.png" 
+              alt="Johfrah Lefebvre"
+              fill
+              className="object-cover"
+            />
+          </ContainerInstrument>
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <HeadingInstrument level={2} className="text-4xl font-black uppercase tracking-tighter">
+                <VoiceglotText translationKey="studio.about.founder.title" defaultText="Johfrah Lefebvre" />
+              </HeadingInstrument>
+              <TextInstrument className="text-va-black/60 font-medium leading-relaxed">
+                <VoiceglotText 
+                  translationKey="studio.about.founder.text1" 
+                  defaultText="Al meer dan 15 jaar breng ik teksten tot leven voor merken die weigeren op te gaan in de grijze massa. Je herkent mijn stem van de tv-spots van Trivago of als de gids bij Tesla en Samsung." 
+                />
+              </TextInstrument>
+              <TextInstrument className="text-va-black/60 font-medium leading-relaxed">
+                <VoiceglotText 
+                  translationKey="studio.about.founder.text2" 
+                  defaultText="Mijn achtergrond ligt in de televisie. Met mijn team won ik een International Emmy Award voor 'Sorry voor Alles'. Die ervaring in regie en storytelling is de motor achter Voices.be." 
+                />
+              </TextInstrument>
+            </div>
+            <div className="flex items-center gap-4">
+              <Award className="text-primary" size={32} />
+              <span className="text-[10px] font-black uppercase tracking-widest text-va-black/40">International Emmy Award Winner</span>
+            </div>
+          </div>
+        </div>
+
+        {/* PHILOSOPHY */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
+          <div className="p-10 rounded-[40px] bg-white border border-black/5 shadow-aura space-y-6">
+            <Star className="text-primary" size={32} />
+            <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight">Top-selectie</HeadingInstrument>
+            <TextInstrument className="text-va-black/40 text-sm font-medium leading-relaxed">
+              Geen eindeloze lijsten, maar een gecureerde groep stemmen die we persoonlijk kennen en regisseren.
+            </TextInstrument>
+          </div>
+          <div className="p-10 rounded-[40px] bg-white border border-black/5 shadow-aura space-y-6">
+            <ShieldCheck className="text-primary" size={32} />
+            <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight">Technische Perfectie</HeadingInstrument>
+            <TextInstrument className="text-va-black/40 text-sm font-medium leading-relaxed">
+              Alles wordt geleverd in 48kHz studiokwaliteit, genormaliseerd volgens de strengste loudness-normen.
+            </TextInstrument>
+          </div>
+          <div className="p-10 rounded-[40px] bg-va-black text-white space-y-6">
+            <Award className="text-primary" size={32} />
+            <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight">Digitale Kluis</HeadingInstrument>
+            <TextInstrument className="text-white/40 text-sm font-medium leading-relaxed">
+              We bewaren al je scripts en instellingen. Een pickup over een jaar klinkt daardoor exact zoals vandaag.
+            </TextInstrument>
+          </div>
+        </div>
+
+      </ContainerInstrument>
+    </PageWrapperInstrument>
+  );
+}

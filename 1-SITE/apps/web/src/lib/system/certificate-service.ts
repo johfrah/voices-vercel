@@ -1,0 +1,68 @@
+import { db } from "@db";
+import { orders, orderItems, workshops, users } from "@db/schema";
+import { eq, and } from "drizzle-orm";
+
+/**
+ * 🎓 NUCLEAR CERTIFICATE SERVICE (2026)
+ * 
+ * Beheert de generatie en validatie van workshop certificaten.
+ * Vervangt de PHP Workshop Certificate Generator.
+ */
+
+export interface CertificateData {
+  participantName: string;
+  workshopTitle: string;
+  instructorName: string;
+  date: Date;
+  orderId: number;
+}
+
+export class CertificateService {
+  /**
+   * Valideert of een certificaat gegenereerd mag worden voor een order item.
+   */
+  static async validateEligibility(orderId: number, itemId: number): Promise<boolean> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
+    if (!order || order.status !== 'completed') return false;
+
+    const [item] = await db.select().from(orderItems).where(and(
+      eq(orderItems.id, itemId),
+      eq(orderItems.orderId, orderId)
+    ));
+
+    if (!item) return false;
+
+    // Check of het een workshop product is (via journey)
+    return order.journey === 'studio' || order.journey === 'academy';
+  }
+
+  /**
+   * Genereert de data voor een certificaat.
+   */
+  static async getCertificateData(orderId: number, itemId: number): Promise<CertificateData | null> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
+    const [item] = await db.select().from(orderItems).where(eq(orderItems.id, itemId));
+    const [user] = order?.userId ? await db.select().from(users).where(eq(users.id, order.userId)) : [null];
+
+    if (!order || !item) return null;
+
+    return {
+      participantName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || (order.rawMeta as any)?.billing_first_name || 'Deelnemer',
+      workshopTitle: item.name,
+      instructorName: 'Voices Studio Instructor', // Dit zou uit de workshop tabel kunnen komen
+      date: order.createdAt || new Date(),
+      orderId: order.id
+    };
+  }
+
+  /**
+   * Genereert een PDF certificaat (Mock / API Call).
+   */
+  static async generatePdf(data: CertificateData): Promise<string> {
+    console.log(`📄 Generating PDF Certificate for ${data.participantName}...`);
+    
+    // In Beheer-modus gebruiken we een serverless function of een service zoals Cloudinary/Vercel OG
+    // Voor nu retourneren we een mock URL.
+    return `https://api.voices.be/v2/certificates/download/${data.orderId}-${Buffer.from(data.participantName).toString('hex')}.pdf`;
+  }
+}

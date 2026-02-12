@@ -1,0 +1,54 @@
+---
+description: Intelligent Architecture Protocol (IAP) - User Intelligence and Context management for the Native Engine.
+globs: ["apps/web/src/app/**/*", "apps/web/src/lib/api.ts", "apps/web/src/contexts/**/*"]
+---
+
+# 🧠 IAP PROTOCOL: USER INTELLIGENCE & CONTEXT
+
+Wij bouwen een intelligent ecosysteem dat context-bewust is. Dit protocol definieert hoe Journey, Persona, Market en Intent worden vastgelegd in de Native Engine.
+
+---
+
+## 1. IAP CONTEXT (DE VIER-EENHEID)
+Elke interactie wordt gedefinieerd door vier dimensies, opgeslagen in de Unified Database (`iap_context` JSONB).
+
+### A. Market (Economische Context)
+- **Keys**: `BE`, `NL`, `FR`, `DE`, `ES`, `PT`, `UK`, `US`.
+- **Functie**: Bepaalt prijzen, aanbod en lokalisatie. Haal op via `x-voices-market` header.
+
+### B. Journey (User Path)
+- **Types**: `Agency`, `Studio`, `Academy`, `Artists`, `Meditation`.
+- **Functie**: Definieert de interface en beschikbare tools.
+
+### C. Usage Type (Flow)
+- **Types**: `Unpaid` (Corporate), `Paid` (Commercial), `Telefonie` (IVR).
+- **Functie**: Stuurt de `PricingEngine` aan.
+
+### D. Intent (Predictive Router)
+- **Personas**: `agency_buyer`, `voice_talent`, `academy_student`, `partner`.
+- **Intents**: `order_voice`, `learn_skill`, `manage_portfolio`, `stream_meditation`.
+
+---
+
+## 2. USER INTELLIGENCE & STATE
+We gebruiken Supabase als de real-time Single Source of Truth voor gebruikersdata.
+
+### A. Unified User DNA
+- `customer_insights`: AI-geanalyseerde data over klantgedrag en behoeften.
+- `journey_state`: De huidige fase van de gebruiker in hun journey (Awareness, Consideration, Decision).
+- `activity_log`: Alle nucleaire acties (orders, downloads, plays).
+
+### B. Frontend Integration
+- **Context Provider**: Gebruik `CheckoutContext` of `AuthContext` voor globale state.
+- **LLM Context**: Elke pagina injecteert een `<script type="application/ld+json">` met de huidige IAP-context voor Voicy.
+- **Data Attributes**: Gebruik `data-voices-intent` en `data-voices-context` op alle interactieve elementen.
+
+---
+
+## 3. IMPLEMENTATIE REGELS
+- **Zero WordPress Cookies**: Gebruik uitsluitend native sessies via Supabase/NextAuth.
+- **Server-Side Intelligence**: Gebruik Server Components om context-bewuste data te fetchen.
+- **Real-time Sync**: Wijzigingen in voorkeuren worden direct naar de `users` tabel in Supabase gepusht.
+
+---
+**GOUDEN REGEL**: De site moet "ademen" op basis van de gebruiker. Als de intentie bekend is, moet de UI zich daar direct naar voegen.

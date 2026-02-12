@@ -1,0 +1,196 @@
+"use client";
+
+import { useTranslation } from '@/contexts/TranslationContext';
+import { MarketManager } from '@config/market-manager';
+import { useSonicDNA } from '@/lib/sonic-dna';
+import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
+import { VoiceglotText } from './VoiceglotText';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { JourneyCta } from './JourneyCta';
+import { JourneyFaq } from './JourneyFaq';
+
+export default function GlobalFooter() {
+  const { t } = useTranslation();
+  const { playClick } = useSonicDNA();
+  const { state } = useVoicesState();
+  const market = MarketManager.getCurrentMarket();
+
+  const ademingSections = [
+    {
+      title: t('footer.meditation', 'Meditatie'),
+      links: [
+        { name: t('nav.meditations', 'Meditaties'), href: '/ademing' },
+        { name: t('nav.my_rest', 'Mijn Rust'), href: '/account/ademing' },
+        { name: t('nav.guides', 'De Gidsen'), href: '/ademing#guides' },
+      ]
+    },
+    {
+      title: t('footer.support', 'Support'),
+      links: [
+        { name: market.phone, href: `tel:${market.phone.replace(/\s+/g, '')}` },
+        { name: market.email, href: `mailto:${market.email}` },
+        { name: t('footer.faq', 'Veelgestelde Vragen'), href: '/faq' },
+      ]
+    },
+    {
+      title: t('footer.voices', 'Voices'),
+      links: [
+        { name: t('nav.voices_back', 'Terug naar Voices'), href: 'https://voices.be' },
+        { name: t('footer.about', 'Ons verhaal'), href: '/about' },
+      ]
+    }
+  ];
+
+  const standardSections = [
+    {
+      title: t('footer.journeys', 'Ontdekken'),
+      links: [
+        { name: t('nav.agency', 'Stemmen'), href: '/agency' },
+        { name: t('nav.studio', 'Coaching'), href: '/studio' },
+        { name: t('nav.academy', 'Leren'), href: '/academy' },
+        { name: t('nav.meditation', 'Rust'), href: 'https://ademing.be' },
+        { name: t('nav.ai', 'AI Stem'), href: 'https://johfrai.be' },
+      ]
+    },
+    {
+      title: t('footer.support', 'Support'),
+      links: [
+        { name: market.phone, href: `tel:${market.phone.replace(/\s+/g, '')}` },
+        { name: market.email, href: `mailto:${market.email}` },
+        { name: t('footer.faq', 'Veelgestelde Vragen'), href: '/faq' },
+        { name: t('footer.terms', 'Voorwaarden'), href: '/terms' },
+      ]
+    },
+    {
+      title: t('footer.company', 'Over Voices'),
+      links: [
+        { name: t('footer.about', 'Ons verhaal'), href: '/about' },
+        { name: t('footer.artists', 'Voices Artists'), href: '/artist' },
+        { name: t('footer.blog', 'Blog'), href: '/blog' },
+      ]
+    }
+  ];
+
+  const portfolioSections = [
+    {
+      title: t('footer.portfolio', 'Portfolio'),
+      links: [
+        { name: t('nav.home', 'Home'), href: '/' },
+        { name: t('nav.about', 'Over Johfrah'), href: '/over-mij' },
+        { name: t('nav.host', 'Host & Reporter'), href: '/host' },
+      ]
+    },
+    {
+      title: t('footer.support', 'Support'),
+      links: [
+        { name: market.phone, href: `tel:${market.phone.replace(/\s+/g, '')}` },
+        { name: market.email, href: `mailto:${market.email}` },
+        { name: t('footer.contact', 'Contact'), href: '/contact' },
+      ]
+    }
+  ];
+
+  let footerSections = standardSections;
+  if (market.market_code === 'ADEMING') footerSections = ademingSections;
+  if (market.market_code === 'JOHFRAH') footerSections = portfolioSections;
+
+  const isPortfolio = market.market_code === 'JOHFRAH';
+
+  return (
+    <ContainerInstrument as="footer" className="bg-va-black text-white pt-24 pb-12 overflow-hidden relative">
+      {/* Liquid Gradient Background */}
+      <ContainerInstrument className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none hmagic" />
+      
+      <ContainerInstrument className="max-w-7xl mx-auto px-6 relative z-10">
+        {/* Dynamic Journey Elements */}
+        {!isPortfolio && (
+          <ContainerInstrument className="mb-24">
+            <JourneyCta journey={state.current_journey} />
+            <ContainerInstrument className="mt-12">
+              <HeadingInstrument level={4} className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-8">
+                <VoiceglotText translationKey="footer.journey_faq" defaultText="Veelgestelde vragen voor deze journey" />
+              </HeadingInstrument>
+              <JourneyFaq journey={state.current_journey} limit={4} />
+            </ContainerInstrument>
+          </ContainerInstrument>
+        )}
+
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 mb-24">
+          {/* Brand Column */}
+          <ContainerInstrument className="lg:col-span-2 space-y-8">
+            <Link href="/" onClick={() => playClick('light')} className="flex items-center gap-3 group">
+              <Image 
+                src={market.logo_url} 
+                alt={market.name} 
+                width={142}
+                height={56}
+                className="h-14 w-auto brightness-0 invert transition-transform duration-500 group-hover:scale-105"
+              />
+            </Link>
+            <TextInstrument className="text-white/40 text-lg font-medium leading-relaxed max-w-sm">
+              {isPortfolio 
+                ? <VoiceglotText translationKey="footer.portfolio.tagline" defaultText="De stem achter het verhaal. Warme, natuurlijke voice-over & host." />
+                : <VoiceglotText translationKey="footer.tagline" defaultText="Een warm en vertrouwd geluid. De perfecte stem voor elk project." />
+              }
+            </TextInstrument>
+            <ContainerInstrument className="flex gap-4">
+              {[Instagram, Twitter, Linkedin, Facebook].map((Icon, i) => (
+                <ButtonInstrument 
+                  key={i} 
+                  onClick={() => playClick('light')}
+                  className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
+                >
+                  <Icon size={18} />
+                </ButtonInstrument>
+              ))}
+            </ContainerInstrument>
+          </ContainerInstrument>
+
+          {/* Links Columns */}
+          {footerSections.map((section, i) => (
+            <ContainerInstrument key={i} className="space-y-8">
+              <HeadingInstrument level={4} className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+                <VoiceglotText translationKey={`footer.section.${i}.title`} defaultText={section.title} />
+              </HeadingInstrument>
+              <ContainerInstrument as="ul" className="space-y-4">
+                {section.links.map((link, j) => (
+                  <ContainerInstrument as="li" key={j}>
+                    <Link 
+                      href={link.href} 
+                      onClick={() => playClick('light')}
+                      className="text-sm font-bold text-white/60 hover:text-primary transition-colors duration-300"
+                    >
+                      <VoiceglotText translationKey={`footer.link.${i}.${j}`} defaultText={link.name} />
+                    </Link>
+                  </ContainerInstrument>
+                ))}
+              </ContainerInstrument>
+            </ContainerInstrument>
+          ))}
+        </ContainerInstrument>
+
+        {/* Bottom Bar */}
+        <ContainerInstrument className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+          <TextInstrument className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/20">
+            © 2026 {isPortfolio ? 'Johfrah Lefebvre' : 'Voices'}. {isPortfolio && (
+              <span>Powered by <a href="https://voices.be" className="hover:text-white transition-colors underline decoration-white/10 underline-offset-4">Voices.be</a></span>
+            )}
+          </TextInstrument>
+          
+          <ContainerInstrument className="flex items-center gap-8">
+            <ContainerInstrument className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/5">
+              <TextInstrument as="span" className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <TextInstrument as="span" className="text-[9px] font-black uppercase tracking-widest text-white/40">
+                <VoiceglotText translationKey="footer.status.online" defaultText="Wij staan voor u klaar" />
+              </TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
+    </ContainerInstrument>
+  );
+};

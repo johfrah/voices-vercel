@@ -1,0 +1,71 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Next.js
+.next/
+out/
+
+# Production
+build
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env*.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# --- VOICES SPECIFIC ---
+
+# 1. De Kelder (Backups & Legacy) - Nooit naar GitHub/Vercel
+4-KELDER/
+
+# 2. Assets (Media) - Staan al in Supabase Storage
+1-SITE/assets/
+**/assets/
+
+# 3. Tijdelijke Scripts & Logs
+*.js
+*.ts
+!1-SITE/**/*.ts
+!1-SITE/**/*.tsx
+!3-WETTEN/**/*.ts
+!3-WETTEN/**/*.tsx
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!1-SITE/**/package.json
+!1-SITE/**/tsconfig.json
+!3-WETTEN/**/package.json
+!3-WETTEN/**/tsconfig.json
+*.txt
+*.log
+
+# 4. Git Lock
+.git/index.lock
+
+# Webhosting rommel
+.webhosting/
+
+# Grondstoffen voor de Fabriek
+4-KELDER/0-GRONDSTOFFEN-FABRIEK/
+**/nuclear-content/
+**/nuclear-content-relevant/

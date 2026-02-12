@@ -1,0 +1,72 @@
+'use client';
+
+import { useEffect } from 'react';
+import {
+  ContainerInstrument,
+  ButtonInstrument,
+  TextInstrument,
+  HeadingInstrument,
+} from '@/components/ui/LayoutInstruments';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { AlertCircle, RefreshCw } from 'lucide-react';
+
+/**
+ * 🛡️ APP ERROR (NUCLEAR 2026)
+ * Error boundary voor app-level fouten.
+ */
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    console.error('App error:', error);
+  }, [error]);
+
+  return (
+    <ContainerInstrument className="min-h-[60vh] flex flex-col items-center justify-center gap-8 py-20 px-6">
+      <ContainerInstrument className="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center">
+        <AlertCircle size={40} />
+      </ContainerInstrument>
+
+      <div className="text-center space-y-2">
+        <HeadingInstrument level={1} className="text-4xl font-black uppercase tracking-tighter">
+          <VoiceglotText translationKey="error.app.title" defaultText="Oeps, even geduld" />
+        </HeadingInstrument>
+        <TextInstrument className="text-va-black/40 font-medium max-w-md mx-auto">
+          <VoiceglotText 
+            translationKey="error.app.text" 
+            defaultText="De pagina kon niet volledig worden geladen. We proberen de verbinding te herstellen." 
+          />
+        </TextInstrument>
+      </div>
+
+      <ButtonInstrument onClick={reset} className="va-btn-pro !px-12">
+        <RefreshCw size={18} />
+        <VoiceglotText translationKey="error.app.cta" defaultText="Opnieuw Proberen" />
+      </ButtonInstrument>
+
+      {/* 🧠 LLM CONTEXT (Compliance) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ErrorPage",
+            "name": "App Error",
+            "_llm_context": {
+              "persona": "Gids",
+              "journey": "common",
+              "intent": "error_recovery",
+              "capabilities": ["reset_state"],
+              "lexicon": ["Fout", "Herstel", "Oeps"],
+              "visual_dna": ["Minimal", "Liquid DNA"]
+            }
+          })
+        }}
+      />
+    </ContainerInstrument>
+  );
+}

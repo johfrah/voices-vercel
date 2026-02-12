@@ -1,0 +1,916 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --va-primary: #E91E63;
+  --va-primary-dark: #C2185B;
+  --va-background: hsl(35, 25%, 98%);
+  --va-dark: #1A1A1A;
+  --va-dark-soft: #2D2D2D;
+  --va-bezier: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* 🎨 THEME SYSTEM */
+.theme-ademing {
+  --va-primary: #6366f1;
+  --va-background: #FAF9F6;
+  font-family: var(--font-raleway), 'Inter', system-ui, sans-serif !important;
+}
+
+.theme-johfrah {
+  --va-primary: #1A1A1A;
+  --va-background: #FFFFFF;
+}
+
+.theme-youssef {
+  --va-primary: #000000;
+  --va-background: #F0F0F0;
+}
+
+.theme-johfrai {
+  --va-primary: #9333ea;
+  --va-background: #000000;
+  --va-dark: #FFFFFF;
+}
+
+body {
+  background-color: var(--va-background);
+  color: var(--va-dark);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+/* 🧪 LIQUID GRADIENTS (120s slow-motion) */
+@keyframes liquidGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animate-liquid-gradient {
+  animation: liquidGradient 120s ease infinite;
+  background-size: 400% 400%;
+}
+
+.hmagic {
+  background: linear-gradient(-45deg, #6366f1, #a855f7, #ec4899);
+  background-size: 400% 400%;
+  animation: liquidGradient 120s ease infinite;
+}
+
+.hred {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: liquidGradient 120s ease infinite;
+}
+
+.hblue {
+  background: linear-gradient(-45deg, #23a6d5, #23d5ab, #ee7752, #e73c7e);
+  background-size: 400% 400%;
+  animation: liquidGradient 120s ease infinite;
+}
+
+.hmagic-text {
+  background: linear-gradient(-45deg, #4f46e5, #9333ea, #db2777, #4f46e5);
+  background-size: 400% 400%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #4f46e5;
+  animation: liquidGradient 30s ease infinite;
+  display: inline-block;
+  filter: drop-shadow(0 2px 10px rgba(0,0,0,0.05));
+  position: relative;
+  z-index: 1;
+}
+
+.va-hmagic-text {
+  @apply hmagic-text;
+}
+
+.hblue-text {
+  background: linear-gradient(-45deg, #23a6d5, #23d5ab, #ee7752, #e73c7e);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: liquidGradient 120s ease infinite;
+}
+
+.animate-slow-pulse {
+  animation: slowPulse 10s ease-in-out infinite;
+}
+
+@keyframes slowPulse {
+  0%, 100% { opacity: 0.03; transform: scale(1); }
+  50% { opacity: 0.05; transform: scale(1.05); }
+}
+
+.golden-curve {
+  transition-timing-function: var(--va-bezier);
+}
+
+/* 🎨 SHADOW SYSTEM */
+.shadow-aura {
+  box-shadow: 0 32px 64px -16px rgba(0,0,0,0.08);
+}
+
+.shadow-aura-lg {
+  box-shadow: 0 48px 96px -24px rgba(0,0,0,0.12);
+}
+
+.drop-shadow-aura {
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.1));
+}
+
+/* 🏗️ BENTO SYSTEM */
+.va-container {
+  @apply max-w-7xl mx-auto;
+}
+
+.va-flex-center {
+  @apply flex items-center justify-center;
+}
+
+.va-loading-screen {
+  @apply min-h-screen flex items-center justify-center font-black uppercase tracking-tighter text-4xl animate-pulse;
+}
+
+/* ⚡ AGENCY HERO INSTRUMENT */
+.va-agency-hero {
+  @apply relative pt-32 pb-16 px-8 z-10;
+}
+
+.va-hero-content {
+  @apply max-w-4xl space-y-8 mb-16;
+}
+
+.va-badge-container {
+  @apply flex;
+}
+
+.va-badge {
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-[10px] font-black tracking-widest shadow-sm border border-black/5;
+}
+
+.va-icon-primary {
+  @apply text-va-primary;
+}
+
+.va-hero-title {
+  @apply text-7xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-4 relative z-20;
+}
+
+.va-hmagic-text {
+  @apply hmagic-text;
+}
+
+.va-hero-description {
+  @apply text-2xl md:text-3xl text-va-black/50 font-medium leading-tight tracking-tight max-w-2xl;
+}
+
+/* ⚡ ARTIST HERO INSTRUMENT */
+.va-artist-hero {
+  @apply relative;
+}
+
+.va-artist-nav {
+  @apply sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-gray-100/50;
+}
+
+.va-artist-nav-content {
+  @apply px-6 h-24 flex items-center justify-between;
+}
+
+.va-artist-nav-left {
+  @apply flex items-center gap-12;
+}
+
+.va-artist-back-link {
+  @apply flex items-center gap-3;
+}
+
+.va-artist-back-link:hover .va-artist-back-icon {
+  @apply bg-va-primary;
+}
+
+.va-artist-back-link:hover .va-artist-back-text {
+  @apply text-va-dark;
+}
+
+.va-artist-back-icon {
+  @apply w-10 h-10 rounded-xl bg-va-dark text-white flex items-center justify-center transition-all duration-500;
+}
+
+.va-artist-back-text {
+  @apply text-[10px] font-black tracking-widest text-va-dark/40 transition-colors;
+}
+
+.va-artist-nav-links {
+  @apply hidden lg:flex items-center gap-8 text-[11px] font-black tracking-[0.2em] text-va-dark/30;
+}
+
+.va-artist-nav-link {
+  @apply hover:text-va-primary transition-colors relative;
+}
+
+.va-artist-nav-link:hover .va-artist-nav-link-indicator {
+  @apply w-full;
+}
+
+.va-artist-nav-link-indicator {
+  @apply absolute -bottom-1 left-0 w-0 h-0.5 bg-va-primary transition-all duration-500;
+}
+
+.va-artist-hero-section {
+  @apply relative pt-20 pb-32 px-6 z-10;
+}
+
+.va-artist-hero-grid {
+  @apply grid lg:grid-cols-2 gap-20 items-center;
+}
+
+.va-artist-hero-content {
+  @apply space-y-10;
+}
+
+.va-artist-badge {
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[10px] font-black tracking-widest shadow-sm border border-gray-100/50;
+}
+
+.va-artist-badge-dot {
+  @apply w-2 h-2 rounded-full bg-va-primary animate-pulse;
+}
+
+.va-artist-title {
+  @apply text-7xl md:text-[8vw] font-black leading-[0.85] tracking-tighter;
+}
+
+.va-artist-bio {
+  @apply text-2xl text-va-dark/40 max-w-xl leading-tight font-medium tracking-tight;
+}
+
+.va-artist-hero-actions {
+  @apply flex flex-wrap items-center gap-6 pt-4;
+}
+
+.va-artist-btn-secondary {
+  @apply px-10 py-5 rounded-[24px] font-black tracking-widest text-[11px] border-2 border-gray-100 hover:border-va-primary transition-all duration-500;
+}
+
+.va-artist-hero-visual {
+  @apply relative lg:ml-auto;
+}
+
+.va-artist-image-wrapper {
+  @apply relative z-10 aspect-[4/5] w-full max-w-[450px] rounded-[48px] overflow-hidden shadow-aura transform rotate-2 transition-all duration-1000;
+}
+
+.va-artist-image-wrapper:hover {
+  @apply rotate-0;
+}
+
+.va-artist-image {
+  @apply object-cover scale-105 transition-transform duration-1000;
+}
+
+.va-artist-image-wrapper:hover .va-artist-image {
+  @apply scale-100;
+}
+
+.va-artist-image-overlay {
+  @apply absolute inset-0 bg-gradient-to-t from-va-dark/20 to-transparent opacity-0 transition-opacity duration-700;
+}
+
+.va-artist-image-wrapper:hover .va-artist-image-overlay {
+  @apply opacity-100;
+}
+
+.va-artist-aura-primary {
+  @apply absolute -top-20 -right-20 w-80 h-80 bg-va-primary rounded-full blur-[120px] opacity-10 animate-pulse;
+}
+
+.va-artist-aura-secondary {
+  @apply absolute -bottom-20 -left-20 w-80 h-80 bg-[#FFBE00] rounded-full blur-[120px] opacity-10 animate-pulse;
+}
+
+/* ⚡ ARTIST SECTIONS */
+.va-artist-section-white {
+  @apply py-32 px-6 bg-white relative z-10;
+}
+
+.va-artist-section-gray {
+  @apply py-32 px-6 bg-va-background/50 relative z-10;
+}
+
+.va-artist-section-content {
+  @apply space-y-20;
+}
+
+.va-artist-section-header {
+  @apply flex flex-col md:flex-row md:items-end justify-between gap-8;
+}
+
+.va-artist-section-header-center {
+  @apply text-center space-y-4;
+}
+
+.va-artist-header-text {
+  @apply space-y-4;
+}
+
+.va-artist-section-title {
+  @apply text-5xl font-black tracking-tighter;
+}
+
+.va-artist-section-title-large {
+  @apply text-5xl md:text-7xl font-black tracking-tighter leading-none;
+}
+
+.va-artist-section-subtitle {
+  @apply text-va-dark/30 font-black tracking-widest text-[10px];
+}
+
+.va-artist-score-badge {
+  @apply px-4 py-2 bg-va-dark/5 rounded-full text-[10px] font-black tracking-widest text-va-dark/40;
+}
+
+.va-artist-demo-card {
+  @apply p-8 flex items-center justify-between cursor-pointer transition-all duration-500;
+}
+
+.va-artist-demo-card:hover {
+  @apply border-va-primary/20;
+}
+
+.va-artist-demo-info {
+  @apply flex items-center gap-6;
+}
+
+.va-artist-play-btn {
+  @apply w-16 h-16 rounded-2xl bg-va-primary text-white flex items-center justify-center shadow-lg shadow-va-primary/20 transition-transform duration-500;
+}
+
+.va-artist-demo-card:hover .va-artist-play-btn {
+  @apply scale-110;
+}
+
+.va-artist-demo-title {
+  @apply font-black tracking-tight text-lg;
+}
+
+.va-artist-demo-meta {
+  @apply text-[10px] font-black text-va-dark/30 tracking-widest mt-1;
+}
+
+.va-artist-download-btn {
+  @apply w-10 h-10 rounded-full bg-va-background flex items-center justify-center text-va-dark/20 hover:text-va-primary transition-colors;
+}
+
+.va-artist-rates-footer {
+  @apply flex flex-col items-center gap-8 pt-10;
+}
+
+.va-artist-rates-disclaimer {
+  @apply text-center text-va-dark/20 text-[10px] font-black tracking-[0.3em];
+}
+
+.va-artist-guarantee-badge {
+  @apply flex items-center gap-4 px-6 py-3 bg-white rounded-full border border-gray-100 shadow-sm;
+}
+
+.va-artist-guarantee-text {
+  @apply text-[10px] font-black tracking-widest text-va-dark/60;
+}
+
+.va-artist-studio-grid {
+  @apply grid grid-cols-1 md:grid-cols-12 gap-6;
+}
+
+.va-artist-studio-main {
+  @apply md:col-span-8 bg-va-dark text-white rounded-[48px] p-12 md:p-20 overflow-hidden relative;
+}
+
+.va-artist-studio-hmagic {
+  @apply absolute top-0 right-0 w-full h-full hmagic opacity-10 pointer-events-none;
+}
+
+.va-artist-studio-content {
+  @apply relative z-10 space-y-12;
+}
+
+.va-artist-studio-header {
+  @apply space-y-4;
+}
+
+.va-artist-studio-title {
+  @apply text-5xl md:text-7xl font-black tracking-tighter leading-none text-white;
+}
+
+.va-artist-studio-badge {
+  @apply text-va-primary font-black tracking-widest text-[10px];
+}
+
+.va-artist-studio-specs {
+  @apply grid sm:grid-cols-2 gap-10;
+}
+
+.va-artist-spec-item {
+  @apply space-y-2;
+}
+
+.va-artist-spec-label {
+  @apply font-black tracking-widest text-[10px] text-white/40;
+}
+
+.va-artist-spec-value {
+  @apply text-xl font-bold text-white/90;
+}
+
+.va-artist-studio-remote {
+  @apply pt-8 border-t border-white/5 flex items-center gap-4;
+}
+
+.va-artist-remote-text {
+  @apply text-sm font-medium text-white/60;
+}
+
+.va-artist-studio-award {
+  @apply md:col-span-4 bg-va-background rounded-[48px] p-12 flex flex-col justify-between transition-all duration-700;
+}
+
+.va-artist-studio-award:hover {
+  @apply shadow-aura;
+}
+
+.va-artist-award-title {
+  @apply text-3xl font-black tracking-tighter leading-none mb-2;
+}
+
+.va-artist-award-subtitle {
+  @apply text-va-dark/30 font-black tracking-widest text-[10px];
+}
+
+.va-artist-footer {
+  @apply pt-32 pb-40 px-6 bg-va-background border-t border-gray-100 relative z-10;
+}
+
+.va-artist-footer-content {
+  @apply flex flex-col md:flex-row items-center justify-between gap-8;
+}
+
+.va-artist-footer-left {
+  @apply flex items-center gap-4;
+}
+
+.va-artist-footer-logo {
+  @apply w-8 h-8 rounded-lg bg-va-dark text-white flex items-center justify-center font-black text-xs;
+}
+
+.va-artist-footer-copy {
+  @apply text-va-dark/20 text-[10px] font-black tracking-widest;
+}
+
+.va-artist-footer-socials {
+  @apply flex items-center gap-6;
+}
+
+.va-artist-social-link {
+  @apply text-va-dark/20 hover:text-va-primary transition-colors;
+}
+
+/* ⚡ ACCOUNT INSTRUMENTS */
+.va-account-hero {
+  @apply mb-16 flex flex-col md:flex-row md:items-center justify-between gap-8;
+}
+
+.va-account-hero-content {
+  @apply space-y-4;
+}
+
+.va-account-badge {
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black tracking-widest border border-primary/10;
+}
+
+.va-account-title {
+  @apply text-6xl font-black tracking-tighter;
+}
+
+.va-account-subtitle {
+  @apply text-va-black/40 font-medium;
+}
+
+.va-account-logout-btn {
+  @apply flex items-center gap-3 px-8 py-4 bg-va-black text-white rounded-va-lg text-[11px] font-black tracking-widest hover:bg-primary transition-all shadow-xl;
+}
+
+.va-text-primary {
+  @apply text-va-primary;
+}
+
+/* ⚡ ACCOUNT CARDS */
+.va-bento-card-interactive {
+  @apply bg-white shadow-aura p-12 flex flex-col justify-between transition-all;
+}
+
+.va-bento-card-interactive:hover {
+  @apply scale-[1.02];
+}
+
+.va-bento-card-hred {
+  @apply hred text-white p-12 flex flex-col justify-between transition-all;
+}
+
+.va-bento-card-hred:hover {
+  @apply scale-[1.02];
+}
+
+.va-bento-card-dark {
+  @apply bg-va-dark-soft text-white p-12 flex flex-col justify-between transition-all;
+}
+
+.va-bento-card-dark:hover {
+  @apply scale-[1.02];
+}
+
+.va-bento-card-flat {
+  @apply bg-va-off-white border border-black/[0.03] p-12 flex flex-col justify-between;
+}
+
+.va-account-card-content {
+  @apply space-y-4;
+}
+
+.va-account-icon-box {
+  @apply w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-8;
+}
+
+.va-bg-blue {
+  @apply bg-blue-500 shadow-lg shadow-blue-500/20;
+}
+
+.va-bg-glass {
+  @apply bg-white/20 backdrop-blur-md;
+}
+
+.va-bg-primary {
+  @apply bg-primary shadow-lg shadow-primary/20;
+}
+
+.va-account-card-title {
+  @apply text-3xl font-black tracking-tight mb-4;
+}
+
+.va-account-card-title-white {
+  @apply text-2xl font-black tracking-tight mb-2 text-white;
+}
+
+.va-account-card-desc {
+  @apply text-va-black/40 font-medium max-w-xs;
+}
+
+.va-account-card-desc-white {
+  @apply text-white/60 text-xs font-medium leading-relaxed;
+}
+
+.va-account-card-desc-white-soft {
+  @apply text-white/40 text-xs font-medium leading-relaxed;
+}
+
+.va-account-card-link {
+  @apply flex items-center gap-2 font-black tracking-widest text-[10px] mt-8 transition-all;
+}
+
+.va-bento-card-interactive:hover .va-account-card-link,
+.va-bento-card-hred:hover .va-account-card-link,
+.va-bento-card-dark:hover .va-account-card-link {
+  @apply gap-4;
+}
+
+.va-account-card-link-white {
+  @apply va-account-card-link text-white;
+}
+
+.va-account-card-link-primary {
+  @apply va-account-card-link text-primary;
+}
+
+.va-text-blue {
+  @apply text-blue-500;
+}
+
+.va-account-security-grid {
+  @apply flex flex-col md:flex-row gap-12;
+}
+
+.va-account-security-content {
+  @apply flex-1 space-y-6;
+}
+
+.va-account-security-header {
+  @apply flex items-center gap-3 text-primary;
+}
+
+.va-account-security-title {
+  @apply text-xl font-black tracking-tight;
+}
+
+.va-account-security-desc {
+  @apply text-va-black/50 text-sm font-medium leading-relaxed;
+}
+
+.va-account-security-badges {
+  @apply flex gap-4;
+}
+
+.va-security-badge {
+  @apply px-4 py-2 bg-white rounded-xl border border-black/5 text-[9px] font-black tracking-widest text-va-black/40;
+}
+
+.va-account-security-visual {
+  @apply w-full md:w-48 aspect-square bg-va-black rounded-3xl flex items-center justify-center relative overflow-hidden;
+}
+
+.va-visual-overlay {
+  @apply absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent;
+}
+
+.va-animate-pulse {
+  @apply animate-pulse relative z-10;
+}
+
+/* ⚡ ADMIN INSTRUMENTS */
+.va-edit-overlay-container {
+  @apply relative min-h-screen border-4 border-primary/20 transition-colors duration-1000;
+}
+
+.va-admin-toolbar {
+  @apply fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-va-black/90 text-white px-6 py-4 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-6 backdrop-blur-2xl border border-white/10 hmagic;
+}
+
+.va-admin-toolbar-status {
+  @apply flex items-center gap-3 border-r border-white/10 pr-6;
+}
+
+.va-status-dot {
+  @apply w-2.5 h-2.5 bg-primary rounded-full shadow-[0_0_15px_rgba(255,75,58,0.5)];
+}
+
+.va-status-text {
+  @apply flex flex-col;
+}
+
+.va-status-label {
+  @apply text-[10px] font-black tracking-[0.2em];
+}
+
+.va-status-sublabel {
+  @apply text-[8px] opacity-40 font-bold tracking-widest;
+}
+
+.va-admin-toolbar-actions {
+  @apply flex items-center gap-6;
+}
+
+.va-admin-btn-action {
+  @apply flex items-center gap-2 text-[10px] font-black tracking-widest hover:text-primary transition-all;
+}
+
+.va-admin-btn-action:hover .va-btn-icon-rotate {
+  @apply rotate-90;
+}
+
+.va-admin-btn-action:hover .va-btn-icon-scale {
+  @apply scale-110;
+}
+
+.va-btn-icon-rotate {
+  @apply transition-transform;
+}
+
+.va-btn-icon-scale {
+  @apply transition-transform;
+}
+
+.va-admin-toolbar-controls {
+  @apply flex items-center gap-3 ml-4;
+}
+
+.va-admin-btn-close {
+  @apply bg-white/5 hover:bg-white/10 p-3 rounded-2xl transition-all active:scale-90;
+}
+
+.va-admin-btn-save {
+  @apply bg-primary text-white px-6 py-3 rounded-2xl text-[10px] font-black tracking-widest flex items-center gap-2 hover:scale-105 hover:shadow-[0_10px_20px_rgba(255,75,58,0.3)] transition-all active:scale-95;
+}
+
+/* 🧪 EDIT MODE STYLES (Global) */
+.edit-mode-section {
+  position: relative;
+  outline: 2px dashed rgba(255, 75, 58, 0.1);
+  outline-offset: 8px;
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.edit-mode-section:hover {
+  outline-color: rgba(255, 75, 58, 0.4);
+  background: rgba(255, 75, 58, 0.01);
+  outline-offset: 4px;
+}
+
+.edit-mode-handle {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff4b3a;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: grab;
+  box-shadow: 0 10px 20px rgba(255, 75, 58, 0.2);
+  transition: all 0.3s ease;
+}
+
+.edit-mode-handle:hover {
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 15px 30px rgba(255, 75, 58, 0.3);
+}
+
+/* ⚡ PAGE WRAPPERS */
+.va-page-wrapper {
+  @apply min-h-screen bg-va-background text-va-black selection:bg-primary selection:text-white relative pt-24;
+}
+
+.va-main-layout {
+  @apply antialiased;
+}
+
+.va-section-grid {
+  @apply relative px-8 pb-32 z-10;
+}
+
+.va-loading-pulse {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-8 opacity-20 animate-pulse;
+}
+
+.va-loading-pulse::before {
+  content: '';
+  @apply bg-white h-[500px] rounded-[32px];
+}
+
+/* ⚡ HOME PAGE */
+.va-home-container {
+  @apply max-w-7xl mx-auto px-6 py-20 relative z-10;
+}
+
+.va-hero-container {
+  @apply mb-32 space-y-10 animate-fade-in;
+}
+
+.va-hero-badge {
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black tracking-widest border border-primary/10;
+}
+
+.va-hero-title {
+  @apply text-7xl md:text-[120px] font-black leading-[0.85] tracking-tighter max-w-5xl relative z-20 text-va-black;
+}
+
+.va-hero-meta {
+  @apply flex flex-col md:flex-row md:items-center gap-12 pt-4;
+}
+
+.va-hero-subtitle {
+  @apply text-xl text-va-black/60 max-w-md font-medium leading-relaxed;
+}
+
+.va-hero-actions {
+  @apply flex gap-4;
+}
+
+.va-hero-btn-secondary {
+  @apply px-10 py-6 rounded-va-lg font-black tracking-widest text-[11px] border-2 border-black/5 hover:border-primary transition-all bg-white shadow-sm;
+}
+
+/* ⚡ VA BUTTON SYSTEM */
+.va-btn-pro {
+  @apply bg-va-dark text-white font-black tracking-widest text-[10px] transition-all transform active:scale-95 flex items-center justify-center gap-2;
+  border-radius: theme('borderRadius.va-xl');
+  padding: theme('spacing.va-btn-lg-y') theme('spacing.va-btn-lg-x');
+  transition-timing-function: var(--va-bezier);
+}
+
+.va-btn-pro:hover {
+  @apply bg-va-primary shadow-xl scale-105;
+}
+
+.va-btn-secondary {
+  @apply bg-white text-va-black font-black tracking-widest text-[10px] transition-all transform active:scale-95 border-2 border-black/5 flex items-center justify-center gap-2;
+  border-radius: theme('borderRadius.va-xl');
+  padding: theme('spacing.va-btn-lg-y') theme('spacing.va-btn-lg-x');
+  transition-timing-function: var(--va-bezier);
+}
+
+.va-btn-secondary:hover {
+  @apply border-va-primary bg-va-off-white shadow-sm;
+}
+
+.va-btn-nav {
+  @apply bg-va-black text-white font-black tracking-widest text-[10px] transition-all transform active:scale-95 flex items-center justify-center gap-2;
+  border-radius: theme('borderRadius.va-full');
+  padding: theme('spacing.va-btn-md-y') theme('spacing.va-btn-md-x');
+  box-shadow: theme('boxShadow.lg');
+}
+
+.va-btn-nav:hover {
+  @apply bg-va-primary;
+}
+
+/* 🎨 SHIMMER EFFECT */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s var(--va-bezier) forwards;
+}
+
+.animate-shimmer {
+  animation: shimmer 3s linear infinite;
+  background: linear-gradient(90deg, currentColor 0%, #FF4081 50%, currentColor 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+}
+
+/* 📱 MOBILE OVERRIDES */
+@media (max-width: 768px) {
+  .va-bento-card {
+    border-radius: 32px;
+  }
+}
+
+@media print {
+  .no-print, 
+  nav, 
+  footer, 
+  .va-account-badge,
+  .va-btn-pro,
+  .fixed,
+  .sticky,
+  .va-bento-card button {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .max-w-7xl {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .prose {
+    max-width: none !important;
+  }
+
+  /* Zorg dat scripts ook geprint worden voor admin */
+  .bg-va-black {
+    background: #f9f9f9 !important;
+    color: black !important;
+    border: 1px solid #eee !important;
+    padding: 2rem !important;
+  }
+
+  .text-primary {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+
+  .va-bento-card {
+    border: 1px solid #eee !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    margin-bottom: 2rem !important;
+  }
+}
+
+/* 🖋️ TYPOGRAPHY MANDATE: Raleway for all headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-raleway), "Raleway", sans-serif !important;
+}

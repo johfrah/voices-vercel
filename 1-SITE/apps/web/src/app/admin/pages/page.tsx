@@ -1,0 +1,148 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { useEditMode } from '@/contexts/EditModeContext';
+import { 
+  Search, 
+  Plus, 
+  FileText, 
+  ArrowLeft,
+  ChevronRight,
+  Globe,
+  Zap,
+  ArrowRight
+} from 'lucide-react';
+import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
+import { 
+  PageWrapperInstrument, 
+  SectionInstrument, 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument, 
+  ButtonInstrument, 
+  InputInstrument 
+} from '@/components/ui/LayoutInstruments';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import Link from 'next/link';
+
+interface PageRecord {
+  id: number;
+  title: string;
+  slug: string;
+  iapContext: any;
+  updatedAt: string;
+}
+
+/**
+ * 🏗️ PAGE ARCHITECT (CMS)
+ * Beheer alle pagina-content direct in de database.
+ */
+export default function PageArchitectPage() {
+  const { isEditMode, toggleEditMode } = useEditMode();
+  const [search, setSearch] = useState('');
+  const [pages, setPages] = useState<PageRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPages = async () => {
+      try {
+        const res = await fetch('/api/admin/pages');
+        const data = await res.json();
+        if (data.success) {
+          setPages(data.pages);
+        }
+      } catch (e) {
+        console.error('Failed to fetch pages', e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPages();
+  }, []);
+
+  return (
+    <PageWrapperInstrument className="p-12 space-y-12 max-w-[1600px] mx-auto min-h-screen">
+      <SectionInstrument className="flex justify-between items-end">
+        <ContainerInstrument className="space-y-4">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[10px] font-black uppercase tracking-widest">
+            <ArrowLeft size={12} /> 
+            <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
+          </Link>
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter uppercase">
+            <VoiceglotText translationKey="admin.architect.title" defaultText="Page Architect" />
+          </HeadingInstrument>
+        </ContainerInstrument>
+
+        <ContainerInstrument className="flex gap-4 items-center">
+          <ContainerInstrument className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
+            <InputInstrument 
+              type="text" 
+              placeholder="Zoek pagina..."
+              className="bg-white border border-black/5 rounded-2xl pl-12 pr-6 py-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all w-80 shadow-sm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </ContainerInstrument>
+          
+          <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
+            <Plus size={16} /> <VoiceglotText translationKey="admin.architect.new" defaultText="Nieuwe Pagina" />
+          </ButtonInstrument>
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {pages.map((page) => (
+          <BentoCard key={page.id} span="sm" className="bg-white border border-black/5 p-8 rounded-[40px] hover:shadow-aura transition-all group flex flex-col justify-between h-[320px]">
+            <ContainerInstrument>
+              <div className="flex justify-between items-start mb-6">
+                <div className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center text-va-black/20 group-hover:text-primary transition-colors">
+                  <FileText size={24} />
+                </div>
+                <div className="flex gap-2">
+                  <span className="px-3 py-1 bg-primary/5 text-primary rounded-full text-[8px] font-black uppercase tracking-widest border border-primary/10">
+                    {page.iapContext.journey}
+                  </span>
+                </div>
+              </div>
+              <HeadingInstrument level={3} className="text-2xl font-black uppercase tracking-tight mb-2">
+                <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} noTranslate={true} />
+              </HeadingInstrument>
+              <TextInstrument className="text-[10px] font-black text-va-black/20 uppercase tracking-widest">
+                /<VoiceglotText translationKey={`page.${page.slug}.slug`} defaultText={page.slug} noTranslate={true} />
+              </TextInstrument>
+            </ContainerInstrument>
+
+            <ContainerInstrument className="flex items-center justify-between pt-8 border-t border-black/5">
+              <div className="flex items-center gap-2 text-va-black/20">
+                <Globe size={12} />
+                <span className="text-[9px] font-bold uppercase tracking-widest">
+                  <VoiceglotText translationKey="common.status.live" defaultText="Live" />
+                </span>
+              </div>
+              <Link href={`/admin/pages/${page.slug}`} className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                <ChevronRight size={18} />
+              </Link>
+            </ContainerInstrument>
+          </BentoCard>
+        ))}
+
+        <BentoCard span="sm" className="bg-va-black text-white p-8 rounded-[40px] relative overflow-hidden flex flex-col justify-between">
+          <ContainerInstrument className="relative z-10">
+            <Zap className="text-primary mb-6" size={32} />
+            <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-4">
+              Page Intelligence
+            </HeadingInstrument>
+            <TextInstrument className="text-white/40 text-xs font-medium leading-relaxed">
+              Voicy analyseert welke pagina&apos;s het beste converteren. Er zijn 2 nieuwe optimalisatie-suggesties voor de Academy.
+            </TextInstrument>
+          </ContainerInstrument>
+          <ButtonInstrument className="relative z-10 text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
+            Bekijk Suggesties <ArrowRight size={12} />
+          </ButtonInstrument>
+          <ContainerInstrument className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[60px]" />
+        </BentoCard>
+      </ContainerInstrument>
+    </PageWrapperInstrument>
+  );
+}

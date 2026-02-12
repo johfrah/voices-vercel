@@ -1,0 +1,42 @@
+import { NextResponse } from 'next/server';
+import * as path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import { requireAdmin } from '@/lib/auth/api-auth';
+import { GeminiService } from '@/services/GeminiService';
+
+const execAsync = promisify(exec);
+
+export async function GET(request: Request) {
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
+  const { searchParams } = new URL(request.url);
+  const filePath = searchParams.get('path');
+  const contextStr = searchParams.get('context');
+  const context = contextStr ? JSON.parse(contextStr) : null;
+
+  if (!filePath) {
+    return new NextResponse('Missing path', { status: 400 });
+  }
+
+  try {
+    // 1. Haal de afbeelding op van de server via SSH (zelfde als serve route)
+    const { stdout } = await execAsync(`ssh voices-prod "cat '${filePath}'"`, {
+      encoding: 'buffer',
+      maxBuffer: 10 * 1024 * 1024 // 10MB limiet
+    });
+
+    const ext = path.extname(filePath).toLowerCase();
+    const mimeType = ext === '.png' ? 'image/png' : 'image/jpeg';
+
+    // 2. Analyseer met Gemini Vision + Context
+    const gemini = GeminiService.getInstance();
+    const analysis = await gemini.analyzeImage(stdout, mimeType, context);
+
+    return NextResponse.json(analysis);
+  } catch (error) {
+    console.error('Vision analysis error:', error);
+    return new NextResponse('Analysis failed', { status: 500 });
+  }
+}

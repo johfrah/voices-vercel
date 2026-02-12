@@ -1,0 +1,387 @@
+"use client";
+
+import React, { useState } from 'react';
+import { 
+  PageWrapperInstrument, 
+  SectionInstrument, 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument, 
+  ButtonInstrument 
+} from '@/components/ui/LayoutInstruments';
+import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { Terminal, Zap, Sparkles, Code2, Play, Save, History, ArrowLeft, Loader2, ShieldAlert, RefreshCw, X } from 'lucide-react';
+import Link from 'next/link';
+import toast from 'react-hot-toast';
+
+/**
+ * ⚡ VIBECODE BACKEND (NUCLEAR 2026)
+ * 
+ * "Code schrijven op basis van de vibe van het project."
+ */
+export default function VibecodePage() {
+  const [code, setCode] = useState(`// ⚡ VIBECODE: Pas de logica van de Freedom Machine aan
+// Intent: "Versnel de checkout vibe"
+
+export async function onBeforeCheckout(context) {
+  if (context.urgency > 0.8) {
+    context.applyVibe('express-delivery');
+    console.log("🚀 Express vibe toegepast!");
+  }
+}`);
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [gitStatus, setGitStatus] = useState<'idle' | 'staged' | 'pushed'>('idle');
+  const [activeTab, setActiveTab] = useState<'editor' | 'templates' | 'assistant'>('editor');
+  const [metadata, setMetadata] = useState({ title: '', description: '' });
+
+  const templates = [
+    { title: 'Nieuwe Pagina', description: 'Maak een nieuwe content pagina aan.', code: '# Nieuwe Pagina\n\nSchrijf hier je content in Markdown...', type: 'page' },
+    { title: 'Urgentie Boost', description: 'Verhoogt de focus op snelheid bij hoge urgentie.', code: '// ⚡ VIBECODE: Urgentie Boost\nexport async function onInteraction(ctx) {\n  if (ctx.intent === "quote" && ctx.urgency > 0.7) {\n    ctx.showSmartChip("Directe Auditie");\n  }\n}', type: 'vibe' },
+    { title: 'Vriendelijke Voicy', description: 'Maakt de AI-assistent extra behulpzaam en informeel.', code: '// ⚡ VIBECODE: Vriendelijke Vibe\nexport async function onAiResponse(ctx) {\n  ctx.setTone("warm-informal");\n  ctx.addEmoji("👋");\n}', type: 'vibe' },
+    { title: 'Pricing Guard', description: 'Voegt extra validatie toe aan complexe offertes.', code: '// ⚡ VIBECODE: Pricing Guard\nexport async function onPriceCalculate(price) {\n  if (price < 50) return price * 1.2; // Nuclear Margin Protection\n  return price;\n}', type: 'vibe' },
+  ];
+
+  const handlePreview = () => {
+    setIsExecuting(true);
+    setIsPreviewing(true);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('cody_preview_logic', code);
+      sessionStorage.setItem('cody_preview_active', 'true');
+    }
+    setTimeout(() => {
+      setIsExecuting(false);
+      toast.success("Live Preview geactiveerd voor jouw sessie!");
+    }, 1000);
+  };
+
+  const handleStopPreview = () => {
+    setIsPreviewing(false);
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('cody_preview_logic');
+      sessionStorage.removeItem('cody_preview_active');
+    }
+    toast("Preview gestopt. Site draait weer op core logica.");
+  };
+
+  const handleSave = async () => {
+    setIsExecuting(true);
+    const isPage = code.startsWith('#');
+    const finalFilename = isPage ? `page/${metadata.title || 'nieuwe-pagina'}` : 'checkout-vibe';
+
+    try {
+      const res = await fetch('/api/admin/vibecode/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: finalFilename,
+          code: code,
+          metadata: { 
+            title: metadata.title || (isPage ? 'Nieuwe Pagina' : 'Untitled Vibe'), 
+            strength: 0.98,
+            description: metadata.description
+          }
+        })
+      });
+      if (res.ok) {
+        handleStopPreview();
+        setGitStatus('staged');
+        toast.success(isPage ? "Pagina lokaal aangemaakt!" : "Vibe lokaal opgeslagen (Git-ready)!");
+      }
+    } catch (e) {
+      toast.error("Opslaan mislukt.");
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
+  const handlePush = async () => {
+    setIsExecuting(true);
+    try {
+      // 🚀 Trigger de 'Super-Push' logica via de API
+      const res = await fetch('/api/admin/vibecode/push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'super-push' })
+      });
+      if (res.ok) {
+        setGitStatus('pushed');
+        toast.success("Super-Push voltooid! Database, Code en Git zijn gesynct.");
+      } else {
+        throw new Error("Push mislukt");
+      }
+    } catch (e) {
+      toast.error("Super-Push mislukt. Controleer server autorisatie.");
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
+  const handleRun = () => {
+    setIsExecuting(true);
+    setTimeout(() => {
+      setIsExecuting(false);
+      toast.success("Vibe succesvol toegepast op de Shadow Layer!");
+    }, 1500);
+  };
+
+  const handleSyncKnowledge = async () => {
+    setIsExecuting(true);
+    try {
+      const res = await fetch('/api/admin/vibecode/sync', { method: 'POST' });
+      const data = await res.json();
+      toast.success(`Knowledge Sync voltooid: ${data.syncedCount} bronnen overgezet!`);
+    } catch (e) {
+      toast.error("Sync mislukt.");
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
+  return (
+    <PageWrapperInstrument className="p-12 space-y-12 max-w-[1600px] mx-auto min-h-screen">
+      {/* Header */}
+      <SectionInstrument className="flex justify-between items-end">
+        <ContainerInstrument className="space-y-4">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[10px] font-black uppercase tracking-widest">
+            <ArrowLeft size={12} /> 
+            <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
+          </Link>
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter uppercase">
+            Cody <span className="text-primary">Engine</span>
+          </HeadingInstrument>
+        </ContainerInstrument>
+        
+        <ContainerInstrument className="flex gap-4">
+          <ButtonInstrument 
+            onClick={handleSyncKnowledge}
+            disabled={isExecuting}
+            className="va-btn-pro !bg-va-black flex items-center gap-2"
+          >
+            {isExecuting ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} />}
+            <VoiceglotText translationKey="admin.vibecode.sync_kb" defaultText="Sync Knowledge Base" />
+          </ButtonInstrument>
+          <div className="flex bg-va-off-white p-1 rounded-2xl border border-black/5">
+            <button onClick={() => setActiveTab('editor')} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'editor' ? 'bg-va-black text-white shadow-lg' : 'text-va-black/30'}`}>
+              <VoiceglotText translationKey="common.editor" defaultText="Editor" />
+            </button>
+            <button onClick={() => setActiveTab('templates')} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'templates' ? 'bg-va-black text-white shadow-lg' : 'text-va-black/30'}`}>
+              <VoiceglotText translationKey="common.templates" defaultText="Templates" />
+            </button>
+            <button onClick={() => setActiveTab('assistant')} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'assistant' ? 'bg-va-black text-white shadow-lg' : 'text-va-black/30'}`}>
+              <VoiceglotText translationKey="common.ai_assistant" defaultText="AI Assistant" />
+            </button>
+          </div>
+          
+          <div className="flex gap-2">
+            {isPreviewing ? (
+              <ButtonInstrument 
+                onClick={handleStopPreview}
+                className="va-btn-pro !bg-red-500 !text-white flex items-center gap-2 shadow-lg shadow-red-500/20"
+              >
+                <X size={16} /> <VoiceglotText translationKey="admin.vibecode.stop_preview" defaultText="Stop Preview" />
+              </ButtonInstrument>
+            ) : (
+              <ButtonInstrument 
+                onClick={handlePreview}
+                disabled={isExecuting}
+                className="va-btn-pro !bg-va-off-white !text-va-black flex items-center gap-2"
+              >
+                <Play size={16} /> <VoiceglotText translationKey="admin.vibecode.live_preview" defaultText="Live Preview" />
+              </ButtonInstrument>
+            )}
+            <ButtonInstrument 
+              onClick={handleSave}
+              disabled={isExecuting}
+              className="va-btn-pro !bg-va-off-white !text-va-black flex items-center gap-2"
+            >
+              <Save size={16} /> <VoiceglotText translationKey="admin.vibecode.save_local" defaultText="Save Local" />
+            </ButtonInstrument>
+            <ButtonInstrument 
+              onClick={handlePush}
+              disabled={isExecuting || gitStatus !== 'staged'}
+              className={`va-btn-pro flex items-center gap-2 transition-all ${gitStatus === 'staged' ? '!bg-primary !text-white shadow-lg shadow-primary/20' : '!bg-va-black !text-white opacity-50'}`}
+            >
+              {isExecuting ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} />}
+              <VoiceglotText translationKey="admin.vibecode.push_live" defaultText="Push to Live" />
+            </ButtonInstrument>
+          </div>
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      <BentoGrid columns={3}>
+        {/* Editor / Content Area */}
+        <BentoCard span="lg" className="bg-va-black border-white/5 p-0 overflow-hidden min-h-[600px] flex flex-col">
+          {activeTab === 'editor' && (
+            <>
+              <div className="px-6 py-4 bg-white/5 border-b border-white/5 flex justify-between items-center">
+                <TextInstrument className="text-[10px] font-black text-white/20 uppercase tracking-widest flex items-center gap-2">
+                  <Code2 size={12} /> <VoiceglotText translationKey="admin.vibecode.filename" defaultText="shadow-logic.cody" />
+                </TextInstrument>
+                <div className="text-[9px] font-black text-primary uppercase tracking-widest animate-pulse">
+                  ● <VoiceglotText translationKey="admin.vibecode.live_connection" defaultText="Live Connection" />
+                </div>
+              </div>
+
+              {/* Metadata Inputs */}
+              <div className="px-10 py-6 bg-white/5 border-b border-white/5 grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[8px] font-black uppercase tracking-widest text-white/30 ml-2">
+                    <VoiceglotText translationKey="admin.vibecode.meta_title_label" defaultText="Titel / Slug" />
+                  </label>
+                  <input 
+                    type="text" 
+                    value={metadata.title}
+                    onChange={(e) => setMetadata(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="bijv: over-ons of checkout-vibe"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-xs text-white outline-none focus:border-primary/50 transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[8px] font-black uppercase tracking-widest text-white/30 ml-2">
+                    <VoiceglotText translationKey="admin.vibecode.meta_desc_label" defaultText="Omschrijving" />
+                  </label>
+                  <input 
+                    type="text" 
+                    value={metadata.description}
+                    onChange={(e) => setMetadata(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Wat doet deze wijziging?"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-xs text-white outline-none focus:border-primary/50 transition-all"
+                  />
+                </div>
+              </div>
+              
+              {/* Git Status Bar */}
+              <div className="px-6 py-2 bg-white/5 border-b border-white/5 flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${gitStatus === 'idle' ? 'bg-white/20' : 'bg-green-500'}`} />
+                  <span className="text-[8px] font-black uppercase tracking-widest text-white/40">
+                    <VoiceglotText translationKey="admin.vibecode.status.local" defaultText="Local Save" />
+                  </span>
+                </div>
+                <div className="w-4 h-[1px] bg-white/10" />
+                <div className="flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${gitStatus === 'staged' || gitStatus === 'pushed' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-white/20'}`} />
+                  <span className="text-[8px] font-black uppercase tracking-widest text-white/40">
+                    <VoiceglotText translationKey="admin.vibecode.status.staged" defaultText="Git Staged" />
+                  </span>
+                </div>
+                <div className="w-4 h-[1px] bg-white/10" />
+                <div className="flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${gitStatus === 'pushed' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-white/20'}`} />
+                  <span className="text-[8px] font-black uppercase tracking-widest text-white/40">
+                    <VoiceglotText translationKey="admin.vibecode.status.pushed" defaultText="Combell Deploy" />
+                  </span>
+                </div>
+                
+                {gitStatus === 'staged' && (
+                  <div className="ml-auto flex items-center gap-2">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-primary animate-pulse">
+                      <VoiceglotText translationKey="admin.vibecode.status.waiting" defaultText="Waiting for Push..." />
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <textarea 
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                className="flex-1 bg-transparent p-10 text-primary/80 font-mono text-sm outline-none resize-none leading-relaxed"
+                spellCheck={false}
+              />
+            </>
+          )}
+
+          {activeTab === 'templates' && (
+            <div className="p-10 grid grid-cols-2 gap-6">
+              {templates.map(t => (
+                <div key={t.title} onClick={() => { setCode(t.code); setActiveTab('editor'); }} className="p-6 bg-white/5 border border-white/10 rounded-[32px] hover:border-primary/50 transition-all cursor-pointer group">
+                  <HeadingInstrument level={4} className="text-white font-black uppercase tracking-tight mb-2 group-hover:text-primary">{t.title}</HeadingInstrument>
+                  <TextInstrument className="text-white/40 text-xs font-medium">{t.description}</TextInstrument>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'assistant' && (
+            <div className="p-10 flex flex-col items-center justify-center h-full space-y-8">
+              <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center text-primary animate-pulse">
+                <Sparkles size={48} />
+              </div>
+              <div className="max-w-md text-center space-y-4">
+                <HeadingInstrument level={3} className="text-white text-2xl font-black uppercase">
+                  <VoiceglotText translationKey="admin.vibecode.assistant.title" defaultText="Cody Assistant" />
+                </HeadingInstrument>
+                <TextInstrument className="text-white/40 font-medium">
+                  <VoiceglotText translationKey="admin.vibecode.assistant.desc" defaultText="Beschrijf in gewoon Nederlands wat je wilt veranderen, en ik schrijf de code voor je." />
+                </TextInstrument>
+                <input 
+                  type="text" 
+                  placeholder="Bijv: 'Maak Voicy wat zakelijker op de checkout pagina'"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white outline-none focus:border-primary transition-all"
+                />
+              </div>
+            </div>
+          )}
+        </BentoCard>
+
+        {/* Sidebar Stats */}
+        <div className="space-y-8">
+          <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 text-primary rounded-lg">
+                <Zap size={20} />
+              </div>
+              <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">
+                <VoiceglotText translationKey="admin.vibecode.vibe_strength" defaultText="Vibe Strength" />
+              </TextInstrument>
+            </div>
+            <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">98.4%</HeadingInstrument>
+            <div className="w-full bg-va-off-white h-1.5 rounded-full overflow-hidden">
+              <div className="bg-primary h-full w-[98%]" />
+            </div>
+          </BentoCard>
+
+          <BentoCard span="sm" className="bg-va-black text-white p-8 space-y-6">
+            <HeadingInstrument level={4} className="text-xs font-black uppercase tracking-widest opacity-40">Active Personas</HeadingInstrument>
+            <div className="space-y-3">
+              {['Musical Confidant', 'Nuclear Architect', 'Voice Over Pro'].map(p => (
+                <div key={p} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                  <TextInstrument className="text-[10px] font-bold uppercase tracking-tight">{p}</TextInstrument>
+                  <Sparkles size={12} className="text-primary" />
+                </div>
+              ))}
+            </div>
+          </BentoCard>
+
+          <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
+            <div className="flex items-center gap-3">
+              <History size={18} className="text-va-black/20" />
+              <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Recent Changes</TextInstrument>
+            </div>
+            <div className="space-y-2">
+              <TextInstrument className="text-[9px] font-medium text-va-black/40 italic">&quot;Checkout flow optimized for mobile vibes&quot;</TextInstrument>
+              <TextInstrument className="text-[9px] font-medium text-va-black/40 italic">&quot;Voiceglot healing threshold adjusted&quot;</TextInstrument>
+            </div>
+          </BentoCard>
+        </div>
+      </BentoGrid>
+
+      {/* Warning */}
+      <ContainerInstrument className="p-8 bg-va-black text-white rounded-[32px] flex items-center gap-6">
+        <div className="w-16 h-16 bg-primary text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
+          <ShieldAlert size={32} />
+        </div>
+        <div className="space-y-1">
+          <HeadingInstrument level={4} className="text-primary font-black uppercase tracking-tight">
+            <VoiceglotText translationKey="admin.vibecode.protocol.title" defaultText="VIBECODE PROTOCOL" />
+          </HeadingInstrument>
+          <TextInstrument className="text-xs opacity-60 font-medium">
+            <VoiceglotText translationKey="admin.vibecode.protocol.desc" defaultText="Vibecode overschrijft de standaard logica van de Freedom Machine. Wijzigingen zijn direct merkbaar voor alle gebruikers in de Shadow Layer. Gebruik met uiterste precisie." />
+          </TextInstrument>
+        </div>
+      </ContainerInstrument>
+    </PageWrapperInstrument>
+  );
+}

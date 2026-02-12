@@ -1,0 +1,100 @@
+import { db } from '@db';
+import { appConfigs } from '@db/schema';
+import { eq } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
+import { getActor, getActors, getMusicLibrary } from '@/lib/api-server';
+import { requireAdmin } from '@/lib/auth/api-auth';
+
+// 🚀 NUCLEAR CACHE BUSTER
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+/**
+ * ⚙️ API: ADMIN CONFIG (2026)
+ * 
+ * Beheer van globale systeeminstellingen, bedrijfsinformatie en vakantieregelingen.
+ * Nu ook als bridge voor client-side data fetching van server-only resources.
+ * actor/actors/music = publiek (agency). appConfigs = admin only.
+ */
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const type = searchParams.get('type');
+
+  // appConfigs en overige types: admin only
+  const publicTypes = ['actor', 'actors', 'music'];
+  if (!type || !publicTypes.includes(type)) {
+    const auth = await requireAdmin();
+    if (auth instanceof NextResponse) return auth;
+  }
+
+  try {
+    // 🛡️ BRIDGE LOGIC: Handle client-side requests for server-only data
+    if (type === 'actor') {
+      const slug = searchParams.get('slug');
+      const lang = searchParams.get('lang') || 'nl';
+      if (!slug) return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
+      const actor = await getActor(slug, lang);
+      return NextResponse.json(actor);
+    }
+
+    if (type === 'actors') {
+      const lang = searchParams.get('lang') || 'nl';
+      const params: Record<string, string> = {};
+      searchParams.forEach((value, key) => {
+        if (key !== 'type' && key !== 'lang') params[key] = value;
+      });
+      const results = await getActors(params, lang);
+      return NextResponse.json(results);
+    }
+
+    if (type === 'music') {
+      const category = searchParams.get('category') || 'music';
+      const library = await getMusicLibrary(category);
+      return NextResponse.json(library);
+    }
+
+    // Default: Return all app configs
+    const configs = await db.select().from(appConfigs);
+    const configMap = configs.reduce((acc: any, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {});
+
+    return NextResponse.json(configMap);
+  } catch (error) {
+    console.error('[Admin Config GET Error]:', error);
+    return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
+  try {
+    const body = await request.json();
+    const { key, value } = body;
+
+    if (!key) return NextResponse.json({ error: 'Key is required' }, { status: 400 });
+
+    await db.insert(appConfigs)
+      .values({
+        key,
+        value,
+        updatedAt: new Date()
+      })
+      .onConflictDoUpdate({
+        target: appConfigs.key,
+        set: {
+          value,
+          updatedAt: new Date()
+        }
+      });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('[Admin Config POST Error]:', error);
+    return NextResponse.json({ error: 'Failed to update config' }, { status: 500 });
+  }
+}

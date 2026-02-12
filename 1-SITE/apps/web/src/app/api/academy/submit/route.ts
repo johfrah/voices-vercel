@@ -1,0 +1,82 @@
+import { db } from '@db';
+import { courseSubmissions, users } from '@db/schema';
+import { createClient } from '@supabase/supabase-js';
+import { NextResponse } from 'next/server';
+import { DropboxExportBridge } from '@/lib/audio/dropbox-bridge';
+import { eq } from 'drizzle-orm';
+
+/**
+ * ACADEMY SUBMISSION HANDLER
+ * 
+ * Verwerkt audio-inzendingen van studenten via Drizzle ORM.
+ * 🛡️ ATOMIC CRUD: Gewikkeld in db.transaction()
+ */
+
+export async function POST(request: Request) {
+  try {
+    const formData = await request.formData();
+    const audio = formData.get('audio') as Blob;
+    const lessonId = formData.get('lesson_id') as string;
+    const userId = formData.get('user_id') as string;
+
+    if (!audio || !lessonId || !userId) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) {
+      console.error('[Academy] Supabase URL or SERVICE_ROLE_KEY missing');
+      return NextResponse.json({ error: 'Storage service unavailable' }, { status: 503 });
+    }
+
+    const supabase = createClient(url, key);
+
+    // 1. Upload to Supabase Storage
+    const fileName = `academy/${userId}/lesson-${lessonId}-${Date.now()}.webm`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('audio-submissions')
+      .upload(fileName, audio);
+
+    if (uploadError) throw uploadError;
+
+    // 2. Register in Database via Atomic Transaction
+    const result = await db.transaction(async (tx) => {
+      const [submission] = await tx.insert(courseSubmissions).values({
+        userId: parseInt(userId),
+        lessonId: parseInt(lessonId),
+        filePath: uploadData.path,
+        status: 'pending',
+        submittedAt: new Date()
+      }).returning();
+
+      return submission;
+    });
+
+    // 3. Sync to Dropbox for Coach Review (God Mode Activation)
+    const [user] = await db.select().from(users).where(eq(users.id, parseInt(userId))).limit(1);
+    if (user) {
+      await DropboxExportBridge.pushToControlFolder(uploadData.path, {
+        orderId: `ACADEMY-${result.id}`,
+        customerName: `${user.firstName || 'Student'} ${user.lastName || ''}`.trim(),
+        projectName: `Les ${lessonId} Inzending`
+      });
+    }
+
+    console.log(`🎙️ Academy Submission: ${result.filePath} by user ${userId} (Synced to Dropbox)`);
+
+    return NextResponse.json({
+      success: true,
+      submissionId: result.id,
+      path: result.filePath,
+      message: 'Submission received and stored in Supabase.'
+    });
+
+  } catch (error) {
+    console.error('❌ Core Academy Submission Error:', error);
+    return NextResponse.json({ 
+      error: 'Submission failed',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
+  }
+}
