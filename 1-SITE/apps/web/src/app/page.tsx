@@ -81,49 +81,40 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
   );
 }
 
-import { getActors } from "@/lib/api-server";
-
 /**
- * MAIN HOME PAGE (Server Component)
+ * MAIN HOME PAGE (Client Component)
  */
-export async function Home() {
-  const searchResults = await getActors({}, 'nl');
-  const actors = searchResults.results;
-  const reviews = searchResults.reviews || [];
-
-  const mappedActors = actors.map(actor => ({
-    id: actor.id,
-    display_name: actor.display_name,
-    photo_url: actor.photo_url,
-    voice_score: actor.voice_score,
-    native_lang: actor.native_lang,
-    ai_tags: actor.ai_tags || [],
-    slug: actor.slug,
-    demos: actor.demos || []
-  }));
-
-  return <HomeWrapper actors={mappedActors} reviews={reviews} />;
-}
-
-export default Home;
-
-/**
- * HOME WRAPPER (Client Component)
- */
-function HomeWrapper({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
+export default function Home() {
   const [mounted, setMounted] = useState(false);
+  const [data, setData] = useState<{ actors: Actor[], reviews: any[] } | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    fetch('/api/actors')
+      .then(res => res.json())
+      .then(resData => {
+        const mappedActors = resData.results.map((actor: any) => ({
+          id: actor.id,
+          display_name: actor.display_name,
+          photo_url: actor.photo_url,
+          voice_score: actor.voice_score,
+          native_lang: actor.native_lang,
+          ai_tags: actor.ai_tags || [],
+          slug: actor.slug,
+          demos: actor.demos || []
+        }));
+        setData({ actors: mappedActors, reviews: resData.reviews || [] });
+      })
+      .catch(err => console.error('Home Data Fetch Error:', err));
   }, []);
 
-  if (!mounted) {
+  if (!mounted || !data) {
     return <PageWrapperInstrument />;
   }
   
   return (
     <Suspense fallback={<LoadingScreenInstrument text="Voices..." />}>
-      <HomeContent actors={actors} reviews={reviews} />
+      <HomeContent actors={data.actors} reviews={data.reviews} />
     </Suspense>
   );
 }
