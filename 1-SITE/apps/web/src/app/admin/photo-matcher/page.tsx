@@ -307,14 +307,7 @@ export default function PhotoMatcherPage() {
     </ContainerInstrument>
   );
 
-  // 📄 Pagination Logic
-  const totalItems = showAutoMatched ? autoMatchedItems.length : goldItems.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedItems = showAutoMatched 
-    ? autoMatchedItems.slice(startIndex, startIndex + itemsPerPage)
-    : goldItems.slice(startIndex, startIndex + itemsPerPage);
-
+  // 📄 Pagination Logic (reused from above)
   if (goldItems.length === 0 && !loading && !showAutoMatched) {
     return (
       <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 font-sans pt-32">

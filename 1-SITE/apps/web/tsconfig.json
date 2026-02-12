@@ -22,6 +22,7 @@
       "@config/*": ["../../packages/config/*"],
       "@db": ["../../packages/database/src/index.ts"],
       "@db/*": ["../../packages/database/src/*"],
+      "@db-service": ["./src/lib/db-service.ts"],
       "@database/*": ["../../packages/database/*"],
       "@legacy/*": ["../../legacy/*"]
     }
