@@ -628,7 +628,7 @@ export const VoicyChat: React.FC = () => {
           )}
 
           {activeTab === 'mail' && (
-            <ContainerInstrument plain className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+            <ContainerInstrument plain className="flex-1 p-4 md:p-6 overflow-y-auto custom-scrollbar">
               <AnimatePresence mode="wait">
                 {mailSent ? (
                   <motion.div 
@@ -642,7 +642,7 @@ export const VoicyChat: React.FC = () => {
                     <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
                       <VoiceglotText translationKey="chat.mail.sent.title" defaultText="Bericht verzonden!" />
                     </HeadingInstrument>
-                    <TextInstrument className="text-sm text-va-black/40 font-medium">
+                    <TextInstrument className="text-[15px] text-va-black/40 font-medium">
                       <VoiceglotText translationKey="chat.mail.sent.text" defaultText="Bedankt! We hebben je bericht ontvangen en reageren zo snel mogelijk." />
                     </TextInstrument>
                     <ButtonInstrument 
@@ -681,7 +681,7 @@ export const VoicyChat: React.FC = () => {
                           value={mailForm.email}
                           onChange={(e) => setMailForm(prev => ({ ...prev, email: e.target.value }))}
                           placeholder="naam@bedrijf.be"
-                          className="w-full bg-va-off-white border-none rounded-2xl py-3 px-6 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all"
+                          className="w-full bg-va-off-white border-none rounded-2xl py-3 px-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
                         />
                       </div>
                       <div className="space-y-1">
@@ -693,7 +693,7 @@ export const VoicyChat: React.FC = () => {
                           value={mailForm.message}
                           onChange={(e) => setMailForm(prev => ({ ...prev, message: e.target.value }))}
                           placeholder="Hoe kunnen we je helpen?"
-                          className="w-full bg-va-off-white border-none rounded-[24px] py-4 px-6 text-sm font-medium min-h-[120px] focus:ring-2 focus:ring-primary/20 transition-all resize-none outline-none"
+                          className="w-full bg-va-off-white border-none rounded-[24px] py-4 px-6 text-[15px] font-medium min-h-[120px] focus:ring-2 focus:ring-primary/20 transition-all resize-none outline-none"
                         />
                       </div>
                       <ButtonInstrument 
