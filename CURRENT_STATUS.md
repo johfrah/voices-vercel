@@ -1,8 +1,8 @@
 # 🎼 Bob's Podium Licht (Live Status)
 
-**Huidige Fase**: FINALE
-**Bericht**: Golden Standard Check...
-**Laatste Update**: 11:28:43 AM
+**Huidige Fase**: SECTION_1
+**Bericht**: Chris, Moby & Laya spelen samen...
+**Laatste Update**: 11:29:09 AM
 
 ---
 *Dit bestand wordt live bijgewerkt door Bob de Dirigent.*
