@@ -248,7 +248,7 @@ export const SelectInstrument = forwardRef<HTMLSelectElement, SelectHTMLAttribut
   ...props
 }, ref) => {
   return (
-    <select ref={ref} className={cn(className, "rounded-[10px]")} {...props}>
+    <select ref={ref} className={cn(className, "rounded-[10px] bg-va-off-white border-none px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all")} {...props}>
       {children}
     </select>
   );

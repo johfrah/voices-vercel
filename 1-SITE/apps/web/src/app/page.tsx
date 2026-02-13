@@ -13,6 +13,7 @@ import { MarketManager } from "@config/market-manager";
 import { Suspense, useEffect, useState } from 'react';
 import { Actor } from "@/types";
 
+import { JourneySelector } from "@/components/ui/JourneySelector";
 import { FilterBar } from "@/components/ui/FilterBar";
 import { useTranslation } from "@/contexts/TranslationContext";
 
@@ -61,6 +62,7 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
       
       <SectionInstrument className="!pt-0 -mt-12 relative z-30">
         <ContainerInstrument className="max-w-5xl mx-auto px-6">
+          <JourneySelector />
           <FilterBar filters={filters} params={{}} />
         </ContainerInstrument>
       </SectionInstrument>

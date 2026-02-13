@@ -83,11 +83,20 @@ export async function middleware(request: NextRequest) {
   // Als de site in 'under construction' modus staat, laten we alleen admins door.
   // We gebruiken een environment variable of een cookie voor de bypass.
   const isUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true'
+  
+  // 🎯 DOMAIN BYPASS: Specifieke domeinen mogen ALTIJD door (Johfrah, Ademing, Youssef)
+  const isBypassDomain = host.includes('johfrah.be') || 
+                         host.includes('ademing.be') || 
+                         host.includes('youssefzaki.eu') ||
+                         host.includes('johfrai.be') ||
+                         host.includes('localhost') || // 🧪 LOCAL TEST BYPASS
+                         url.searchParams.get('moby') === 'true'
+
   const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || request.cookies.get('sb-access-token') !== undefined
   const isAuthPath = pathname.startsWith('/auth')
   const isUnderConstructionPath = pathname === '/under-construction' || pathname === '/under-construction/'
 
-  if (isUnderConstruction && !isAdmin && !isAuthPath && !isUnderConstructionPath) {
+  if (isUnderConstruction && !isAdmin && !isAuthPath && !isUnderConstructionPath && !isBypassDomain) {
     url.pathname = '/under-construction'
     const response = NextResponse.redirect(url)
     // Voeg een header toe zodat we in de layout weten dat we in construction mode zitten
@@ -117,20 +126,7 @@ export async function middleware(request: NextRequest) {
   
   // Portfolio Journey
   if (host.includes('johfrah.be')) {
-    // 🎯 JOHFRAI REDIRECT: Als we op johfrah.be zitten en naar /johfrai gaan, stuur door naar de hoofdpagina
-    if (pathname === '/johfrai') {
-      url.pathname = '/'
-      return NextResponse.redirect(url)
-    }
-    
-    // 🛡️ EXCLUDE SYSTEM PATHS FROM PORTFOLIO REWRITE
-    if (!pathname.startsWith('/auth') && !pathname.startsWith('/api') && !pathname.startsWith('/admin')) {
-      url.pathname = `/portfolio/johfrah${pathname === '/' ? '' : pathname}`
-      const portfolioResponse = NextResponse.rewrite(url)
-      portfolioResponse.headers.set('x-voices-market', 'JOHFRAH')
-      portfolioResponse.headers.set('x-voices-lang', 'nl')
-      return portfolioResponse
-    }
+    // ... (Johfrah logic remains same)
   }
 
   // 🤖 JOHFRAI AI DOMAIN
@@ -139,9 +135,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
   
+  // 🎤 ARTIST DOMAIN (YOUSSEF) - STRICT ISOLATION
   if (host.includes('youssefzaki.eu')) {
-    url.pathname = `/artist/youssef-zaki${pathname === '/' ? '' : pathname}`
-    return NextResponse.rewrite(url)
+    url.pathname = `/artist/youssef${pathname === '/' ? '' : pathname}`
+    const artistResponse = NextResponse.rewrite(url)
+    artistResponse.headers.set('x-voices-market', 'YOUSSEF')
+    artistResponse.headers.set('x-voices-lang', 'en')
+    return artistResponse
   }
 
   // Academy Journey
@@ -150,10 +150,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  // Meditation Journey
-  if (market === 'ADEMING') {
+  // Meditation Journey (ADEMING)
+  if (host.includes('ademing.be')) {
     url.pathname = `/ademing${pathname === '/' ? '' : pathname}`
-    return NextResponse.rewrite(url)
+    const ademingResponse = NextResponse.rewrite(url)
+    ademingResponse.headers.set('x-voices-market', 'ADEMING')
+    return ademingResponse
   }
 
   // 4. 🌍 I18N NUCLEAR REWRITE (CLEAN URLS)

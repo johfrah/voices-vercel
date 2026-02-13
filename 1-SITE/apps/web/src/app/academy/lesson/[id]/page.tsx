@@ -146,7 +146,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           <div className="mb-8 p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-between">
             <div className="flex items-center gap-3">
               <EyeOff size={20} className="text-primary" />
-              <TextInstrument className="text-sm font-black uppercase tracking-tight text-primary">Student Preview Modus</TextInstrument>
+              <TextInstrument className="text-sm font-black tracking-tight text-primary">Student Preview Modus</TextInstrument>
             </div>
             <Link href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[10px]">
               Terug naar Admin Mode
@@ -156,14 +156,14 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         <SectionInstrument className="mb-12 space-y-6">
           <Link 
             href="/academy" 
-            className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-all"
+            className="inline-flex items-center gap-2 text-[10px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
           >
             <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="academy.back_to_overview" defaultText="Terug naar overzicht" />
           </Link>
           
           <ContainerInstrument className="space-y-2">
-            <HeadingInstrument level={1} className="text-5xl font-black uppercase tracking-tighter">
+            <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
               <VoiceglotText translationKey={`academy.lesson.${params.id}.title`} defaultText={data.header.title} />
             </HeadingInstrument>
           </ContainerInstrument>
@@ -174,7 +174,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
             <ContainerInstrument className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8">
               {isLockedByDrip ? <Info size={48} className="text-white" /> : <ShieldCheck size={48} className="text-white" />}
             </ContainerInstrument>
-            <HeadingInstrument level={2} className="text-5xl font-black uppercase tracking-tighter leading-none">
+            <HeadingInstrument level={2} className="text-5xl font-black tracking-tighter leading-none">
               <VoiceglotText 
                 translationKey={isLockedByDrip ? "academy.drip.title" : "academy.paywall.title"} 
                 defaultText={reason === "previous_incomplete" ? "Eerst de vorige les afronden" : isLockedByDrip ? "Even laten bezinken..." : "Deze les is vergrendeld"} 
@@ -241,7 +241,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         <div className="mb-8 p-4 bg-va-black rounded-2xl flex items-center justify-between shadow-xl border border-white/5">
           <div className="flex items-center gap-3 text-white">
             <Eye size={20} className="text-primary" />
-            <TextInstrument className="text-sm font-black uppercase tracking-tight">Admin Mode Actief</TextInstrument>
+            <TextInstrument className="text-sm font-black tracking-tight">Admin Mode Actief</TextInstrument>
           </div>
           <div className="flex gap-4">
             {!isPreviewMode ? (
@@ -269,14 +269,14 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
       <SectionInstrument className="mb-12 space-y-6">
         <Link 
           href="/academy" 
-          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-all"
+          className="inline-flex items-center gap-2 text-[10px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
           <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="academy.back_to_overview" defaultText="Terug naar overzicht" />
         </Link>
         
         <ContainerInstrument className="space-y-2">
-          <HeadingInstrument level={1} className="text-5xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
             <VoiceglotText translationKey={`academy.lesson.${params.id}.title`} defaultText={data.header.title} />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/50 font-medium">
@@ -296,7 +296,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
 
           {/* Exercise Content */}
           <ContainerInstrument className="prose prose-va max-w-none">
-            <HeadingInstrument level={2} className="text-3xl font-black uppercase tracking-tight mb-6">
+            <HeadingInstrument level={2} className="text-3xl font-black tracking-tight mb-6">
               <VoiceglotText translationKey="academy.lesson.exercise_title" defaultText="Oefening" />
             </HeadingInstrument>
             <ContainerInstrument className="text-va-black/70 leading-relaxed academy-content">
@@ -314,20 +314,20 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           {/* 📊 NULMETING REFLECTIE (Alleen voor Les 1) */}
           {isLessonOne && (
             <BentoCard span="xl" className="bg-va-off-white p-12 border border-black/5">
-              <HeadingInstrument level={3} className="text-3xl font-black uppercase tracking-tighter mb-8">
+              <HeadingInstrument level={3} className="text-3xl font-black tracking-tighter mb-8">
                 <VoiceglotText translationKey="academy.lesson1.nulmeting.title" defaultText="Zelfreflectie: Jouw Nulmeting" />
               </HeadingInstrument>
               <ContainerInstrument className="space-y-8">
                 <TextInstrument className="text-va-black/60 font-medium leading-relaxed">
                   <VoiceglotText 
                     translationKey="academy.lesson1.nulmeting.intro" 
-                    defaultText="Luister je eigen opname hierboven eens rustig terug. Probeer niet te oordelen, maar observeer nuchter wat je hoort. Deze vragen helpen je daarbij:" 
+                    defaultText="Luister je eigen opname hierboven eens rustig terug. Probreed niet te oordelen, maar observeer nuchter wat je hoort. Deze vragen helpen je daarbij:" 
                   />
                 </TextInstrument>
                 <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <ContainerInstrument className="space-y-4">
                     <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">1</div>
-                    <TextInstrument className="font-bold text-sm uppercase tracking-widest">
+                    <TextInstrument className="font-bold text-sm tracking-widest">
                       <VoiceglotText translationKey="academy.lesson1.q1" defaultText="Geloof je jezelf?" />
                     </TextInstrument>
                     <TextInstrument className="text-xs text-va-black/40 leading-relaxed">
@@ -336,7 +336,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
                   </ContainerInstrument>
                   <ContainerInstrument className="space-y-4">
                     <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">2</div>
-                    <TextInstrument className="font-bold text-sm uppercase tracking-widest">
+                    <TextInstrument className="font-bold text-sm tracking-widest">
                       <VoiceglotText translationKey="academy.lesson1.q2" defaultText="Hoor je de adem?" />
                     </TextInstrument>
                     <TextInstrument className="text-xs text-va-black/40 leading-relaxed">
@@ -345,7 +345,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
                   </ContainerInstrument>
                   <ContainerInstrument className="space-y-4">
                     <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">3</div>
-                    <TextInstrument className="font-bold text-sm uppercase tracking-widest">
+                    <TextInstrument className="font-bold text-sm tracking-widest">
                       <VoiceglotText translationKey="academy.lesson1.q3" defaultText="De Glimlach?" />
                     </TextInstrument>
                     <TextInstrument className="text-xs text-va-black/40 leading-relaxed">
@@ -369,7 +369,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           {isAdmin && (
             <BentoGrid columns={2} className="mt-12">
               <BentoCard span="md" className="bg-va-black text-white p-8">
-                <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-4 text-primary">
+                <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-4 text-primary">
                   <VoiceglotText translationKey="academy.admin.intro_script_title" defaultText="Introductie Script (2 min)" />
                 </HeadingInstrument>
                 <div className="prose prose-invert prose-xs max-h-96 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10">
@@ -382,7 +382,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
               </BentoCard>
 
               <BentoCard span="md" className="bg-va-black text-white p-8">
-                <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-4 text-primary">
+                <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-4 text-primary">
                   <VoiceglotText translationKey="academy.admin.deep_dive_script_title" defaultText="Verdieping Script (4 min)" />
                 </HeadingInstrument>
                 <div className="prose prose-invert prose-xs max-h-96 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10">
@@ -401,7 +401,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         <ContainerInstrument className="space-y-8">
           {/* Technical Briefing */}
           <BentoCard span="sm" className="hred text-white">
-            <HeadingInstrument level={4} className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-6 flex items-center gap-2">
+            <HeadingInstrument level={4} className="text-[10px] font-black tracking-widest text-white/40 mb-6 flex items-center gap-2">
               <Info size={14} /> 
               <VoiceglotText translationKey="academy.lesson.technical_briefing" defaultText="Briefing" />
             </HeadingInstrument>
@@ -429,7 +429,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
 
           {/* Progress Widget */}
           <BentoCard span="sm" className="bg-va-black text-white">
-            <HeadingInstrument level={4} className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-4">
+            <HeadingInstrument level={4} className="text-[10px] font-black tracking-widest text-white/40 mb-4">
               <VoiceglotText translationKey="academy.lesson.progress_label" defaultText="Voortgang" />
             </HeadingInstrument>
             <ContainerInstrument className="text-4xl font-black tracking-tighter text-primary mb-4">{progress.percentage}%</ContainerInstrument>

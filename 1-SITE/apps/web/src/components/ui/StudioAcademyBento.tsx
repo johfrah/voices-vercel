@@ -1,6 +1,7 @@
 "use client";
 
 import { Mic, BookOpen, Calendar, Star, PlayCircle, Users } from "lucide-react";
+import Image from "next/image";
 import React from 'react';
 import { BentoCard, BentoGrid } from "./BentoGrid";
 import { VoiceglotText } from "./VoiceglotText";
@@ -16,6 +17,14 @@ export const StudioAcademyBento = () => {
     <BentoGrid className="mb-32">
       {/* 🎙️ MAIN CARD: Workshops */}
       <BentoCard span="xl" className="h-[450px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="/assets/perfect-photo.jpg" 
+            alt="Studio" 
+            fill 
+            className="object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-1000"
+          />
+        </div>
         <ContainerInstrument className="relative z-10">
           <ContainerInstrument className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
             <Mic size={32} fill="currentColor" />

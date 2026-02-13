@@ -61,12 +61,15 @@ export const VoicejarTracker: React.FC = () => {
       eventsRef.current = [];
 
       try {
+        const body = JSON.stringify(payload);
+        // 🛡️ CHRIS-PROTOCOL: Voorkom 'Failed to fetch' door payload grootte te checken voor keepalive
+        const useKeepAlive = body.length < 60000; 
+
         await fetch('/api/voicejar/record', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          // Gebruik keepalive voor data-integriteit bij navigeren
-          keepalive: true 
+          body,
+          keepalive: useKeepAlive
         });
       } catch (e) {
         // 🛡️ CHRIS-PROTOCOL: SILENCE IN DEV

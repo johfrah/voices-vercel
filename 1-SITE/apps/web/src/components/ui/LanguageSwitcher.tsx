@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Globe, Check } from 'lucide-react';
+import { Globe, Check, ChevronRight } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useSonicDNA } from '@/lib/sonic-dna';
 
 interface Language {
   code: string;
@@ -24,6 +26,8 @@ export const LanguageSwitcher: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<any>(null);
+  const { playClick, playSwell } = useSonicDNA();
 
   const languages = Object.values(LANGUAGE_MAP);
 
@@ -36,40 +40,14 @@ export const LanguageSwitcher: React.FC = () => {
     }
   }, [pathname]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isOpen]);
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setIsOpen(true);
+    playSwell();
+  };
 
-  const playClick = (type: 'soft' | 'pro' = 'soft') => {
-    try {
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      const now = audioCtx.currentTime;
-      if (type === 'pro') {
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
-        gain.gain.setValueAtTime(0.08, now);
-      } else {
-        osc.frequency.setValueAtTime(220, now);
-        osc.frequency.exponentialRampToValueAtTime(80, now + 0.08);
-        gain.gain.setValueAtTime(0.04, now);
-      }
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(now + 0.1);
-    } catch (e) {}
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setIsOpen(false), 300);
   };
 
   const switchLanguage = (langCode: string) => {
@@ -89,56 +67,69 @@ export const LanguageSwitcher: React.FC = () => {
     setIsOpen(false);
   };
 
-  const currentLanguage = LANGUAGE_MAP[currentLang] || LANGUAGE_MAP.nl;
-
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div 
+      className="relative" 
+      ref={dropdownRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <button
         onClick={(e) => {
           e.preventDefault();
-          e.stopPropagation();
           playClick('soft');
           setIsOpen(!isOpen);
         }}
-        className="flex items-center gap-2 px-4 py-3 rounded-full bg-va-black/5 border border-black/5 hover:bg-va-black/10 hover:border-black/10 transition-all duration-500 text-[10px] font-black uppercase tracking-widest text-va-black hover:text-va-black"
+        className="flex items-center gap-2 px-2 py-2 transition-all duration-500 group"
       >
-        <span className="text-sm leading-none">{currentLanguage.flag}</span>
-        <span className="hidden sm:inline">{currentLanguage.code.toUpperCase()}</span>
+        <span className="text-[11px] font-black uppercase tracking-widest text-va-black border-b-2 border-va-black pb-0.5 leading-none">
+          {currentLang.toUpperCase()}
+        </span>
+        <img 
+          src="/assets/common/branding/icons/LANGUAGEa.svg" 
+          alt="Language" 
+          className="w-6 h-6 transition-transform duration-500 group-hover:scale-110" 
+          style={{ filter: 'brightness(0)' }}
+        />
       </button>
 
-      {isOpen && (
-        <div className="absolute top-full right-0 mt-4 w-64 bg-white rounded-[32px] shadow-2xl border border-black/5 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="p-3 bg-va-off-white/50">
-            {languages.map((lang) => {
-              const isActive = lang.code === currentLang;
-              return (
-                <button
-                  key={lang.code}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    switchLanguage(lang.code);
-                  }}
-                  className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-left transition-all duration-500 group mb-1 last:mb-0 ${
-                    isActive
-                      ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                      : 'text-va-black/60 hover:text-va-black hover:bg-white border border-transparent hover:border-black/5'
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <span className="text-xl leading-none">{lang.flag}</span>
-                    <div className="flex flex-col">
-                      <span className={`text-[11px] font-black uppercase tracking-widest ${isActive ? 'text-white' : 'text-va-black'}`}>{lang.native}</span>
-                      <span className={`text-[10px] mt-0.5 font-bold uppercase tracking-tight ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>{lang.label}</span>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-full right-0 mt-2 w-64 bg-white/80 backdrop-blur-2xl rounded-[24px] shadow-aura border border-black/5 overflow-hidden z-50"
+          >
+            <div className="p-2 bg-va-off-white/50">
+              {languages.map((lang) => {
+                const isActive = lang.code === currentLang;
+                return (
+                  <button
+                    key={lang.code}
+                    onClick={() => switchLanguage(lang.code)}
+                    className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-left transition-all duration-500 group mb-1 last:mb-0 ${
+                      isActive
+                        ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                        : 'text-va-black/60 hover:text-va-black hover:bg-white border border-transparent hover:border-black/5'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="text-xl leading-none">{lang.flag}</span>
+                      <div className="flex flex-col">
+                        <span className={`text-[11px] font-black uppercase tracking-widest ${isActive ? 'text-white' : 'text-va-black'}`}>{lang.native}</span>
+                        <span className={`text-[10px] mt-0.5 font-bold uppercase tracking-tight ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>{lang.label}</span>
+                      </div>
                     </div>
-                  </div>
-                  {isActive && <Check size={14} className="text-white" />}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                    {isActive ? <Check size={14} className="text-white" /> : <ChevronRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -40,7 +40,7 @@ next-env.d.ts
 # 2. Assets (Media) - Staan al in Supabase Storage
 1-SITE/assets/
 **/assets/
-!1-SITE/apps/web/public/assets/common/branding/**
+!1-SITE/apps/web/public/assets/common/**
 
 # 3. Tijdelijke Scripts & Logs
 *.js

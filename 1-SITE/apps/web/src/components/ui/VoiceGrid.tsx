@@ -1,10 +1,9 @@
 "use client";
 
+import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
 import React, { useState } from 'react';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
-import { BentoGrid } from './BentoGrid';
-import { MediaMaster } from './MediaMaster';
 import { VoiceCard } from './VoiceCard';
 
 interface VoiceGridProps {

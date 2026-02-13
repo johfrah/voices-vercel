@@ -2,6 +2,7 @@
 
 import { ArrowRight, Heart, Mic, Zap } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import React from 'react';
 import { BentoCard, BentoGrid } from "./BentoGrid";
 import { VoiceglotText } from "./VoiceglotText";
@@ -81,6 +82,14 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
         </BentoCard>
       ) : (
         <BentoCard span="xl" className="h-[500px] flex flex-col justify-between group overflow-hidden relative p-12 bg-white border border-black/[0.03] shadow-aura">
+          <div className="absolute inset-0 z-0">
+            <Image 
+              src="/assets/voice-photo.jpg" 
+              alt="Casting" 
+              fill 
+              className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-1000"
+            />
+          </div>
           <ContainerInstrument className="relative z-10">
             <ContainerInstrument className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-white mb-8 shadow-lg shadow-primary/10">
               <Mic size={32} />

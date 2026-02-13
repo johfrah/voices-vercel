@@ -9,6 +9,11 @@
 
 import fs from 'fs';
 import path from 'path';
+import { createClient } from '@supabase/supabase-js';
+import * as dotenv from 'dotenv';
+
+// Laad env vars voor self-healing checks
+dotenv.config({ path: '1-SITE/apps/web/.env.local' });
 
 interface AuditResult {
   file: string;
@@ -16,6 +21,38 @@ interface AuditResult {
 }
 
 class ChrisWatchdog {
+  private supabase: any;
+
+  constructor() {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (url && key) {
+      this.supabase = createClient(url, key);
+    }
+  }
+
+  /**
+   * 🏥 SELF-HEALING: Check database health
+   */
+  async checkDatabaseHealth() {
+    console.log('🏥 [HEAL] Controleren van database gezondheid...');
+    if (!this.supabase) {
+      console.error('🔴 [HEAL] Supabase niet geconfigureerd in env.');
+      return false;
+    }
+
+    try {
+      const { data, error } = await this.supabase.from('actors').select('id').limit(1);
+      if (error) throw error;
+      console.log('✅ [HEAL] Database tunnel (SDK) is operationeel.');
+      return true;
+    } catch (e: any) {
+      console.error('🔴 [HEAL] Database CRITICAL FAILURE:', e.message);
+      // Hier kunnen we proactief actie ondernemen, bijv. een notificatie sturen
+      return false;
+    }
+  }
+
   private rules = [
     {
       name: 'Raleway Mandate',
@@ -40,6 +77,18 @@ class ChrisWatchdog {
       pattern: />[^<{]*[a-zA-Z]{5,}[^<{]*</g,
       message: 'Mogelijke hardcoded tekst gedetecteerd. Gebruik <VoiceglotText />.',
       severity: 'WARNING'
+    },
+    {
+      name: 'Mobile-First Spacing',
+      pattern: /className="[^"]*\b(p|m)[xy]?-[0-9]+\b(?!.*md:(p|m)[xy]?-[0-9]+)[^"]*"/g,
+      message: 'Zorg voor mobile-first spacing (gebruik md: voor desktop overrides).',
+      severity: 'WARNING'
+    },
+    {
+      name: 'Atomic Icon Mandate',
+      pattern: /<(Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind)(?!.*strokeWidth={1.5})[^>]*>/g,
+      message: 'Lucide icons MOETEN strokeWidth={1.5} hebben voor de Ademing-feel.',
+      severity: 'CRITICAL'
     }
   ];
 
@@ -128,7 +177,7 @@ class ChrisWatchdog {
 }
 
 // CLI Execution
-const mode = process.argv[2] === '--fix' ? 'fix' : 'audit';
+const mode = process.argv[2];
 const target = process.argv[3] || '1-SITE/apps/web/src';
 const watchdog = new ChrisWatchdog();
 
@@ -139,6 +188,10 @@ if (mode === 'fix') {
   } else {
     console.log('🔴 Geef een specifiek bestand op voor --fix.');
   }
+} else if (mode === 'health') {
+  watchdog.checkDatabaseHealth().then(ok => {
+    process.exit(ok ? 0 : 1);
+  });
 } else {
   watchdog.run(target).catch(console.error);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { Archive, DollarSign, Globe, ShieldCheck, Zap } from "lucide-react";
+import Image from "next/image";
 import { BentoCard, BentoGrid } from "./BentoGrid";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
 import { VoiceglotText } from "./VoiceglotText";
@@ -15,6 +16,14 @@ export const GuaranteesBento = () => {
     <BentoGrid className="mb-32">
       {/* 🛡️ MAIN CARD: 100% Tevredenheid */}
       <BentoCard span="xl" className="h-[400px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="/assets/service-photo.jpg" 
+            alt="Service" 
+            fill 
+            className="object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-1000"
+          />
+        </div>
         <ContainerInstrument className="relative z-10">
           <ContainerInstrument className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
             <ShieldCheck size={32} fill="currentColor" />

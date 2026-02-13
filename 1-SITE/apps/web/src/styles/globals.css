@@ -18,14 +18,10 @@
   font-family: var(--font-raleway), 'Inter', system-ui, sans-serif !important;
 }
 
-.theme-johfrah {
-  --va-primary: #1A1A1A;
-  --va-background: #FFFFFF;
-}
-
 .theme-youssef {
-  --va-primary: #000000;
-  --va-background: #F0F0F0;
+  --va-primary: #1A1A1A; /* Luxe Black */
+  --va-background: hsl(35, 25%, 98%); /* Voices Off-White */
+  --va-accent: #E91E63; /* Subtle Pink accent for Heart/Donation */
 }
 
 .theme-johfrai {

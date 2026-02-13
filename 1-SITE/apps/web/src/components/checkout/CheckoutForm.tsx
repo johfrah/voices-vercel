@@ -118,9 +118,11 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           quoteMessage,
           payment_method: selectedMethod,
           market: 'BE',
-          music: state.music // 🎵 Ensure music options are passed
+          music: state.music 
         }),
       });
+
+      const data = await res.json();
 
       if (data.success) {
         if (formData.isQuote || data.isBankTransfer) {
@@ -149,16 +151,16 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     <div className="space-y-8">
       {/* Admin Quote Toggle */}
       {isAdmin && (
-        <div className="p-6 bg-primary/5 rounded-[32px] border border-primary/10 flex items-center justify-between group animate-fade-in">
+        <div className="p-6 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center justify-between group animate-fade-in">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
-              <FileText size={24} />
+            <div className="w-12 h-12 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+              <FileText size={24} strokeWidth={1.5} />
             </div>
             <div>
-              <h4 className="text-sm font-black uppercase tracking-tight">
+              <h4 className="text-sm font-light tracking-tight">
                 <VoiceglotText translationKey="checkout.admin.quote_mode" defaultText="Admin Offerte Modus" />
               </h4>
-              <p className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest">
+              <p className="text-[10px] font-light text-va-black/40 tracking-widest">
                 <VoiceglotText translationKey="checkout.admin.quote_desc" defaultText="Verstuur een offerte i.p.v. directe betaling" />
               </p>
             </div>
@@ -172,206 +174,223 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-1">
-          <LabelInstrument>
-            <VoiceglotText translationKey="checkout.form.first_name" defaultText="Voornaam *" />
-          </LabelInstrument>
-          <InputInstrument
-            value={formData.first_name || ''}
-            placeholder="Bijv. Jan"
-            className="w-full"
-            onChange={(e) => handleChange('first_name', e.target.value)}
-          />
+      <div className="bg-white p-8 rounded-[20px] border border-black/[0.03] shadow-aura space-y-6">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
+            <CheckCircle2 size={20} strokeWidth={1.5} />
+          </div>
+          <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
+            <VoiceglotText translationKey="checkout.details.title" defaultText="Jouw Gegevens" />
+          </HeadingInstrument>
         </div>
-        <div className="space-y-1">
-          <LabelInstrument>
-            <VoiceglotText translationKey="checkout.form.last_name" defaultText="Achternaam *" />
-          </LabelInstrument>
-          <InputInstrument
-            value={formData.last_name || ''}
-            placeholder="Bijv. Janssen"
-            className="w-full"
-            onChange={(e) => handleChange('last_name', e.target.value)}
-          />
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-1">
-          <LabelInstrument>
-            <VoiceglotText translationKey="checkout.form.email" defaultText="E-mailadres *" />
-          </LabelInstrument>
-          <InputInstrument
-            type="email"
-            value={formData.email || ''}
-            placeholder="naam@bedrijf.be"
-            className="w-full"
-            onChange={(e) => handleChange('email', e.target.value)}
-          />
-        </div>
-        <div className="space-y-1">
-          <LabelInstrument>
-            <VoiceglotText translationKey="checkout.form.phone" defaultText="Telefoonnummer" />
-          </LabelInstrument>
-          <InputInstrument
-            value={formData.phone || ''}
-            placeholder="+32..."
-            className="w-full"
-            onChange={(e) => handleChange('phone', e.target.value)}
-          />
-        </div>
-      </div>
-      
-      <div className="space-y-1">
-        <LabelInstrument>
-          <VoiceglotText translationKey="checkout.form.vat" defaultText="BTW-nummer" />
-        </LabelInstrument>
-        <div className="relative">
-          <InputInstrument
-            value={formData.vat_number || ''}
-            placeholder="Bijv. BE0662426460"
-            className="w-full"
-            onChange={(e) => handleChange('vat_number', e.target.value.toUpperCase())}
-          />
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            {vatStatus.validating ? <Loader2 className="animate-spin text-primary" size={18} /> : 
-             vatStatus.valid ? (
-               <div className="flex items-center gap-2 text-green-600 animate-fade-in">
-                 <span className="text-[9px] font-black uppercase tracking-widest">
-                   <VoiceglotText translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" />
-                 </span>
-                 <CheckCircle2 size={18} />
-               </div>
-             ) : vatStatus.valid === false ? (
-               <AlertCircle className="text-red-600" size={18} />
-             ) : null}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-1">
+            <LabelInstrument>
+              <VoiceglotText translationKey="checkout.form.first_name" defaultText="Voornaam *" />
+            </LabelInstrument>
+            <InputInstrument
+              value={formData.first_name || ''}
+              placeholder="Bijv. Jan"
+              className="w-full !rounded-[10px]"
+              onChange={(e) => handleChange('first_name', e.target.value)}
+            />
+          </div>
+          <div className="space-y-1">
+            <LabelInstrument>
+              <VoiceglotText translationKey="checkout.form.last_name" defaultText="Achternaam *" />
+            </LabelInstrument>
+            <InputInstrument
+              value={formData.last_name || ''}
+              placeholder="Bijv. Janssen"
+              className="w-full !rounded-[10px]"
+              onChange={(e) => handleChange('last_name', e.target.value)}
+            />
           </div>
         </div>
-      </div>
-
-      <div className="space-y-1">
-        <LabelInstrument>
-          <VoiceglotText translationKey="checkout.form.company" defaultText="Bedrijfsnaam" />
-        </LabelInstrument>
-        <InputInstrument
-          value={formData.company || ''}
-          placeholder="Jouw bedrijf"
-          className="w-full"
-          onChange={(e) => handleChange('company', e.target.value)}
-        />
-      </div>
-
-      <div className="space-y-1">
-        <LabelInstrument>
-          <VoiceglotText translationKey="checkout.form.address" defaultText="Straat en huisnummer" />
-        </LabelInstrument>
-        <InputInstrument
-          value={formData.address_street || ''}
-          placeholder="Kerkstraat 1"
-          className="w-full"
-          onChange={(e) => handleChange('address_street', e.target.value)}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-1">
+            <LabelInstrument>
+              <VoiceglotText translationKey="checkout.form.email" defaultText="E-mailadres *" />
+            </LabelInstrument>
+            <InputInstrument
+              type="email"
+              value={formData.email || ''}
+              placeholder="naam@bedrijf.be"
+              className="w-full !rounded-[10px]"
+              onChange={(e) => handleChange('email', e.target.value)}
+            />
+          </div>
+          <div className="space-y-1">
+            <LabelInstrument>
+              <VoiceglotText translationKey="checkout.form.phone" defaultText="Telefoonnummer" />
+            </LabelInstrument>
+            <InputInstrument
+              value={formData.phone || ''}
+              placeholder="+32..."
+              className="w-full !rounded-[10px]"
+              onChange={(e) => handleChange('phone', e.target.value)}
+            />
+          </div>
+        </div>
+        
         <div className="space-y-1">
           <LabelInstrument>
-            <VoiceglotText translationKey="checkout.form.zip" defaultText="Postcode *" />
+            <VoiceglotText translationKey="checkout.form.vat" defaultText="BTW-nummer" />
+          </LabelInstrument>
+          <div className="relative">
+            <InputInstrument
+              value={formData.vat_number || ''}
+              placeholder="Bijv. BE0662426460"
+              className="w-full !rounded-[10px]"
+              onChange={(e) => handleChange('vat_number', e.target.value.toUpperCase())}
+            />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {vatStatus.validating ? <Loader2 className="animate-spin text-primary" size={18} /> : 
+               vatStatus.valid ? (
+                 <div className="flex items-center gap-2 text-green-600 animate-fade-in">
+                   <span className="text-[9px] font-light tracking-widest">
+                     <VoiceglotText translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" />
+                   </span>
+                   <CheckCircle2 size={18} strokeWidth={1.5} />
+                 </div>
+               ) : vatStatus.valid === false ? (
+                 <div className="flex items-center gap-2 text-red-500 animate-shake">
+                   <span className="text-[9px] font-light tracking-widest">
+                     <VoiceglotText translationKey="checkout.form.vat_invalid" defaultText="Ongeldig" />
+                   </span>
+                   <AlertCircle size={18} strokeWidth={1.5} />
+                 </div>
+               ) : null}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <LabelInstrument>
+            <VoiceglotText translationKey="checkout.form.company" defaultText="Bedrijfsnaam" />
           </LabelInstrument>
           <InputInstrument
-            value={formData.postal_code || ''}
-            placeholder="9000"
-            className="w-full"
-            onChange={(e) => handleChange('postal_code', e.target.value)}
+            value={formData.company || ''}
+            placeholder="Jouw bedrijf"
+            className="w-full !rounded-[10px]"
+            onChange={(e) => handleChange('company', e.target.value)}
           />
         </div>
+
         <div className="space-y-1">
           <LabelInstrument>
-            <VoiceglotText translationKey="checkout.form.city" defaultText="Stad *" />
+            <VoiceglotText translationKey="checkout.form.address" defaultText="Straat en huisnummer" />
           </LabelInstrument>
           <InputInstrument
-            value={formData.city || ''}
-            placeholder="Gent"
-            className="w-full"
-            onChange={(e) => handleChange('city', e.target.value)}
+            value={formData.address_street || ''}
+            placeholder="Kerkstraat 1"
+            className="w-full !rounded-[10px]"
+            onChange={(e) => handleChange('address_street', e.target.value)}
           />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-1">
+            <LabelInstrument>
+              <VoiceglotText translationKey="checkout.form.zip" defaultText="Postcode *" />
+            </LabelInstrument>
+            <InputInstrument
+              value={formData.postal_code || ''}
+              placeholder="9000"
+              className="w-full !rounded-[10px]"
+              onChange={(e) => handleChange('postal_code', e.target.value)}
+            />
+          </div>
+          <div className="space-y-1">
+            <LabelInstrument>
+              <VoiceglotText translationKey="checkout.form.city" defaultText="Stad *" />
+            </LabelInstrument>
+            <InputInstrument
+              value={formData.city || ''}
+              placeholder="Gent"
+              className="w-full !rounded-[10px]"
+              onChange={(e) => handleChange('city', e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
       {!formData.isQuote ? (
         <>
-          <div className="pt-8 border-t border-black/5">
-            <h3 className="text-sm font-black uppercase tracking-widest text-va-black/30 mb-6">
-              <VoiceglotText translationKey="checkout.step2.title" defaultText="2. Betaalprovider" />
-            </h3>
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {gateways.map((gw) => (
+          <div className="bg-white p-8 rounded-[20px] border border-black/[0.03] shadow-aura space-y-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
+                <Sparkles size={20} strokeWidth={1.5} />
+              </div>
+              <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
+                <VoiceglotText translationKey="checkout.payment.title" defaultText="Betaalmethode" />
+              </HeadingInstrument>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {gateways.map((gateway) => (
                 <button
-                  key={gw.id}
+                  key={gateway.id}
                   type="button"
-                  onClick={() => handleChange('gateway', gw.id)}
-                  className={`flex items-center justify-center gap-3 p-4 rounded-[24px] border-2 transition-all ${
-                    formData.gateway === gw.id ? 'border-primary bg-primary/5' : 'border-black/5 hover:border-black/10'
+                  onClick={() => handleChange('gateway', gateway.id)}
+                  className={`p-6 rounded-[15px] border text-left transition-all flex items-center gap-4 ${
+                    formData.gateway === gateway.id 
+                      ? "bg-va-black text-white border-va-black shadow-aura-lg" 
+                      : "bg-va-off-white text-va-black/40 border-transparent hover:border-black/10"
                   }`}
                 >
-                  <span className="text-xl">{gw.icon}</span>
-                  <span className="font-black uppercase tracking-widest text-[10px] text-va-black/60">
-                    <VoiceglotText translationKey={`checkout.gateway.${gw.id}`} defaultText={gw.name} />
-                  </span>
+                  <span className="text-2xl">{gateway.icon}</span>
+                  <span className="font-light tracking-tight">{gateway.name}</span>
                 </button>
               ))}
             </div>
-          </div>
 
-          {formData.gateway === 'mollie' && (
-            <div className="pt-4">
-              <h3 className="text-sm font-black uppercase tracking-widest text-va-black/30 mb-6">
-                <VoiceglotText translationKey="checkout.step3.title" defaultText="3. Betaalmethode" />
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {paymentMethods.map((method) => (
-                  <button
-                    key={method.id}
-                    type="button"
-                    onClick={() => setSelectedMethod(method.id)}
-                    className={`flex flex-col items-center gap-3 p-4 rounded-[24px] border-2 transition-all ${
-                      selectedMethod === method.id ? 'border-primary bg-primary/5' : 'border-black/5 hover:border-black/10'
-                    }`}
-                  >
-                    <Image 
-                      src={method.image.size2x} 
-                      alt={method.description} 
-                      width={64}
-                      height={32}
-                      className="h-8 object-contain" 
-                    />
-                    <span className="font-black uppercase tracking-widest text-[9px] text-va-black/60">
-                      <VoiceglotText translationKey={`checkout.method.${method.id}`} defaultText={method.description} />
-                    </span>
-                  </button>
-                ))}
+            {formData.gateway === 'mollie' && (
+              <div className="pt-6 border-t border-black/5">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {paymentMethods.map((method) => (
+                    <button
+                      key={method.id}
+                      type="button"
+                      onClick={() => setSelectedMethod(method.id)}
+                      className={`flex flex-col items-center gap-3 p-4 rounded-[15px] border-2 transition-all ${
+                        selectedMethod === method.id ? 'border-primary bg-primary/5' : 'border-black/5 hover:border-black/10'
+                      }`}
+                    >
+                      <Image 
+                        src={method.image.size2x} 
+                        alt={method.description} 
+                        width={64} 
+                        height={32} 
+                        className="h-8 object-contain" 
+                      />
+                      <span className="font-light tracking-widest text-[9px] text-va-black/60 uppercase">
+                        <VoiceglotText translationKey={`checkout.method.${method.id}`} defaultText={method.description} />
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </>
       ) : (
-        <div className="pt-8 border-t border-black/5 animate-fade-in">
-          <div className="p-8 bg-primary/5 rounded-[32px] border border-primary/10 flex items-center gap-6">
-            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-primary shadow-sm">
-              <Sparkles size={28} />
-            </div>
-            <div>
-              <h4 className="text-lg font-black uppercase tracking-tighter">
-                <VoiceglotText translationKey="checkout.ready_to_send.title" defaultText="Klaar voor verzending" />
-              </h4>
-              <p className="text-sm text-va-black/50 font-medium leading-relaxed">
-                <VoiceglotText 
-                  translationKey="checkout.ready_to_send.desc" 
-                  defaultText={`Je staat op het punt een officiële offerte te sturen naar ${formData.email}. In de volgende stap kun je de begeleidende e-mail personaliseren.`} 
-                />
-              </p>
-            </div>
+        <div className="p-8 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center gap-6 animate-fade-in">
+          <div className="w-14 h-14 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm">
+            <Sparkles size={28} strokeWidth={1.5} />
+          </div>
+          <div>
+            <h4 className="text-lg font-light tracking-tight">
+              <VoiceglotText translationKey="checkout.ready_to_send.title" defaultText="Klaar voor verzending" />
+            </h4>
+            <p className="text-sm text-va-black/40 font-light leading-relaxed">
+              <VoiceglotText 
+                translationKey="checkout.ready_to_send.desc" 
+                defaultText={`Je staat op het punt een officiële offerte te sturen naar ${formData.email}. In de volgende stap kun je de begeleidende e-mail personaliseren.`} 
+              />
+            </p>
           </div>
         </div>
       )}
@@ -387,7 +406,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                 className="w-5 h-5 rounded border-2 border-black/10 text-primary focus:ring-primary/20 transition-all"
               />
             </div>
-            <span className="text-xs text-va-black/60 font-medium leading-relaxed group-hover:text-va-black transition-colors">
+            <span className="text-xs text-va-black/40 font-light leading-relaxed group-hover:text-va-black transition-colors">
               <VoiceglotText 
                 translationKey="checkout.academy.terms" 
                 defaultText="Ik ga akkoord met de algemene voorwaarden en begrijp dat mijn herroepingsrecht vervalt zodra ik toegang krijg tot de digitale leeromgeving." 
@@ -399,19 +418,27 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
 
       <AcademyUpsellSection />
 
-      <button 
-        className={`va-btn-pro w-full flex items-center justify-center gap-3 ${(isSubmitting || (state.journey === 'academy' && !agreedToTerms)) ? 'opacity-50 cursor-not-allowed' : ''}`} 
-        onClick={() => formData.isQuote ? setIsPreviewOpen(true) : handleSubmit()}
-        disabled={isSubmitting || (state.journey === 'academy' && !agreedToTerms)}
-      >
-        {isSubmitting ? (
-          <><Loader2 className="animate-spin" size={20} /> <VoiceglotText translationKey="common.processing" defaultText="Verwerken..." /></>
-        ) : formData.isQuote ? (
-          <><VoiceglotText translationKey="checkout.cta.quote" defaultText="Preview Offerte E-mail" /> <Send size={18} /></>
-        ) : (
-          <VoiceglotText translationKey="checkout.cta.pay" defaultText={`Nu Betalen via ${formData.gateway === 'stripe' ? 'Stripe' : selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1)}`} />
-        )}
-      </button>
+      <div className="pt-4">
+        <ButtonInstrument 
+          onClick={() => formData.isQuote ? setIsPreviewOpen(true) : handleSubmit()}
+          disabled={isSubmitting || (state.journey === 'academy' && !agreedToTerms)}
+          className={`w-full va-btn-pro !py-8 text-lg !rounded-[10px] !bg-va-black !text-white flex items-center justify-center gap-3 group ${(isSubmitting || (state.journey === 'academy' && !agreedToTerms)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {isSubmitting ? (
+            <><Loader2 className="animate-spin" size={24} /> <VoiceglotText translationKey="common.processing" defaultText="Verwerken..." /></>
+          ) : formData.isQuote ? (
+            <><VoiceglotText translationKey="checkout.cta.quote" defaultText="Preview Offerte E-mail" /> <Send size={20} /></>
+          ) : (
+            <>
+              <VoiceglotText translationKey="checkout.cta.pay" defaultText={`Nu Betalen via ${selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1)}`} />
+              <Send size={20} className="group-hover:translate-x-1 transition-transform" />
+            </>
+          )}
+        </ButtonInstrument>
+        <p className="text-center text-[10px] font-light tracking-widest text-va-black/20 mt-6">
+          Door af te ronden ga je akkoord met onze algemene voorwaarden.
+        </p>
+      </div>
 
       <EmailPreviewModal 
         isOpen={isPreviewOpen}

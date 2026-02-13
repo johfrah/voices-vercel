@@ -45,7 +45,7 @@ export const HeroInstrument: React.FC = () => {
 
         <div className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg group">
           <Image 
-            src="/assets/images/hero-artist-placeholder.jpg" 
+            src="/assets/voices-photo.jpg" 
             alt="Voices Artist"
             fill
             className="object-cover transition-transform duration-1000 group-hover:scale-105"

@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { GeminiService } from '@/services/GeminiService';
+import { MarketManager } from '@config/market-manager';
 import { db } from '@db';
 import { translations } from '@db/schema';
-import { eq, and } from 'drizzle-orm';
-import { GeminiService } from '@/services/GeminiService';
-import { DirectMailService } from '@/services/DirectMailService';
-import { MarketManager } from '@config/market-manager';
+import { and, eq } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * 🩹 API: SELF-HEALING TRANSLATIONS (GOD MODE 2026)

@@ -35,6 +35,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.warn('[Voices] Auth request aborted, likely due to rapid navigation or component unmount.');
             return;
           }
+          // 🛡️ CHRIS-PROTOCOL: Geen error noise voor ontbrekende sessies (normaal voor gasten)
+          if (error.message?.includes('Auth session missing')) {
+            setUser(null);
+            setIsLoading(false);
+            return;
+          }
           console.error('[Voices] Auth error:', error);
           setUser(null);
           setIsLoading(false);

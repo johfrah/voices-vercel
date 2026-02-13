@@ -18,6 +18,7 @@ interface VoiceCardProps {
 
 /**
  * CATEGORY DEFINITIONS (The Big 8)
+ * Gebruikt Lucide icons met strokeWidth 1.5 voor de Ademing-feel.
  */
 const CATEGORIES = [
   { id: 'tv', icon: Monitor, label: 'TV', key: 'category.tv' },
@@ -75,7 +76,18 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
     playDemo(demo);
   };
 
-  const displayPrice = voice.starting_price || 0;
+  const displayPrice = useMemo(() => {
+    const base = parseFloat(voice.starting_price?.toString() || '0');
+    const ivr = parseFloat(voice.price_ivr?.toString() || '0');
+    const online = parseFloat(voice.price_online?.toString() || '0');
+
+    switch (state.current_journey) {
+      case 'telephony': return ivr || base;
+      case 'commercial': return online || base;
+      case 'video': return base;
+      default: return base;
+    }
+  }, [voice, state.current_journey]);
 
   // Sector-specific demo text logic (Beheer-modus)
   const getSectorDemoText = () => {
@@ -129,7 +141,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-xl font-black tracking-tighter uppercase text-va-black">
+                <h3 className="text-xl font-black tracking-tighter text-va-black">
                   <VoiceglotText 
                     translationKey={`actor.${voice.id}.name`} 
                     defaultText={voice.display_name} 
@@ -139,13 +151,13 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 {voice.voice_score > 90 && (
                   <div className="flex items-center gap-1 px-2 py-0.5 bg-yellow-400/10 text-yellow-600 rounded-full">
                     <Star size={10} fill="currentColor" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">
+                    <span className="text-[8px] font-black tracking-widest">
                       <VoiceglotText translationKey="common.selected" defaultText="Geselecteerd" />
                     </span>
                   </div>
                 )}
               </div>
-              <p className="text-[10px] font-black text-va-black/30 uppercase tracking-[0.2em]">
+              <p className="text-[10px] font-black text-va-black/30 tracking-[0.2em]">
                 <VoiceglotText translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} defaultText={voice.native_lang || ''} /> | {voice.gender === 'Mannelijke stem' ? <VoiceglotText translationKey="common.gender.male" defaultText="Man" /> : <VoiceglotText translationKey="common.gender.female" defaultText="Vrouw" />}
               </p>
             </div>
@@ -169,7 +181,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                       : 'bg-va-off-white border-black/5 text-va-black/40 hover:border-primary/30 hover:text-primary'
                   }`}
                 >
-                  <Icon size={12} strokeWidth={isActive ? 2.5 : 1.5} />
+                  <Icon size={12} strokeWidth={isActive ? 2 : 1.5} className={isActive ? 'opacity-100' : 'opacity-60'} />
                   <span className="text-[9px] font-black uppercase tracking-widest">
                     <VoiceglotText translationKey={cat.key} defaultText={cat.label} />
                   </span>

@@ -15,7 +15,9 @@
     "db:security-remediation": "ts-node 4-KELDER/scripts/supabase-security-remediation.ts",
     "lint": "cd 1-SITE/apps/web && npm run lint",
     "watchdog": "ts-node 3-WETTEN/scripts/core/maintenance/watchdog.ts",
-    "subtitles": "npx ts-node 3-WETTEN/scripts/subtitle-agent/transcribe-videos.ts"
+    "subtitles": "npx ts-node 3-WETTEN/scripts/subtitle-agent/transcribe-videos.ts",
+    "chris": "npx ts-node 3-WETTEN/scripts/chris.ts",
+    "run-agent": "npx ts-node 3-WETTEN/scripts/orchestrator.ts"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +34,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.95.3",
     "dotenv": "^17.2.4",
     "pg": "^8.18.0",
     "postgres": "^3.4.8"

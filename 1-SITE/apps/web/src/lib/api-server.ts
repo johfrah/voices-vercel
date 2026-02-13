@@ -92,24 +92,30 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 
     const actorIds = dbResults.map(a => a.id);
     
-    // Fetch demos and reviews
+    // Fetch demos, reviews and translations in batch
     let demos: any[] = [];
     let dbReviews: any[] = [];
+    let translationMap: Record<string, string> = {};
 
     try {
-      [demos, dbReviews] = await Promise.all([
+      const [demosRes, reviewsRes, transRes] = await Promise.all([
         actorIds.length > 0 
           ? db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN (${sql.join(actorIds, sql`, `)})`)
           : Promise.resolve([]),
-        db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(10)
+        db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(10),
+        VoiceglotBridge.translateBatch(dbResults.map(a => a.bio || '').filter(Boolean), lang)
       ]);
+      demos = demosRes;
+      dbReviews = reviewsRes;
+      translationMap = transRes;
     } catch (relError) {
       console.warn('⚠️ Drizzle relation fetch failed, falling back to SDK');
-      const [demosRes, reviewsRes] = await Promise.all([
+      const [demosRes, reviewsRes, transRes] = await Promise.all([
         actorIds.length > 0 
           ? supabase.from('actor_demos').select('*').in('actor_id', actorIds)
           : Promise.resolve({ data: [] }),
-        supabase.from('reviews').select('*').order('created_at', { ascending: false }).limit(10)
+        supabase.from('reviews').select('*').order('created_at', { ascending: false }).limit(10),
+        VoiceglotBridge.translateBatch(dbResults.map(a => a.bio || '').filter(Boolean), lang)
       ]);
       
       demos = (demosRes.data || []).map(d => ({ ...d, actorId: d.actor_id }));
@@ -120,15 +126,16 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         textEn: r.text_en,
         createdAt: r.created_at
       }));
+      translationMap = transRes;
     }
 
-    const mappedResults = await Promise.all(dbResults.map(async (actor) => {
+    const mappedResults = dbResults.map((actor) => {
       const photoUrl = actor.dropboxUrl || '';
       const proxiedPhoto = photoUrl.startsWith('http') 
         ? photoUrl 
         : (photoUrl ? `/api/proxy?path=${encodeURIComponent(photoUrl)}` : '');
 
-      const translatedBio = await VoiceglotBridge.t(actor.bio || '', lang);
+      const translatedBio = translationMap[actor.bio || ''] || actor.bio || '';
 
       return {
         id: actor.wpProductId || actor.id,
@@ -160,7 +167,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
             category: d.type || 'demo'
           }))
       };
-    }));
+    });
 
     // Get unique languages for filters
     let uniqueLangs: string[] = [];
@@ -277,7 +284,9 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     }));
   }
   
-  const translatedBio = await VoiceglotBridge.t(actor.bio || '', lang);
+  const [translatedBio] = await Promise.all([
+    VoiceglotBridge.t(actor.bio || '', lang)
+  ]);
 
   return {
     id: actor.wpProductId || actor.id,

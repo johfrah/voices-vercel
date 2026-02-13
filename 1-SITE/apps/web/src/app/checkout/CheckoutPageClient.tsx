@@ -49,24 +49,24 @@ export default function CheckoutPageClient() {
 
   return (
     <div className="min-h-screen bg-va-off-white pb-24 relative z-10">
-      <SectionInstrument className="max-w-7xl mx-auto px-6 pt-20">
+      <SectionInstrument className="max-w-6xl mx-auto px-6 pt-20">
         <ContainerInstrument className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <ContainerInstrument className="space-y-4">
             <Link 
               href="/agency" 
-              className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/60 hover:text-primary transition-colors"
+              className="inline-flex items-center gap-2 text-[10px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors"
             >
               <ArrowLeft size={14} /> 
               <VoiceglotText translationKey="checkout.back_to_agency" defaultText="Verder Casten" />
             </Link>
-            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-va-black">
+            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none text-va-black">
               <VoiceglotText translationKey="checkout.title" defaultText="Checkout" />
             </HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="flex items-center gap-4">
-            <ContainerInstrument className="va-account-badge">
-              <ShieldCheck size={12} />
-              <VoiceglotText translationKey="checkout.secure" defaultText="Veilig" />
+            <ContainerInstrument className="px-4 py-2 bg-primary/5 text-primary rounded-full text-[10px] font-light tracking-widest border border-primary/10 flex items-center gap-2">
+              <ShieldCheck size={12} strokeWidth={1.5} />
+              <VoiceglotText translationKey="checkout.secure" defaultText="Secure Checkout" />
             </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

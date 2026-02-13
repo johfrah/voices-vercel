@@ -207,10 +207,19 @@ export default function GlobalNav() {
         { name: 'Over Johfrah', href: '/over-mij', key: 'nav.about' },
         { name: 'Contact', href: '/contact', key: 'nav.contact' }
       ]);
+    } else if (market.market_code === 'YOUSSEF') {
+      setLinks([
+        { name: 'The Story', href: '/#story', key: 'nav.artist_story' },
+        { name: 'Music', href: '/#music', key: 'nav.artist_music' },
+        { name: 'Support', href: '/#support', key: 'nav.artist_support' },
+        { name: 'Contact', href: '/contact', key: 'nav.contact' }
+      ]);
     }
   }, [market.market_code]);
 
   if (!mounted) return null;
+
+  const isSpecialJourney = market.market_code === 'JOHFRAH' || market.market_code === 'YOUSSEF' || market.market_code === 'ADEMING';
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 px-8 py-6 flex justify-between items-center bg-white/50 backdrop-blur-xl border-b border-black/5 golden-curve md:px-8 md:py-6 px-4 py-4">
@@ -221,8 +230,12 @@ export default function GlobalNav() {
         onMouseEnter={() => playSwell()}
       >
         {market.market_code === 'JOHFRAH' || (typeof window !== 'undefined' && window.location.host.includes('johfrah.be')) ? (
-          <span className="text-xl font-black tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap">
+          <span className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap">
             JOHFRAH LEFEBVRE
+          </span>
+        ) : market.market_code === 'YOUSSEF' ? (
+          <span className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap">
+            YOUSSEF ZAKI
           </span>
         ) : (
           <VoiceglotImage 
@@ -246,7 +259,7 @@ export default function GlobalNav() {
             href={link.href}
             onClick={() => playClick('soft')}
             onMouseEnter={() => playSwell()}
-            className={`text-[10px] font-black tracking-[0.2em] transition-all duration-500 ${
+            className={`text-[10px] font-light tracking-[0.2em] transition-all duration-500 uppercase ${
               pathname.startsWith(link.href) ? 'text-primary' : 'text-va-black/30 hover:text-va-black'
             }`}
           >
@@ -267,16 +280,16 @@ export default function GlobalNav() {
             <div className="p-4 space-y-4">
               <div className="flex items-center gap-3 text-primary mb-2">
                 {isEditMode ? <Unlock size={18} /> : <Lock size={18} />}
-                <TextInstrument className="text-xs font-black uppercase tracking-widest">
+                <TextInstrument className="text-xs font-light tracking-widest uppercase">
                   Edit Mode: {isEditMode ? 'Aan' : 'Uit'}
                 </TextInstrument>
               </div>
-              <TextInstrument className="text-[10px] text-va-black/40 leading-relaxed font-medium">
+              <TextInstrument className="text-[10px] text-va-black/40 leading-relaxed font-light">
                 In Edit Mode kun je teksten en beelden direct op de pagina aanpassen via Voiceglot.
               </TextInstrument>
               <button 
                 onClick={toggleEditMode}
-                className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                className={`w-full py-3 rounded-[10px] text-[10px] font-light tracking-widest uppercase transition-all ${
                   isEditMode ? 'bg-va-black text-white' : 'bg-primary text-white shadow-lg shadow-primary/20'
                 }`}
               >
@@ -290,94 +303,101 @@ export default function GlobalNav() {
         <LanguageSwitcher />
 
         {/* 👤 ACCOUNT ICON */}
-        <HeaderIcon 
-          src="/assets/common/branding/icons/ACCOUNT.svg" 
-          alt="Account"
-          isActive={auth.isAuthenticated}
-        >
-          {auth.isAuthenticated ? (
-            <>
-              <div className="px-4 py-4 border-b border-black/5 mb-2">
-                <TextInstrument className="text-[10px] font-black text-va-black/30 uppercase tracking-widest mb-1">Ingelogd als</TextInstrument>
-                <TextInstrument className="text-sm font-black text-va-black truncate">{auth.user?.email}</TextInstrument>
+        {!isSpecialJourney && (
+          <HeaderIcon 
+            src="/assets/common/branding/icons/ACCOUNT.svg" 
+            alt="Account"
+            isActive={auth.isAuthenticated}
+          >
+            {auth.isAuthenticated ? (
+              <>
+                <div className="px-4 py-4 border-b border-black/5 mb-2">
+                  <TextInstrument className="text-[10px] font-light text-va-black/30 uppercase tracking-widest mb-1">Ingelogd als</TextInstrument>
+                  <TextInstrument className="text-sm font-light text-va-black truncate">{auth.user?.email}</TextInstrument>
+                </div>
+                {isAdmin && (
+                  <DropdownItem 
+                    icon={LayoutDashboard} 
+                    label="Admin Dashboard" 
+                    href="/admin/dashboard" 
+                    variant="primary"
+                    badge="God Mode"
+                  />
+                )}
+                <DropdownItem icon={User} label="Mijn Profiel" href="/account" />
+                <DropdownItem icon={ShoppingBag} label="Bestellingen" href="/account/orders" />
+                <DropdownItem icon={Heart} label="Favorieten" href="/account/favorites" />
+                <DropdownItem icon={Settings} label="Instellingen" href="/account/settings" />
+                <div className="mt-2 pt-2 border-t border-black/5">
+                  <DropdownItem 
+                    icon={LogOut} 
+                    label="Uitloggen" 
+                    onClick={() => auth.logout()} 
+                    variant="danger" 
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="p-4 space-y-4 text-center">
+                <div className="w-12 h-12 bg-va-black/5 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <User size={24} className="text-va-black/20" />
+                </div>
+                <div>
+                  <HeadingInstrument level={4} className="text-sm font-light tracking-tight mb-1 uppercase">Welkom bij Voices</HeadingInstrument>
+                  <TextInstrument className="text-[10px] text-va-black/40 font-light">Log in om je favoriete stemmen op te slaan en bestellingen te beheren.</TextInstrument>
+                </div>
+                <div className="space-y-2">
+                  <Link href="/auth/login" className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[10px] font-light tracking-widest uppercase hover:bg-primary transition-all">
+                    Inloggen
+                  </Link>
+                  <Link href="/auth/register" className="block w-full py-3 border border-black/10 text-va-black rounded-[10px] text-[10px] font-light tracking-widest uppercase hover:bg-va-black/5 transition-all">
+                    Account aanmaken
+                  </Link>
+                </div>
               </div>
-              {isAdmin && (
-                <DropdownItem 
-                  icon={LayoutDashboard} 
-                  label="Admin Dashboard" 
-                  href="/admin/dashboard" 
-                  variant="primary"
-                  badge="God Mode"
-                />
-              )}
-              <DropdownItem icon={User} label="Mijn Profiel" href="/account" />
-              <DropdownItem icon={ShoppingBag} label="Bestellingen" href="/account/orders" />
-              <DropdownItem icon={Heart} label="Favorieten" href="/account/favorites" />
-              <DropdownItem icon={Settings} label="Instellingen" href="/account/settings" />
-              <div className="mt-2 pt-2 border-t border-black/5">
-                <DropdownItem 
-                  icon={LogOut} 
-                  label="Uitloggen" 
-                  onClick={() => auth.logout()} 
-                  variant="danger" 
-                />
-              </div>
-            </>
-          ) : (
-            <div className="p-4 space-y-4 text-center">
-              <div className="w-12 h-12 bg-va-black/5 rounded-full flex items-center justify-center mx-auto mb-2">
-                <User size={24} className="text-va-black/20" />
-              </div>
-              <div>
-                <HeadingInstrument level={4} className="text-sm font-black uppercase tracking-tight mb-1">Welkom bij Voices</HeadingInstrument>
-                <TextInstrument className="text-[10px] text-va-black/40 font-medium">Log in om je favoriete stemmen op te slaan en bestellingen te beheren.</TextInstrument>
-              </div>
-              <div className="space-y-2">
-                <Link href="/auth/login" className="block w-full py-3 bg-va-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all">
-                  Inloggen
-                </Link>
-                <Link href="/auth/register" className="block w-full py-3 border border-black/10 text-va-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-va-black/5 transition-all">
-                  Account aanmaken
-                </Link>
-              </div>
-            </div>
-          )}
-        </HeaderIcon>
+            )}
+          </HeaderIcon>
+        )}
 
         {/* ❤️ FAVORITES ICON */}
-        <HeaderIcon 
-          src="/assets/common/branding/icons/FAVORITES.svg" 
-          alt="Favorieten"
-          href="/account/favorites"
-        >
-          <div className="p-4 text-center">
-            <Heart size={24} className="text-primary/20 mx-auto mb-3" />
-            <TextInstrument className="text-xs font-black uppercase tracking-widest mb-2">Jouw Favorieten</TextInstrument>
-            <TextInstrument className="text-[10px] text-va-black/40 font-medium mb-4">Je hebt nog geen stemmen opgeslagen.</TextInstrument>
-            <Link href="/agency" className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">
-              Ontdek stemmen
-            </Link>
-          </div>
-        </HeaderIcon>
+        {!isSpecialJourney && (
+          <HeaderIcon 
+            src="/assets/common/branding/icons/FAVORITES.svg" 
+            alt="Favorieten"
+            href="/account/favorites"
+          >
+            <div className="p-4 text-center">
+              <Heart size={24} className="text-primary/20 mx-auto mb-3" />
+              <TextInstrument className="text-xs font-light tracking-widest uppercase mb-2">Jouw Favorieten</TextInstrument>
+              <TextInstrument className="text-[10px] text-va-black/40 font-light mb-4">Je hebt nog geen stemmen opgeslagen.</TextInstrument>
+              <Link href="/agency" className="text-[9px] font-light text-primary tracking-widest uppercase hover:underline">
+                Ontdek stemmen
+              </Link>
+            </div>
+          </HeaderIcon>
+        )}
 
         {/* 🛍️ CART ICON */}
-        <HeaderIcon 
-          src="/assets/common/branding/icons/CART.svg" 
-          alt="Winkelmandje" 
-          badge={0}
-          href="/checkout"
-        >
-          <div className="p-4 text-center">
-            <ShoppingBag size={24} className="text-va-black/10 mx-auto mb-3" />
-            <TextInstrument className="text-xs font-black uppercase tracking-widest mb-2">Winkelmandje</TextInstrument>
-            <TextInstrument className="text-[10px] text-va-black/40 font-medium mb-4">Je mandje is nog leeg.</TextInstrument>
-            <Link href="/agency" className="block w-full py-3 bg-va-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all">
-              Start een project
-            </Link>
-          </div>
-        </HeaderIcon>
+        {!isSpecialJourney && (
+          <HeaderIcon 
+            src="/assets/common/branding/icons/CART.svg" 
+            alt="Winkelmandje" 
+            badge={0}
+            href="/checkout"
+          >
+            <div className="p-4 text-center">
+              <ShoppingBag size={24} className="text-va-black/10 mx-auto mb-3" />
+              <TextInstrument className="text-xs font-light tracking-widest uppercase mb-2">Winkelmandje</TextInstrument>
+              <TextInstrument className="text-[10px] text-va-black/40 font-light mb-4">Je mandje is nog leeg.</TextInstrument>
+              <Link href="/agency" className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[10px] font-light tracking-widest uppercase hover:bg-primary transition-all">
+                Start een project
+              </Link>
+            </div>
+          </HeaderIcon>
+        )}
       </div>
     </nav>
+  );
   );
 }
 

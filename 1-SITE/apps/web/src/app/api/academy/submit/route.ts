@@ -54,11 +54,20 @@ export async function POST(request: Request) {
     });
 
     // 3. Sync to Dropbox for Coach Review (God Mode Activation)
-    const [user] = await db.select().from(users).where(eq(users.id, parseInt(userId))).limit(1);
+    let user: any = null;
+    try {
+      const [dbUser] = await db.select().from(users).where(eq(users.id, parseInt(userId))).limit(1);
+      user = dbUser;
+    } catch (dbError) {
+      console.warn('⚠️ Academy Submit Drizzle user fetch failed, falling back to SDK');
+      const { data } = await supabase.from('users').select('*').eq('id', parseInt(userId)).single();
+      user = data;
+    }
+
     if (user) {
       await DropboxExportBridge.pushToControlFolder(uploadData.path, {
         orderId: `ACADEMY-${result.id}`,
-        customerName: `${user.firstName || 'Student'} ${user.lastName || ''}`.trim(),
+        customerName: `${user.firstName || user.first_name || 'Student'} ${user.lastName || user.last_name || ''}`.trim(),
         projectName: `Les ${lessonId} Inzending`
       });
     }

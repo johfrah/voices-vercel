@@ -102,11 +102,39 @@ export default function GlobalFooter() {
     }
   ];
 
+  const youssefSections = [
+    {
+      title: t('footer.artist', 'Artist'),
+      links: [
+        { name: 'The Story', href: '/#story' },
+        { name: 'Music', href: '/#music' },
+        { name: 'Support', href: '/#support' },
+      ]
+    },
+    {
+      title: t('footer.support', 'Support'),
+      links: [
+        { name: market.email, href: `mailto:${market.email}` },
+        { name: t('footer.contact', 'Contact'), href: '/contact' },
+      ]
+    },
+    {
+      title: t('footer.label', 'Label'),
+      links: [
+        { name: 'Voices Artists', href: 'https://voices.be/artist' },
+        { name: 'Back to Voices', href: 'https://voices.be' },
+      ]
+    }
+  ];
+
   let footerSections = standardSections;
   if (market.market_code === 'ADEMING') footerSections = ademingSections;
   if (market.market_code === 'JOHFRAH') footerSections = portfolioSections;
+  if (market.market_code === 'YOUSSEF') footerSections = youssefSections;
 
   const isPortfolio = market.market_code === 'JOHFRAH';
+  const isArtist = market.market_code === 'YOUSSEF';
+  const isSpecial = isPortfolio || isArtist || market.market_code === 'ADEMING';
 
   return (
     <ContainerInstrument as="footer" className="bg-va-black text-white pt-24 pb-12 overflow-hidden relative">
@@ -115,11 +143,11 @@ export default function GlobalFooter() {
       
       <ContainerInstrument className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Dynamic Journey Elements */}
-        {!isPortfolio && (
+        {!isSpecial && (
           <ContainerInstrument className="mb-24">
             <JourneyCta journey={state.current_journey} />
             <ContainerInstrument className="mt-12">
-              <HeadingInstrument level={4} className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-8">
+              <HeadingInstrument level={4} className="text-[10px] font-light tracking-[0.2em] text-white/20 mb-8 uppercase">
                 <VoiceglotText translationKey="footer.journey_faq" defaultText="Veelgestelde vragen voor deze journey" />
               </HeadingInstrument>
               <JourneyFaq journey={state.current_journey} limit={4} />
@@ -131,17 +159,23 @@ export default function GlobalFooter() {
           {/* Brand Column */}
           <ContainerInstrument className="lg:col-span-2 space-y-8">
             <Link href="/" onClick={() => playClick('light')} className="flex items-center gap-3 group">
-              <Image 
-                src={market.logo_url} 
-                alt={market.name} 
-                width={142}
-                height={56}
-                className="h-14 w-auto brightness-0 invert transition-transform duration-500 group-hover:scale-105"
-              />
+              {isArtist ? (
+                <span className="text-2xl font-light tracking-tighter text-white">YOUSSEF ZAKI</span>
+              ) : (
+                <Image 
+                  src={market.logo_url} 
+                  alt={market.name} 
+                  width={142}
+                  height={56}
+                  className="h-14 w-auto brightness-0 invert transition-transform duration-500 group-hover:scale-105"
+                />
+              )}
             </Link>
-            <TextInstrument className="text-white/40 text-lg font-medium leading-relaxed max-w-sm">
+            <TextInstrument className="text-white/40 text-lg font-light leading-relaxed max-w-sm">
               {isPortfolio 
                 ? <VoiceglotText translationKey="footer.portfolio.tagline" defaultText="De stem achter het verhaal. Warme, natuurlijke voice-over & host." />
+                : isArtist
+                ? <VoiceglotText translationKey="footer.artist.tagline" defaultText="Independent singer releasing music on his own terms. Supported by Voices Artists." />
                 : <VoiceglotText translationKey="footer.tagline" defaultText="Een warm en vertrouwd geluid. De perfecte stem voor elk project." />
               }
             </TextInstrument>
@@ -152,7 +186,7 @@ export default function GlobalFooter() {
                   onClick={() => playClick('light')}
                   className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
                 >
-                  <Icon size={18} />
+                  <Icon size={18} strokeWidth={1.5} />
                 </ButtonInstrument>
               ))}
             </ContainerInstrument>
@@ -161,7 +195,7 @@ export default function GlobalFooter() {
           {/* Links Columns */}
           {footerSections.map((section, i) => (
             <ContainerInstrument key={i} className="space-y-8">
-              <HeadingInstrument level={4} className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+              <HeadingInstrument level={4} className="text-[10px] font-light tracking-[0.2em] text-white/20 uppercase">
                 <VoiceglotText translationKey={`footer.section.${i}.title`} defaultText={section.title} />
               </HeadingInstrument>
               <ContainerInstrument as="ul" className="space-y-4">
@@ -170,7 +204,7 @@ export default function GlobalFooter() {
                     <Link 
                       href={link.href} 
                       onClick={() => playClick('light')}
-                      className="text-sm font-bold text-white/60 hover:text-primary transition-colors duration-300"
+                      className="text-sm font-light text-white/60 hover:text-primary transition-colors duration-300"
                     >
                       <VoiceglotText translationKey={`footer.link.${i}.${j}`} defaultText={link.name} />
                     </Link>
@@ -183,8 +217,8 @@ export default function GlobalFooter() {
 
         {/* Bottom Bar */}
         <ContainerInstrument className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-          <TextInstrument className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/20">
-            © 2026 {isPortfolio ? 'Johfrah Lefebvre' : 'Voices'}. {isPortfolio && (
+          <TextInstrument className="flex items-center gap-2 text-[10px] font-light tracking-widest text-white/20 uppercase">
+            © 2026 {isPortfolio ? 'Johfrah Lefebvre' : isArtist ? 'Youssef Zaki' : 'Voices'}. {isSpecial && (
               <span>Powered by <a href="https://voices.be" className="hover:text-white transition-colors underline decoration-white/10 underline-offset-4">Voices.be</a></span>
             )}
           </TextInstrument>
@@ -192,11 +226,12 @@ export default function GlobalFooter() {
           <ContainerInstrument className="flex items-center gap-8">
             <ContainerInstrument className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/5">
               <TextInstrument as="span" className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <TextInstrument as="span" className="text-[9px] font-black uppercase tracking-widest text-white/40">
+              <TextInstrument as="span" className="text-[9px] font-light tracking-widest text-white/40 uppercase">
                 <VoiceglotText translationKey="footer.status.online" defaultText="Wij staan voor u klaar" />
               </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
+        </ContainerInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
     </ContainerInstrument>

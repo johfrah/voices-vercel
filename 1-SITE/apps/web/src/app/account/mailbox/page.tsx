@@ -416,14 +416,14 @@ export default function MailboxPage() {
 
             <ContainerInstrument className="flex items-center gap-4">
               {isSyncing && (
-                <div className="flex items-center gap-3 bg-va-black/5 px-4 py-2 rounded-2xl border border-va-black/10">
+                <div className="flex items-center gap-3 bg-va-black/5 px-4 py-2 rounded-[20px] border border-va-black/10">
                   <div className="flex flex-col items-end">
-                    <TextInstrument as="span" className="text-[8px] font-black uppercase tracking-tighter text-va-black/40">
+                    <TextInstrument as="span" className="text-[8px] font-light tracking-widest text-va-black/40">
                       <VoiceglotText translationKey="mailbox.sync.status" defaultText="AI Brain Syncing" />
                     </TextInstrument>
-                    <span className="text-[10px] font-mono font-bold">{syncProgress.current.toLocaleString()} / {syncProgress.total.toLocaleString()}</span>
+                    <span className="text-[10px] font-mono font-light">{syncProgress.current.toLocaleString()} / {syncProgress.total.toLocaleString()}</span>
                   </div>
-                  <div className="w-20 h-1.5 bg-va-black/10 rounded-full overflow-hidden">
+                  <div className="w-20 h-1 bg-va-black/10 rounded-full overflow-hidden">
                     <motion.div 
                       className="h-full bg-va-black"
                       initial={{ width: 0 }}
@@ -435,23 +435,23 @@ export default function MailboxPage() {
               <ButtonInstrument 
                 onClick={startFullSync}
                 disabled={isSyncing}
-                className="bg-va-black text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-50"
+                className="bg-va-black text-white px-6 py-3 rounded-[10px] text-[10px] font-light tracking-widest flex items-center gap-2 transition-all disabled:opacity-50"
               >
                 <Brain size={14} className={isSyncing ? 'animate-pulse' : ''} />
                 <VoiceglotText translationKey="mailbox.ai_sync" defaultText={isSyncing ? "Syncing..." : "Start AI Brain Sync"} />
               </ButtonInstrument>
-              <ButtonInstrument onClick={handleCompose} className="bg-white text-va-black border border-gray-100 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all">
+              <ButtonInstrument onClick={handleCompose} className="bg-white text-va-black border border-black/5 px-6 py-3 rounded-[10px] text-[10px] font-light tracking-widest flex items-center gap-2 transition-all">
                 <Plus size={14} />
                 <VoiceglotText translationKey="mailbox.compose" defaultText="Nieuw bericht" />
               </ButtonInstrument>
               <ButtonInstrument 
                 onClick={() => setSortByValue(!sortByValue)}
-                className={`p-3 rounded-2xl border transition-all ${sortByValue ? 'bg-va-black text-white border-va-black' : 'bg-gray-50 border-gray-100 text-gray-400'}`}
+                className={`p-3 rounded-[10px] border transition-all ${sortByValue ? 'bg-va-black text-white border-va-black' : 'bg-va-off-white border-black/5 text-va-black/40'}`}
                 title="Sorteer op commerciële waarde"
               >
                 <TrendingUp size={16} />
               </ButtonInstrument>
-              <ButtonInstrument onClick={() => refreshInbox()} disabled={isRefreshing} className={`p-3 rounded-2xl bg-gray-50 border border-gray-100 transition-all ${isRefreshing ? 'opacity-50 cursor-not-allowed' : ''}`} title="Synchroniseren">
+              <ButtonInstrument onClick={() => refreshInbox()} disabled={isRefreshing} className={`p-3 rounded-[10px] bg-va-off-white border border-black/5 transition-all ${isRefreshing ? 'opacity-50 cursor-not-allowed' : ''}`} title="Synchroniseren">
                 <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
               </ButtonInstrument>
             </ContainerInstrument>
@@ -465,7 +465,7 @@ export default function MailboxPage() {
                     <select 
                       value={activeAccount}
                       onChange={(e) => refreshInbox(true, true, 'INBOX', e.target.value)}
-                      className="w-full bg-va-black text-white text-[10px] font-light tracking-widest py-3 px-4 rounded-2xl shadow-lg focus:ring-2 focus:ring-primary/20 outline-none appearance-none cursor-pointer border-none"
+                      className="w-full bg-va-black text-white text-[10px] font-light tracking-widest py-3 px-4 rounded-[10px] shadow-lg focus:ring-2 focus:ring-primary/20 outline-none appearance-none cursor-pointer border-none"
                     >
                       <option value="all">📬 {t('mailbox.accounts.all', 'Alle Accounts')}</option>
                       <option value="johfrah@voices.be">Voices.be</option>
@@ -475,8 +475,8 @@ export default function MailboxPage() {
                 </ContainerInstrument>
 
                 <ContainerInstrument className="relative mb-4">
-                  <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 text-gray-400" />
-                  <InputInstrument type="text" placeholder="Zoek..." className="w-full bg-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all py-2.5 text-sm bg-gray-50/50 border-none rounded-2xl focus:ring-2 focus:ring-va-black/5" />
+                  <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" />
+                  <InputInstrument type="text" placeholder="Zoek..." className="w-full bg-white border border-black/5 rounded-[10px] py-2.5 pl-12 pr-4 text-xs font-light focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
                 </ContainerInstrument>
                 
                 <ContainerInstrument className="space-y-4">
@@ -612,8 +612,8 @@ export default function MailboxPage() {
                       </ContainerInstrument>
                     ) : insights ? (
                         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <ContainerInstrument className="bg-white p-5 rounded-[24px] border border-gray-100 shadow-sm">
-                            <HeadingInstrument level={3} className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
+                      <ContainerInstrument className="bg-white p-5 rounded-[20px] border border-black/[0.03] shadow-aura">
+                            <HeadingInstrument level={3} className="text-[9px] font-light tracking-widest text-va-black/40 mb-4 flex items-center gap-2">
                               <TrendingUp size={12} className="text-va-black" />
                               <VoiceglotText translationKey="mailbox.insights.trends" defaultText="Markt Trends" />
                             </HeadingInstrument>
@@ -622,20 +622,20 @@ export default function MailboxPage() {
                                 <ContainerInstrument 
                                   key={i} 
                                   onClick={() => setSelectedInsight({ type: 'Trend', ...trend })}
-                                  className="p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-all border border-transparent hover:border-va-black/10"
+                                  className="p-3 bg-va-off-white rounded-[10px] cursor-pointer hover:bg-white hover:shadow-aura transition-all border border-transparent hover:border-va-black/5"
                                 >
                                   <div className="flex justify-between items-center mb-0.5">
-                                    <TextInstrument className="text-[13px] font-bold">{trend.label}</TextInstrument>
-                                    <TextInstrument className={`text-[13px] font-black ${trend.status === 'up' ? 'text-green-600' : 'text-red-500'}`}>{trend.change}</TextInstrument>
+                                    <TextInstrument className="text-[13px] font-light">{trend.label}</TextInstrument>
+                                    <TextInstrument className={`text-[13px] font-light ${trend.status === 'up' ? 'text-green-600' : 'text-red-500'}`}>{trend.change}</TextInstrument>
                                   </div>
                                   {trend.explanation && (
-                                    <TextInstrument className="text-[10px] text-gray-400 leading-tight">{trend.explanation}</TextInstrument>
+                                    <TextInstrument className="text-[10px] font-light text-va-black/40 leading-tight">{trend.explanation}</TextInstrument>
                                   )}
                                 </ContainerInstrument>
                               ))}
                             </ContainerInstrument>
                           </ContainerInstrument>
-                          <ContainerInstrument className="bg-va-black text-white p-5 rounded-[24px] shadow-xl">
+                          <ContainerInstrument className="bg-va-black text-white p-5 rounded-[20px] shadow-aura-lg">
                             <HeadingInstrument level={3} className="text-[9px] font-light tracking-widest text-va-white/40 mb-4 flex items-center gap-2">
                               <Brain size={12} className="text-va-white" />
                               <VoiceglotText translationKey="mailbox.insights.sentiment" defaultText="Sentiment" />
@@ -645,8 +645,8 @@ export default function MailboxPage() {
                               <TextInstrument className="text-[11px] font-light tracking-widest text-va-white/60">{insights.sentiment.label}</TextInstrument>
                             </ContainerInstrument>
                             {insights.comparisonSummary && (
-                              <ContainerInstrument className="mt-1 mb-3 p-2.5 bg-va-white/5 rounded-xl border border-va-white/10">
-                                <TextInstrument className="text-[10px] font-medium text-va-white/80 leading-relaxed italic">
+                              <ContainerInstrument className="mt-1 mb-3 p-2.5 bg-va-white/5 rounded-[10px] border border-va-white/10">
+                                <TextInstrument className="text-[10px] font-light text-va-white/80 leading-relaxed italic">
                                   &quot;{insights.comparisonSummary}&quot;
                                 </TextInstrument>
                               </ContainerInstrument>
@@ -654,7 +654,7 @@ export default function MailboxPage() {
                             <ContainerInstrument className="mt-4 space-y-2">
                               <ContainerInstrument 
                                 onClick={() => setSelectedInsight({ type: 'Sentiment Positief', ...insights.sentiment.topPositive })}
-                                className="p-2.5 bg-va-white/10 rounded-xl border border-va-white/5 cursor-pointer hover:bg-va-white/20 transition-all"
+                                className="p-2.5 bg-va-white/10 rounded-[10px] border border-va-white/5 cursor-pointer hover:bg-va-white/20 transition-all"
                               >
                                 <TextInstrument className="text-[8px] font-light text-green-400 mb-0.5">
                                   <VoiceglotText translationKey="mailbox.insights.positive" defaultText="Top Positief" />
@@ -663,7 +663,7 @@ export default function MailboxPage() {
                               </ContainerInstrument>
                               <ContainerInstrument 
                                 onClick={() => setSelectedInsight({ type: 'Sentiment Negatief', ...insights.sentiment.topNegative })}
-                                className="p-2.5 bg-va-white/10 rounded-xl border border-va-white/5 cursor-pointer hover:bg-va-white/20 transition-all"
+                                className="p-2.5 bg-va-white/10 rounded-[10px] border border-va-white/5 cursor-pointer hover:bg-va-white/20 transition-all"
                               >
                                 <TextInstrument className="text-[8px] font-light text-red-400 mb-0.5">
                                   <VoiceglotText translationKey="mailbox.insights.negative" defaultText="Top Negatief" />
@@ -674,17 +674,17 @@ export default function MailboxPage() {
                           </ContainerInstrument>
                           <ContainerInstrument className="md:col-span-2 grid grid-cols-1 md:grid-cols-4 gap-3">
                             {Object.entries(insights.swot).map(([key, items]: [string, any]) => (
-                              <ContainerInstrument key={key} className="bg-white p-4 rounded-[20px] border border-gray-100">
-                                <HeadingInstrument level={4} className="text-[8px] font-light tracking-widest text-gray-400 mb-2">{key}</HeadingInstrument>
+                              <ContainerInstrument key={key} className="bg-white p-4 rounded-[20px] border border-black/[0.03] shadow-aura">
+                                <HeadingInstrument level={4} className="text-[8px] font-light tracking-widest text-va-black/40 mb-2">{key}</HeadingInstrument>
                                 <ContainerInstrument as="ul" className="space-y-1.5">
                                   {items.map((item: any, i: number) => (
                                     <ContainerInstrument 
                                       as="li" 
                                       key={i} 
                                       onClick={() => setSelectedInsight({ type: key, ...item })}
-                                      className="text-[11px] font-light leading-tight flex gap-2 cursor-pointer hover:text-va-black transition-colors"
+                                      className="text-[11px] font-light leading-tight flex gap-2 cursor-pointer hover:text-primary transition-colors"
                                     >
-                                      <TextInstrument as="span" className="text-va-black">•</TextInstrument>{item.text || item}
+                                      <TextInstrument as="span" className="text-va-black/20">•</TextInstrument>{item.text || item}
                                     </ContainerInstrument>
                                   ))}
                                 </ContainerInstrument>
@@ -734,46 +734,46 @@ export default function MailboxPage() {
                       <ContainerInstrument className="grid grid-cols-1 gap-4">
                         {isFaqLoading ? (
                           [1, 2, 3].map((i) => (
-                            <ContainerInstrument key={i} className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm animate-pulse">
-                              <ContainerInstrument className="h-12 bg-gray-50 rounded-2xl w-3/4 mb-4" />
-                              <ContainerInstrument className="h-20 bg-gray-50 rounded-2xl w-full" />
+                            <ContainerInstrument key={i} className="bg-white p-6 rounded-[20px] border border-black/[0.03] shadow-aura animate-pulse">
+                              <ContainerInstrument className="h-12 bg-va-off-white rounded-[10px] w-3/4 mb-4" />
+                              <ContainerInstrument className="h-20 bg-va-off-white rounded-[10px] w-full" />
                             </ContainerInstrument>
                           ))
                         ) : faqProposals.length > 0 ? (
                           faqProposals.map((proposal, i) => (
-                            <ContainerInstrument key={i} className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+                            <ContainerInstrument key={i} className="bg-white p-6 rounded-[20px] border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all group">
                               <ContainerInstrument className="flex justify-between items-start mb-4">
                                 <ContainerInstrument className="flex items-center gap-3">
-                                  <ContainerInstrument className="w-10 h-10 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
-                                    <MessageSquareQuote size={20} />
+                                  <ContainerInstrument className="w-10 h-10 bg-primary/5 text-primary rounded-[10px] flex items-center justify-center">
+                                    <MessageSquareQuote size={20} strokeWidth={1.5} />
                                   </ContainerInstrument>
                                   <ContainerInstrument>
-                                    <TextInstrument className="text-[10px] font-light tracking-widest text-gray-400">
+                                    <TextInstrument className="text-[10px] font-light tracking-widest text-va-black/40">
                                       <VoiceglotText translationKey="mailbox.faq.pattern" defaultText="Patroon" /> ({proposal.frequency}x)
                                     </TextInstrument>
-                                    <HeadingInstrument level={3} className="font-light text-lg text-gray-900">{proposal.question}</HeadingInstrument>
+                                    <HeadingInstrument level={3} className="font-light text-lg text-va-black">{proposal.question}</HeadingInstrument>
                                   </ContainerInstrument>
                                 </ContainerInstrument>
                                 <ContainerInstrument className="flex gap-2">
-                                  <ButtonInstrument className="px-4 py-2 bg-va-black text-white rounded-xl text-[10px] font-light tracking-widest transition-all">
+                                  <ButtonInstrument className="px-4 py-2 bg-va-black text-white rounded-[10px] text-[10px] font-light tracking-widest transition-all">
                                     <VoiceglotText translationKey="mailbox.faq.add" defaultText="Toevoegen" />
                                   </ButtonInstrument>
-                                  <ButtonInstrument className="px-4 py-2 bg-gray-50 text-gray-400 rounded-xl text-[10px] font-light tracking-widest transition-all">
+                                  <ButtonInstrument className="px-4 py-2 bg-va-off-white text-va-black/40 rounded-[10px] text-[10px] font-light tracking-widest transition-all">
                                     <VoiceglotText translationKey="mailbox.faq.ignore" defaultText="Negeren" />
                                   </ButtonInstrument>
                                 </ContainerInstrument>
                               </ContainerInstrument>
-                              <ContainerInstrument className="p-4 bg-gray-50 rounded-2xl border border-gray-100 italic text-sm text-gray-600">&quot;{proposal.suggestedAnswer}&quot;</ContainerInstrument>
+                              <ContainerInstrument className="p-4 bg-va-off-white rounded-[10px] border border-black/[0.02] italic text-sm text-va-black/60 font-light">&quot;{proposal.suggestedAnswer}&quot;</ContainerInstrument>
                               <ContainerInstrument className="mt-4 flex items-center gap-4">
-                                <ContainerInstrument className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400">
-                                  <Brain size={12} />Confidence: {(proposal.confidence * 100).toFixed(0)}%
+                                <ContainerInstrument className="flex items-center gap-1.5 text-[10px] font-light tracking-widest text-va-black/20">
+                                  <Brain size={12} strokeWidth={1.5} />Confidence: {(proposal.confidence * 100).toFixed(0)}%
                                 </ContainerInstrument>
                               </ContainerInstrument>
                             </ContainerInstrument>
                           ))
                         ) : (
-                          <ContainerInstrument className="text-center py-20 bg-white rounded-[32px] border border-dashed border-gray-200">
-                            <TextInstrument className="text-gray-400 font-bold">
+                          <ContainerInstrument className="text-center py-20 bg-va-off-white rounded-[20px] border border-dashed border-black/10">
+                            <TextInstrument className="text-va-black/20 font-light tracking-widest">
                               <VoiceglotText translationKey="mailbox.faq.empty" defaultText="Geen nieuwe FAQ voorstellen gevonden." />
                             </TextInstrument>
                           </ContainerInstrument>
@@ -806,7 +806,7 @@ export default function MailboxPage() {
                       {/* 👤 DNA Pane (Right) */}
                       <ContainerInstrument className="w-80 flex-shrink-0 border-l border-gray-100 bg-white overflow-y-auto h-full hidden xl:block custom-scrollbar">
                         <div className="p-6">
-                          <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                              <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-va-black/40 mb-6 flex items-center gap-2">
                             <ShieldCheck size={12} className="text-va-black" />
                             <VoiceglotText translationKey="mailbox.customer_dna" defaultText="Customer DNA" />
                           </HeadingInstrument>
@@ -814,7 +814,7 @@ export default function MailboxPage() {
                             <ContainerInstrument className="space-y-8">
                               <ContainerInstrument className="flex items-center gap-4">
                                 {customerDna.signatureAssets?.[0] ? (
-                                  <ContainerInstrument className="w-12 h-12 rounded-2xl overflow-hidden border border-gray-100">
+                                  <ContainerInstrument className="w-12 h-12 rounded-[10px] overflow-hidden border border-black/5">
                                     <Image 
                                       src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(customerDna.signatureAssets[0].filePath)}`} 
                                       alt="Avatar" 
@@ -824,27 +824,27 @@ export default function MailboxPage() {
                                     />
                                   </ContainerInstrument>
                                 ) : (
-                                  <ContainerInstrument className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-va-black font-bold">{customerDna.user.firstName[0]}{customerDna.user.lastName?.[0]}</ContainerInstrument>
+                                  <ContainerInstrument className="w-12 h-12 bg-va-off-white rounded-[10px] flex items-center justify-center text-va-black font-light border border-black/5">{customerDna.user.firstName[0]}{customerDna.user.lastName?.[0]}</ContainerInstrument>
                                 )}
                                 <ContainerInstrument>
                                   <div className="flex items-center gap-2">
-                                    <HeadingInstrument level={3} className="font-bold text-sm">{customerDna.user.firstName} {customerDna.user.lastName}</HeadingInstrument>
+                                    <HeadingInstrument level={3} className="font-light text-sm">{customerDna.user.firstName} {customerDna.user.lastName}</HeadingInstrument>
                                     {customerDna.actor && (
-                                      <span className="text-[7px] px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded font-black uppercase tracking-widest border border-blue-100">
+                                      <span className="text-[7px] px-1.5 py-0.5 bg-primary/5 text-primary rounded-[4px] font-light tracking-widest border border-primary/10">
                                         Voice Actor
                                       </span>
                                     )}
                                   </div>
-                                  <TextInstrument className="text-[10px] text-gray-500">{customerDna.user.email}</TextInstrument>
+                                  <TextInstrument className="text-[10px] font-light text-va-black/40">{customerDna.user.email}</TextInstrument>
                                 </ContainerInstrument>
                               </ContainerInstrument>
                               {timeTravelContext && (
-                                <ContainerInstrument className={`p-4 rounded-2xl border ${timeTravelContext.sentiment === 'Attention Required' ? 'bg-red-50 border-red-100' : 'bg-va-black/5 border-va-black/5'}`}>
+                                <ContainerInstrument className={`p-4 rounded-[15px] border ${timeTravelContext.sentiment === 'Attention Required' ? 'bg-red-50 border-red-100' : 'bg-va-off-white border-black/[0.03]'}`}>
                                   <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-va-black/40 mb-2 flex items-center gap-2">
-                                    <History size={12} />
+                                    <History size={12} strokeWidth={1.5} />
                                     Vibe Check: {timeTravelContext.vibe}
                                   </HeadingInstrument>
-                                  <TextInstrument className="text-[11px] font-light text-va-black">{timeTravelContext.summary}</TextInstrument>
+                                  <TextInstrument className="text-[11px] font-light text-va-black leading-relaxed">{timeTravelContext.summary}</TextInstrument>
                                   <ContainerInstrument className="mt-2 flex items-center gap-2">
                                     <span className={`px-2 py-0.5 rounded-full text-[8px] font-light tracking-widest ${
                                       timeTravelContext.sentiment === 'Positive' ? 'bg-green-100 text-green-700' : 
@@ -858,17 +858,17 @@ export default function MailboxPage() {
                               )}
                               
                               {customerDna.actorAssignments && customerDna.actorAssignments.length > 0 && (
-                                <ContainerInstrument className="bg-blue-50/50 border border-blue-100/50 p-4 rounded-2xl">
-                                  <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-blue-700 mb-4 flex items-center gap-2">
-                                    <Mic size={12} />
+                                <ContainerInstrument className="bg-primary/5 border border-primary/10 p-4 rounded-[15px]">
+                                  <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-primary mb-4 flex items-center gap-2">
+                                    <Mic size={12} strokeWidth={1.5} />
                                     Assignments ({customerDna.actorAssignments.filter((a: any) => a.status === 'approved').length} voltooid)
                                   </HeadingInstrument>
                                   <ContainerInstrument className="space-y-3">
                                     {customerDna.actorAssignments.slice(0, 5).map((asg: any) => (
-                                      <ContainerInstrument key={asg.id} className="bg-white p-2.5 rounded-xl border border-blue-100 shadow-sm">
+                                      <ContainerInstrument key={asg.id} className="bg-white p-2.5 rounded-[10px] border border-primary/5 shadow-sm">
                                         <div className="flex justify-between items-start mb-1">
-                                          <TextInstrument className="text-[10px] font-light text-gray-900 truncate max-w-[120px]">{asg.name}</TextInstrument>
-                                          <span className={`text-[7px] font-light px-1.5 py-0.5 rounded ${
+                                          <TextInstrument className="text-[10px] font-light text-va-black truncate max-w-[120px]">{asg.name}</TextInstrument>
+                                          <span className={`text-[7px] font-light px-1.5 py-0.5 rounded-[4px] ${
                                             asg.status === 'approved' ? 'bg-green-100 text-green-700' : 
                                             asg.status === 'waiting' ? 'bg-orange-100 text-orange-700 animate-pulse' : 
                                             'bg-gray-100 text-gray-500'
@@ -877,13 +877,13 @@ export default function MailboxPage() {
                                           </span>
                                         </div>
                                         <div className="flex justify-between items-center">
-                                          <TextInstrument className="text-[8px] text-gray-400 font-light">Project #{asg.orderId}</TextInstrument>
-                                          <TextInstrument className="text-[9px] font-light text-blue-600">€{asg.total}</TextInstrument>
+                                          <TextInstrument className="text-[8px] text-va-black/20 font-light">Project #{asg.orderId}</TextInstrument>
+                                          <TextInstrument className="text-[9px] font-light text-primary">€{asg.total}</TextInstrument>
                                         </div>
                                       </ContainerInstrument>
                                     ))}
                                     {customerDna.actorAssignments.length > 5 && (
-                                      <ButtonInstrument className="w-full py-2 text-[8px] font-light tracking-widest text-blue-400 hover:text-blue-600 transition-colors">
+                                      <ButtonInstrument className="w-full py-2 text-[8px] font-light tracking-widest text-primary/40 hover:text-primary transition-colors">
                                         Bekijk alle {customerDna.actorAssignments.length} projecten
                                       </ButtonInstrument>
                                     )}
@@ -892,36 +892,36 @@ export default function MailboxPage() {
                               )}
 
                                 <ContainerInstrument className="grid grid-cols-2 gap-4">
-                                  <ContainerInstrument className="bg-gray-50 p-3 rounded-2xl">
-                                    <TextInstrument className="text-[8px] text-gray-400 font-light mb-1"><VoiceglotText translationKey="mailbox.dna.orders" defaultText="Orders" /></TextInstrument>
+                                  <ContainerInstrument className="bg-va-off-white p-3 rounded-[15px] border border-black/[0.03]">
+                                    <TextInstrument className="text-[8px] text-va-black/40 font-light tracking-widest mb-1"><VoiceglotText translationKey="mailbox.dna.orders" defaultText="Orders" /></TextInstrument>
                                     <TextInstrument className="font-light text-lg">{customerDna.orders.length}</TextInstrument>
                                   </ContainerInstrument>
-                                  <ContainerInstrument className="bg-gray-50 p-3 rounded-2xl relative overflow-hidden">
+                                  <ContainerInstrument className="bg-va-off-white p-3 rounded-[15px] border border-black/[0.03] relative overflow-hidden">
                                     {customerDna.actor && (
-                                      <div className="absolute top-0 right-0 bg-va-black text-white px-1.5 py-0.5 rounded-bl-lg text-[7px] font-light tracking-tighter z-10">
+                                      <div className="absolute top-0 right-0 bg-va-black text-white px-1.5 py-0.5 rounded-bl-[8px] text-[7px] font-light tracking-widest z-10">
                                         Actor
                                       </div>
                                     )}
-                                    <TextInstrument className="text-[8px] text-gray-400 font-light mb-1"><VoiceglotText translationKey="mailbox.dna.vault" defaultText="Vault Files" /></TextInstrument>
+                                    <TextInstrument className="text-[8px] text-va-black/40 font-light tracking-widest mb-1"><VoiceglotText translationKey="mailbox.dna.vault" defaultText="Vault Files" /></TextInstrument>
                                     <TextInstrument className="font-light text-lg">{customerDna.vault.length}</TextInstrument>
                                   </ContainerInstrument>
                                 </ContainerInstrument>
                               {projectDna && (
-                                <ContainerInstrument className="bg-va-black text-white p-4 rounded-2xl shadow-lg border border-va-black/10">
-                                  <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-va-white/60 mb-3 flex items-center gap-2"><Hash size={12} className="text-va-white" />Project DNA #{projectDna.order.wpOrderId}</HeadingInstrument>
+                                <ContainerInstrument className="bg-va-black text-white p-4 rounded-[20px] shadow-aura-lg border border-white/5">
+                                  <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-white/40 mb-3 flex items-center gap-2"><Hash size={12} strokeWidth={1.5} />Project DNA #{projectDna.order.wpOrderId}</HeadingInstrument>
                                   <ContainerInstrument className="space-y-4">
                                     <ContainerInstrument className="flex justify-between items-center">
-                                      <TextInstrument as="span" className="text-[10px] font-light opacity-60 text-va-white">
+                                      <TextInstrument as="span" className="text-[10px] font-light opacity-40">
                                         <VoiceglotText translationKey="common.status" defaultText="Status" />
                                       </TextInstrument>
-                                      <TextInstrument as="span" className="px-2 py-0.5 bg-va-white/20 rounded text-[9px] font-light tracking-widest">{projectDna.order.status}</TextInstrument>
+                                      <TextInstrument as="span" className="px-2 py-0.5 bg-white/10 rounded-[4px] text-[9px] font-light tracking-widest">{projectDna.order.status}</TextInstrument>
                                     </ContainerInstrument>
                                     {projectDna.order.items?.map((item: any) => (
-                                      <ContainerInstrument key={item.id} className="flex items-center gap-3 p-2 bg-va-white/10 rounded-xl">
-                                        <ContainerInstrument className="w-8 h-8 rounded-lg bg-va-white/20 flex items-center justify-center text-[10px] font-light">{item.actor?.firstName[0]}</ContainerInstrument>
+                                      <ContainerInstrument key={item.id} className="flex items-center gap-3 p-2 bg-white/5 rounded-[10px]">
+                                        <ContainerInstrument className="w-8 h-8 rounded-[6px] bg-white/10 flex items-center justify-center text-[10px] font-light">{item.actor?.firstName[0]}</ContainerInstrument>
                                         <ContainerInstrument className="min-w-0">
                                           <TextInstrument className="text-[10px] font-light truncate">{item.actor?.firstName} {item.actor?.lastName}</TextInstrument>
-                                          <TextInstrument className="text-[8px] opacity-60">{item.deliveryStatus || 'Pending'}</TextInstrument>
+                                          <TextInstrument className="text-[8px] opacity-40 font-light">{item.deliveryStatus || 'Pending'}</TextInstrument>
                                         </ContainerInstrument>
                                       </ContainerInstrument>
                                     ))}
@@ -929,17 +929,17 @@ export default function MailboxPage() {
                                   <ButtonInstrument 
                                     onClick={() => generateAiDraft(selectedThread.messages[0].id)}
                                     disabled={isDrafting}
-                                    className={`py-2 px-4 rounded-xl text-[9px] font-light tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${draftMethod === 'semantic_matching' ? 'bg-va-black text-white' : 'bg-va-black/10 text-va-black'}`}
+                                    className={`py-2 px-4 rounded-[10px] text-[9px] font-light tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${draftMethod === 'semantic_matching' ? 'bg-primary text-white' : 'bg-white/10 text-white'}`}
                                   >
                                     <div className="flex items-center gap-2">
-                                      <Brain size={12} className={isDrafting ? 'animate-spin' : ''} />
+                                      <Brain size={12} className={isDrafting ? 'animate-spin' : ''} strokeWidth={1.5} />
                                       {isDrafting ? 'Drafting...' : 'Voicy Draft'}
                                     </div>
                                     {draftMethod === 'semantic_matching' && (
-                                      <span className="text-[7px] opacity-60">Semantic Match Active</span>
+                                      <span className="text-[7px] opacity-60">Semantic Match</span>
                                     )}
                                   </ButtonInstrument>
-                                  <ButtonInstrument className="py-2 bg-va-white/20 text-va-white rounded-xl text-[9px] font-light tracking-widest transition-all">
+                                  <ButtonInstrument className="py-2 bg-white/5 text-white/60 rounded-[10px] text-[9px] font-light tracking-widest transition-all hover:bg-white/10">
                                     <VoiceglotText translationKey="mailbox.dna.update_status" defaultText="Update" />
                                   </ButtonInstrument>
                                 </ContainerInstrument>
@@ -965,30 +965,30 @@ export default function MailboxPage() {
                               </ContainerInstrument>
                             )}
                             <ContainerInstrument>
-                              <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-gray-900 mb-3 flex items-center gap-2"><Lock size={10} /><VoiceglotText translationKey="mailbox.dna.vault_title" defaultText="The Vault (Kluis)" /></HeadingInstrument>
+                              <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-va-black/40 mb-3 flex items-center gap-2"><Lock size={10} strokeWidth={1.5} /><VoiceglotText translationKey="mailbox.dna.vault_title" defaultText="The Vault (Kluis)" /></HeadingInstrument>
                               <ContainerInstrument className="space-y-2">
                                 {customerDna.vault.length > 0 ? customerDna.vault.slice(0, 5).map((file: any) => (
-                                  <ContainerInstrument key={file.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group" onClick={() => setSpotlightFile(file)}>
-                                    <ContainerInstrument className="w-8 h-8 bg-orange-50 text-orange-600 rounded-lg flex items-center justify-center">
-                                      {file.category === 'demo_inbound' ? <Mic size={14} /> : <FileText size={14} />}
+                                  <ContainerInstrument key={file.id} className="flex items-center gap-3 p-2 hover:bg-va-off-white rounded-[10px] transition-colors cursor-pointer group border border-transparent hover:border-black/[0.03]" onClick={() => setSpotlightFile(file)}>
+                                    <ContainerInstrument className="w-8 h-8 bg-primary/5 text-primary rounded-[6px] flex items-center justify-center">
+                                      {file.category === 'demo_inbound' ? <Mic size={14} strokeWidth={1.5} /> : <FileText size={14} strokeWidth={1.5} />}
                                     </ContainerInstrument>
                                     <ContainerInstrument className="flex-grow min-w-0">
                                       <div className="flex items-center gap-2">
-                                        <TextInstrument className="text-[10px] font-light truncate">{file.originalName}</TextInstrument>
-                                        {file.actorId && <span className="text-[6px] bg-blue-100 text-blue-600 px-1 rounded font-light">Actor Asset</span>}
+                                        <TextInstrument className="text-[10px] font-light truncate text-va-black">{file.originalName}</TextInstrument>
+                                        {file.actorId && <span className="text-[6px] bg-primary/5 text-primary px-1 rounded font-light tracking-widest">Actor Asset</span>}
                                       </div>
-                                      <TextInstrument className="text-[8px] text-gray-400">{file.category}</TextInstrument>
+                                      <TextInstrument className="text-[8px] text-va-black/20 font-light tracking-widest">{file.category}</TextInstrument>
                                     </ContainerInstrument>
                                   </ContainerInstrument>
-                                )) : <TextInstrument className="text-[10px] text-gray-400 italic"><VoiceglotText translationKey="mailbox.dna.vault_empty" defaultText="Geen bestanden in de kluis." /></TextInstrument>}
+                                )) : <TextInstrument className="text-[10px] text-va-black/20 italic font-light"><VoiceglotText translationKey="mailbox.dna.vault_empty" defaultText="Geen bestanden in de kluis." /></TextInstrument>}
                               </ContainerInstrument>
                             </ContainerInstrument>
                             <ContainerInstrument>
-                              <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-gray-900 mb-3 flex items-center gap-2"><History size={10} /><VoiceglotText translationKey="mailbox.dna.history_title" defaultText="Bestelgeschiedenis" /></HeadingInstrument>
+                              <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-va-black/40 mb-3 flex items-center gap-2"><History size={10} strokeWidth={1.5} /><VoiceglotText translationKey="mailbox.dna.history_title" defaultText="Bestelgeschiedenis" /></HeadingInstrument>
                               <ContainerInstrument className="space-y-2">
                                 {customerDna.orders.length > 0 ? customerDna.orders.map((order: any) => (
-                                  <ContainerInstrument key={order.id} className="p-3 bg-gray-50 rounded-2xl"><ContainerInstrument className="flex justify-between items-start mb-1"><TextInstrument className="text-[10px] font-light">#{order.wpOrderId || order.id}</TextInstrument><TextInstrument className="text-[10px] font-light">€{order.total}</TextInstrument></ContainerInstrument><TextInstrument className="text-[8px] text-gray-400">{new Date(order.createdAt).toLocaleDateString()}</TextInstrument></ContainerInstrument>
-                                )) : <TextInstrument className="text-[10px] text-gray-400 italic"><VoiceglotText translationKey="mailbox.dna.history_empty" defaultText="Nog geen bestellingen." /></TextInstrument>}
+                                  <ContainerInstrument key={order.id} className="p-3 bg-va-off-white rounded-[10px] border border-black/[0.03]"><ContainerInstrument className="flex justify-between items-start mb-1"><TextInstrument className="text-[10px] font-light text-va-black">#{order.wpOrderId || order.id}</TextInstrument><TextInstrument className="text-[10px] font-light text-primary">€{order.total}</TextInstrument></ContainerInstrument><TextInstrument className="text-[8px] text-va-black/20 font-light tracking-widest">{new Date(order.createdAt).toLocaleDateString()}</TextInstrument></ContainerInstrument>
+                                )) : <TextInstrument className="text-[10px] text-va-black/20 italic font-light"><VoiceglotText translationKey="mailbox.dna.history_empty" defaultText="Nog geen bestellingen." /></TextInstrument>}
                               </ContainerInstrument>
                             </ContainerInstrument>
                           </ContainerInstrument>
@@ -1041,7 +1041,7 @@ export default function MailboxPage() {
                 </a>
               </div>
 
-              <div className="w-full aspect-video bg-black/40 rounded-[32px] overflow-hidden flex items-center justify-center border border-white/10 shadow-2xl">
+              <div className="w-full aspect-video bg-black/40 rounded-[20px] overflow-hidden flex items-center justify-center border border-white/10 shadow-2xl">
                 {/\.(mp4|webm|mov)$/i.test(spotlightFile.originalName || spotlightFile.filename) ? (
                   <video 
                     src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.filePath || spotlightFile.path)}`} 
@@ -1102,30 +1102,30 @@ export default function MailboxPage() {
               className="bg-white w-full max-w-4xl max-h-[80vh] rounded-[40px] shadow-2xl overflow-hidden flex flex-col"
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-8 border-b border-gray-100 flex justify-between items-start">
+              <div className="p-8 border-b border-black/[0.03] flex justify-between items-start">
                 <div>
                   <span className="text-[10px] font-light tracking-widest text-va-black/40 mb-2 block">{selectedInsight.type}</span>
                   <HeadingInstrument level={2} className="text-2xl font-light text-va-black">{selectedInsight.label || selectedInsight.text || "Detail Analyse"}</HeadingInstrument>
                 </div>
-                <ButtonInstrument onClick={() => setSelectedInsight(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <ArrowLeft className="rotate-90" />
+                <ButtonInstrument onClick={() => setSelectedInsight(null)} className="p-2 hover:bg-va-off-white rounded-full transition-colors">
+                  <ArrowLeft className="rotate-90" strokeWidth={1.5} />
                 </ButtonInstrument>
               </div>
 
               <div className="flex-grow overflow-y-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* 🚀 ACTIONABLE RECOMMENDATIONS */}
                 <div className="space-y-6">
-                  <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-va-black flex items-center gap-2">
-                    <Zap size={14} className="text-va-black" />
+                  <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
+                    <Zap size={14} strokeWidth={1.5} />
                     Vooruitdenkende Acties
                   </HeadingInstrument>
                   <div className="space-y-3">
                     {(selectedInsight.actions?.map((action: string, i: number) => (
-                      <div key={i} className="p-4 bg-va-black text-white rounded-2xl flex gap-3 items-start shadow-lg">
-                        <div className="w-5 h-5 bg-va-white/20 rounded-full flex items-center justify-center text-[10px] font-light shrink-0">{i+1}</div>
+                      <div key={i} className="p-4 bg-va-black text-white rounded-[15px] flex gap-3 items-start shadow-aura">
+                        <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center text-[10px] font-light shrink-0">{i+1}</div>
                         <TextInstrument className="text-xs font-light leading-relaxed">{action}</TextInstrument>
                       </div>
-                    ))) || <TextInstrument className="text-xs italic text-gray-400">
+                    ))) || <TextInstrument className="text-xs italic text-va-black/20 font-light">
                       <VoiceglotText translationKey="mailbox.actions.empty" defaultText="Geen specifieke acties geformuleerd." />
                     </TextInstrument>}
                   </div>
@@ -1133,8 +1133,8 @@ export default function MailboxPage() {
 
                 {/* 📧 SOURCE EVIDENCE */}
                 <div className="space-y-6">
-                  <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-va-black flex items-center gap-2">
-                    <Mail size={14} className="text-va-black" />
+                  <HeadingInstrument level={4} className="text-[10px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
+                    <Mail size={14} strokeWidth={1.5} />
                     Bewijslast (E-mails)
                   </HeadingInstrument>
                   <div className="space-y-3">
@@ -1142,16 +1142,16 @@ export default function MailboxPage() {
                       const mail = insights?.allSourceMails?.find((m: any) => m.id === id);
                       if (!mail) return null;
                       return (
-                        <div key={id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-va-black/10 transition-all">
+                        <div key={id} className="p-4 bg-va-off-white rounded-[15px] border border-black/[0.03] hover:border-black/10 transition-all">
                           <div className="flex justify-between items-start mb-2">
                             <TextInstrument className="text-[10px] font-light text-va-black truncate max-w-[150px]">{mail.sender}</TextInstrument>
-                            <TextInstrument className="text-[8px] font-light text-gray-400">{new Date(mail.date).toLocaleDateString()}</TextInstrument>
+                            <TextInstrument className="text-[8px] font-light text-va-black/20">{new Date(mail.date).toLocaleDateString()}</TextInstrument>
                           </div>
-                          <TextInstrument className="text-[11px] font-light mb-1 block">{mail.subject}</TextInstrument>
-                          <TextInstrument className="text-[10px] text-gray-500 line-clamp-2 italic">&quot;{mail.body}&quot;</TextInstrument>
+                          <TextInstrument className="text-[11px] font-light mb-1 block text-va-black">{mail.subject}</TextInstrument>
+                          <TextInstrument className="text-[10px] text-va-black/40 line-clamp-2 italic font-light">&quot;{mail.body}&quot;</TextInstrument>
                         </div>
                       );
-                    }) || <TextInstrument className="text-xs italic text-gray-400">
+                    }) || <TextInstrument className="text-xs italic text-va-black/20 font-light">
                       <VoiceglotText translationKey="mailbox.emails.empty" defaultText="Geen specifieke mails gekoppeld." />
                     </TextInstrument>}
                   </div>
