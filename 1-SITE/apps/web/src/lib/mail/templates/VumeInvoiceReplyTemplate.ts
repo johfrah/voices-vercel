@@ -56,7 +56,7 @@ export function VumeInvoiceReplyTemplate(options: InvoiceReplyOptions) {
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
       <tr>
         <td align="center">
-          <a href="https://${host}/account/orders" style="display: inline-block; padding: 18px 36px; background-color: #000000; color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 14px; letter-spacing: 0.05em;">${content.button}</a>
+          <a href="https://${host}/account/orders" style="display: inline-block; padding: 18px 36px; background-color: #000000; color: #FFFFFF; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 14px; letter-spacing: 0.05em;">${content.button}</a>
         </td>
       </tr>
     </table>

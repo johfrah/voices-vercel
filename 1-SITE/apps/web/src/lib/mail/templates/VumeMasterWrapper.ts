@@ -80,7 +80,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #FAFAFA; padding-bottom: 60px;">
         <tr>
           <td align="center" style="padding: 40px 20px;">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #FFFFFF; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.04);">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.04);">
               <!-- LOGO HEADER -->
               <tr>
                 <td align="center" style="padding: 40px 0;">
