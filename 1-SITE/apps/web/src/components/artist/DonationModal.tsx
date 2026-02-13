@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument,
-  InputInstrument
+import {
+    ButtonInstrument,
+    HeadingInstrument,
+    InputInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
-import { Heart, X, ShieldCheck, Loader2 } from "lucide-react";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { Heart, Loader2, ShieldCheck, X } from "lucide-react";
+import { useState } from "react";
 
 interface DonationModalProps {
   artistId: string;
@@ -80,7 +79,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose }: Donatio
 
           <form onSubmit={handleDonate} className="space-y-6">
             <div>
-              <label className="text-[10px] font-light tracking-widest text-va-black/40 uppercase mb-2 block">
+              <label className="text-[15px] font-light tracking-widest text-va-black/40 mb-2 block">
                 Bedrag (EUR)
               </label>
               <div className="grid grid-cols-4 gap-2 mb-4">
@@ -142,7 +141,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose }: Donatio
               )}
             </ButtonInstrument>
 
-            <p className="text-[10px] font-light text-va-black/20 text-center">
+            <p className="text-[15px] font-light text-va-black/20 text-center">
               Veilig betalen via Mollie · Geen extra kosten
             </p>
           </form>

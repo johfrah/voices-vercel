@@ -53,17 +53,17 @@ export const ProfitEngineWidget: React.FC = () => {
             <Zap size={20} />
           </div>
           <div className="text-right">
-            <span className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Status</span>
+            <span className="text-[15px] font-black tracking-widest text-va-black/30">Status</span>
             <div className="flex items-center gap-2 text-success">
               <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Winstgevend</span>
+              <span className="text-[15px] font-black tracking-widest">Winstgevend</span>
             </div>
           </div>
         </div>
 
         <div className="space-y-6">
           <div>
-            <h3 className="text-sm font-black uppercase tracking-widest text-va-black/40 mb-1">Netto Winst (30d)</h3>
+            <h3 className="text-sm font-black tracking-widest text-va-black/40 mb-1">Netto Winst (30d)</h3>
             <div className="text-5xl font-black tracking-tighter text-va-black">
               {stats.profit.formatted.split(',')[0]}
             </div>
@@ -71,11 +71,11 @@ export const ProfitEngineWidget: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-va-off-white rounded-2xl border border-black/5">
-              <p className="text-[9px] font-black uppercase tracking-widest text-va-black/30 mb-1">Omzet</p>
+              <p className="text-[15px] font-black tracking-widest text-va-black/30 mb-1">Omzet</p>
               <p className="text-lg font-black tracking-tight text-va-black">{stats.revenue.formatted}</p>
             </div>
             <div className="p-4 bg-va-off-white rounded-2xl border border-black/5">
-              <p className="text-[9px] font-black uppercase tracking-widest text-va-black/30 mb-1">Marge</p>
+              <p className="text-[15px] font-black tracking-widest text-va-black/30 mb-1">Marge</p>
               <p className="text-lg font-black tracking-tight text-success">{stats.margin.formatted}</p>
             </div>
           </div>
@@ -83,7 +83,7 @@ export const ProfitEngineWidget: React.FC = () => {
       </div>
 
       <div className="relative z-10 mt-8 pt-6 border-t border-black/5 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/40">
+        <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40">
           <TrendingUp size={14} className="text-success" />
           +12% vs vorige maand
         </div>

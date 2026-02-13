@@ -34,6 +34,7 @@ body {
   background-color: var(--va-background);
   color: var(--va-dark);
   font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
   scroll-behavior: smooth;
 }
@@ -121,7 +122,7 @@ body {
 
 /* 🏗️ BENTO SYSTEM */
 .va-container {
-  @apply max-w-7xl mx-auto px-6 md:px-12 lg:px-16;
+  @apply max-w-7xl mx-auto px-4 md:px-6 lg:px-8;
 }
 
 .va-flex-center {
@@ -146,7 +147,7 @@ body {
 }
 
 .va-badge {
-  @apply inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-[10px] font-light tracking-widest shadow-sm border border-black/5 uppercase;
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-[15px] font-light tracking-widest shadow-sm border border-black/5 uppercase;
 }
 
 .va-icon-primary {
@@ -199,11 +200,11 @@ body {
 }
 
 .va-artist-back-text {
-  @apply text-[10px] font-black tracking-widest text-va-dark/40 transition-colors;
+  @apply text-[15px] font-black tracking-widest text-va-dark/40 transition-colors;
 }
 
 .va-artist-nav-links {
-  @apply hidden lg:flex items-center gap-8 text-[11px] font-black tracking-[0.2em] text-va-dark/30;
+  @apply hidden lg:flex items-center gap-8 text-[15px] font-black tracking-[0.2em] text-va-dark/30;
 }
 
 .va-artist-nav-link {
@@ -231,7 +232,7 @@ body {
 }
 
 .va-artist-badge {
-  @apply inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[10px] font-black tracking-widest shadow-sm border border-gray-100/50;
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-black tracking-widest shadow-sm border border-gray-100/50;
 }
 
 .va-artist-badge-dot {
@@ -251,7 +252,7 @@ body {
 }
 
 .va-artist-btn-secondary {
-  @apply px-10 py-5 rounded-[24px] font-black tracking-widest text-[11px] border-2 border-gray-100 hover:border-va-primary transition-all duration-500;
+  @apply px-10 py-5 rounded-[24px] font-black tracking-widest text-[15px] border-2 border-gray-100 hover:border-va-primary transition-all duration-500;
 }
 
 .va-artist-hero-visual {
@@ -324,11 +325,11 @@ body {
 }
 
 .va-artist-section-subtitle {
-  @apply text-va-dark/30 font-black tracking-widest text-[10px];
+  @apply text-va-dark/30 font-black tracking-widest text-[15px];
 }
 
 .va-artist-score-badge {
-  @apply px-4 py-2 bg-va-dark/5 rounded-full text-[10px] font-black tracking-widest text-va-dark/40;
+  @apply px-4 py-2 bg-va-dark/5 rounded-full text-[15px] font-black tracking-widest text-va-dark/40;
 }
 
 .va-artist-demo-card {
@@ -356,7 +357,7 @@ body {
 }
 
 .va-artist-demo-meta {
-  @apply text-[10px] font-black text-va-dark/30 tracking-widest mt-1;
+  @apply text-[15px] font-black text-va-dark/30 tracking-widest mt-1;
 }
 
 .va-artist-download-btn {
@@ -368,7 +369,7 @@ body {
 }
 
 .va-artist-rates-disclaimer {
-  @apply text-center text-va-dark/20 text-[10px] font-black tracking-[0.3em];
+  @apply text-center text-va-dark/20 text-[15px] font-black tracking-[0.3em];
 }
 
 .va-artist-guarantee-badge {
@@ -376,7 +377,7 @@ body {
 }
 
 .va-artist-guarantee-text {
-  @apply text-[10px] font-black tracking-widest text-va-dark/60;
+  @apply text-[15px] font-black tracking-widest text-va-dark/60;
 }
 
 .va-artist-studio-grid {
@@ -404,7 +405,7 @@ body {
 }
 
 .va-artist-studio-badge {
-  @apply text-va-primary font-black tracking-widest text-[10px];
+  @apply text-va-primary font-black tracking-widest text-[15px];
 }
 
 .va-artist-studio-specs {
@@ -416,7 +417,7 @@ body {
 }
 
 .va-artist-spec-label {
-  @apply font-black tracking-widest text-[10px] text-white/40;
+  @apply font-black tracking-widest text-[15px] text-white/40;
 }
 
 .va-artist-spec-value {
@@ -444,7 +445,7 @@ body {
 }
 
 .va-artist-award-subtitle {
-  @apply text-va-dark/30 font-black tracking-widest text-[10px];
+  @apply text-va-dark/30 font-black tracking-widest text-[15px];
 }
 
 .va-artist-footer {
@@ -460,11 +461,11 @@ body {
 }
 
 .va-artist-footer-logo {
-  @apply w-8 h-8 rounded-lg bg-va-dark text-white flex items-center justify-center font-black text-xs;
+  @apply w-8 h-8 rounded-lg bg-va-dark text-white flex items-center justify-center font-black text-[15px];
 }
 
 .va-artist-footer-copy {
-  @apply text-va-dark/20 text-[10px] font-black tracking-widest;
+  @apply text-va-dark/20 text-[15px] font-black tracking-widest;
 }
 
 .va-artist-footer-socials {
@@ -485,7 +486,7 @@ body {
 }
 
 .va-account-badge {
-  @apply inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black tracking-widest border border-primary/10;
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10;
 }
 
 .va-account-title {
@@ -497,7 +498,7 @@ body {
 }
 
 .va-account-logout-btn {
-  @apply flex items-center gap-3 px-8 py-4 bg-va-black text-white rounded-va-lg text-[11px] font-black tracking-widest hover:bg-primary transition-all shadow-xl;
+  @apply flex items-center gap-3 px-8 py-4 bg-va-black text-white rounded-va-lg text-[15px] font-black tracking-widest hover:bg-primary transition-all shadow-xl;
 }
 
 .va-text-primary {
@@ -566,15 +567,15 @@ body {
 }
 
 .va-account-card-desc-white {
-  @apply text-white/60 text-xs font-medium leading-relaxed;
+  @apply text-white/60 text-[15px] font-medium leading-relaxed;
 }
 
 .va-account-card-desc-white-soft {
-  @apply text-white/40 text-xs font-medium leading-relaxed;
+  @apply text-white/40 text-[15px] font-medium leading-relaxed;
 }
 
 .va-account-card-link {
-  @apply flex items-center gap-2 font-black tracking-widest text-[10px] mt-8 transition-all;
+  @apply flex items-center gap-2 font-black tracking-widest text-[15px] mt-8 transition-all;
 }
 
 .va-bento-card-interactive:hover .va-account-card-link,
@@ -620,7 +621,7 @@ body {
 }
 
 .va-security-badge {
-  @apply px-4 py-2 bg-white rounded-xl border border-black/5 text-[9px] font-black tracking-widest text-va-black/40;
+  @apply px-4 py-2 bg-white rounded-xl border border-black/5 text-[15px] font-black tracking-widest text-va-black/40;
 }
 
 .va-account-security-visual {
@@ -657,11 +658,11 @@ body {
 }
 
 .va-status-label {
-  @apply text-[10px] font-black tracking-[0.2em];
+  @apply text-[15px] font-black tracking-[0.2em];
 }
 
 .va-status-sublabel {
-  @apply text-[8px] opacity-40 font-bold tracking-widest;
+  @apply text-[15px] opacity-40 font-bold tracking-widest;
 }
 
 .va-admin-toolbar-actions {
@@ -669,7 +670,7 @@ body {
 }
 
 .va-admin-btn-action {
-  @apply flex items-center gap-2 text-[10px] font-black tracking-widest hover:text-primary transition-all;
+  @apply flex items-center gap-2 text-[15px] font-black tracking-widest hover:text-primary transition-all;
 }
 
 .va-admin-btn-action:hover .va-btn-icon-rotate {
@@ -697,7 +698,7 @@ body {
 }
 
 .va-admin-btn-save {
-  @apply bg-primary text-white px-6 py-3 rounded-2xl text-[10px] font-black tracking-widest flex items-center gap-2 hover:scale-105 hover:shadow-[0_10px_20px_rgba(255,75,58,0.3)] transition-all active:scale-95;
+  @apply bg-primary text-white px-6 py-3 rounded-2xl text-[15px] font-black tracking-widest flex items-center gap-2 hover:scale-105 hover:shadow-[0_10px_20px_rgba(255,75,58,0.3)] transition-all active:scale-95;
 }
 
 /* 🧪 EDIT MODE STYLES (Global) */
@@ -772,7 +773,7 @@ body {
 }
 
 .va-hero-badge {
-  @apply inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black tracking-widest border border-primary/10;
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10;
 }
 
 .va-hero-title {
@@ -792,12 +793,12 @@ body {
 }
 
 .va-hero-btn-secondary {
-  @apply px-10 py-6 rounded-va-lg font-light tracking-widest text-[11px] border-2 border-black/5 hover:border-primary transition-all bg-white shadow-sm uppercase;
+  @apply px-10 py-6 rounded-va-lg font-light tracking-widest text-[15px] border-2 border-black/5 hover:border-primary transition-all bg-white shadow-sm uppercase;
 }
 
 /* ⚡ VA BUTTON SYSTEM */
 .va-btn-pro {
-  @apply bg-va-dark text-white font-light tracking-widest text-[10px] transition-all transform active:scale-95 flex items-center justify-center gap-2 uppercase;
+  @apply bg-va-dark text-white font-light tracking-widest text-[15px] transition-all transform active:scale-95 flex items-center justify-center gap-2 uppercase;
   border-radius: theme('borderRadius.va-xl');
   padding: theme('spacing.va-btn-lg-y') theme('spacing.va-btn-lg-x');
   transition-timing-function: var(--va-bezier);
@@ -808,7 +809,7 @@ body {
 }
 
 .va-btn-secondary {
-  @apply bg-white text-va-black font-light tracking-widest text-[10px] transition-all transform active:scale-95 border-2 border-black/5 flex items-center justify-center gap-2 uppercase;
+  @apply bg-white text-va-black font-light tracking-widest text-[15px] transition-all transform active:scale-95 border-2 border-black/5 flex items-center justify-center gap-2 uppercase;
   border-radius: theme('borderRadius.va-xl');
   padding: theme('spacing.va-btn-lg-y') theme('spacing.va-btn-lg-x');
   transition-timing-function: var(--va-bezier);
@@ -819,7 +820,7 @@ body {
 }
 
 .va-btn-nav {
-  @apply bg-va-black text-white font-black tracking-widest text-[10px] transition-all transform active:scale-95 flex items-center justify-center gap-2;
+  @apply bg-va-black text-white font-black tracking-widest text-[15px] transition-all transform active:scale-95 flex items-center justify-center gap-2;
   border-radius: theme('borderRadius.va-full');
   padding: theme('spacing.va-btn-md-y') theme('spacing.va-btn-md-x');
   box-shadow: theme('boxShadow.lg');

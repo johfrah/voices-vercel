@@ -45,12 +45,12 @@ export default function VoiceCommand() {
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             className="mb-4 p-6 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-primary/20 w-80"
           >
-            <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">Voicy Shadow Command</p>
+            <p className="text-[15px] font-black tracking-widest text-primary mb-2">Voicy Shadow Command</p>
             <p className="text-sm text-va-black mb-4 italic">&quot;{draft}&quot;</p>
             <div className="flex gap-2">
               <button 
                 onClick={confirmCommand}
-                className="flex-1 bg-va-black text-white py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-colors flex items-center justify-center gap-2"
+                className="flex-1 bg-va-black text-white py-2 rounded-lg text-[15px] font-bold tracking-widest hover:bg-primary transition-colors flex items-center justify-center gap-2"
               >
                 <Check size={12} /> Confirm
               </button>

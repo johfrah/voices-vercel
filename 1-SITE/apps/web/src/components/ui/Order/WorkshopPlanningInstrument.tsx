@@ -27,7 +27,7 @@ export const WorkshopPlanningInstrument: React.FC<WorkshopPlanningInstrumentProp
       >
         <div className="mt-4 flex gap-6">
           <div className="flex-1 p-6 bg-purple-50 rounded-3xl border border-purple-100">
-            <div className="text-purple-400 text-[10px] font-bold tracking-widest uppercase">
+            <div className="text-purple-400 text-[15px] font-bold tracking-widest ">
               <VoiceglotText translationKey="order.workshop.date_time" defaultText="Datum & Tijd" />
             </div>
             <div className="text-2xl font-bold text-purple-900 mt-1">
@@ -41,7 +41,7 @@ export const WorkshopPlanningInstrument: React.FC<WorkshopPlanningInstrumentProp
             </button>
           </div>
           <div className="flex-1 space-y-3">
-            <div className="text-slate-400 text-[10px] font-bold tracking-widest uppercase">
+            <div className="text-slate-400 text-[15px] font-bold tracking-widest ">
               <VoiceglotText translationKey="order.workshop.details" defaultText="Details" />
             </div>
             <div className="flex items-center gap-2 text-sm">

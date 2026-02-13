@@ -156,7 +156,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
         {/* Main Config */}
         <div className="flex-1 p-8 lg:p-12 space-y-10">
           <div>
-            <h3 className="text-sm font-black text-va-black/30 mb-6">
+            <h3 className="text-sm font-medium text-va-black/30 mb-6">
               <VoiceglotText translationKey="pricing.step1.title" defaultText="1. Kies je projecttype" />
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -171,7 +171,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   }`}
                 >
                   <type.icon size={24} />
-                  <span className="font-black text-[10px]">
+                  <span className="font-medium text-[15px]">
                     <VoiceglotText translationKey={type.translationKey} defaultText={type.label} />
                   </span>
                 </button>
@@ -181,11 +181,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
-              <h3 className="text-sm font-black text-va-black/30 mb-6">
+              <h3 className="text-sm font-medium text-va-black/30 mb-6">
                 <VoiceglotText translationKey="pricing.step2.language" defaultText="2. Taal van de productie" />
               </h3>
               <select 
-                className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-6 text-[11px] font-black focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+                className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
               >
@@ -201,11 +201,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
 
             {state.usage === 'paid' && (
               <div className="animate-in fade-in slide-in-from-top-4 duration-700">
-                <h3 className="text-sm font-black text-va-black/30 mb-6">
+                <h3 className="text-sm font-medium text-va-black/30 mb-6">
                   <VoiceglotText translationKey="pricing.step2.country" defaultText="3. Land van uitzending" />
                 </h3>
                 <select 
-                  className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-6 text-[11px] font-black focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+                  className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                 >
@@ -222,7 +222,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
           {state.usage === 'paid' ? (
             <div className="space-y-10 animate-in fade-in slide-in-from-top-4 duration-700">
               <div className="space-y-6">
-                <h3 className="text-sm font-black text-va-black/30">
+                <h3 className="text-sm font-medium text-va-black/30">
                   <VoiceglotText translationKey="pricing.media_buyout" defaultText="4. Media & Buyout" />
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -236,7 +236,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                           setMedia([...media, m as any]);
                         }
                       }}
-                      className={`px-6 py-3 rounded-full text-[10px] font-black border-2 transition-all ${
+                      className={`px-6 py-3 rounded-full text-[15px] font-medium border-2 transition-all ${
                         media.includes(m as any) ? 'bg-primary border-primary text-white' : 'bg-white border-black/5 text-va-black/40'
                       }`}
                     >
@@ -247,7 +247,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                 
                 <div className="grid grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <span className="text-[10px] font-black text-va-black/30 uppercase tracking-widest">
+                    <span className="text-[15px] font-medium text-va-black/30 tracking-widest">
                       <VoiceglotText translationKey="pricing.spots_count" defaultText="Aantal Spots" />
                     </span>
                     <div className="flex items-center gap-4">
@@ -256,11 +256,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                         onChange={(e) => setSpots(parseInt(e.target.value))}
                         className="flex-1 h-2 bg-black/5 rounded-lg appearance-none cursor-pointer accent-primary"
                       />
-                      <span className="text-xl font-black text-primary w-8">{spots}</span>
+                      <span className="text-xl font-light text-primary w-8">{spots}</span>
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <span className="text-[10px] font-black text-va-black/30 uppercase tracking-widest">
+                    <span className="text-[15px] font-medium text-va-black/30 tracking-widest">
                       <VoiceglotText translationKey="pricing.duration_years" defaultText="Looptijd (Jaar)" />
                     </span>
                     <div className="flex items-center gap-4">
@@ -269,7 +269,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                         onChange={(e) => setYears(parseInt(e.target.value))}
                         className="flex-1 h-2 bg-black/5 rounded-lg appearance-none cursor-pointer accent-primary"
                       />
-                      <span className="text-xl font-black text-primary w-8">{years}</span>
+                      <span className="text-xl font-light text-primary w-8">{years}</span>
                     </div>
                   </div>
                 </div>
@@ -277,7 +277,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
 
               {/* 🎙️ Dynamic Voice Preview for Paid */}
               <div className="pt-10 border-t border-black/5">
-                <h3 className="text-sm font-black text-va-black/30 mb-8">
+                <h3 className="text-sm font-medium text-va-black/30 mb-8">
                   <VoiceglotText translationKey="pricing.matching_voices" defaultText="Beschikbare stemmen voor dit tarief" />
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -288,11 +288,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     );
                     return (
                       <div key={a.id} className="p-4 bg-va-off-white rounded-[32px] border border-black/5 flex flex-col items-center text-center group hover:border-primary/20 transition-all">
-                        <div className="w-12 h-12 rounded-full bg-primary/10 mb-3 flex items-center justify-center font-black text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                        <div className="w-12 h-12 rounded-full bg-primary/10 mb-3 flex items-center justify-center font-medium text-primary group-hover:bg-primary group-hover:text-white transition-all">
                           {a.first_name[0]}
                         </div>
-                        <span className="text-[10px] font-black mb-1">{a.first_name}</span>
-                        <span className="text-[12px] font-black text-primary">{actorPrice.formatted.split(',')[0]}</span>
+                        <span className="text-[15px] font-medium mb-1">{a.first_name}</span>
+                        <span className="text-[15px] font-medium text-primary">{actorPrice.formatted.split(',')[0]}</span>
                       </div>
                     );
                   })}
@@ -302,7 +302,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
           ) : (
             <div>
             <div className="flex justify-between items-center mb-6">
-                <h3 className="text-sm font-black text-va-black/30">
+                <h3 className="text-sm font-medium text-va-black/30">
                   4. <VoiceglotText translationKey="pricing.step3.words" defaultText="Aantal woorden" />
                 </h3>
               </div>
@@ -320,25 +320,25 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     type="number" 
                     value={words} 
                     onChange={(e) => setWords(Math.max(1, parseInt(e.target.value) || 0))}
-                    className="w-24 bg-va-off-white border-2 border-primary/20 rounded-xl py-3 px-4 text-sm font-black text-primary text-center focus:border-primary focus:ring-0 outline-none transition-all"
+                    className="w-24 bg-va-off-white border-2 border-primary/20 rounded-xl py-3 px-4 text-sm font-medium text-primary text-center focus:border-primary focus:ring-0 outline-none transition-all"
                   />
-                  <span className="absolute -top-2 -right-2 bg-primary text-white text-[7px] font-black px-1.5 py-0.5 rounded-md shadow-lg">
+                  <span className="absolute -top-2 -right-2 bg-primary text-white text-[15px] font-medium px-1.5 py-0.5 rounded-md shadow-lg">
                     <VoiceglotText translationKey="common.fill_in" defaultText="Vul in" />
                   </span>
                 </div>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-black text-va-black/20">
+                <span className="text-[15px] font-medium text-va-black/20">
                   1 <VoiceglotText translationKey="pricing.unit.word" defaultText="woord" />
                 </span>
-                <span className="text-xl font-black tracking-tighter text-primary">
+                <span className="text-xl font-light tracking-tighter text-primary">
                   {words} <VoiceglotText translationKey="pricing.unit.words" defaultText="woorden" />
                 </span>
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] font-black text-va-black/20">
+                  <span className="text-[15px] font-medium text-va-black/20">
                     {state.usage === 'telefonie' ? '500+' : '5000+'}
                   </span>
-                  <span className="text-[8px] font-bold text-primary/40 tracking-tighter">
+                  <span className="text-[15px] font-medium text-primary/40 tracking-tighter">
                     ± {Math.floor(words / 160)}:{(Math.round((words % 160) / 160 * 60)).toString().padStart(2, '0')} min (160 wpm)
                   </span>
                 </div>
@@ -357,16 +357,16 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     <Music size={20} />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black uppercase tracking-tight">
+                    <h3 className="text-sm font-medium tracking-tight">
                       <VoiceglotText translationKey="pricing.music.title" defaultText="Wachtmuziek toevoegen" />
                     </h3>
-                    <p className="text-[10px] text-va-black/40 font-medium">
+                    <p className="text-[15px] text-va-black/40 font-light">
                       <VoiceglotText translationKey="pricing.music.subtitle" defaultText="Kies een track uit onze rechtenvrije bibliotheek." />
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-lg font-black text-va-black">€59</span>
+                  <span className="text-lg font-light text-va-black">€59</span>
                 </div>
               </div>
 
@@ -382,8 +382,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     {state.music.asBackground && <Check size={12} strokeWidth={4} />}
                   </div>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-tight">Achtergrondmuziek</p>
-                    <p className="text-[8px] font-medium text-va-black/40">Gemixt onder de stem.</p>
+                    <p className="text-[15px] font-medium tracking-tight">Achtergrondmuziek</p>
+                    <p className="text-[15px] font-light text-va-black/40">Gemixt onder de stem.</p>
                   </div>
                 </button>
 
@@ -398,8 +398,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     {state.music.asHoldMusic && <Check size={12} strokeWidth={4} />}
                   </div>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-tight">Wachtmuziek</p>
-                    <p className="text-[8px] font-medium text-va-black/40">Als apart audiobestand.</p>
+                    <p className="text-[15px] font-medium tracking-tight">Wachtmuziek</p>
+                    <p className="text-[15px] font-light text-va-black/40">Als apart audiobestand.</p>
                   </div>
                 </button>
               </div>
@@ -412,14 +412,14 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
           <div className="relative z-10 space-y-8">
             
             <div className="space-y-2">
-              <div className="text-6xl font-black tracking-tighter text-primary">
+              <div className="text-6xl font-light tracking-tighter text-primary">
                 {pricing.formatted}
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] font-black text-white/20">
+                <p className="text-[15px] font-medium text-white/20">
                   <VoiceglotText translationKey="common.excl_vat" defaultText="Exclusief BTW" />
                 </p>
-                <p className="text-sm font-black text-white/40 uppercase tracking-widest">
+                <p className="text-sm font-medium text-white/40 tracking-widest">
                   <VoiceglotText translationKey="pricing.inclusive_label" defaultText="(Inclusief)" />
                 </p>
               </div>
@@ -434,10 +434,10 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                 <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
               <div className="space-y-2 opacity-0">
-                <p className="text-[9px] font-black text-primary animate-pulse">
+                <p className="text-[15px] font-medium text-primary animate-pulse">
                   <VoiceglotText translationKey="pricing.final_price" defaultText="Finale prijs voor deze opdracht" />
                 </p>
-                <p className="text-[10px] font-medium text-white/40 leading-relaxed">
+                <p className="text-[15px] font-light text-white/40 leading-relaxed">
                   {mode === 'ai' ? (
                     <VoiceglotText 
                       translationKey="pricing.disclaimer.ai" 

@@ -24,14 +24,14 @@ export default function AboutPage() {
       
       <SectionInstrument className="max-w-7xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="text-center mb-20 space-y-6">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border border-black/5">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-black tracking-widest shadow-sm border border-black/5">
             <ShieldCheck size={12} className="text-primary" /> 
             <VoiceglotText translationKey="about.badge" defaultText="Ons Verhaal" />
           </ContainerInstrument>
           
-          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
             <VoiceglotText translationKey="about.title_part1" defaultText="Het Vriendelijkste " />
-            <TextInstrument as="span" className="text-primary">
+            <TextInstrument as="span" className="text-primary font-light">
               <VoiceglotText translationKey="about.title_part2" defaultText="Stemmenbureau" />
             </TextInstrument>
           </HeadingInstrument>
@@ -45,7 +45,7 @@ export default function AboutPage() {
           >
             <ContainerInstrument className="space-y-8">
               <Quote size={40} className="text-primary/20" />
-              <HeadingInstrument level={2} className="text-4xl font-black uppercase tracking-tight leading-none">
+              <HeadingInstrument level={2} className="text-4xl font-black tracking-tight leading-none">
                 <VoiceglotText translationKey="about.founder.title" defaultText="Wij geloven in de kracht van een warm geluid." />
               </HeadingInstrument>
               <TextInstrument className="text-va-black/60 font-medium text-lg leading-relaxed">
@@ -63,7 +63,7 @@ export default function AboutPage() {
             className="bg-va-black text-white p-12 flex flex-col justify-between"
           >
             <ContainerInstrument className="space-y-6">
-              <HeadingInstrument level={3} className="text-xs font-black uppercase tracking-[0.2em] text-white/20">
+              <HeadingInstrument level={3} className="text-[15px] font-black tracking-[0.2em] text-white/20">
                 <VoiceglotText translationKey="about.values.label" defaultText="Onze Kernwaarden" />
               </HeadingInstrument>
               <ContainerInstrument className="space-y-4">
@@ -74,7 +74,7 @@ export default function AboutPage() {
                 ].map((v, i) => (
                   <ContainerInstrument key={i} className="flex items-center gap-3">
                     <v.icon size={16} className="text-primary" />
-                    <TextInstrument className="text-xs font-black uppercase tracking-widest">
+                    <TextInstrument className="text-[15px] font-black tracking-widest">
                       <VoiceglotText translationKey={v.key} defaultText={v.text} />
                     </TextInstrument>
                   </ContainerInstrument>
@@ -92,7 +92,7 @@ export default function AboutPage() {
               <Users size={32} className="text-primary" />
             </ContainerInstrument>
             <ContainerInstrument className="space-y-4">
-              <HeadingInstrument level={2} className="text-3xl font-black uppercase tracking-tight">
+              <HeadingInstrument level={2} className="text-3xl font-black tracking-tight">
                 <VoiceglotText translationKey="about.mission.title" defaultText="Een stem die echt is en vertrouwen geeft." />
               </HeadingInstrument>
               <TextInstrument className="text-va-black/60 font-medium">

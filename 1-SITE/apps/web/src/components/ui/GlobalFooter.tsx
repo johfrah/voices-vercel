@@ -147,7 +147,7 @@ export default function GlobalFooter() {
           <ContainerInstrument className="mb-24">
             <JourneyCta journey={state.current_journey} />
             <ContainerInstrument className="mt-12">
-              <HeadingInstrument level={4} className="text-[10px] font-light tracking-[0.2em] text-white/20 mb-8 uppercase">
+              <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-white/20 mb-8 ">
                 <VoiceglotText translationKey="footer.journey_faq" defaultText="Veelgestelde vragen voor deze journey" />
               </HeadingInstrument>
               <JourneyFaq journey={state.current_journey} limit={4} />
@@ -195,7 +195,7 @@ export default function GlobalFooter() {
           {/* Links Columns */}
           {footerSections.map((section, i) => (
             <ContainerInstrument key={i} className="space-y-8">
-              <HeadingInstrument level={4} className="text-[10px] font-light tracking-[0.2em] text-white/20 uppercase">
+              <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-white/20 ">
                 <VoiceglotText translationKey={`footer.section.${i}.title`} defaultText={section.title} />
               </HeadingInstrument>
               <ContainerInstrument as="ul" className="space-y-4">
@@ -217,7 +217,7 @@ export default function GlobalFooter() {
 
         {/* Bottom Bar */}
         <ContainerInstrument className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-          <TextInstrument className="flex items-center gap-2 text-[10px] font-light tracking-widest text-white/20 uppercase">
+          <TextInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-white/20 ">
             © 2026 {isPortfolio ? 'Johfrah Lefebvre' : isArtist ? 'Youssef Zaki' : 'Voices'}. {isSpecial && (
               <span>Powered by <a href="https://voices.be" className="hover:text-white transition-colors underline decoration-white/10 underline-offset-4">Voices.be</a></span>
             )}
@@ -225,8 +225,8 @@ export default function GlobalFooter() {
           
           <ContainerInstrument className="flex items-center gap-8">
             <ContainerInstrument className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/5">
-              <TextInstrument as="span" className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <TextInstrument as="span" className="text-[9px] font-light tracking-widest text-white/40 uppercase">
+              <TextInstrument as="span" className="w-2 h-2 rounded-full bg-green-500 animate-pulse font-light" />
+              <TextInstrument as="span" className="text-[15px] font-light tracking-widest text-white/40 ">
                 <VoiceglotText translationKey="footer.status.online" defaultText="Wij staan voor u klaar" />
               </TextInstrument>
             </ContainerInstrument>

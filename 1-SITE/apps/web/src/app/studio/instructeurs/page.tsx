@@ -27,12 +27,12 @@ export default async function InstructorsPage() {
         <SectionInstrument className="mb-20 space-y-4">
           <Link 
             href="/studio" 
-            className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-all mb-4"
+            className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all mb-4"
           >
             <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="studio.back_to_studio" defaultText="Terug naar Studio" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter leading-none">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none">
             <VoiceglotText translationKey="studio.instructors.title" defaultText="Maak kennis met onze" /> <br />
             <span className="text-primary">experts.</span>
           </HeadingInstrument>
@@ -58,10 +58,10 @@ export default async function InstructorsPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-1000"
                   />
                   <ContainerInstrument className="absolute bottom-8 left-8 right-8">
-                    <TextInstrument className="text-white/60 text-[10px] font-black uppercase tracking-widest mb-2">
+                    <TextInstrument className="text-white/60 text-[15px] font-black tracking-widest mb-2">
                       <VoiceglotText translationKey={`studio.instructor.${instructor.id}.tagline`} defaultText={instructor.tagline || 'Workshopgever'} />
                     </TextInstrument>
-                    <HeadingInstrument level={4} className="text-3xl font-black text-white uppercase tracking-tighter leading-none">
+                    <HeadingInstrument level={4} className="text-3xl font-black text-white tracking-tighter leading-none">
                       <VoiceglotText translationKey={`studio.instructor.${instructor.id}.name`} defaultText={instructor.name} />
                     </HeadingInstrument>
                   </ContainerInstrument>
@@ -74,13 +74,13 @@ export default async function InstructorsPage() {
                 <div className="flex items-center gap-6">
                   <Link 
                     href={`/studio/instructeurs/${instructor.slug || instructor.id}`}
-                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary group/btn"
+                    className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-primary group/btn"
                   >
                     <VoiceglotText translationKey="studio.instructor.view_profile" defaultText="BEKIJK PROFIEL" /> <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                   </Link>
                   <Link 
                     href={`/studio/afspraak`}
-                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-colors"
+                    className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-colors"
                   >
                     <VoiceglotText translationKey="studio.instructor.book_meeting" defaultText="PLAN EEN GESPREK" />
                   </Link>

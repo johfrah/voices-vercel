@@ -73,11 +73,11 @@ export default function FaqPage() {
         
         {/* Header */}
         <SectionInstrument className="mb-16 text-center">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest border border-primary/10 mb-8">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10 mb-8">
             <HelpCircle size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="faq.badge" defaultText="Kennisbank" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter leading-none mb-6">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6">
             <VoiceglotText translationKey="faq.title" defaultText="Hoe kunnen we helpen?" />
           </HeadingInstrument>
           
@@ -99,7 +99,7 @@ export default function FaqPage() {
                 onClick={() => toggleFaq(i)}
                 className="w-full px-10 py-8 flex items-center justify-between text-left group"
               >
-                <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight group-hover:text-primary transition-colors">
+                <HeadingInstrument level={3} className="text-xl font-black tracking-tight group-hover:text-primary transition-colors">
                   <VoiceglotText translationKey={faq.key} defaultText={faq.q} />
                 </HeadingInstrument>
                 {openIndex === i ? <ChevronUp className="text-primary" /> : <ChevronDown className="text-va-black/20" />}
@@ -118,7 +118,7 @@ export default function FaqPage() {
         {/* Voicy CTA */}
         <ContainerInstrument className="mt-20 bg-va-black text-white rounded-[40px] p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-12 group">
           <div className="relative z-10 space-y-4 max-w-xl">
-            <HeadingInstrument level={2} className="text-4xl font-black uppercase tracking-tighter leading-tight">
+            <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter leading-tight">
               <VoiceglotText translationKey="faq.voicy.title" defaultText="Niet gevonden wat je zocht?" />
             </HeadingInstrument>
             <TextInstrument className="text-white/40 text-lg font-medium">

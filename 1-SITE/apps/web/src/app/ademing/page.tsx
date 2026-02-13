@@ -1,21 +1,20 @@
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { VoiceglotImage } from "@/components/ui/VoiceglotImage";
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  LoadingScreenInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  ButtonInstrument
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    LoadingScreenInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
+import { VoiceglotImage } from "@/components/ui/VoiceglotImage";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { db } from "@db";
 import { ademingTracks } from "@db/schema";
 import { eq } from "drizzle-orm";
 import { Play } from "lucide-react";
 import { headers } from 'next/headers';
-import Image from 'next/image';
 import { Suspense } from 'react';
 
 /**
@@ -36,7 +35,7 @@ async function TrackGrid() {
           title={track.vibe || 'Meditatie'}
         >
           <ContainerInstrument className="flex justify-between items-start mb-12">
-            <ContainerInstrument className="bg-black/5 text-black/40 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+            <ContainerInstrument className="bg-black/5 text-black/40 text-[15px] font-black px-3 py-1 rounded-full tracking-widest">
               {track.duration ? `${Math.floor(track.duration / 60)} min` : '10 min'}
             </ContainerInstrument>
           </ContainerInstrument>
@@ -78,13 +77,13 @@ export default async function AdemingPage() {
 
       <SectionInstrument className="px-8 mb-24 text-center flex flex-col items-center">
         <ContainerInstrument className="max-w-4xl">
-          <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[10px] font-light px-6 py-2 rounded-full mb-10 tracking-[0.3em] uppercase border border-primary/10">
+          <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[15px] font-light px-6 py-2 rounded-full mb-10 tracking-[0.3em] border border-primary/10">
             <VoiceglotText translationKey="ademing.hero.badge" defaultText="Ademing" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-[12vw] md:text-[8vw] font-extralight tracking-tighter leading-[0.75] mb-12 uppercase">
+          <HeadingInstrument level={1} className="text-[12vw] md:text-[8vw] font-extralight tracking-tighter leading-[0.75] mb-12 ">
             <VoiceglotText translationKey="ademing.hero.title_part1" defaultText="Kom tot " />
             <br />
-            <TextInstrument as="span" className="text-black/10">
+            <TextInstrument as="span" className="text-black/10 font-light">
               <VoiceglotText translationKey="ademing.hero.title_part2" defaultText="rust." />
             </TextInstrument>
           </HeadingInstrument>
@@ -104,7 +103,7 @@ export default async function AdemingPage() {
       {/* 🧘 DE GIDSEN VAN ADEMING */}
       <SectionInstrument className="max-w-7xl mx-auto px-8 mt-40">
         <ContainerInstrument className="mb-16">
-          <HeadingInstrument level={2} className="text-4xl font-light uppercase tracking-tighter text-black/20">
+          <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-black/20">
             <VoiceglotText translationKey="ademing.guides.title" defaultText="De Gidsen" />
           </HeadingInstrument>
         </ContainerInstrument>
@@ -122,10 +121,10 @@ export default async function AdemingPage() {
                 />
               </ContainerInstrument>
               <ContainerInstrument>
-                <HeadingInstrument level={4} className="text-[10px] font-light uppercase tracking-widest text-primary mb-1">
+                <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-primary mb-1">
                   <VoiceglotText translationKey="ademing.guide.julie.title" defaultText="Gids" />
                 </HeadingInstrument>
-                <HeadingInstrument level={3} className="text-4xl font-light uppercase tracking-tighter">
+                <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter">
                   <VoiceglotText translationKey="ademing.guide.julie.name" defaultText="Julie" noTranslate={true} />
                 </HeadingInstrument>
               </ContainerInstrument>
@@ -151,10 +150,10 @@ export default async function AdemingPage() {
                 />
               </ContainerInstrument>
               <ContainerInstrument>
-                <HeadingInstrument level={4} className="text-[10px] font-light uppercase tracking-widest text-va-black/30 mb-1">
+                <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/30 mb-1">
                   <VoiceglotText translationKey="ademing.guide.johfrah.title" defaultText="Gids" />
                 </HeadingInstrument>
-                <HeadingInstrument level={3} className="text-4xl font-light uppercase tracking-tighter">
+                <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter">
                   <VoiceglotText translationKey="ademing.guide.johfrah.name" defaultText="Johfrah" noTranslate={true} />
                 </HeadingInstrument>
               </ContainerInstrument>

@@ -33,14 +33,14 @@ export const ProductionStatusInstrument: React.FC<ProductionStatusInstrumentProp
               </div>
               <div>
                 <div className="font-bold">{item.name}</div>
-                <div className="text-xs text-slate-500 uppercase tracking-wider font-bold">
+                <div className="text-[15px] text-slate-500 tracking-wider font-bold">
                   {item.meta_data?.usage || <VoiceglotText translationKey="order.item.no_usage" defaultText="No usage defined" />}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-6">
               <div className="text-right">
-                <div className="text-xs text-slate-400 uppercase font-bold tracking-tighter">
+                <div className="text-[15px] text-slate-400 font-bold tracking-tighter">
                   <VoiceglotText translationKey="order.item.deadline" defaultText="Deadline" />
                 </div>
                 <div className="font-medium text-sm flex items-center gap-1">
@@ -48,7 +48,7 @@ export const ProductionStatusInstrument: React.FC<ProductionStatusInstrumentProp
                 </div>
               </div>
               <div className={clsx(
-                "px-3 py-1 rounded-lg text-xs font-bold uppercase",
+                "px-3 py-1 rounded-lg text-[15px] font-bold uppercase",
                 item.delivery_status === 'approved' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
               )}>
                 <VoiceglotText translationKey={`order.delivery_status.${item.delivery_status}`} defaultText={item.delivery_status} />

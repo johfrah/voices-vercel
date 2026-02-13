@@ -20,11 +20,11 @@ export default function JohfrahContactPage() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-32">
       <SectionInstrument>
         <ContainerInstrument className="max-w-4xl mx-auto px-6">
-          <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter mb-8">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter mb-8">
             <VoiceglotText translationKey="portfolio.johfrah.contact.title" defaultText="Laten we praten" />
           </HeadingInstrument>
           
-          <TextInstrument className="text-xl text-va-black/60 mb-12">
+          <TextInstrument className="text-xl text-va-black/60 mb-12 font-light">
             <VoiceglotText 
               translationKey="portfolio.johfrah.contact.intro" 
               defaultText="Heb je een project waar je mijn stem, regie of host-skills voor wilt inzetten? Ik hoor het graag." 
@@ -39,7 +39,7 @@ export default function JohfrahContactPage() {
                   <Mail size={20} />
                 </div>
                 <div>
-                  <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Email</TextInstrument>
+                  <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Email</TextInstrument>
                   <a href="mailto:johfrah@johfrah.be" className="text-lg font-bold hover:text-primary transition-colors">johfrah@johfrah.be</a>
                 </div>
               </div>
@@ -49,7 +49,7 @@ export default function JohfrahContactPage() {
                   <Phone size={20} />
                 </div>
                 <div>
-                  <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Telefoon</TextInstrument>
+                  <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Telefoon</TextInstrument>
                   <a href="tel:+3227931991" className="text-lg font-bold hover:text-primary transition-colors">+32 (0)2 793 19 91</a>
                 </div>
               </div>
@@ -59,7 +59,7 @@ export default function JohfrahContactPage() {
                   <MapPin size={20} />
                 </div>
                 <div>
-                  <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Locatie</TextInstrument>
+                  <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Locatie</TextInstrument>
                   <TextInstrument className="text-lg font-bold">Brussel / Antwerpen, België</TextInstrument>
                 </div>
               </div>
@@ -67,10 +67,10 @@ export default function JohfrahContactPage() {
 
             {/* Direct Action */}
             <div className="bg-va-black text-white p-10 rounded-[40px] space-y-6 shadow-2xl">
-              <HeadingInstrument level={3} className="text-2xl font-black uppercase tracking-tight">
+              <HeadingInstrument level={3} className="text-2xl font-black tracking-tight">
                 Direct Boeken?
               </HeadingInstrument>
-              <TextInstrument className="text-white/60 text-sm leading-relaxed">
+              <TextInstrument className="text-white/60 text-sm leading-relaxed font-light">
                 Wil je direct een stemopname inplannen of een offerte aanvragen via de Voices Engine?
               </TextInstrument>
               <ButtonInstrument as="a" href="https://voices.be/studio/book" className="va-btn-pro w-full text-center">

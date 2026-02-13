@@ -50,7 +50,7 @@ export const AppointmentPicker: React.FC<{ onSelect: (slot: TimeSlot) => void }>
                 : 'border-black/5 bg-white text-black/40 hover:border-black/10'
             }`}
           >
-            <div className="text-[10px] font-black uppercase tracking-widest mb-1">
+            <div className="text-[15px] font-black tracking-widest mb-1">
               {format(day, 'EEE', { locale: nlBE })}
             </div>
             <div className="text-xl font-black tracking-tighter">
@@ -64,7 +64,7 @@ export const AppointmentPicker: React.FC<{ onSelect: (slot: TimeSlot) => void }>
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
         <AnimatePresence mode="wait">
           {loading ? (
-            <div className="col-span-full py-12 text-center animate-pulse text-black/20 font-black uppercase tracking-widest">
+            <div className="col-span-full py-12 text-center animate-pulse text-black/20 font-black tracking-widest">
               Zoeken naar gaatjes...
             </div>
           ) : slots.length > 0 ? (
@@ -87,7 +87,7 @@ export const AppointmentPicker: React.FC<{ onSelect: (slot: TimeSlot) => void }>
               </motion.button>
             ))
           ) : (
-            <div className="col-span-full py-12 text-center text-black/20 font-black uppercase tracking-widest">
+            <div className="col-span-full py-12 text-center text-black/20 font-black tracking-widest">
               Geen plekjes vrij op deze dag.
             </div>
           )}

@@ -46,7 +46,7 @@ const AnimatedPrice: React.FC<{ value: number; label?: string }> = ({ value, lab
           €{displayValue.toFixed(2)}
         </motion.span>
         {label && (
-          <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{label}</span>
+          <span className="text-[15px] font-bold text-white/20 tracking-widest">{label}</span>
         )}
       </div>
     </div>
@@ -128,7 +128,7 @@ export const MobileCheckoutSheet: React.FC = () => {
           <div className="w-12 h-1.5 bg-black/10 rounded-full mb-2" />
           {!isOpen && (
             <div className="flex justify-between items-center w-full px-8">
-              <span className="text-[10px] font-black uppercase tracking-widest text-va-black/40">
+              <span className="text-[15px] font-black tracking-widest text-va-black/40">
                 <VoiceglotText translationKey="checkout.mobile.order_title" defaultText="Jouw Bestelling" />
               </span>
               <div className="flex items-center gap-2">
@@ -143,13 +143,13 @@ export const MobileCheckoutSheet: React.FC = () => {
         <div className="px-6 pb-12 max-h-[80vh] overflow-y-auto">
           {step === 'summary' && (
             <div className="space-y-6">
-              <h2 className="text-3xl font-black uppercase tracking-tighter">
+              <h2 className="text-3xl font-black tracking-tighter">
                 <VoiceglotText translationKey="checkout.mobile.summary_title" defaultText="Check je order" />
               </h2>
               
               <div className="grid grid-cols-2 gap-4">
                 <BentoCard className="bg-white p-6 border border-black/5">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-va-black/30 mb-2">
+                  <p className="text-[15px] font-black tracking-widest text-va-black/30 mb-2">
                     <VoiceglotText translationKey="common.voice" defaultText="Stem" />
                   </p>
                   <div className="flex items-center gap-3">
@@ -171,7 +171,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                   onClick={startVoiceBriefing}
                   className="bg-white p-6 border border-black/5 cursor-pointer hover:border-primary/30 transition-all"
                 >
-                  <p className="text-[10px] font-black uppercase tracking-widest text-va-black/30 mb-2">
+                  <p className="text-[15px] font-black tracking-widest text-va-black/30 mb-2">
                     <VoiceglotText translationKey="common.briefing" defaultText="Briefing" />
                   </p>
                   <div className="flex items-center gap-2 text-primary">
@@ -186,13 +186,13 @@ export const MobileCheckoutSheet: React.FC = () => {
                 <div className="absolute top-0 right-0 p-4 opacity-10">
                   <CreditCard size={80} />
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2">
+                <p className="text-[15px] font-black tracking-widest text-white/30 mb-2">
                   <VoiceglotText translationKey="common.total_amount" defaultText="Totaalbedrag" />
                 </p>
                 
                 <AnimatedPrice value={total} label="Incl. BTW" />
 
-                <div className="mt-4 pt-4 border-t border-white/5 flex justify-between text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                <div className="mt-4 pt-4 border-t border-white/5 flex justify-between text-[15px] font-bold text-white/40 tracking-widest">
                   <span>Excl. BTW</span>
                   <motion.span
                     key={subtotal}
@@ -214,7 +214,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                 </button>
                 <button 
                   onClick={() => setStep('payment')}
-                  className="w-full h-16 bg-white border-2 border-black/5 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm uppercase tracking-widest hover:bg-gray-50 transition-all"
+                  className="w-full h-16 bg-white border-2 border-black/5 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm tracking-widest hover:bg-gray-50 transition-all"
                 >
                   <VoiceglotText translationKey="checkout.mobile.other_payment" defaultText="Andere betaalmethode" />
                 </button>
@@ -232,7 +232,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                 <button onClick={() => setStep('summary')} className="p-2 bg-black/5 rounded-full">
                   <ChevronUp className="-rotate-90" size={20} />
                 </button>
-                <h2 className="text-3xl font-black uppercase tracking-tighter">
+                <h2 className="text-3xl font-black tracking-tighter">
                   <VoiceglotText translationKey="checkout.mobile.voice_briefing_title" defaultText="Spreek je briefing in" />
                 </h2>
               </div>
@@ -251,7 +251,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                 </motion.button>
                 
                 <div className="text-center">
-                  <p className="text-va-black/40 font-bold uppercase tracking-widest text-[10px] mb-2">
+                  <p className="text-va-black/40 font-bold tracking-widest text-[15px] mb-2">
                     {isRecording ? 'Aan het luisteren...' : 'Tik om te starten'}
                   </p>
                   {isRecording && (
@@ -271,13 +271,13 @@ export const MobileCheckoutSheet: React.FC = () => {
 
               {transcription && (
                 <BentoCard className="bg-white p-6 border-2 border-primary/20">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">
+                  <p className="text-[15px] font-black tracking-widest text-primary mb-2">
                     <VoiceglotText translationKey="checkout.mobile.registered_briefing" defaultText="Geregistreerde Briefing" />
                   </p>
                   <p className="text-sm font-medium leading-relaxed italic">&quot;{transcription}&quot;</p>
                   <button 
                     onClick={() => setStep('summary')}
-                    className="mt-6 w-full py-4 bg-va-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2"
+                    className="mt-6 w-full py-4 bg-va-black text-white rounded-xl text-[15px] font-black tracking-widest flex items-center justify-center gap-2"
                   >
                     <VoiceglotText translationKey="checkout.mobile.confirm_briefing" defaultText="Bevestig Briefing" /> <ArrowRight size={14} />
                   </button>
@@ -295,13 +295,13 @@ export const MobileCheckoutSheet: React.FC = () => {
               <div className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 size={48} />
               </div>
-              <h2 className="text-4xl font-black uppercase tracking-tighter">
+              <h2 className="text-4xl font-black tracking-tighter">
                 <VoiceglotText translationKey="checkout.mobile.success_title" defaultText="Bestelling Gelukt!" />
               </h2>
               <p className="text-va-black/50 font-medium">
                 <VoiceglotText translationKey="checkout.mobile.success_desc" defaultText="Je ontvangt direct een pushbericht zodra de opname start." />
               </p>
-              <BentoCard className="bg-primary text-va-black p-6 font-black uppercase tracking-widest text-xs cursor-pointer hover:scale-105 transition-all">
+              <BentoCard className="bg-primary text-va-black p-6 font-black tracking-widest text-[15px] cursor-pointer hover:scale-105 transition-all">
                 <VoiceglotText translationKey="checkout.mobile.view_cockpit" defaultText="Bekijk Status in Cockpit" />
               </BentoCard>
             </motion.div>

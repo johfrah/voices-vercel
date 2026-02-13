@@ -69,6 +69,7 @@ export interface ContainerInstrumentProps extends HTMLAttributes<HTMLElement> {
   noTranslate?: boolean;
   ariaLabel?: string;
   role?: string;
+  plain?: boolean;
 }
 
 export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentProps>(({ 
@@ -78,15 +79,17 @@ export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentPr
   noTranslate,
   ariaLabel,
   role,
+  plain = false,
   ...props
 }, ref) => {
   return (
     <Component 
       ref={ref} 
       className={cn(
-        className.includes('max-w-') ? className : cn("va-container", className),
+        (plain || className.includes('max-w-')) ? className : cn("va-container", className),
         noTranslate && "notranslate"
       )} 
+      style={{ paddingLeft: plain ? 0 : undefined, paddingRight: plain ? 0 : undefined }}
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
       role={role}
@@ -123,7 +126,7 @@ export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumen
       className={cn(
         noTranslate && "notranslate",
         className.includes('va-text-soft') && "text-va-black/40 font-medium",
-        className.includes('va-text-xs') && "text-[10px] font-light tracking-widest",
+        className.includes('va-text-[15px]') && "text-[15px] font-light tracking-widest",
         className
       )} 
       translate={noTranslate ? "no" : undefined}
@@ -162,7 +165,7 @@ export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({
       className={cn(
         noTranslate && "notranslate",
         className.includes('va-text-soft') && "text-va-black/40 font-medium",
-        className.includes('va-text-xs') && "text-[10px] font-light tracking-widest",
+        className.includes('va-text-[15px]') && "text-[15px] font-light tracking-widest",
         className
       )} 
       translate={noTranslate ? "no" : undefined}
@@ -203,7 +206,7 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
       ref={ref}
       type={Component === 'button' ? type : undefined}
       href={Component === 'a' ? href : undefined}
-      className={cn(className, noTranslate && "notranslate", "rounded-[10px] active:scale-95 transition-transform duration-100")}
+      className={cn(className, noTranslate && "notranslate", "rounded-[10px] active:scale-95 transition-transform duration-100 text-[15px]")}
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
       onClick={(e: any) => {
@@ -230,7 +233,7 @@ export const InputInstrument = forwardRef<HTMLInputElement, InputHTMLAttributes<
     <input 
       ref={ref}
       className={cn(
-        "bg-va-off-white border-none rounded-[10px] px-6 py-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20",
+        "bg-va-off-white border-none rounded-[10px] px-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20",
         className
       )}
       {...props}
@@ -248,7 +251,7 @@ export const SelectInstrument = forwardRef<HTMLSelectElement, SelectHTMLAttribut
   ...props
 }, ref) => {
   return (
-    <select ref={ref} className={cn(className, "rounded-[10px] bg-va-off-white border-none px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all")} {...props}>
+    <select ref={ref} className={cn(className, "rounded-[10px] bg-va-off-white border-none px-4 py-3 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all")} {...props}>
       {children}
     </select>
   );
@@ -263,7 +266,7 @@ export const OptionInstrument = ({
   ...props
 }: React.OptionHTMLAttributes<HTMLOptionElement>) => {
   return (
-    <option {...props}>
+    <option {...props} className="text-[15px]">
       {children}
     </option>
   );
@@ -295,7 +298,7 @@ export const LabelInstrument = ({
 }: HTMLAttributes<HTMLLabelElement>) => {
   return (
     <label 
-      className={cn("text-[10px] font-light tracking-widest text-va-black/40 ml-4 mb-2 block", className)} 
+      className={cn("text-[15px] font-light tracking-widest text-va-black/40 ml-4 mb-2 block", className)} 
       {...props}
     >
       {children}

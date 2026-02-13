@@ -25,7 +25,7 @@ export default function BookMeetingPage() {
             <CheckCircle2 size={48} />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-4">
-            <HeadingInstrument level={1} className="text-5xl font-black uppercase tracking-tighter">
+            <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
               <VoiceglotText translationKey="studio.meeting.success.title" defaultText="Afspraak staat!" />
             </HeadingInstrument>
             <TextInstrument className="text-va-black/50 font-medium text-lg">
@@ -49,7 +49,7 @@ export default function BookMeetingPage() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-32 pb-20">
       <ContainerInstrument className="max-w-4xl mx-auto px-6">
         <SectionInstrument className="mb-16 text-center space-y-4">
-          <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter">
             <VoiceglotText translationKey="studio.meeting.title" defaultText="Kennismaken" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-medium max-w-xl mx-auto text-lg">
@@ -65,7 +65,7 @@ export default function BookMeetingPage() {
           <div className="space-y-8">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">1</div>
-              <h2 className="text-xl font-black uppercase tracking-tight">Kies een moment</h2>
+              <h2 className="text-xl font-black tracking-tight">Kies een moment</h2>
             </div>
             <AppointmentPicker onSelect={setSelectedSlot} />
           </div>
@@ -74,7 +74,7 @@ export default function BookMeetingPage() {
           <div className={`space-y-8 transition-opacity duration-500 ${selectedSlot ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">2</div>
-              <h2 className="text-xl font-black uppercase tracking-tight">Jouw gegevens</h2>
+              <h2 className="text-xl font-black tracking-tight">Jouw gegevens</h2>
             </div>
             
             {selectedSlot && (

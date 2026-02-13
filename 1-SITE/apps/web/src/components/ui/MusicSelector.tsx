@@ -66,17 +66,17 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
             <Music size={20} />
           </div>
           <div>
-            <h4 className="text-sm font-black uppercase tracking-tight">
+            <h4 className="text-sm font-black tracking-tight">
               <VoiceglotText translationKey="music.selector.title" defaultText="Kies je sfeer" />
             </h4>
-            <p className="text-[10px] text-va-black/40 font-medium">
+            <p className="text-[15px] text-va-black/40 font-medium">
               <VoiceglotText translationKey="music.selector.subtitle" defaultText="Beluister enkele voorbeelden van onze rechtenvrije bibliotheek." />
             </p>
           </div>
         </div>
         <div className="text-right">
           <span className="text-lg font-black text-va-black">€59</span>
-          <p className="text-[8px] font-bold text-va-black/30 uppercase tracking-widest">
+          <p className="text-[15px] font-bold text-va-black/30 tracking-widest">
             <VoiceglotText translationKey="music.selector.price_label" defaultText="Eénmalig per set" />
           </p>
         </div>
@@ -93,8 +93,8 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
               )}
             >
               <div>
-                <p className={cn("text-[10px] font-black uppercase tracking-widest", state.music.trackId === track.id ? "text-primary" : "text-va-black")}>{track.title}</p>
-                <p className="text-[8px] font-bold text-va-black/30 uppercase tracking-tighter">{track.vibe}</p>
+                <p className={cn("text-[15px] font-black uppercase tracking-widest", state.music.trackId === track.id ? "text-primary" : "text-va-black")}>{track.title}</p>
+                <p className="text-[15px] font-bold text-va-black/30 tracking-tighter">{track.vibe}</p>
               </div>
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center transition-all",
@@ -116,7 +116,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
         <div className="bg-white p-6 rounded-2xl border border-primary/10 space-y-4 animate-in slide-in-from-top-2 duration-500">
           <div className="flex items-center gap-2 mb-2">
             <Info size={14} className="text-primary" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-va-black/60">
+            <p className="text-[15px] font-black tracking-widest text-va-black/60">
               <VoiceglotText translationKey="music.options.title" defaultText="Hoe wil je deze muziek gebruiken?" />
             </p>
           </div>
@@ -133,10 +133,10 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
                 {state.music.asBackground && <Check size={12} strokeWidth={4} />}
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-tight">
+                <p className="text-[15px] font-black tracking-tight">
                   <VoiceglotText translationKey="music.options.background.title" defaultText="Achtergrondmuziek" />
                 </p>
-                <p className="text-[8px] font-medium text-va-black/40">
+                <p className="text-[15px] font-medium text-va-black/40">
                   <VoiceglotText translationKey="music.options.background.desc" defaultText="Gemixt onder de stem (professionele mix)." />
                 </p>
               </div>
@@ -153,10 +153,10 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
                 {state.music.asHoldMusic && <Check size={12} strokeWidth={4} />}
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-tight">
+                <p className="text-[15px] font-black tracking-tight">
                   <VoiceglotText translationKey="music.options.hold.title" defaultText="Wachtmuziek" />
                 </p>
-                <p className="text-[8px] font-medium text-va-black/40">
+                <p className="text-[15px] font-medium text-va-black/40">
                   <VoiceglotText translationKey="music.options.hold.desc" defaultText="Als apart audiobestand voor je centrale." />
                 </p>
               </div>
@@ -164,7 +164,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
           </div>
           
           {state.music.asBackground && state.music.asHoldMusic && (
-            <p className="text-[9px] font-bold text-primary text-center italic">
+            <p className="text-[15px] font-bold text-primary text-center italic">
               <VoiceglotText translationKey="music.options.both_hint" defaultText="Beide opties gekozen: we leveren zowel de mix als het losse bestand." />
             </p>
           )}
@@ -173,7 +173,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
 
       <div className="flex items-center gap-2 bg-white/50 p-3 rounded-xl border border-black/5">
         <Check size={14} className="text-green-500" />
-        <p className="text-[9px] font-medium text-va-black/60">
+        <p className="text-[15px] font-medium text-va-black/60">
           <VoiceglotText translationKey="music.selector.footer_note" defaultText="Inclusief professionele mix door onze technici." />
         </p>
       </div>

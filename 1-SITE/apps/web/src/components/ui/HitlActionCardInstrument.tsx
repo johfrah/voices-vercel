@@ -42,31 +42,31 @@ export const HitlActionCardInstrument = ({
       <ContainerInstrument className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 blur-2xl rounded-full group-hover:bg-primary/20 transition-all" />
       
       <ContainerInstrument className="flex justify-between items-start mb-3 relative z-10">
-        <ContainerInstrument className="flex items-center gap-2">
+          <ContainerInstrument className="flex items-center gap-2">
           {getIcon()}
-          <HeadingInstrument level={4} className="text-[9px] font-black uppercase tracking-widest text-white/40">
-            Voicy Suggestie
+          <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-white/40">
+            <VoiceglotText translationKey="hitl.suggestion" defaultText="Voicy Suggestie" />
           </HeadingInstrument>
         </ContainerInstrument>
         <ButtonInstrument onClick={onDismiss} className="text-white/20 hover:text-white transition-colors">
-          <X size={12} />
+          <X size={12} strokeWidth={1.5} />
         </ButtonInstrument>
       </ContainerInstrument>
 
       <ContainerInstrument className="relative z-10">
-        <HeadingInstrument level={3} className="text-xs font-black mb-1">
+        <HeadingInstrument level={3} className="text-[15px] font-medium mb-1">
           {title}
         </HeadingInstrument>
-        <TextInstrument className="text-[10px] text-white/60 leading-relaxed mb-4">
+        <TextInstrument className="text-[15px] text-white/60 leading-relaxed mb-4 font-light">
           {description}
         </TextInstrument>
 
         <ButtonInstrument 
           onClick={onApprove}
-          className="w-full py-2 bg-white text-va-black rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all"
+          className="w-full py-2 bg-white text-va-black rounded-xl text-[15px] font-medium tracking-widest flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all"
         >
           <VoiceglotText translationKey="common.approve" defaultText="Goedkeuren & Versturen" />
-          <ArrowRight size={12} />
+          <ArrowRight size={12} strokeWidth={1.5} />
         </ButtonInstrument>
       </ContainerInstrument>
     </ContainerInstrument>

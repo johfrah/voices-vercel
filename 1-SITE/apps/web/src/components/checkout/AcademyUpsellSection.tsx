@@ -14,7 +14,7 @@ export const AcademyUpsellSection: React.FC = () => {
     <div className="space-y-6 mt-12 pt-12 border-t border-black/5">
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="text-primary" size={18} />
-        <h3 className="text-sm font-black uppercase tracking-widest text-va-black/40">
+        <h3 className="text-sm font-black tracking-widest text-va-black/40">
           <VoiceglotText translationKey="checkout.upsell.title" defaultText="Maak je traject compleet" />
         </h3>
       </div>
@@ -35,10 +35,10 @@ export const AcademyUpsellSection: React.FC = () => {
                 <Home size={24} />
               </div>
               <div className="space-y-1">
-                <h4 className="font-black uppercase tracking-tighter text-lg leading-none">
+                <h4 className="font-black tracking-tighter text-lg leading-none">
                   <VoiceglotText translationKey="checkout.upsell.workshop_home.title" defaultText="Live Workshop bij Johfrah thuis" />
                 </h4>
-                <p className="text-xs text-va-black/50 font-medium max-w-[280px]">
+                <p className="text-[15px] text-va-black/50 font-medium max-w-[280px]">
                   <VoiceglotText 
                     translationKey="checkout.upsell.workshop_home.text" 
                     defaultText="Een exclusieve 1-op-1 trainingsdag in mijn persoonlijke studio, inclusief jouw professionele demo-opname." 
@@ -46,7 +46,7 @@ export const AcademyUpsellSection: React.FC = () => {
                 </p>
                 <div className="pt-2 flex items-center gap-2">
                   <span className="text-sm font-black text-primary">+ €395</span>
-                  <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">
+                  <span className="text-[15px] font-bold text-va-black/20 tracking-widest">
                     <VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" />
                   </span>
                 </div>

@@ -85,6 +85,12 @@ class ChrisWatchdog {
       severity: 'WARNING'
     },
     {
+      name: 'Leesbaarheid Mandate',
+      pattern: /text-\[([0-9]|1[0-4])px\]|text-xs/g,
+      message: 'Minimale tekstgrootte is 15px. Geen text-[8px] tot text-[14px] of text-xs toegestaan.',
+      severity: 'CRITICAL'
+    },
+    {
       name: 'Atomic Icon Mandate',
       pattern: /<(Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind)(?!.*strokeWidth={1.5})[^>]*>/g,
       message: 'Lucide icons MOETEN strokeWidth={1.5} hebben voor de Ademing-feel.',

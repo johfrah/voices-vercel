@@ -29,9 +29,9 @@ export const GlossaryCard: React.FC<GlossaryCardProps> = ({ term }) => {
         <BookOpen size={18} />
       </div>
       <div>
-        <h4 className="text-xs font-black uppercase tracking-widest mb-1">{def.title}</h4>
-        <p className="text-[11px] text-va-black/60 leading-relaxed mb-3">{def.text}</p>
-        <Link href={`/glossary/${term}`} className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-primary hover:gap-2 transition-all">
+        <h4 className="text-[15px] font-black tracking-widest mb-1">{def.title}</h4>
+        <p className="text-[15px] text-va-black/60 leading-relaxed mb-3">{def.text}</p>
+        <Link href={`/glossary/${term}`} className="inline-flex items-center gap-1.5 text-[15px] font-black tracking-widest text-primary hover:gap-2 transition-all">
           Lees meer in de kennisbank <ArrowRight size={10} />
         </Link>
       </div>

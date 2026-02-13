@@ -45,28 +45,28 @@ export const CookieBanner: React.FC = () => {
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           className="fixed bottom-8 left-6 right-6 md:left-auto md:right-8 md:w-[400px] z-[100]"
         >
-          <ContainerInstrument className="bg-va-black text-white p-6 rounded-[24px] shadow-aura border border-white/5 relative overflow-hidden group">
+          <ContainerInstrument plain className="bg-va-black text-white p-6 rounded-[24px] shadow-aura border border-white/5 relative overflow-hidden group">
             {/* Liquid Background Element */}
-            <ContainerInstrument className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
+            <ContainerInstrument plain className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
 
-            <ContainerInstrument className="relative z-10 space-y-4">
-              <TextInstrument className="text-white/60 text-[10px] font-bold uppercase tracking-widest">
+            <ContainerInstrument plain className="relative z-10 space-y-4">
+              <TextInstrument className="text-white/60 text-[15px] font-bold tracking-widest">
                 <VoiceglotText 
                   translationKey="legal.cookie.text" 
                   defaultText="Wij gebruiken cookies om jouw ervaring te personaliseren." 
                 />
               </TextInstrument>
 
-              <ContainerInstrument className="flex items-center gap-4">
+              <ContainerInstrument plain className="flex items-center gap-4">
                 <ButtonInstrument 
                   onClick={() => handleAccept('all')}
-                  className="bg-primary text-va-black px-5 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all"
+                  className="bg-primary text-va-black px-5 py-2.5 rounded-lg text-[15px] font-black tracking-widest hover:scale-105 transition-all"
                 >
                   <VoiceglotText translationKey="legal.cookie.accept" defaultText="Accepteer" />
                 </ButtonInstrument>
                 <ButtonInstrument 
                   onClick={() => handleAccept('essential')}
-                  className="text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-white transition-colors"
+                  className="text-[15px] font-black tracking-widest text-white/20 hover:text-white transition-colors"
                 >
                   <VoiceglotText translationKey="legal.cookie.essential" defaultText="Noodzakelijk" />
                 </ButtonInstrument>

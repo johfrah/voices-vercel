@@ -74,7 +74,7 @@ async function JohfrahContent() {
             <div className="lg:col-span-7 space-y-10">
               <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-md rounded-[20px] shadow-sm border border-black/[0.03]">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-black/40">
+                <span className="text-[15px] font-black tracking-widest text-black/40">
                   <VoiceglotText translationKey="portfolio.badge" defaultText="The Voice behind the Story" />
                 </span>
               </ContainerInstrument>
@@ -96,7 +96,7 @@ async function JohfrahContent() {
                 <ButtonInstrument as="a" href="#demos" className="va-btn-pro !rounded-[10px] px-10 py-5">
                   <VoiceglotText translationKey="portfolio.johfrah.cta.demos" defaultText="Beluister Demo's" />
                 </ButtonInstrument>
-                <a href="#contact" className="text-[11px] font-black uppercase tracking-[0.2em] text-va-black/30 hover:text-primary transition-all duration-500 flex items-center gap-3 group">
+                <a href="#contact" className="text-[15px] font-black tracking-[0.2em] text-va-black/30 hover:text-primary transition-all duration-500 flex items-center gap-3 group">
                   <VoiceglotText translationKey="portfolio.johfrah.cta.contact" defaultText="Laten we praten" />
                   <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
                 </a>
@@ -118,7 +118,7 @@ async function JohfrahContent() {
               {/* Floating Award Badge - Removed per user request */}
               {/* <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-[20px] shadow-aura flex items-center gap-4 max-w-[200px] animate-float border border-black/[0.03]">
                 <Award className="text-primary shrink-0" size={32} strokeWidth={1.5} />
-                <TextInstrument className="text-[10px] font-black leading-tight uppercase tracking-wider text-va-black/60">
+                <TextInstrument className="text-[15px] font-black leading-tight tracking-wider text-va-black/60">
                   Emmy Award Winnaar
                 </TextInstrument>
               </div> */}
@@ -135,7 +135,7 @@ async function JohfrahContent() {
               <div className="w-14 h-14 rounded-[12px] bg-white/10 backdrop-blur-md flex items-center justify-center">
                 <Award size={28} strokeWidth={1.5} className="text-white/60" />
               </div>
-              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter leading-none uppercase">
+              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter leading-none ">
                 <VoiceglotText translationKey="portfolio.johfrah.host.title" defaultText="Host & Reporter" />
               </HeadingInstrument>
               <TextInstrument className="text-lg text-white/70 font-light leading-relaxed max-w-sm">
@@ -170,19 +170,19 @@ async function JohfrahContent() {
 
           <BentoCard id="rates" span="md" className="bg-white p-10 rounded-[20px] shadow-aura flex flex-col justify-between border border-black/[0.03]">
             <div>
-              <HeadingInstrument level={3} className="text-2xl font-light uppercase tracking-tighter text-va-black mb-10">
+              <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter text-va-black mb-10">
                 <VoiceglotText translationKey="portfolio.johfrah.rates.title" defaultText="Investering" />
               </HeadingInstrument>
               <div className="space-y-8">
                 {data.rates.map((rate, i) => (
                   <div key={i} className="group">
                     <div className="flex justify-between items-end mb-2">
-                      <TextInstrument as="span" className="font-bold uppercase text-[10px] tracking-[0.2em] text-va-black/20 group-hover:text-primary transition-colors">
+                      <TextInstrument as="span" className="font-bold text-[15px] tracking-[0.2em] text-va-black/20 group-hover:text-primary transition-colors">
                         <VoiceglotText translationKey={`portfolio.johfrah.rates.${i}.label`} defaultText={rate.label} />
                       </TextInstrument>
                       <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black">€{rate.price}</TextInstrument>
                     </div>
-                    <TextInstrument className="text-va-black/40 text-[13px] font-medium leading-relaxed">
+                    <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed">
                       <VoiceglotText translationKey={`portfolio.johfrah.rates.${i}.desc`} defaultText={rate.desc} />
                     </TextInstrument>
                   </div>
@@ -191,10 +191,10 @@ async function JohfrahContent() {
             </div>
             
             <div className="pt-10 border-t border-black/[0.03] mt-10">
-              <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/20 mb-2">
+              <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/20 mb-2">
                 Studio Setup
               </TextInstrument>
-              <TextInstrument className="text-[13px] text-va-black/40 font-light">
+              <TextInstrument className="text-[15px] text-va-black/40 font-light">
                 Neumann TLM 103 • Apollo Interface • SourceConnect
               </TextInstrument>
             </div>
@@ -226,7 +226,7 @@ async function JohfrahContent() {
                     <div className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 group-hover:bg-primary group-hover:text-white transition-all duration-700 shadow-sm mb-6">
                       <Mic size={20} strokeWidth={1.5} />
                     </div>
-                    <TextInstrument className="font-bold uppercase tracking-widest text-[10px] text-va-black/30 group-hover:text-primary transition-colors mb-2">
+                    <TextInstrument className="font-bold tracking-widest text-[15px] text-va-black/30 group-hover:text-primary transition-colors mb-2">
                       <VoiceglotText translationKey={`portfolio.johfrah.demo.${i}.category`} defaultText={demo.category} />
                     </TextInstrument>
                     <HeadingInstrument level={3} className="text-lg font-light tracking-tight text-va-black">
@@ -260,7 +260,7 @@ async function JohfrahContent() {
                 Start een project
               </ButtonInstrument>
             </a>
-            <a href="tel:+32475123456" className="text-va-black/30 hover:text-primary transition-colors font-light tracking-[0.2em] text-[11px] uppercase">
+            <a href="tel:+32475123456" className="text-va-black/30 hover:text-primary transition-colors font-light tracking-[0.2em] text-[15px] ">
               BEL DIRECT: +32 475 12 34 56
             </a>
           </div>

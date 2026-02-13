@@ -74,7 +74,7 @@ export const CommandPalette = () => {
             className="flex-grow bg-transparent border-none outline-none text-lg font-medium text-va-black placeholder:text-gray-300"
           />
           <div className="flex items-center gap-1.5 ml-4">
-            <span className="px-1.5 py-1 bg-gray-100 text-gray-400 rounded text-[10px] font-black">ESC</span>
+            <span className="px-1.5 py-1 bg-gray-100 text-gray-400 rounded text-[15px] font-black">ESC</span>
           </div>
         </div>
 
@@ -83,7 +83,7 @@ export const CommandPalette = () => {
             <VoiceglotText translationKey="command.palette.empty" defaultText="Geen resultaten gevonden voor deze zoekopdracht." />
           </Command.Empty>
 
-          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.nav" defaultText="Navigatie" />} className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
+          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.nav" defaultText="Navigatie" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400">
             <Item onSelect={() => runCommand(() => router.push('/admin/dashboard'))}>
               <LayoutDashboard className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.cockpit.title" defaultText="Voices Cockpit" /></span>
@@ -111,7 +111,7 @@ export const CommandPalette = () => {
             </Item>
           </Command.Group>
 
-          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.mgmt" defaultText="Beheer" />} className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mt-4">
+          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.mgmt" defaultText="Beheer" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400 mt-4">
             <Item onSelect={() => runCommand(() => router.push('/admin/voices'))}>
               <Mic className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.voices.title" defaultText="Voices Manager" /></span>
@@ -152,7 +152,7 @@ export const CommandPalette = () => {
             </Item>
           </Command.Group>
 
-          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.studio" defaultText="Studio Specifiek" />} className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mt-4">
+          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.studio" defaultText="Studio Specifiek" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400 mt-4">
             <Item onSelect={() => runCommand(() => router.push('/studio/kalender'))}>
               <History className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.studio.calendar" defaultText="Studio Kalender" /></span>
@@ -163,7 +163,7 @@ export const CommandPalette = () => {
             </Item>
           </Command.Group>
 
-          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.system" defaultText="Systeem" />} className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mt-4">
+          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.system" defaultText="Systeem" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400 mt-4">
             <Item onSelect={() => runCommand(() => router.push('/account/partner'))}>
               <TrendingUp className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.partner.title" defaultText="Partner Dashboard" /></span>
@@ -175,7 +175,7 @@ export const CommandPalette = () => {
             </Item>
           </Command.Group>
 
-          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.actions" defaultText="Acties" />} className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mt-4">
+          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.actions" defaultText="Acties" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400 mt-4">
             <Item onSelect={() => runCommand(() => {
               toast.success('Nieuw bericht venster geopend');
               // Trigger compose logic via event of state
@@ -204,7 +204,7 @@ export const CommandPalette = () => {
             </Item>
           </Command.Group>
 
-          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.intelligence" defaultText="Intelligence" />} className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mt-4">
+          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.intelligence" defaultText="Intelligence" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400 mt-4">
             <Item onSelect={() => runCommand(() => router.push('/account/mailbox?tab=insights'))}>
               <TrendingUp className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.insights.title" defaultText="Trends & SWOT Analyse" /></span>
@@ -219,20 +219,20 @@ export const CommandPalette = () => {
         <div className="px-6 py-3 bg-gray-50/50 border-t border-gray-50 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
-              <span className="px-1 py-0.5 bg-white border border-gray-200 rounded text-[9px] font-bold shadow-sm">↑↓</span>
-              <span className="text-[10px] text-gray-400 font-medium">
+              <span className="px-1 py-0.5 bg-white border border-gray-200 rounded text-[15px] font-bold shadow-sm">↑↓</span>
+              <span className="text-[15px] text-gray-400 font-medium">
                 <VoiceglotText translationKey="command.palette.hint.navigate" defaultText="Navigeren" />
               </span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="px-1 py-0.5 bg-white border border-gray-200 rounded text-[9px] font-bold shadow-sm">ENTER</span>
-              <span className="text-[10px] text-gray-400 font-medium">
+              <span className="px-1 py-0.5 bg-white border border-gray-200 rounded text-[15px] font-bold shadow-sm">ENTER</span>
+              <span className="text-[15px] text-gray-400 font-medium">
                 <VoiceglotText translationKey="command.palette.hint.select" defaultText="Selecteren" />
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-gray-300 font-black uppercase tracking-tighter italic">Voices OS v2.6</span>
+            <span className="text-[15px] text-gray-300 font-black tracking-tighter italic">Voices OS v2.6</span>
           </div>
         </div>
       </div>
@@ -251,7 +251,7 @@ const Item = ({ children, onSelect }: { children: React.ReactNode; onSelect: () 
 
 const Shortcut = ({ children }: { children: React.ReactNode }) => (
   <div className="ml-auto flex items-center gap-1">
-    <span className="text-[9px] font-black px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded group-aria-selected:bg-white/20 group-aria-selected:text-white transition-colors">
+    <span className="text-[15px] font-black px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded group-aria-selected:bg-white/20 group-aria-selected:text-white transition-colors">
       {children}
     </span>
   </div>

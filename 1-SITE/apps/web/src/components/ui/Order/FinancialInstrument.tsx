@@ -24,19 +24,19 @@ export const FinancialInstrument: React.FC<FinancialInstrumentProps> = ({
     >
       <div className="grid grid-cols-3 gap-4 mt-4">
         <div>
-          <div className="text-slate-400 text-[10px] font-bold tracking-widest uppercase">
+          <div className="text-slate-400 text-[15px] font-bold tracking-widest ">
             <VoiceglotText translationKey="order.financial.revenue" defaultText="Omzet" />
           </div>
           <div className="text-2xl font-bold">€{total}</div>
         </div>
         <div>
-          <div className="text-slate-400 text-[10px] font-bold tracking-widest uppercase text-red-400">
+          <div className="text-slate-400 text-[15px] font-bold tracking-widest text-red-400">
             <VoiceglotText translationKey="order.financial.cost" defaultText="Inkoop (COG)" />
           </div>
           <div className="text-2xl font-bold text-red-400">€{totalCost}</div>
         </div>
         <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-          <div className="text-slate-400 text-[10px] font-bold tracking-widest uppercase text-emerald-400">
+          <div className="text-slate-400 text-[15px] font-bold tracking-widest text-emerald-400">
             <VoiceglotText translationKey="order.financial.margin" defaultText="Marge" />
           </div>
           <div className="text-2xl font-bold text-emerald-400">€{totalProfit}</div>

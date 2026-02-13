@@ -34,17 +34,17 @@ export default async function EditionParticipantsPage({ params }: { params: { id
       {/* 🔙 BACK BUTTON */}
       <Link 
         href="/studio/beheer" 
-        className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
+        className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
       >
         <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
         <VoiceglotText translationKey="studio.beheer.back" defaultText="TERUG NAAR COCKPIT" />
       </Link>
 
       <ContainerInstrument className="mb-12">
-        <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-black/40 mb-2">
+        <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2">
           <VoiceglotText translationKey="studio.beheer.participants_list" defaultText="Deelnemerslijst" />
         </TextInstrument>
-        <HeadingInstrument level={1} className="text-5xl font-black uppercase tracking-tighter">
+        <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
           <VoiceglotText translationKey="studio.beheer.who_is_in_class" defaultText="Wie zit er in de klas?" />
         </HeadingInstrument>
       </ContainerInstrument>
@@ -55,11 +55,11 @@ export default async function EditionParticipantsPage({ params }: { params: { id
           <div className="p-8 border-b border-black/5 bg-va-off-white/50 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <Users size={20} className="text-primary" />
-              <span className="text-sm font-black uppercase tracking-tight">
+              <span className="text-sm font-black tracking-tight">
                 {participants.length} Deelnemers bevestigd
               </span>
             </div>
-            <div className="text-[10px] font-bold text-black/20 uppercase tracking-widest">
+            <div className="text-[15px] font-bold text-black/20 tracking-widest">
               Privacy Mode Actief (No PII)
             </div>
           </div>
@@ -77,14 +77,14 @@ export default async function EditionParticipantsPage({ params }: { params: { id
                         {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
                       </div>
                       <div>
-                        <div className="text-xl font-black uppercase tracking-tight">
+                        <div className="text-xl font-black tracking-tight">
                           {user?.firstName} {user?.lastName}
                         </div>
                         <div className="flex gap-4 mt-1">
-                          <div className="flex items-center gap-1 text-[10px] font-bold text-black/30 uppercase tracking-widest">
+                          <div className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
                             <Briefcase size={10} /> {dna.profession || 'Niet opgegeven'}
                           </div>
-                          <div className="flex items-center gap-1 text-[10px] font-bold text-black/30 uppercase tracking-widest">
+                          <div className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
                             <Calendar size={10} /> {dna.age || '?'} jaar
                           </div>
                         </div>
@@ -94,7 +94,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
                     {/* USER DNA TAGS */}
                     <div className="flex flex-wrap gap-2">
                       <div className={cn(
-                        "px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border",
+                        "px-3 py-1.5 rounded-full text-[15px] font-black uppercase tracking-widest border",
                         dna.experience === 'beginner' ? "bg-green-500/5 border-green-500/20 text-green-600" :
                         dna.experience === 'intermediate' ? "bg-blue-500/5 border-blue-500/20 text-blue-600" :
                         "bg-primary/5 border-primary/20 text-primary"
@@ -102,7 +102,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
                         {dna.experience || 'beginner'}
                       </div>
                       {dna.goal && (
-                        <div className="px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest bg-black/5 border-black/10 text-black/40">
+                        <div className="px-3 py-1.5 rounded-full text-[15px] font-black tracking-widest bg-black/5 border-black/10 text-black/40">
                           Doelgericht
                         </div>
                       )}
@@ -111,7 +111,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
 
                   {/* GOAL / EXPECTATIONS (IF AVAILABLE) */}
                   {dna.goal && (
-                    <div className="mt-6 p-4 rounded-xl bg-va-off-white/50 border border-black/5 italic text-xs text-black/60 leading-relaxed">
+                    <div className="mt-6 p-4 rounded-xl bg-va-off-white/50 border border-black/5 italic text-[15px] text-black/60 leading-relaxed">
                       &quot;{dna.goal}&quot;
                     </div>
                   )}
@@ -119,7 +119,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
               );
             }) : (
               <div className="py-20 text-center">
-                <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-black/20">
+                <TextInstrument className="text-[15px] font-black tracking-widest text-black/20">
                   Nog geen deelnemers voor deze editie.
                 </TextInstrument>
               </div>
@@ -131,10 +131,10 @@ export default async function EditionParticipantsPage({ params }: { params: { id
         <div className="space-y-8">
           <BentoCard span="sm" className="bg-va-black text-white p-10">
             <Star className="text-primary mb-6" size={24} />
-            <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tighter mb-4">
+            <HeadingInstrument level={3} className="text-xl font-black tracking-tighter mb-4">
               <VoiceglotText translationKey="studio.beheer.prepare_title" defaultText="Bereid je voor" />
             </HeadingInstrument>
-            <TextInstrument className="text-white/40 text-xs font-medium leading-relaxed mb-8">
+            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed mb-8">
               <VoiceglotText 
                 translationKey="studio.beheer.prepare_desc" 
                 defaultText="Gebruik het &lsquo;User DNA&rsquo; om je coaching aan te passen. Heb je veel beginners? Focus dan meer op de basis." 
@@ -144,19 +144,19 @@ export default async function EditionParticipantsPage({ params }: { params: { id
             <div className="space-y-4">
               <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
                 <Info size={16} className="text-primary" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">80% Beginners</span>
+                <span className="text-[15px] font-bold tracking-widest">80% Beginners</span>
               </div>
             </div>
           </BentoCard>
 
           <BentoCard span="sm" className="bg-va-off-white p-10 border border-black/5">
-            <HeadingInstrument level={3} className="text-[10px] font-black uppercase tracking-widest text-black/30 mb-6">
+            <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest text-black/30 mb-6">
               Hulp nodig?
             </HeadingInstrument>
-            <TextInstrument className="text-xs font-medium text-black/60 leading-relaxed mb-8">
+            <TextInstrument className="text-[15px] font-medium text-black/60 leading-relaxed mb-8">
               Vragen over de deelnemers of de logistiek? Neem contact op met de admin.
             </TextInstrument>
-            <Link href="/studio/afspraak" className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">
+            <Link href="/studio/afspraak" className="text-[15px] font-black tracking-widest text-primary hover:underline">
               CONTACTEER ADMIN
             </Link>
           </BentoCard>

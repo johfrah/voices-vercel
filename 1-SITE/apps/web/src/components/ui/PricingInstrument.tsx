@@ -33,9 +33,9 @@ export const PricingInstrument: React.FC = () => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ContainerInstrument className="mb-16 space-y-4">
-        <HeadingInstrument level={2} className="text-5xl font-black uppercase tracking-tighter">
+        <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter">
           <VoiceglotText translationKey="home.pricing.title_part1" defaultText="Bereken jouw " />
-          <TextInstrument as="span" className="text-primary">
+          <TextInstrument as="span" className="text-primary font-light italic">
             <VoiceglotText translationKey="home.pricing.title_highlight" defaultText="tarief" />
           </TextInstrument>
         </HeadingInstrument>

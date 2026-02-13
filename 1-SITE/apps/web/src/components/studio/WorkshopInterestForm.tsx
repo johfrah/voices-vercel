@@ -74,7 +74,7 @@ export const WorkshopInterestForm: React.FC = () => {
         <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
           <CheckCircle2 size={40} />
         </div>
-        <HeadingInstrument level={2} className="text-4xl font-black uppercase tracking-tighter">
+        <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter">
           <VoiceglotText translationKey="workshop.interest.success.title" defaultText="Bedankt!" />
         </HeadingInstrument>
         <TextInstrument className="text-va-black/40 font-medium text-lg">
@@ -98,7 +98,7 @@ export const WorkshopInterestForm: React.FC = () => {
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-8">
               <Star className="text-primary fill-primary" size={24} />
-              <h3 className="text-xl font-black uppercase tracking-tight">
+              <h3 className="text-xl font-black tracking-tight">
                 <VoiceglotText translationKey="workshop.interest.title" defaultText="Voor welke workshop(s) heb je interesse?" />
               </h3>
             </div>
@@ -116,7 +116,7 @@ export const WorkshopInterestForm: React.FC = () => {
                       : "bg-white border-black/5 text-va-black hover:border-primary/30"
                   )}
                 >
-                  <span className="font-black uppercase tracking-tight text-sm">
+                  <span className="font-black tracking-tight text-sm">
                     <VoiceglotText translationKey={`workshop.${w.id}.title`} defaultText={w.title} noTranslate={true} />
                   </span>
                   <div className={cn(
@@ -136,7 +136,7 @@ export const WorkshopInterestForm: React.FC = () => {
           <div className="pt-12 border-t border-black/5 space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-black/40 px-4">
+                <label className="text-[15px] font-black tracking-widest text-black/40 px-4">
                   <VoiceglotText translationKey="common.first_name" defaultText="Voornaam" />
                 </label>
                 <InputInstrument 
@@ -148,7 +148,7 @@ export const WorkshopInterestForm: React.FC = () => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-black/40 px-4">
+                <label className="text-[15px] font-black tracking-widest text-black/40 px-4">
                   <VoiceglotText translationKey="common.last_name" defaultText="Familienaam" />
                 </label>
                 <InputInstrument 
@@ -160,7 +160,7 @@ export const WorkshopInterestForm: React.FC = () => {
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-black/40 px-4">
+                <label className="text-[15px] font-black tracking-widest text-black/40 px-4">
                   <VoiceglotText translationKey="common.email" defaultText="E-mailadres" />
                 </label>
                 <InputInstrument 
@@ -177,7 +177,7 @@ export const WorkshopInterestForm: React.FC = () => {
             <button
               type="submit"
               disabled={selectedWorkshops.length === 0 || !formData.email}
-              className="w-full py-6 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-sm hover:bg-primary transition-all shadow-xl flex items-center justify-center gap-3 group"
+              className="w-full py-6 rounded-2xl bg-black text-white font-black tracking-widest text-sm hover:bg-primary transition-all shadow-xl flex items-center justify-center gap-3 group"
             >
               <VoiceglotText translationKey="common.next_step" defaultText="VOLGENDE STAP" /> <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
@@ -188,14 +188,14 @@ export const WorkshopInterestForm: React.FC = () => {
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-8">
               <Star className="text-primary fill-primary" size={24} />
-              <h3 className="text-xl font-black uppercase tracking-tight">
+              <h3 className="text-xl font-black tracking-tight">
                 <VoiceglotText translationKey="workshop.interest.step2.title" defaultText="Help ons je beter te leren kennen" />
               </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-black/40 px-4">
+                <label className="text-[15px] font-black tracking-widest text-black/40 px-4">
                   <VoiceglotText translationKey="common.profession" defaultText="Beroep" />
                 </label>
                 <InputInstrument 
@@ -206,7 +206,7 @@ export const WorkshopInterestForm: React.FC = () => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-black/40 px-4">
+                <label className="text-[15px] font-black tracking-widest text-black/40 px-4">
                   <VoiceglotText translationKey="common.age" defaultText="Leeftijd" />
                 </label>
                 <InputInstrument 
@@ -218,7 +218,7 @@ export const WorkshopInterestForm: React.FC = () => {
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-black/40 px-4">
+                <label className="text-[15px] font-black tracking-widest text-black/40 px-4">
                   <VoiceglotText translationKey="common.experience" defaultText="Ervaring met stemwerk" />
                 </label>
                 <select 
@@ -233,7 +233,7 @@ export const WorkshopInterestForm: React.FC = () => {
                 </select>
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-black/40 px-4">
+                <label className="text-[15px] font-black tracking-widest text-black/40 px-4">
                   <VoiceglotText translationKey="common.goal" defaultText="Wat is je doel?" />
                 </label>
                 <textarea 
@@ -251,14 +251,14 @@ export const WorkshopInterestForm: React.FC = () => {
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="px-8 py-6 rounded-2xl bg-va-off-white text-black/40 font-black uppercase tracking-widest text-sm hover:bg-black/5 transition-all"
+              className="px-8 py-6 rounded-2xl bg-va-off-white text-black/40 font-black tracking-widest text-sm hover:bg-black/5 transition-all"
             >
               <VoiceglotText translationKey="common.previous" defaultText="VORIGE" />
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 py-6 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-sm hover:bg-primary transition-all shadow-xl flex items-center justify-center gap-3 group"
+              className="flex-1 py-6 rounded-2xl bg-black text-white font-black tracking-widest text-sm hover:bg-primary transition-all shadow-xl flex items-center justify-center gap-3 group"
             >
               {isLoading ? <VoiceglotText translationKey="common.processing" defaultText="VERWERKEN..." /> : <VoiceglotText translationKey="workshop.interest.submit" defaultText="INSCHRIJVING VOLTOOIEN" />} <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </button>

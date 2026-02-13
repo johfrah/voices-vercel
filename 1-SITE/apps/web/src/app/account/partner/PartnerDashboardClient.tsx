@@ -42,19 +42,19 @@ export default function PartnerDashboardClient() {
       <SectionInstrument className="mb-16">
         <Link 
           href="/account" 
-          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-colors mb-8"
         >
           <ArrowLeft size={12} /> 
           <VoiceglotText translationKey="account.back_to_dashboard" defaultText="Terug naar Dashboard" />
         </Link>
         <ContainerInstrument className="space-y-4">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest border border-primary/10">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10">
             <Zap size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="account.partner.badge" defaultText="Partner" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter">
             <VoiceglotText translationKey="account.partner.title_part1" defaultText="Partner " />
-            <TextInstrument as="span" className="text-primary">
+            <TextInstrument as="span" className="text-primary font-light">
               <VoiceglotText translationKey="account.partner.title_part2" defaultText="Insights" />
             </TextInstrument>
           </HeadingInstrument>
@@ -72,12 +72,12 @@ export default function PartnerDashboardClient() {
               <ContainerInstrument className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center text-va-black/40 group-hover:text-primary transition-colors">
                 {stat.icon}
               </ContainerInstrument>
-              <TextInstrument as="span" className="text-[10px] font-black text-green-500 bg-green-500/10 px-2 py-1 rounded-lg">
+              <TextInstrument as="span" className="text-[15px] font-black text-green-500 bg-green-500/10 px-2 py-1 rounded-lg">
                 {stat.trend}
               </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="space-y-1">
-              <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">{stat.label}</TextInstrument>
+              <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">{stat.label}</TextInstrument>
               <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">{stat.value}</HeadingInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -89,7 +89,7 @@ export default function PartnerDashboardClient() {
         <BentoCard span="lg" className="bg-va-black text-white p-12 h-[400px] flex flex-col justify-between relative overflow-hidden group">
           <ContainerInstrument className="relative z-10">
             <Briefcase className="text-primary mb-8" size={40} />
-            <HeadingInstrument level={2} className="text-4xl font-black uppercase tracking-tighter mb-4">
+            <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter mb-4">
               <VoiceglotText translationKey="account.partner.campaigns.title" defaultText="Campagne Beheer" />
             </HeadingInstrument>
             <TextInstrument className="text-white/40 max-w-sm text-sm font-medium leading-relaxed">
@@ -109,17 +109,17 @@ export default function PartnerDashboardClient() {
         <BentoCard span="sm" className="bg-white border border-black/5 p-10 flex flex-col justify-between h-[400px] group hover:border-primary/20 transition-all">
           <ContainerInstrument>
             <ExternalLink className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-black uppercase tracking-tight mb-4">
+            <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
               <VoiceglotText translationKey="account.partner.links.title" defaultText="Affiliate Links" />
             </HeadingInstrument>
-            <TextInstrument className="text-va-black/40 text-xs font-medium leading-relaxed">
+            <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed">
               <VoiceglotText 
                 translationKey="account.partner.links.text" 
                 defaultText="Genereer unieke links en verdien commissie op elke succesvolle casting." 
               />
             </TextInstrument>
           </ContainerInstrument>
-          <ButtonInstrument className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
+          <ButtonInstrument className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
             <VoiceglotText translationKey="account.partner.links.cta" defaultText="Links Genereren" /> <ArrowRight size={12} />
           </ButtonInstrument>
         </BentoCard>

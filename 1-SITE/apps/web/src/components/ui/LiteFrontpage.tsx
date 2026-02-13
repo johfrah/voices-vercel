@@ -10,7 +10,7 @@ export default function LiteFrontpage() {
 
       {/* Hero Section - Lite Version */}
       <div className="mb-32 space-y-10 animate-fade-in">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest border border-primary/10">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10">
           <Construction size={12} className="animate-pulse" /> Voices in Aanbouw
         </div>
         <h1 className="text-7xl md:text-[120px] font-black leading-[0.85] tracking-tighter max-w-5xl">
@@ -34,7 +34,7 @@ export default function LiteFrontpage() {
             <div className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-white mb-8 shadow-lg shadow-primary/20">
               <Mic size={32} />
             </div>
-            <h3 className="text-5xl font-black uppercase tracking-tighter mb-6 leading-none text-primary">Voices<br/>Platform</h3>
+            <h3 className="text-5xl font-black tracking-tighter mb-6 leading-none text-primary">Voices<br/>Platform</h3>
             <p className="text-white/50 font-medium max-w-sm text-lg">
               Een actieve, geautomatiseerde verkoper die 24/7 voor u klaarstaat.
             </p>
@@ -46,8 +46,8 @@ export default function LiteFrontpage() {
           <BentoCard span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between h-[184px] shadow-sm">
             <div>
               <Zap className="text-primary mb-4" size={24} fill="currentColor" />
-              <h3 className="text-xl font-black uppercase tracking-tight mb-2">Snelheid</h3>
-              <p className="text-va-black/40 text-xs font-medium leading-relaxed">
+              <h3 className="text-xl font-black tracking-tight mb-2">Snelheid</h3>
+              <p className="text-va-black/40 text-[15px] font-medium leading-relaxed">
                 Geleverd binnen 24 uur, direct in uw inbox.
               </p>
             </div>
@@ -56,8 +56,8 @@ export default function LiteFrontpage() {
           <BentoCard span="sm" className="hmagic text-white p-8 flex flex-col justify-between h-[184px]">
             <div>
               <Star className="mb-4 text-white" size={24} fill="currentColor" />
-              <h3 className="text-xl font-black uppercase tracking-tight mb-2">Kwaliteit</h3>
-              <p className="text-white/80 text-xs font-medium leading-relaxed">
+              <h3 className="text-xl font-black tracking-tight mb-2">Kwaliteit</h3>
+              <p className="text-white/80 text-[15px] font-medium leading-relaxed">
                 Alleen de beste stemmen, handmatig geselecteerd.
               </p>
             </div>
@@ -68,7 +68,7 @@ export default function LiteFrontpage() {
       {/* Status Bento */}
       <BentoCard span="full" className="bg-va-off-white p-12 flex flex-col md:flex-row items-center justify-between gap-8 border border-black/5 mb-32">
         <div className="space-y-4 text-center md:text-left">
-          <h2 className="text-4xl font-black uppercase tracking-tighter">Blijf op de <span className="text-primary">hoogte</span></h2>
+          <h2 className="text-4xl font-black tracking-tighter">Blijf op de <span className="text-primary">hoogte</span></h2>
           <p className="text-va-black/40 font-medium">Laat je e-mail achter voor exclusieve toegang tot de launch.</p>
         </div>
         <div className="flex w-full md:w-auto gap-4">
@@ -83,7 +83,7 @@ export default function LiteFrontpage() {
 
       {/* Footer Lite */}
       <div className="text-center py-20 border-t border-black/5">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-va-black/20">
+        <p className="text-[15px] font-black tracking-[0.3em] text-va-black/20">
           Voices &copy; 2026
         </p>
       </div>

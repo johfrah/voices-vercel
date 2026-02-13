@@ -51,12 +51,12 @@ export default async function StudioPage() {
         <ContainerInstrument>
           <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full mb-12 shadow-sm border border-black/[0.03]">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-black/60">
+            <span className="text-[15px] font-black tracking-widest text-black/60">
               <VoiceglotText translationKey="studio.hero.badge" defaultText="Voices Studio • Jouw verhaal komt binnen" />
             </span>
           </div>
           
-          <HeadingInstrument level={1} className="text-[12vw] md:text-[8vw] font-light tracking-tighter leading-[0.8] mb-12 uppercase">
+          <HeadingInstrument level={1} className="text-[12vw] md:text-[8vw] font-light tracking-tighter leading-[0.8] mb-12 ">
             <VoiceglotText translationKey="studio.hero.title_part1" defaultText="Workshops for " /> <br />
             <span className="text-primary">
               <VoiceglotText translationKey="studio.hero.title_part2" defaultText="professionele sprekers." />
@@ -81,7 +81,7 @@ export default async function StudioPage() {
                 <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-8">
                   <Star size={24} fill="currentColor" />
                 </div>
-                <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none mb-8 uppercase">
+                <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none mb-8 ">
                   <VoiceglotText translationKey="studio.bento.guide.title" defaultText="Welke workshop past bij jou?" />
                 </HeadingInstrument>
                 <TextInstrument className="text-white/70 font-medium max-w-sm text-lg leading-relaxed">
@@ -102,14 +102,14 @@ export default async function StudioPage() {
             <BentoCard span="sm" className="bg-va-black text-white p-12 flex flex-col justify-between rounded-[48px] shadow-aura-lg">
               <div>
                 <MessageSquare className="text-primary mb-8" size={48} />
-                <HeadingInstrument level={3} className="text-3xl font-light uppercase tracking-tight mb-6 leading-none">
+                <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 leading-none">
                   <VoiceglotText translationKey="studio.bento.appointment.title" defaultText="Samen aan de slag" />
                 </HeadingInstrument>
                 <TextInstrument className="text-white/40 text-sm font-medium leading-relaxed">
                   <VoiceglotText translationKey="studio.bento.appointment.text" defaultText="Twijfel je over je potentieel? Plan een gesprek in met Johfrah in de studio." />
                 </TextInstrument>
               </div>
-              <Link href="/studio/afspraak" className="w-full py-6 rounded-2xl bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] hover:bg-primary hover:border-primary transition-all duration-500 flex items-center justify-center">
+              <Link href="/studio/afspraak" className="w-full py-6 rounded-2xl bg-white/5 border border-white/10 text-white font-black tracking-widest text-[15px] hover:bg-primary hover:border-primary transition-all duration-500 flex items-center justify-center">
                 <VoiceglotText translationKey="studio.bento.appointment.cta" defaultText="AGENDA BEKIJKEN" />
               </Link>
             </BentoCard>
@@ -118,7 +118,7 @@ export default async function StudioPage() {
             <BentoCard span="sm" className="bg-white p-12 flex flex-col justify-between rounded-[48px] shadow-aura border border-black/5">
               <div>
                 <GraduationCap className="text-primary mb-8" size={48} />
-                <HeadingInstrument level={3} className="text-3xl font-light uppercase tracking-tight mb-6 leading-none">
+                <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 leading-none">
                   <VoiceglotText translationKey="studio.bento.academy_bridge.title" defaultText="Academy Talent" />
                 </HeadingInstrument>
                 <TextInstrument className="text-va-black/40 text-sm font-medium leading-relaxed mb-8">
@@ -135,7 +135,7 @@ export default async function StudioPage() {
                   />
                 </div>
               </div>
-              <Link href="/studio/participants" className="text-[10px] font-black uppercase tracking-widest text-va-black/20 hover:text-primary transition-colors text-center mt-6">
+              <Link href="/studio/participants" className="text-[15px] font-black tracking-widest text-va-black/20 hover:text-primary transition-colors text-center mt-6">
                 <VoiceglotText translationKey="studio.bento.academy_bridge.cta" defaultText="BEKIJK ALLE TALENTEN" />
               </Link>
             </BentoCard>
@@ -143,19 +143,19 @@ export default async function StudioPage() {
             {/* 🎙️ WORKSHOP GRID */}
             <div className="md:col-span-2 space-y-12 pt-12">
               <div className="flex justify-between items-end px-4">
-                <HeadingInstrument level={3} className="text-[10px] font-black uppercase tracking-widest text-black/30">
+                <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest text-black/30">
                   <VoiceglotText translationKey="studio.grid_label" defaultText="Aan de slag in de studio" />
                 </HeadingInstrument>
-                <Link href="/studio/kalender" className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline flex items-center gap-2">
+                <Link href="/studio/kalender" className="text-[15px] font-black tracking-widest text-primary hover:underline flex items-center gap-2">
                   <VoiceglotText translationKey="studio.calendar_link" defaultText="VOLLEDIGE KALENDER" /> <ArrowRight size={12} />
                 </Link>
               </div>
               {activeWorkshops.length === 0 ? (
                 <div className="p-12 text-center rounded-[32px] border-2 border-dashed border-black/5 bg-va-off-white/30">
-                  <TextInstrument className="text-black/40 font-black uppercase tracking-tighter">
+                  <TextInstrument className="text-black/40 font-black tracking-tighter">
                     <VoiceglotText translationKey="studio.no_workshops" defaultText="Momenteel geen geplande sessies." />
                   </TextInstrument>
-                  <TextInstrument className="text-[10px] text-black/20 uppercase font-bold mt-2 tracking-widest italic">
+                  <TextInstrument className="text-[15px] text-black/20 font-bold mt-2 tracking-widest italic">
                     <VoiceglotText translationKey="studio.no_workshops_subtitle" defaultText="Nieuwe data volgen binnenkort." />
                   </TextInstrument>
                 </div>
@@ -182,7 +182,7 @@ export default async function StudioPage() {
                             <div className="w-8 h-8 rounded-full bg-primary/80 backdrop-blur-md flex items-center justify-center text-white">
                               <Play size={14} fill="currentColor" />
                             </div>
-                            <span className="text-[10px] font-black text-white uppercase tracking-widest">
+                            <span className="text-[15px] font-black text-white tracking-widest">
                               <VoiceglotText translationKey="studio.aftermovie" defaultText="Aftermovie" />
                             </span>
                           </div>
@@ -191,15 +191,15 @@ export default async function StudioPage() {
 
                       <div className="p-8 flex flex-col flex-grow">
                         <div className="flex justify-between items-start mb-8">
-                          <div className="bg-black text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">
+                          <div className="bg-black text-white text-[15px] font-black px-4 py-1.5 rounded-full tracking-widest">
                             <VoiceglotText translationKey="studio.workshop_badge" defaultText="Workshop" />
                           </div>
-                          <span className="text-[10px] font-bold text-black/30 uppercase tracking-widest flex items-center gap-2">
+                          <span className="text-[15px] font-bold text-black/30 tracking-widest flex items-center gap-2">
                             <Calendar size={12} /> {new Date(workshop.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })}
                           </span>
                         </div>
 
-                        <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter leading-none mb-4 uppercase group-hover:text-primary transition-colors">
+                        <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter leading-none mb-4 group-hover:text-primary transition-colors">
                           <VoiceglotText translationKey={`studio.workshop.${workshop.id}.title`} defaultText={workshop.title} />
                         </HeadingInstrument>
                         
@@ -212,14 +212,14 @@ export default async function StudioPage() {
 
                         <div className="flex justify-between items-end pt-4 border-t border-black/[0.03]">
                           <div>
-                            <p className="text-[10px] text-black/40 font-bold uppercase tracking-widest mb-1">
+                            <p className="text-[15px] text-black/40 font-bold tracking-widest mb-1">
                               <VoiceglotText translationKey="studio.investment" defaultText="Investering" />
                             </p>
                             <p className="text-2xl font-light tracking-tighter">€ {workshop.price}</p>
                           </div>
                           <Link 
                             href={`/studio/book?id=${workshop.id}`}
-                            className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-primary group/btn"
+                            className="flex items-center gap-3 text-[15px] font-black tracking-widest text-primary group/btn"
                           >
                             <VoiceglotText translationKey="studio.book_cta" defaultText="Ik kom ook" /> <ArrowRight size={16} className="group-hover/btn:translate-x-2 transition-transform" />
                           </Link>
@@ -234,10 +234,10 @@ export default async function StudioPage() {
             {/* 🎓 INSTRUCTEURS FOCUS */}
             <BentoCard span="full" className="bg-white p-16 rounded-[64px] shadow-aura">
               <div className="max-w-4xl mb-20">
-                <HeadingInstrument level={3} className="text-[10px] font-black uppercase tracking-widest text-black/30 mb-8">
+                <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest text-black/30 mb-8">
                   <VoiceglotText translationKey="studio.instructors.label" defaultText="Jouw Workshopgevers" />
                 </HeadingInstrument>
-                <HeadingInstrument level={2} className="text-6xl font-light uppercase tracking-tighter leading-none mb-8">
+                <HeadingInstrument level={2} className="text-6xl font-light tracking-tighter leading-none mb-8">
                   <VoiceglotText translationKey="studio.instructors.title_part1" defaultText="Leer professioneler spreken met " /> <br />
                   <span className="text-primary">
                     <VoiceglotText translationKey="studio.instructors.title_part2" defaultText="Bernadette en Johfrah." />
@@ -259,10 +259,10 @@ export default async function StudioPage() {
                         className="object-cover group-hover:scale-105 transition-transform duration-1000"
                       />
                       <div className="absolute bottom-8 left-8 right-8">
-                        <p className="text-white/60 text-[10px] font-black uppercase tracking-widest mb-2">
+                        <p className="text-white/60 text-[15px] font-black tracking-widest mb-2">
                           <VoiceglotText translationKey={`studio.instructor.${t.id}.tagline`} defaultText={t.tagline || 'Workshopgever'} />
                         </p>
-                        <HeadingInstrument level={4} className="text-3xl font-light text-white uppercase tracking-tighter leading-none">
+                        <HeadingInstrument level={4} className="text-3xl font-light text-white tracking-tighter leading-none">
                           <VoiceglotText translationKey={`studio.instructor.${t.id}.name`} defaultText={t.name} />
                         </HeadingInstrument>
                       </div>

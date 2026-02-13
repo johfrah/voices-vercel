@@ -57,7 +57,7 @@ export default function SuccessPageClient() {
         </ContainerInstrument>
         
         <ContainerInstrument className="space-y-2">
-          <HeadingInstrument level={1} className="text-6xl md:text-7xl font-black uppercase tracking-tighter leading-none text-va-black">
+          <HeadingInstrument level={1} className="text-6xl md:text-7xl font-black tracking-tighter leading-none text-va-black">
             <VoiceglotText translationKey="checkout.success.title" defaultText="Gelukt!" />
           </HeadingInstrument>
             <TextInstrument className="text-va-black/40 font-medium text-lg">
@@ -69,7 +69,7 @@ export default function SuccessPageClient() {
         </ContainerInstrument>
 
         <ContainerInstrument className="bg-primary/5 p-4 rounded-2xl inline-block">
-          <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-primary animate-pulse">
+          <TextInstrument className="text-[15px] font-black tracking-widest text-primary animate-pulse">
             <VoiceglotText 
               translationKey="checkout.success.delivery.info" 
               defaultText={searchParams.get('delivery') ? `Verwachte levering: ${searchParams.get('delivery')}` : "Verwachte levering: Binnen 48 uur"} 
@@ -82,10 +82,10 @@ export default function SuccessPageClient() {
             <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
               <ShoppingBag size={20} />
             </div>
-            <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight">
+            <HeadingInstrument level={3} className="text-xl font-black tracking-tight">
               <VoiceglotText translationKey="checkout.success.status.title" defaultText="Status" />
             </HeadingInstrument>
-            <TextInstrument className="text-xs text-va-black/40 font-medium leading-relaxed">
+            <TextInstrument className="text-[15px] text-va-black/40 font-medium leading-relaxed">
               <VoiceglotText 
                 translationKey="checkout.success.status.text" 
                 defaultText={searchParams.get('method') === 'banktransfer' 
@@ -94,7 +94,7 @@ export default function SuccessPageClient() {
                 } 
               />
             </TextInstrument>
-            <Link href="/account/orders" className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
+            <Link href="/account/orders" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
               <VoiceglotText translationKey="checkout.success.status.cta" defaultText="Mijn Bestellingen" /> <ArrowRight size={12} />
             </Link>
           </BentoCard>
@@ -103,10 +103,10 @@ export default function SuccessPageClient() {
             <div className="w-10 h-10 bg-primary text-va-black rounded-xl flex items-center justify-center relative z-10">
               <Sparkles size={20} />
             </div>
-            <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight relative z-10">
+            <HeadingInstrument level={3} className="text-xl font-black tracking-tight relative z-10">
               <VoiceglotText translationKey="checkout.success.next.title" defaultText="Volgende Stap" />
             </HeadingInstrument>
-            <TextInstrument className="text-white/40 text-xs font-medium leading-relaxed relative z-10">
+            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed relative z-10">
               <VoiceglotText translationKey="checkout.success.next.text" defaultText="Wil je alvast een volgend project voorbereiden of je stem-techniek aanscherpen in de Academy?" />
             </TextInstrument>
             <Link href="/academy" className="va-btn-pro !bg-primary !py-3 w-full text-center relative z-10">
@@ -117,7 +117,7 @@ export default function SuccessPageClient() {
         </BentoGrid>
 
         <ContainerInstrument className="pt-8">
-          <Link href="/" className="text-[10px] font-black uppercase tracking-widest text-va-black/20 hover:text-primary transition-colors">
+          <Link href="/" className="text-[15px] font-black tracking-widest text-va-black/20 hover:text-primary transition-colors">
             <VoiceglotText translationKey="checkout.success.back_home" defaultText="Terug naar de homepagina" />
           </Link>
         </ContainerInstrument>

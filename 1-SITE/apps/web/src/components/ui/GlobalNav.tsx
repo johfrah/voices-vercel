@@ -5,6 +5,7 @@ import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { MarketManager } from '@config/market-manager';
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import { 
   Activity, 
   Bell, 
@@ -83,18 +84,20 @@ const HeaderIcon = ({
         }`}
       >
         {src ? (
-          <img 
+          <Image 
             src={src} 
             alt={alt} 
+            width={24}
+            height={24}
             className="w-6 h-6 transition-transform duration-500 group-hover/icon:scale-110" 
-            style={{ filter: 'brightness(0)' }}
+            style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
           />
         ) : Icon ? (
-          <Icon size={22} strokeWidth={1.5} className="transition-transform duration-500 group-hover/icon:scale-110" />
+          <Icon size={22} strokeWidth={1.5} className="text-primary transition-transform duration-500 group-hover/icon:scale-110" />
         ) : null}
 
         {badge !== undefined && badge > 0 && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[15px] font-medium rounded-full flex items-center justify-center shadow-lg border-2 border-white">
             {badge}
           </span>
         )}
@@ -107,7 +110,7 @@ const HeaderIcon = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-full right-0 mt-2 w-64 bg-white/80 backdrop-blur-2xl rounded-[24px] shadow-aura border border-black/5 overflow-hidden z-50"
+            className="absolute top-full right-0 mt-2 w-80 bg-white/80 backdrop-blur-2xl rounded-[24px] shadow-aura border border-black/5 overflow-hidden z-50"
           >
             <div className="p-2">
               {children}
@@ -163,11 +166,11 @@ const DropdownItem = ({
     >
       <div className="flex items-center gap-3">
         <Icon size={16} strokeWidth={variant === 'primary' ? 2 : 1.5} />
-        <span className="text-[11px] font-black uppercase tracking-widest">{label}</span>
+        <span className="text-[15px] font-medium tracking-widest">{label}</span>
       </div>
       <div className="flex items-center gap-2">
         {badge && (
-          <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-[8px] font-black rounded-md">
+          <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-[15px] font-medium rounded-md">
             {badge}
           </span>
         )}
@@ -222,7 +225,7 @@ export default function GlobalNav() {
   const isSpecialJourney = market.market_code === 'JOHFRAH' || market.market_code === 'YOUSSEF' || market.market_code === 'ADEMING';
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 px-8 py-6 flex justify-between items-center bg-white/50 backdrop-blur-xl border-b border-black/5 golden-curve md:px-8 md:py-6 px-4 py-4">
+    <nav className="fixed top-0 left-0 right-0 z-40 px-4 md:px-6 py-4 md:py-6 flex justify-between items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve">
       <Link 
         href="/" 
         className="flex items-center gap-2 md:gap-3 group"
@@ -259,7 +262,7 @@ export default function GlobalNav() {
             href={link.href}
             onClick={() => playClick('soft')}
             onMouseEnter={() => playSwell()}
-            className={`text-[10px] font-light tracking-[0.2em] transition-all duration-500 uppercase ${
+            className={`text-[15px] font-medium tracking-widest transition-all duration-500 uppercase ${
               pathname.startsWith(link.href) ? 'text-primary' : 'text-va-black/30 hover:text-va-black'
             }`}
           >
@@ -269,35 +272,32 @@ export default function GlobalNav() {
       </div>
 
       <div className="flex gap-2 items-center">
-        {/* 🛠️ EDIT MODE ICON */}
-        {canEdit && (
-          <HeaderIcon 
-            icon={isEditMode ? Unlock : Lock} 
-            alt="Edit Mode" 
-            isActive={isEditMode}
-            onClick={toggleEditMode}
-          >
-            <div className="p-4 space-y-4">
-              <div className="flex items-center gap-3 text-primary mb-2">
-                {isEditMode ? <Unlock size={18} /> : <Lock size={18} />}
-                <TextInstrument className="text-xs font-light tracking-widest uppercase">
-                  Edit Mode: {isEditMode ? 'Aan' : 'Uit'}
-                </TextInstrument>
-              </div>
-              <TextInstrument className="text-[10px] text-va-black/40 leading-relaxed font-light">
-                In Edit Mode kun je teksten en beelden direct op de pagina aanpassen via Voiceglot.
-              </TextInstrument>
-              <button 
-                onClick={toggleEditMode}
-                className={`w-full py-3 rounded-[10px] text-[10px] font-light tracking-widest uppercase transition-all ${
-                  isEditMode ? 'bg-va-black text-white' : 'bg-primary text-white shadow-lg shadow-primary/20'
-                }`}
-              >
-                {isEditMode ? 'Uitschakelen' : 'Inschakelen'}
-              </button>
+        {/* 🍔 MENU ICON */}
+        <HeaderIcon 
+          src="/assets/common/branding/icons/MENU.svg" 
+          alt="Menu"
+        >
+          <div className="p-2 space-y-1">
+            <div className="px-4 py-3 border-b border-black/5 mb-2">
+              <TextInstrument className="text-[15px] font-medium text-va-black/30 tracking-[0.2em] ">Navigatie</TextInstrument>
             </div>
-          </HeaderIcon>
-        )}
+            {links.map((link) => (
+              <DropdownItem 
+                key={link.href}
+                icon={ChevronRight} 
+                label={link.name} 
+                href={link.href}
+              />
+            ))}
+            <div className="mt-2 pt-2 border-t border-black/5">
+              <DropdownItem 
+                icon={Mail} 
+                label="Support" 
+                href="/contact" 
+              />
+            </div>
+          </div>
+        </HeaderIcon>
 
         {/* 🌐 LANGUAGE ICON */}
         <LanguageSwitcher />
@@ -312,7 +312,7 @@ export default function GlobalNav() {
             {auth.isAuthenticated ? (
               <>
                 <div className="px-4 py-4 border-b border-black/5 mb-2">
-                  <TextInstrument className="text-[10px] font-light text-va-black/30 uppercase tracking-widest mb-1">Ingelogd als</TextInstrument>
+                  <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-1">Ingelogd als</TextInstrument>
                   <TextInstrument className="text-sm font-light text-va-black truncate">{auth.user?.email}</TextInstrument>
                 </div>
                 {isAdmin && (
@@ -343,14 +343,14 @@ export default function GlobalNav() {
                   <User size={24} className="text-va-black/20" />
                 </div>
                 <div>
-                  <HeadingInstrument level={4} className="text-sm font-light tracking-tight mb-1 uppercase">Welkom bij Voices</HeadingInstrument>
-                  <TextInstrument className="text-[10px] text-va-black/40 font-light">Log in om je favoriete stemmen op te slaan en bestellingen te beheren.</TextInstrument>
+                  <HeadingInstrument level={4} className="text-sm font-light tracking-tight mb-1 ">Welkom bij Voices</HeadingInstrument>
+                  <TextInstrument className="text-[15px] text-va-black/40 font-light">Log in om je favoriete stemmen op te slaan en bestellingen te beheren.</TextInstrument>
                 </div>
                 <div className="space-y-2">
-                  <Link href="/auth/login" className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[10px] font-light tracking-widest uppercase hover:bg-primary transition-all">
+                  <Link href="/auth/login" className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all">
                     Inloggen
                   </Link>
-                  <Link href="/auth/register" className="block w-full py-3 border border-black/10 text-va-black rounded-[10px] text-[10px] font-light tracking-widest uppercase hover:bg-va-black/5 transition-all">
+                  <Link href="/auth/register" className="block w-full py-3 border border-black/10 text-va-black rounded-[10px] text-[15px] font-light tracking-widest hover:bg-va-black/5 transition-all">
                     Account aanmaken
                   </Link>
                 </div>
@@ -368,9 +368,9 @@ export default function GlobalNav() {
           >
             <div className="p-4 text-center">
               <Heart size={24} className="text-primary/20 mx-auto mb-3" />
-              <TextInstrument className="text-xs font-light tracking-widest uppercase mb-2">Jouw Favorieten</TextInstrument>
-              <TextInstrument className="text-[10px] text-va-black/40 font-light mb-4">Je hebt nog geen stemmen opgeslagen.</TextInstrument>
-              <Link href="/agency" className="text-[9px] font-light text-primary tracking-widest uppercase hover:underline">
+              <TextInstrument className="text-[15px] font-light tracking-widest mb-2">Jouw Favorieten</TextInstrument>
+              <TextInstrument className="text-[15px] text-va-black/40 font-light mb-4">Je hebt nog geen stemmen opgeslagen.</TextInstrument>
+              <Link href="/agency" className="text-[15px] font-light text-primary tracking-widest hover:underline">
                 Ontdek stemmen
               </Link>
             </div>
@@ -387,9 +387,9 @@ export default function GlobalNav() {
           >
             <div className="p-4 text-center">
               <ShoppingBag size={24} className="text-va-black/10 mx-auto mb-3" />
-              <TextInstrument className="text-xs font-light tracking-widest uppercase mb-2">Winkelmandje</TextInstrument>
-              <TextInstrument className="text-[10px] text-va-black/40 font-light mb-4">Je mandje is nog leeg.</TextInstrument>
-              <Link href="/agency" className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[10px] font-light tracking-widest uppercase hover:bg-primary transition-all">
+              <TextInstrument className="text-[15px] font-light tracking-widest mb-2">Winkelmandje</TextInstrument>
+              <TextInstrument className="text-[15px] text-va-black/40 font-light mb-4">Je mandje is nog leeg.</TextInstrument>
+              <Link href="/agency" className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all">
                 Start een project
               </Link>
             </div>

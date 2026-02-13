@@ -54,15 +54,15 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
         <div>
           <div className="flex justify-between items-start mb-6">
             <div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-1 block">
+              <span className="text-[15px] font-black tracking-widest text-primary mb-1 block">
                 <VoiceglotText translationKey="audio.review.mode" defaultText="Review Mode" />
               </span>
-              <h2 className="text-2xl font-black tracking-tight text-gray-900 uppercase">{projectName}</h2>
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <h2 className="text-2xl font-black tracking-tight text-gray-900 ">{projectName}</h2>
+              <p className="text-[15px] font-black tracking-widest text-gray-400">
                 <VoiceglotText translationKey="common.order_number" defaultText="Order #" />{orderId}
               </p>
             </div>
-            <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${isProcessing ? 'bg-blue-50 text-blue-500 animate-pulse' : 'bg-green-50 text-green-600'}`}>
+            <div className={`px-3 py-1 rounded-full text-[15px] font-bold uppercase tracking-wider ${isProcessing ? 'bg-blue-50 text-blue-500 animate-pulse' : 'bg-green-50 text-green-600'}`}>
               {isProcessing ? (
                 <VoiceglotText translationKey="audio.review.processing" defaultText="Processing Mix..." />
               ) : (
@@ -97,7 +97,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
           </button>
           
           <div className="flex-1">
-            <div className="flex justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+            <div className="flex justify-between text-[15px] font-bold text-gray-400 tracking-widest mb-2">
               <span>00:0{Math.floor(currentTime)}</span>
               <span>00:{duration || '15'}</span>
             </div>
@@ -120,7 +120,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
           
           <div className="space-y-6">
             <div>
-              <div className="flex justify-between text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">
+              <div className="flex justify-between text-[15px] font-bold text-gray-400 tracking-wider mb-3">
                 <span>
                   <VoiceglotText translationKey="audio.review.voice" defaultText="Stem" />
                 </span>
@@ -140,14 +140,14 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
             </div>
 
             <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-              <span className="text-[10px] font-bold text-gray-400 uppercase block mb-2">
+              <span className="text-[15px] font-bold text-gray-400 block mb-2">
                 <VoiceglotText translationKey="audio.review.selected_track" defaultText="Geselecteerde Track" />
               </span>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
                   <Music size={14} />
                 </div>
-                <span className="text-xs font-bold text-gray-700 truncate">Corporate Uplifting v2</span>
+                <span className="text-[15px] font-bold text-gray-700 truncate">Corporate Uplifting v2</span>
               </div>
             </div>
           </div>
@@ -166,7 +166,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
               <MessageSquare size={18} />
             </div>
             <div>
-              <span className="block text-xs font-bold opacity-60 uppercase tracking-widest">
+              <span className="block text-[15px] font-bold opacity-60 tracking-widest">
                 <VoiceglotText translationKey="common.feedback" defaultText="Feedback" />
               </span>
               <span className="text-sm font-medium">
@@ -182,7 +182,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
               <RotateCcw size={18} />
             </div>
             <div>
-              <span className="block text-xs font-bold text-gray-400 uppercase tracking-widest">
+              <span className="block text-[15px] font-bold text-gray-400 tracking-widest">
                 <VoiceglotText translationKey="common.revision" defaultText="Revisie" />
               </span>
               <span className="text-sm font-medium text-gray-700">
@@ -198,7 +198,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
               <Volume2 size={18} />
             </div>
             <div>
-              <span className="block text-xs font-bold text-gray-400 uppercase tracking-widest">
+              <span className="block text-[15px] font-bold text-gray-400 tracking-widest">
                 <VoiceglotText translationKey="common.export" defaultText="Export" />
               </span>
               <span className="text-sm font-medium text-gray-700">

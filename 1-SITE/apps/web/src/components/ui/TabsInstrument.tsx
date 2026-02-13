@@ -20,7 +20,7 @@ export const TabsInstrument: React.FC<{ items: TabItem[] }> = ({ items }) => {
             <button
               key={item.id}
               onClick={() => setActiveId(item.id)}
-              className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] transition-all duration-500 ${
+              className={`px-8 py-4 rounded-2xl font-black uppercase text-[15px] tracking-[0.2em] transition-all duration-500 ${
                 activeId === item.id 
                   ? 'bg-primary text-va-black scale-105 shadow-lg shadow-primary/20' 
                   : 'bg-white/5 text-white/40 hover:bg-white/10'

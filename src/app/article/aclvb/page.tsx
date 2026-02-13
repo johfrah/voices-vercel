@@ -52,12 +52,12 @@ export default function AclvbStoryPage() {
         <ContainerInstrument className="mb-12">
           <Link 
             href="/blog" 
-            className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-all mb-8"
+            className="inline-flex items-center gap-2 text-[15px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-all mb-8"
           >
             <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
           </Link>
-          <TextInstrument className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-4">
+          <TextInstrument className="text-[15px] font-black uppercase tracking-[0.2em] text-primary mb-4">
             <VoiceglotText translationKey="article.theme.stories" defaultText="Stories" />
           </TextInstrument>
           <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter leading-none mb-6">

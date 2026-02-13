@@ -107,7 +107,7 @@ export const VoiceStep: React.FC = () => {
       )}
 
       <div className="flex gap-4">
-        <button onClick={() => setStep('briefing')} className="flex-1 py-6 rounded-[24px] bg-black/5 font-black uppercase tracking-widest text-[11px] hover:bg-black/10 transition-all">
+        <button onClick={() => setStep('briefing')} className="flex-1 py-6 rounded-[24px] bg-black/5 font-black tracking-widest text-[15px] hover:bg-black/10 transition-all">
           Terug
         </button>
         <button onClick={handleNext} className="flex-[2] va-btn-pro py-6">

@@ -4,6 +4,8 @@ export const deliveryStatus = pgEnum("delivery_status", ['waiting', 'uploaded', 
 export const leadVibe = pgEnum("lead_vibe", ['cold', 'warm', 'hot', 'burning'])
 export const senderType = pgEnum("sender_type", ['user', 'admin', 'ai'])
 export const status = pgEnum("status", ['pending', 'approved', 'active', 'live', 'publish', 'rejected', 'cancelled'])
+export const studioSessionStatus = pgEnum("studio_session_status", ['active', 'archived', 'completed'])
+export const studioFeedbackType = pgEnum("studio_feedback_type", ['text', 'audio', 'waveform_marker'])
 
 
 export const actorDemos = pgTable("actor_demos", {
@@ -971,3 +973,70 @@ export const vaultFiles = pgTable("vault_files", {
 			name: "vault_files_promoted_media_id_fkey"
 		}),
 ]);
+
+export const studioSessions = pgTable("studio_sessions", {
+	id: serial().primaryKey().notNull(),
+	orderId: integer("order_id"),
+	orderItemId: integer("order_item_id"),
+	conversationId: integer("conversation_id"),
+	status: studioSessionStatus().default('active'),
+	settings: jsonb().default({}),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.orderId],
+		foreignColumns: [orders.id],
+		name: "studio_sessions_order_id_orders_id_fk"
+	}),
+	foreignKey({
+		columns: [table.orderItemId],
+		foreignColumns: [orderItems.id],
+		name: "studio_sessions_order_item_id_order_items_id_fk"
+	}),
+	foreignKey({
+		columns: [table.conversationId],
+		foreignColumns: [chatConversations.id],
+		name: "studio_sessions_conversation_id_chat_conversations_id_fk"
+	}),
+]);
+
+export const studioScripts = pgTable("studio_scripts", {
+	id: serial().primaryKey().notNull(),
+	sessionId: integer("session_id").notNull(),
+	version: integer().notNull().default(1),
+	content: text().notNull(),
+	notes: text(),
+	isCurrent: boolean("is_current").default(true),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.sessionId],
+		foreignColumns: [studioSessions.id],
+		name: "studio_scripts_session_id_studio_sessions_id_fk"
+	}),
+]);
+
+export const studioFeedback = pgTable("studio_feedback", {
+	id: serial().primaryKey().notNull(),
+	sessionId: integer("session_id").notNull(),
+	userId: integer("user_id").notNull(),
+	type: studioFeedbackType().notNull().default('text'),
+	content: text().notNull(),
+	audioPath: text("audio_path"),
+	waveformTimestamp: numeric("waveform_timestamp", { precision: 10, scale: 3 }),
+	isResolved: boolean("is_resolved").default(false),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.sessionId],
+		foreignColumns: [studioSessions.id],
+		name: "studio_feedback_session_id_studio_sessions_id_fk"
+	}),
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "studio_feedback_user_id_users_id_fk"
+	}),
+]);
+

@@ -71,7 +71,7 @@ export default function NotFound() {
       <ContainerInstrument className="max-w-2xl text-center space-y-8">
         {healingStatus === 'ghost-generated' && ghostContent ? (
           <ContainerInstrument className="text-left bg-white p-12 rounded-[40px] shadow-aura border border-black/5 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <ContainerInstrument className="flex items-center gap-2 mb-8 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest w-fit">
+            <ContainerInstrument className="flex items-center gap-2 mb-8 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest w-fit">
               <Sparkles size={12} /> Voicy Ghost Content (Live Generated)
             </ContainerInstrument>
             <div className="prose prose-va max-w-none">
@@ -83,11 +83,11 @@ export default function NotFound() {
           </ContainerInstrument>
         ) : (
           <>
-            <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full text-primary text-[10px] font-black uppercase tracking-widest border border-primary/10">
+            <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10">
               <Search size={12} /> <VoiceglotText translationKey="404.badge" defaultText="Error 404" />
             </ContainerInstrument>
             
-            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
               <VoiceglotText translationKey="404.title" defaultText="Spoorloos." />
             </HeadingInstrument>
             
@@ -99,13 +99,13 @@ export default function NotFound() {
             </TextInstrument>
 
             {healingStatus === 'voicy-offered' && (
-              <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-bold uppercase tracking-widest animate-pulse">
+              <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-bold tracking-widest animate-pulse">
                 <Heart size={12} /> <VoiceglotText translationKey="404.voicy_help" defaultText="Voicy helpt je verder →" />
               </ContainerInstrument>
             )}
 
             {healingStatus === 'searching' && (
-              <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-va-black/5 rounded-full text-va-black/40 text-[10px] font-bold uppercase tracking-widest">
+              <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-va-black/5 rounded-full text-va-black/40 text-[15px] font-bold tracking-widest">
                 <Loader2 size={12} className="animate-spin" /> Voicy zoekt naar een oplossing...
               </ContainerInstrument>
             )}

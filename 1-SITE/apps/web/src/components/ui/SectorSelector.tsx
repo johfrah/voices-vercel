@@ -37,13 +37,13 @@ export const SectorSelector: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between px-4">
-        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-va-black/30">
+        <h4 className="text-[15px] font-black tracking-[0.2em] text-va-black/30">
           Personaliseer voor uw sector
         </h4>
         {state.current_sector && (
           <button 
             onClick={() => updateSector(null)}
-            className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity"
+            className="text-[15px] font-black tracking-widest text-primary hover:opacity-70 transition-opacity"
           >
             Wis filter
           </button>
@@ -73,7 +73,7 @@ export const SectorSelector: React.FC = () => {
               `}>
                 <Icon size={24} />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-center leading-tight">
+              <span className="text-[15px] font-black tracking-widest text-center leading-tight">
                 {sector.label}
               </span>
             </button>

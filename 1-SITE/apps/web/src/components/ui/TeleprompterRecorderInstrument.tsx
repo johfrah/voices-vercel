@@ -12,6 +12,8 @@ import { motion, AnimatePresence } from 'framer-motion';
  * Een geavanceerd instrument voor DIY opnames met teleprompter en multi-format export.
  */
 
+import { VoiceglotText } from "./VoiceglotText";
+
 interface TeleprompterRecorderProps {
   initialText?: string;
   className?: string;
@@ -104,14 +106,14 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
           ref={scrollRef}
           className="flex-1 overflow-y-auto p-12 pt-48 pb-48 text-center scroll-smooth no-scrollbar"
         >
-          <p className="text-3xl md:text-4xl font-bold text-white/90 leading-relaxed">
+          <p className="text-3xl md:text-4xl font-medium text-white/90 leading-relaxed">
             {text}
           </p>
         </div>
 
         {/* Speed Control */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/10">
-          <Sliders size={14} className="text-white/40" />
+          <Sliders size={14} className="text-white/40" strokeWidth={1.5} />
           <input 
             type="range" 
             min="1" 
@@ -120,7 +122,7 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
             onChange={(e) => setScrollSpeed(parseInt(e.target.value))}
             className="w-24 accent-primary"
           />
-          <span className="text-[10px] font-black text-white uppercase tracking-widest">Tempo</span>
+          <span className="text-[15px] font-medium text-white tracking-widest">Tempo</span>
         </div>
       </div>
 
@@ -128,12 +130,18 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
       <div className="flex-1 p-8 flex flex-col justify-between border-l border-black/5">
         <div className="space-y-8">
           <div>
-            <h3 className="text-xl font-black tracking-tight uppercase mb-2">DIY Studio</h3>
-            <p className="text-xs text-va-black/40 font-medium">Neem je eigen tekst op met professionele instellingen.</p>
+            <h3 className="text-xl font-light tracking-tight mb-2">
+              <VoiceglotText translationKey="teleprompter.title" defaultText="DIY Studio" />
+            </h3>
+            <p className="text-[15px] text-va-black/40 font-light">
+              <VoiceglotText translationKey="teleprompter.subtitle" defaultText="Neem je eigen tekst op met professionele instellingen." />
+            </p>
           </div>
 
           <div className="space-y-4">
-            <label className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Export Formaat</label>
+            <label className="text-[15px] font-medium tracking-widest text-va-black/30">
+              <VoiceglotText translationKey="teleprompter.export_format" defaultText="Export Formaat" />
+            </label>
             <div className="grid grid-cols-1 gap-2">
               {(['8khz', '16khz', '48khz'] as const).map((format) => (
                 <button
@@ -144,8 +152,8 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
                     exportFormat === format ? "bg-va-black text-white border-va-black shadow-lg" : "bg-va-off-white border-transparent text-va-black/40 hover:border-black/10"
                   )}
                 >
-                  <span className="text-[10px] font-black uppercase tracking-widest">{format}</span>
-                  {exportFormat === format && <Check size={14} className="text-primary" />}
+                  <span className="text-[15px] font-medium tracking-widest">{format}</span>
+                  {exportFormat === format && <Check size={14} className="text-primary" strokeWidth={1.5} />}
                 </button>
               ))}
             </div>
@@ -162,11 +170,11 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
                 exit={{ opacity: 0, y: -10 }}
                 onClick={isRecording ? stopRecording : startRecording}
                 className={cn(
-                  "w-full py-6 rounded-[24px] font-black uppercase tracking-[0.2em] text-xs transition-all flex items-center justify-center gap-3 shadow-xl",
+                  "w-full py-6 rounded-[24px] font-medium uppercase tracking-[0.2em] text-[15px] transition-all flex items-center justify-center gap-3 shadow-xl",
                   isRecording ? "bg-red-500 text-white animate-pulse" : "bg-primary text-white hover:scale-105 active:scale-95"
                 )}
               >
-                {isRecording ? <><Square size={18} fill="currentColor" /> Stop</> : <><Mic size={18} /> Start Opname</>}
+                {isRecording ? <><Square size={18} fill="currentColor" strokeWidth={1.5} /> <VoiceglotText translationKey="teleprompter.stop" defaultText="Stop" /></> : <><Mic size={18} strokeWidth={1.5} /> <VoiceglotText translationKey="teleprompter.start" defaultText="Start Opname" /></>}
               </motion.button>
             ) : (
               <motion.div
@@ -177,7 +185,7 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
               >
                 <div className="bg-va-off-white p-4 rounded-2xl flex items-center gap-3">
                   <button onClick={() => playClick('pro')} className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-primary hover:scale-110 transition-transform">
-                    <Play size={16} fill="currentColor" className="ml-1" />
+                    <Play size={16} fill="currentColor" className="ml-1" strokeWidth={1.5} />
                   </button>
                   <div className="flex-1 h-1 bg-black/5 rounded-full overflow-hidden">
                     <div className="h-full bg-primary w-1/3" />
@@ -187,23 +195,23 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
                 <div className="flex gap-2">
                   <button
                     onClick={() => { playClick('soft'); setAudioUrl(null); }}
-                    className="flex-1 py-4 bg-va-off-white text-va-black/40 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:text-red-500 transition-all"
+                    className="flex-1 py-4 bg-va-off-white text-va-black/40 rounded-2xl text-[15px] font-medium tracking-widest hover:text-red-500 transition-all"
                   >
-                    <Trash2 size={14} className="mx-auto" />
+                    <Trash2 size={14} className="mx-auto" strokeWidth={1.5} />
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="flex-[3] py-4 bg-va-black text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-primary transition-all"
+                    className="flex-[3] py-4 bg-va-black text-white rounded-2xl text-[15px] font-medium tracking-widest flex items-center justify-center gap-2 hover:bg-primary transition-all"
                   >
-                    <Download size={14} /> Download .WAV
+                    <Download size={14} strokeWidth={1.5} /> <VoiceglotText translationKey="teleprompter.download" defaultText="Download .WAV" />
                   </button>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
           
-          <p className="text-[9px] font-bold text-va-black/20 text-center uppercase tracking-tighter">
-            Tip: Voor de beste indruk laat je het <br/>professioneel inspreken in de studio.
+          <p className="text-[15px] font-light text-va-black/20 text-center tracking-tighter">
+            <VoiceglotText translationKey="teleprompter.tip" defaultText="Tip: Voor de beste indruk laat je het professioneel inspreken in de studio." />
           </p>
         </div>
       </div>

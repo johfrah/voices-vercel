@@ -1,28 +1,28 @@
-import React, { Suspense } from 'react';
-import { getAcademyLesson } from "@/lib/api-server";
-import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  LoadingScreenInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  ButtonInstrument
+import { AcademyRecorder } from "@/components/academy/AcademyRecorder";
+import { VideoPlayer } from "@/components/academy/VideoPlayer";
+import { AcademyContent } from "@/components/ui/AcademyContent";
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import {
+    ContainerInstrument,
+    HeadingInstrument,
+    LoadingScreenInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { ArrowLeft, Play, Info, CheckCircle2, Mic, ShieldCheck, Eye, EyeOff, FileText } from "lucide-react";
-import Link from "next/link";
-import { VideoPlayer } from "@/components/academy/VideoPlayer";
-import { AcademyRecorder } from "@/components/academy/AcademyRecorder";
-import { AcademyContent } from "@/components/ui/AcademyContent";
-import { SecurityService } from '@/lib/security-service';
+import { getAcademyLesson } from "@/lib/api-server";
 import { MobileBridge } from '@/lib/mobile-bridge';
+import { SecurityService } from '@/lib/security-service';
 import { createClient } from "@/utils/supabase/server";
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { db } from "@db";
 import { courseProgress, users } from "@db/schema";
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { and, eq } from "drizzle-orm";
+import { ArrowLeft, CheckCircle2, Eye, EyeOff, FileText, Info, ShieldCheck } from "lucide-react";
+import { Metadata } from "next";
+import Link from "next/link";
+import { Suspense } from 'react';
 
 // 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -30,6 +30,36 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PU
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 
 import { AcademyPdfButton } from "@/components/ui/AcademyPdfButton";
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  try {
+    const data = await getAcademyLesson(params.id);
+    if (!data || data.type === 'notice') return {};
+
+    const title = `${data.header.title} - Voices Academy Les ${params.id} | Voices.be`;
+    const description = data.header.subtitle || `Volg les ${params.id} van de Voices Academy. Leer alles over stemgebruik, techniek en de business.`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        type: 'article',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+      },
+      alternates: {
+        canonical: `https://www.voices.be/academy/lesson/${params.id}`,
+      }
+    };
+  } catch (e) {
+    return {};
+  }
+}
 
 export default function LessonPage({ params, searchParams }: { params: { id: string }, searchParams: { preview?: string } }) {
   return (
@@ -148,7 +178,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
               <EyeOff size={20} className="text-primary" />
               <TextInstrument className="text-sm font-black tracking-tight text-primary">Student Preview Modus</TextInstrument>
             </div>
-            <Link href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[10px]">
+            <Link href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[15px]">
               Terug naar Admin Mode
             </Link>
           </div>
@@ -156,7 +186,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         <SectionInstrument className="mb-12 space-y-6">
           <Link 
             href="/academy" 
-            className="inline-flex items-center gap-2 text-[10px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
+            className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
           >
             <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="academy.back_to_overview" defaultText="Terug naar overzicht" />
@@ -221,6 +251,36 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
       onContextMenu={(e) => !isAdmin && e.preventDefault()} 
       onCopy={(e) => !isAdmin && e.preventDefault()}
     >
+      {/* 🕸️ SUZY'S SCHEMA INJECTION: Course & VideoObject */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Course",
+            "name": data.header.title,
+            "description": data.header.subtitle,
+            "provider": {
+              "@type": "Organization",
+              "name": "Voices Academy",
+              "url": "https://www.voices.be"
+            },
+            "hasCourseInstance": {
+              "@type": "CourseInstance",
+              "courseMode": "online",
+              "educationalLevel": "Professional"
+            },
+            "video": videoUrl ? {
+              "@type": "VideoObject",
+              "name": data.header.title,
+              "description": data.header.subtitle,
+              "thumbnailUrl": `https://www.voices.be/api/academy/thumbnail/${params.id}`,
+              "uploadDate": new Date().toISOString(),
+              "contentUrl": videoUrl
+            } : undefined
+          })
+        }}
+      />
       {/* 🛡️ ANTI-SCREENSHOT OVERLAY (Only for non-admins) */}
       {!isAdmin && (
         <style dangerouslySetInnerHTML={{ __html: `
@@ -248,17 +308,17 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
               <>
                 <button 
                   onClick={() => window.print()} 
-                  className="va-btn-pro !bg-white/10 !text-white !py-2 !px-4 !text-[10px] hover:!bg-white/20 flex items-center gap-2"
+                  className="va-btn-pro !bg-white/10 !text-white !py-2 !px-4 !text-[15px] hover:!bg-white/20 flex items-center gap-2"
                 >
                   <FileText size={14} />
                   Print Workshop (PDF)
                 </button>
-                <Link href={`/academy/lesson/${params.id}?preview=student`} className="va-btn-pro !bg-white/10 !text-white !py-2 !px-4 !text-[10px] hover:!bg-white/20">
+                <Link href={`/academy/lesson/${params.id}?preview=student`} className="va-btn-pro !bg-white/10 !text-white !py-2 !px-4 !text-[15px] hover:!bg-white/20">
                   Preview als Student
                 </Link>
               </>
             ) : (
-              <Link href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[10px]">
+              <Link href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[15px]">
                 Terug naar Admin Mode
               </Link>
             )}
@@ -269,7 +329,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
       <SectionInstrument className="mb-12 space-y-6">
         <Link 
           href="/academy" 
-          className="inline-flex items-center gap-2 text-[10px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
+          className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
           <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="academy.back_to_overview" defaultText="Terug naar overzicht" />
@@ -330,7 +390,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
                     <TextInstrument className="font-bold text-sm tracking-widest">
                       <VoiceglotText translationKey="academy.lesson1.q1" defaultText="Geloof je jezelf?" />
                     </TextInstrument>
-                    <TextInstrument className="text-xs text-va-black/40 leading-relaxed">
+                    <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light">
                       <VoiceglotText translationKey="academy.lesson1.q1.desc" defaultText="Hoor je iemand die een tekst voorleest, of hoor je iemand die een verhaal vertelt aan een vriend?" />
                     </TextInstrument>
                   </ContainerInstrument>
@@ -339,7 +399,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
                     <TextInstrument className="font-bold text-sm tracking-widest">
                       <VoiceglotText translationKey="academy.lesson1.q2" defaultText="Hoor je de adem?" />
                     </TextInstrument>
-                    <TextInstrument className="text-xs text-va-black/40 leading-relaxed">
+                    <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light">
                       <VoiceglotText translationKey="academy.lesson1.q2.desc" defaultText="Zit er rust in je klank, of hoor je de inspanning en de nood om de zin af te maken?" />
                     </TextInstrument>
                   </ContainerInstrument>
@@ -348,13 +408,13 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
                     <TextInstrument className="font-bold text-sm tracking-widest">
                       <VoiceglotText translationKey="academy.lesson1.q3" defaultText="De Glimlach?" />
                     </TextInstrument>
-                    <TextInstrument className="text-xs text-va-black/40 leading-relaxed">
+                    <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light">
                       <VoiceglotText translationKey="academy.lesson1.q3.desc" defaultText="Kun je horen dat je plezier hebt in wat je vertelt, of klinkt het als een verplichte opdracht?" />
                     </TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="pt-8 border-t border-black/5">
-                  <TextInstrument className="italic text-va-black/40 text-sm">
+                  <TextInstrument className="italic text-va-black/40 text-sm font-light">
                     <VoiceglotText 
                       translationKey="academy.lesson1.nulmeting.footer" 
                       defaultText="Bewaar deze opname goed. Over 20 lessen luisteren we hier samen naar terug om te horen hoe je intentie is gegroeid." 
@@ -401,11 +461,11 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         <ContainerInstrument className="space-y-8">
           {/* Technical Briefing */}
           <BentoCard span="sm" className="hred text-white">
-            <HeadingInstrument level={4} className="text-[10px] font-black tracking-widest text-white/40 mb-6 flex items-center gap-2">
+            <HeadingInstrument level={4} className="text-[15px] font-black tracking-widest text-white/40 mb-6 flex items-center gap-2">
               <Info size={14} /> 
               <VoiceglotText translationKey="academy.lesson.technical_briefing" defaultText="Briefing" />
             </HeadingInstrument>
-            <ContainerInstrument as="ul" className="space-y-4 text-xs font-medium">
+            <ContainerInstrument as="ul" className="space-y-4 text-[15px] font-medium">
               <ContainerInstrument as="li" className="flex gap-3">
                 <CheckCircle2 size={16} className="shrink-0 text-white" />
                 <TextInstrument as="span">
@@ -429,7 +489,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
 
           {/* Progress Widget */}
           <BentoCard span="sm" className="bg-va-black text-white">
-            <HeadingInstrument level={4} className="text-[10px] font-black tracking-widest text-white/40 mb-4">
+            <HeadingInstrument level={4} className="text-[15px] font-black tracking-widest text-white/40 mb-4">
               <VoiceglotText translationKey="academy.lesson.progress_label" defaultText="Voortgang" />
             </HeadingInstrument>
             <ContainerInstrument className="text-4xl font-black tracking-tighter text-primary mb-4">{progress.percentage}%</ContainerInstrument>

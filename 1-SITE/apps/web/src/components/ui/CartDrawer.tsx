@@ -49,7 +49,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               <div className="w-10 h-10 bg-va-black rounded-xl flex items-center justify-center text-white">
                 <ShoppingBag size={20} />
               </div>
-              <h2 className="text-xl font-black uppercase tracking-tighter">Jouw <span className="text-primary">Mandje</span></h2>
+              <h2 className="text-xl font-black tracking-tighter">Jouw <span className="text-primary">Mandje</span></h2>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-va-off-white rounded-full transition-all">
               <X size={24} className="text-va-black/20" />
@@ -61,16 +61,16 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             {loading ? (
               <div className="h-full flex flex-col items-center justify-center text-va-black/20 gap-4">
                 <Loader2 className="animate-spin" size={32} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Laden...</span>
+                <span className="text-[15px] font-black tracking-widest">Laden...</span>
               </div>
             ) : cart.length > 0 ? (
               <div className="space-y-6">
                 {cart.map((item) => (
                   <div key={item.key} className="flex gap-4 p-4 bg-va-off-white rounded-[24px] group border border-transparent hover:border-black/5 transition-all">
                     <div className="flex-1">
-                      <h4 className="text-sm font-black uppercase tracking-tight mb-1">{item.title}</h4>
+                      <h4 className="text-sm font-black tracking-tight mb-1">{item.title}</h4>
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">Aantal: {item.quantity}</span>
+                        <span className="text-[15px] font-bold text-va-black/30 tracking-widest">Aantal: {item.quantity}</span>
                         <span className="font-black text-va-black">€{item.price}</span>
                       </div>
                     </div>
@@ -83,7 +83,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-va-black/20 gap-4">
                 <ShoppingBag size={48} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Je mandje is leeg</span>
+                <span className="text-[15px] font-black tracking-widest">Je mandje is leeg</span>
               </div>
             )}
           </div>
@@ -92,16 +92,16 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           {cart.length > 0 && (
             <div className="px-8 py-8 bg-va-off-white border-t border-black/5 space-y-6">
               <div className="space-y-3">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-va-black/40">
+                <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
                   <span>Subtotaal</span>
                   <span className="text-va-black">€{subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-va-black/40">
+                <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
                   <span>BTW (21%)</span>
                   <span className="text-va-black">€{vat.toFixed(2)}</span>
                 </div>
                 <div className="pt-4 border-t border-black/5 flex justify-between items-center">
-                  <span className="text-sm font-black uppercase tracking-widest">Totaal</span>
+                  <span className="text-sm font-black tracking-widest">Totaal</span>
                   <span className="text-3xl font-black text-primary tracking-tighter">€{total.toFixed(2)}</span>
                 </div>
               </div>

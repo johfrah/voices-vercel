@@ -69,11 +69,11 @@ export default function StudioReviewsPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[10px] font-black uppercase tracking-widest">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter uppercase">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
             <VoiceglotText translationKey="admin.reviews.title" defaultText="Review Intelligence" />
           </HeadingInstrument>
         </ContainerInstrument>
@@ -84,7 +84,7 @@ export default function StudioReviewsPage() {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                className={`px-6 py-3 rounded-xl text-[15px] font-black uppercase tracking-widest transition-all ${
                   filter === f ? 'bg-va-black text-white shadow-lg' : 'text-va-black/30 hover:text-va-black'
                 }`}
               >
@@ -98,7 +98,7 @@ export default function StudioReviewsPage() {
       {/* Stats */}
       <BentoGrid columns={4}>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="va-text-xs text-va-black/30">
+          <TextInstrument className="va-text-[15px] text-va-black/30 font-light">
             <VoiceglotText translationKey="admin.reviews.stats.avg_score" defaultText="Gemiddelde Score" />
           </TextInstrument>
           <div className="flex items-center gap-2">
@@ -109,19 +109,19 @@ export default function StudioReviewsPage() {
           </div>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="va-text-xs text-va-black/30">
+          <TextInstrument className="va-text-[15px] text-va-black/30 font-light">
             <VoiceglotText translationKey="admin.reviews.stats.total" defaultText="Totaal Reviews" />
           </TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">{reviews.length}</HeadingInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="va-text-xs text-va-black/30">
+          <TextInstrument className="va-text-[15px] text-va-black/30 font-light">
             <VoiceglotText translationKey="admin.reviews.stats.pending" defaultText="Wachtend" />
           </TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-orange-500">{reviews.filter(r => r.status === 'pending').length}</HeadingInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="va-text-xs text-va-black/30">
+          <TextInstrument className="va-text-[15px] text-va-black/30 font-light">
             <VoiceglotText translationKey="admin.reviews.stats.sentiment" defaultText="Sentiment" />
           </TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-green-500">
@@ -139,7 +139,7 @@ export default function StudioReviewsPage() {
                 <div className="flex text-primary">
                   {[...Array(review.rating)].map((_, i) => <Star key={i} size={12} fill="currentColor" />)}
                 </div>
-                <div className={`px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest ${
+                <div className={`px-2 py-1 rounded text-[15px] font-black uppercase tracking-widest ${
                   review.status === 'approved' ? 'bg-green-500/10 text-green-600' : 'bg-orange-500/10 text-orange-600'
                 }`}>
                   {review.status}
@@ -154,12 +154,12 @@ export default function StudioReviewsPage() {
               </div>
 
               <div className="pt-4 border-t border-black/5 flex items-center gap-3">
-                <div className="w-8 h-8 bg-va-off-white rounded-full flex items-center justify-center font-black text-[10px] text-va-black/20 uppercase">
+                <div className="w-8 h-8 bg-va-off-white rounded-full flex items-center justify-center font-black text-[15px] text-va-black/20 ">
                   {review.userName?.charAt(0)}
                 </div>
                 <div>
-                  <TextInstrument className="text-[10px] font-black uppercase tracking-tight">{review.userName}</TextInstrument>
-                  <TextInstrument className="text-[9px] text-va-black/30 font-medium tracking-widest uppercase">{review.actorName}</TextInstrument>
+                  <TextInstrument className="text-[15px] font-black tracking-tight">{review.userName}</TextInstrument>
+                  <TextInstrument className="text-[15px] text-va-black/30 font-medium tracking-widest ">{review.actorName}</TextInstrument>
                 </div>
               </div>
             </div>

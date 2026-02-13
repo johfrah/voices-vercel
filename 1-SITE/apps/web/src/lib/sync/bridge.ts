@@ -1,10 +1,11 @@
-export { db } from '@db';
+import { db } from '../../../../../packages/database/src/index';
+export { db };
 import {
     actorDemos,
     actors,
     instructors,
     users
-} from '@db/schema';
+} from '../../../../../packages/database/schema';
 import { eq } from 'drizzle-orm';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -203,7 +204,7 @@ export async function syncAllData() {
             preferences: user.preferences || {}
           }).onConflictDoUpdate({
             target: users.wpUserId,
-            set: { lastActive: new Date() }
+            set: { lastActive: new Date().toISOString() as any }
           });
         } catch (e) {
           console.error(`  [ERROR] Failed to sync user ${user.email}:`, e);
@@ -265,7 +266,7 @@ export async function syncAllData() {
             rates: ratesObj,
             dropboxUrl: photoPath,
             isManuallyEdited: false, // Reset lock bij automatische sync (indien niet gelockt)
-            updatedAt: new Date()
+            updatedAt: new Date().toISOString() as any
           }).onConflictDoUpdate({
             target: actors.wpProductId,
             set: { 
@@ -278,7 +279,7 @@ export async function syncAllData() {
               priceOnline: actor.price_online?.toString(),
               priceIvr: actor.price_ivr?.toString(),
               priceLiveRegie: actor.price_live_regie?.toString(),
-              updatedAt: new Date() 
+              updatedAt: new Date().toISOString() as any 
             }
           });
 

@@ -171,7 +171,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     key={track.srcLang}
                     onClick={() => setActiveSubtitle(activeSubtitle === track.srcLang ? null : track.srcLang)}
                     className={cn(
-                      "text-[10px] px-2 py-1 rounded border border-white/20 transition-all",
+                      "text-[15px] px-2 py-1 rounded border border-white/20 transition-all",
                       activeSubtitle === track.srcLang ? "bg-primary border-primary text-white" : "bg-white/10 text-white/60 hover:bg-white/20"
                     )}
                   >

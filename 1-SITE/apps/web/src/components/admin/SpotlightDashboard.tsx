@@ -57,7 +57,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                 <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                   <BarChart3 size={18} className="text-white" />
                 </div>
-                <h2 className="text-sm font-black uppercase tracking-[0.2em] text-white">Spotlight Cockpit</h2>
+                <h2 className="text-sm font-black tracking-[0.2em] text-white">Spotlight Cockpit</h2>
               </div>
               <button 
                 onClick={() => { playClick('soft'); onClose(); }}
@@ -73,7 +73,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                 <button
                   key={tab}
                   onClick={() => { playClick('soft'); setActiveTab(tab); }}
-                  className={`flex-1 py-2 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${
+                  className={`flex-1 py-2 text-[15px] font-black uppercase tracking-widest rounded-lg transition-all ${
                     activeTab === tab ? 'bg-white/10 text-white shadow-sm' : 'text-white/30 hover:text-white/50'
                   }`}
                 >
@@ -92,33 +92,33 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                     <div key={i} className="bg-white/5 border border-white/5 p-4 rounded-2xl">
                       <div className="flex items-center gap-2 text-white/30 mb-2">
                         {stat.icon}
-                        <span className="text-[8px] font-black uppercase tracking-widest">{stat.label}</span>
+                        <span className="text-[15px] font-black tracking-widest">{stat.label}</span>
                       </div>
                       <div className="flex items-baseline gap-2">
                         <span className="text-xl font-black text-white">{stat.value}</span>
-                        <span className="text-[9px] font-bold text-primary">{stat.change}</span>
+                        <span className="text-[15px] font-bold text-primary">{stat.change}</span>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-[10px] font-black uppercase tracking-widest text-white/40">Systeem Status</h3>
+                  <h3 className="text-[15px] font-black tracking-widest text-white/40">Systeem Status</h3>
                   <div className="bg-primary/10 border border-primary/20 p-6 rounded-2xl space-y-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 text-primary">
                         <Sparkles size={16} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Systeem Optimalisatie</span>
+                        <span className="text-[15px] font-black tracking-widest">Systeem Optimalisatie</span>
                       </div>
-                      <div className="text-[8px] font-black text-white/40 uppercase tracking-widest">Gereed</div>
+                      <div className="text-[15px] font-black text-white/40 tracking-widest">Gereed</div>
                     </div>
-                    <p className="text-[10px] text-white/60 font-medium leading-relaxed">
+                    <p className="text-[15px] text-white/60 font-medium leading-relaxed">
                       Het systeem heeft 4 nieuwe optimalisaties gevonden voor de &quot;Agency&quot; journey op basis van recente data.
                     </p>
                     <button 
                       onClick={handleOptimize}
                       disabled={isOptimizing}
-                      className="w-full bg-primary text-white py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                      className="w-full bg-primary text-white py-4 rounded-xl text-[15px] font-black tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                     >
                       {isOptimizing ? (
                         <>
@@ -139,7 +139,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
 
             {activeTab === 'sync' && (
               <div className="space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-white/40">Atomic Sync Logs</h3>
+                <h3 className="text-[15px] font-black tracking-widest text-white/40">Atomic Sync Logs</h3>
                 <div className="space-y-2">
                   {[
                     { msg: 'Voiceglot: agency.hero.title bijgewerkt', time: '2m ago', type: 'manual' },
@@ -150,9 +150,9 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                     <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
                       <div className="flex items-center gap-3">
                         <div className={`w-1.5 h-1.5 rounded-full ${log.type === 'manual' ? 'bg-primary' : log.type === 'lock' ? 'bg-red-500' : 'bg-white/20'}`} />
-                        <span className="text-[10px] font-bold text-white/80">{log.msg}</span>
+                        <span className="text-[15px] font-bold text-white/80">{log.msg}</span>
                       </div>
-                      <span className="text-[8px] font-black text-white/20 uppercase">{log.time}</span>
+                      <span className="text-[15px] font-black text-white/20 ">{log.time}</span>
                     </div>
                   ))}
                 </div>
@@ -163,13 +163,13 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
           {/* Footer */}
           <div className="p-8 border-t border-white/10 bg-black/20">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/40">
+              <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-white/40">
                 <Database size={12} />
                 Master Registry
               </div>
-              <div className="text-[10px] font-black text-primary">ENCRYPTED</div>
+              <div className="text-[15px] font-black text-primary">ENCRYPTED</div>
             </div>
-            <p className="text-[9px] text-white/20 font-medium italic">
+            <p className="text-[15px] text-white/20 font-medium italic">
               Voices Core v2.4.0 • Beheer-modus Actief
             </p>
           </div>

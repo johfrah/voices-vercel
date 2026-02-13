@@ -312,11 +312,11 @@ export default function PhotoMatcherPage() {
       <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 font-sans pt-32">
         <ContainerInstrument className="max-w-5xl mx-auto">
           <ContainerInstrument className="py-20 text-center">
-            <TextInstrument as="span" className="text-6xl block mb-4">🎉</TextInstrument>
+            <TextInstrument as="span" className="text-6xl block mb-4 font-light">🎉</TextInstrument>
             <HeadingInstrument level={2} className="text-2xl font-bold text-gray-900">
               <VoiceglotText translationKey="admin.photo_matcher.done_title" defaultText="alles is verwerkt!" />
             </HeadingInstrument>
-            <TextInstrument className="text-gray-500">
+            <TextInstrument className="text-gray-500 font-light">
               <VoiceglotText translationKey="admin.photo_matcher.done_text" defaultText="lekker gewerkt, de database is weer een stukje schoner." />
             </TextInstrument>
             {slopItems.length > 0 && (
@@ -340,7 +340,7 @@ export default function PhotoMatcherPage() {
         <ContainerInstrument className="mb-8 bg-va-black text-white rounded-[32px] p-6 shadow-aura flex items-center justify-between">
           <div className="flex gap-10">
             <div>
-              <TextInstrument className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Nuclear Progress</TextInstrument>
+              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light">Nuclear Progress</TextInstrument>
               <div className="flex items-center gap-3">
                 <div className="w-32 h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <div className="h-full bg-va-primary transition-all duration-500" style={{ width: `${progressPercentage}%` }} />
@@ -349,12 +349,12 @@ export default function PhotoMatcherPage() {
               </div>
             </div>
             <div>
-              <TextInstrument className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Space Saved</TextInstrument>
+              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light">Space Saved</TextInstrument>
               <TextInstrument className="text-sm font-bold text-va-primary">{savedGB} GB</TextInstrument>
             </div>
             <div>
-              <TextInstrument className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Shortcuts</TextInstrument>
-              <TextInstrument className="text-[10px] font-medium text-white/60">
+              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light">Shortcuts</TextInstrument>
+              <TextInstrument className="text-[15px] font-medium text-white/60">
                 <span className="text-white bg-white/10 px-1.5 py-0.5 rounded mr-1">A</span> Archive 
                 <span className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3">M</span> Match 
                 <span className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3">S</span> Skip
@@ -364,7 +364,7 @@ export default function PhotoMatcherPage() {
           {scanning && (
             <div className="flex items-center gap-3 bg-va-primary/20 px-4 py-2 rounded-full border border-va-primary/30">
               <div className="w-2 h-2 bg-va-primary rounded-full animate-pulse" />
-              <TextInstrument className="text-[10px] font-bold text-va-primary uppercase tracking-widest">
+              <TextInstrument className="text-[15px] font-bold text-va-primary tracking-widest">
                 Scanning: {scanProgress}%
               </TextInstrument>
             </div>
@@ -376,7 +376,7 @@ export default function PhotoMatcherPage() {
             <HeadingInstrument level={1} className="text-4xl font-light tracking-tight text-black mb-2">
               <VoiceglotText translationKey="admin.photo_matcher.title" defaultText="photo matcher" />
             </HeadingInstrument>
-            <TextInstrument className="text-gray-400 tracking-widest text-xs font-medium">
+            <TextInstrument className="text-gray-400 tracking-widest text-[15px] font-medium">
               {totalItems} <VoiceglotText translationKey="admin.photo_matcher.to_process" defaultText={showAutoMatched ? "automatisch gematchte foto's (ter controle)" : "foto's te verwerken"} />
               {totalPages > 1 && ` • pagina ${currentPage} van ${totalPages}`}
             </TextInstrument>
@@ -423,7 +423,7 @@ export default function PhotoMatcherPage() {
               <ButtonInstrument
                 key={i + 1}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`w-10 h-10 rounded-full text-xs font-bold transition-all ${
+                className={`w-10 h-10 rounded-full text-[15px] font-bold transition-all ${
                   currentPage === i + 1 ? 'bg-va-primary text-white' : 'bg-white border border-black/5 text-gray-400 hover:border-black'
                 }`}
               >
@@ -438,7 +438,7 @@ export default function PhotoMatcherPage() {
             <div key={groupName} className="space-y-4">
               <div className="flex items-center gap-4 px-4">
                 <div className="h-px flex-grow bg-black/[0.05]" />
-                <TextInstrument className="text-[10px] font-bold text-black/20 uppercase tracking-[0.3em]">
+                <TextInstrument className="text-[15px] font-bold text-black/20 tracking-[0.3em]">
                   {groupName}
                 </TextInstrument>
                 <div className="h-px flex-grow bg-black/[0.05]" />
@@ -474,10 +474,10 @@ export default function PhotoMatcherPage() {
                       <ContainerInstrument className="flex-grow space-y-6 pt-2">
                         <ContainerInstrument>
                           <ContainerInstrument className="flex items-center gap-3 mb-2">
-                            <TextInstrument as="span" className="text-[10px] font-medium tracking-[0.2em] text-va-primary/60">
+                            <TextInstrument as="span" className="text-[15px] font-medium tracking-[0.2em] text-va-primary/60">
                               {item.source || 'automatisch'}
                             </TextInstrument>
-                            <TextInstrument className="text-[10px] font-mono text-gray-300 break-all">{item.path || item.filePath}</TextInstrument>
+                            <TextInstrument className="text-[15px] font-mono text-gray-300 break-all">{item.path || item.filePath}</TextInstrument>
                           </ContainerInstrument>
                           <HeadingInstrument level={3} className="text-xl font-light text-gray-900">{item.fileName}</HeadingInstrument>
                         </ContainerInstrument>
@@ -487,7 +487,7 @@ export default function PhotoMatcherPage() {
                           <ContainerInstrument className="p-6 bg-va-off-white rounded-[24px] border border-black/[0.02]">
                             {item.analysis ? (
                               item.analysis.loading ? (
-                                <TextInstrument className="text-xs text-va-primary/40 animate-pulse font-medium italic">vision analyseert...</TextInstrument>
+                                <TextInstrument className="text-[15px] text-va-primary/40 animate-pulse font-medium italic">vision analyseert...</TextInstrument>
                               ) : (
                                 <div className="space-y-3">
                                   <TextInstrument className="text-sm text-va-black/60 leading-relaxed font-medium">
@@ -495,13 +495,13 @@ export default function PhotoMatcherPage() {
                                   </TextInstrument>
                                   <div className="flex flex-wrap gap-2 items-center">
                                     {item.analysis.labels.map((l: string) => (
-                                      <span key={l} className="px-3 py-1 bg-white rounded-full text-[9px] font-medium text-gray-400 border border-black/[0.03]">{l}</span>
+                                      <span key={l} className="px-3 py-1 bg-white rounded-full text-[15px] font-medium text-gray-400 border border-black/[0.03]">{l}</span>
                                     ))}
-                                    <span className="px-3 py-1 bg-va-primary/5 text-va-primary rounded-full text-[9px] font-bold italic">{item.analysis.vibe}</span>
+                                    <span className="px-3 py-1 bg-va-primary/5 text-va-primary rounded-full text-[15px] font-bold italic">{item.analysis.vibe}</span>
                                     
                                     <ButtonInstrument 
                                       onClick={() => handleAction('match', item.path, undefined, item.analysis)}
-                                      className="ml-auto px-4 py-2 bg-va-black text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-va-primary transition-all"
+                                      className="ml-auto px-4 py-2 bg-va-black text-white rounded-xl text-[15px] font-black tracking-widest hover:bg-va-primary transition-all"
                                     >
                                       verplaats naar assets
                                     </ButtonInstrument>
@@ -511,7 +511,7 @@ export default function PhotoMatcherPage() {
                             ) : (
                               <ButtonInstrument 
                                 onClick={() => analyzeImage(item)}
-                                className="text-[10px] font-bold text-va-primary/60 hover:text-va-primary transition-colors flex items-center gap-2"
+                                className="text-[15px] font-bold text-va-primary/60 hover:text-va-primary transition-colors flex items-center gap-2"
                               >
                                 ✨ vision beschrijving genereren
                               </ButtonInstrument>
@@ -533,14 +533,14 @@ export default function PhotoMatcherPage() {
                               >
                                 <ContainerInstrument>
                                   <TextInstrument className="text-sm font-medium text-black">{s.name}</TextInstrument>
-                                  <TextInstrument className="text-[10px] text-gray-400 font-medium">
+                                  <TextInstrument className="text-[15px] text-gray-400 font-medium">
                                     {s.confidence === 'verified' ? '✓ geverifieerd' : s.confidence}
                                   </TextInstrument>
                                 </ContainerInstrument>
                               </ButtonInstrument>
                             ))
                           ) : !showAutoMatched && (
-                            <TextInstrument className="text-xs text-gray-300 italic">geen automatische match gevonden</TextInstrument>
+                            <TextInstrument className="text-[15px] text-gray-300 italic font-light">geen automatische match gevonden</TextInstrument>
                           )}
                         </ContainerInstrument>
                       </ContainerInstrument>
@@ -549,13 +549,13 @@ export default function PhotoMatcherPage() {
                       <ContainerInstrument className="flex flex-col gap-3 w-36 pt-2">
                         <ButtonInstrument 
                           onClick={() => handleAction('ignore', item.path)}
-                          className="w-full py-3 px-4 border border-black/5 text-gray-400 hover:border-black hover:text-black rounded-2xl text-[10px] font-medium tracking-widest transition-all bg-white"
+                          className="w-full py-3 px-4 border border-black/5 text-gray-400 hover:border-black hover:text-black rounded-2xl text-[15px] font-medium tracking-widest transition-all bg-white"
                         >
                           overslaan
                         </ButtonInstrument>
                         <ButtonInstrument 
                           onClick={() => handleAction('archive', item.path)}
-                          className="w-full py-3 px-4 bg-va-off-white text-gray-400 hover:text-gray-600 rounded-2xl text-[10px] font-medium tracking-widest transition-all"
+                          className="w-full py-3 px-4 bg-va-off-white text-gray-400 hover:text-gray-600 rounded-2xl text-[15px] font-medium tracking-widest transition-all"
                         >
                           archiveren
                         </ButtonInstrument>

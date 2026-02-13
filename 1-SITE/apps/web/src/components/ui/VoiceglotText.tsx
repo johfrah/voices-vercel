@@ -148,7 +148,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
       )}
 
       {isEditMode && !noTranslate && (
-        <div className="absolute -top-6 left-0 opacity-0 group-hover/edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest pointer-events-none z-50">
+        <div className="absolute -top-6 left-0 opacity-0 group-hover/edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[15px] font-black tracking-widest pointer-events-none z-50">
           <Lock size={8} className="text-primary" />
           Voiceglot: {translationKey}
         </div>

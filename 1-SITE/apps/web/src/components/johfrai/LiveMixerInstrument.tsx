@@ -138,10 +138,10 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
               <Mic size={18} />
             </div>
             <div>
-              <h4 className="font-black text-sm uppercase tracking-tight">
+              <h4 className="font-black text-sm tracking-tight">
                 {title || <VoiceglotText translationKey="common.untitled_file" defaultText="Naamloos bestand" />}
               </h4>
-              <p className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
+              <p className="text-[15px] font-bold text-va-black/30 tracking-widest">
                 {formatTime(currentTime)} / {formatTime(duration)}
               </p>
             </div>
@@ -180,14 +180,14 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
           <div className="absolute top-2 left-4 flex gap-4 pointer-events-none">
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-              <span className="text-[8px] font-black uppercase tracking-widest text-va-black/40">
+              <span className="text-[15px] font-black tracking-widest text-va-black/40">
                 <VoiceglotText translationKey="audio.review.voice" defaultText="Stem" />
               </span>
             </div>
             {musicUrl && (
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-va-black/10" />
-                <span className="text-[8px] font-black uppercase tracking-widest text-va-black/40">
+                <span className="text-[15px] font-black tracking-widest text-va-black/40">
                   <VoiceglotText translationKey="audio.review.music" defaultText="Muziek" />
                 </span>
               </div>
@@ -204,10 +204,10 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
               </div>
               <div className="flex-1 space-y-1">
                 <div className="flex justify-between items-center">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-va-black/40">
+                  <span className="text-[15px] font-black tracking-widest text-va-black/40">
                     <VoiceglotText translationKey="audio.review.mix_volume" defaultText="Mix Volume" />
                   </span>
-                  <span className="text-[9px] font-black text-primary">{Math.round(musicVolume * 100)}%</span>
+                  <span className="text-[15px] font-black text-primary">{Math.round(musicVolume * 100)}%</span>
                 </div>
                 <input 
                   type="range" 
@@ -223,7 +223,7 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
             
             <div className="flex items-center gap-2 text-va-black/20">
               <Sliders size={14} />
-              <span className="text-[9px] font-black uppercase tracking-widest">
+              <span className="text-[15px] font-black tracking-widest">
                 <VoiceglotText translationKey="audio.review.live_mix" defaultText="Live Mix" />
               </span>
             </div>

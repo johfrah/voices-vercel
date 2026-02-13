@@ -24,7 +24,7 @@ export default function BedanktMeetingPage() {
         </div>
         
         <div className="space-y-4">
-          <HeadingInstrument level={1} className="text-4xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter">
             <VoiceglotText translationKey="studio.meeting.thanks.title" defaultText="Bedankt voor het gesprek!" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/50 font-medium text-lg leading-relaxed">

@@ -48,7 +48,7 @@ export const OrderStepsInstrument: React.FC<{ currentStep?: string, isTelephony?
                   <span className="text-2xl font-extralight tracking-tighter">0{index + 1}</span>
                 </div>
                 <TextInstrument className={cn(
-                  "text-[10px] font-light tracking-[0.2em] text-center whitespace-nowrap uppercase",
+                  "text-[15px] font-light tracking-[0.2em] text-center whitespace-nowrap uppercase",
                   isActive ? "text-va-black" : "text-va-black/30"
                 )}>
                   <VoiceglotText translationKey={step.titleKey} defaultText={step.defaultTitle.split(' ').slice(1).join(' ')} />

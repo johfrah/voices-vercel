@@ -78,15 +78,15 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <button 
           onClick={() => setShowInterestForm(false)}
-          className="text-[10px] font-black uppercase tracking-widest text-black/40 hover:text-black transition-colors flex items-center gap-2"
+          className="text-[15px] font-black tracking-widest text-black/40 hover:text-black transition-colors flex items-center gap-2"
         >
           <ArrowLeft size={12} /> Terug naar overzicht
         </button>
         <div className="p-8 bg-va-off-white rounded-3xl border border-black/5">
-          <h4 className="text-xl font-black uppercase tracking-tighter mb-4">
+          <h4 className="text-xl font-black tracking-tighter mb-4">
             <VoiceglotText translationKey="studio.booking.notify_me.title" defaultText="Houd me op de hoogte" />
           </h4>
-          <p className="text-xs text-black/60 mb-8 leading-relaxed">
+          <p className="text-[15px] text-black/60 mb-8 leading-relaxed">
             <VoiceglotText 
               translationKey="studio.booking.notify_me.text" 
               defaultText="Er zijn momenteel geen data gepland voor deze workshop. Laat je gegevens achter en we laten je als eerste weten wanneer er nieuwe edities beschikbaar zijn." 
@@ -98,7 +98,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
               placeholder={t('common.placeholder.email', 'Jouw e-mailadres')} 
               className="w-full p-4 rounded-xl border border-black/10 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
             />
-            <button className="w-full py-4 bg-black text-white rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-primary transition-all">
+            <button className="w-full py-4 bg-black text-white rounded-xl font-black tracking-widest text-[15px] hover:bg-primary transition-all">
               <VoiceglotText translationKey="common.send" defaultText="VERZENDEN" />
             </button>
           </form>
@@ -128,7 +128,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t('studio.booking.search_voice', "Zoek een stem (bijv. 'johfra')...")}
-            className="w-full bg-va-off-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all group-hover:border-black/10"
+            className="w-full bg-va-off-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 text-[15px] font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all group-hover:border-black/10"
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} />
           {isSearching && (
@@ -140,7 +140,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
         <AnimatePresence>
           {foundVoices.length > 0 && (
             <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
-              <div className="text-[10px] font-black uppercase tracking-widest text-black/30 px-2">
+              <div className="text-[15px] font-black tracking-widest text-black/30 px-2">
                 <VoiceglotText translationKey="studio.booking.found_voices" defaultText="Gevonden Stemmen" />
               </div>
               {foundVoices.map((voice) => (
@@ -161,10 +161,10 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       {/* DATE SELECTOR */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h4 className="text-[10px] font-black uppercase tracking-widest text-black/40">
+          <h4 className="text-[15px] font-black tracking-widest text-black/40">
             <VoiceglotText translationKey="studio.booking.available_dates" defaultText="Beschikbare Data" />
           </h4>
-          <span className="text-[10px] font-bold text-primary uppercase tracking-widest flex items-center gap-1">
+          <span className="text-[15px] font-bold text-primary tracking-widest flex items-center gap-1">
             <Info size={12} /> <VoiceglotText translationKey="studio.booking.limited_spots" defaultText="Slechts enkele plaatsen" />
           </span>
         </div>
@@ -196,8 +196,8 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                   <Calendar size={16} className={selectedDateIndex === index ? "text-primary" : "text-black/40"} />
                 </div>
                 <div className="text-left">
-                  <div className="text-sm font-black uppercase tracking-tight">{date.date_raw}</div>
-                  <div className="text-[10px] font-bold opacity-40 uppercase tracking-widest flex items-center gap-2 mt-0.5">
+                  <div className="text-sm font-black tracking-tight">{date.date_raw}</div>
+                  <div className="text-[15px] font-bold opacity-40 tracking-widest flex items-center gap-2 mt-0.5">
                     <MapPin size={10} /> {date.location}
                   </div>
                 </div>
@@ -208,12 +208,12 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
             </button>
           )) : (
             <div className="p-8 rounded-2xl bg-va-off-white border border-dashed border-black/10 text-center">
-              <p className="text-[10px] font-black uppercase tracking-widest text-black/30">
+              <p className="text-[15px] font-black tracking-widest text-black/30">
                 <VoiceglotText translationKey="studio.booking.no_dates" defaultText="Geen data gepland" />
               </p>
               <button 
                 onClick={() => setShowInterestForm(true)}
-                className="text-[10px] font-black uppercase tracking-widest text-primary mt-2 hover:underline"
+                className="text-[15px] font-black tracking-widest text-primary mt-2 hover:underline"
               >
                 <VoiceglotText translationKey="studio.booking.notify_me.cta" defaultText="Houd me op de hoogte" />
               </button>
@@ -226,16 +226,16 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       <div className="pt-8 border-t border-black/5 space-y-6">
         <div className="flex justify-between items-end">
           <div>
-            <div className="text-[10px] font-black uppercase tracking-widest text-black/30 mb-1">
+            <div className="text-[15px] font-black tracking-widest text-black/30 mb-1">
               <VoiceglotText translationKey="studio.booking.total_investment" defaultText="Totaal Investering" />
             </div>
             <div className="text-4xl font-black tracking-tighter">€{priceExclVatValue}</div>
           </div>
           <div className="text-right">
-            <div className="flex items-center gap-2 text-[10px] font-bold text-green-500 uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-[15px] font-bold text-green-500 tracking-widest mb-1">
               <CheckCircle2 size={12} /> <VoiceglotText translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-green-500 uppercase tracking-widest">
+            <div className="flex items-center gap-2 text-[15px] font-bold text-green-500 tracking-widest">
               <CheckCircle2 size={12} /> <VoiceglotText translationKey="studio.booking.certificate" defaultText="Certificaat" />
             </div>
           </div>
@@ -261,7 +261,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           )}
         </button>
         
-        <p className="text-[9px] text-center text-black/30 font-medium uppercase tracking-widest">
+        <p className="text-[15px] text-center text-black/30 font-medium tracking-widest">
           <VoiceglotText translationKey="studio.booking.security_info" defaultText="Veilig betalen via Mollie • Directe bevestiging" />
         </p>
       </div>

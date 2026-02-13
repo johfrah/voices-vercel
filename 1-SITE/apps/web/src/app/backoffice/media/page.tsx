@@ -26,7 +26,7 @@ export default function MediaPage() {
           <ContainerInstrument className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto">
             <ShieldAlert className="text-red-500" size={32} />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-2xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-2xl font-black tracking-tighter">
             <VoiceglotText translationKey="admin.access_denied.title" defaultText="Toegang Geweigerd" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-medium leading-relaxed">

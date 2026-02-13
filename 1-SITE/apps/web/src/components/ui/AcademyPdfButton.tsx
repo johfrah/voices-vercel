@@ -66,7 +66,7 @@ export const AcademyPdfButton: React.FC<AcademyPdfButtonProps> = ({
     <button 
       onClick={handleDownload}
       disabled={isGenerating}
-      className="w-full py-4 rounded-xl bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+      className="w-full py-4 rounded-xl bg-white/5 hover:bg-white/10 text-white text-[15px] font-black tracking-widest transition-all flex items-center justify-center gap-2 disabled:opacity-50"
     >
       {isGenerating ? (
         <Loader2 size={14} className="animate-spin" />

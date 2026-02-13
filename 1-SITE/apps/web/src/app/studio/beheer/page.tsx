@@ -59,10 +59,10 @@ export default async function InstructorDashboardPage() {
       {/* HEADER */}
       <ContainerInstrument className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <ContainerInstrument>
-          <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-black/40 mb-2">
+          <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2">
             <VoiceglotText translationKey="studio.beheer.cockpit_badge" defaultText="Instructor Cockpit" />
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
             <VoiceglotText translationKey="studio.beheer.welcome" defaultText="Welkom," /> <span className="text-primary">{effectiveInstructor.name.split(' ')[0]}</span>.
           </HeadingInstrument>
         </ContainerInstrument>
@@ -77,12 +77,12 @@ export default async function InstructorDashboardPage() {
         <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>
             <Calendar className="text-primary mb-6" size={24} />
-            <TextInstrument className="va-text-xs text-black/30">
+            <TextInstrument className="va-text-[15px] text-black/30 font-light">
               <VoiceglotText translationKey="studio.beheer.stats.planned" defaultText="Geplande Edities" />
             </TextInstrument>
             <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter mt-2">{upcomingEditions.length}</HeadingInstrument>
           </ContainerInstrument>
-          <TextInstrument className="text-[10px] font-bold text-black/20 uppercase tracking-widest mt-8">
+          <TextInstrument className="text-[15px] font-bold text-black/20 tracking-widest mt-8">
             <VoiceglotText translationKey="studio.beheer.stats.next" defaultText="Volgende:" /> {upcomingEditions[0]?.date.toLocaleDateString('nl-BE') || <VoiceglotText translationKey="common.none" defaultText="Geen" />}
           </TextInstrument>
         </BentoCard>
@@ -90,12 +90,12 @@ export default async function InstructorDashboardPage() {
         <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>
             <Users className="text-primary mb-6" size={24} />
-            <TextInstrument className="va-text-xs text-black/30">
+            <TextInstrument className="va-text-[15px] text-black/30 font-light">
               <VoiceglotText translationKey="studio.beheer.stats.capacity" defaultText="Totale Capaciteit" />
             </TextInstrument>
             <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter mt-2">{totalParticipants}</HeadingInstrument>
           </ContainerInstrument>
-          <TextInstrument className="text-[10px] font-bold text-black/20 uppercase tracking-widest mt-8">
+          <TextInstrument className="text-[15px] font-bold text-black/20 tracking-widest mt-8">
             <VoiceglotText translationKey="studio.beheer.stats.avg" defaultText="Gem. 8 per workshop" />
           </TextInstrument>
         </BentoCard>
@@ -103,19 +103,19 @@ export default async function InstructorDashboardPage() {
         <BentoCard span="sm" className="bg-va-black text-white p-8 flex flex-col justify-between">
           <ContainerInstrument>
             <TrendingUp className="text-primary mb-6" size={24} />
-            <TextInstrument className="va-text-xs text-white/30">
+            <TextInstrument className="va-text-[15px] text-white/30 font-light">
               <VoiceglotText translationKey="studio.beheer.stats.impact" defaultText="Jouw Impact" />
             </TextInstrument>
             <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter mt-2">4.9/5</HeadingInstrument>
           </ContainerInstrument>
-          <Link href="/studio/reviews" className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline mt-8 flex items-center gap-2">
+          <Link href="/studio/reviews" className="text-[15px] font-black tracking-widest text-primary hover:underline mt-8 flex items-center gap-2">
             <VoiceglotText translationKey="studio.beheer.stats.reviews_cta" defaultText="BEKIJK REVIEWS" /> <ExternalLink size={12} />
           </Link>
         </BentoCard>
 
         {/* ACTIVE EDITIONS LIST */}
         <BentoCard span="lg" className="bg-white shadow-aura p-10 border border-black/5">
-          <HeadingInstrument level={2} className="va-text-xs text-black/30 mb-8">
+          <HeadingInstrument level={2} className="va-text-[15px] text-black/30 mb-8">
             <VoiceglotText translationKey="studio.beheer.active_workshops" defaultText="Jouw Actieve Workshops" />
           </HeadingInstrument>
           
@@ -124,18 +124,18 @@ export default async function InstructorDashboardPage() {
               <div key={edition.id} className="group p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-black/5 transition-all flex flex-col md:flex-row justify-between items-center gap-6">
                 <div className="flex items-center gap-6 w-full md:w-auto">
                   <div className="w-14 h-14 rounded-2xl bg-black text-white flex flex-col items-center justify-center">
-                    <span className="text-xs font-black">{edition.date.getDate()}</span>
-                    <span className="text-[8px] font-bold uppercase">{edition.date.toLocaleString('nl-BE', { month: 'short' })}</span>
+                    <span className="text-[15px] font-black">{edition.date.getDate()}</span>
+                    <span className="text-[15px] font-bold ">{edition.date.toLocaleString('nl-BE', { month: 'short' })}</span>
                   </div>
                   <div>
-                    <HeadingInstrument level={4} className="text-lg font-black uppercase tracking-tight">
+                    <HeadingInstrument level={4} className="text-lg font-black tracking-tight">
                       {edition.workshop?.title}
                     </HeadingInstrument>
                     <div className="flex flex-wrap gap-4 mt-1">
-                      <div className="flex items-center gap-1 text-[10px] font-bold text-black/30 uppercase tracking-widest">
+                      <div className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
                         <MapPin size={10} /> {edition.location?.name || 'Gent'}
                       </div>
-                      <div className="flex items-center gap-1 text-[10px] font-bold text-black/30 uppercase tracking-widest">
+                      <div className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
                         <Clock size={10} /> {edition.date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
@@ -144,14 +144,14 @@ export default async function InstructorDashboardPage() {
                 
                 <div className="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end">
                   <div className="text-right">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-black/20 mb-1">
+                    <div className="text-[15px] font-black tracking-widest text-black/20 mb-1">
                       <VoiceglotText translationKey="studio.beheer.occupancy" defaultText="Bezetting" />
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-24 h-1.5 bg-black/5 rounded-full overflow-hidden">
                         <div className="h-full bg-primary w-[75%]" />
                       </div>
-                      <span className="text-[10px] font-black">6/{edition.capacity}</span>
+                      <span className="text-[15px] font-black">6/{edition.capacity}</span>
                     </div>
                   </div>
                   <Link href={`/studio/beheer/editie/${edition.id}`} className="va-btn-secondary !p-4 !rounded-xl">
@@ -161,7 +161,7 @@ export default async function InstructorDashboardPage() {
               </div>
             )) : (
               <div className="py-20 text-center border-2 border-dashed border-black/5 rounded-[32px]">
-                <TextInstrument className="va-text-xs text-black/20">
+                <TextInstrument className="va-text-[15px] text-black/20 font-light">
                   <VoiceglotText translationKey="studio.beheer.no_workshops" defaultText="Nog geen workshops gepland. Start met je eerste!" />
                 </TextInstrument>
               </div>
@@ -172,23 +172,23 @@ export default async function InstructorDashboardPage() {
         {/* QUICK ACTIONS / TIPS */}
         <BentoCard span="sm" className="bg-va-off-white p-10 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>
-            <HeadingInstrument level={3} className="va-text-xs text-black/30 mb-6">
+            <HeadingInstrument level={3} className="va-text-[15px] text-black/30 mb-6">
               <VoiceglotText translationKey="studio.beheer.tips.title" defaultText="Tips voor succes" />
             </HeadingInstrument>
             <div className="space-y-6">
               <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <span className="text-[10px] font-black text-primary">1</span>
+                  <span className="text-[15px] font-black text-primary">1</span>
                 </div>
-                <TextInstrument className="text-xs font-medium text-black/60 leading-relaxed">
+                <TextInstrument className="text-[15px] font-medium text-black/60 leading-relaxed">
                   <VoiceglotText translationKey="studio.beheer.tips.tip1" defaultText="Deel je persoonlijke link op LinkedIn om meer deelnemers te trekken." />
                 </TextInstrument>
               </div>
               <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <span className="text-[10px] font-black text-primary">2</span>
+                  <span className="text-[15px] font-black text-primary">2</span>
                 </div>
-                <TextInstrument className="text-xs font-medium text-black/60 leading-relaxed">
+                <TextInstrument className="text-[15px] font-medium text-black/60 leading-relaxed">
                   <VoiceglotText translationKey="studio.beheer.tips.tip2" defaultText="Upload je bio en foto om je profiel aantrekkelijker te maken." />
                 </TextInstrument>
               </div>

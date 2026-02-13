@@ -24,11 +24,11 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
             onClick={() => setOpenId(openId === item.id ? null : item.id)}
             className="w-full px-10 py-8 flex items-center justify-between text-left group"
           >
-            <HeadingInstrument level={4} className="text-sm font-black  tracking-widest text-va-black/60 group-hover:text-va-black transition-colors">
+            <HeadingInstrument level={4} className="text-sm font-medium tracking-widest text-va-black/60 group-hover:text-va-black transition-colors">
               {item.title}
             </HeadingInstrument>
             <div className={`p-2 rounded-full bg-va-black/5 transition-transform duration-500 ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
-              <ChevronDown size={18} />
+              <ChevronDown size={18} strokeWidth={1.5} />
             </div>
           </button>
           <div 

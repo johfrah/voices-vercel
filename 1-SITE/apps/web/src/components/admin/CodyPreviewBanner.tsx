@@ -55,15 +55,15 @@ export const CodyPreviewBanner = () => {
               <Zap size={14} fill="currentColor" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest leading-none">Cody Live Preview</span>
-              <span className="text-[9px] font-medium opacity-80 leading-tight">Je ziet de site met tijdelijke Shadow Logic.</span>
+              <span className="text-[15px] font-black tracking-widest leading-none">Cody Live Preview</span>
+              <span className="text-[15px] font-medium opacity-80 leading-tight">Je ziet de site met tijdelijke Shadow Logic.</span>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-3 py-1 bg-black/10 rounded-full border border-white/10">
               <Eye size={12} />
-              <span className="text-[9px] font-black uppercase tracking-widest">Alleen zichtbaar voor jou</span>
+              <span className="text-[15px] font-black tracking-widest">Alleen zichtbaar voor jou</span>
             </div>
             <button 
               onClick={stopPreview}

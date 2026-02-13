@@ -57,11 +57,11 @@ export default function AdminUsersPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[10px] font-black uppercase tracking-widest">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter uppercase">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
             <VoiceglotText translationKey="admin.users.title" defaultText="User DNA" />
           </HeadingInstrument>
         </ContainerInstrument>
@@ -74,7 +74,7 @@ export default function AdminUsersPage() {
               placeholder="Zoek op naam of email..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-2xl text-xs font-medium focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
+              className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-2xl text-[15px] font-medium focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
             />
           </div>
           <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
@@ -86,19 +86,19 @@ export default function AdminUsersPage() {
       {/* Stats */}
       <BentoGrid columns={4}>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Totaal Gebruikers</TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Totaal Gebruikers</TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">{users.length}</HeadingInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Nieuw (30d)</TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Nieuw (30d)</TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-primary">+{users.filter(u => new Date(u.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}</HeadingInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Admins</TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Admins</TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-va-black">{users.filter(u => u.role === 'admin').length}</HeadingInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Actieve Sessies</TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Actieve Sessies</TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-green-500">24</HeadingInstrument>
         </BentoCard>
       </BentoGrid>
@@ -108,11 +108,11 @@ export default function AdminUsersPage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-va-off-white/50 border-b border-black/5">
-              <th className="p-6 text-[10px] font-black uppercase tracking-widest text-va-black/30">Gebruiker</th>
-              <th className="p-6 text-[10px] font-black uppercase tracking-widest text-va-black/30">Rol</th>
-              <th className="p-6 text-[10px] font-black uppercase tracking-widest text-va-black/30">Status</th>
-              <th className="p-6 text-[10px] font-black uppercase tracking-widest text-va-black/30">Laatst Actief</th>
-              <th className="p-6 text-[10px] font-black uppercase tracking-widest text-va-black/30">Acties</th>
+              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Gebruiker</th>
+              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Rol</th>
+              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Status</th>
+              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Laatst Actief</th>
+              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Acties</th>
             </tr>
           </thead>
           <tbody>
@@ -120,17 +120,17 @@ export default function AdminUsersPage() {
               <tr key={user.id} className="border-b border-black/5 hover:bg-va-off-white/20 transition-colors group">
                 <td className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-va-off-white rounded-full flex items-center justify-center font-black text-va-black/20 uppercase">
+                    <div className="w-10 h-10 bg-va-off-white rounded-full flex items-center justify-center font-black text-va-black/20 ">
                       {user.name?.charAt(0) || user.email?.charAt(0)}
                     </div>
                     <div>
-                      <TextInstrument className="font-black text-va-black uppercase tracking-tight">{user.name || 'Onbekend'}</TextInstrument>
-                      <TextInstrument className="text-[10px] text-va-black/40 font-medium">{user.email}</TextInstrument>
+                      <TextInstrument className="font-black text-va-black tracking-tight">{user.name || 'Onbekend'}</TextInstrument>
+                      <TextInstrument className="text-[15px] text-va-black/40 font-medium">{user.email}</TextInstrument>
                     </div>
                   </div>
                 </td>
                 <td className="p-6">
-                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
                     user.role === 'admin' ? 'bg-va-black text-white' : 'bg-va-off-white text-va-black/40'
                   }`}>
                     {user.role === 'admin' ? <Shield size={10} /> : <Users size={10} />}
@@ -140,11 +140,11 @@ export default function AdminUsersPage() {
                 <td className="p-6">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    <TextInstrument className="text-[10px] font-black uppercase tracking-widest">Actief</TextInstrument>
+                    <TextInstrument className="text-[15px] font-black tracking-widest">Actief</TextInstrument>
                   </div>
                 </td>
                 <td className="p-6">
-                  <TextInstrument className="text-[10px] font-medium text-va-black/40">
+                  <TextInstrument className="text-[15px] font-medium text-va-black/40">
                     {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('nl-BE') : 'Nooit'}
                   </TextInstrument>
                 </td>

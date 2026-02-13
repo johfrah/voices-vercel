@@ -25,10 +25,10 @@ export default function SkyggeStoryPage() {
       
       <SectionInstrument className="max-w-5xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-16">
-          <TextInstrument className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-4">
+          <TextInstrument className="text-[15px] font-black tracking-[0.2em] text-primary mb-4">
             <VoiceglotText translationKey="story.category" defaultText="Klantverhaal" />
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter leading-none mb-6">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6">
             <VoiceglotText translationKey="story.skygge.title" defaultText="SKYGGE | Professionalisering via audio" />
           </HeadingInstrument>
           <TextInstrument className="text-xl text-va-black/40 font-medium max-w-2xl">
@@ -51,7 +51,7 @@ export default function SkyggeStoryPage() {
                 defaultText="Dat was een no-brainer. Je kunt privé van zakelijk scheiden en je 100% focussen op de klant. Geen telefoontjes meer om tien uur 's avonds." 
               />
             </HeadingInstrument>
-            <TextInstrument className="text-va-black/40 font-black uppercase tracking-widest text-xs">
+            <TextInstrument className="text-va-black/40 font-black tracking-widest text-[15px]">
               — An Casters, Mede-zaakvoerder SKYGGE
             </TextInstrument>
           </BentoCard>
@@ -60,10 +60,10 @@ export default function SkyggeStoryPage() {
             span="md" 
             className="bg-va-black text-white p-12"
           >
-            <HeadingInstrument level={3} className="text-2xl font-black uppercase tracking-tight mb-6">
+            <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-6">
               <VoiceglotText translationKey="story.skygge.challenge.title" defaultText="De Uitdaging" />
             </HeadingInstrument>
-            <TextInstrument className="text-white/60 leading-relaxed">
+            <TextInstrument className="text-white/60 leading-relaxed font-light">
               <VoiceglotText 
                 translationKey="story.skygge.challenge.text" 
                 defaultText="Als groeiend bedrijf wil je bereikbaar zijn, maar ook je grenzen bewaken. Een professionele uitstraling aan de telefoon is daarbij essentieel." 
@@ -75,10 +75,10 @@ export default function SkyggeStoryPage() {
             span="md" 
             className="bg-va-off-white p-12"
           >
-            <HeadingInstrument level={3} className="text-2xl font-black uppercase tracking-tight mb-6">
+            <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-6">
               <VoiceglotText translationKey="story.skygge.solution.title" defaultText="De Oplossing" />
             </HeadingInstrument>
-            <TextInstrument className="text-va-black/60 leading-relaxed">
+            <TextInstrument className="text-va-black/60 leading-relaxed font-light">
               <VoiceglotText 
                 translationKey="story.skygge.solution.text" 
                 defaultText="Door te kiezen voor een professionele stem van Voices.be, klinkt SKYGGE nu vanaf de eerste seconde betrouwbaar en deskundig." 
@@ -91,10 +91,10 @@ export default function SkyggeStoryPage() {
             className="bg-primary text-white p-12 flex items-center justify-between"
           >
             <ContainerInstrument>
-              <HeadingInstrument level={3} className="text-3xl font-black uppercase tracking-tight mb-2">
+              <HeadingInstrument level={3} className="text-3xl font-black tracking-tight mb-2">
                 <VoiceglotText translationKey="story.skygge.cta.title" defaultText="Ook zo'n eerste indruk maken?" />
               </HeadingInstrument>
-              <TextInstrument className="opacity-80">
+              <TextInstrument className="opacity-80 font-light">
                 <VoiceglotText translationKey="story.skygge.cta.text" defaultText="Ontdek hoe wij jouw bedrijf kunnen laten klinken." />
               </TextInstrument>
             </ContainerInstrument>

@@ -99,7 +99,7 @@ export const EmailListItemInstrument = ({
         className={`relative z-10 bg-white py-3 px-4 transition-colors cursor-pointer active:bg-gray-50 ${isUnread ? 'bg-blue-50/30' : ''} ${isSelected ? 'bg-gray-50' : ''}`}
       >
         <div className="flex items-center gap-4">
-          <div className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold relative shadow-sm overflow-hidden ${isSemanticResult ? 'bg-va-black text-white' : 'bg-gray-100 text-gray-500'}`}>
+          <div className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-[15px] font-bold relative shadow-sm overflow-hidden ${isSemanticResult ? 'bg-va-black text-white' : 'bg-gray-100 text-gray-500'}`}>
             {avatarUrl ? (
               <Image src={avatarUrl} alt="Avatar" width={40} height={40} className="w-full h-full object-cover" />
             ) : gravatarUrl ? (
@@ -131,16 +131,16 @@ export const EmailListItemInstrument = ({
           <div className="flex-grow min-w-0">
             <div className="flex justify-between items-center mb-0.5">
               <div className="flex items-center gap-2 min-w-0">
-                <TextInstrument as="span" className="text-[13px] font-bold text-gray-900 truncate">
+                <TextInstrument as="span" className="text-[15px] font-bold text-gray-900 truncate">
                   {sender.split('<')[0].replace(/"/g, '').trim()}
                 </TextInstrument>
                 {personaBadge && (
-                  <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded flex-shrink-0 ${personaBadge.color}`}>
+                  <span className={`text-[15px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded flex-shrink-0 ${personaBadge.color}`}>
                     {personaBadge.label}
                   </span>
                 )}
                 {intent && !personaBadge && (
-                  <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded flex-shrink-0 ${
+                  <span className={`text-[15px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded flex-shrink-0 ${
                     intent === 'quote_request' ? 'bg-green-100 text-green-700' : 
                     intent === 'demo_submission' ? 'bg-blue-100 text-blue-700' : 
                     'bg-gray-100 text-gray-500'
@@ -149,25 +149,25 @@ export const EmailListItemInstrument = ({
                   </span>
                 )}
                 {isSemanticResult && similarity && (
-                  <span className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-va-black text-white flex-shrink-0">
+                  <span className="text-[15px] font-black tracking-widest px-1.5 py-0.5 rounded bg-va-black text-white flex-shrink-0">
                     {Math.round(similarity * 100)}% MATCH
                   </span>
                 )}
               </div>
-              <TextInstrument as="span" className="text-[10px] text-gray-400 flex-shrink-0 font-medium">
+              <TextInstrument as="span" className="text-[15px] text-gray-400 flex-shrink-0 font-medium">
                 {formatDistanceToNow(new Date(date), { addSuffix: false, locale: nl })}
               </TextInstrument>
             </div>
             
             <div className="flex items-center gap-2">
-              <TextInstrument as="p" className="text-[12px] font-semibold text-gray-800 truncate flex-grow">
+              <TextInstrument as="p" className="text-[15px] font-semibold text-gray-800 truncate flex-grow">
                 {subject}
               </TextInstrument>
               {hasAttachments && (
                 <Paperclip size={12} className="text-gray-400 flex-shrink-0" />
               )}
             </div>
-            <TextInstrument as="p" className="text-[11px] text-gray-500 truncate mt-0.5">
+            <TextInstrument as="p" className="text-[15px] text-gray-500 truncate mt-0.5 font-light">
               {preview.replace(/[\n\r]/g, ' ')}
             </TextInstrument>
           </div>

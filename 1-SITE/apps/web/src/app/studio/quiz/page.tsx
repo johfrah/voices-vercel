@@ -8,7 +8,7 @@ export default function QuizPage() {
     <main className="min-h-screen bg-black pt-24 pb-12">
       <ContainerInstrument>
         <div className="max-w-4xl mx-auto text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 uppercase tracking-tighter">
+          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter">
             <VoiceglotText translationKey="studio.quiz.title" defaultText="Ontdek jouw stem" />
           </h1>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">

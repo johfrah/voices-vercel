@@ -46,10 +46,10 @@ export default function ScriptsPage() {
       
       <SectionInstrument className="max-w-6xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-16">
-          <TextInstrument className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-4">
+          <TextInstrument className="text-[15px] font-black tracking-[0.2em] text-primary mb-4">
             <VoiceglotText translationKey="scripts.category" defaultText="Inspiratie" />
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter leading-none mb-6">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6">
             <VoiceglotText translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" />
           </HeadingInstrument>
           <TextInstrument className="text-xl text-va-black/40 font-medium max-w-2xl">
@@ -72,18 +72,18 @@ export default function ScriptsPage() {
                   <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                     <FileText size={20} />
                   </div>
-                  <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight">
+                  <HeadingInstrument level={3} className="text-xl font-black tracking-tight">
                     <VoiceglotText translationKey={`${cat.key}.title`} defaultText={cat.title} />
                   </HeadingInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="p-6 bg-va-off-white rounded-2xl border border-black/5 relative group">
                   <TextInstrument className="text-sm font-medium leading-relaxed text-va-black/70 italic">
-                    "<VoiceglotText translationKey={`${cat.key}.content`} defaultText={cat.content} />"
+                    &quot;<VoiceglotText translationKey={`${cat.key}.content`} defaultText={cat.content} />&quot;
                   </TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
               
-              <button className="mt-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/30 hover:text-primary transition-all">
+              <button className="mt-8 flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/30 hover:text-primary transition-all">
                 <Copy size={14} />
                 <VoiceglotText translationKey="scripts.copy_button" defaultText="Kopieer Tekst" />
               </button>

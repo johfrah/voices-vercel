@@ -22,7 +22,7 @@ export const HeroInstrument: React.FC = () => {
     <div className="va-hero-container relative overflow-hidden py-24 md:py-32">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="relative z-10">
-          <div className="va-hero-badge inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-light tracking-widest border border-primary/10 mb-8">
+          <div className="va-hero-badge inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest border border-primary/10 mb-8">
             <Sparkles size={12} fill="currentColor" /> <VoiceglotText translationKey="home.hero.badge" defaultText="De beste stemmen van de Benelux" />
           </div>
           <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black mb-8">

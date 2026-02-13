@@ -33,7 +33,7 @@ export default function JohfrahAboutPage() {
 
             <div className="space-y-12">
               <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-light uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest">
                   <Heart size={12} fill="currentColor" /> 
                   <VoiceglotText translationKey="portfolio.johfrah.about.badge" defaultText="Mijn Verhaal" />
                 </div>
@@ -63,7 +63,7 @@ export default function JohfrahAboutPage() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-primary">
                     <Award size={20} strokeWidth={1.5} />
-                    <TextInstrument className="font-light uppercase text-xs tracking-widest">Erkenning</TextInstrument>
+                    <TextInstrument className="font-light text-[15px] tracking-widest">Erkenning</TextInstrument>
                   </div>
                   <TextInstrument className="text-sm font-light">
                     Jarenlange ervaring als regisseur. Ik weet hoe je een verhaal vertelt dat blijft hangen.
@@ -73,7 +73,7 @@ export default function JohfrahAboutPage() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-primary">
                     <Mic size={20} strokeWidth={1.5} />
-                    <TextInstrument className="font-light uppercase text-xs tracking-widest">Vakmanschap</TextInstrument>
+                    <TextInstrument className="font-light text-[15px] tracking-widest">Vakmanschap</TextInstrument>
                   </div>
                   <TextInstrument className="text-sm font-light">
                     Duizenden producties voor nationale en internationale merken. Van intieme meditaties tot knallende commercials.
@@ -82,7 +82,7 @@ export default function JohfrahAboutPage() {
               </div>
 
               <div className="pt-12">
-                <ButtonInstrument as="a" href="/contact" className="va-btn-pro !rounded-[10px] !font-light !tracking-widest !uppercase">
+                <ButtonInstrument as="a" href="/contact" className="va-btn-pro !rounded-[10px] !font-light !tracking-widest !">
                   Laten we samenwerken
                 </ButtonInstrument>
               </div>

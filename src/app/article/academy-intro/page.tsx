@@ -25,12 +25,12 @@ export default function AcademyIntroArticlePage() {
         <ContainerInstrument className="mb-12">
           <Link 
             href="/blog" 
-            className="inline-flex items-center gap-2 text-[10px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 uppercase"
+            className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 uppercase"
           >
             <ArrowLeft size={14} strokeWidth={1.5} /> 
             <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
           </Link>
-          <TextInstrument className="text-[10px] font-light tracking-[0.2em] text-primary mb-4 uppercase">
+          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 uppercase">
             <VoiceglotText translationKey="article.theme.academy" defaultText="Academy" />
           </TextInstrument>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6 text-va-black uppercase">

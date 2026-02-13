@@ -182,7 +182,7 @@ export const SpotlightDashboard: React.FC = () => {
             autoFocus
             type="text" 
             placeholder={t('admin.spotlight.placeholder', 'Wat wil je beheren? (CMD + K)...')}
-            className="flex-1 bg-transparent border-none text-3xl font-black tracking-tighter focus:ring-0 placeholder:text-va-black/10 uppercase"
+            className="flex-1 bg-transparent border-none text-3xl font-black tracking-tighter focus:ring-0 placeholder:text-va-black/10 "
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -215,15 +215,15 @@ export const SpotlightDashboard: React.FC = () => {
                   <item.icon size={24} />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-black uppercase tracking-tight text-[11px] text-va-black/80">
+                  <h4 className="font-black tracking-tight text-[15px] text-va-black/80">
                     <VoiceglotText translationKey={`admin.menu.${item.title.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.title} />
                   </h4>
-                  <p className="text-[9px] font-bold text-va-black/20 uppercase tracking-[0.2em] mt-1.5">
+                  <p className="text-[15px] font-bold text-va-black/20 tracking-[0.2em] mt-1.5">
                     <VoiceglotText translationKey={`admin.group.${item.group.toLowerCase()}`} defaultText={item.group} />
                   </p>
                 </div>
                 {item.badge && (
-                  <span className="absolute top-4 right-4 bg-primary text-white text-[8px] font-black px-2 py-1 rounded-full shadow-lg shadow-primary/20">
+                  <span className="absolute top-4 right-4 bg-primary text-white text-[15px] font-black px-2 py-1 rounded-full shadow-lg shadow-primary/20">
                     {item.badge}
                   </span>
                 )}
@@ -238,7 +238,7 @@ export const SpotlightDashboard: React.FC = () => {
                 <Brain size={48} className="text-va-black/10" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-black uppercase tracking-tighter">
+                <h3 className="text-2xl font-black tracking-tighter">
                   <VoiceglotText translationKey="admin.spotlight.no_results" defaultText={`Geen resultaten voor "${search}"`} />
                 </h3>
                 <p className="text-va-black/40 text-sm font-medium">
@@ -250,7 +250,7 @@ export const SpotlightDashboard: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-va-black/30">
+        <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center text-[15px] font-black tracking-widest text-va-black/30">
           <div className="flex gap-8">
             <span className="flex items-center gap-2 text-va-black/60">
               <MousePointer2 size={12} className="text-primary" /> 

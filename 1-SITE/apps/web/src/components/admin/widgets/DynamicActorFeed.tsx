@@ -77,7 +77,7 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2">
           <Sparkles size={14} className="text-primary" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-va-black/40">
+          <span className="text-[15px] font-black tracking-widest text-va-black/40">
             Live Actor Feed • {filter}
           </span>
         </div>
@@ -100,9 +100,9 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
           </div>
           
           <div className="flex-1">
-            <h4 className="text-xs font-black uppercase tracking-tight">{actor.firstName}</h4>
+            <h4 className="text-[15px] font-black tracking-tight">{actor.firstName}</h4>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-[8px] font-black text-primary uppercase tracking-widest">{actor.nativeLang}</span>
+              <span className="text-[15px] font-black text-primary tracking-widest">{actor.nativeLang}</span>
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} size={6} fill={i < 4 ? "currentColor" : "none"} className="text-yellow-500" />
@@ -112,8 +112,8 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
           </div>
 
           <div className="text-right">
-            <p className="text-[8px] font-black text-va-black/20 uppercase tracking-widest">Vanaf</p>
-            <p className="text-xs font-black tracking-tighter">€{actor.startingPrice}</p>
+            <p className="text-[15px] font-black text-va-black/20 tracking-widest">Vanaf</p>
+            <p className="text-[15px] font-black tracking-tighter">€{actor.startingPrice}</p>
           </div>
 
           <button 
@@ -128,7 +128,7 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
         </motion.div>
       ))}
 
-      <button className="w-full py-3 mt-4 border-2 border-dashed border-black/5 rounded-2xl text-[9px] font-black uppercase tracking-widest text-va-black/20 hover:border-primary/20 hover:text-primary transition-all">
+      <button className="w-full py-3 mt-4 border-2 border-dashed border-black/5 rounded-2xl text-[15px] font-black tracking-widest text-va-black/20 hover:border-primary/20 hover:text-primary transition-all">
         Bekijk alle stemmen
       </button>
     </div>

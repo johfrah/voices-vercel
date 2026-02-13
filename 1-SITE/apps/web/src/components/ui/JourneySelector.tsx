@@ -44,7 +44,7 @@ export function JourneySelector() {
               )}
             >
               <Icon size={18} strokeWidth={isActive ? 2.5 : 1.5} className={cn("transition-transform duration-500", isActive && "scale-110")} />
-              <span className="text-[11px] font-black uppercase tracking-widest">
+              <span className="text-[15px] font-black tracking-widest">
                 <VoiceglotText translationKey={j.key} defaultText={j.label} />
               </span>
               {isActive && (

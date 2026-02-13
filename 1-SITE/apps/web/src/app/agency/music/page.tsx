@@ -66,7 +66,7 @@ export default function MusicLibraryPage() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white">
       <SectionInstrument className="relative pt-32 pb-12 overflow-hidden">
         <ContainerInstrument className="max-w-7xl mx-auto px-6 text-center space-y-6">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest">
             <Music size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="music.badge" defaultText="Muziekbibliotheek" />
           </ContainerInstrument>
@@ -105,17 +105,17 @@ export default function MusicLibraryPage() {
                           )}>
                             <Music size={20} />
                           </div>
-                          <span className="text-[10px] font-black text-primary uppercase tracking-widest">€59</span>
+                          <span className="text-[15px] font-black text-primary tracking-widest">€59</span>
                         </div>
-                        <h3 className="text-xl font-black uppercase tracking-tight">{track.title}</h3>
-                        <p className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">{track.vibe}</p>
+                        <h3 className="text-xl font-black tracking-tight">{track.title}</h3>
+                        <p className="text-[15px] font-bold text-va-black/30 tracking-widest">{track.vibe}</p>
                       </div>
 
                       <div className="flex items-center gap-4">
                         <button 
                           onClick={() => togglePlay(track)}
                           className={cn(
-                            "flex-1 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2 shadow-lg",
+                            "flex-1 py-4 rounded-2xl font-black uppercase tracking-widest text-[15px] transition-all flex items-center justify-center gap-2 shadow-lg",
                             playingId === track.id ? "bg-va-black text-white" : "bg-va-off-white text-va-black hover:bg-va-black hover:text-white"
                           )}
                         >
@@ -142,7 +142,7 @@ export default function MusicLibraryPage() {
                   <div className="bg-va-black text-white rounded-[40px] p-8 shadow-2xl border-b-8 border-primary overflow-hidden relative">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-3xl" />
                     
-                    <h3 className="text-2xl font-black uppercase tracking-tight mb-6 relative z-10">Jouw Selectie</h3>
+                    <h3 className="text-2xl font-black tracking-tight mb-6 relative z-10">Jouw Selectie</h3>
                     
                     {selectedTrackId ? (
                       <div className="space-y-8 relative z-10">
@@ -151,13 +151,13 @@ export default function MusicLibraryPage() {
                             <Music size={24} />
                           </div>
                           <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Gekozen track</p>
-                            <p className="text-lg font-black uppercase">{tracks.find(t => t.id === selectedTrackId)?.title}</p>
+                            <p className="text-[15px] font-black tracking-widest text-white/40">Gekozen track</p>
+                            <p className="text-lg font-black ">{tracks.find(t => t.id === selectedTrackId)?.title}</p>
                           </div>
                         </div>
 
                         <div className="space-y-4">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-white/40 flex items-center gap-2">
+                          <p className="text-[15px] font-black tracking-widest text-white/40 flex items-center gap-2">
                             <Info size={14} className="text-primary" />
                             Hoe wil je dit gebruiken?
                           </p>
@@ -174,8 +174,8 @@ export default function MusicLibraryPage() {
                                 {options.asBackground && <Check size={12} strokeWidth={4} />}
                               </div>
                               <div>
-                                <p className="text-[10px] font-black uppercase tracking-tight">Achtergrondmuziek</p>
-                                <p className="text-[8px] font-medium text-white/40">Gemixt onder de stem.</p>
+                                <p className="text-[15px] font-black tracking-tight">Achtergrondmuziek</p>
+                                <p className="text-[15px] font-medium text-white/40">Gemixt onder de stem.</p>
                               </div>
                             </button>
 
@@ -190,8 +190,8 @@ export default function MusicLibraryPage() {
                                 {options.asHoldMusic && <Check size={12} strokeWidth={4} />}
                               </div>
                               <div>
-                                <p className="text-[10px] font-black uppercase tracking-tight">Wachtmuziek</p>
-                                <p className="text-[8px] font-medium text-white/40">Als apart bestand.</p>
+                                <p className="text-[15px] font-black tracking-tight">Wachtmuziek</p>
+                                <p className="text-[15px] font-medium text-white/40">Als apart bestand.</p>
                               </div>
                             </button>
                           </div>
@@ -202,7 +202,7 @@ export default function MusicLibraryPage() {
                           <button 
                             disabled={!options.asBackground && !options.asHoldMusic}
                             onClick={() => handleAddToCart(tracks.find(t => t.id === selectedTrackId))}
-                            className="px-8 py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-all disabled:opacity-20 disabled:scale-100"
+                            className="px-8 py-4 bg-primary text-white rounded-2xl font-black tracking-widest text-[15px] hover:scale-105 transition-all disabled:opacity-20 disabled:scale-100"
                           >
                             Voeg toe
                           </button>
@@ -213,14 +213,14 @@ export default function MusicLibraryPage() {
                         <div className="w-16 h-16 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center mx-auto">
                           <Music size={24} />
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-widest">Kies een track om te configureren</p>
+                        <p className="text-[15px] font-black tracking-widest">Kies een track om te configureren</p>
                       </div>
                     )}
                   </div>
                   
                   <div className="p-6 bg-white rounded-[32px] border border-black/5">
-                    <p className="text-[9px] font-medium text-va-black/60 leading-relaxed">
-                      <span className="font-black text-va-black block mb-1 uppercase tracking-widest">Inbegrepen bij elke licentie:</span>
+                    <p className="text-[15px] font-medium text-va-black/60 leading-relaxed">
+                      <span className="font-black text-va-black block mb-1 tracking-widest">Inbegrepen bij elke licentie:</span>
                       • Onbeperkt gebruik (rechtenvrij)<br />
                       • Professionele mix door technicus<br />
                       • HD WAV & 8kHz Telefoon formaat

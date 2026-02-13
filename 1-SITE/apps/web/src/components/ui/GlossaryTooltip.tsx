@@ -28,10 +28,10 @@ export const GlossaryTooltip: React.FC<GlossaryTooltipProps> = ({
       {children}
       
       <ContainerInstrument className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 p-5 bg-va-black text-white rounded-[20px] shadow-aura opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-[100] scale-95 group-hover:scale-100">
-        <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 block">
+        <TextInstrument className="text-[15px] font-black tracking-widest text-primary mb-2 block">
           Begrip: {term}
         </TextInstrument>
-        <TextInstrument className="text-xs font-medium leading-relaxed text-white/90">
+        <TextInstrument className="text-[15px] font-medium leading-relaxed text-white/90">
           {definition}
         </TextInstrument>
         {/* Arrow */}

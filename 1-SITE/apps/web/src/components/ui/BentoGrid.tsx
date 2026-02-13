@@ -102,6 +102,7 @@ export function BentoCard({
 
   return (
     <ContainerInstrument 
+      plain
       ref={setNodeRef}
       style={combinedStyle}
       onClick={onClick}
@@ -151,14 +152,14 @@ export function BentoCard({
         <ContainerInstrument className="absolute inset-0 bg-primary/5 pointer-events-none border-2 border-primary/20 rounded-[32px]" />
       )}
       {isEditMode && (
-        <ContainerInstrument className="absolute bottom-4 left-8 z-20 bg-va-black/80 backdrop-blur-md text-[8px] font-black text-white px-2 py-1 rounded-md uppercase tracking-widest opacity-0 group-hover/card:opacity-100 transition-opacity">
+        <ContainerInstrument className="absolute bottom-4 left-8 z-20 bg-va-black/80 backdrop-blur-md text-[15px] font-black text-white px-2 py-1 rounded-md tracking-widest opacity-0 group-hover/card:opacity-100 transition-opacity">
           CVR: 4.2% • Beheer: Kwaliteit
         </ContainerInstrument>
       )}
       {(title || icon) && (
         <ContainerInstrument className="px-8 pt-8 flex items-center gap-3">
           {icon && <ContainerInstrument className="text-primary">{icon}</ContainerInstrument>}
-          {title && <HeadingInstrument level={3} className="text-[10px] font-black uppercase tracking-widest opacity-30">{title}</HeadingInstrument>}
+          {title && <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest opacity-30">{title}</HeadingInstrument>}
         </ContainerInstrument>
       )}
       {children}

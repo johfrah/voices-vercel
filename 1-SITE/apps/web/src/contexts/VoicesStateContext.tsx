@@ -13,6 +13,11 @@ interface VoicesState {
     asset_focus: 'Audio-First' | 'Script-First' | 'Hybrid';
     decision_power: 'End-User' | 'Proxy-Buyer' | null;
   };
+  selected_actors: Array<{
+    id: number;
+    firstName: string;
+    photoUrl?: string;
+  }>;
 }
 
 interface VoicesStateContextType {
@@ -22,6 +27,8 @@ interface VoicesStateContextType {
   updateJourney: (journey: VoicesState['current_journey']) => void;
   updateIntent: (intent: Partial<VoicesState['intent']>) => void;
   getPlaceholderValue: (key: string) => string;
+  toggleActorSelection: (actor: { id: number; firstName: string; photoUrl?: string }) => void;
+  clearSelectedActors: () => void;
 }
 
 const initialState: VoicesState = {
@@ -35,6 +42,7 @@ const initialState: VoicesState = {
     asset_focus: 'Hybrid',
     decision_power: null,
   },
+  selected_actors: [],
 };
 
 const VoicesStateContext = createContext<VoicesStateContextType | undefined>(undefined);
@@ -68,6 +76,19 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const updateIntent = (intent: Partial<VoicesState['intent']>) => 
     setState(prev => ({ ...prev, intent: { ...prev.intent, ...intent } }));
 
+  const toggleActorSelection = (actor: { id: number; firstName: string; photoUrl?: string }) => {
+    setState(prev => {
+      const isSelected = prev.selected_actors.some(a => a.id === actor.id);
+      if (isSelected) {
+        return { ...prev, selected_actors: prev.selected_actors.filter(a => a.id !== actor.id) };
+      } else {
+        return { ...prev, selected_actors: [...prev.selected_actors, actor] };
+      }
+    });
+  };
+
+  const clearSelectedActors = () => setState(prev => ({ ...prev, selected_actors: [] }));
+
   const getPlaceholderValue = (key: string): string => {
     switch (key) {
       case 'company_name': return state.company_name || 'Uw Bedrijf';
@@ -84,7 +105,9 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
       updateSector, 
       updateJourney,
       updateIntent,
-      getPlaceholderValue
+      getPlaceholderValue,
+      toggleActorSelection,
+      clearSelectedActors
     }}>
       {children}
     </VoicesStateContext.Provider>

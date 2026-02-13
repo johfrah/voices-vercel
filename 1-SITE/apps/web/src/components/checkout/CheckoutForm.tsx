@@ -1,22 +1,20 @@
 "use client";
 
+import {
+    ButtonInstrument,
+    HeadingInstrument,
+    InputInstrument,
+    LabelInstrument
+} from "@/components/ui/LayoutInstruments";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useSonicDNA } from "@/lib/sonic-dna";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { 
-  ButtonInstrument, 
-  InputInstrument, 
-  LabelInstrument, 
-  ContainerInstrument,
-  HeadingInstrument,
-  TextInstrument
-} from "@/components/ui/LayoutInstruments";
 import { AlertCircle, CheckCircle2, FileText, Loader2, Send, Sparkles } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { EmailPreviewModal } from './EmailPreviewModal';
-import { AcademyUpsellSection } from './AcademyUpsellSection';
 import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
+import { AcademyUpsellSection } from './AcademyUpsellSection';
+import { EmailPreviewModal } from './EmailPreviewModal';
 
 export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const { playClick } = useSonicDNA();
@@ -160,7 +158,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               <h4 className="text-sm font-light tracking-tight">
                 <VoiceglotText translationKey="checkout.admin.quote_mode" defaultText="Admin Offerte Modus" />
               </h4>
-              <p className="text-[10px] font-light text-va-black/40 tracking-widest">
+              <p className="text-[15px] font-light text-va-black/40 tracking-widest">
                 <VoiceglotText translationKey="checkout.admin.quote_desc" defaultText="Verstuur een offerte i.p.v. directe betaling" />
               </p>
             </div>
@@ -250,14 +248,14 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               {vatStatus.validating ? <Loader2 className="animate-spin text-primary" size={18} /> : 
                vatStatus.valid ? (
                  <div className="flex items-center gap-2 text-green-600 animate-fade-in">
-                   <span className="text-[9px] font-light tracking-widest">
+                   <span className="text-[15px] font-light tracking-widest">
                      <VoiceglotText translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" />
                    </span>
                    <CheckCircle2 size={18} strokeWidth={1.5} />
                  </div>
                ) : vatStatus.valid === false ? (
                  <div className="flex items-center gap-2 text-red-500 animate-shake">
-                   <span className="text-[9px] font-light tracking-widest">
+                   <span className="text-[15px] font-light tracking-widest">
                      <VoiceglotText translationKey="checkout.form.vat_invalid" defaultText="Ongeldig" />
                    </span>
                    <AlertCircle size={18} strokeWidth={1.5} />
@@ -366,7 +364,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                         height={32} 
                         className="h-8 object-contain" 
                       />
-                      <span className="font-light tracking-widest text-[9px] text-va-black/60 uppercase">
+                      <span className="font-light tracking-widest text-[15px] text-va-black/60 ">
                         <VoiceglotText translationKey={`checkout.method.${method.id}`} defaultText={method.description} />
                       </span>
                     </button>
@@ -406,7 +404,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                 className="w-5 h-5 rounded border-2 border-black/10 text-primary focus:ring-primary/20 transition-all"
               />
             </div>
-            <span className="text-xs text-va-black/40 font-light leading-relaxed group-hover:text-va-black transition-colors">
+            <span className="text-[15px] text-va-black/40 font-light leading-relaxed group-hover:text-va-black transition-colors">
               <VoiceglotText 
                 translationKey="checkout.academy.terms" 
                 defaultText="Ik ga akkoord met de algemene voorwaarden en begrijp dat mijn herroepingsrecht vervalt zodra ik toegang krijg tot de digitale leeromgeving." 
@@ -435,7 +433,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             </>
           )}
         </ButtonInstrument>
-        <p className="text-center text-[10px] font-light tracking-widest text-va-black/20 mt-6">
+        <p className="text-center text-[15px] font-light tracking-widest text-va-black/20 mt-6">
           Door af te ronden ga je akkoord met onze algemene voorwaarden.
         </p>
       </div>

@@ -12,6 +12,8 @@ import { cn } from '@/lib/utils';
  * Vervangt de PHP [audiorecorder] shortcode.
  */
 
+import { VoiceglotText } from "./VoiceglotText";
+
 interface AudioRecorderProps {
   orderId?: number;
   onUploadComplete?: (url: string) => void;
@@ -93,13 +95,15 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
         "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500",
         isRecording ? "bg-red-500 animate-pulse scale-110 shadow-lg shadow-red-500/20" : "bg-primary shadow-lg shadow-primary/20"
       )}>
-        <Mic className="text-white" size={32} />
+        <Mic className="text-white" size={32} strokeWidth={1.5} />
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-xl font-black tracking-tight">Audiobriefing</h3>
-        <p className="text-sm text-va-black/40 max-w-xs mx-auto">
-          Spreek je instructies in voor de stemacteur. Duidelijkheid boven alles.
+        <h3 className="text-xl font-light tracking-tight">
+          <VoiceglotText translationKey="recorder.title" defaultText="Audiobriefing" />
+        </h3>
+        <p className="text-sm text-va-black/40 max-w-xs mx-auto font-light">
+          <VoiceglotText translationKey="recorder.subtitle" defaultText="Spreek je instructies in voor de stemacteur. Duidelijkheid boven alles." />
         </p>
       </div>
 
@@ -114,9 +118,9 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
             )}
           >
             {isRecording ? (
-              <><Square size={18} fill="currentColor" /> Stop Opname</>
+              <><Square size={18} fill="currentColor" strokeWidth={1.5} /> <VoiceglotText translationKey="recorder.stop" defaultText="Stop Opname" /></>
             ) : (
-              <><Mic size={18} /> Start Opname</>
+              <><Mic size={18} strokeWidth={1.5} /> <VoiceglotText translationKey="recorder.start" defaultText="Start Opname" /></>
             )}
           </button>
         ) : (
@@ -128,7 +132,7 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
                 onClick={() => setAudioUrl(null)}
                 className="va-btn-soft flex-1 py-3 flex items-center justify-center gap-2"
               >
-                <Trash2 size={16} /> Opnieuw
+                <Trash2 size={16} strokeWidth={1.5} /> <VoiceglotText translationKey="recorder.retry" defaultText="Opnieuw" />
               </button>
               
               <button
@@ -137,9 +141,9 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
                 className="va-btn-pro flex-[2] py-3 flex items-center justify-center gap-2"
               >
                 {isUploading ? (
-                  <><Loader2 size={16} className="animate-spin" /> Bezig...</>
+                  <><Loader2 size={16} className="animate-spin" strokeWidth={1.5} /> <VoiceglotText translationKey="recorder.uploading" defaultText="Bezig..." /></>
                 ) : (
-                  <><CheckCircle2 size={16} /> Versturen</>
+                  <><CheckCircle2 size={16} strokeWidth={1.5} /> <VoiceglotText translationKey="recorder.send" defaultText="Versturen" /></>
                 )}
               </button>
             </div>
@@ -147,14 +151,16 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
         )}
       </div>
 
-      {error && <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest">{error}</p>}
+      {error && <p className="text-[15px] font-medium text-red-500 tracking-widest">{error}</p>}
 
       <div className="pt-6 border-t border-va-black/5 w-full text-left">
-        <h4 className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-3">Tips voor succes</h4>
-        <ul className="text-[11px] text-va-black/50 space-y-1.5 font-medium">
-          <li>• Spreek namen en vaktermen duidelijk uit.</li>
-          <li>• Geef aan welk tempo of welke toon je wenst.</li>
-          <li>• Maximaal 2 minuten per opname.</li>
+        <h4 className="text-[15px] font-medium tracking-widest opacity-30 mb-3">
+          <VoiceglotText translationKey="recorder.tips.title" defaultText="Tips voor succes" />
+        </h4>
+        <ul className="text-[15px] text-va-black/50 space-y-1.5 font-light">
+          <li>• <VoiceglotText translationKey="recorder.tips.1" defaultText="Spreek namen en vaktermen duidelijk uit." /></li>
+          <li>• <VoiceglotText translationKey="recorder.tips.2" defaultText="Geef aan welk tempo of welke toon je wenst." /></li>
+          <li>• <VoiceglotText translationKey="recorder.tips.3" defaultText="Maximaal 2 minuten per opname." /></li>
         </ul>
       </div>
     </div>

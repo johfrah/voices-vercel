@@ -230,14 +230,14 @@ export const MediaLibrary: React.FC = () => {
       {/* 👤 ACTOR SIDEBAR */}
       <div className="w-full lg:w-64 space-y-6">
         <div className="bg-white rounded-[32px] shadow-aura p-6 space-y-4">
-          <div className="flex items-center gap-2 text-va-black font-black uppercase tracking-tighter text-sm">
+          <div className="flex items-center gap-2 text-va-black font-black tracking-tighter text-sm">
             <User size={16} />
             Stemacteurs
           </div>
           <div className="space-y-1 max-h-[400px] overflow-y-auto no-scrollbar">
             <button
               onClick={() => { playClick('light'); setSelectedActorId(null); }}
-              className={`w-full text-left px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`w-full text-left px-4 py-2 rounded-xl text-[15px] font-bold transition-all ${
                 selectedActorId === null ? 'bg-va-black text-white' : 'hover:bg-va-off-white text-va-black/40'
               }`}
             >
@@ -247,7 +247,7 @@ export const MediaLibrary: React.FC = () => {
               <button
                 key={actor.id}
                 onClick={() => { playClick('light'); setSelectedActorId(actor.id); }}
-                className={`w-full text-left px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between group ${
+                className={`w-full text-left px-4 py-2 rounded-xl text-[15px] font-bold transition-all flex items-center justify-between group ${
                   selectedActorId === actor.id ? 'bg-primary text-white' : 'hover:bg-va-off-white text-va-black/60'
                 }`}
               >
@@ -262,7 +262,7 @@ export const MediaLibrary: React.FC = () => {
         {selectedActorId && youtubeUrl && (
           <div className="bg-red-50 rounded-[32px] p-6 space-y-4 border border-red-100 animate-in fade-in slide-in-from-left duration-500">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-red-600 font-black uppercase tracking-tighter text-sm">
+              <div className="flex items-center gap-2 text-red-600 font-black tracking-tighter text-sm">
                 <Youtube size={18} />
                 YouTube
               </div>
@@ -279,7 +279,7 @@ export const MediaLibrary: React.FC = () => {
             </div>
 
             {youtubeUrl.startsWith('local:') ? (
-              <div className="p-4 bg-green-100 text-green-700 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <div className="p-4 bg-green-100 text-green-700 rounded-2xl text-[15px] font-black tracking-widest flex items-center gap-2">
                 <CheckSquare size={14} /> Geconverteerd
               </div>
             ) : (
@@ -291,14 +291,14 @@ export const MediaLibrary: React.FC = () => {
                 <div className="absolute inset-0 flex items-center justify-center text-white/20 group-hover:text-white/40 transition-colors">
                   <Youtube size={40} />
                 </div>
-                <div className="absolute bottom-2 left-2 right-2 p-2 bg-va-black/60 backdrop-blur-md rounded-lg text-[8px] text-white font-bold truncate">
+                <div className="absolute bottom-2 left-2 right-2 p-2 bg-va-black/60 backdrop-blur-md rounded-lg text-[15px] text-white font-bold truncate">
                   {youtubeUrl}
                 </div>
               </a>
             )}
             
             {!youtubeUrl.startsWith('local:') && (
-              <p className="text-[9px] text-red-600/60 font-medium leading-relaxed">
+              <p className="text-[15px] text-red-600/60 font-medium leading-relaxed">
                 Klik op de refresh knop om deze video direct in onze eigen player af te spelen.
               </p>
             )}
@@ -315,7 +315,7 @@ export const MediaLibrary: React.FC = () => {
               <div className="w-10 h-10 bg-va-black text-white rounded-xl flex items-center justify-center shadow-aura">
                 <ImageIcon size={20} />
               </div>
-              <h2 className="text-3xl font-black uppercase tracking-tighter">
+              <h2 className="text-3xl font-black tracking-tighter">
                 {selectedActorId ? `${actors.find(a => a.id === selectedActorId)?.firstName}'s Portfolio` : 'Media Engine'}
               </h2>
             </div>
@@ -342,7 +342,7 @@ export const MediaLibrary: React.FC = () => {
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white border-none rounded-2xl py-4 px-6 shadow-aura text-sm font-black uppercase tracking-widest focus:ring-2 focus:ring-primary/20"
+              className="bg-white border-none rounded-2xl py-4 px-6 shadow-aura text-sm font-black tracking-widest focus:ring-2 focus:ring-primary/20"
             >
               <option value="newest">Nieuwst</option>
               <option value="oldest">Oudst</option>
@@ -351,7 +351,7 @@ export const MediaLibrary: React.FC = () => {
             </select>
 
             <label className={`
-              flex items-center gap-2 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs cursor-pointer transition-all shadow-pro
+              flex items-center gap-2 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[15px] cursor-pointer transition-all shadow-pro
               ${isUploading ? 'bg-va-black/10 text-va-black/30' : 'bg-va-black text-white hover:scale-105 active:scale-95'}
             `}>
               {isUploading ? <Upload className="animate-bounce" size={16} /> : <Plus size={16} />}
@@ -365,7 +365,7 @@ export const MediaLibrary: React.FC = () => {
         {selectedIds.length > 0 && (
           <div className="bg-va-black text-white p-4 rounded-[24px] shadow-aura flex items-center justify-between animate-in slide-in-from-top duration-500">
             <div className="flex items-center gap-4 ml-4">
-              <span className="text-xs font-black uppercase tracking-widest">
+              <span className="text-[15px] font-black tracking-widest">
                 {selectedIds.length} geselecteerd
               </span>
               <button 
@@ -377,13 +377,13 @@ export const MediaLibrary: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-2">
-              <button onClick={() => handleBulkVisibility(true)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest">
+              <button onClick={() => handleBulkVisibility(true)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-xl transition-all text-[15px] font-black tracking-widest">
                 <Eye size={14} /> Publiek
               </button>
-              <button onClick={() => handleBulkVisibility(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest">
+              <button onClick={() => handleBulkVisibility(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-xl transition-all text-[15px] font-black tracking-widest">
                 <EyeOff size={14} /> Privé
               </button>
-              <button onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest">
+              <button onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-xl transition-all text-[15px] font-black tracking-widest">
                 <Trash2 size={14} /> Verwijderen
               </button>
             </div>
@@ -399,7 +399,7 @@ export const MediaLibrary: React.FC = () => {
                   key={j}
                   onClick={() => { playClick('light'); setFilterJourney(j); }}
                   className={`
-                    px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap
+                    px-6 py-2 rounded-full text-[15px] font-black uppercase tracking-widest transition-all whitespace-nowrap
                     ${filterJourney === j ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white text-va-black/40 hover:bg-va-off-white shadow-sm'}
                   `}
                 >
@@ -411,7 +411,7 @@ export const MediaLibrary: React.FC = () => {
             <button
               onClick={() => { playClick('light'); setFilterStatus(filterStatus === 'orphans' ? 'all' : 'orphans'); }}
               className={`
-                px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2
+                px-6 py-2 rounded-full text-[15px] font-black uppercase tracking-widest transition-all flex items-center gap-2
                 ${filterStatus === 'orphans' ? 'bg-orange-500 text-white shadow-lg shadow-orange-200' : 'bg-white text-va-black/40 hover:bg-va-off-white shadow-sm'}
               `}
             >
@@ -431,7 +431,7 @@ export const MediaLibrary: React.FC = () => {
               <div className="w-24 h-24 bg-va-off-white rounded-full flex items-center justify-center mx-auto mb-6">
                 <ImageIcon className="text-va-black/10" size={40} />
               </div>
-              <h3 className="text-2xl font-black uppercase tracking-tighter">Geen media gevonden</h3>
+              <h3 className="text-2xl font-black tracking-tighter">Geen media gevonden</h3>
               <p className="text-va-black/40 font-medium">Pas je filters aan of upload een nieuw bestand.</p>
             </div>
           ) : (
@@ -483,7 +483,7 @@ export const MediaLibrary: React.FC = () => {
                     <button 
                       onClick={(e) => { e.stopPropagation(); toggleVisibility(item.id, item.isPublic); }}
                       className={`
-                        px-3 py-1 backdrop-blur-md rounded-full text-[8px] font-black uppercase tracking-widest transition-all flex items-center gap-1
+                        px-3 py-1 backdrop-blur-md rounded-full text-[15px] font-black uppercase tracking-widest transition-all flex items-center gap-1
                         ${item.isPublic ? 'bg-green-500/80 text-white' : 'bg-va-black/80 text-white'}
                       `}
                     >
@@ -491,7 +491,7 @@ export const MediaLibrary: React.FC = () => {
                       {item.isPublic ? 'Public' : 'Private'}
                     </button>
                     {item.isOrphan && (
-                      <div className="px-3 py-1 bg-orange-500/80 backdrop-blur-md text-white rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1">
+                      <div className="px-3 py-1 bg-orange-500/80 backdrop-blur-md text-white rounded-full text-[15px] font-black tracking-widest flex items-center gap-1">
                         <AlertCircle size={10} /> Wees
                       </div>
                     )}
@@ -501,8 +501,8 @@ export const MediaLibrary: React.FC = () => {
                 {/* Info Area */}
                 <div className="p-6 space-y-4">
                   <div className="space-y-1">
-                    <h4 className="text-[11px] font-black truncate uppercase tracking-tight text-va-black">{item.fileName}</h4>
-                    <div className="flex items-center gap-2 text-[9px] font-bold text-va-black/30 uppercase tracking-widest">
+                    <h4 className="text-[15px] font-black truncate tracking-tight text-va-black">{item.fileName}</h4>
+                    <div className="flex items-center gap-2 text-[15px] font-bold text-va-black/30 tracking-widest">
                       <span>{(item.fileSize / 1024).toFixed(0)} KB</span>
                       <span className="w-1 h-1 rounded-full bg-va-black/10" />
                       <span>{new Date(item.createdAt).toLocaleDateString('nl-BE')}</span>
@@ -514,7 +514,7 @@ export const MediaLibrary: React.FC = () => {
                     <div className="space-y-1.5 pt-3 border-t border-black/5">
                       <div className="flex flex-wrap gap-1">
                         {item.relations.map((rel, i) => (
-                          <div key={i} className="px-2 py-1 bg-primary/5 text-primary rounded-lg text-[8px] font-bold">
+                          <div key={i} className="px-2 py-1 bg-primary/5 text-primary rounded-lg text-[15px] font-bold">
                             <span className="opacity-40">{rel.type}:</span> {rel.name}
                           </div>
                         ))}

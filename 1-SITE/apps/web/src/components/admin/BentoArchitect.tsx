@@ -60,8 +60,8 @@ const DraggableWidget: React.FC<{ widget: BuilderWidget }> = ({ widget }) => {
         {widget.icon}
       </div>
       <div>
-        <h4 className="text-[11px] font-black uppercase tracking-widest text-white">{widget.label}</h4>
-        <p className="text-[9px] text-white/30 font-bold uppercase tracking-tighter mt-1">{widget.description}</p>
+        <h4 className="text-[15px] font-black tracking-widest text-white">{widget.label}</h4>
+        <p className="text-[15px] text-white/30 font-bold tracking-tighter mt-1">{widget.description}</p>
       </div>
     </div>
   );
@@ -126,7 +126,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
                 <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                   <Layout size={18} className="text-white" />
                 </div>
-              <h2 className="text-sm font-black uppercase tracking-[0.2em] text-white">Architect</h2>
+              <h2 className="text-sm font-black tracking-[0.2em] text-white">Architect</h2>
             </div>
             <button 
               onClick={() => { playClick('soft'); onClose(); }}
@@ -142,7 +142,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
               <button
                 key={tab}
                 onClick={() => { playClick('soft'); setActiveTab(tab); }}
-                className={`flex-1 py-2 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${
+                className={`flex-1 py-2 text-[15px] font-black uppercase tracking-widest rounded-lg transition-all ${
                   activeTab === tab ? 'bg-white/10 text-white shadow-sm' : 'text-white/30 hover:text-white/50'
                 }`}
               >
@@ -156,7 +156,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
           <div className="flex-1 overflow-y-auto p-8 space-y-8">
             {activeTab === 'widgets' && (
               <div className="space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-white/40">Componenten</h3>
+                <h3 className="text-[15px] font-black tracking-widest text-white/40">Componenten</h3>
                 <div className="grid grid-cols-1 gap-3">
                   {widgets.map((widget) => (
                     <DraggableWidget key={widget.type} widget={widget} />
@@ -168,7 +168,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
 
             {activeTab === 'iap' && (
               <div className="space-y-6">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-white/40">Systeem Simulatie</h3>
+                <h3 className="text-[15px] font-black tracking-widest text-white/40">Systeem Simulatie</h3>
                 
                 {/* Persona Selector */}
                 <div className="grid grid-cols-2 gap-2">
@@ -176,7 +176,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
                     <button
                       key={p}
                       onClick={() => setIapContext(prev => ({ ...prev, persona: p }))}
-                      className={`p-2 text-[8px] font-black uppercase tracking-tighter rounded-lg border transition-all ${
+                      className={`p-2 text-[15px] font-black uppercase tracking-tighter rounded-lg border transition-all ${
                         iapContext.persona === p 
                         ? 'bg-primary/20 border-primary text-primary' 
                         : 'bg-white/5 border-white/5 text-white/40 hover:text-white'
@@ -196,18 +196,18 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-3 text-primary">
                         <Sparkles size={16} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Predictive Layout</span>
+                        <span className="text-[15px] font-black tracking-widest">Predictive Layout</span>
                       </div>
                       <div className="text-xl font-black text-primary">{suggestion.score}%</div>
                     </div>
                     
-                    <p className="text-[10px] text-white/60 font-medium leading-relaxed">
+                    <p className="text-[15px] text-white/60 font-medium leading-relaxed">
                       {suggestion.reasoning}
                     </p>
 
                     <div className="space-y-2">
                       {suggestion.suggestedChanges.map((change, i) => (
-                        <div key={i} className="text-[8px] font-bold uppercase tracking-widest text-white/30 flex items-center gap-2">
+                        <div key={i} className="text-[15px] font-bold tracking-widest text-white/30 flex items-center gap-2">
                           <div className="w-1 h-1 bg-primary rounded-full" />
                           {change.action} {change.targetSpan || 'position'}
                         </div>
@@ -216,7 +216,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
 
                     <button 
                       onClick={handleApplySuggestion}
-                      className="w-full bg-primary text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20"
+                      className="w-full bg-primary text-white py-3 rounded-xl text-[15px] font-black tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20"
                     >
                       Apply Suggestion
                     </button>
@@ -230,13 +230,13 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
           {/* Footer */}
           <div className="p-8 border-t border-white/10 bg-black/20">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/40">
+              <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-white/40">
                 <Database size={12} />
                 Atomic Sync
               </div>
-              <div className="text-[10px] font-black text-primary">LIVE</div>
+              <div className="text-[15px] font-black text-primary">LIVE</div>
             </div>
-            <p className="text-[9px] text-white/20 font-medium italic">
+            <p className="text-[15px] text-white/20 font-medium italic">
               Elke wijziging wordt direct als atomic block opgeslagen in de Master Registry.
             </p>
           </div>

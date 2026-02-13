@@ -70,14 +70,14 @@ export const SpatialOrderTrackerInstrument = ({
                   "bg-white text-va-black/20"
                 )}
               >
-                {isCompleted ? <Check size={20} strokeWidth={3} /> : <Icon size={20} />}
+                {isCompleted ? <Check size={20} strokeWidth={1.5} /> : <Icon size={20} strokeWidth={1.5} />}
               </ContainerInstrument>
 
               {/* Label */}
               <ContainerInstrument className="absolute top-16 whitespace-nowrap text-center">
                 <TextInstrument 
                   className={cn(
-                    "text-[10px] font-black uppercase tracking-widest transition-colors",
+                    "text-[15px] font-medium uppercase tracking-widest transition-colors",
                     isActive ? "text-va-black" : "text-va-black/20"
                   )}
                 >

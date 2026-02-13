@@ -37,7 +37,7 @@ export default function GlobalError({
             </ContainerInstrument>
             
             <div className="space-y-2">
-              <HeadingInstrument level={1} className="text-3xl font-black uppercase tracking-tighter">
+              <HeadingInstrument level={1} className="text-3xl font-black tracking-tighter">
                 <VoiceglotText translationKey="error.global.title" defaultText="Systeem Fout" />
               </HeadingInstrument>
               <TextInstrument className="text-va-black/40 font-medium leading-relaxed">

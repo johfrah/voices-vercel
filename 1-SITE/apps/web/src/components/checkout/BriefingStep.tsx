@@ -23,7 +23,7 @@ export const BriefingStep: React.FC = () => {
     <div className={`grid grid-cols-1 ${state.usage === 'telefonie' ? 'lg:grid-cols-3' : ''} gap-10`}>
       <div className={`${state.usage === 'telefonie' ? 'lg:col-span-2' : ''} space-y-10`}>
         <div className="space-y-6">
-          <label className="block text-sm font-black uppercase tracking-widest text-va-black/30">
+          <label className="block text-sm font-black tracking-widest text-va-black/30">
             1. Wat is het script?
           </label>
           <textarea
@@ -32,7 +32,7 @@ export const BriefingStep: React.FC = () => {
             placeholder="Plak hier je tekst..."
             className="w-full h-64 bg-va-off-white border-none rounded-[32px] p-8 text-lg font-medium focus:ring-2 focus:ring-primary/20 transition-all resize-none"
           />
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-va-black/20">
+          <div className="flex items-center gap-2 text-[15px] font-bold tracking-widest text-va-black/20">
             <Info size={14} />
             {state.usage === 'telefonie' ? (
               <span>{state.briefing.trim().split(/\n+/).filter(Boolean).length} prompts gedetecteerd</span>
@@ -43,7 +43,7 @@ export const BriefingStep: React.FC = () => {
         </div>
 
         <div className="space-y-6">
-          <label className="block text-sm font-black uppercase tracking-widest text-va-black/30">
+          <label className="block text-sm font-black tracking-widest text-va-black/30">
             2. Uitspraak instructies (optioneel)
           </label>
           <input
@@ -56,7 +56,7 @@ export const BriefingStep: React.FC = () => {
         </div>
 
         <div className="space-y-6">
-          <label className="block text-sm font-black uppercase tracking-widest text-va-black/30">
+          <label className="block text-sm font-black tracking-widest text-va-black/30">
             3. Hoe wordt de opname gebruikt?
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -68,7 +68,7 @@ export const BriefingStep: React.FC = () => {
               <button
                 key={type.id}
                 onClick={() => updateUsage(type.id as any)}
-                className={`py-5 px-6 rounded-[24px] border-2 font-black uppercase tracking-widest text-[11px] transition-all ${
+                className={`py-5 px-6 rounded-[24px] border-2 font-black uppercase tracking-widest text-[15px] transition-all ${
                   state.usage === type.id 
                     ? 'border-primary bg-primary/5 text-primary' 
                     : 'border-black/5 hover:border-black/10 text-va-black/40'

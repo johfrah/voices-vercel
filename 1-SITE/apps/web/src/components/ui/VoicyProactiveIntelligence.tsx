@@ -76,7 +76,7 @@ export const VoicyProactiveIntelligence = () => {
                   <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                     <Brain size={18} className="text-va-black" />
                   </div>
-                  <TextInstrument as="span" className="text-[9px] font-black uppercase tracking-[0.2em] text-primary">
+                  <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em] text-primary">
                     Voicy Intelligence
                   </TextInstrument>
                 </div>
@@ -92,7 +92,7 @@ export const VoicyProactiveIntelligence = () => {
                 {tip.title}
               </HeadingInstrument>
               
-              <TextInstrument className="text-[11px] text-white/60 leading-relaxed mb-6 font-medium">
+              <TextInstrument className="text-[15px] text-white/60 leading-relaxed mb-6 font-medium">
                 {tip.description}
               </TextInstrument>
 
@@ -100,7 +100,7 @@ export const VoicyProactiveIntelligence = () => {
                 {tip.cta && (
                   <ButtonInstrument 
                     onClick={tip.cta.onClick}
-                    className="bg-white text-va-black px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all flex items-center gap-2 shadow-lg"
+                    className="bg-white text-va-black px-4 py-2 rounded-xl text-[15px] font-black tracking-widest hover:bg-primary hover:text-white transition-all flex items-center gap-2 shadow-lg"
                   >
                     {tip.cta.label}
                     <ArrowRight size={12} />
@@ -108,7 +108,7 @@ export const VoicyProactiveIntelligence = () => {
                 )}
                 <ButtonInstrument 
                   onClick={() => setIsVisible(false)}
-                  className="text-[9px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors"
+                  className="text-[15px] font-black tracking-widest text-white/40 hover:text-white transition-colors"
                 >
                   Later
                 </ButtonInstrument>

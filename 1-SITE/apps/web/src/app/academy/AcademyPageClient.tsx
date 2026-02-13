@@ -26,13 +26,13 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       <SectionInstrument className="mb-16">
         <ContainerInstrument className="space-y-4">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/20">
             <GraduationCap size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="academy.client.badge" defaultText="Voices Academy" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
             <VoiceglotText translationKey="academy.client.title_part1" defaultText="Master your " />
-            <TextInstrument as="span" className="text-primary">
+            <TextInstrument as="span" className="text-primary font-light">
               <VoiceglotText translationKey="academy.client.title_part2" defaultText="Instrument" />
             </TextInstrument>
           </HeadingInstrument>
@@ -54,11 +54,11 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
                   <ContainerInstrument className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all">
                     <BookOpen size={24} />
                   </ContainerInstrument>
-                  <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/20">
+                  <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/20">
                     {course.level}
                   </TextInstrument>
                 </ContainerInstrument>
-                <HeadingInstrument level={3} className="text-2xl font-black uppercase tracking-tight mb-4 group-hover:text-primary transition-colors">
+                <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4 group-hover:text-primary transition-colors">
                   {course.title}
                 </HeadingInstrument>
                 <TextInstrument className="text-va-black/40 text-sm font-medium leading-relaxed line-clamp-3 mb-8">
@@ -67,12 +67,12 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
               </ContainerInstrument>
               
               <ContainerInstrument className="pt-6 border-t border-black/5 flex justify-between items-center">
-                <TextInstrument className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/40">
+                <TextInstrument className="flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40">
                   <Clock size={12} /> {course.duration}
                 </TextInstrument>
                 <Link 
                   href={`/academy/lesson/${course.id}`}
-                  className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 group-hover:gap-3 transition-all"
+                  className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 group-hover:gap-3 transition-all"
                 >
                   <VoiceglotText translationKey="academy.client.start_lesson" defaultText="Start Les" /> <ArrowRight size={14} />
                 </Link>
@@ -85,17 +85,17 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
         <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between group">
           <ContainerInstrument>
             <Trophy className="text-primary mb-8" size={40} />
-            <HeadingInstrument level={2} className="text-2xl font-black uppercase tracking-tight mb-4">
+            <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
               <VoiceglotText translationKey="academy.client.achievements.title" defaultText="Certificering" />
             </HeadingInstrument>
-            <TextInstrument className="text-white/40 text-xs font-medium leading-relaxed">
+            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">
               <VoiceglotText 
                 translationKey="academy.client.achievements.text" 
                 defaultText="Ontvang een officieel Voices certificaat na het succesvol afronden van een masterclass." 
               />
             </TextInstrument>
           </ContainerInstrument>
-          <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-primary/60">
+          <TextInstrument className="text-[15px] font-black tracking-widest text-primary/60">
             <VoiceglotText translationKey="academy.client.achievements.footer" defaultText="Voices" />
           </TextInstrument>
         </BentoCard>

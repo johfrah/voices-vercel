@@ -77,7 +77,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
         
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
           <select 
-            className="flex-1 lg:w-40 bg-va-off-white border-none rounded-[24px] py-5 px-6 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+            className="flex-1 lg:w-40 bg-va-off-white border-none rounded-[24px] py-5 px-6 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
             value={combinedParams.language || ''}
             onChange={(e) => updateQuery({ language: e.target.value || undefined })}
           >
@@ -88,7 +88,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
           </select>
 
           <select 
-            className="hidden md:block lg:w-40 bg-va-off-white border-none rounded-[24px] py-5 px-6 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+            className="hidden md:block lg:w-40 bg-va-off-white border-none rounded-[24px] py-5 px-6 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
             value={combinedParams.gender || ''}
             onChange={(e) => updateQuery({ gender: e.target.value || undefined })}
           >
@@ -124,7 +124,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
           )}
           <button 
             onClick={() => updateQuery({ search: undefined, gender: undefined, style: undefined, language: undefined })}
-            className="text-[10px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-colors ml-2"
+            className="text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-colors ml-2"
           >
             <VoiceglotText translationKey="agency.filter.clear_all" defaultText="Wis alles" />
           </button>
@@ -144,7 +144,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 };
 
 const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => (
-  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
+  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-full text-[15px] font-black tracking-widest shadow-sm">
     {label}
     <button onClick={onRemove} className="hover:text-primary transition-colors">
       <X size={12} />

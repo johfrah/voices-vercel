@@ -53,12 +53,12 @@ export const AgencyFilterSheet: React.FC<{
               <div className="space-y-10">
                 <header className="flex justify-between items-end">
                   <div>
-                    <h2 className="text-4xl font-black uppercase tracking-tighter text-va-black">Filters</h2>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-va-black/30">Vind de perfecte stem</p>
+                    <h2 className="text-4xl font-black tracking-tighter text-va-black">Filters</h2>
+                    <p className="text-[15px] font-black tracking-widest text-va-black/30">Vind de perfecte stem</p>
                   </div>
                   <button 
                     onClick={() => onUpdate({ language: undefined, gender: undefined, style: undefined, search: undefined })}
-                    className="text-[10px] font-black uppercase tracking-widest text-primary"
+                    className="text-[15px] font-black tracking-widest text-primary"
                   >
                     Wis alles
                   </button>
@@ -68,7 +68,7 @@ export const AgencyFilterSheet: React.FC<{
                 <section className="space-y-4">
                   <div className="flex items-center gap-2 text-va-black/40">
                     <Globe size={14} />
-                    <h3 className="text-[10px] font-black uppercase tracking-widest">Taal</h3>
+                    <h3 className="text-[15px] font-black tracking-widest">Taal</h3>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {filters.languages.map(lang => (
@@ -86,7 +86,7 @@ export const AgencyFilterSheet: React.FC<{
                 <section className="space-y-4">
                   <div className="flex items-center gap-2 text-va-black/40">
                     <Users size={14} />
-                    <h3 className="text-[10px] font-black uppercase tracking-widest">Geslacht</h3>
+                    <h3 className="text-[15px] font-black tracking-widest">Geslacht</h3>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     {filters.genders.map(gender => (
@@ -104,7 +104,7 @@ export const AgencyFilterSheet: React.FC<{
                 <section className="space-y-4">
                   <div className="flex items-center gap-2 text-va-black/40">
                     <Mic2 size={14} />
-                    <h3 className="text-[10px] font-black uppercase tracking-widest">Stijl</h3>
+                    <h3 className="text-[15px] font-black tracking-widest">Stijl</h3>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     {filters.styles.map(style => (
@@ -124,7 +124,7 @@ export const AgencyFilterSheet: React.FC<{
             <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-va-off-white via-va-off-white to-transparent">
               <button 
                 onClick={onClose}
-                className="w-full py-6 bg-va-black text-white rounded-[24px] font-black uppercase tracking-widest text-xs shadow-aura active:scale-95 transition-all"
+                className="w-full py-6 bg-va-black text-white rounded-[24px] font-black tracking-widest text-[15px] shadow-aura active:scale-95 transition-all"
               >
                 Toon Resultaten
               </button>
@@ -144,7 +144,7 @@ const FilterChip = ({ label, selected, onClick }: { label: string, selected: boo
     <button
       onClick={onClick}
       className={cn(
-        "px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 transition-all flex items-center justify-between group",
+        "px-6 py-4 rounded-2xl text-[15px] font-black uppercase tracking-widest border-2 transition-all flex items-center justify-between group",
         selected 
           ? "bg-primary border-primary text-va-black shadow-lg" 
           : "bg-white border-black/5 text-va-black/40 hover:border-black/10"
@@ -153,7 +153,7 @@ const FilterChip = ({ label, selected, onClick }: { label: string, selected: boo
       <div className="flex items-center gap-2 truncate mr-2">
         <span className="truncate">{displayLabel}</span>
         {isAi && (
-          <span className="text-[7px] bg-va-black/5 text-va-black/30 px-1.5 py-0.5 rounded-md font-bold group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+          <span className="text-[15px] bg-va-black/5 text-va-black/30 px-1.5 py-0.5 rounded-md font-bold group-hover:bg-primary/20 group-hover:text-primary transition-colors">
             AI
           </span>
         )}

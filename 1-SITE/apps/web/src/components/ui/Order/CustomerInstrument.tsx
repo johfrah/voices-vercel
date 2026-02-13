@@ -37,13 +37,13 @@ export const CustomerInstrument: React.FC<CustomerInstrumentProps> = ({
       </div>
       <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
         <div className="p-3 bg-slate-50 rounded-xl">
-          <div className="text-slate-400 uppercase text-[10px] font-bold tracking-widest">
+          <div className="text-slate-400 text-[15px] font-bold tracking-widest">
             <VoiceglotText translationKey="order.customer.company" defaultText="Bedrijf" />
           </div>
           <div className="font-medium">{company || <VoiceglotText translationKey="common.private" defaultText="Privé" />}</div>
         </div>
         <div className="p-3 bg-slate-50 rounded-xl">
-          <div className="text-slate-400 uppercase text-[10px] font-bold tracking-widest">
+          <div className="text-slate-400 text-[15px] font-bold tracking-widest">
             <VoiceglotText translationKey="order.customer.total_spent" defaultText="Total Spent" />
           </div>
           <div className="font-medium">€{totalSpent}</div>

@@ -17,7 +17,7 @@ export const OrderHeader: React.FC<OrderHeaderProps> = ({ id, date, journey, sta
   return (
     <div className="flex justify-between items-center">
       <div>
-        <h1 className="text-4xl font-black tracking-tight text-slate-900 uppercase">
+        <h1 className="text-4xl font-black tracking-tight text-slate-900 ">
           <VoiceglotText translationKey="order.header.title" defaultText="Order #" />{id}
         </h1>
         <p className="text-slate-50 mt-1">
@@ -31,7 +31,7 @@ export const OrderHeader: React.FC<OrderHeaderProps> = ({ id, date, journey, sta
         )}>
           <VoiceglotText translationKey={`journey.${journey}`} defaultText={journey} />
         </span>
-        <span className="px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-sm font-semibold uppercase tracking-wider">
+        <span className="px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-sm font-semibold tracking-wider">
           <VoiceglotText translationKey={`order.status.${status}`} defaultText={status} />
         </span>
       </div>

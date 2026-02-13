@@ -69,11 +69,11 @@ export default function VoiceglotAdminPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[10px] font-black uppercase tracking-widest">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter uppercase">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
             <VoiceglotText translationKey="admin.voiceglot.title" defaultText="Voiceglot Intelligence" />
           </HeadingInstrument>
         </ContainerInstrument>
@@ -97,14 +97,14 @@ export default function VoiceglotAdminPage() {
             <div className="p-2 bg-primary/20 text-primary rounded-lg">
               <Globe size={20} />
             </div>
-            <TextInstrument className="va-text-xs opacity-40 text-white">
+            <TextInstrument className="va-text-[15px] opacity-40 text-white font-light">
               <VoiceglotText translationKey="admin.voiceglot.registry" defaultText="Registry" />
             </TextInstrument>
           </div>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">
             {stats?.totalStrings || 0}
           </HeadingInstrument>
-          <TextInstrument className="text-[9px] font-black uppercase tracking-widest opacity-40 text-white">
+          <TextInstrument className="text-[15px] font-black tracking-widest opacity-40 text-white">
             <VoiceglotText translationKey="admin.voiceglot.unique_strings" defaultText="Unieke Strings Gedetecteerd" />
           </TextInstrument>
         </BentoCard>
@@ -113,10 +113,10 @@ export default function VoiceglotAdminPage() {
           <BentoCard key={c.lang} span="sm" className="bg-white border border-black/5 p-8 space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-va-off-white rounded-full flex items-center justify-center font-black text-[10px] uppercase">
+                <div className="w-8 h-8 bg-va-off-white rounded-full flex items-center justify-center font-black text-[15px] ">
                   {c.lang}
                 </div>
-                <TextInstrument className="va-text-xs text-va-black/30">
+                <TextInstrument className="va-text-[15px] text-va-black/30 font-light">
                   <VoiceglotText translationKey="admin.voiceglot.coverage" defaultText="Coverage" />
                 </TextInstrument>
               </div>
@@ -128,7 +128,7 @@ export default function VoiceglotAdminPage() {
                 style={{ width: `${c.percentage}%` }}
               />
             </div>
-            <TextInstrument className="text-[9px] font-black uppercase tracking-widest text-va-black/20">
+            <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/20">
               {c.count} <VoiceglotText translationKey="admin.voiceglot.translated_count" defaultText="vertaalde strings" />
             </TextInstrument>
           </BentoCard>
@@ -139,7 +139,7 @@ export default function VoiceglotAdminPage() {
       <BentoGrid columns={3}>
         <BentoCard span="lg" className="bg-white border border-black/5 p-10 space-y-8">
           <div className="flex justify-between items-center">
-            <HeadingInstrument level={3} className="text-2xl font-black uppercase tracking-tight">
+            <HeadingInstrument level={3} className="text-2xl font-black tracking-tight">
               <VoiceglotText translationKey="admin.voiceglot.recent_title" defaultText="Recent Gedetecteerd" />
             </HeadingInstrument>
             <Languages size={20} className="text-va-black/10" />
@@ -148,7 +148,7 @@ export default function VoiceglotAdminPage() {
             {stats?.recentStrings?.map((s: any) => (
               <div key={s.id} className="p-4 bg-va-off-white/50 rounded-2xl flex justify-between items-center group hover:bg-va-off-white transition-all">
                 <div className="space-y-1">
-                  <TextInstrument className="text-[10px] font-black text-primary uppercase tracking-widest">{s.registryKey}</TextInstrument>
+                  <TextInstrument className="text-[15px] font-black text-primary tracking-widest">{s.registryKey}</TextInstrument>
                   <TextInstrument className="text-sm font-medium text-va-black/60 line-clamp-1">{s.sourceText}</TextInstrument>
                 </div>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -162,7 +162,7 @@ export default function VoiceglotAdminPage() {
         <BentoCard span="sm" className="bg-primary text-white p-10 space-y-6 flex flex-col justify-between">
           <div className="space-y-4">
             <ShieldCheck size={40} />
-            <HeadingInstrument level={3} className="text-3xl font-black uppercase tracking-tighter leading-none">
+            <HeadingInstrument level={3} className="text-3xl font-black tracking-tighter leading-none">
               <VoiceglotText translationKey="admin.voiceglot.seo_title" defaultText="AI SEO AUTOMATION" />
             </HeadingInstrument>
             <TextInstrument className="text-sm font-medium opacity-80">
@@ -174,10 +174,10 @@ export default function VoiceglotAdminPage() {
           </div>
           <div className="p-4 bg-white/10 rounded-2xl border border-white/10">
             <div className="flex justify-between items-center mb-2">
-              <TextInstrument className="text-[9px] font-black uppercase tracking-widest">
+              <TextInstrument className="text-[15px] font-black tracking-widest">
                 <VoiceglotText translationKey="admin.voiceglot.seo_status" defaultText="SEO Sync Status" />
               </TextInstrument>
-              <TextInstrument className="text-[9px] font-black uppercase tracking-widest">100%</TextInstrument>
+              <TextInstrument className="text-[15px] font-black tracking-widest">100%</TextInstrument>
             </div>
             <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
               <div className="bg-white h-full w-full" />
@@ -192,10 +192,10 @@ export default function VoiceglotAdminPage() {
           <Zap size={32} />
         </div>
         <div className="space-y-1">
-          <HeadingInstrument level={4} className="text-primary font-black uppercase tracking-tight">
+          <HeadingInstrument level={4} className="text-primary font-black tracking-tight">
             <VoiceglotText translationKey="admin.voiceglot.protocol_title" defaultText="VOICEGLOT PROTOCOL" />
           </HeadingInstrument>
-          <TextInstrument className="text-xs opacity-60 font-medium">
+          <TextInstrument className="text-[15px] opacity-60 font-medium">
             <VoiceglotText 
               translationKey="admin.voiceglot.protocol_text" 
               defaultText="De Freedom Machine spreekt elke taal. Zodra een nieuwe string wordt gedetecteerd in de UI, wordt deze binnen 60 seconden automatisch vertaald door de Intelligence Layer. Slugs worden automatisch 'slugified' per taal om SEO-waarde te maximaliseren." 

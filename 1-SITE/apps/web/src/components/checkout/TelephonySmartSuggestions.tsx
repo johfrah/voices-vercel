@@ -74,17 +74,17 @@ export const TelephonySmartSuggestions: React.FC = () => {
           <Sparkles size={20} />
         </div>
         <div>
-          <h3 className="text-sm font-black uppercase tracking-widest">
+          <h3 className="text-sm font-black tracking-widest">
             <VoiceglotText translationKey="checkout.telephony.suggestions.title" defaultText="Smart Suggestions" />
           </h3>
-          <p className="text-[10px] font-bold text-va-black/40 uppercase tracking-wider">
+          <p className="text-[15px] font-bold text-va-black/40 tracking-wider">
             <VoiceglotText translationKey="checkout.telephony.suggestions.subtitle" defaultText="Telephony Script Assistant" />
           </p>
         </div>
       </div>
 
       <div className="space-y-4">
-        <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/30">
+        <label className="flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/30">
           <Building2 size={12} /> <VoiceglotText translationKey="checkout.telephony.company_label" defaultText="Jouw Bedrijfsnaam" />
         </label>
         <input
@@ -104,10 +104,10 @@ export const TelephonySmartSuggestions: React.FC = () => {
             className="group flex items-center justify-between p-4 bg-white hover:bg-primary hover:text-white rounded-xl transition-all text-left shadow-sm"
           >
             <div className="flex-1">
-              <p className="text-[10px] font-black uppercase tracking-widest opacity-40 group-hover:opacity-100 mb-1">
+              <p className="text-[15px] font-black tracking-widest opacity-40 group-hover:opacity-100 mb-1">
                 {template.title}
               </p>
-              <p className="text-xs font-medium line-clamp-1 opacity-80 group-hover:opacity-100">
+              <p className="text-[15px] font-medium line-clamp-1 opacity-80 group-hover:opacity-100">
                 {template.text.replace(/\[Bedrijf\]/g, companyName || '...') }
               </p>
             </div>
@@ -122,7 +122,7 @@ export const TelephonySmartSuggestions: React.FC = () => {
         ))}
       </div>
       
-      <p className="text-[9px] font-bold text-va-black/20 uppercase tracking-widest text-center">
+      <p className="text-[15px] font-bold text-va-black/20 tracking-widest text-center">
         <VoiceglotText translationKey="checkout.telephony.suggestions.hint" defaultText="Klik op een suggestie om deze toe te voegen aan je script" />
       </p>
     </div>

@@ -49,11 +49,11 @@ export default function AdminDatabasePage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[10px] font-black uppercase tracking-widest">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter uppercase">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
             <VoiceglotText translationKey="admin.database.title" defaultText="Nuclear DB" />
           </HeadingInstrument>
         </ContainerInstrument>
@@ -66,7 +66,7 @@ export default function AdminDatabasePage() {
               placeholder="Zoek tabel..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-2xl text-xs font-medium focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
+              className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-2xl text-[15px] font-medium focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
             />
           </div>
           <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
@@ -82,19 +82,19 @@ export default function AdminDatabasePage() {
             <div className="p-2 bg-primary/20 text-primary rounded-lg">
               <Database size={20} />
             </div>
-            <TextInstrument className="text-[10px] font-black uppercase tracking-widest opacity-40 text-white">Status</TextInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest opacity-40 text-white">Status</TextInstrument>
           </div>
           <HeadingInstrument level={3} className="text-3xl font-black tracking-tighter">HEALTHY</HeadingInstrument>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <TextInstrument className="text-[9px] font-black uppercase tracking-widest opacity-40 text-white">Drizzle ORM v0.30.0</TextInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest opacity-40 text-white">Drizzle ORM v0.30.0</TextInstrument>
           </div>
         </BentoCard>
         
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
           <div className="flex items-center gap-3 text-va-black/40">
             <Table size={20} />
-            <TextInstrument className="text-[10px] font-black uppercase tracking-widest">Tabellen</TextInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest">Tabellen</TextInstrument>
           </div>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">{tables.length}</HeadingInstrument>
         </BentoCard>
@@ -102,7 +102,7 @@ export default function AdminDatabasePage() {
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
           <div className="flex items-center gap-3 text-va-black/40">
             <HardDrive size={20} />
-            <TextInstrument className="text-[10px] font-black uppercase tracking-widest">Storage</TextInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest">Storage</TextInstrument>
           </div>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">1.2 GB</HeadingInstrument>
         </BentoCard>
@@ -110,7 +110,7 @@ export default function AdminDatabasePage() {
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
           <div className="flex items-center gap-3 text-va-black/40">
             <Zap size={20} />
-            <TextInstrument className="text-[10px] font-black uppercase tracking-widest">Queries/sec</TextInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest">Queries/sec</TextInstrument>
           </div>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-primary">142</HeadingInstrument>
         </BentoCard>
@@ -125,16 +125,16 @@ export default function AdminDatabasePage() {
                 <div className="p-3 bg-va-off-white rounded-2xl text-va-black/20 group-hover:text-primary group-hover:bg-primary/5 transition-all">
                   <Table size={24} />
                 </div>
-                <div className="text-[9px] font-black text-va-black/20 uppercase tracking-widest">
+                <div className="text-[15px] font-black text-va-black/20 tracking-widest">
                   {Math.floor(Math.random() * 10000)} rijen
                 </div>
               </div>
-              <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight group-hover:text-primary transition-colors">
+              <HeadingInstrument level={3} className="text-xl font-black tracking-tight group-hover:text-primary transition-colors">
                 {table}
               </HeadingInstrument>
               <div className="flex gap-2">
-                <div className="px-2 py-1 bg-va-off-white rounded text-[8px] font-bold uppercase tracking-widest text-va-black/40">Read</div>
-                <div className="px-2 py-1 bg-va-off-white rounded text-[8px] font-bold uppercase tracking-widest text-va-black/40">Write</div>
+                <div className="px-2 py-1 bg-va-off-white rounded text-[15px] font-bold tracking-widest text-va-black/40">Read</div>
+                <div className="px-2 py-1 bg-va-off-white rounded text-[15px] font-bold tracking-widest text-va-black/40">Write</div>
               </div>
             </div>
             <div className="absolute -right-4 -bottom-4 text-va-black/[0.02] group-hover:text-primary/[0.05] transition-all">
@@ -150,8 +150,8 @@ export default function AdminDatabasePage() {
           <ShieldAlert size={32} />
         </div>
         <div className="space-y-1">
-          <HeadingInstrument level={4} className="text-red-500 font-black uppercase tracking-tight">NUCLEAR WARNING</HeadingInstrument>
-          <TextInstrument className="text-xs text-red-900/60 font-medium">
+          <HeadingInstrument level={4} className="text-red-500 font-black tracking-tight">NUCLEAR WARNING</HeadingInstrument>
+          <TextInstrument className="text-[15px] text-red-900/60 font-medium">
             Wijzigingen in de database zijn onomkeerbaar. Gebruik deze tool uitsluitend voor onderhoud en debugging. 
             Maak altijd een backup via de `scripts/maintenance/backup.sh` voordat je destructieve acties uitvoert.
           </TextInstrument>

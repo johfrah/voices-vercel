@@ -45,10 +45,10 @@ export const IVROverview: React.FC = () => {
             <Phone size={28} />
           </div>
           <div>
-            <h2 className="text-3xl font-black tracking-tighter uppercase">
+            <h2 className="text-3xl font-black tracking-tighter ">
               <VoiceglotText translationKey="ivr.configurator.title" defaultText="IVR Configurator" />
             </h2>
-            <p className="text-[10px] font-black uppercase tracking-widest text-black/30">
+            <p className="text-[15px] font-black tracking-widest text-black/30">
               <VoiceglotText translationKey="ivr.configurator.subtitle" defaultText="Telephony OS 2026 • Active" />
             </p>
           </div>
@@ -62,7 +62,7 @@ export const IVROverview: React.FC = () => {
       <div className="space-y-4">
         {steps.map((step, index) => (
           <div key={step.id} className="flex items-center gap-6 p-6 bg-black/5 rounded-2xl border border-black/5 group hover:bg-black/10 transition-all">
-            <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-black text-xs">
+            <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-black text-[15px]">
               {index + 1}
             </div>
             
@@ -85,7 +85,7 @@ export const IVROverview: React.FC = () => {
                   newSteps[index].action = e.target.value as any;
                   setSteps(newSteps);
                 }}
-                className="bg-transparent text-xs font-black uppercase tracking-widest focus:outline-none"
+                className="bg-transparent text-[15px] font-black tracking-widest focus:outline-none"
               >
                 <option value="message">Boodschap</option>
                 <option value="menu">Keuzemenu</option>
@@ -113,7 +113,7 @@ export const IVROverview: React.FC = () => {
 
         <button 
           onClick={addStep}
-          className="w-full py-4 border-2 border-dashed border-black/10 rounded-2xl flex items-center justify-center gap-2 text-black/30 hover:text-black hover:border-black/20 transition-all font-black uppercase text-[10px] tracking-widest"
+          className="w-full py-4 border-2 border-dashed border-black/10 rounded-2xl flex items-center justify-center gap-2 text-black/30 hover:text-black hover:border-black/20 transition-all font-black text-[15px] tracking-widest"
         >
           <Plus size={16} /> <VoiceglotText translationKey="ivr.configurator.add_step" defaultText="STAP TOEVOEGEN" />
         </button>
@@ -124,24 +124,24 @@ export const IVROverview: React.FC = () => {
         <div className="bg-va-off-white rounded-[32px] p-6 border-none shadow-none">
           <div className="flex items-center gap-3 mb-4 text-black/40">
             <Music size={18} />
-            <span className="text-[10px] font-black uppercase tracking-widest">
+            <span className="text-[15px] font-black tracking-widest">
               <VoiceglotText translationKey="ivr.configurator.hold_music" defaultText="Wachtmuziek" />
             </span>
           </div>
           <p className="font-bold text-sm mb-4 italic">&quot;Corporate Minimalist V1&quot;</p>
-          <button className="text-[10px] font-black underline uppercase tracking-widest">
+          <button className="text-[15px] font-black underline tracking-widest">
             <VoiceglotText translationKey="ivr.configurator.change_music" defaultText="Wijzig muziek" />
           </button>
         </div>
         <div className="bg-va-off-white rounded-[32px] p-6 border-none shadow-none">
           <div className="flex items-center gap-3 mb-4 text-black/40">
             <Mic2 size={18} />
-            <span className="text-[10px] font-black uppercase tracking-widest">
+            <span className="text-[15px] font-black tracking-widest">
               <VoiceglotText translationKey="ivr.configurator.voice_actor" defaultText="Stemacteur" />
             </span>
           </div>
           <p className="font-bold text-sm mb-4 italic">&quot;Sarah (Vlaams, Zakelijk)&quot;</p>
-          <button className="text-[10px] font-black underline uppercase tracking-widest">
+          <button className="text-[15px] font-black underline tracking-widest">
             <VoiceglotText translationKey="ivr.configurator.change_voice" defaultText="Wijzig stem" />
           </button>
         </div>

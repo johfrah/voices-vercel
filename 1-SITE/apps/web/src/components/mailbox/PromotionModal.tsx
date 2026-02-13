@@ -65,7 +65,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
           <HeadingInstrument level={3} className="text-2xl font-black tracking-tight text-gray-900 mb-2">
             Promoot naar Profiel
           </HeadingInstrument>
-          <TextInstrument className="text-gray-500 text-sm mb-8">
+          <TextInstrument className="text-gray-500 text-sm mb-8 font-light">
             Verplaats deze demo van de privé kluis naar het publieke profiel van de stem.
           </TextInstrument>
 
@@ -79,7 +79,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
           ) : (
             <div className="space-y-6">
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Demo Naam</label>
+                <label className="text-[15px] font-black tracking-widest text-gray-400 mb-2 block">Demo Naam</label>
                 <InputInstrument 
                   value={demoName}
                   onChange={(e) => setDemoName(e.target.value)}
@@ -88,7 +88,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Type</label>
+                <label className="text-[15px] font-black tracking-widest text-gray-400 mb-2 block">Type</label>
                 <select 
                   value={demoType}
                   onChange={(e) => setDemoType(e.target.value)}
@@ -105,7 +105,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
                 <ButtonInstrument 
                   onClick={handlePromote}
                   disabled={isPromoting || !actorId}
-                  className="w-full bg-va-black text-white rounded-2xl py-4 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:scale-[1.02] transition-all disabled:opacity-50"
+                  className="w-full bg-va-black text-white rounded-2xl py-4 font-black tracking-widest text-[15px] flex items-center justify-center gap-2 hover:scale-[1.02] transition-all disabled:opacity-50"
                 >
                   {isPromoting ? 'Bezig...' : (
                     <>
@@ -115,7 +115,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
                   )}
                 </ButtonInstrument>
                 {!actorId && (
-                  <p className="text-[10px] text-red-500 mt-2 text-center font-bold">⚠️ Geen acteur gekoppeld aan deze mail.</p>
+                  <p className="text-[15px] text-red-500 mt-2 text-center font-bold">⚠️ Geen acteur gekoppeld aan deze mail.</p>
                 )}
               </div>
             </div>

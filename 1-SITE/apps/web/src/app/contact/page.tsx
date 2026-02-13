@@ -56,11 +56,11 @@ export default function ContactPage() {
         
         {/* Header */}
         <SectionInstrument className="mb-16 text-center">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest border border-primary/10 mb-8">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10 mb-8">
             <Sparkles size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="contact.badge" defaultText="Altijd Bereikbaar" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-6">
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-none mb-6">
             <VoiceglotText translationKey="contact.title_part1" defaultText="Laten we " />
             <span className="text-primary">
               <VoiceglotText translationKey="contact.title_part2" defaultText="praten." />
@@ -82,7 +82,7 @@ export default function ContactPage() {
                 <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center">
                   <CheckCircle2 size={40} />
                 </div>
-                <HeadingInstrument level={2} className="text-3xl font-black uppercase tracking-tight">
+                <HeadingInstrument level={2} className="text-3xl font-black tracking-tight">
                   <VoiceglotText translationKey="contact.success.title" defaultText="Bericht Ontvangen!" />
                 </HeadingInstrument>
                 <TextInstrument className="text-va-black/40 font-medium max-w-sm">
@@ -97,7 +97,7 @@ export default function ContactPage() {
               </div>
             ) : (
               <>
-                <HeadingInstrument level={2} className="text-2xl font-black uppercase tracking-tight mb-8">
+                <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-8">
                   <VoiceglotText translationKey="contact.form.title" defaultText="Stuur ons een bericht" />
                 </HeadingInstrument>
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -142,7 +142,7 @@ export default function ContactPage() {
               <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
                 <MessageSquare size={24} />
               </div>
-              <HeadingInstrument level={2} className="text-3xl font-black uppercase tracking-tighter mb-4 leading-tight">
+              <HeadingInstrument level={2} className="text-3xl font-black tracking-tighter mb-4 leading-tight">
                 <VoiceglotText translationKey="contact.voicy.title" defaultText="Direct antwoord nodig?" />
               </HeadingInstrument>
               <TextInstrument className="text-white/40 text-sm font-medium leading-relaxed mb-8">
@@ -168,7 +168,7 @@ export default function ContactPage() {
                 <Phone size={20} />
               </div>
               <div>
-                <TextInstrument className="va-text-xs text-va-black/30 mb-1">
+                <TextInstrument className="va-text-[15px] text-va-black/30 mb-1 font-light">
                   <VoiceglotText translationKey="contact.info.phone_label" defaultText="Bel ons" />
                 </TextInstrument>
                 <TextInstrument className="text-lg font-black">+32 (0)2 793 19 91</TextInstrument>
@@ -179,7 +179,7 @@ export default function ContactPage() {
                 <Mail size={20} />
               </div>
               <div>
-                <TextInstrument className="va-text-xs text-va-black/30 mb-1">
+                <TextInstrument className="va-text-[15px] text-va-black/30 mb-1 font-light">
                   <VoiceglotText translationKey="contact.info.email_label" defaultText="E-mail ons" />
                 </TextInstrument>
                 <TextInstrument className="text-lg font-black">hello@voices.be</TextInstrument>
@@ -190,7 +190,7 @@ export default function ContactPage() {
                 <MapPin size={20} />
               </div>
               <div>
-                <TextInstrument className="va-text-xs text-va-black/30 mb-1">
+                <TextInstrument className="va-text-[15px] text-va-black/30 mb-1 font-light">
                   <VoiceglotText translationKey="contact.info.address_label" defaultText="Bezoek ons" />
                 </TextInstrument>
                 <TextInstrument className="text-lg font-black">

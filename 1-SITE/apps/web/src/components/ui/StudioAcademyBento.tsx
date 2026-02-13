@@ -25,11 +25,11 @@ export const StudioAcademyBento = () => {
             className="object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-1000"
           />
         </div>
-        <ContainerInstrument className="relative z-10">
-          <ContainerInstrument className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
+        <ContainerInstrument plain className="relative z-10">
+          <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
             <Mic size={32} fill="currentColor" />
           </ContainerInstrument>
-          <HeadingInstrument level={3} className="text-5xl font-black uppercase tracking-tighter mb-6 leading-none text-primary">
+          <HeadingInstrument level={3} className="text-5xl font-black tracking-tighter mb-6 leading-none text-primary">
             <VoiceglotText translationKey="studio.hero.title" defaultText="Master je Stem" />
           </HeadingInstrument>
           <TextInstrument className="text-white/40 font-medium max-w-md text-lg">
@@ -44,12 +44,12 @@ export const StudioAcademyBento = () => {
 
       {/* 🎓 Academy Quick-Link */}
       <BentoCard span="sm" className="bg-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
-        <ContainerInstrument>
+        <ContainerInstrument plain>
           <BookOpen className="text-primary mb-4" size={24} />
-          <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-2 text-va-black">
+          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black">
             <VoiceglotText translationKey="academy.title" defaultText="Voices Academy" />
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 text-xs font-medium leading-relaxed">
+          <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed">
             <VoiceglotText translationKey="academy.description" defaultText="Online leertrajecten voor wie op eigen tempo wil groeien als stemacteur." />
           </TextInstrument>
         </ContainerInstrument>
@@ -57,12 +57,12 @@ export const StudioAcademyBento = () => {
 
       {/* 📅 Kalender */}
       <BentoCard span="sm" className="bg-va-dark-soft text-white p-8 flex flex-col justify-between h-[280px] border-none">
-        <ContainerInstrument>
+        <ContainerInstrument plain>
           <Calendar className="text-primary mb-4" size={24} />
-          <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-2 text-primary">
+          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-primary">
             <VoiceglotText translationKey="studio.calendar.title" defaultText="Volgende Sessies" />
           </HeadingInstrument>
-          <TextInstrument className="text-white/60 text-xs font-medium leading-relaxed">
+          <TextInstrument className="text-white/60 text-[15px] font-medium leading-relaxed">
             <VoiceglotText translationKey="studio.calendar.description" defaultText="Bekijk de data voor 'Perfect spreken' en 'Voice-overs voor beginners'." />
           </TextInstrument>
         </ContainerInstrument>
@@ -70,12 +70,12 @@ export const StudioAcademyBento = () => {
 
       {/* 🌟 De Coaches (Bernadette & Johfrah) */}
       <BentoCard span="md" className="bg-va-off-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
-        <ContainerInstrument>
+        <ContainerInstrument plain>
           <Users className="text-va-black/20 mb-4" size={24} />
-          <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-2 text-va-black">
+          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black">
             <VoiceglotText translationKey="studio.coaches.title" defaultText="Topcoaches" />
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 text-xs font-medium leading-relaxed">
+          <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed">
             <VoiceglotText translationKey="studio.coaches.description" defaultText="Bernadette Timmermans (VRT) & Johfrah Lefebvre delen hun jarenlange ervaring." />
           </TextInstrument>
         </ContainerInstrument>
@@ -83,12 +83,12 @@ export const StudioAcademyBento = () => {
 
       {/* 🎬 Video Quiz */}
       <BentoCard span="sm" className="bg-primary text-va-black p-8 flex flex-col justify-between h-[280px] border-none">
-        <ContainerInstrument>
+        <ContainerInstrument plain>
           <PlayCircle className="mb-4" size={24} fill="currentColor" />
-          <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-2">
+          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2">
             <VoiceglotText translationKey="studio.quiz.title" defaultText="Welke Workshop?" />
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/60 text-xs font-medium leading-relaxed">
+          <TextInstrument className="text-va-black/60 text-[15px] font-medium leading-relaxed">
             <VoiceglotText translationKey="studio.quiz.description" defaultText="Doe de interactieve video-quiz en ontdek jouw ideale traject." />
           </TextInstrument>
         </ContainerInstrument>

@@ -43,26 +43,26 @@ export const MailList = ({ mails, selectedMailId, onSelect }: MailListProps) => 
                   <ContainerInstrument className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
                 )}
                 <TextInstrument as="span" className={cn(
-                  "text-xs truncate block",
+                  "text-[15px] truncate block",
                   mail.isUnread ? "font-bold text-va-black" : "font-medium text-va-black/70"
                 )}>
                   {mail.from}
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <TextInstrument as="span" className="text-[10px] text-va-black/40 whitespace-nowrap flex-shrink-0">
+            <TextInstrument as="span" className="text-[15px] text-va-black/40 whitespace-nowrap flex-shrink-0 font-light">
               {mail.date}
             </TextInstrument>
           </ContainerInstrument>
 
           <TextInstrument as="h4" className={cn(
-            "text-xs mb-1 truncate pr-8",
+            "text-[15px] mb-1 truncate pr-8",
             mail.isUnread ? "font-bold text-va-black" : "font-medium text-va-black/80"
           )}>
             {mail.subject}
           </TextInstrument>
 
-          <TextInstrument as="p" className="text-[10px] text-va-black/50 line-clamp-2 leading-relaxed">
+          <TextInstrument as="p" className="text-[15px] text-va-black/50 line-clamp-2 leading-relaxed font-light">
             {mail.preview}
           </TextInstrument>
 

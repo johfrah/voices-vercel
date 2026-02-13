@@ -30,9 +30,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/cookies',
   ];
 
-  // 2. Dynamische Routes: Actors (Voice-overs)
+  // 2. Dynamische Routes: Actors, Articles, Academy & Studio
   let allActors: { slug: string }[] = [];
   let allArticles: { slug: string }[] = [];
+  const academyLessons = Array.from({ length: 20 }, (_, i) => ({ id: (i + 1).toString() })); // 20 lessen
+  const studioWorkshops = ['stemacteren-basis', 'stemacteren-gevorderd', 'audio-productie']; // Voorbeeld workshops
 
   try {
     allActors = await db.select({ slug: actors.slug }).from(actors).where(eq(actors.status, 'live'));
@@ -73,6 +75,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.6,
+      });
+    });
+
+    // 🎓 Academy routes
+    academyLessons.forEach(lesson => {
+      sitemapEntries.push({
+        url: `${baseUrl}${lang}/academy/lesson/${lesson.id}/`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.7,
+      });
+    });
+
+    // 🎙️ Studio routes
+    studioWorkshops.forEach(slug => {
+      sitemapEntries.push({
+        url: `${baseUrl}${lang}/studio/workshop/${slug}/`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.7,
       });
     });
   }

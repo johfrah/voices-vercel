@@ -24,8 +24,8 @@ const FunnelStep: React.FC<FunnelStepProps> = ({ label, value, subLabel, icon, c
       {icon}
     </div>
     <div className="text-3xl font-black tracking-tighter text-white">{value}</div>
-    <div className="text-[10px] font-black uppercase tracking-widest text-white/40">{label}</div>
-    <div className="text-[9px] font-medium text-white/20">{subLabel}</div>
+    <div className="text-[15px] font-black tracking-widest text-white/40">{label}</div>
+    <div className="text-[15px] font-medium text-white/20">{subLabel}</div>
   </div>
 );
 
@@ -86,17 +86,17 @@ export const WorkshopFunnel: React.FC<{ data: any }> = ({ data }) => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp size={16} className="text-primary" />
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-primary">
+              <h4 className="text-[15px] font-black tracking-widest text-primary">
                 <VoiceglotText translationKey="studio.funnel.insights.title" defaultText="Performance Insights" />
               </h4>
             </div>
             <div className="text-6xl font-black tracking-tighter text-va-black group-hover:text-primary transition-colors duration-500">68.4%</div>
-            <div className="text-[10px] font-black uppercase tracking-widest text-va-black/30 mt-2">
+            <div className="text-[15px] font-black tracking-widest text-va-black/30 mt-2">
               <VoiceglotText translationKey="studio.funnel.insights.avg_conversion" defaultText="Gemiddelde Conversie" />
             </div>
           </div>
           <div className="text-right">
-            <p className="text-xs font-medium text-va-black/50 max-w-[220px] leading-relaxed">
+            <p className="text-[15px] font-medium text-va-black/50 max-w-[220px] leading-relaxed">
               <VoiceglotText 
                 translationKey="studio.funnel.insights.text" 
                 defaultText="Uw workshops presteren 12% beter dan het marktgemiddelde. De persona 'Ambitieuze Spreker' converteert het hoogst." 

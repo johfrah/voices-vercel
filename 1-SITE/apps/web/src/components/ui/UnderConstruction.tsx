@@ -27,7 +27,7 @@ export default function UnderConstruction() {
         <div className="fixed top-8 right-8 z-50">
           <Link 
             href="/auth/login" 
-            className="text-[10px] font-black uppercase tracking-widest bg-va-black text-white px-6 py-3 rounded-full hover:bg-primary transition-all shadow-lg"
+            className="text-[15px] font-black tracking-widest bg-va-black text-white px-6 py-3 rounded-full hover:bg-primary transition-all shadow-lg"
             onClick={() => playClick('pro')}
           >
             <VoiceglotText translationKey="admin.dashboard.link" defaultText="Admin Dashboard" />
@@ -58,7 +58,7 @@ export default function UnderConstruction() {
 
         {/* BENTO STATUS BOX */}
         <div className="w-full bg-white/80 backdrop-blur-xl border border-black/5 p-12 rounded-[32px] shadow-aura space-y-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest border border-primary/10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10">
             <Construction size={12} className="animate-pulse" /> <VoiceglotText translationKey="construction.badge" defaultText="Voices in Aanbouw" />
           </div>
           

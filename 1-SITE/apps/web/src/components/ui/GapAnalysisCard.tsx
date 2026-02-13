@@ -56,13 +56,13 @@ export const GapAnalysisCard: React.FC = () => {
             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
               <Sparkles size={20} className="text-white" />
             </div>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+            <h4 className="text-[15px] font-black tracking-[0.2em] text-primary">
               Portfolio Analyse
             </h4>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-4xl font-black uppercase tracking-tighter leading-none">
+            <h3 className="text-4xl font-black tracking-tighter leading-none">
               Maak de bereikbaarheid van <br />
               <span className="text-primary">{getPlaceholderValue('company_name')}</span> compleet.
             </h3>
@@ -87,10 +87,10 @@ export const GapAnalysisCard: React.FC = () => {
                   ) : (
                     <AlertCircle size={16} className="text-primary" />
                   )}
-                  <span className="text-xs font-black uppercase tracking-widest">{req.label}</span>
+                  <span className="text-[15px] font-black tracking-widest">{req.label}</span>
                 </div>
                 {!hasAsset(req.id) && (
-                  <span className="text-[8px] font-black bg-primary px-2 py-1 rounded-full uppercase tracking-tighter">
+                  <span className="text-[15px] font-black bg-primary px-2 py-1 rounded-full tracking-tighter">
                     Aanbevolen
                   </span>
                 )}
@@ -104,8 +104,8 @@ export const GapAnalysisCard: React.FC = () => {
           className="mt-12 flex items-center justify-between w-full p-6 bg-primary rounded-2xl hover:bg-white hover:text-va-black transition-all duration-500 group/btn"
         >
           <div className="text-left">
-            <p className="text-[9px] font-black uppercase tracking-widest opacity-60 mb-1">Direct Bestellen</p>
-            <h5 className="text-sm font-black uppercase tracking-tight">Configureer ontbrekende assets</h5>
+            <p className="text-[15px] font-black tracking-widest opacity-60 mb-1">Direct Bestellen</p>
+            <h5 className="text-sm font-black tracking-tight">Configureer ontbrekende assets</h5>
           </div>
           <ArrowRight className="group-hover/btn:translate-x-2 transition-transform" />
         </button>

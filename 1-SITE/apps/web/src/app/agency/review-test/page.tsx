@@ -18,13 +18,13 @@ export default function AudioReviewTestPage() {
       
       <div className="max-w-7xl mx-auto pt-32 pb-20 px-6">
         <div className="mb-12">
-          <TextInstrument as="span" className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[11px] font-bold uppercase tracking-widest mb-4">
+          <TextInstrument as="span" className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[15px] font-bold tracking-widest mb-4">
             Spotlight Feature Preview
           </TextInstrument>
           <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter text-gray-900 mb-4">
-            Audio Review <TextInstrument as="span" className="text-primary">Engine</TextInstrument>
+            Audio Review <TextInstrument as="span" className="text-primary font-light">Engine</TextInstrument>
           </HeadingInstrument>
-          <TextInstrument className="text-xl text-gray-500 max-w-2xl">
+          <TextInstrument className="text-xl text-gray-500 max-w-2xl font-light">
             Test hier de interactieve feedback loop. Pas de muziekbalans aan, 
             bekijk de geanimeerde waveform en simuleer de Dropbox-export.
           </TextInstrument>
@@ -42,22 +42,22 @@ export default function AudioReviewTestPage() {
             <HeadingInstrument level={3} className="text-lg font-bold text-gray-900 mb-4">Hoe werkt dit?</HeadingInstrument>
             <ul className="space-y-4 text-gray-600 text-sm">
               <li className="flex gap-3">
-                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold shrink-0">1</TextInstrument>
+                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[15px] font-bold shrink-0">1</TextInstrument>
                 <TextInstrument as="span">De <strong>Smart Mix</strong> slider stuurt live opdrachten naar de backend (FFMPEG) om de ducking-intensiteit aan te passen.</TextInstrument>
               </li>
               <li className="flex gap-3">
-                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold shrink-0">2</TextInstrument>
+                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[15px] font-bold shrink-0">2</TextInstrument>
                 <TextInstrument as="span">De <strong>Sonic DNA Waveform</strong> visualiseert de audio en reageert op interacties.</TextInstrument>
               </li>
               <li className="flex gap-3">
-                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold shrink-0">3</TextInstrument>
+                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[15px] font-bold shrink-0">3</TextInstrument>
                 <TextInstrument as="span">Bij <strong>Goedkeuring</strong> wordt de finale mastering chain toegepast en gesynct naar Dropbox.</TextInstrument>
               </li>
             </ul>
           </div>
           <div className="bg-gray-50 p-8 rounded-[32px] border border-gray-100">
             <HeadingInstrument level={3} className="text-lg font-bold text-gray-900 mb-2">Core Mandaat</HeadingInstrument>
-            <TextInstrument className="text-sm text-gray-500 leading-relaxed">
+            <TextInstrument className="text-sm text-gray-500 leading-relaxed font-light">
               Dit is een 100% Next.js implementatie. Er wordt geen PHP gebruikt voor de rendering of de audio-logica. 
               De data-bridge communiceert direct met de Node.js services.
             </TextInstrument>

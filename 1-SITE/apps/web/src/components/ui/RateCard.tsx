@@ -62,7 +62,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
   return (
     <div className={cn("bg-white rounded-[32px] p-8 border border-black/5 shadow-sm hover:shadow-xl transition-all duration-500 group relative overflow-hidden", className)}>
       {config.badge && (
-        <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-va-black text-white text-[8px] font-black uppercase tracking-widest">
+        <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-va-black text-white text-[15px] font-black tracking-widest">
           {config.badge}
         </div>
       )}
@@ -71,15 +71,15 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
         <Icon size={24} />
       </div>
 
-      <h3 className="text-lg font-black uppercase tracking-tight mb-1">{config.title}</h3>
+      <h3 className="text-lg font-black tracking-tight mb-1">{config.title}</h3>
       <div className="flex items-baseline gap-1 mb-6">
         <span className="text-3xl font-black text-va-black">{config.price}</span>
-        <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">{config.unit}</span>
+        <span className="text-[15px] font-bold text-va-black/30 tracking-widest">{config.unit}</span>
       </div>
 
       <ul className="space-y-3 mb-8">
         {config.features.map((feature, i) => (
-          <li key={i} className="flex items-center gap-2 text-[11px] font-medium text-va-black/60">
+          <li key={i} className="flex items-center gap-2 text-[15px] font-medium text-va-black/60">
             <CheckCircle2 size={14} className="text-green-500 shrink-0" />
             {feature}
           </li>
@@ -87,7 +87,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
       </ul>
 
       <div className="pt-6 border-top border-black/5">
-        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-primary group-hover:gap-3 transition-all">
+        <div className="flex items-center gap-2 text-[15px] font-black tracking-[0.2em] text-primary group-hover:gap-3 transition-all">
           Vul je aantal woorden in voor de prijs <Zap size={10} fill="currentColor" />
         </div>
       </div>

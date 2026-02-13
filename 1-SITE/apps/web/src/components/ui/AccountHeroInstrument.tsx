@@ -27,13 +27,13 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
     <div className="va-account-hero">
       <div className="va-account-hero-content">
         <div className="va-account-badge">
-          <User size={12} className="va-icon-primary" fill="currentColor" /> 
+          <User size={12} className="va-icon-primary" fill="currentColor" strokeWidth={1.5} /> 
           <VoiceglotText 
             translationKey="account.hero.welcome" 
             defaultText={`Welkom terug, ${userName}`} 
           />
         </div>
-        <h1 className="va-account-title">
+        <h1 className="va-account-title font-light">
           <VoiceglotText translationKey="account.hero.title_part1" defaultText="Mijn " />
           <span className="va-text-primary">
             <VoiceglotText translationKey="account.hero.title_part2" defaultText="Voices" />
@@ -47,7 +47,7 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
         </p>
       </div>
       <button onClick={onLogout} className="va-account-logout-btn">
-        <LogOut size={16} /> 
+        <LogOut size={16} strokeWidth={1.5} /> 
         <VoiceglotText translationKey="common.logout" defaultText="Uitloggen" />
       </button>
     </div>

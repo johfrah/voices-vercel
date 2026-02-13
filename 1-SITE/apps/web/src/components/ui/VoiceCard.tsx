@@ -5,7 +5,7 @@ import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { calculateDeliveryDate } from '@/lib/delivery-logic';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { Actor, Demo } from '@/types';
-import { Calendar, ChevronRight, Mic, Play, Quote, Star, Monitor, Radio, Globe, Mic2, Phone, Building2, BookOpen, Wind } from 'lucide-react';
+import { Calendar, ChevronRight, Mic, Play, Quote, Star, Monitor, Radio, Globe, Mic2, Phone, Building2, BookOpen, Wind, Plus, Check } from 'lucide-react';
 import Image from 'next/image';
 import React, { useMemo } from 'react';
 import { BentoCard } from './BentoGrid';
@@ -33,8 +33,20 @@ const CATEGORIES = [
 
 export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
   const { playClick, playSwell } = useSonicDNA();
-  const { state, getPlaceholderValue } = useVoicesState();
+  const { state, getPlaceholderValue, toggleActorSelection } = useVoicesState();
   const { activeDemo, playDemo } = useGlobalAudio();
+
+  const isSelected = state.selected_actors.some(a => a.id === voice.id);
+
+  const handleStudioToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    playClick(isSelected ? 'soft' : 'success');
+    toggleActorSelection({
+      id: voice.id,
+      firstName: voice.firstName || voice.display_name?.split(' ')[0] || 'Stem',
+      photoUrl: voice.photo_url
+    });
+  };
 
   const deliveryInfo = useMemo(() => {
     return calculateDeliveryDate({
@@ -111,7 +123,10 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
   return (
     <BentoCard 
       span="md" 
-      className="group cursor-pointer bg-white border border-gray-100 rounded-[40px] p-8 transition-all duration-700 hover:shadow-[0_40px_80px_-16px_rgba(0,0,0,0.12)] hover:-translate-y-1 relative overflow-hidden golden-curve" 
+      className={cn(
+        "group cursor-pointer bg-white border rounded-[40px] p-8 transition-all duration-700 hover:shadow-[0_40px_80px_-16px_rgba(0,0,0,0.12)] hover:-translate-y-1 relative overflow-hidden golden-curve",
+        isSelected ? "border-primary ring-1 ring-primary/20" : "border-gray-100"
+      )}
       onClick={() => {
         playClick('soft');
         onSelect?.(voice);
@@ -138,10 +153,32 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                   <Mic size={24} className="text-va-black/20" />
                 </div>
               )}
+              {/* Studio Toggle Overlay */}
+              <button 
+                onClick={handleStudioToggle}
+                className={cn(
+                  "absolute top-2 right-2 px-3 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5 transition-all duration-300 z-20 border border-white/20",
+                  isSelected 
+                    ? "bg-primary text-white scale-105 shadow-lg" 
+                    : "bg-black/40 text-white/90 hover:bg-black/60 opacity-0 group-hover:opacity-100"
+                )}
+              >
+                {isSelected ? (
+                  <>
+                    <Check size={12} strokeWidth={3} />
+                    <span className="text-[15px] font-bold tracking-widest uppercase">In Studio</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus size={12} strokeWidth={3} />
+                    <span className="text-[15px] font-bold tracking-widest uppercase text-white/80">Gratis Demo</span>
+                  </>
+                )}
+              </button>
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-xl font-black tracking-tighter text-va-black">
+                <h3 className="text-xl font-light tracking-tighter text-va-black">
                   <VoiceglotText 
                     translationKey={`actor.${voice.id}.name`} 
                     defaultText={voice.display_name} 
@@ -150,14 +187,14 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 </h3>
                 {voice.voice_score > 90 && (
                   <div className="flex items-center gap-1 px-2 py-0.5 bg-yellow-400/10 text-yellow-600 rounded-full">
-                    <Star size={10} fill="currentColor" />
-                    <span className="text-[8px] font-black tracking-widest">
+                    <Star size={10} fill="currentColor" strokeWidth={1.5} />
+                    <span className="text-[15px] font-medium tracking-widest">
                       <VoiceglotText translationKey="common.selected" defaultText="Geselecteerd" />
                     </span>
                   </div>
                 )}
               </div>
-              <p className="text-[10px] font-black text-va-black/30 tracking-[0.2em]">
+              <p className="text-[15px] font-medium text-va-black/30 tracking-[0.2em]">
                 <VoiceglotText translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} defaultText={voice.native_lang || ''} /> | {voice.gender === 'Mannelijke stem' ? <VoiceglotText translationKey="common.gender.male" defaultText="Man" /> : <VoiceglotText translationKey="common.gender.female" defaultText="Vrouw" />}
               </p>
             </div>
@@ -182,7 +219,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                   }`}
                 >
                   <Icon size={12} strokeWidth={isActive ? 2 : 1.5} className={isActive ? 'opacity-100' : 'opacity-60'} />
-                  <span className="text-[9px] font-black uppercase tracking-widest">
+                  <span className="text-[15px] font-medium tracking-widest">
                     <VoiceglotText translationKey={cat.key} defaultText={cat.label} />
                   </span>
                 </button>
@@ -194,12 +231,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
           {sectorDemo ? (
             <div className="mb-6 p-5 bg-primary/5 rounded-3xl border border-primary/10 animate-in fade-in zoom-in-95 duration-700">
               <div className="flex items-center gap-2 mb-2 text-primary">
-                <Quote size={12} fill="currentColor" />
-                <span className="text-[8px] font-black uppercase tracking-[0.2em]">
+                <Quote size={12} fill="currentColor" strokeWidth={1.5} />
+                <span className="text-[15px] font-medium tracking-[0.2em]">
                   <VoiceglotText translationKey="common.for_your_sector" defaultText="Voor uw sector" />
                 </span>
               </div>
-              <p className="text-[11px] font-medium text-va-black/60 italic leading-relaxed">
+              <p className="text-[15px] font-medium text-va-black/60 italic leading-relaxed">
                 &quot;{sectorDemo}&quot;
               </p>
             </div>
@@ -221,9 +258,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                     const isAi = tagStr.startsWith('ai:');
                     const label = isAi ? tagStr.replace('ai:', '') : tagStr;
                     return (
-                      <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1 bg-va-off-white rounded-full text-[8px] font-black uppercase tracking-widest text-va-black/40 border border-black/5">
+                      <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1 bg-va-off-white rounded-full text-[15px] font-medium tracking-widest text-va-black/40 border border-black/5">
                         <VoiceglotText translationKey={`common.tag.${label.toLowerCase()}`} defaultText={label} />
-                        {isAi && <span className="text-[6px] bg-primary/10 text-primary px-1 rounded-sm">AI</span>}
+                        {isAi && <span className="text-[15px] bg-primary/10 text-primary px-1 rounded-sm">AI</span>}
                       </span>
                     );
                   })}
@@ -236,11 +273,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
         {/* Footer: Price & Action */}
         <div className="pt-6 border-t border-black/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-1.5 text-[9px] font-black text-va-black/30 uppercase tracking-widest mb-1">
-              <Calendar size={10} className="text-primary" />
+            <div className="flex items-center gap-1.5 text-[15px] font-medium text-va-black/30 tracking-widest mb-1">
+              <Calendar size={10} className="text-primary" strokeWidth={1.5} />
               <VoiceglotText translationKey="common.ready" defaultText="Klaar" />: {deliveryInfo.formattedShort}
             </div>
-            <p className="text-2xl font-black tracking-tighter text-va-black">€{displayPrice}</p>
+            <p className="text-2xl font-light tracking-tighter text-va-black">€{displayPrice}</p>
           </div>
           <button 
             onClick={(e) => {
@@ -250,7 +287,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 window.location.href = `/voice/${voice.slug}`;
               }
             }}
-            className="w-full sm:w-auto bg-va-dark text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-xl shadow-black/5 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-va-dark text-white px-6 py-4 rounded-2xl text-[15px] font-medium tracking-widest hover:bg-primary transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-xl shadow-black/5 flex items-center justify-center gap-2"
           >
             <VoiceglotText translationKey="common.order_fast" defaultText="Snel Bestellen" />
             <ChevronRight size={14} />

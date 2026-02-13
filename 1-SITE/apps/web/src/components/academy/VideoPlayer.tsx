@@ -102,7 +102,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, su
               <button onClick={togglePlay} className="text-white hover:text-primary transition-colors">
                 {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
               </button>
-              <div className="text-white/60 text-[11px] font-black uppercase tracking-widest tabular-nums">
+              <div className="text-white/60 text-[15px] font-black tracking-widest tabular-nums">
                 <span className="text-white">{formatTime(videoRef.current?.currentTime || 0)}</span> / {formatTime(duration)}
               </div>
             </div>
@@ -118,7 +118,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, su
 
       {/* Title Tag */}
       {title && (
-        <div className="absolute top-8 left-8 px-4 py-2 bg-va-black/40 backdrop-blur-md rounded-full border border-white/10 text-white text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-8 left-8 px-4 py-2 bg-va-black/40 backdrop-blur-md rounded-full border border-white/10 text-white text-[15px] font-black tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
           {title}
         </div>
       )}

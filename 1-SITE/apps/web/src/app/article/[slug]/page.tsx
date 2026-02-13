@@ -1,18 +1,17 @@
-import React, { Suspense } from 'react';
-import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  LoadingScreenInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  ButtonInstrument
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { ArrowLeft, Calendar, User, Tag, Share2, Heart } from "lucide-react";
-import Link from "next/link";
 import { getArticle } from "@/lib/api-server";
+import { ArrowLeft, Calendar, Heart, Share2 } from "lucide-react";
+import Link from "next/link";
+import { Suspense } from 'react';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,7 +42,7 @@ async function ArticleContent({ slug }: { slug: string }) {
       <SectionInstrument className="mb-12 flex items-center justify-between">
         <Link 
           href="/agency" 
-          className="inline-flex items-center gap-2 text-[10px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all uppercase"
+          className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all "
         >
           <ArrowLeft size={14} strokeWidth={1.5} /> 
           <VoiceglotText translationKey="article.back_to_overview" defaultText="Terug" />
@@ -62,25 +61,25 @@ async function ArticleContent({ slug }: { slug: string }) {
         {/* Title & Meta Card */}
         <BentoCard span="xl" className="bg-white shadow-aura p-12 !rounded-[20px]">
           <ContainerInstrument className="flex items-center gap-4 mb-6">
-            <ContainerInstrument className="px-3 py-1 bg-va-off-white rounded-full text-[8px] font-light tracking-widest text-va-black/40 border border-black/5 uppercase">
+            <ContainerInstrument className="px-3 py-1 bg-va-off-white rounded-full text-[15px] font-light tracking-widest text-va-black/40 border border-black/5 ">
               <VoiceglotText translationKey={`journey.${article.meta?.llm_context?.journey?.[0]?.toLowerCase() || 'inspiration'}`} defaultText={article.meta?.llm_context?.journey?.[0] || 'Inspiratie'} />
             </ContainerInstrument>
-            <TextInstrument className="flex items-center gap-2 text-[10px] font-light text-va-black/30 tracking-widest uppercase">
+            <TextInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
               <Calendar size={12} strokeWidth={1.5} /> {new Date(article.date).toLocaleDateString('nl-BE')}
             </TextInstrument>
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-8 leading-[0.9] text-va-black uppercase">
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-8 leading-[0.9] text-va-black ">
             <VoiceglotText translationKey={`article.${article.id}.title`} defaultText={article.title} />
           </HeadingInstrument>
           <ContainerInstrument className="flex items-center gap-3">
-            <ContainerInstrument className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-light text-xs">
+            <ContainerInstrument className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-light text-[15px]">
               {article.meta?.llm_context?.author?.[0] || 'V'}
             </ContainerInstrument>
             <ContainerInstrument>
-              <TextInstrument className="text-[10px] font-light tracking-widest text-va-black uppercase">
+              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black ">
                 <VoiceglotText translationKey={`author.${article.meta?.llm_context?.author?.toLowerCase() || 'voices'}`} defaultText={article.meta?.llm_context?.author || 'Voices'} />
               </TextInstrument>
-              <TextInstrument className="text-[8px] font-light uppercase tracking-widest text-va-black/30">
+              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30">
                 <VoiceglotText translationKey="article.expert_author" defaultText="Auteur" />
               </TextInstrument>
             </ContainerInstrument>
@@ -94,14 +93,14 @@ async function ArticleContent({ slug }: { slug: string }) {
 
         <BentoCard span="md" className="hred text-white p-12 flex flex-col justify-between !rounded-[20px]">
           <ContainerInstrument>
-            <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-4 uppercase">
+            <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-4 ">
               <VoiceglotText translationKey="article.cta.title" defaultText="Klaar voor de volgende stap?" />
             </HeadingInstrument>
             <TextInstrument className="text-sm font-light opacity-80 mb-8 leading-relaxed">
               <VoiceglotText translationKey="article.cta.text" defaultText="Onze experts staan klaar om je te helpen met je project of je carrière." />
             </TextInstrument>
           </ContainerInstrument>
-          <Link href="/agency" className="va-btn-pro !bg-white !text-va-black w-full text-center !rounded-[10px] !font-light !tracking-widest !uppercase">
+          <Link href="/agency" className="va-btn-pro !bg-white !text-va-black w-full text-center !rounded-[10px] !font-light !tracking-widest !">
             <VoiceglotText translationKey="article.cta.button" defaultText="Ontdek de Mogelijkheden" />
           </Link>
         </BentoCard>

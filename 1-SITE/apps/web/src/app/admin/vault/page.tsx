@@ -69,12 +69,12 @@ export default function VaultBrowserPage() {
                 </ButtonInstrument>
                 <HeadingInstrument level={1} className="text-4xl font-bold tracking-tight text-black">
                   <VoiceglotText translationKey="admin.vault.title" defaultText="The Vault" />
-                  <TextInstrument as="span" className="text-orange-500 text-2xl ml-2">
+                  <TextInstrument as="span" className="text-orange-500 text-2xl ml-2 font-light">
                     <VoiceglotText translationKey="admin.vault.subtitle" defaultText="Kluis" />
                   </TextInstrument>
                 </HeadingInstrument>
               </ContainerInstrument>
-              <TextInstrument className="text-gray-500 uppercase tracking-widest text-[10px] font-black flex items-center gap-2">
+              <TextInstrument className="text-gray-500 tracking-widest text-[15px] font-black flex items-center gap-2">
                 <Shield size={12} />
                 <VoiceglotText translationKey="admin.vault.description" defaultText="Beveiligde Documenten & Inbound Assets" />
               </TextInstrument>
@@ -116,7 +116,7 @@ export default function VaultBrowserPage() {
             </SelectInstrument>
             <ButtonInstrument 
               onClick={fetchFiles}
-              className="bg-va-black text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all"
+              className="bg-va-black text-white rounded-2xl font-black tracking-widest text-[15px] hover:scale-[1.02] transition-all"
             >
               <VoiceglotText translationKey="admin.vault.filter.btn" defaultText="Filteren" />
             </ButtonInstrument>
@@ -149,20 +149,20 @@ export default function VaultBrowserPage() {
                   </HeadingInstrument>
                   
                   <ContainerInstrument className="space-y-2">
-                    <ContainerInstrument className="flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                    <ContainerInstrument className="flex items-center gap-2 text-[15px] text-gray-400 font-bold tracking-widest">
                       <Calendar size={10} />
                       {format(new Date(file.createdAt), 'dd MMM yyyy', { locale: nl })}
                     </ContainerInstrument>
                     
                     {file.customer && (
-                      <ContainerInstrument className="flex items-center gap-2 text-[10px] text-gray-600 font-bold">
+                      <ContainerInstrument className="flex items-center gap-2 text-[15px] text-gray-600 font-bold">
                         <User size={10} />
                         {file.customer.firstName} {file.customer.lastName}
                       </ContainerInstrument>
                     )}
 
                     {file.project && (
-                      <ContainerInstrument className="inline-block px-2 py-1 bg-orange-50 text-orange-700 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                      <ContainerInstrument className="inline-block px-2 py-1 bg-orange-50 text-orange-700 rounded-lg text-[15px] font-black tracking-widest">
                         <VoiceglotText translationKey="admin.vault.project_id" defaultText="Project" /> #{file.project.wpOrderId}
                       </ContainerInstrument>
                     )}

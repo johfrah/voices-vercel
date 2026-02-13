@@ -35,28 +35,28 @@ async function PortfolioGrid() {
           title={artist.nativeLang}
         >
           <ContainerInstrument className="flex justify-between items-start mb-12 relative z-10">
-            <ContainerInstrument className="bg-white/10 text-white/60 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-white/5">
+            <ContainerInstrument className="bg-white/10 text-white/60 text-[15px] font-black px-3 py-1 rounded-full tracking-widest border border-white/5">
               {artist.status === 'live' ? <VoiceglotText translationKey="artist.status.available" defaultText="AVAILABLE" /> : <VoiceglotText translationKey="artist.status.recording" defaultText="RECORDING" />}
             </ContainerInstrument>
-            <TextInstrument className="text-[9px] font-black text-orange-500 uppercase tracking-widest">
+            <TextInstrument className="text-[15px] font-black text-orange-500 tracking-widest">
               <VoiceglotText translationKey="artist.badge.sonic_talent" defaultText="Voices" />
             </TextInstrument>
           </ContainerInstrument>
 
-          <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter leading-[0.8] mb-4 group-hover:text-orange-400 transition-colors relative z-10 uppercase">
+          <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter leading-[0.8] mb-4 group-hover:text-orange-400 transition-colors relative z-10 ">
             <VoiceglotText 
               translationKey={`artist.${artist.id}.name`} 
               defaultText={`${artist.firstName} ${artist.lastName || ''}`} 
               noTranslate={true}
             />
           </HeadingInstrument>
-          <TextInstrument className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-12 relative z-10">
+          <TextInstrument className="text-white/40 text-[15px] font-black tracking-[0.2em] mb-12 relative z-10">
             <VoiceglotText translationKey={`artist.${artist.id}.tag`} defaultText={artist.aiTags?.split(',')[0] || 'Musical Artist'} />
           </TextInstrument>
           
           <ContainerInstrument className="mt-auto flex justify-between items-center relative z-10">
             <ButtonInstrument 
-              className="va-btn-pro !bg-white !text-black !rounded-full !px-8 !py-3 text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all active:scale-95"
+              className="va-btn-pro !bg-white !text-black !rounded-full !px-8 !py-3 text-[15px] font-black tracking-widest hover:scale-105 transition-all active:scale-95"
               data-voices-sonic-dna="click-pro"
             >
               <VoiceglotText translationKey="artist.view_portfolio" defaultText="VIEW PORTFOLIO" />
@@ -89,13 +89,13 @@ export default async function ArtistPage() {
 
       <SectionInstrument className="px-8 mb-24 max-w-7xl mx-auto">
         <ContainerInstrument className="max-w-5xl">
-          <ContainerInstrument className="inline-block bg-white/5 text-white/40 text-[10px] font-black px-6 py-2 rounded-full mb-10 tracking-[0.3em] uppercase border border-white/10">
+          <ContainerInstrument className="inline-block bg-white/5 text-white/40 text-[15px] font-black px-6 py-2 rounded-full mb-10 tracking-[0.3em] border border-white/10">
             <VoiceglotText translationKey="artist.hero.badge" defaultText="Voices Artists" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-[10vw] md:text-[7vw] font-black tracking-tighter leading-[0.85] mb-10 uppercase">
+          <HeadingInstrument level={1} className="text-[10vw] md:text-[7vw] font-black tracking-tighter leading-[0.85] mb-10 ">
             <VoiceglotText translationKey="artist.hero.title_part1" defaultText="YOUR SOUND, " />
             <br />
-            <TextInstrument as="span" className="text-orange-500">
+            <TextInstrument as="span" className="text-orange-500 font-light">
               <VoiceglotText translationKey="artist.hero.title_highlight" defaultText="UNFILTERED." />
             </TextInstrument>
           </HeadingInstrument>

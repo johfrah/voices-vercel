@@ -22,7 +22,7 @@ export default function MeetingPage({
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-32 pb-20 px-6">
       <SectionInstrument className="max-w-6xl mx-auto space-y-12">
         <div className="text-center space-y-4">
-          <HeadingInstrument level={1} className="text-5xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
             <VoiceglotText translationKey="studio.meeting.title" defaultText="Studio Meeting" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-medium text-lg">

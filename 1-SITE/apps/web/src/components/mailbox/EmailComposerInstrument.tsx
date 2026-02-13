@@ -47,7 +47,7 @@ export const EmailComposerInstrument = ({
         {/* Body */}
         <ContainerInstrument className="va-composer-body">
           <ContainerInstrument className="va-composer-field">
-            <TextInstrument as="label" className="va-composer-label">
+            <TextInstrument as="label" className="va-composer-label font-light">
               <VoiceglotText translationKey="mailbox.to" defaultText="Aan" />
             </TextInstrument>
             <InputInstrument 
@@ -59,7 +59,7 @@ export const EmailComposerInstrument = ({
           </ContainerInstrument>
 
           <ContainerInstrument className="va-composer-field">
-            <TextInstrument as="label" className="va-composer-label">
+            <TextInstrument as="label" className="va-composer-label font-light">
               <VoiceglotText translationKey="mailbox.subject" defaultText="Onderwerp" />
             </TextInstrument>
             <InputInstrument 

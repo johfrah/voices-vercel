@@ -82,7 +82,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
     <div className="space-y-8">
       {/* 🏷️ SECTOR SELECTOR */}
       <div className="space-y-4">
-        <h3 className="text-sm font-black uppercase tracking-widest text-va-black/40 flex items-center gap-2">
+        <h3 className="text-sm font-black tracking-widest text-va-black/40 flex items-center gap-2">
           <Briefcase size={14} /> 
           <VoiceglotText translationKey="johfrai.explorer.sectors" defaultText="Kies je sector" />
         </h3>
@@ -109,7 +109,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
 
       {/* 🎭 VIBE SELECTOR */}
       <div className="space-y-4">
-        <h3 className="text-sm font-black uppercase tracking-widest text-va-black/40 flex items-center gap-2">
+        <h3 className="text-sm font-black tracking-widest text-va-black/40 flex items-center gap-2">
           <Sparkles size={14} /> 
           <VoiceglotText translationKey="johfrai.explorer.vibes" defaultText="Kies de vibe" />
         </h3>
@@ -134,10 +134,10 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
       {/* 🎙️ DEMO LIST */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-black uppercase tracking-widest text-va-black/40">
+          <h3 className="text-sm font-black tracking-widest text-va-black/40">
             <VoiceglotText translationKey="johfrai.explorer.results" defaultText="Gevonden voorbeelden" />
           </h3>
-          <span className="text-[10px] font-bold text-va-black/20 bg-va-black/5 px-2 py-1 rounded-md">
+          <span className="text-[15px] font-bold text-va-black/20 bg-va-black/5 px-2 py-1 rounded-md">
             {demos.length} {demos.length === 1 
               ? <VoiceglotText translationKey="johfrai.explorer.result" defaultText="resultaat" /> 
               : <VoiceglotText translationKey="johfrai.explorer.results_count" defaultText="resultaten" />}
@@ -149,7 +149,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
             {isLoading ? (
               <div className="col-span-full py-12 flex flex-col items-center justify-center text-va-black/20 space-y-4">
                 <div className="w-8 h-8 border-4 border-va-black/10 border-t-primary rounded-full animate-spin" />
-                <p className="text-xs font-bold uppercase tracking-widest">
+                <p className="text-[15px] font-bold tracking-widest">
                   <VoiceglotText translationKey="johfrai.explorer.loading" defaultText="Demos laden..." />
                 </p>
               </div>
@@ -175,7 +175,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
                     </button>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-black text-sm truncate">{demo.title}</h4>
-                      <p className="text-[10px] text-va-black/40 uppercase font-bold tracking-wider">
+                      <p className="text-[15px] text-va-black/40 font-bold tracking-wider">
                         {demo.category}
                       </p>
                     </div>
@@ -195,10 +195,10 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
               <div className="col-span-full py-12 flex flex-col items-center justify-center text-va-black/20 space-y-4 bg-va-black/5 rounded-[32px] border-2 border-dashed border-va-black/10">
                 <Sparkles size={32} />
                 <div className="text-center">
-                  <p className="text-xs font-black uppercase tracking-widest">
+                  <p className="text-[15px] font-black tracking-widest">
                     <VoiceglotText translationKey="johfrai.explorer.no_match" defaultText="Geen specifieke match gevonden" />
                   </p>
-                  <p className="text-[10px] font-medium mt-1">
+                  <p className="text-[15px] font-medium mt-1">
                     <VoiceglotText translationKey="johfrai.explorer.try_other" defaultText="Probeer een andere sector of vibe." />
                   </p>
                 </div>

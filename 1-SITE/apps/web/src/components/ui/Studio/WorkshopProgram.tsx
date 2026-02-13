@@ -14,7 +14,7 @@ interface WorkshopProgramProps {
 export const WorkshopProgram: React.FC<WorkshopProgramProps> = ({ dagindeling, image }) => {
   return (
     <BentoCard span="lg" className="bg-va-off-white p-12">
-      <h3 className="text-3xl font-black uppercase tracking-tight mb-10">
+      <h3 className="text-3xl font-black tracking-tight mb-10">
         <VoiceglotText translationKey="workshop.program.title" defaultText="Programma van de dag" />
       </h3>
       <div className="grid md:grid-cols-2 gap-12">

@@ -110,16 +110,16 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               <Volume2 size={20} className="md:size-24" />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="text-white font-black uppercase tracking-tight text-sm truncate">{demo.title}</h4>
+              <h4 className="text-white font-black tracking-tight text-sm truncate">{demo.title}</h4>
               <div className="flex items-center gap-2 mt-1">
                 <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-                <p className="text-primary text-[9px] font-black uppercase tracking-widest">Live Preview</p>
+                <p className="text-primary text-[15px] font-black tracking-widest">Live Preview</p>
               </div>
             </div>
             {/* Mobile Time Display */}
             <div className="md:hidden text-right tabular-nums">
-              <div className="text-white font-black text-[10px]">{formatTime(audioRef.current?.currentTime || 0)}</div>
-              <div className="text-white/20 text-[8px] font-bold">{formatTime(duration)}</div>
+              <div className="text-white font-black text-[15px]">{formatTime(audioRef.current?.currentTime || 0)}</div>
+              <div className="text-white/20 text-[15px] font-bold">{formatTime(duration)}</div>
             </div>
           </div>
 
@@ -157,8 +157,8 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           {/* Desktop Time & Close */}
           <div className="hidden md:flex items-center gap-6">
             <div className="text-right tabular-nums">
-              <div className="text-white font-black text-xs">{formatTime(audioRef.current?.currentTime || 0)}</div>
-              <div className="text-white/20 text-[10px] font-bold">{formatTime(duration)}</div>
+              <div className="text-white font-black text-[15px]">{formatTime(audioRef.current?.currentTime || 0)}</div>
+              <div className="text-white/20 text-[15px] font-bold">{formatTime(duration)}</div>
             </div>
             <button 
               onClick={() => {

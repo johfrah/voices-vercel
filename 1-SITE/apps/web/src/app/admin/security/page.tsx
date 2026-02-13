@@ -55,11 +55,11 @@ export default function AdminSecurityPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[10px] font-black uppercase tracking-widest">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter uppercase">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
             Nuclear <span className="text-primary">Security</span>
           </HeadingInstrument>
         </ContainerInstrument>
@@ -70,7 +70,7 @@ export default function AdminSecurityPage() {
         <BentoCard span="lg" className="bg-white border border-black/5 p-10 space-y-8">
           <div className="flex justify-between items-start">
             <div className="space-y-2">
-              <HeadingInstrument level={3} className="text-3xl font-black uppercase tracking-tight">Multi-Factor Auth</HeadingInstrument>
+              <HeadingInstrument level={3} className="text-3xl font-black tracking-tight">Multi-Factor Auth</HeadingInstrument>
               <TextInstrument className="text-va-black/40 font-medium max-w-md">
                 Beveilig de toegang tot je mailbox en de database met een extra code via je telefoon.
               </TextInstrument>
@@ -83,24 +83,24 @@ export default function AdminSecurityPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
             <div className="p-6 bg-va-off-white rounded-[32px] space-y-4 border border-black/5">
               <Smartphone className="text-va-black/20" size={24} />
-              <HeadingInstrument level={4} className="text-sm font-black uppercase tracking-widest">Authenticator App</HeadingInstrument>
-              <TextInstrument className="text-[10px] font-medium text-va-black/40 leading-relaxed">
+              <HeadingInstrument level={4} className="text-sm font-black tracking-widest">Authenticator App</HeadingInstrument>
+              <TextInstrument className="text-[15px] font-medium text-va-black/40 leading-relaxed">
                 Gebruik Google Authenticator, Authy of iCloud Keychain voor tijdgebonden codes.
               </TextInstrument>
               <ButtonInstrument 
                 onClick={handleToggleMfa}
-                className={`w-full py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${isMfaActive ? 'bg-va-black text-white' : 'bg-primary text-white shadow-lg shadow-primary/20'}`}
+                className={`w-full py-3 rounded-xl text-[15px] font-black uppercase tracking-widest transition-all ${isMfaActive ? 'bg-va-black text-white' : 'bg-primary text-white shadow-lg shadow-primary/20'}`}
               >
                 {isMfaActive ? 'Geconfigureerd' : 'Nu Activeren'}
               </ButtonInstrument>
             </div>
             <div className="p-6 bg-va-off-white rounded-[32px] space-y-4 border border-black/5 opacity-40">
               <Fingerprint className="text-va-black/20" size={24} />
-              <HeadingInstrument level={4} className="text-sm font-black uppercase tracking-widest">Biometrische Lock</HeadingInstrument>
-              <TextInstrument className="text-[10px] font-medium text-va-black/40 leading-relaxed">
+              <HeadingInstrument level={4} className="text-sm font-black tracking-widest">Biometrische Lock</HeadingInstrument>
+              <TextInstrument className="text-[15px] font-medium text-va-black/40 leading-relaxed">
                 Gebruik FaceID of TouchID om direct in te loggen zonder wachtwoord.
               </TextInstrument>
-              <div className="text-[8px] font-black uppercase tracking-widest text-va-black/20">Binnenkort Beschikbaar</div>
+              <div className="text-[15px] font-black tracking-widest text-va-black/20">Binnenkort Beschikbaar</div>
             </div>
           </div>
         </BentoCard>
@@ -109,7 +109,7 @@ export default function AdminSecurityPage() {
         <BentoCard span="sm" className="bg-va-black text-white p-10 space-y-8 flex flex-col justify-between">
           <div className="space-y-4">
             <Lock className="text-primary" size={40} />
-            <HeadingInstrument level={3} className="text-2xl font-black uppercase tracking-tighter leading-tight">
+            <HeadingInstrument level={3} className="text-2xl font-black tracking-tighter leading-tight">
               Admin<br />Escalation
             </HeadingInstrument>
             <TextInstrument className="text-sm font-medium opacity-60">
@@ -123,15 +123,15 @@ export default function AdminSecurityPage() {
               ].map(item => (
                 <div key={item.label} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  <TextInstrument className="text-[10px] font-bold uppercase tracking-tight">{item.label}</TextInstrument>
+                  <TextInstrument className="text-[15px] font-bold tracking-tight">{item.label}</TextInstrument>
                 </div>
               ))}
             </div>
           </div>
           <div className="pt-6 border-t border-white/10">
             <div className="flex items-center justify-between">
-              <TextInstrument className="text-[10px] font-black uppercase tracking-widest opacity-40">Status</TextInstrument>
-              <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-primary">Strict Mode</TextInstrument>
+              <TextInstrument className="text-[15px] font-black tracking-widest opacity-40">Status</TextInstrument>
+              <TextInstrument className="text-[15px] font-black tracking-widest text-primary">Strict Mode</TextInstrument>
             </div>
           </div>
         </BentoCard>
@@ -140,10 +140,10 @@ export default function AdminSecurityPage() {
       {/* Security Logs */}
       <BentoCard span="full" className="bg-white border border-black/5 p-10 space-y-6">
         <div className="flex justify-between items-center">
-          <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
+          <HeadingInstrument level={3} className="text-xl font-black tracking-tight flex items-center gap-3">
             <History size={20} className="text-va-black/20" /> Security Audit Log
           </HeadingInstrument>
-          <ButtonInstrument className="text-[9px] font-black uppercase tracking-widest text-va-black/20 hover:text-va-black transition-colors">Download Volledig Log</ButtonInstrument>
+          <ButtonInstrument className="text-[15px] font-black tracking-widest text-va-black/20 hover:text-va-black transition-colors">Download Volledig Log</ButtonInstrument>
         </div>
         <div className="space-y-2">
           {[
@@ -154,11 +154,11 @@ export default function AdminSecurityPage() {
             <div key={i} className="flex items-center justify-between p-4 bg-va-off-white/50 rounded-2xl border border-transparent hover:border-black/5 transition-all">
               <div className="flex items-center gap-4">
                 {log.icon}
-                <TextInstrument className="text-xs font-bold uppercase tracking-tight">{log.action}</TextInstrument>
+                <TextInstrument className="text-[15px] font-bold tracking-tight">{log.action}</TextInstrument>
               </div>
               <div className="flex items-center gap-6">
-                <TextInstrument className="text-[10px] font-medium text-va-black/40">{log.time}</TextInstrument>
-                <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/20">{log.status}</TextInstrument>
+                <TextInstrument className="text-[15px] font-medium text-va-black/40">{log.time}</TextInstrument>
+                <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/20">{log.status}</TextInstrument>
               </div>
             </div>
           ))}
@@ -171,8 +171,8 @@ export default function AdminSecurityPage() {
           <Zap size={32} />
         </div>
         <div className="space-y-1">
-          <HeadingInstrument level={4} className="text-primary font-black uppercase tracking-tight">SECURITY MANDATE</HeadingInstrument>
-          <TextInstrument className="text-xs opacity-60 font-medium">
+          <HeadingInstrument level={4} className="text-primary font-black tracking-tight">SECURITY MANDATE</HeadingInstrument>
+          <TextInstrument className="text-[15px] opacity-60 font-medium">
             Jouw mailbox bevat gevoelige klantgegevens en DNA. Door MFA te activeren, maak je de Freedom Machine ondoordringbaar voor externe dreigingen. Jouw sessie is momenteel beveiligd via Magic Link.
           </TextInstrument>
         </div>

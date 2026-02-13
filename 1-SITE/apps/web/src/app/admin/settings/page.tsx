@@ -124,11 +124,11 @@ export default function AdminSettingsPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[10px] font-black uppercase tracking-widest">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter uppercase">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
             <VoiceglotText translationKey="admin.settings.title" defaultText="Instellingen" />
           </HeadingInstrument>
         </ContainerInstrument>
@@ -138,7 +138,7 @@ export default function AdminSettingsPage() {
             playClick('pro');
             toggleEditMode();
           }}
-          className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-lg ${
+          className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[15px] font-black uppercase tracking-widest transition-all shadow-lg ${
             isEditMode 
               ? 'bg-primary text-white shadow-primary/20 scale-105' 
               : 'bg-va-black text-white hover:bg-va-black/80'
@@ -157,15 +157,15 @@ export default function AdminSettingsPage() {
               <Building2 size={24} />
             </div>
             <div>
-              <HeadingInstrument level={2} className="text-xl font-black uppercase tracking-tight">Bedrijfsinformatie</HeadingInstrument>
-              <TextInstrument className="text-xs text-va-black/40 font-medium">Algemene bedrijfsgegevens voor facturatie en contact.</TextInstrument>
+              <HeadingInstrument level={2} className="text-xl font-black tracking-tight">Bedrijfsinformatie</HeadingInstrument>
+              <TextInstrument className="text-[15px] text-va-black/40 font-medium">Algemene bedrijfsgegevens voor facturatie en contact.</TextInstrument>
             </div>
           </ContainerInstrument>
 
           <div className="grid grid-cols-2 gap-8">
             <div className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-va-black/30 ml-4">Bedrijfsnaam</label>
+                <label className="text-[15px] font-black tracking-widest text-va-black/30 ml-4">Bedrijfsnaam</label>
                 <InputInstrument 
                   value={configs.company_info.name} 
                   onChange={(e) => updateConfig('company_info', 'name', e.target.value)}
@@ -174,7 +174,7 @@ export default function AdminSettingsPage() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-va-black/30 ml-4">E-mailadres</label>
+                <label className="text-[15px] font-black tracking-widest text-va-black/30 ml-4">E-mailadres</label>
                 <InputInstrument 
                   value={configs.company_info.email} 
                   onChange={(e) => updateConfig('company_info', 'email', e.target.value)}
@@ -183,7 +183,7 @@ export default function AdminSettingsPage() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-va-black/30 ml-4">Telefoon</label>
+                <label className="text-[15px] font-black tracking-widest text-va-black/30 ml-4">Telefoon</label>
                 <InputInstrument 
                   value={configs.company_info.phone} 
                   onChange={(e) => updateConfig('company_info', 'phone', e.target.value)}
@@ -194,7 +194,7 @@ export default function AdminSettingsPage() {
             </div>
             <div className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-va-black/30 ml-4">BTW Nummer</label>
+                <label className="text-[15px] font-black tracking-widest text-va-black/30 ml-4">BTW Nummer</label>
                 <InputInstrument 
                   value={configs.company_info.vat} 
                   onChange={(e) => updateConfig('company_info', 'vat', e.target.value)}
@@ -203,7 +203,7 @@ export default function AdminSettingsPage() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-va-black/30 ml-4">IBAN</label>
+                <label className="text-[15px] font-black tracking-widest text-va-black/30 ml-4">IBAN</label>
                 <InputInstrument 
                   value={configs.company_info.iban} 
                   onChange={(e) => updateConfig('company_info', 'iban', e.target.value)}
@@ -212,7 +212,7 @@ export default function AdminSettingsPage() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-va-black/30 ml-4">Adres</label>
+                <label className="text-[15px] font-black tracking-widest text-va-black/30 ml-4">Adres</label>
                 <InputInstrument 
                   value={configs.company_info.address} 
                   onChange={(e) => updateConfig('company_info', 'address', e.target.value)}
@@ -242,14 +242,14 @@ export default function AdminSettingsPage() {
               <Clock size={24} />
             </div>
             <div>
-              <HeadingInstrument level={2} className="text-xl font-black uppercase tracking-tight">Algemeen</HeadingInstrument>
-              <TextInstrument className="text-xs text-va-black/40 font-medium">Systeem-brede parameters.</TextInstrument>
+              <HeadingInstrument level={2} className="text-xl font-black tracking-tight">Algemeen</HeadingInstrument>
+              <TextInstrument className="text-[15px] text-va-black/40 font-medium">Systeem-brede parameters.</TextInstrument>
             </div>
           </ContainerInstrument>
 
           <div className="space-y-6">
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-va-black/30 ml-4">Openingsuren</label>
+              <label className="text-[15px] font-black tracking-widest text-va-black/30 ml-4">Openingsuren</label>
               <InputInstrument 
                 value={configs.general_settings.opening_hours} 
                 onChange={(e) => updateConfig('general_settings', 'opening_hours', e.target.value)}
@@ -258,7 +258,7 @@ export default function AdminSettingsPage() {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-va-black/30 ml-4">Standaard Levertijd (Dagen)</label>
+              <label className="text-[15px] font-black tracking-widest text-va-black/30 ml-4">Standaard Levertijd (Dagen)</label>
               <InputInstrument 
                 type="number"
                 value={configs.general_settings.default_delivery_days} 
@@ -268,7 +268,7 @@ export default function AdminSettingsPage() {
               />
             </div>
             <div className="flex items-center justify-between p-4 bg-va-off-white rounded-2xl">
-              <span className="text-[10px] font-black uppercase tracking-widest text-va-black/60">AI Assistent Actief</span>
+              <span className="text-[15px] font-black tracking-widest text-va-black/60">AI Assistent Actief</span>
               <button 
                 onClick={() => updateConfig('general_settings', 'ai_enabled', !configs.general_settings.ai_enabled)}
                 disabled={!isEditMode}
@@ -300,14 +300,14 @@ export default function AdminSettingsPage() {
                   <Palmtree size={28} />
                 </div>
                 <div>
-                  <HeadingInstrument level={2} className="text-2xl font-black uppercase tracking-tighter">Vakantieregeling</HeadingInstrument>
-                  <TextInstrument className="text-white/40 text-xs font-medium">Zet het hele platform in &apos;Vakantie-modus&apos;.</TextInstrument>
+                  <HeadingInstrument level={2} className="text-2xl font-black tracking-tighter">Vakantieregeling</HeadingInstrument>
+                  <TextInstrument className="text-white/40 text-[15px] font-medium">Zet het hele platform in &apos;Vakantie-modus&apos;.</TextInstrument>
                 </div>
               </div>
 
               <div className="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/10">
                 <div>
-                  <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-primary">Status</TextInstrument>
+                  <TextInstrument className="text-[15px] font-black tracking-widest text-primary">Status</TextInstrument>
                   <TextInstrument className="text-sm font-bold">{configs.vacation_rules.is_active ? 'Vakantie Modus ACTIEF' : 'Platform Operationeel'}</TextInstrument>
                 </div>
                 <button 
@@ -322,7 +322,7 @@ export default function AdminSettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-white/30 ml-4">Van</label>
+                <label className="text-[15px] font-black tracking-widest text-white/30 ml-4">Van</label>
                 <InputInstrument 
                   type="text"
                   placeholder="Bijv. 1 juli"
@@ -333,7 +333,7 @@ export default function AdminSettingsPage() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-white/30 ml-4">Tot</label>
+                <label className="text-[15px] font-black tracking-widest text-white/30 ml-4">Tot</label>
                 <InputInstrument 
                   type="text"
                   placeholder="Bijv. 15 juli"
@@ -344,7 +344,7 @@ export default function AdminSettingsPage() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-white/30 ml-4">Terug op</label>
+                <label className="text-[15px] font-black tracking-widest text-white/30 ml-4">Terug op</label>
                 <InputInstrument 
                   type="text"
                   placeholder="Bijv. 16 juli"
@@ -358,7 +358,7 @@ export default function AdminSettingsPage() {
 
             <div className="space-y-6">
               <div className="space-y-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-white/30 ml-4">Bericht (NL)</label>
+                <label className="text-[15px] font-black tracking-widest text-white/30 ml-4">Bericht (NL)</label>
                 <textarea 
                   value={configs.vacation_rules.message_nl} 
                   onChange={(e) => updateConfig('vacation_rules', 'message_nl', e.target.value)}

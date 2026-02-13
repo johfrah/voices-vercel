@@ -110,16 +110,16 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
             {thread.subject}
           </HeadingInstrument>
           <ButtonInstrument onClick={onClose} className="p-1.5 hover:bg-black/5 rounded-lg transition-colors">
-            <TextInstrument as="span" className="text-xs font-bold">✕</TextInstrument>
+            <TextInstrument as="span" className="text-[15px] font-bold">✕</TextInstrument>
           </ButtonInstrument>
         </ContainerInstrument>
         
         <ContainerInstrument className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 bg-pink-50 text-pink-600 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border border-pink-100">
+          <div className="flex items-center gap-1.5 bg-pink-50 text-pink-600 px-2 py-0.5 rounded-md text-[15px] font-black tracking-widest border border-pink-100">
             <ShieldCheck size={10} />
             SECURE THREAD
           </div>
-          <TextInstrument as="span" className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+          <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-gray-400">
             {thread.messages.length} BERICHTEN
           </TextInstrument>
         </ContainerInstrument>
@@ -152,18 +152,18 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                       <TextInstrument as="span" className="text-sm font-black text-gray-900">
                         {senderName}
                       </TextInstrument>
-                      <TextInstrument as="span" className="text-xs text-gray-400 font-medium">
+                      <TextInstrument as="span" className="text-[15px] text-gray-400 font-medium">
                         to &apos;Johfrah Lefebvre&apos;
                       </TextInstrument>
                     </div>
-                    <TextInstrument as="p" className="text-[11px] text-gray-400 font-medium">
+                    <TextInstrument as="p" className="text-[15px] text-gray-400 font-medium">
                       {message.senderEmail}
                     </TextInstrument>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <TextInstrument as="span" className="text-[11px] font-bold text-gray-400">
+                  <TextInstrument as="span" className="text-[15px] font-bold text-gray-400">
                     {format(new Date(message.date), 'd MMM, HH:mm', { locale: nl })}
                   </TextInstrument>
                   <ButtonInstrument className="p-1 text-gray-300 hover:text-va-black transition-colors">
@@ -174,11 +174,11 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
 
               {/* AI Quick Actions (Spark Style) */}
               <div className="px-6 pb-2 flex gap-2">
-                <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-blue-100/50 hover:bg-blue-100 transition-all">
+                <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[15px] font-black tracking-widest border border-blue-100/50 hover:bg-blue-100 transition-all">
                   <Sparkles size={12} />
                   Translate to English
                 </ButtonInstrument>
-                <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-lg text-[10px] font-black uppercase tracking-widest border border-gray-100 hover:bg-gray-100 transition-all">
+                <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-lg text-[15px] font-black tracking-widest border border-gray-100 hover:bg-gray-100 transition-all">
                   <Languages size={12} />
                 </ButtonInstrument>
               </div>
@@ -195,9 +195,9 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2 text-gray-400">
                       <Paperclip size={14} />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">{message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}</span>
+                      <span className="text-[15px] font-bold tracking-widest">{message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}</span>
                     </div>
-                    <ButtonInstrument className="text-[11px] font-black text-blue-600 hover:underline uppercase tracking-widest">
+                    <ButtonInstrument className="text-[15px] font-black text-blue-600 hover:underline tracking-widest">
                       Save all {(message.attachments.reduce((sum, a) => sum + a.size, 0) / 1024).toFixed(0)} KB
                     </ButtonInstrument>
                   </div>
@@ -216,8 +216,8 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                             {isPdf(att.filename) ? <FileText size={24} /> : isAudio(att.filename) ? <Mic size={24} /> : isVideo(att.filename) ? <Play size={24} /> : <ImageIcon size={24} />}
                           </div>
                           <div className="text-center px-2">
-                            <p className="text-[10px] font-black text-gray-900 truncate w-full max-w-[100px]">{att.filename}</p>
-                            <p className="text-[8px] font-bold text-gray-400 uppercase">{(att.size / 1024).toFixed(0)} KB</p>
+                            <p className="text-[15px] font-black text-gray-900 truncate w-full max-w-[100px]">{att.filename}</p>
+                            <p className="text-[15px] font-bold text-gray-400 ">{(att.size / 1024).toFixed(0)} KB</p>
                           </div>
                           
                           {/* Hover Actions */}
@@ -236,9 +236,9 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
               {/* AI Quick Replies (Spark Style) */}
               <div className="px-6 py-4 bg-gray-50/30 border-t border-gray-50 flex items-center justify-between">
                 <div className="flex gap-2">
-                  <span className="text-[10px] font-black text-blue-600 mr-2 flex items-center gap-1"><Sparkles size={10} /> +ai</span>
+                  <span className="text-[15px] font-black text-blue-600 mr-2 flex items-center gap-1"><Sparkles size={10} /> +ai</span>
                   {['Interested', 'Not interested', 'Thanks'].map((reply) => (
-                    <ButtonInstrument key={reply} className="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-[11px] font-bold text-gray-600 hover:border-va-black transition-all shadow-sm">
+                    <ButtonInstrument key={reply} className="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-[15px] font-bold text-gray-600 hover:border-va-black transition-all shadow-sm">
                       {reply}
                     </ButtonInstrument>
                   ))}
@@ -281,12 +281,12 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
               <div className="w-full flex justify-between items-center text-white/80">
                 <div className="flex flex-col">
                   <span className="text-2xl font-black">{spotlightFile.filename}</span>
-                  <span className="text-xs uppercase tracking-widest opacity-50">{spotlightFile.category} • {(spotlightFile.size / 1024 / 1024).toFixed(2)} MB</span>
+                  <span className="text-[15px] tracking-widest opacity-50">{spotlightFile.category} • {(spotlightFile.size / 1024 / 1024).toFixed(2)} MB</span>
                 </div>
                 <a 
                   href={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 
                   download={spotlightFile.filename}
-                  className="bg-white text-va-black px-6 py-3 rounded-2xl font-black uppercase tracking-widest flex items-center gap-2 hover:bg-primary hover:text-white transition-all"
+                  className="bg-white text-va-black px-6 py-3 rounded-2xl font-black tracking-widest flex items-center gap-2 hover:bg-primary hover:text-white transition-all"
                 >
                   <Download size={18} />
                   Downloaden

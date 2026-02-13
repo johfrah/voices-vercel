@@ -1,18 +1,17 @@
 "use client";
 
-import { useCheckout } from '@/contexts/CheckoutContext';
-import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  LoadingScreenInstrument,
-  HeadingInstrument,
-  TextInstrument
+import { PricingSummary } from '@/components/checkout/PricingSummary';
+import {
+    ContainerInstrument,
+    HeadingInstrument,
+    LoadingScreenInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { ShoppingCart, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { useCheckout } from '@/contexts/CheckoutContext';
+import { ArrowLeft, ShieldCheck, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 
 /**
@@ -32,7 +31,7 @@ export default function CheckoutPageClient() {
             <ShoppingCart size={48} />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-2">
-            <HeadingInstrument level={1} className="text-4xl font-black uppercase tracking-tighter">
+            <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter">
               <VoiceglotText translationKey="checkout.empty.title" defaultText="Winkelmand Leeg" />
             </HeadingInstrument>
             <TextInstrument className="text-va-black/40 font-medium">
@@ -54,7 +53,7 @@ export default function CheckoutPageClient() {
           <ContainerInstrument className="space-y-4">
             <Link 
               href="/agency" 
-              className="inline-flex items-center gap-2 text-[10px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors"
+              className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors"
             >
               <ArrowLeft size={14} /> 
               <VoiceglotText translationKey="checkout.back_to_agency" defaultText="Verder Casten" />
@@ -64,7 +63,7 @@ export default function CheckoutPageClient() {
             </HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="flex items-center gap-4">
-            <ContainerInstrument className="px-4 py-2 bg-primary/5 text-primary rounded-full text-[10px] font-light tracking-widest border border-primary/10 flex items-center gap-2">
+            <ContainerInstrument className="px-4 py-2 bg-primary/5 text-primary rounded-full text-[15px] font-light tracking-widest border border-primary/10 flex items-center gap-2">
               <ShieldCheck size={12} strokeWidth={1.5} />
               <VoiceglotText translationKey="checkout.secure" defaultText="Secure Checkout" />
             </ContainerInstrument>

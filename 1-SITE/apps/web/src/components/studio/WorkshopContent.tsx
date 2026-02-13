@@ -26,7 +26,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
       <BentoCard span="lg" className="relative group aspect-video md:aspect-auto bg-black overflow-hidden">
         {workshop.aftermovie_url ? (
           <ContainerInstrument className="absolute inset-0 flex items-center justify-center">
-            <ContainerInstrument className="text-white/20 font-black uppercase tracking-tighter text-4xl group-hover:scale-110 transition-transform duration-700">
+            <ContainerInstrument className="text-white/20 font-black tracking-tighter text-4xl group-hover:scale-110 transition-transform duration-700">
               <VoiceglotText translationKey="workshop.aftermovie.label" defaultText="Aftermovie" />
             </ContainerInstrument>
             <ButtonInstrument className="absolute inset-0 flex items-center justify-center group-hover:bg-black/20 transition-all duration-500">
@@ -73,7 +73,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
       {/* INSTRUCTEUR BENTO */}
       <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between">
         <ContainerInstrument>
-          <ContainerInstrument className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-8">
+          <ContainerInstrument className="text-[15px] font-black tracking-widest text-white/30 mb-8">
             <VoiceglotText translationKey="workshop.instructor.label" defaultText="Jouw Workshopgever" />
           </ContainerInstrument>
           <ContainerInstrument className="relative w-32 h-32 rounded-3xl overflow-hidden mb-6 border-2 border-white/10">
@@ -84,10 +84,10 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
               className="object-cover"
             />
           </ContainerInstrument>
-          <HeadingInstrument level={4} className="text-2xl font-black uppercase tracking-tight mb-4">
+          <HeadingInstrument level={4} className="text-2xl font-black tracking-tight mb-4">
             <VoiceglotText translationKey={`workshop.${workshop.id}.instructor_name`} defaultText={workshop.instructeur || "Johfrah"} />
           </HeadingInstrument>
-          <TextInstrument className="text-white/40 text-xs font-medium leading-relaxed line-clamp-4">
+          <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed line-clamp-4">
             {workshop.about_me || (
               <VoiceglotText 
                 translationKey="workshop.instructor.default_about" 
@@ -96,7 +96,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
             )}
           </TextInstrument>
         </ContainerInstrument>
-        <ButtonInstrument className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all mt-8">
+        <ButtonInstrument className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all mt-8">
           <VoiceglotText translationKey="workshop.instructor.action" defaultText="MEER OVER DE WORKSHOPGEVER" /> <ArrowRight size={14} />
         </ButtonInstrument>
       </BentoCard>

@@ -25,15 +25,15 @@ export default function SkyggeArticlePage() {
         <ContainerInstrument className="mb-12">
           <Link 
             href="/blog" 
-            className="inline-flex items-center gap-2 text-[10px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 uppercase"
+            className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
             <ArrowLeft size={14} strokeWidth={1.5} /> 
             <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
           </Link>
-          <TextInstrument className="text-[10px] font-light tracking-[0.2em] text-primary mb-4 uppercase">
+          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 ">
             <VoiceglotText translationKey="article.theme.stories" defaultText="Stories" />
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6 text-va-black uppercase">
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6 text-va-black ">
             <VoiceglotText translationKey="story.skygge.title" defaultText="SKYGGE | Professionalisering via audio" />
           </HeadingInstrument>
         </ContainerInstrument>

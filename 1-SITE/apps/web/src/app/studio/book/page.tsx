@@ -41,7 +41,7 @@ function BookingContent() {
           <CheckCircle2 size={48} />
         </ContainerInstrument>
         <ContainerInstrument className="space-y-4">
-          <HeadingInstrument level={1} className="text-5xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
             <VoiceglotText translationKey="studio.booking.success.title" defaultText="Je bent erbij!" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/50 font-medium text-lg">
@@ -63,7 +63,7 @@ function BookingContent() {
   return (
     <>
       <SectionInstrument className="mb-20 text-center space-y-4">
-        <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter">
+        <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter">
           <VoiceglotText translationKey="studio.booking.title" defaultText="Reserveer je plek" />
         </HeadingInstrument>
         <TextInstrument className="text-va-black/40 font-medium max-w-xl mx-auto text-lg">
@@ -88,7 +88,7 @@ function BookingContent() {
 export default function BookingPage() {
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20">
-      <Suspense fallback={<div className="animate-pulse text-va-black/20 font-black uppercase tracking-widest text-center py-40">Laden...</div>}>
+      <Suspense fallback={<div className="animate-pulse text-va-black/20 font-black tracking-widest text-center py-40">Laden...</div>}>
         <BookingContent />
       </Suspense>
     </PageWrapperInstrument>

@@ -33,13 +33,13 @@ export default function VoicePageClient({ actors }: { actors: any[] }) {
       <SectionInstrument className="mb-16">
         <ContainerInstrument className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <ContainerInstrument className="space-y-4">
-            <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
+            <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/20">
               <Mic size={12} fill="currentColor" /> 
               <VoiceglotText translationKey="agency.client.badge" defaultText="Voice Casting" />
             </ContainerInstrument>
-            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
               <VoiceglotText translationKey="agency.client.title_part1" defaultText="Vind jouw " />
-              <TextInstrument as="span" className="text-primary">
+              <TextInstrument as="span" className="text-primary font-light">
                 <VoiceglotText translationKey="agency.client.title_part2" defaultText="Stem" />
               </TextInstrument>
             </HeadingInstrument>
@@ -86,14 +86,14 @@ export default function VoicePageClient({ actors }: { actors: any[] }) {
               </ContainerInstrument>
               <ContainerInstrument className="p-6">
                 <ContainerInstrument className="flex justify-between items-start mb-1">
-                  <HeadingInstrument level={3} className="font-black uppercase tracking-tight text-lg">
+                  <HeadingInstrument level={3} className="font-black tracking-tight text-lg">
                     <VoiceglotText translationKey={`actor.${actor.id}.name`} defaultText={actor.display_name} noTranslate={true} />
                   </HeadingInstrument>
-                  <ContainerInstrument className="flex items-center gap-1 text-[10px] font-bold text-primary">
+                  <ContainerInstrument className="flex items-center gap-1 text-[15px] font-bold text-primary">
                     <Star size={10} fill="currentColor" /> {actor.voice_score}
                   </ContainerInstrument>
                 </ContainerInstrument>
-                <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/30">
+                <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">
                   <VoiceglotText translationKey={`common.language.${actor.native_lang?.toLowerCase()}`} defaultText={actor.native_lang || ''} /> <VoiceglotText translationKey="common.native" defaultText="Native" />
                 </TextInstrument>
               </ContainerInstrument>

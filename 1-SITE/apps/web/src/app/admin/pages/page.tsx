@@ -64,11 +64,11 @@ export default function PageArchitectPage() {
     <PageWrapperInstrument className="p-12 space-y-12 max-w-[1600px] mx-auto min-h-screen">
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[10px] font-black uppercase tracking-widest">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter uppercase">
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
             <VoiceglotText translationKey="admin.architect.title" defaultText="Page Architect" />
           </HeadingInstrument>
         </ContainerInstrument>
@@ -100,15 +100,15 @@ export default function PageArchitectPage() {
                   <FileText size={24} />
                 </div>
                 <div className="flex gap-2">
-                  <span className="px-3 py-1 bg-primary/5 text-primary rounded-full text-[8px] font-black uppercase tracking-widest border border-primary/10">
+                  <span className="px-3 py-1 bg-primary/5 text-primary rounded-full text-[15px] font-black tracking-widest border border-primary/10">
                     {page.iapContext.journey}
                   </span>
                 </div>
               </div>
-              <HeadingInstrument level={3} className="text-2xl font-black uppercase tracking-tight mb-2">
+              <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-2">
                 <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} noTranslate={true} />
               </HeadingInstrument>
-              <TextInstrument className="text-[10px] font-black text-va-black/20 uppercase tracking-widest">
+              <TextInstrument className="text-[15px] font-black text-va-black/20 tracking-widest">
                 /<VoiceglotText translationKey={`page.${page.slug}.slug`} defaultText={page.slug} noTranslate={true} />
               </TextInstrument>
             </ContainerInstrument>
@@ -116,7 +116,7 @@ export default function PageArchitectPage() {
             <ContainerInstrument className="flex items-center justify-between pt-8 border-t border-black/5">
               <div className="flex items-center gap-2 text-va-black/20">
                 <Globe size={12} />
-                <span className="text-[9px] font-bold uppercase tracking-widest">
+                <span className="text-[15px] font-bold tracking-widest">
                   <VoiceglotText translationKey="common.status.live" defaultText="Live" />
                 </span>
               </div>
@@ -130,14 +130,14 @@ export default function PageArchitectPage() {
         <BentoCard span="sm" className="bg-va-black text-white p-8 rounded-[40px] relative overflow-hidden flex flex-col justify-between">
           <ContainerInstrument className="relative z-10">
             <Zap className="text-primary mb-6" size={32} />
-            <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-tight mb-4">
+            <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-4">
               Page Intelligence
             </HeadingInstrument>
-            <TextInstrument className="text-white/40 text-xs font-medium leading-relaxed">
+            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">
               Voicy analyseert welke pagina&apos;s het beste converteren. Er zijn 2 nieuwe optimalisatie-suggesties voor de Academy.
             </TextInstrument>
           </ContainerInstrument>
-          <ButtonInstrument className="relative z-10 text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
+          <ButtonInstrument className="relative z-10 text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
             Bekijk Suggesties <ArrowRight size={12} />
           </ButtonInstrument>
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[60px]" />

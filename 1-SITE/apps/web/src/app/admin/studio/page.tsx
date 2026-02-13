@@ -37,11 +37,11 @@ export default async function StudioAdminPage() {
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">
       <ContainerInstrument className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <ContainerInstrument>
-          <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-black/40 mb-2">
+          <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2">
             <VoiceglotText translationKey="admin.studio.badge" defaultText="Studio Master Control" />
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-black uppercase tracking-tighter">
-            <VoiceglotText translationKey="admin.studio.title_part1" defaultText="Studio" /> <TextInstrument as="span" className="text-primary"><VoiceglotText translationKey="admin.studio.title_part2" defaultText="Beheer." /></TextInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
+            <VoiceglotText translationKey="admin.studio.title_part1" defaultText="Studio" /> <TextInstrument as="span" className="text-primary font-light"><VoiceglotText translationKey="admin.studio.title_part2" defaultText="Beheer." /></TextInstrument>
           </HeadingInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
@@ -51,7 +51,7 @@ export default async function StudioAdminPage() {
         <BentoCard span="sm" className="bg-va-black text-white p-8 flex flex-col justify-between">
           <ContainerInstrument>
             <DollarSign className="text-primary mb-6" size={24} />
-            <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-white/30">
+            <TextInstrument className="text-[15px] font-black tracking-widest text-white/30">
               <VoiceglotText translationKey="admin.studio.total_revenue" defaultText="Totale Omzet Studio" />
             </TextInstrument>
             <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter mt-2">
@@ -60,16 +60,16 @@ export default async function StudioAdminPage() {
           </ContainerInstrument>
           <div className="pt-8 border-t border-white/5 space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
+              <span className="text-[15px] font-bold text-white/20 tracking-widest">
                 <VoiceglotText translationKey="common.net_profit" defaultText="Netto Winst" />
               </span>
-              <span className="text-xs font-black text-primary">€{financeStats.netRevenue.toLocaleString('nl-BE')}</span>
+              <span className="text-[15px] font-black text-primary">€{financeStats.netRevenue.toLocaleString('nl-BE')}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
+              <span className="text-[15px] font-bold text-white/20 tracking-widest">
                 <VoiceglotText translationKey="common.margin" defaultText="Marge" />
               </span>
-              <span className="text-xs font-black">{financeStats.marginPercentage.toFixed(1)}%</span>
+              <span className="text-[15px] font-black">{financeStats.marginPercentage.toFixed(1)}%</span>
             </div>
           </div>
         </BentoCard>
@@ -78,19 +78,19 @@ export default async function StudioAdminPage() {
         <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>
             <Mail className="text-primary mb-6" size={24} />
-            <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-black/30">
+            <TextInstrument className="text-[15px] font-black tracking-widest text-black/30">
               <VoiceglotText translationKey="admin.studio.mail_triggers" defaultText="Smart Mail Triggers" />
             </TextInstrument>
             <div className="space-y-3 mt-6">
-              <ButtonInstrument className="w-full py-3 bg-white border border-black/5 text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all">
+              <ButtonInstrument className="w-full py-3 bg-white border border-black/5 text-[15px] font-black tracking-widest hover:bg-primary transition-all">
                 <VoiceglotText translationKey="admin.studio.trigger.new_edition" defaultText="Nieuwe Editie Aankondiging" />
               </ButtonInstrument>
-              <ButtonInstrument className="w-full py-3 bg-white border border-black/5 text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all">
+              <ButtonInstrument className="w-full py-3 bg-white border border-black/5 text-[15px] font-black tracking-widest hover:bg-primary transition-all">
                 <VoiceglotText translationKey="admin.studio.trigger.certificates" defaultText="Certificaten Klaar (Bulk)" />
               </ButtonInstrument>
             </div>
           </ContainerInstrument>
-          <TextInstrument className="text-[9px] font-medium text-black/30 mt-8">
+          <TextInstrument className="text-[15px] font-medium text-black/30 mt-8">
             <VoiceglotText translationKey="admin.studio.mail_disclaimer" defaultText="* Mails worden alleen door Johfrah getriggerd." />
           </TextInstrument>
         </BentoCard>
@@ -99,22 +99,22 @@ export default async function StudioAdminPage() {
         <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>
             <Upload className="text-primary mb-6" size={24} />
-            <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-black/30">
+            <TextInstrument className="text-[15px] font-black tracking-widest text-black/30">
               <VoiceglotText translationKey="admin.studio.audio_uploads" defaultText="Audio Uploads" />
             </TextInstrument>
             <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter mt-2">12</HeadingInstrument>
-            <TextInstrument className="text-[10px] font-bold text-black/20 uppercase tracking-widest mt-1">
+            <TextInstrument className="text-[15px] font-bold text-black/20 tracking-widest mt-1">
               <VoiceglotText translationKey="admin.studio.pending_uploads" defaultText="Nog te verwerken" />
             </TextInstrument>
           </ContainerInstrument>
-          <ButtonInstrument className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all mt-8">
+          <ButtonInstrument className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all mt-8">
             <VoiceglotText translationKey="admin.studio.start_upload" defaultText="START BATCH UPLOAD" /> <ArrowRight size={14} />
           </ButtonInstrument>
         </BentoCard>
 
         {/* EDITIONS LIST FOR ADMIN */}
         <BentoCard span="lg" className="bg-white shadow-aura p-10 border border-black/5">
-          <HeadingInstrument level={2} className="text-[10px] font-black uppercase tracking-widest text-black/30 mb-8">
+          <HeadingInstrument level={2} className="text-[15px] font-black tracking-widest text-black/30 mb-8">
             <VoiceglotText translationKey="admin.studio.all_editions" defaultText="Alle Studio Edities" />
           </HeadingInstrument>
           
@@ -123,18 +123,18 @@ export default async function StudioAdminPage() {
               <div key={edition.id} className="p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-black/5 transition-all flex flex-col md:flex-row justify-between items-center gap-6">
                 <div className="flex items-center gap-6">
                   <div className="w-12 h-12 rounded-xl bg-black text-white flex flex-col items-center justify-center">
-                    <span className="text-xs font-black">{edition.date.getDate()}</span>
-                    <span className="text-[8px] font-bold uppercase">{edition.date.toLocaleString('nl-BE', { month: 'short' })}</span>
+                    <span className="text-[15px] font-black">{edition.date.getDate()}</span>
+                    <span className="text-[15px] font-bold ">{edition.date.toLocaleString('nl-BE', { month: 'short' })}</span>
                   </div>
                   <div>
-                    <HeadingInstrument level={4} className="text-lg font-black uppercase tracking-tight">
+                    <HeadingInstrument level={4} className="text-lg font-black tracking-tight">
                       <VoiceglotText translationKey={`workshop.${edition.workshop?.id}.title`} defaultText={edition.workshop?.title || ''} noTranslate={true} />
                     </HeadingInstrument>
                     <div className="flex gap-4 mt-1">
-                      <span className="text-[10px] font-bold text-black/30 uppercase tracking-widest">
+                      <span className="text-[15px] font-bold text-black/30 tracking-widest">
                         <VoiceglotText translationKey={`instructor.${edition.instructor?.id}.name`} defaultText={edition.instructor?.name || ''} noTranslate={true} />
                       </span>
-                      <span className="text-[10px] font-bold text-black/30 uppercase tracking-widest">
+                      <span className="text-[15px] font-bold text-black/30 tracking-widest">
                         <VoiceglotText translationKey={`location.${edition.location?.id}.name`} defaultText={edition.location?.name || ''} noTranslate={true} />
                       </span>
                     </div>
@@ -143,10 +143,10 @@ export default async function StudioAdminPage() {
                 
                 <div className="flex items-center gap-6">
                   <div className="text-right">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-black/20 mb-1">
+                    <div className="text-[15px] font-black tracking-widest text-black/20 mb-1">
                       <VoiceglotText translationKey="common.status" defaultText="Status" />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-black/40">
+                    <span className="text-[15px] font-black tracking-widest text-black/40">
                       <VoiceglotText translationKey={`common.status.${edition.status}`} defaultText={edition.status || ''} />
                     </span>
                   </div>

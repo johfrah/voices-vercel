@@ -156,11 +156,11 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
             <Mic size={28} />
           </div>
           <div>
-            <h3 className="text-3xl font-black tracking-tighter uppercase">
+            <h3 className="text-3xl font-black tracking-tighter ">
               <VoiceglotText translationKey="academy.recorder.title" defaultText="Jouw Opname" />
             </h3>
             <div className="flex items-center gap-4 mt-1">
-              <p className="text-[10px] font-black uppercase tracking-widest text-black/30">
+              <p className="text-[15px] font-black tracking-widest text-black/30">
                 {isRecording ? (
                   <VoiceglotText translationKey="academy.recorder.recording" defaultText="Nu aan het opnemen..." />
                 ) : audioBlob ? (
@@ -171,7 +171,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
               </p>
               <button 
                 onClick={() => setShowTeleprompter(!showTeleprompter)}
-                className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[9px] font-black uppercase tracking-widest transition-all ${showTeleprompter ? 'bg-black text-white border-black' : 'bg-transparent text-black/30 border-black/10 hover:border-black/30'}`}
+                className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[15px] font-black uppercase tracking-widest transition-all ${showTeleprompter ? 'bg-black text-white border-black' : 'bg-transparent text-black/30 border-black/10 hover:border-black/30'}`}
               >
                 <Monitor size={10} />
                 {showTeleprompter ? <VoiceglotText translationKey="academy.recorder.teleprompter.on" defaultText="Teleprompter AAN" /> : <VoiceglotText translationKey="academy.recorder.teleprompter.off" defaultText="Teleprompter UIT" />}
@@ -215,7 +215,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
                 onChange={(e) => setScrollSpeed(parseInt(e.target.value))}
                 className="w-16 accent-primary"
               />
-              <span className="text-[8px] font-black text-white uppercase tracking-widest">
+              <span className="text-[15px] font-black text-white tracking-widest">
                 <VoiceglotText translationKey="academy.recorder.tempo" defaultText="Tempo" />
               </span>
             </div>
@@ -223,7 +223,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
         ) : (
           <>
             {!audioBlob && !isRecording && (
-              <div className="text-black/10 font-black uppercase tracking-[0.2em] text-sm">
+              <div className="text-black/10 font-black tracking-[0.2em] text-sm">
                 <VoiceglotText translationKey="academy.recorder.input_ready" defaultText="Microphone Input Ready" />
               </div>
             )}

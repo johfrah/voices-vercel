@@ -57,7 +57,7 @@ function AfspraakContent() {
           <CheckCircle2 size={48} />
         </ContainerInstrument>
         <ContainerInstrument className="space-y-4">
-          <HeadingInstrument level={1} className="text-5xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
             <VoiceglotText translationKey="studio.meeting.success.title" defaultText="Afspraak staat!" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/50 font-medium text-lg">
@@ -80,7 +80,7 @@ function AfspraakContent() {
     return (
       <ContainerInstrument className="max-w-xl w-full bg-white p-12 md:p-16 rounded-[40px] shadow-aura text-center space-y-8 border border-black/5">
         <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-sm font-black uppercase tracking-widest text-va-black/60">
+        <p className="text-sm font-black tracking-widest text-va-black/60">
           <VoiceglotText translationKey="studio.appointment.cancelling" defaultText="Afspraak annuleren..." />
         </p>
       </ContainerInstrument>
@@ -95,7 +95,7 @@ function AfspraakContent() {
         </div>
         
         <div className="space-y-4">
-          <HeadingInstrument level={1} className="text-4xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter">
             <VoiceglotText translationKey="studio.appointment.cancel.title" defaultText="Afspraak geannuleerd" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/50 font-medium text-lg leading-relaxed">
@@ -111,7 +111,7 @@ function AfspraakContent() {
             <RefreshCcw size={16} />
             <VoiceglotText translationKey="studio.appointment.cancel.cta" defaultText="Nu herplannen" />
           </Link>
-          <Link href="/studio" className="text-xs font-black uppercase tracking-widest text-va-black/30 hover:text-primary transition-all">
+          <Link href="/studio" className="text-[15px] font-black tracking-widest text-va-black/30 hover:text-primary transition-all">
             <VoiceglotText translationKey="common.back_to_home" defaultText="Terug naar home" />
           </Link>
         </div>
@@ -127,7 +127,7 @@ function AfspraakContent() {
         </div>
         
         <div className="space-y-4">
-          <HeadingInstrument level={1} className="text-4xl font-black uppercase tracking-tighter">
+          <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter">
             <VoiceglotText translationKey="studio.appointment.manage.title" defaultText="Afspraak beheren" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/50 font-medium text-lg leading-relaxed">
@@ -142,7 +142,7 @@ function AfspraakContent() {
           <Link href={`/studio/afspraak/?manage=${manageToken}&cancel=1`} className="va-btn-pro bg-red-500 hover:bg-red-600 border-red-500 hover:border-red-600 inline-block">
             <VoiceglotText translationKey="studio.appointment.manage.cancel_btn" defaultText="Afspraak annuleren" />
           </Link>
-          <Link href="/studio" className="text-xs font-black uppercase tracking-widest text-va-black/30 hover:text-primary transition-all">
+          <Link href="/studio" className="text-[15px] font-black tracking-widest text-va-black/30 hover:text-primary transition-all">
             <VoiceglotText translationKey="common.back_to_home" defaultText="Terug naar home" />
           </Link>
         </div>
@@ -154,7 +154,7 @@ function AfspraakContent() {
   return (
     <ContainerInstrument className="max-w-4xl w-full mx-auto px-6 py-20">
       <div className="mb-16 text-center space-y-4">
-        <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter">
+        <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter">
           <VoiceglotText translationKey="studio.meeting.title" defaultText="Kennismaken" />
         </HeadingInstrument>
         <TextInstrument className="text-va-black/40 font-medium max-w-xl mx-auto text-lg text-center">
@@ -169,7 +169,7 @@ function AfspraakContent() {
         <div className="space-y-8">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">1</div>
-            <h2 className="text-xl font-black uppercase tracking-tight">
+            <h2 className="text-xl font-black tracking-tight">
               <VoiceglotText translationKey="studio.appointment.step1" defaultText="Kies een moment" />
             </h2>
           </div>
@@ -179,7 +179,7 @@ function AfspraakContent() {
         <div className={`space-y-8 transition-opacity duration-500 ${selectedSlot ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">2</div>
-            <h2 className="text-xl font-black uppercase tracking-tight">
+            <h2 className="text-xl font-black tracking-tight">
               <VoiceglotText translationKey="studio.appointment.step2" defaultText="Jouw gegevens" />
             </h2>
           </div>
@@ -207,7 +207,7 @@ export default function AfspraakPage() {
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white flex items-center justify-center px-6">
       <Suspense fallback={
-        <div className="animate-pulse text-va-black/20 font-black uppercase tracking-widest">
+        <div className="animate-pulse text-va-black/20 font-black tracking-widest">
           <VoiceglotText translationKey="common.loading" defaultText="Laden..." />
         </div>
       }>

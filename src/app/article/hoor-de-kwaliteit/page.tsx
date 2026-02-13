@@ -57,7 +57,7 @@ export default function DemoBentoPage() {
       
       <SectionInstrument className="max-w-7xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-16">
-          <TextInstrument className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-4">
+          <TextInstrument className="text-[15px] font-black uppercase tracking-[0.2em] text-primary mb-4">
             <VoiceglotText translationKey="demo.category" defaultText="Beleving" />
           </TextInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-6">
@@ -92,14 +92,14 @@ export default function DemoBentoPage() {
                   <HeadingInstrument level={3} className="font-black uppercase tracking-tight text-lg">
                     {voice.name}
                   </HeadingInstrument>
-                  <ContainerInstrument className="flex items-center gap-1 text-[10px] font-bold text-primary">
+                  <ContainerInstrument className="flex items-center gap-1 text-[15px] font-bold text-primary">
                     <Star size={10} fill="currentColor" /> {voice.score}
                   </ContainerInstrument>
                 </ContainerInstrument>
-                <TextInstrument className="text-xs text-va-black/60 leading-relaxed mb-4">
+                <TextInstrument className="text-[15px] text-va-black/60 leading-relaxed mb-4">
                   {voice.description}
                 </TextInstrument>
-                <Link href={`/voice/${voice.id}`} className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary hover:gap-4 transition-all">
+                <Link href={`/voice/${voice.id}`} className="flex items-center gap-2 text-[15px] font-black uppercase tracking-widest text-primary hover:gap-4 transition-all">
                   <VoiceglotText translationKey="common.view_profile" defaultText="Bekijk Profiel" /> <ArrowRight size={12} />
                 </Link>
               </ContainerInstrument>

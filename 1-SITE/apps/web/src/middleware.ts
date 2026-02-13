@@ -82,15 +82,15 @@ export async function middleware(request: NextRequest) {
   // 1.7 🚧 UNDER CONSTRUCTION GATE (GOD MODE)
   // Als de site in 'under construction' modus staat, laten we alleen admins door.
   // We gebruiken een environment variable of een cookie voor de bypass.
-  const isUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true'
+  const isUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true' || host.includes('voices.be')
   
   // 🎯 DOMAIN BYPASS: Specifieke domeinen mogen ALTIJD door (Johfrah, Ademing, Youssef)
-  const isBypassDomain = host.includes('johfrah.be') || 
+  const isBypassDomain = (host.includes('johfrah.be') || 
                          host.includes('ademing.be') || 
                          host.includes('youssefzaki.eu') ||
                          host.includes('johfrai.be') ||
                          host.includes('localhost') || // 🧪 LOCAL TEST BYPASS
-                         url.searchParams.get('moby') === 'true'
+                         url.searchParams.get('moby') === 'true') && !host.includes('voices.be') // 🚨 MAT: voices.be mag NIET door de bypass als het onder constructie is
 
   const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || request.cookies.get('sb-access-token') !== undefined
   const isAuthPath = pathname.startsWith('/auth')
@@ -126,7 +126,10 @@ export async function middleware(request: NextRequest) {
   
   // Portfolio Journey
   if (host.includes('johfrah.be')) {
-    // ... (Johfrah logic remains same)
+    url.pathname = `/portfolio/johfrah${pathname === '/' ? '' : pathname}`
+    const portfolioResponse = NextResponse.rewrite(url)
+    portfolioResponse.headers.set('x-voices-market', 'JOHFRAH')
+    return portfolioResponse
   }
 
   // 🤖 JOHFRAI AI DOMAIN

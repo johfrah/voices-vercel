@@ -36,8 +36,8 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
               <Mail size={24} />
             </div>
             <div>
-              <h3 className="text-xl font-black uppercase tracking-tighter">Offerte Preview</h3>
-              <p className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest">Personaliseer je bericht voor verzending</p>
+              <h3 className="text-xl font-black tracking-tighter">Offerte Preview</h3>
+              <p className="text-[15px] font-bold text-va-black/40 tracking-widest">Personaliseer je bericht voor verzending</p>
             </div>
           </div>
           <button 
@@ -54,7 +54,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-10 space-y-8">
           <div className="space-y-4">
-            <label className="text-[11px] font-black uppercase tracking-widest text-va-black/40 ml-2">E-mail Bericht</label>
+            <label className="text-[15px] font-black tracking-widest text-va-black/40 ml-2">E-mail Bericht</label>
             <textarea 
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -67,8 +67,8 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
               <FileText size={24} />
             </div>
             <div className="flex-1">
-              <h4 className="text-sm font-black uppercase tracking-tight mb-1">Bijlage: Offerte_Voices.pdf</h4>
-              <p className="text-xs text-va-black/40 font-medium leading-relaxed">
+              <h4 className="text-sm font-black tracking-tight mb-1">Bijlage: Offerte_Voices.pdf</h4>
+              <p className="text-[15px] text-va-black/40 font-medium leading-relaxed">
                 Het systeem genereert automatisch een PDF met de tarieven en voorwaarden. 
                 De klant kan deze digitaal ondertekenen.
               </p>
@@ -78,7 +78,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
 
         {/* Footer */}
         <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center">
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/30">
+          <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/30">
             <Sparkles size={14} className="text-primary" />
             Core Admin Protocol Active
           </div>

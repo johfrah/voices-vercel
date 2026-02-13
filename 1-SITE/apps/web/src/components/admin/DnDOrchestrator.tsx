@@ -98,7 +98,7 @@ export const DnDOrchestrator: React.FC<DnDOrchestratorProps> = ({
       }}>
         {activeId ? (
           <div className="bg-primary/20 border-2 border-primary border-dashed rounded-2xl p-4 backdrop-blur-md">
-            <span className="text-[10px] font-black uppercase text-primary">Moving Block...</span>
+            <span className="text-[15px] font-black text-primary">Moving Block...</span>
           </div>
         ) : null}
       </DragOverlay>

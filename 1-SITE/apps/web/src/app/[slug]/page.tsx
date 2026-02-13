@@ -7,8 +7,43 @@ import { db } from '@db';
 import { contentArticles } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap } from 'lucide-react';
+import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { slug } = params;
+  try {
+    const page = await db.query.contentArticles.findFirst({
+      where: eq(contentArticles.slug, slug),
+    });
+
+    if (!page) return {};
+
+    const title = `${page.title} | Voices.be`;
+    const description = page.description || `Ontdek meer over ${page.title} op Voices.be. De standaard in stemmen en audio-productie.`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+      },
+      alternates: {
+        canonical: `https://www.voices.be/${slug}`,
+      }
+    };
+  } catch (e) {
+    return {};
+  }
+}
 
 export default async function DynamicCmsPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
@@ -25,7 +60,8 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
 
     if (!page) notFound();
 
-    const journey = page.iapContext?.journey || 'agency';
+    const iapContext = page.iapContext as { journey?: string; lang?: string } | null;
+    const journey = iapContext?.journey || 'agency';
 
     const getIcon = (cat: string) => {
       const c = cat.toLowerCase();
@@ -103,7 +139,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                   
                   // 🌍 Intelligent Market-Aware Subtitle Logic
                   // We bepalen de taal op basis van de IAP context van de pagina
-                  const currentLang = page.iapContext?.lang || 'nl';
+                  const currentLang = (page.iapContext as { lang?: string } | null)?.lang || 'nl';
                   const subtitleUrl = videoUrl ? videoUrl.replace('.mp4', `-${currentLang}.vtt`) : null;
                   
                   return (
@@ -157,7 +193,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
             <section key={block.id} className="py-32 relative min-h-[80vh] flex items-center animate-in fade-in duration-1000 fill-mode-both">
               <div className="absolute inset-0 bg-va-black rounded-[80px] overflow-hidden shadow-aura-lg grayscale-[0.5] hover:grayscale-0 transition-all duration-1000 group/lifestyle">
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60" />
-                <span className="absolute inset-0 flex items-center justify-center text-white/5 font-black text-[20vw] rotate-12 tracking-tighter pointer-events-none uppercase">VOICES</span>
+                <span className="absolute inset-0 flex items-center justify-center text-white/5 font-black text-[20vw] rotate-12 tracking-tighter pointer-events-none ">VOICES</span>
               </div>
               <div className="relative z-10 max-w-xl ml-12 lg:ml-24 p-16 bg-white/90 backdrop-blur-xl rounded-[60px] shadow-aura-lg border border-white/20">
                 {title && <HeadingInstrument level={2} className="text-5xl font-light mb-8 tracking-tight text-va-black leading-none">{title}</HeadingInstrument>}
@@ -245,7 +281,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
         <ContainerInstrument className="py-48 relative z-10">
           {/* 🚀 GLOBAL HERO MANDATE */}
           <header className="mb-64 max-w-5xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
-              <TextInstrument className="text-[12px] font-medium tracking-[0.4em] text-primary/60 mb-12 block">
+              <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-12 block">
                 {journey}
               </TextInstrument>
               <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black">
@@ -263,7 +299,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
             <footer className="mt-80 text-center">
               <div className="bg-va-black text-white p-32 rounded-[100px] shadow-aura-lg relative overflow-hidden group">
                 <div className="relative z-10">
-                  <TextInstrument className="text-[11px] font-medium tracking-[0.4em] text-primary/60 mb-10 block">
+                  <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block">
                     <VoiceglotText translationKey="cta.next_step" defaultText="volgende stap" />
                   </TextInstrument>
                   <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9]">
