@@ -33,7 +33,7 @@ export default function GlobalNav() {
   const [mounted, setMounted] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [links, setLinks] = useState<any[]>([
-    { name: 'Mijn Stem', href: '/#demos', key: 'nav.my_voice' },
+    { name: 'Onze Stemmen', href: '/agency', key: 'nav.my_voice' },
     { name: 'Werkwijze', href: '/#how-it-works', key: 'nav.how_it_works' },
     { name: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
     { name: 'Contact', href: '/contact', key: 'nav.contact' }

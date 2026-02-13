@@ -6,6 +6,7 @@ import { CheckoutProvider } from '@/contexts/CheckoutContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { EditModeProvider } from '@/contexts/EditModeContext';
 import { VoicesStateProvider } from '@/contexts/VoicesStateContext';
+import { GlobalAudioProvider } from '@/contexts/GlobalAudioContext';
 import { usePathname } from 'next/navigation';
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -20,9 +21,11 @@ export function Providers({ children }: { children: ReactNode }) {
       <AuthProvider>
         <EditModeProvider>
           <VoicesStateProvider>
-            <CheckoutProvider>
-              {children}
-            </CheckoutProvider>
+            <GlobalAudioProvider>
+              <CheckoutProvider>
+                {children}
+              </CheckoutProvider>
+            </GlobalAudioProvider>
           </VoicesStateProvider>
         </EditModeProvider>
       </AuthProvider>

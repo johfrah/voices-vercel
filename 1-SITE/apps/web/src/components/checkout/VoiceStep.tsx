@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useCheckout } from '@/contexts/CheckoutContext';
+import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { Actor } from '@/types';
 import { VoiceCard } from '../ui/VoiceCard';
@@ -9,6 +10,7 @@ import { Search, Loader2, CheckCircle2 } from 'lucide-react';
 
 export const VoiceStep: React.FC = () => {
   const { state, selectActor, setStep } = useCheckout();
+  const { playDemo } = useGlobalAudio();
   const { playClick } = useSonicDNA();
   const [actors, setActors] = useState<Actor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,6 +85,9 @@ export const VoiceStep: React.FC = () => {
               onClick={() => {
                 playClick('light');
                 selectActor(actor);
+                if (actor.demos && actor.demos.length > 0) {
+                  playDemo(actor.demos[0]);
+                }
               }}
               className={`relative rounded-[44px] border-4 transition-all cursor-pointer ${
                 state.selectedActor?.id === actor.id 

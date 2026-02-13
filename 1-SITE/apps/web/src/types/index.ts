@@ -98,6 +98,7 @@ export interface Actor {
   delivery_days_max?: number;
   cutoff_time?: string;
   availability?: any[];
+  bio?: string;
 }
 
 export interface Demo {
@@ -117,6 +118,7 @@ export interface SearchResults {
   count: number;
   results: Actor[];
   filters: SearchFilters;
+  reviews?: any[];
   _nuclear?: boolean;
   _source?: string;
   _bridge_timestamp?: string;

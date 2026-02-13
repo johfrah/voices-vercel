@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
 import React, { useState } from 'react';
+import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { BentoGrid } from './BentoGrid';
 import { MediaMaster } from './MediaMaster';
 import { VoiceCard } from './VoiceCard';
@@ -13,7 +13,7 @@ interface VoiceGridProps {
 }
 
 export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false }) => {
-  const [activeDemo, setActiveDemo] = useState<Demo | null>(null);
+  const { playDemo } = useGlobalAudio();
 
   const handleSelect = (actor: Actor) => {
     // 🛡️ NAVIGATION MANDATE: Als we op de agency pagina zijn, navigeren we direct naar de individuele voice pagina.
@@ -31,25 +31,25 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false }
         featured && "md:block flex overflow-x-auto pb-12 -mx-6 px-6 snap-x snap-mandatory no-scrollbar"
       )}>
         <div className={cn(
-          featured ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-w-max md:min-w-full" : ""
+          featured ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-w-max md:min-w-full" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         )}>
           {actors.map((actor) => (
             <div key={actor.id} className={cn(featured && "w-[85vw] md:w-auto snap-center")}>
               <VoiceCard 
                 voice={actor} 
-                onSelect={handleSelect}
+                onSelect={() => {
+                  // We gebruiken de eerste demo van de actor als default voor de grid
+                  if (actor.demos && actor.demos.length > 0) {
+                    playDemo(actor.demos[0]);
+                  } else {
+                    handleSelect(actor);
+                  }
+                }}
               />
             </div>
           ))}
         </div>
       </div>
-
-      {activeDemo && (
-        <MediaMaster 
-          demo={activeDemo} 
-          onClose={() => setActiveDemo(null)} 
-        />
-      )}
     </>
   );
 };

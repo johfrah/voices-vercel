@@ -143,9 +143,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
             </div>
           ) : (
             <div className="mb-8">
-              {voice.bio ? (
+              {(voice as any).bio ? (
                 <p className="text-sm text-va-black/50 font-medium leading-relaxed italic mb-4 line-clamp-2">
-                  &quot;<VoiceglotText translationKey={`actor.${voice.id}.bio`} defaultText={voice.bio} />&quot;
+                  &quot;<VoiceglotText translationKey={`actor.${voice.id}.bio`} defaultText={(voice as any).bio} />&quot;
                 </p>
               ) : (
                 <p className="text-sm text-va-black/50 font-medium leading-relaxed italic mb-4">

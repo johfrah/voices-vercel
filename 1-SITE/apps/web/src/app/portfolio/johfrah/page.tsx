@@ -45,7 +45,7 @@ async function JohfrahContent() {
     name: artistData?.display_name || "Johfrah Lefebvre",
     title: "Vlaamse Voice-over & Regisseur",
     image: artistData?.photo_url || "/assets/common/branding/johfrah/johfrah-hero.jpg",
-    extended_bio: artistData?.bio || "Mijn stem is mijn instrument om jouw verhaal te vertellen. Warm, naturel en met een rust die blijft hangen. Of het nu gaat om een documentaire die diepgang vraagt of een commercial die moet binnenkomen: ik zoek altijd naar de menselijke klik.",
+    extended_bio: (artistData as any)?.bio || "Mijn stem is mijn instrument om jouw verhaal te vertellen. Warm, naturel en met een rust die blijft hangen. Of het nu gaat om een documentaire die diepgang vraagt of een commercial die moet binnenkomen: ik zoek altijd naar de menselijke klik.",
     host_content: {
       title: "Host & Reporter",
       intro: "Ik breng verhalen tot leven, recht voor de camera of midden in de actie.",

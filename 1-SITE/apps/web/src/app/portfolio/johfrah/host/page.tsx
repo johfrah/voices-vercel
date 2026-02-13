@@ -1,13 +1,13 @@
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument,
-  ButtonInstrument
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { Award, Camera, Mic, Tv } from "lucide-react";
+import { Award, Camera, Tv } from "lucide-react";
 import { Metadata } from "next";
 import Image from 'next/image';
 

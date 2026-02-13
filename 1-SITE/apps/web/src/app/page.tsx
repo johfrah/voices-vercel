@@ -104,11 +104,11 @@ export default function Home() {
           voice_score: actor.voice_score,
           native_lang: actor.native_lang,
           starting_price: actor.starting_price,
-          delivery_days_min: actor.delivery_days_min,
-          delivery_days_max: actor.delivery_days_max,
-          cutoff_time: actor.cutoff_time,
-          availability: actor.availability,
-          ai_tags: actor.ai_tags || [],
+          delivery_days_min: actor.delivery_days_min || 1,
+          delivery_days_max: actor.delivery_days_max || 2,
+          cutoff_time: actor.cutoff_time || '18:00',
+          availability: actor.availability || [],
+          ai_tags: actor.ai_tags || '',
           slug: actor.slug,
           demos: actor.demos || []
         }));

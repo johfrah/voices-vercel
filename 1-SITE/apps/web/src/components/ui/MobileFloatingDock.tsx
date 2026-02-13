@@ -28,7 +28,7 @@ export function MobileFloatingDock() {
 
   const navItems = [
     { icon: Home, label: 'Home', href: '/', key: 'nav.home' },
-    { icon: Mic2, label: 'Stemmen', href: '/#demos', key: 'nav.my_voice' },
+    { icon: Mic2, label: 'Stemmen', href: '/agency', key: 'nav.my_voice' },
     { icon: ShoppingCart, label: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
     { icon: Phone, label: 'Contact', href: '/contact', key: 'nav.contact' },
     { icon: User, label: 'Account', href: '/account', key: 'nav.account' },

@@ -85,8 +85,14 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   };
 
   return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-3rem)] max-w-3xl animate-slide-in-up">
-      <div className="bg-va-black/90 backdrop-blur-2xl rounded-[32px] p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] border border-white/10">
+    <div className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] max-w-3xl animate-slide-in-up">
+      <div className="bg-va-black/95 backdrop-blur-3xl rounded-[40px] p-4 md:p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] border border-white/10 relative overflow-hidden">
+        {/* Liquid Progress Background */}
+        <div 
+          className="absolute inset-0 bg-primary/5 transition-all duration-300 ease-out pointer-events-none" 
+          style={{ width: `${progress}%` }}
+        />
+
         <audio 
           ref={audioRef} 
           onTimeUpdate={handleTimeUpdate} 
@@ -95,51 +101,96 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           onError={handleAudioError}
         />
         
-        <div className="flex items-center gap-6">
+        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 relative z-10">
           {/* Demo Info */}
-          <div className="flex items-center gap-4 min-w-0 flex-1">
-            <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center text-white shrink-0 shadow-lg shadow-primary/20">
-              <Volume2 size={24} />
+          <div className="flex items-center gap-4 min-w-0 w-full md:w-auto flex-1">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary flex items-center justify-center text-white shrink-0 shadow-lg shadow-primary/20 animate-pulse">
+              <Volume2 size={20} className="md:size-24" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h4 className="text-white font-black uppercase tracking-tight text-sm truncate">{demo.title}</h4>
-              <p className="text-primary text-[10px] font-black uppercase tracking-widest mt-1">Nu aan het spelen</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                <p className="text-primary text-[9px] font-black uppercase tracking-widest">Live Preview</p>
+              </div>
+            </div>
+            {/* Mobile Time Display */}
+            <div className="md:hidden text-right tabular-nums">
+              <div className="text-white font-black text-[10px]">{formatTime(audioRef.current?.currentTime || 0)}</div>
+              <div className="text-white/20 text-[8px] font-bold">{formatTime(duration)}</div>
             </div>
           </div>
 
           {/* Controls */}
-          <div className="flex items-center gap-4">
-            <button className="text-white/20 hover:text-white transition-colors">
-              <SkipBack size={20} fill="currentColor" />
+          <div className="flex items-center justify-center gap-6 w-full md:w-auto">
+            <button 
+              onClick={() => {
+                if (audioRef.current) audioRef.current.currentTime -= 5;
+                playClick('soft');
+              }}
+              className="text-white/30 hover:text-white transition-all active:scale-90"
+            >
+              <SkipBack size={24} fill="currentColor" />
             </button>
             <button 
-              onClick={togglePlay}
-              className="w-14 h-14 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl"
+              onClick={() => {
+                togglePlay();
+                playClick(isPlaying ? 'soft' : 'pro');
+              }}
+              className="w-16 h-16 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-105 active:scale-90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
             >
-              {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+              {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
             </button>
-            <button className="text-white/20 hover:text-white transition-colors">
-              <SkipForward size={20} fill="currentColor" />
+            <button 
+              onClick={() => {
+                if (audioRef.current) audioRef.current.currentTime += 5;
+                playClick('soft');
+              }}
+              className="text-white/30 hover:text-white transition-all active:scale-90"
+            >
+              <SkipForward size={24} fill="currentColor" />
             </button>
           </div>
 
-          {/* Progress & Close */}
-          <div className="flex items-center gap-6">
-            <div className="hidden md:block text-right">
-              <div className="text-white font-black text-xs tabular-nums">{formatTime(audioRef.current?.currentTime || 0)}</div>
-              <div className="text-white/20 text-[10px] font-bold tabular-nums">{formatTime(duration)}</div>
+          {/* Desktop Time & Close */}
+          <div className="hidden md:flex items-center gap-6">
+            <div className="text-right tabular-nums">
+              <div className="text-white font-black text-xs">{formatTime(audioRef.current?.currentTime || 0)}</div>
+              <div className="text-white/20 text-[10px] font-bold">{formatTime(duration)}</div>
             </div>
             <button 
-              onClick={onClose}
-              className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"
+              onClick={() => {
+                playClick('soft');
+                onClose?.();
+              }}
+              className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"
             >
-              <X size={18} />
+              <X size={20} />
             </button>
           </div>
+          
+          {/* Mobile Close */}
+          <button 
+            onClick={onClose}
+            className="md:hidden absolute -top-2 -right-2 w-8 h-8 rounded-full bg-va-black border border-white/10 flex items-center justify-center text-white/40 shadow-xl"
+          >
+            <X size={14} />
+          </button>
         </div>
 
         {/* Progress Bar */}
-        <div className="mt-6 h-1.5 w-full bg-white/5 rounded-full overflow-hidden cursor-pointer group relative">
+        <div 
+          className="mt-4 md:mt-6 h-2 w-full bg-white/5 rounded-full overflow-hidden cursor-pointer group relative"
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const clickedProgress = x / rect.width;
+            if (audioRef.current) {
+              audioRef.current.currentTime = clickedProgress * audioRef.current.duration;
+              playClick('soft');
+            }
+          }}
+        >
           <div 
             className="absolute inset-0 bg-primary transition-all duration-100 ease-linear" 
             style={{ width: `${progress}%` }}

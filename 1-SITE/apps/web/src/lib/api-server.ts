@@ -95,34 +95,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     };
   } catch (error: any) {
     console.error('❌ getActors FATAL ERROR:', error);
-    
-    // 🛡️ CHRIS-PROTOCOL: EMERGENCY FALLBACK
-    // Als de database ontploft, leveren we een 'Safe Harbor' ervaring.
-    // De site mag NOOIT dood aanvoelen.
-    return {
-      count: 1,
-      results: [{
-        id: 'fallback-johfrah',
-        display_name: 'Johfrah',
-        first_name: 'Johfrah',
-        last_name: 'Lefebvre',
-        slug: 'johfrah',
-        gender: 'Mannelijke stem',
-        native_lang: 'nl',
-        photo_url: '/assets/images/hero-artist-placeholder.jpg',
-        starting_price: 149,
-        price_unpaid_media: 149,
-        price_ivr: 49,
-        voice_score: 98,
-        ai_enabled: false,
-        bio: 'Systeem in herstelmodus. Neem contact op voor boekingen.',
-        demos: []
-      }] as any,
-      filters: { genders: [], languages: ['nl'], styles: [] },
-      _nuclear: true,
-      _source: 'emergency_fallback',
-      reviews: []
-    };
+    throw error;
   }
 }
 
@@ -167,8 +140,8 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     ai_tags: actor.aiTags || '',
     bio: translatedBio,
     price_unpaid: parseFloat(actor.priceUnpaid || '0'),
-    delivery_days_min: actor.delivery_days_min || 1,
-    delivery_days_max: actor.delivery_days_max || 3,
+    delivery_days_min: actor.deliveryDaysMin || 1,
+    delivery_days_max: actor.deliveryDaysMax || 3,
     cutoff_time: actor.cutoffTime || '18:00',
     availability: actor.availability as any[] || [],
     reviews: dbReviews.map(r => ({

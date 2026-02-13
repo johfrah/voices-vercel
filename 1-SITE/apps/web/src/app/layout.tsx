@@ -3,13 +3,14 @@ import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import FooterWrapper from "@/components/ui/FooterWrapper";
 import GlobalNav from "@/components/ui/GlobalNav";
-import { MobileFloatingDock } from "@/components/ui/MobileFloatingDock";
 import { LoadingScreenInstrument, PageWrapperInstrument, RootLayoutInstrument } from "@/components/ui/LayoutInstruments";
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
+import { MobileFloatingDock } from "@/components/ui/MobileFloatingDock";
 import { SonicDNAHandler } from "@/components/ui/SonicDNA";
 import { VoicejarTracker } from "@/components/ui/VoicejarTracker";
 import { VoicyBridge } from "@/components/ui/VoicyBridge";
 import { VoicyChat } from "@/components/ui/VoicyChat";
+import { GlobalAudioOrchestrator } from "@/components/ui/GlobalAudioOrchestrator";
 import { MarketManager } from "@config/market-manager";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
@@ -158,6 +159,7 @@ export default function RootLayout({
           <CommandPalette />
           <Toaster position="bottom-right" />
           <SonicDNAHandler />
+          <GlobalAudioOrchestrator />
           <Suspense fallback={null}>
             <VoicyBridge />
           </Suspense>
