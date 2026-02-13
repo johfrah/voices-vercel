@@ -1,7 +1,7 @@
 # 🎼 Bob's Podium Licht (Live Status)
 
-**Huidige Fase**: SECTION_1
-**Bericht**: Chris, Moby & Laya spelen samen...
+**Huidige Fase**: FINALE
+**Bericht**: Golden Standard Check...
 **Laatste Update**: 11:29:09 AM
 
 ---
