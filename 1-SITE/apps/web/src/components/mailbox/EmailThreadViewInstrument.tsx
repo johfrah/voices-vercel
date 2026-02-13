@@ -213,7 +213,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                       >
                         <ContainerInstrument className={`aspect-square rounded-2xl border flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden ${focusedAttachmentId === att.id ? 'bg-gray-50 border-va-black/20 shadow-md' : 'bg-white border-gray-100 shadow-sm'}`}>
                           <ContainerInstrument className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
-                            {isPdf(att.filename) ? <FileText strokeWidth={1.5} size={24} / /> : isAudio(att.filename) ? <Mic strokeWidth={1.5} size={24} / /> : isVideo(att.filename) ? <Play strokeWidth={1.5} size={24} / /> : <ImageIcon   size={24} / / />}
+                            {isPdf(att.filename) ? <FileText strokeWidth={1.5} size={24} / /> : isAudio(att.filename) ? <Mic strokeWidth={1.5} size={24} / /> : isVideo(att.filename) ? <Play strokeWidth={1.5} size={24} / /> : <ImageIcon    size={24} / / / />}
                           </ContainerInstrument>
                           <ContainerInstrument className="text-center px-2">
                             <p className="text-[15px] font-light text-gray-900 truncate w-full max-w-[100px]">{att.filename}</p>

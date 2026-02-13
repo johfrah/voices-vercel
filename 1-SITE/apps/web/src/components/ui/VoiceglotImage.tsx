@@ -115,7 +115,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
           />
 
           <div className="absolute -top-6 right-0 opacity-0 group-hover/image-edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[15px] font-black tracking-widest pointer-events-none z-50 shadow-lg">
-            <ImageIcon   size={8} className="text-primary" / / />
+            <ImageIcon    size={8} className="text-primary" / / / />
             Media: {category}
           </div>
         </>

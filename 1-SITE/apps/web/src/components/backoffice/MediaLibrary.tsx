@@ -243,7 +243,7 @@ export const MediaLibrary: React.FC = () => {
   };
 
   const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) return <ImageIcon  className="text-blue-500"  / />;
+    if (type.startsWith('image/')) return <ImageIcon   className="text-blue-500"  / / />;
     if (type.startsWith('audio/')) return <Music className="text-purple-500" strokeWidth={1.5} />;
     if (type.startsWith('video/')) return <Play className="text-red-500" strokeWidth={1.5} />;
     return <FileText className="text-va-black/40" strokeWidth={1.5} />;
@@ -340,7 +340,7 @@ export const MediaLibrary: React.FC = () => {
           <ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-3 mb-2">
               <ContainerInstrument className="w-10 h-10 bg-va-black text-white rounded-[10px] flex items-center justify-center shadow-aura">
-                <ImageIcon  size={20}  / />
+                <ImageIcon   size={20}  / / />
               </ContainerInstrument>
               <HeadingInstrument level={2} className="text-3xl font-light tracking-tight">
                 {selectedActorId ? `${actors.find(a => a.id === selectedActorId)?.firstName}'s Portfolio` : <VoiceglotText strokeWidth={1.5} translationKey="media.engine_title" defaultText="Media Engine" / />}
@@ -456,7 +456,7 @@ export const MediaLibrary: React.FC = () => {
           ) : media.length === 0 ? (
             <ContainerInstrument className="col-span-full py-32 text-center bg-white rounded-[20px] shadow-aura border-2 border-dashed border-va-black/5">
               <ContainerInstrument className="w-24 h-24 bg-va-off-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <ImageIcon  className="text-va-black/10" size={40}  / />
+                <ImageIcon   className="text-va-black/10" size={40}  / / />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
                 <VoiceglotText strokeWidth={1.5} translationKey="media.none_found" defaultText="Geen media gevonden" / />
