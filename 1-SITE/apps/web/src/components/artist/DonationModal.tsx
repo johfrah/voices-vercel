@@ -77,19 +77,19 @@ export function DonationModal({ artistId, artistName, isOpen, onClose }: Donatio
           </ContainerInstrument>
 
           <HeadingInstrument level={2} className="text-3xl font-light tracking-tight mb-2">
-            <VoiceglotText strokeWidth={1.5} translationKey="artist.donate.title" defaultText="Support de artiest" / />
+            <VoiceglotText  translationKey="artist.donate.title" defaultText="Support de artiest" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-light mb-8">
-            <VoiceglotText strokeWidth={1.5} 
+            <VoiceglotText  
               translationKey="artist.donate.desc" 
               defaultText={`Help ${artistName} bij het realiseren van nieuwe producties.`} 
-            / />
+            />
           </TextInstrument>
 
           <ContainerInstrument className="space-y-6">
             <ContainerInstrument className="space-y-2">
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 ml-4">
-                <VoiceglotText strokeWidth={1.5} translationKey="artist.donate.amount" defaultText="Bedrag (€)" / />
+                <VoiceglotText  translationKey="artist.donate.amount" defaultText="Bedrag (€)" />
               </TextInstrument>
               <InputInstrument 
                 type="number"
@@ -102,7 +102,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose }: Donatio
 
             <ContainerInstrument className="space-y-2">
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 ml-4">
-                <VoiceglotText strokeWidth={1.5} translationKey="common.name" defaultText="Naam" / />
+                <VoiceglotText  translationKey="common.name" defaultText="Naam" />
               </TextInstrument>
               <InputInstrument 
                 value={name}
@@ -114,7 +114,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose }: Donatio
 
             <ContainerInstrument className="space-y-2">
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 ml-4">
-                <VoiceglotText strokeWidth={1.5} translationKey="common.email" defaultText="E-mailadres" / />
+                <VoiceglotText  translationKey="common.email" defaultText="E-mailadres" />
               </TextInstrument>
               <InputInstrument 
                 type="email"
@@ -135,7 +135,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose }: Donatio
               ) : (
                 <>
                   <ShieldCheck strokeWidth={1.5} size={20} />
-                  <VoiceglotText strokeWidth={1.5} translationKey="artist.donate.cta" defaultText="Veilig doneren" / />
+                  <VoiceglotText  translationKey="artist.donate.cta" defaultText="Veilig doneren" />
                 </>
               )}
             </ButtonInstrument>

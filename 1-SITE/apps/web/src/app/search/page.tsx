@@ -51,27 +51,27 @@ export default function SearchPage() {
         
         {/* Header */}
         <SectionInstrument className="mb-16">
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6"><VoiceglotText strokeWidth={1.5} translationKey="search.title" defaultText="Zoekresultaten" / /></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6"><VoiceglotText  translationKey="search.title" defaultText="Zoekresultaten" /></HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-light text-xl">
             {query ? (
               <ContainerInstrument as="span">Je zocht op: <TextInstrument as="span" className="text-va-black font-light">&quot;{query}&quot;</TextInstrument></ContainerInstrument>
             ) : (
-              <VoiceglotText strokeWidth={1.5} translationKey="search.no_query" defaultText="Typ een zoekopdracht om resultaten te zien." / />
+              <VoiceglotText  translationKey="search.no_query" defaultText="Typ een zoekopdracht om resultaten te zien." />
             )}
           </TextInstrument>
         </SectionInstrument>
 
         {loading ? (
           <ContainerInstrument className="py-20 flex flex-col items-center justify-center space-y-4">
-            <Loader2 strokeWidth={1.5} className="animate-spin text-primary" size={40} / />
-            <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/20"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.resultaten_ophalen__.00c214" defaultText="Resultaten ophalen..." / /></TextInstrument>
+            <Loader2 strokeWidth={1.5} className="animate-spin text-primary" size={40} />
+            <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/20"><VoiceglotText  translationKey="auto.page.resultaten_ophalen__.00c214" defaultText="Resultaten ophalen..." /></TextInstrument>
           </ContainerInstrument>
         ) : query ? (
           <ContainerInstrument className="space-y-16">
             {/* Voices Results */}
             <SectionInstrument className="space-y-8">
               <HeadingInstrument level={2} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 flex items-center gap-3">
-                <Mic strokeWidth={1.5} size={14} / /><VoiceglotText strokeWidth={1.5} translationKey="auto.page.stemacteurs.72986a" defaultText="Stemacteurs" / /></HeadingInstrument>
+                <Mic strokeWidth={1.5} size={14} /><VoiceglotText  translationKey="auto.page.stemacteurs.72986a" defaultText="Stemacteurs" /></HeadingInstrument>
               {results.voices?.length > 0 ? (
                 <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {results.voices.map((voice: any) => (
@@ -86,14 +86,14 @@ export default function SearchPage() {
                   ))}
                 </ContainerInstrument>
               ) : (
-                <TextInstrument className="text-[15px] font-light text-va-black/30 italic"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.geen_stemmen_gevonde.f55930" defaultText="Geen stemmen gevonden." / /></TextInstrument>
+                <TextInstrument className="text-[15px] font-light text-va-black/30 italic"><VoiceglotText  translationKey="auto.page.geen_stemmen_gevonde.f55930" defaultText="Geen stemmen gevonden." /></TextInstrument>
               )}
             </SectionInstrument>
 
             {/* Articles Results */}
             <SectionInstrument className="space-y-8">
               <HeadingInstrument level={2} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 flex items-center gap-3">
-                <BookOpen strokeWidth={1.5} size={14} /><VoiceglotText strokeWidth={1.5} translationKey="auto.page.artikelen___nieuws.2c2839" defaultText="Artikelen & Nieuws" / /></HeadingInstrument>
+                <BookOpen strokeWidth={1.5} size={14} /><VoiceglotText  translationKey="auto.page.artikelen___nieuws.2c2839" defaultText="Artikelen & Nieuws" /></HeadingInstrument>
               {results.articles?.length > 0 ? (
                 <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {results.articles.map((article: any) => (
@@ -105,7 +105,7 @@ export default function SearchPage() {
                   ))}
                 </ContainerInstrument>
               ) : (
-                <TextInstrument className="text-[15px] font-light text-va-black/30 italic"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.geen_artikelen_gevon.3bda5b" defaultText="Geen artikelen gevonden." / /></TextInstrument>
+                <TextInstrument className="text-[15px] font-light text-va-black/30 italic"><VoiceglotText  translationKey="auto.page.geen_artikelen_gevon.3bda5b" defaultText="Geen artikelen gevonden." /></TextInstrument>
               )}
             </SectionInstrument>
           </ContainerInstrument>

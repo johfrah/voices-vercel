@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
         subject: `🩹 Voicy Self-Heal LIVE: Nieuwe vertaling [${key}]`,
         html: `
           <div style="font-family: sans-serif; padding: 40px; background: #f9f9f9; border-radius: 24px;">
-            <h2 style="letter-spacing: -0.02em; color: #ff4f00;">🩹 Self-Healing Live</h2>
+            <h2 className="font-light" style="letter-spacing: -0.02em; color: #ff4f00;">🩹 Self-Healing Live</h2>
             <p>Er is een ontbrekende vertaling live gefixed op de frontend.</p>
             <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
             <p><strong>Key:</strong> <code>${key}</code></p>

@@ -5,8 +5,8 @@ import { PageWrapperInstrument, LoadingScreenInstrument } from '@/components/ui/
 export default function PartnerDashboard() {
   return (
     <PageWrapperInstrument>
-      <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
-        <PartnerDashboardClient strokeWidth={1.5} / />
+      <Suspense  fallback={<LoadingScreenInstrument />}>
+        <PartnerDashboardClient strokeWidth={1.5} />
       </Suspense>
     </PageWrapperInstrument>
   );

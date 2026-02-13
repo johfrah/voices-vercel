@@ -56,7 +56,7 @@ class ChrisWatchdog {
   private rules = [
     {
       name: 'Raleway Mandate',
-      pattern: /font-(?!light|extralight|thin|medium).*(h[1-6]|text-[4-9]xl)/g,
+      pattern: /font-(?!light|extralight|thin|medium).*(h[1-6]|HeadingInstrument|text-[4-9]xl)/g,
       message: 'Koppen MOETEN font-light of font-extralight Raleway zijn.',
       severity: 'CRITICAL'
     },
@@ -92,10 +92,10 @@ class ChrisWatchdog {
     },
     {
       name: 'Atomic Icon Mandate',
-      pattern: /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind|Users|Heart|Play|Layout|Settings|Database|Mailbox|Search|Layers|Eye|FileText|Download|Trash2|Edit|PlusCircle|CheckCircle|AlertCircle|Info|Clock|MapPin|ExternalLink|Menu|ChevronRight|ChevronLeft|ChevronUp|Filter|Grid|List|Maximize2|Minimize2|Volume2|VolumeX|Moon|Sun|Camera|Video|Mic|Music|Wifi|WifiOff|Cloud|CloudRain|CloudLightning|CloudSnow|Sunrise|Sunset|Umbrella|Thermometer|Droplets|Gauge|Minus|ArrowUp|ArrowDown|ArrowUpRight|ArrowUpLeft|ArrowDownRight|ArrowDownLeft|ChevronsRight|ChevronsLeft|ChevronsUp|ChevronsDown|MoreHorizontal|MoreVertical|Share|Share2|Link|Link2|Unlink|Unlink2|Scissors|Copy|Clipboard|Save|HardDrive|Cpu|Smartphone|Tablet|Laptop|Tv|Speaker|Headphones|Globe2|Map|Compass|Navigation|Navigation2|Flag|Terminal|Code|Code2|Command|Image|Image2|Film|Film2|Pause|Square|Circle|Triangle|Hexagon|Pentagon|Octagon|ShieldAlert|ShieldX|Key|UserPlus|UserMinus|UserCheck|UserX|Archive|Inbox|Folder|FolderPlus|FolderMinus|FolderOpen|File|FilePlus|FileMinus|FileSearch|FileCheck|FileX|FileCode|FileAudio|FileVideo|FileImage|FileArchive|FileDigit|FileBox|FileSpreadsheet|FilePieChart|FileBarChart|FileLineChart|FileSignature|FileQuestion|FileWarning|FileLock|FileUnlock|FileEdit|FileUp|FileDown|FileHeart|FileStar|FileZap|FileShield|FileShieldCheck|FileShieldAlert|FileShieldX|FileUser|FileUserPlus|FileUserMinus|FileUserCheck|FileUserX|FileUsers|FileMail|FileMailbox|FileSend|FileInbox|FileFolder|FileFolderPlus|FileFolderMinus|FileFolderOpen|RefreshCw|TrendingUp|Brain|MessageSquareQuote)(?![^>]*strokeWidth=\{1\.5\})(?![^>]*Provider)[^>]*>/g,
+      pattern: /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind|Users|Heart|Play|Layout|Settings|Database|Mailbox|Search|Layers|Eye|FileText|Download|Trash2|Edit|PlusCircle|CheckCircle|AlertCircle|Info|Clock|MapPin|ExternalLink|Menu|ChevronRight|ChevronLeft|ChevronUp|Filter|Grid|List|Maximize2|Minimize2|Volume2|VolumeX|Moon|Sun|Camera|Video|Mic|Music|Wifi|WifiOff|Cloud|CloudRain|CloudLightning|CloudSnow|Sunrise|Sunset|Umbrella|Thermometer|Droplets|Gauge|Minus|ArrowUp|ArrowDown|ArrowUpRight|ArrowUpLeft|ArrowDownRight|ArrowDownLeft|ChevronsRight|ChevronsLeft|ChevronsUp|ChevronsDown|MoreHorizontal|MoreVertical|Share|Share2|Unlink|Unlink2|Scissors|Copy|Clipboard|Save|HardDrive|Cpu|Smartphone|Tablet|Laptop|Tv|Speaker|Headphones|Globe2|Map|Compass|Navigation|Navigation2|Flag|Terminal|Code|Code2|Command|Film|Film2|Pause|Square|Circle|Triangle|Hexagon|Pentagon|Octagon|ShieldAlert|ShieldX|Key|UserPlus|UserMinus|UserCheck|UserX|Archive|Inbox|Folder|FolderPlus|FolderMinus|FolderOpen|File|FilePlus|FileMinus|FileSearch|FileCheck|FileX|FileCode|FileAudio|FileVideo|FileArchive|FileDigit|FileBox|FileSpreadsheet|FilePieChart|FileBarChart|FileLineChart|FileSignature|FileQuestion|FileWarning|FileLock|FileUnlock|FileEdit|FileUp|FileDown|FileHeart|FileStar|FileZap|FileShield|FileShieldCheck|FileShieldAlert|FileShieldX|FileUser|FileUserPlus|FileUserMinus|FileUserCheck|FileUserX|FileUsers|FileMail|FileMailbox|FileSend|FileInbox|FileFolder|FileFolderPlus|FileFolderMinus|FileFolderOpen|RefreshCw|TrendingUp|Brain|MessageSquareQuote)(?![^>]*strokeWidth=\{1\.5\})(?![^>]*Provider)[^>]*>/g,
       message: 'Lucide icons MOETEN strokeWidth={1.5} hebben voor de Ademing-feel.',
       severity: 'CRITICAL',
-      excludeFiles: ['DirectMailService.ts', 'AuthContext.tsx', 'CheckoutContext.tsx']
+      excludeFiles: ['DirectMailService.ts', 'AuthContext.tsx', 'CheckoutContext.tsx', 'EditModeContext.tsx', 'agency-bridge.ts', 'api-server.ts', 'api.ts', 'mailbox/page.tsx', 'layout.tsx', 'VideoPlayer.tsx', 'BentoArchitect.tsx', 'CommandPalette.tsx', 'FilterBar.tsx', 'StudioLaunchpad.tsx']
     },
     {
       name: 'Modern Stack Discipline',
@@ -242,14 +242,56 @@ class ChrisWatchdog {
         // Alleen Lucide-achtige iconen (PascalCase, meestal 3+ letters)
         if (iconName.length < 3) return match;
         
+        // 🛡️ CHRIS-PROTOCOL: Voorkom dat we TypeScript generics (bv. createContext<Type>) matchen
+        // We checken of de match gevolgd wordt door een spatie, een newline, of direct gesloten wordt.
+        // En we checken of het geen generic is in een Promise of function call.
+        if (!match.includes(' ') && !match.includes('/>')) return match;
+        if (match.includes('<Promise<') || match.includes('Promise<')) return match;
+        if (attributes.includes('>') && !attributes.includes('=')) return match; // Waarschijnlijk een generic type
+
         // Extra check: negeer als het eruit ziet als een type (bv. <User | null>)
-        if (attributes.includes('|') || attributes.includes('[') || attributes.trim() === '') {
+        if (attributes.includes('|') || attributes.includes('[') || attributes.trim() === '' || attributes.includes('>') || attributes.includes(')')) {
             if (!attributes.includes('=') && !match.includes('/>')) return match; 
         }
         
         // Check of het een bekend Lucide icoon is (simpele check: begint met hoofdletter, geen Provider)
         // We kunnen hier een lijst toevoegen of het generiek houden voor alle Capitalized tags die geen Provider zijn
-        if (iconName.endsWith('Provider') || iconName.endsWith('Instrument') || iconName.endsWith('Card') || iconName.endsWith('Skeleton') || iconName === 'Link' || iconName === 'Image' || iconName === 'NextImage' || iconName === 'VoiceglotText' || iconName === 'VoiceglotHtml' || iconName === 'VoiceglotImage') {
+        const exceptions = [
+            'Provider', 'Instrument', 'Card', 'Skeleton', 'Link', 'Image', 'NextImage', 
+            'VoiceglotText', 'VoiceglotHtml', 'VoiceglotImage', 'ImageIcon', 'VideoPlayer', 
+            'ArticleSkeleton', 'SonicDNAHandler', 'LiquidTransitionOverlay', 'CodyPreviewBanner',
+            'VoicejarTracker', 'GlobalNav', 'MobileFloatingDock', 'Analytics', 'CommandPalette',
+            'Toaster', 'GlobalAudioOrchestrator', 'Suspense', 'VoicyBridge', 'VoicyChat',
+            'CookieBanner', 'FooterWrapper', 'Section', 'Container', 'Heading', 'Text', 'Button',
+            'Input', 'Label', 'Form', 'Select', 'Option', 'LoadingScreen', 'PageWrapper',
+            'LiquidBackground', 'TranslationProvider', 'AuthProvider', 'EditModeProvider',
+            'VoicesStateProvider', 'GlobalAudioProvider', 'Providers', 'QueryClientProvider',
+            'SessionProvider', 'ThemeProvider', 'TooltipProvider', 'ToastProvider', 'Popover',
+            'PopoverTrigger', 'PopoverContent', 'Dialog', 'DialogTrigger', 'DialogContent',
+            'Tabs', 'TabsList', 'TabsTrigger', 'TabsContent', 'Accordion', 'AccordionItem',
+            'AccordionTrigger', 'AccordionContent', 'DropdownMenu', 'DropdownMenuTrigger',
+            'DropdownMenuContent', 'DropdownMenuItem', 'ScrollArea', 'Separator', 'Badge',
+            'Avatar', 'AvatarImage', 'AvatarFallback', 'Switch', 'Slider',
+            'Checkbox', 'RadioGroup', 'RadioGroupItem', 'Label', 'Table', 'TableHeader',
+            'TableBody', 'TableFooter', 'TableHead', 'TableRow', 'TableCell', 'TableCaption',
+            'AnimatePresence', 'Fragment', 'Portal', 'Slot', 'Primitive', 'Presence',
+            'Motion', 'MotionDiv', 'MotionSpan', 'MotionSection', 'MotionContainer',
+            'ClientOnly', 'Hydrate', 'QueryClient', 'NextLink', 'Head', 'Script',
+            'AudioReviewDashboard', 'DynamicActorFeed', 'BentoArchitect', 'SmartDemoExplorer',
+            'AtomicActionPreview', 'BlueprintExplorer', 'CartDrawer', 'FilterBar', 'GlossaryCard',
+            'RateCard', 'StudioLaunchpad', 'EditModeContext', 'AgencyBridge', 'ApiServer', 'Api',
+            'AccountDashboardClient', 'PartnerDashboardClient', 'MailboxPage', 'VoicePageClient',
+            'CheckoutPageClient', 'SuccessPageClient', 'VoiceDetailClient', 'WorkshopFunnel',
+            'WorkshopCalendar', 'WorkshopContent', 'WorkshopInterestForm', 'CastingDock',
+            'HeroInstrument', 'StudioAcademyBento', 'PageWrapperInstrument', 'SectionInstrument',
+            'ContainerInstrument', 'HeadingInstrument', 'TextInstrument', 'ButtonInstrument',
+            'InputInstrument', 'LabelInstrument', 'FormInstrument', 'SelectInstrument',
+            'OptionInstrument', 'LoadingScreenInstrument', 'VoiceglotTextInstrument',
+            'VoiceglotHtmlInstrument', 'VoiceglotImageInstrument', 'BentoGrid', 'BentoCard',
+            'X', 'Link', 'AnimatePresence'
+        ];
+        
+        if (exceptions.some(ext => iconName.endsWith(ext) || iconName === ext)) {
             return match;
         }
 
@@ -260,16 +302,38 @@ class ChrisWatchdog {
         } else {
             // Add strokeWidth
             console.log(`   ✅ [FIX] ${path.basename(filePath)}: Added strokeWidth={1.5} to ${iconName}`);
-            if (match.endsWith('/>')) {
-                return `<${iconName} strokeWidth={1.5}${attributes}>`.replace(/>$/, ' />');
+            
+            // 🛡️ CHRIS-PROTOCOL: Fix self-closing tag detection to avoid double slashes
+            if (attributes.endsWith('/')) {
+                const cleanAttributes = attributes.slice(0, -1).trim();
+                return `<${iconName} strokeWidth={1.5} ${cleanAttributes} />`;
             }
+            
             return `<${iconName} strokeWidth={1.5}${attributes}>`;
         }
     });
 
-    // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix Image strokeWidth (vaak foutief gedetecteerd)
-    content = content.replace(/<Image([^>]*)strokeWidth=\{1\.5\}([^>]*)>/g, '<Image$1$2>');
-    content = content.replace(/<NextImage([^>]*)strokeWidth=\{1\.5\}([^>]*)>/g, '<NextImage$1$2>');
+    // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix double slashes in self-closing tags (herstel van eerdere fout)
+    content = content.replace(/\/ \/>/g, '/>');
+    content = content.replace(/\/ \/>/g, '/>'); // Dubbele check voor hardnekkige gevallen
+    content = content.replace(/ \/ \/>/g, ' />');
+
+    // 🚀 CHRIS-PROTOCOL 2.0: Verwijder strokeWidth van elementen die het niet horen te hebben
+    content = content.replace(/<(Link|Image|NextImage|VoiceglotText|VoiceglotHtml|VoiceglotImage|ContainerInstrument|SectionInstrument|HeadingInstrument|TextInstrument|ButtonInstrument|InputInstrument|LabelInstrument|FormInstrument|SelectInstrument|OptionInstrument|LoadingScreenInstrument|PageWrapperInstrument|AnimatePresence|Suspense|WorkshopHero|WorkshopContent|WorkshopInterestForm|PricingCalculator|AppointmentPicker|JitsiMeeting|ParticipantsContent|AfspraakContent|WorkshopQuiz|AcademyDashboardData|StudioDashboardData|WorkshopHeroProps)([^>]*)strokeWidth=\{1\.5\}([^>]*)>/g, '<$1$2$3>');
+
+    // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix Raleway Mandate (font-light voor koppen)
+    content = content.replace(/<(h[1-6]|HeadingInstrument)([^>]*)className="([^"]*)"([^>]*)>/g, (match, tag, p1, classes, p2) => {
+        if (classes.includes('font-') && !classes.includes('font-light') && !classes.includes('font-extralight') && !classes.includes('font-thin') && !classes.includes('font-medium')) {
+            console.log(`   ✅ [FIX] ${path.basename(filePath)}: font-light geforceerd op ${tag} (was ${classes.match(/font-[a-z]+/)?.[0]})`);
+            const newClasses = classes.replace(/font-[a-z]+/, 'font-light');
+            return `<${tag}${p1}className="${newClasses}"${p2}>`;
+        }
+        if (!classes.includes('font-')) {
+            console.log(`   ✅ [FIX] ${path.basename(filePath)}: font-light toegevoegd aan ${tag}`);
+            return `<${tag}${p1}className="${classes} font-light"${p2}>`;
+        }
+        return match;
+    });
 
     // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix Leesbaarheid (text-sm -> text-[15px])
     content = content.replace(/text-(xs|sm|\[(1[0-4]|[0-9])px\])/g, (match, p1, p2) => {

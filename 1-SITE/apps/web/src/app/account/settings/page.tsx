@@ -11,20 +11,20 @@ export default function SettingsPage() {
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       <SectionInstrument className="mb-16">
-        <Link strokeWidth={1.5} 
+        <Link  
           href="/account" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors mb-8"
         >
           <ArrowLeft strokeWidth={1.5} size={12} /> 
-          <VoiceglotText strokeWidth={1.5} translationKey="account.back_to_dashboard" defaultText="Terug naar Dashboard" / />
+          <VoiceglotText  translationKey="account.back_to_dashboard" defaultText="Terug naar Dashboard" />
         </Link>
         <ContainerInstrument className="space-y-4">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest border border-primary/10">
-            <Settings strokeWidth={1.5} size={12} fill="currentColor" / /> 
-            <VoiceglotText strokeWidth={1.5} translationKey="account.settings.badge" defaultText="Account Instellingen" / />
+            <Settings strokeWidth={1.5} size={12} fill="currentColor" /> 
+            <VoiceglotText  translationKey="account.settings.badge" defaultText="Account Instellingen" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter"><VoiceglotText strokeWidth={1.5} translationKey="account.settings.title_part1" defaultText="Jouw " / /><TextInstrument as="span" className="text-primary font-light"><VoiceglotText strokeWidth={1.5} translationKey="account.settings.title_part2" defaultText="Profiel" / /></TextInstrument></HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="account.settings.subtitle" defaultText="Beheer je persoonlijke gegevens en voorkeuren." / /></TextInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter"><VoiceglotText  translationKey="account.settings.title_part1" defaultText="Jouw " /><TextInstrument as="span" className="text-primary font-light"><VoiceglotText  translationKey="account.settings.title_part2" defaultText="Profiel" /></TextInstrument></HeadingInstrument>
+          <TextInstrument className="text-va-black/40 font-light"><VoiceglotText  translationKey="account.settings.subtitle" defaultText="Beheer je persoonlijke gegevens en voorkeuren." /></TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
@@ -36,9 +36,9 @@ export default function SettingsPage() {
             </ContainerInstrument>
             <ContainerInstrument>
               <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
-                <VoiceglotText strokeWidth={1.5} translationKey="account.settings.personal_title" defaultText="Persoonlijke Gegevens" / />
+                <VoiceglotText  translationKey="account.settings.personal_title" defaultText="Persoonlijke Gegevens" />
                 <TextInstrument className="text-va-black/40 text-[15px] font-light">
-                  <VoiceglotText strokeWidth={1.5} translationKey="account.settings.personal_subtitle" defaultText="Update je naam en e-mailadres." / />
+                  <VoiceglotText  translationKey="account.settings.personal_subtitle" defaultText="Update je naam en e-mailadres." />
                 </TextInstrument>
               </HeadingInstrument>
             </ContainerInstrument>
@@ -46,16 +46,16 @@ export default function SettingsPage() {
           
           <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <ContainerInstrument className="space-y-2">
-              <TextInstrument as="label" className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText strokeWidth={1.5} translationKey="common.first_name" defaultText="Voornaam" / /></TextInstrument>
+              <TextInstrument as="label" className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText  translationKey="common.first_name" defaultText="Voornaam" /></TextInstrument>
               <InputInstrument type="text" className="w-full bg-va-off-white border-none rounded-xl py-4 px-6 text-[15px] font-light" defaultValue="John" />
             </ContainerInstrument>
             <ContainerInstrument className="space-y-2">
-              <TextInstrument as="label" className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText strokeWidth={1.5} translationKey="common.last_name" defaultText="Achternaam" / /></TextInstrument>
+              <TextInstrument as="label" className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText  translationKey="common.last_name" defaultText="Achternaam" /></TextInstrument>
               <InputInstrument type="text" className="w-full bg-va-off-white border-none rounded-xl py-4 px-6 text-[15px] font-light" defaultValue="Doe" />
             </ContainerInstrument>
           </ContainerInstrument>
 
-          <ButtonInstrument className="va-btn-pro w-full md:w-auto"><VoiceglotText strokeWidth={1.5} translationKey="common.save_changes" defaultText="Wijzigingen Opslaan" / /></ButtonInstrument>
+          <ButtonInstrument className="va-btn-pro w-full md:w-auto"><VoiceglotText  translationKey="common.save_changes" defaultText="Wijzigingen Opslaan" /></ButtonInstrument>
         </BentoCard>
 
         <BentoCard span="sm" className="bg-va-black text-white p-12 flex flex-col justify-between group">
@@ -64,14 +64,14 @@ export default function SettingsPage() {
               <Lock strokeWidth={1.5} size={24} />
             </ContainerInstrument>
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2">
-              <VoiceglotText strokeWidth={1.5} translationKey="account.settings.security_title" defaultText="Beveiliging" / />
+              <VoiceglotText  translationKey="account.settings.security_title" defaultText="Beveiliging" />
               <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed">
-                <VoiceglotText strokeWidth={1.5} translationKey="account.settings.security_text" defaultText="Wijzig je wachtwoord of activeer extra beveiliging." / />
+                <VoiceglotText  translationKey="account.settings.security_text" defaultText="Wijzig je wachtwoord of activeer extra beveiliging." />
               </TextInstrument>
             </HeadingInstrument>
           </ContainerInstrument>
           <ButtonInstrument className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
-            <VoiceglotText strokeWidth={1.5} translationKey="account.settings.change_password" defaultText="Wachtwoord Wijzigen" / />
+            <VoiceglotText  translationKey="account.settings.change_password" defaultText="Wachtwoord Wijzigen" />
             <ArrowLeft strokeWidth={1.5} size={14} className="rotate-180" />
           </ButtonInstrument>
         </BentoCard>

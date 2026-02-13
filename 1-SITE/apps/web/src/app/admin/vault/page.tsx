@@ -47,11 +47,11 @@ export default function VaultBrowserPage() {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'script': return <FileText strokeWidth={1.5} size={16} className="text-blue-500" / />;
+      case 'script': return <FileText strokeWidth={1.5} size={16} className="text-blue-500" />;
       case 'briefing': return <Shield strokeWidth={1.5} size={16} className="text-orange-500" />;
-      case 'demo_inbound': return <Mic strokeWidth={1.5} size={16} className="text-purple-500" / />;
-      case 'example_video': return <Video strokeWidth={1.5} size={16} className="text-red-500" / />;
-      default: return <FileText strokeWidth={1.5} size={16} className="text-va-black/20" / />;
+      case 'demo_inbound': return <Mic strokeWidth={1.5} size={16} className="text-purple-500" />;
+      case 'example_video': return <Video strokeWidth={1.5} size={16} className="text-red-500" />;
+      default: return <FileText strokeWidth={1.5} size={16} className="text-va-black/20" />;
     }
   };
 
@@ -68,13 +68,13 @@ export default function VaultBrowserPage() {
                   <ArrowLeft strokeWidth={1.5} size={16} />
                 </ButtonInstrument>
                 <HeadingInstrument level={1} className="text-4xl font-light tracking-tight text-va-black">
-                  <VoiceglotText strokeWidth={1.5} translationKey="admin.vault.title" defaultText="The Vault" / />
-                  <TextInstrument as="span" className="text-primary text-2xl ml-2 font-extralight"><VoiceglotText strokeWidth={1.5} translationKey="admin.vault.subtitle" defaultText="Kluis" / /></TextInstrument>
+                  <VoiceglotText  translationKey="admin.vault.title" defaultText="The Vault" />
+                  <TextInstrument as="span" className="text-primary text-2xl ml-2 font-extralight"><VoiceglotText  translationKey="admin.vault.subtitle" defaultText="Kluis" /></TextInstrument>
                 </HeadingInstrument>
               </ContainerInstrument>
               <TextInstrument className="text-va-black/40 tracking-widest text-[15px] font-light flex items-center gap-2 ">
                 <Shield strokeWidth={1.5} size={12} />
-                <VoiceglotText strokeWidth={1.5} translationKey="admin.vault.description" defaultText="Beveiligde Documenten & Inbound Assets" / />
+                <VoiceglotText  translationKey="admin.vault.description" defaultText="Beveiligde Documenten & Inbound Assets" />
               </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -82,7 +82,7 @@ export default function VaultBrowserPage() {
           {/* Filters Bar */}
           <ContainerInstrument className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-white p-4 rounded-[20px] border border-black/5 shadow-sm">
             <ContainerInstrument className="relative">
-              <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} / />
+              <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} />
               <InputInstrument 
                 placeholder="Zoek op bestandsnaam..." 
                 className="pl-12 py-3 bg-va-off-white border-none rounded-[10px] text-[15px] font-light"
@@ -92,7 +92,7 @@ export default function VaultBrowserPage() {
               />
             </ContainerInstrument>
             <ContainerInstrument className="relative">
-              <Hash strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} / />
+              <Hash strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} />
               <InputInstrument 
                 placeholder="Project ID (6 cijfers)" 
                 className="pl-12 py-3 bg-va-off-white border-none rounded-[10px] text-[15px] font-light"
@@ -106,17 +106,17 @@ export default function VaultBrowserPage() {
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
             >
-              <OptionInstrument value="all"><VoiceglotText strokeWidth={1.5} translationKey="admin.vault.filter.all" defaultText="Alle Categorieën" / /></OptionInstrument>
-              <OptionInstrument value="script"><VoiceglotText strokeWidth={1.5} translationKey="admin.vault.filter.scripts" defaultText="Scripts" / /></OptionInstrument>
-              <OptionInstrument value="briefing"><VoiceglotText strokeWidth={1.5} translationKey="admin.vault.filter.briefings" defaultText="Briefings" / /></OptionInstrument>
-              <OptionInstrument value="demo_inbound"><VoiceglotText strokeWidth={1.5} translationKey="admin.vault.filter.demos" defaultText="Inbound Demo's" / /></OptionInstrument>
-              <OptionInstrument value="contract"><VoiceglotText strokeWidth={1.5} translationKey="admin.vault.filter.contracts" defaultText="Contracten" / /></OptionInstrument>
+              <OptionInstrument value="all"><VoiceglotText  translationKey="admin.vault.filter.all" defaultText="Alle Categorieën" /></OptionInstrument>
+              <OptionInstrument value="script"><VoiceglotText  translationKey="admin.vault.filter.scripts" defaultText="Scripts" /></OptionInstrument>
+              <OptionInstrument value="briefing"><VoiceglotText  translationKey="admin.vault.filter.briefings" defaultText="Briefings" /></OptionInstrument>
+              <OptionInstrument value="demo_inbound"><VoiceglotText  translationKey="admin.vault.filter.demos" defaultText="Inbound Demo's" /></OptionInstrument>
+              <OptionInstrument value="contract"><VoiceglotText  translationKey="admin.vault.filter.contracts" defaultText="Contracten" /></OptionInstrument>
             </SelectInstrument>
             <ButtonInstrument 
               onClick={fetchFiles}
               className="bg-va-black text-white rounded-[10px] font-light tracking-widest text-[15px] hover:bg-primary transition-all "
             >
-              <VoiceglotText strokeWidth={1.5} translationKey="admin.vault.filter.btn" defaultText="Filteren" / />
+              <VoiceglotText  translationKey="admin.vault.filter.btn" defaultText="Filteren" />
             </ButtonInstrument>
           </ContainerInstrument>
 
@@ -137,7 +137,7 @@ export default function VaultBrowserPage() {
                     </ContainerInstrument>
                     <ContainerInstrument className="flex gap-2">
                       <ButtonInstrument className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/20 hover:text-va-black">
-                        <Download strokeWidth={1.5} size={16} / />
+                        <Download strokeWidth={1.5} size={16} />
                       </ButtonInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>
@@ -161,7 +161,7 @@ export default function VaultBrowserPage() {
 
                     {file.project && (
                       <ContainerInstrument className="inline-block px-2 py-1 bg-primary/5 text-primary rounded-[20px] text-[15px] font-light tracking-widest ">
-                        <VoiceglotText strokeWidth={1.5} translationKey="admin.vault.project_id" defaultText="Project" / /> #{file.project.wpOrderId}
+                        <VoiceglotText  translationKey="admin.vault.project_id" defaultText="Project" /> #{file.project.wpOrderId}
                       </ContainerInstrument>
                     )}
                   </ContainerInstrument>
@@ -171,7 +171,7 @@ export default function VaultBrowserPage() {
           ) : (
             <ContainerInstrument className="text-center py-20 bg-va-off-white rounded-[20px] border-2 border-dashed border-black/5">
               <Shield strokeWidth={1.5} size={48} className="mx-auto text-va-black/10 mb-4" />
-              <TextInstrument className="text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.vault.empty" defaultText="Geen bestanden gevonden in de kluis." / /></TextInstrument>
+              <TextInstrument className="text-va-black/40 font-light"><VoiceglotText  translationKey="admin.vault.empty" defaultText="Geen bestanden gevonden in de kluis." /></TextInstrument>
             </ContainerInstrument>
           )}
 

@@ -7,5 +7,5 @@ export default async function LaunchpadPage() {
   const lang = headersList.get('x-voices-lang') || 'nl';
   const searchResults = await getActors({}, lang);
   
-  return <StudioLaunchpad strokeWidth={1.5} initialActors={searchResults.results} / />;
+  return <StudioLaunchpad strokeWidth={1.5} initialActors={searchResults.results} />;
 }

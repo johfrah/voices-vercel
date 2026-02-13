@@ -64,7 +64,7 @@ export const OrderIntelligence: React.FC<OrderIntelligenceProps> = ({ order }) =
         date={formattedDate}
         journey={order.journey}
         status={order.status}
-      / />
+      />
 
       <BentoGrid strokeWidth={1.5} columns={4}>
         <CustomerInstrument 

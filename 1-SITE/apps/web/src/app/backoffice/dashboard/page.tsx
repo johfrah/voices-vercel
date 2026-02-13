@@ -61,7 +61,7 @@ async function RecentActivity() {
         <ContainerInstrument key={order.id} className="flex items-center justify-between p-4 bg-white/50 rounded-xl border border-black/5">
           <ContainerInstrument className="flex items-center gap-4">
             <ContainerInstrument className="w-10 h-10 rounded-full bg-va-primary/10 flex items-center justify-center text-va-primary">
-              <ShoppingCart strokeWidth={1.5} size={18} / />
+              <ShoppingCart strokeWidth={1.5} size={18} />
             </ContainerInstrument>
             <ContainerInstrument>
               <TextInstrument className="text-[15px] font-light">Order #{order.wpOrderId}</TextInstrument>
@@ -85,9 +85,9 @@ export default async function BackofficeDashboard() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
       <ContainerInstrument className="max-w-7xl mx-auto">
         <SectionInstrument className="mb-12">
-          <ContainerInstrument className="inline-block bg-black text-white text-[15px] font-light px-3 py-1 rounded-full mb-6 tracking-widest "><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.badge" defaultText="Voices" / /></ContainerInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter leading-none mb-4"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.title_part1" defaultText="Het " / /><TextInstrument as="span" className="text-va-primary font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.title_part2" defaultText="overzicht." / /></TextInstrument></HeadingInstrument>
-          <TextInstrument className="text-xl text-va-black/40 font-light tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.subtitle" defaultText="Real-time overzicht van het Voices ecosysteem." / /></TextInstrument>
+          <ContainerInstrument className="inline-block bg-black text-white text-[15px] font-light px-3 py-1 rounded-full mb-6 tracking-widest "><VoiceglotText  translationKey="admin.dashboard.badge" defaultText="Voices" /></ContainerInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter leading-none mb-4"><VoiceglotText  translationKey="admin.dashboard.title_part1" defaultText="Het " /><TextInstrument as="span" className="text-va-primary font-light"><VoiceglotText  translationKey="admin.dashboard.title_part2" defaultText="overzicht." /></TextInstrument></HeadingInstrument>
+          <TextInstrument className="text-xl text-va-black/40 font-light tracking-tight"><VoiceglotText  translationKey="admin.dashboard.subtitle" defaultText="Real-time overzicht van het Voices ecosysteem." /></TextInstrument>
         </SectionInstrument>
 
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
@@ -95,20 +95,20 @@ export default async function BackofficeDashboard() {
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-green-500/10 text-green-600 rounded-2xl">
-                <ShoppingCart strokeWidth={1.5} size={24} / />
+                <ShoppingCart strokeWidth={1.5} size={24} />
               </ContainerInstrument>
-              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.card.voices" defaultText="Voices Agency" / /></TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText  translationKey="admin.dashboard.card.voices" defaultText="Voices Agency" /></TextInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-4xl font-light tracking-tighter mb-1">€ {Number(stats.revenue).toLocaleString('nl-BE')}</TextInstrument>
-            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.revenue" defaultText="Omzet" / /></TextInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText  translationKey="admin.dashboard.revenue" defaultText="Omzet" /></TextInstrument>
             <ContainerInstrument className="mt-6 pt-6 border-t border-black/5 flex justify-between">
               <ContainerInstrument>
                 <TextInstrument className="text-lg font-light">{stats.orders}</TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.orders" defaultText="Orders" / /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.dashboard.orders" defaultText="Orders" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="text-right">
                 <TextInstrument className="text-lg font-light">{stats.actors}</TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.voices" defaultText="Stemmen" / /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.dashboard.voices" defaultText="Stemmen" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -119,18 +119,18 @@ export default async function BackofficeDashboard() {
               <ContainerInstrument className="p-3 bg-va-primary/10 text-va-primary rounded-2xl">
                 <Activity strokeWidth={1.5} size={24} />
               </ContainerInstrument>
-              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.card.ademing" defaultText="Ademing" / /></TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText  translationKey="admin.dashboard.card.ademing" defaultText="Ademing" /></TextInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-4xl font-light tracking-tighter mb-1">{stats.ademingListenTime}u</TextInstrument>
-            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.listen_time" defaultText="Luistertijd" / /></TextInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText  translationKey="admin.dashboard.listen_time" defaultText="Luistertijd" /></TextInstrument>
             <ContainerInstrument className="mt-6 pt-6 border-t border-black/5 flex justify-between">
               <ContainerInstrument>
                 <TextInstrument className="text-lg font-light">{stats.avgStreak}d</TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.streak" defaultText="Streak" / /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.dashboard.streak" defaultText="Streak" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="text-right">
-                <TextInstrument className="text-lg font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.active" defaultText="Actief" / /></TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.status" defaultText="Status" / /></TextInstrument>
+                <TextInstrument className="text-lg font-light"><VoiceglotText  translationKey="admin.dashboard.active" defaultText="Actief" /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.dashboard.status" defaultText="Status" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -139,20 +139,20 @@ export default async function BackofficeDashboard() {
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-blue-500/10 text-blue-600 rounded-2xl">
-                <Users strokeWidth={1.5} size={24} / />
+                <Users strokeWidth={1.5} size={24} />
               </ContainerInstrument>
-              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.card.users" defaultText="Gebruikers" / /></TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText  translationKey="admin.dashboard.card.users" defaultText="Gebruikers" /></TextInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-4xl font-light tracking-tighter mb-1">{stats.users.toLocaleString('nl-BE')}</TextInstrument>
-            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.profiles" defaultText="Unieke Profielen" / /></TextInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText  translationKey="admin.dashboard.profiles" defaultText="Unieke Profielen" /></TextInstrument>
             <ContainerInstrument className="mt-6 pt-6 border-t border-black/5 flex justify-between">
               <ContainerInstrument>
                 <TextInstrument className="text-lg font-light">{stats.chats}</TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.chats" defaultText="Chats" / /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.dashboard.chats" defaultText="Chats" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="text-right">
                 <TextInstrument className="text-lg font-light">360°</TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.visibility" defaultText="Zichtbaarheid" / /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.dashboard.visibility" defaultText="Zichtbaarheid" /></TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
           </ContainerInstrument>
@@ -163,18 +163,18 @@ export default async function BackofficeDashboard() {
               <ContainerInstrument className="p-3 bg-orange-500/10 text-orange-600 rounded-2xl">
                 <Calendar strokeWidth={1.5} size={24} />
               </ContainerInstrument>
-              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.card.studio" defaultText="Studio & Academy" / /></TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText  translationKey="admin.dashboard.card.studio" defaultText="Studio & Academy" /></TextInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-4xl font-light tracking-tighter mb-1">{stats.workshops}</TextInstrument>
-            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.workshops" defaultText="Workshops" / /></TextInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText  translationKey="admin.dashboard.workshops" defaultText="Workshops" /></TextInstrument>
             <ContainerInstrument className="mt-6 pt-6 border-t border-black/5 flex justify-between">
               <ContainerInstrument>
                 <TextInstrument className="text-lg font-light">16</TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.sessions" defaultText="Sessies" / /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.dashboard.sessions" defaultText="Sessies" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="text-right">
-                <TextInstrument className="text-lg font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.live" defaultText="Live" / /></TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.status" defaultText="Status" / /></TextInstrument>
+                <TextInstrument className="text-lg font-light"><VoiceglotText  translationKey="admin.dashboard.live" defaultText="Live" /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.dashboard.status" defaultText="Status" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -182,27 +182,27 @@ export default async function BackofficeDashboard() {
 
         <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
-            <HeadingInstrument level={2} className="text-xl font-light tracking-tighter mb-8 italic"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.recent_activity" defaultText="Activiteit" / /></HeadingInstrument>
-            <RecentActivity strokeWidth={1.5} / />
+            <HeadingInstrument level={2} className="text-xl font-light tracking-tighter mb-8 italic"><VoiceglotText  translationKey="admin.dashboard.recent_activity" defaultText="Activiteit" /></HeadingInstrument>
+            <RecentActivity strokeWidth={1.5} />
           </ContainerInstrument>
           
           <ContainerInstrument className="bg-black text-white rounded-[40px] p-8 border border-black/[0.03] shadow-lg overflow-hidden relative">
             <ContainerInstrument className="relative z-10">
-              <HeadingInstrument level={2} className="text-xl font-light tracking-tighter mb-4 italic"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.ai_title" defaultText="Intelligence" / /><TextInstrument className="text-white/60 text-[15px] mb-8 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.ai_subtitle" defaultText="Analyse van het platform..." / /></TextInstrument></HeadingInstrument>
+              <HeadingInstrument level={2} className="text-xl font-light tracking-tighter mb-4 italic"><VoiceglotText  translationKey="admin.dashboard.ai_title" defaultText="Intelligence" /><TextInstrument className="text-white/60 text-[15px] mb-8 font-light"><VoiceglotText  translationKey="admin.dashboard.ai_subtitle" defaultText="Analyse van het platform..." /></TextInstrument></HeadingInstrument>
               <ContainerInstrument className="space-y-6">
                 <ContainerInstrument className="p-4 bg-white/10 rounded-xl border border-white/10">
-                  <TextInstrument className="text-[15px] font-light text-va-primary mb-1"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.insight_label_1" defaultText="Inzicht #1" / /></TextInstrument>
-                  <TextInstrument className="text-[15px] font-light"><VoiceglotText strokeWidth={1.5} 
+                  <TextInstrument className="text-[15px] font-light text-va-primary mb-1"><VoiceglotText  translationKey="admin.dashboard.insight_label_1" defaultText="Inzicht #1" /></TextInstrument>
+                  <TextInstrument className="text-[15px] font-light"><VoiceglotText  
                       translationKey="admin.dashboard.insight_1" 
                       defaultText="&quot;80% van de Ademing-gebruikers toont interesse in professionele stemcoaching.&quot;" 
-                    / /></TextInstrument>
+                    /></TextInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="p-4 bg-white/10 rounded-xl border border-white/10">
-                  <TextInstrument className="text-[15px] font-light text-va-primary mb-1"><VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.insight_label_2" defaultText="Inzicht #2" / /></TextInstrument>
-                  <TextInstrument className="text-[15px] font-light"><VoiceglotText strokeWidth={1.5} 
+                  <TextInstrument className="text-[15px] font-light text-va-primary mb-1"><VoiceglotText  translationKey="admin.dashboard.insight_label_2" defaultText="Inzicht #2" /></TextInstrument>
+                  <TextInstrument className="text-[15px] font-light"><VoiceglotText  
                       translationKey="admin.dashboard.insight_2" 
                       defaultText="&quot;De gemiddelde orderwaarde stijgt met 15% na een aanbeveling.&quot;" 
-                    / /></TextInstrument>
+                    /></TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

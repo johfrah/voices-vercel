@@ -18,6 +18,6 @@ export function GlobalAudioOrchestrator() {
     <MediaMaster strokeWidth={1.5} 
       demo={activeDemo} 
       onClose={stopDemo} 
-    / />
+    />
   );
 }

@@ -61,7 +61,7 @@ export default function Error({
       </ContainerInstrument>
 
       <ContainerInstrument className="text-center space-y-2">
-        <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter">
+        <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter">
           <VoiceglotText translationKey="error.app.title" defaultText="Oeps, even geduld" />
         </HeadingInstrument>
         <TextInstrument className="text-va-black/40 font-medium max-w-md mx-auto">

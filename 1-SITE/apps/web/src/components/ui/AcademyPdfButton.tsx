@@ -13,6 +13,13 @@ interface AcademyPdfButtonProps {
   fileName?: string;
 }
 
+import { 
+  ButtonInstrument, 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument 
+} from './LayoutInstruments';
+
 export const AcademyPdfButton: React.FC<AcademyPdfButtonProps> = ({ 
   lessonTitle, 
   contentSelector,
@@ -63,20 +70,20 @@ export const AcademyPdfButton: React.FC<AcademyPdfButtonProps> = ({
   };
 
   return (
-    <button 
+    <ButtonInstrument 
       onClick={handleDownload}
       disabled={isGenerating}
-      className="w-full py-4 rounded-xl bg-white/5 hover:bg-white/10 text-white text-[15px] font-black tracking-widest transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+      className="w-full py-3 md:py-4 rounded-xl bg-white/5 hover:bg-white/10 text-white text-[15px] font-black tracking-widest transition-all flex items-center justify-center gap-2 disabled:opacity-50"
     >
       {isGenerating ? (
-        <Loader2 strokeWidth={1.5} size={14} className="animate-spin" / />
+        <Loader2 strokeWidth={1.5} size={14} className="animate-spin" />
       ) : (
-        <FileText strokeWidth={1.5} size={14} / />
+        <FileText strokeWidth={1.5} size={14} />
       )}
-      <VoiceglotText strokeWidth={1.5} 
+      <VoiceglotText  
         translationKey="academy.lesson.download_pdf" 
         defaultText={isGenerating ? "Genereren..." : "Download Les PDF"} 
-      / />
-    </button>
+      />
+    </ButtonInstrument>
   );
 };

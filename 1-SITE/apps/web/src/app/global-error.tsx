@@ -31,22 +31,27 @@ export default function GlobalError({
         <ContainerInstrument className="min-h-screen flex items-center justify-center p-6">
           <ContainerInstrument className="max-w-md w-full bg-white rounded-[40px] p-12 shadow-aura border border-black/5 text-center space-y-8">
             <ContainerInstrument className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto">
-              <AlertCircle strokeWidth={1.5} size={40} / />
+              <AlertCircle strokeWidth={1.5} size={40} />
             </ContainerInstrument>
             
             <ContainerInstrument className="space-y-2">
-              <HeadingInstrument level={1} className="text-3xl font-black tracking-tighter"><VoiceglotText strokeWidth={1.5} translationKey="error.global.title" defaultText="Systeem Fout" / /><TextInstrument className="text-va-black/40 font-medium leading-relaxed"><VoiceglotText strokeWidth={1.5} 
+              <HeadingInstrument level={1} className="text-3xl font-light tracking-tighter">
+                <VoiceglotText translationKey="error.global.title" defaultText="Systeem Fout" />
+              </HeadingInstrument>
+              <TextInstrument className="text-va-black/40 font-medium leading-relaxed">
+                <VoiceglotText 
                   translationKey="error.global.text" 
                   defaultText="Er ging iets mis bij het laden van de Freedom Machine. Onze excuses voor het ongemak." 
-                / /></TextInstrument></HeadingInstrument>
+                />
+              </TextInstrument>
             </ContainerInstrument>
 
             <ButtonInstrument 
               onClick={reset}
               className="va-btn-pro w-full !py-6"
             >
-              <RefreshCw strokeWidth={1.5} size={18} / />
-              <VoiceglotText strokeWidth={1.5} translationKey="error.global.cta" defaultText="Pagina Herstellen" / />
+              <RefreshCw strokeWidth={1.5} size={18} />
+              <VoiceglotText translationKey="error.global.cta" defaultText="Pagina Herstellen" />
             </ButtonInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

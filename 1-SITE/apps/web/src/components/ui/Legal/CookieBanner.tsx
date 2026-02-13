@@ -51,37 +51,37 @@ export const CookieBanner: React.FC = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="fixed bottom-8 left-6 right-6 md:left-auto md:right-8 md:w-[400px] z-[100]"
+          className="fixed bottom-6 md:bottom-8 left-4 md:left-auto right-4 md:right-8 md:w-[400px] z-[100]"
         >
-          <ContainerInstrument plain className="bg-va-black text-white p-6 rounded-[24px] shadow-aura border border-white/5 relative overflow-hidden group">
+          <ContainerInstrument plain className="bg-va-black text-white p-5 md:p-6 rounded-[24px] shadow-aura border border-white/5 relative overflow-hidden group">
             {/* Liquid Background Element */}
-            <ContainerInstrument plain className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
+            <ContainerInstrument plain className="absolute -bottom-20 -right-20 w-48 md:w-64 h-48 md:h-64 bg-primary/5 rounded-full blur-[60px] md:blur-[80px]" />
 
             <ContainerInstrument plain className="relative z-10 space-y-4">
-              <TextInstrument className="text-white/60 text-[15px] font-light"><VoiceglotText strokeWidth={1.5} 
+              <TextInstrument className="text-white/60 text-[15px] md:text-[15px] font-light leading-relaxed"><VoiceglotText  
                   translationKey="legal.cookie.text" 
                   defaultText="Wij gebruiken cookies om jouw ervaring te personaliseren." 
-                / />{' '}
-                <Link strokeWidth={1.5} 
+                />{' '}
+                <Link  
                   href="/cookies/" 
                   className="text-white/80 underline underline-offset-2 hover:text-white transition-colors"
                 >
-                  <VoiceglotText strokeWidth={1.5} translationKey="legal.cookie.policy" defaultText="Cookiebeleid" / />
+                  <VoiceglotText  translationKey="legal.cookie.policy" defaultText="Cookiebeleid" />
                 </Link>
               </TextInstrument>
 
-              <ContainerInstrument plain className="flex items-center gap-4">
+              <ContainerInstrument plain className="flex items-center gap-3 md:gap-4">
                 <ButtonInstrument 
                   onClick={() => handleAccept('all')}
-                  className="bg-primary text-va-black px-5 py-2.5 rounded-[20px] text-[15px] font-light tracking-tight hover:scale-105 transition-all"
+                  className="bg-primary text-va-black px-4 md:px-5 py-2 md:py-2.5 rounded-[20px] text-[15px] md:text-[15px] font-light tracking-tight hover:scale-105 transition-all "
                 >
-                  <VoiceglotText strokeWidth={1.5} translationKey="legal.cookie.accept" defaultText="Accepteer" / />
+                  <VoiceglotText  translationKey="legal.cookie.accept" defaultText="Accepteer" />
                 </ButtonInstrument>
                 <ButtonInstrument 
                   onClick={() => handleAccept('essential')}
-                  className="text-[15px] font-light tracking-tight text-white/20 hover:text-white transition-colors"
+                  className="text-[15px] md:text-[15px] font-light tracking-tight text-white/20 hover:text-white transition-colors "
                 >
-                  <VoiceglotText strokeWidth={1.5} translationKey="legal.cookie.essential" defaultText="Noodzakelijk" / />
+                  <VoiceglotText  translationKey="legal.cookie.essential" defaultText="Noodzakelijk" />
                 </ButtonInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

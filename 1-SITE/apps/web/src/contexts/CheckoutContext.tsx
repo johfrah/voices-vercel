@@ -5,6 +5,10 @@ import { Actor } from '@/types';
 import { CheckCircle2 } from 'lucide-react';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
+import { 
+  ContainerInstrument 
+} from '@/components/ui/LayoutInstruments';
+
 interface CheckoutState {
   step: 'briefing' | 'voice' | 'details' | 'payment' | 'done';
   journey: 'studio' | 'academy' | 'agency' | 'johfrai-subscription';
@@ -216,7 +220,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       unlockPrice,
       isVatExempt
     }}>
-      <div className="hidden"><CheckCircle2 strokeWidth={1.5} /></div>
+      <ContainerInstrument className="hidden"><CheckCircle2 strokeWidth={1.5} /></ContainerInstrument>
       {children}
     </CheckoutContext.Provider>
   );

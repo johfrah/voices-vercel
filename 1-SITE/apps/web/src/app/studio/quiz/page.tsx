@@ -8,19 +8,19 @@ export default function QuizPage() {
     <main className="min-h-screen bg-black pt-24 pb-12">
       <ContainerInstrument>
         <ContainerInstrument className="max-w-4xl mx-auto text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter">
-            <VoiceglotText strokeWidth={1.5} translationKey="studio.quiz.title" defaultText="Ontdek jouw stem" / />
+          <h1 className="text-4xl md:text-6xl font-light text-white mb-4 tracking-tighter">
+            <VoiceglotText  translationKey="studio.quiz.title" defaultText="Ontdek jouw stem" />
           </h1>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            <VoiceglotText strokeWidth={1.5} 
+            <VoiceglotText  
               translationKey="studio.quiz.subtitle" 
               defaultText="Niet zeker welke workshop bij je past? Beantwoord een paar vragen en we geven je direct advies." 
-            / />
+            />
           </p>
         </ContainerInstrument>
 
         <ContainerInstrument className="flex justify-center">
-          <WorkshopQuiz strokeWidth={1.5} / />
+          <WorkshopQuiz   />
         </ContainerInstrument>
       </ContainerInstrument>
     </main>

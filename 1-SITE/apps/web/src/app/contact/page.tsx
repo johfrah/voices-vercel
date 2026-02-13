@@ -76,25 +76,25 @@ export default function ContactPage() {
 
   return (
     <PageWrapperInstrument className="pt-32 pb-40 bg-va-off-white min-h-screen relative overflow-hidden">
-      <LiquidBackground strokeWidth={1.5} / />
+      <LiquidBackground strokeWidth={1.5} />
       <ContainerInstrument className="relative z-10">
         
         {/* Header */}
         <SectionInstrument className="mb-16 text-center">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest border border-black/5 mb-8 ">
             <Sparkles strokeWidth={1.5} size={12} fill="currentColor" /> 
-            <VoiceglotText strokeWidth={1.5} translationKey="contact.badge" defaultText="Altijd Bereikbaar" / />
+            <VoiceglotText  translationKey="contact.badge" defaultText="Altijd Bereikbaar" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none mb-6">
-            <VoiceglotText strokeWidth={1.5} translationKey="contact.title_part1" defaultText="Laten we " / />
+            <VoiceglotText  translationKey="contact.title_part1" defaultText="Laten we " />
             <TextInstrument as="span" className="text-primary font-light">
-              <VoiceglotText strokeWidth={1.5} translationKey="contact.title_part2" defaultText="praten." / />
+              <VoiceglotText  translationKey="contact.title_part2" defaultText="praten." />
             </TextInstrument>
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-light text-[15px] md:text-xl max-w-2xl mx-auto"><VoiceglotText strokeWidth={1.5} 
+          <TextInstrument className="text-va-black/40 font-light text-[15px] md:text-xl max-w-2xl mx-auto"><VoiceglotText  
               translationKey="contact.subtitle" 
               defaultText="Heb je een vraag over een stem, een project of wil je gewoon even sparren? We staan voor je klaar." 
-            / /></TextInstrument>
+            /></TextInstrument>
         </SectionInstrument>
 
         <BentoGrid strokeWidth={1.5} columns={3}>
@@ -106,22 +106,22 @@ export default function ContactPage() {
                   <CheckCircle2 strokeWidth={1.5} size={40} />
                 </ContainerInstrument>
                 <HeadingInstrument level={2} className="text-3xl font-light tracking-tight">
-                  <VoiceglotText strokeWidth={1.5} translationKey="contact.success.title" defaultText="Bericht ontvangen" / />
+                  <VoiceglotText  translationKey="contact.success.title" defaultText="Bericht ontvangen" />
                 </HeadingInstrument>
                 <TextInstrument className="text-va-black/40 font-light text-[15px] max-w-sm leading-relaxed">
-                  <VoiceglotText strokeWidth={1.5}
+                  <VoiceglotText 
                     translationKey="contact.success.text"
                     defaultText="Bedankt voor je bericht. We hebben het direct doorgestuurd naar ons team en reageren zo snel mogelijk."
-                  / />
+                  />
                 </TextInstrument>
                 <ButtonInstrument onClick={() => setIsSent(false)} className="va-btn-secondary">
-                  <VoiceglotText strokeWidth={1.5} translationKey="contact.success.cta" defaultText="Nog een bericht sturen" / />
+                  <VoiceglotText  translationKey="contact.success.cta" defaultText="Nog een bericht sturen" />
                 </ButtonInstrument>
               </ContainerInstrument>
             ) : (
               <>
                 <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-8">
-                  <VoiceglotText strokeWidth={1.5} translationKey="contact.form.title" defaultText="Stuur ons een bericht" / />
+                  <VoiceglotText  translationKey="contact.form.title" defaultText="Stuur ons een bericht" />
                 </HeadingInstrument>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {submitError && (
@@ -138,14 +138,14 @@ export default function ContactPage() {
                         onClick={() => setSubmitError(null)}
                         className="ml-auto shrink-0 text-[15px] font-light underline hover:no-underline"
                       >
-                        <VoiceglotText strokeWidth={1.5} translationKey="contact.error.dismiss" defaultText="Sluiten" / />
+                        <VoiceglotText  translationKey="contact.error.dismiss" defaultText="Sluiten" />
                       </ButtonInstrument>
                     </ContainerInstrument>
                   )}
                   <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <ContainerInstrument className="space-y-1">
                       <LabelInstrument>
-                        <VoiceglotText strokeWidth={1.5} translationKey="contact.form.name" defaultText="Naam" / />
+                        <VoiceglotText  translationKey="contact.form.name" defaultText="Naam" />
                       </LabelInstrument>
                       <InputInstrument
                         required
@@ -157,7 +157,7 @@ export default function ContactPage() {
                     </ContainerInstrument>
                     <ContainerInstrument className="space-y-1">
                       <LabelInstrument>
-                        <VoiceglotText strokeWidth={1.5} translationKey="contact.form.email" defaultText="E-mail" / />
+                        <VoiceglotText  translationKey="contact.form.email" defaultText="E-mail" />
                       </LabelInstrument>
                       <InputInstrument
                         required
@@ -171,7 +171,7 @@ export default function ContactPage() {
                   </ContainerInstrument>
                   <ContainerInstrument className="space-y-1">
                     <LabelInstrument>
-                      <VoiceglotText strokeWidth={1.5} translationKey="contact.form.subject" defaultText="Onderwerp" / />
+                      <VoiceglotText  translationKey="contact.form.subject" defaultText="Onderwerp" />
                     </LabelInstrument>
                     <InputInstrument
                       value={formData.subject}
@@ -182,7 +182,7 @@ export default function ContactPage() {
                   </ContainerInstrument>
                   <ContainerInstrument className="space-y-1">
                     <LabelInstrument>
-                      <VoiceglotText strokeWidth={1.5} translationKey="contact.form.message" defaultText="Bericht" / />
+                      <VoiceglotText  translationKey="contact.form.message" defaultText="Bericht" />
                     </LabelInstrument>
                     <textarea
                       required
@@ -193,8 +193,8 @@ export default function ContactPage() {
                     />
                   </ContainerInstrument>
                   <ButtonInstrument type="submit" disabled={isSubmitting} className="va-btn-pro w-full flex items-center justify-center gap-3">
-                    {isSubmitting ? <Loader2 strokeWidth={1.5} className="animate-spin" size={18} / /> : <Send strokeWidth={1.5} size={18} />}
-                    <VoiceglotText strokeWidth={1.5} translationKey="contact.form.submit" defaultText="Bericht verzenden" / />
+                    {isSubmitting ? <Loader2 strokeWidth={1.5} className="animate-spin" size={18} /> : <Send strokeWidth={1.5} size={18} />}
+                    <VoiceglotText  translationKey="contact.form.submit" defaultText="Bericht verzenden" />
                   </ButtonInstrument>
                 </form>
               </>
@@ -208,20 +208,20 @@ export default function ContactPage() {
                 <MessageSquare strokeWidth={1.5} size={24} />
               </ContainerInstrument>
               <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter mb-4 leading-tight">
-                <VoiceglotText strokeWidth={1.5} translationKey="contact.voicy.title" defaultText="Direct antwoord nodig?" / />
+                <VoiceglotText  translationKey="contact.voicy.title" defaultText="Direct antwoord nodig?" />
               </HeadingInstrument>
               <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed mb-8 block">
-                <VoiceglotText strokeWidth={1.5}
+                <VoiceglotText 
                   translationKey="contact.voicy.text"
                   defaultText="Chat direct met Voicy, onze AI-assistent. Ze kan je helpen met tarieven, stemkeuze en technische vragen."
-                / />
+                />
               </TextInstrument>
             </ContainerInstrument>
             <ButtonInstrument 
               onClick={openVoicy}
               className="relative z-10 va-btn-pro !bg-primary !text-va-black w-full"
             >
-              <VoiceglotText strokeWidth={1.5} translationKey="contact.voicy.cta" defaultText="Start Chat" / />
+              <VoiceglotText  translationKey="contact.voicy.cta" defaultText="Start Chat" />
             </ButtonInstrument>
             <ContainerInstrument className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[80px]" aria-hidden="true" />
           </BentoCard>
@@ -233,7 +233,7 @@ export default function ContactPage() {
                 <Phone strokeWidth={1.5} size={20} />
               </ContainerInstrument>
               <ContainerInstrument>
-                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText strokeWidth={1.5} translationKey="contact.info.phone_label" defaultText="Bel ons" / /></TextInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText  translationKey="contact.info.phone_label" defaultText="Bel ons" /></TextInstrument>
                 <TextInstrument className="text-lg font-light">+32 (0)2 793 19 91</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -242,17 +242,17 @@ export default function ContactPage() {
                 <Mail strokeWidth={1.5} size={20} />
               </ContainerInstrument>
               <ContainerInstrument>
-                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText strokeWidth={1.5} translationKey="contact.info.email_label" defaultText="E-mail ons" / /></TextInstrument>
-                <TextInstrument className="text-lg font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.hello_voices_be.b689c1" defaultText="hello@voices.be" / /></TextInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText  translationKey="contact.info.email_label" defaultText="E-mail ons" /></TextInstrument>
+                <TextInstrument className="text-lg font-light"><VoiceglotText  translationKey="auto.page.hello_voices_be.b689c1" defaultText="hello@voices.be" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="bg-white/50 backdrop-blur-md p-8 rounded-[20px] border border-black/5 flex items-center gap-6">
               <ContainerInstrument className="w-12 h-12 bg-va-black rounded-[10px] flex items-center justify-center text-white shrink-0">
-                <MapPin strokeWidth={1.5} size={20} / />
+                <MapPin strokeWidth={1.5} size={20} />
               </ContainerInstrument>
               <ContainerInstrument>
-                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText strokeWidth={1.5} translationKey="contact.info.address_label" defaultText="Bezoek ons" / /></TextInstrument>
-                <TextInstrument className="text-lg font-light"><VoiceglotText strokeWidth={1.5} translationKey="contact.info.address_value" defaultText="Gent, België" / /></TextInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText  translationKey="contact.info.address_label" defaultText="Bezoek ons" /></TextInstrument>
+                <TextInstrument className="text-lg font-light"><VoiceglotText  translationKey="contact.info.address_value" defaultText="Gent, België" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

@@ -24,13 +24,13 @@ export default function MediaPage() {
       <PageWrapperInstrument className="min-h-screen bg-va-off-white flex items-center justify-center p-6">
         <SectionInstrument className="bg-white p-12 rounded-[40px] shadow-aura text-center max-w-md space-y-6">
           <ContainerInstrument className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto">
-            <ShieldAlert strokeWidth={1.5} className="text-red-500" size={32} / />
+            <ShieldAlert strokeWidth={1.5} className="text-red-500" size={32} />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-2xl font-black tracking-tighter"><VoiceglotText strokeWidth={1.5} translationKey="admin.access_denied.title" defaultText="Toegang Geweigerd" / /><TextInstrument className="text-va-black/40 font-medium leading-relaxed"><VoiceglotText strokeWidth={1.5} 
+          <HeadingInstrument level={1} className="text-2xl font-light tracking-tighter"><VoiceglotText  translationKey="admin.access_denied.title" defaultText="Toegang Geweigerd" /><TextInstrument className="text-va-black/40 font-medium leading-relaxed"><VoiceglotText  
               translationKey="admin.access_denied.text" 
               defaultText="Deze sectie is uitsluitend toegankelijk voor beheer." 
-            / /></TextInstrument></HeadingInstrument>
-          <ButtonInstrument as="a" href="/" className="va-btn-pro inline-block"><VoiceglotText strokeWidth={1.5} translationKey="common.back_to_home" defaultText="Terug" / /></ButtonInstrument>
+            /></TextInstrument></HeadingInstrument>
+          <ButtonInstrument as="a" href="/" className="va-btn-pro inline-block"><VoiceglotText  translationKey="common.back_to_home" defaultText="Terug" /></ButtonInstrument>
         </SectionInstrument>
       </PageWrapperInstrument>
     );
@@ -39,7 +39,7 @@ export default function MediaPage() {
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 md:p-12 lg:p-20">
       <SectionInstrument className="max-w-7xl mx-auto">
-        <MediaLibrary strokeWidth={1.5} / />
+        <MediaLibrary strokeWidth={1.5} />
       </SectionInstrument>
     </PageWrapperInstrument>
   );

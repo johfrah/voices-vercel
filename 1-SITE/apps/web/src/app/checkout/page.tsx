@@ -5,9 +5,9 @@ import { PageWrapperInstrument, LoadingScreenInstrument } from '@/components/ui/
 
 export default function CheckoutPage() {
   return (
-    <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
-      <CheckoutPageClient strokeWidth={1.5} / />
-      <MobileCheckoutSheet strokeWidth={1.5} / />
+    <Suspense  fallback={<LoadingScreenInstrument />}>
+      <CheckoutPageClient strokeWidth={1.5} />
+      <MobileCheckoutSheet strokeWidth={1.5} />
     </Suspense>
   );
 }

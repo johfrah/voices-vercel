@@ -12,6 +12,12 @@ import React, { useRef, useState } from 'react';
  * Vervangt de PHP [audiorecorder] shortcode.
  */
 
+import { 
+  ButtonInstrument, 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument 
+} from './LayoutInstruments';
 import { VoiceglotText } from "./VoiceglotText";
 
 interface AudioRecorderProps {
@@ -87,82 +93,82 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
   };
 
   return (
-    <div className={cn(
-      "va-cockpit-card p-8 text-center flex flex-col items-center gap-6",
+    <ContainerInstrument className={cn(
+      "va-cockpit-card p-6 md:p-8 text-center flex flex-col items-center gap-4 md:gap-6",
       className
     )}>
-      <div className={cn(
-        "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500",
+      <ContainerInstrument className={cn(
+        "w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-500",
         isRecording ? "bg-red-500 animate-pulse scale-110 shadow-lg shadow-red-500/20" : "bg-primary shadow-lg shadow-primary/20"
       )}>
-        <Mic strokeWidth={1.5} className="text-white" size={32} / />
-      </div>
+        <Mic strokeWidth={1.5} className="text-white" size={32} />
+      </ContainerInstrument>
 
-      <div className="space-y-2">
-        <h3 className="text-xl font-light tracking-tight">
-          <VoiceglotText strokeWidth={1.5} translationKey="recorder.title" defaultText="Audiobriefing" / />
-        </h3>
-        <p className="text-[15px] text-va-black/40 max-w-xs mx-auto font-light">
-          <VoiceglotText strokeWidth={1.5} translationKey="recorder.subtitle" defaultText="Spreek je instructies in voor de stemacteur. Duidelijkheid boven alles." / />
-        </p>
-      </div>
+      <ContainerInstrument className="space-y-2">
+        <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
+          <VoiceglotText  translationKey="recorder.title" defaultText="Audiobriefing" />
+        </HeadingInstrument>
+        <TextInstrument className="text-[15px] text-va-black/40 max-w-xs mx-auto font-light">
+          <VoiceglotText  translationKey="recorder.subtitle" defaultText="Spreek je instructies in voor de stemacteur. Duidelijkheid boven alles." />
+        </TextInstrument>
+      </ContainerInstrument>
 
-      <div className="flex flex-col gap-4 w-full max-w-xs">
+      <ContainerInstrument className="flex flex-col gap-3 md:gap-4 w-full max-w-xs">
         {!audioUrl ? (
-          <button
+          <ButtonInstrument
             onClick={isRecording ? stopRecording : startRecording}
             onMouseEnter={() => playSwell()}
             className={cn(
-              "va-btn-pro w-full py-4 flex items-center justify-center gap-3",
+              "va-btn-pro w-full py-3 md:py-4 flex items-center justify-center gap-3",
               isRecording && "bg-va-black text-white"
             )}
           >
             {isRecording ? (
-              <><Square strokeWidth={1.5} size={18} fill="currentColor" / /> <VoiceglotText strokeWidth={1.5} translationKey="recorder.stop" defaultText="Stop Opname" / /></>
+              <><Square strokeWidth={1.5} size={18} fill="currentColor" /> <VoiceglotText  translationKey="recorder.stop" defaultText="Stop Opname" /></>
             ) : (
-              <><Mic strokeWidth={1.5} size={18} / /> <VoiceglotText strokeWidth={1.5} translationKey="recorder.start" defaultText="Start Opname" / /></>
+              <><Mic strokeWidth={1.5} size={18} /> <VoiceglotText  translationKey="recorder.start" defaultText="Start Opname" /></>
             )}
-          </button>
+          </ButtonInstrument>
         ) : (
-          <div className="space-y-4 w-full">
+          <ContainerInstrument className="space-y-3 md:space-y-4 w-full">
             <audio src={audioUrl} controls className="w-full h-10" />
             
-            <div className="flex gap-2">
-              <button
+            <ContainerInstrument className="flex gap-2">
+              <ButtonInstrument
                 onClick={() => setAudioUrl(null)}
                 className="va-btn-soft flex-1 py-3 flex items-center justify-center gap-2"
               >
-                <Trash2 strokeWidth={1.5} size={16} / /> <VoiceglotText strokeWidth={1.5} translationKey="recorder.retry" defaultText="Opnieuw" / />
-              </button>
+                <Trash2 strokeWidth={1.5} size={16} /> <VoiceglotText  translationKey="recorder.retry" defaultText="Opnieuw" />
+              </ButtonInstrument>
               
-              <button
+              <ButtonInstrument
                 onClick={handleUpload}
                 disabled={isUploading}
                 className="va-btn-pro flex-[2] py-3 flex items-center justify-center gap-2"
               >
                 {isUploading ? (
-                  <><Loader2 strokeWidth={1.5} size={16} className="animate-spin" / /> <VoiceglotText strokeWidth={1.5} translationKey="recorder.uploading" defaultText="Bezig..." / /></>
+                  <><Loader2 strokeWidth={1.5} size={16} className="animate-spin" /> <VoiceglotText  translationKey="recorder.uploading" defaultText="Bezig..." /></>
                 ) : (
-                  <><CheckCircle2 strokeWidth={1.5} size={16} /> <VoiceglotText strokeWidth={1.5} translationKey="recorder.send" defaultText="Versturen" / /></>
+                  <><CheckCircle2 strokeWidth={1.5} size={16} /> <VoiceglotText  translationKey="recorder.send" defaultText="Versturen" /></>
                 )}
-              </button>
-            </div>
-          </div>
+              </ButtonInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
         )}
-      </div>
+      </ContainerInstrument>
 
-      {error && <p className="text-[15px] font-medium text-red-500 tracking-widest">{error}</p>}
+      {error && <TextInstrument className="text-[15px] font-medium text-red-500 tracking-widest">{error}</TextInstrument>}
 
-      <div className="pt-6 border-t border-va-black/5 w-full text-left">
-        <h4 className="text-[15px] font-medium tracking-widest opacity-30 mb-3">
-          <VoiceglotText strokeWidth={1.5} translationKey="recorder.tips.title" defaultText="Tips voor succes" / />
-        </h4>
+      <ContainerInstrument className="pt-4 md:pt-6 border-t border-va-black/5 w-full text-left">
+        <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest opacity-30 mb-3">
+          <VoiceglotText  translationKey="recorder.tips.title" defaultText="Tips voor succes" />
+        </HeadingInstrument>
         <ul className="text-[15px] text-va-black/50 space-y-1.5 font-light">
-          <li>• <VoiceglotText strokeWidth={1.5} translationKey="recorder.tips.1" defaultText="Spreek namen en vaktermen duidelijk uit." / /></li>
-          <li>• <VoiceglotText strokeWidth={1.5} translationKey="recorder.tips.2" defaultText="Geef aan welk tempo of welke toon je wenst." / /></li>
-          <li>• <VoiceglotText strokeWidth={1.5} translationKey="recorder.tips.3" defaultText="Maximaal 2 minuten per opname." / /></li>
+          <li>• <VoiceglotText  translationKey="recorder.tips.1" defaultText="Spreek namen en vaktermen duidelijk uit." /></li>
+          <li>• <VoiceglotText  translationKey="recorder.tips.2" defaultText="Geef aan welk tempo of welke toon je wenst." /></li>
+          <li>• <VoiceglotText  translationKey="recorder.tips.3" defaultText="Maximaal 2 minuten per opname." /></li>
         </ul>
-      </div>
-    </div>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 };

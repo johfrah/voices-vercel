@@ -96,11 +96,11 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
               alt={actor.firstName} 
               fill
               className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
-            / />
+            />
           </div>
           
           <div className="flex-1">
-            <h4 className="text-[15px] font-black tracking-tight">{actor.firstName}</h4>
+            <h4 className="text-[15px] font-light tracking-tight">{actor.firstName}</h4>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-[15px] font-black text-primary tracking-widest">{actor.nativeLang}</span>
               <div className="flex gap-0.5">
@@ -123,7 +123,7 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
             }}
             className="w-8 h-8 rounded-lg bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all active:scale-90"
           >
-            <Play strokeWidth={1.5} size={12} fill="currentColor" / />
+            <Play strokeWidth={1.5} size={12} fill="currentColor" />
           </button>
         </motion.div>
       ))}

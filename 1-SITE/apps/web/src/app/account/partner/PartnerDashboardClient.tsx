@@ -32,28 +32,28 @@ export default function PartnerDashboardClient() {
 
   const stats = [
     { label: 'Actieve Projecten', value: '12', icon: <Briefcase strokeWidth={1.5} size={20} />, trend: '+2' },
-    { label: 'Totaal Bereik', value: '45.2k', icon: <Users strokeWidth={1.5} size={20} / />, trend: '+12%' },
-    { label: 'Conversie', value: '3.8%', icon: <TrendingUp strokeWidth={1.5} size={20} / />, trend: '+0.4%' },
-    { label: 'Inkomsten (30d)', value: '€ 2.450', icon: <BarChart3 strokeWidth={1.5} size={20} / />, trend: '+15%' },
+    { label: 'Totaal Bereik', value: '45.2k', icon: <Users strokeWidth={1.5} size={20} />, trend: '+12%' },
+    { label: 'Conversie', value: '3.8%', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: '+0.4%' },
+    { label: 'Inkomsten (30d)', value: '€ 2.450', icon: <BarChart3 strokeWidth={1.5} size={20} />, trend: '+15%' },
   ];
 
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       <SectionInstrument className="mb-16">
-        <Link strokeWidth={1.5} 
+        <Link  
           href="/account" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors mb-8"
         >
           <ArrowLeft strokeWidth={1.5} size={12} /> 
-          <VoiceglotText strokeWidth={1.5} translationKey="account.back_to_dashboard" defaultText="Terug naar Dashboard" / />
+          <VoiceglotText  translationKey="account.back_to_dashboard" defaultText="Terug naar Dashboard" />
         </Link>
         <ContainerInstrument className="space-y-4">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest border border-primary/10">
             <Zap strokeWidth={1.5} size={12} fill="currentColor" /> 
-            <VoiceglotText strokeWidth={1.5} translationKey="account.partner.badge" defaultText="Partner" / />
+            <VoiceglotText  translationKey="account.partner.badge" defaultText="Partner" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter"><VoiceglotText strokeWidth={1.5} translationKey="account.partner.title_part1" defaultText="Partner " / /><TextInstrument as="span" className="text-primary font-light"><VoiceglotText strokeWidth={1.5} translationKey="account.partner.title_part2" defaultText="Insights" / /></TextInstrument></HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-light"><VoiceglotText strokeWidth={1.5} translationKey="account.partner.subtitle" defaultText="Beheer je samenwerkingen en bekijk je resultaten." / /></TextInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter"><VoiceglotText  translationKey="account.partner.title_part1" defaultText="Partner " /><TextInstrument as="span" className="text-primary font-light"><VoiceglotText  translationKey="account.partner.title_part2" defaultText="Insights" /></TextInstrument></HeadingInstrument>
+          <TextInstrument className="text-va-black/40 font-light"><VoiceglotText  translationKey="account.partner.subtitle" defaultText="Beheer je samenwerkingen en bekijk je resultaten." /></TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
@@ -82,25 +82,25 @@ export default function PartnerDashboardClient() {
         <BentoCard span="lg" className="bg-va-black text-white p-12 h-[400px] flex flex-col justify-between relative overflow-hidden group">
           <ContainerInstrument className="relative z-10">
             <Briefcase strokeWidth={1.5} className="text-primary mb-8" size={40} />
-            <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-4"><VoiceglotText strokeWidth={1.5} translationKey="account.partner.campaigns.title" defaultText="Campagne Beheer" / /><TextInstrument className="text-white/40 max-w-sm text-[15px] font-light leading-relaxed"><VoiceglotText strokeWidth={1.5} 
+            <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-4"><VoiceglotText  translationKey="account.partner.campaigns.title" defaultText="Campagne Beheer" /><TextInstrument className="text-white/40 max-w-sm text-[15px] font-light leading-relaxed"><VoiceglotText  
                 translationKey="account.partner.campaigns.text" 
                 defaultText="Bekijk en beheer al je actieve campagnes en voice-over projecten op één plek." 
-              / /></TextInstrument></HeadingInstrument>
+              /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <ButtonInstrument className="relative z-10 va-btn-pro !bg-primary w-fit flex items-center gap-2"><VoiceglotText strokeWidth={1.5} translationKey="account.partner.campaigns.cta" defaultText="Nieuwe Campagne" / /><Plus strokeWidth={1.5} size={16} /></ButtonInstrument>
+          <ButtonInstrument className="relative z-10 va-btn-pro !bg-primary w-fit flex items-center gap-2"><VoiceglotText  translationKey="account.partner.campaigns.cta" defaultText="Nieuwe Campagne" /><Plus strokeWidth={1.5} size={16} /></ButtonInstrument>
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-[80px] group-hover:bg-primary/20 transition-all duration-1000" />
         </BentoCard>
 
         {/* Affiliate Links */}
         <BentoCard span="sm" className="bg-white border border-black/5 p-10 flex flex-col justify-between h-[400px] group hover:border-primary/20 transition-all">
           <ContainerInstrument>
-            <ExternalLink strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} / />
-            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText strokeWidth={1.5} translationKey="account.partner.links.title" defaultText="Affiliate Links" / /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed"><VoiceglotText strokeWidth={1.5} 
+            <ExternalLink strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
+            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText  translationKey="account.partner.links.title" defaultText="Affiliate Links" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed"><VoiceglotText  
                 translationKey="account.partner.links.text" 
                 defaultText="Genereer unieke links en verdien commissie op elke succesvolle casting." 
-              / /></TextInstrument></HeadingInstrument>
+              /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <ButtonInstrument className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all"><VoiceglotText strokeWidth={1.5} translationKey="account.partner.links.cta" defaultText="Links Genereren" / /><ArrowRight strokeWidth={1.5} size={12} /></ButtonInstrument>
+          <ButtonInstrument className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all"><VoiceglotText  translationKey="account.partner.links.cta" defaultText="Links Genereren" /><ArrowRight strokeWidth={1.5} size={12} /></ButtonInstrument>
         </BentoCard>
       </BentoGrid>
     </PageWrapperInstrument>

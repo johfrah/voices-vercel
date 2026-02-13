@@ -53,8 +53,8 @@ export const EmailApprovalDashboard = () => {
 
   return (
     <div className="p-8 bg-black min-h-screen text-white">
-      <h1 className="text-4xl font-black mb-8 tracking-tighter">
-        <VoiceglotText strokeWidth={1.5} translationKey="admin.approval.title" defaultText="NUCLEAR APPROVAL CENTER" / />
+      <h1 className="text-4xl font-light mb-8 tracking-tighter">
+        <VoiceglotText  translationKey="admin.approval.title" defaultText="NUCLEAR APPROVAL CENTER" />
       </h1>
 
       <BentoGrid>

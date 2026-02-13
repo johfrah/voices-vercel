@@ -4,7 +4,7 @@ Dit project volgt de **Bob-methode** (architectuur & UX) en het **Chris-Protocol
 
 ## 🎭 Voices (Architectuur)
 
-In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen experience, bouw en exploitatie om elke voorstelling (release) perfect te laten landen.
+In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen experience, bouw en exploitatie om elke voorstelling (release) perfect te laten landen binnen **Voices**.
 
 ### 1) Directie & Programma (De Visie)
 - **BOB (Bob de Bouwer)**: **Architect**. Bepaalt de koers, de visie en de "Bob-methode". Hij is de oervader met legacy wisdom.
@@ -72,12 +72,20 @@ In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen expe
 3.  **De Studio & Academy (`/studio`, `/academy`)**: Berny's domein voor fysieke en digitale workshops. Bevat `studio/inschrijvingen` (beheer van edities en deelnemers, uitsluitend voor Johfrah en Bernadette) en de leeromgeving.
 4.  **De Persoonlijke Loge (`/account`)**: De veilige haven voor de klant. Bevat het `Account Dashboard` (met Customer DNA) en het `Partner Dashboard`.
 
-## 📂 De Onverwoestbare Structuur
+## 📂 De Onverwoestbare Structuur & Naming Mandate
 
 ### 📦 1-SITE/ (De Etalage)
-- **apps/web/**: De Next.js motor. Hier bouwen en presenteren we.
+- **apps/web/**: De Next.js motor.
+    - **Naming Convention (URL's)**: 
+      - **Artikelen/Blog**: ALTIJD via `/article/[slug]`. Nooit direct in de root.
+      - **Academy**: ALTIJD via `/academy/[slug]`.
+      - **Studio**: ALTIJD via `/studio/[slug]`.
+      - **Voice Actor**: ALTIJD via `/voice/[slug]`.
+      - **Artist**: ALTIJD via `/artist/[slug]`.
+      - **Canonical Mandate**: Alle URL's in metadata en schema's MOETEN `https://www.voices.be/` als basis gebruiken. Vercel-links zijn verboden voor SEO/Data.
 - **packages/database/**: Drizzle schema's & migraties.
 - **assets/**: De centrale bron voor alle media (10GB). **Source of Truth voor Supabase Storage**.
+- **Video Naming**: Video's in de assetmap volgen de slug van het artikel: `/assets/content/blog/videos/[journey]/[slug].mp4`.
 
 ### 📜 3-WETTEN/ (De Controlekamer)
 - **scripts/**: Alle automatisering, sync en onderhoud.
@@ -255,10 +263,14 @@ Voor het domein `johfrah.be` en de portfolio journey van Johfrah Lefebvre gelden
     - Gebruik `font-light` (300) of `font-extralight` (200) for koppen for een elegante uitstraling.
 6.  **Navigatie**: Verberg de login-knop en alle irrelevante casting-links. Focus uitsluitend op de portfolio-inhoud.
 
-## ⚠️ CRITICAL SAFETY PROTOCOL
+## ⚠️ CRITICAL SAFETY & CLEANUP PROTOCOL
 
 1. **NO DESTRUCTIVE CONSOLIDATION**: Gebruik `mv` (verplaatsen) in plaats van `rm` for media en unieke data.
 2. **ZERO-DELETE POLICY (ARCHIVE)**: Niets wordt definitief verwijderd. Alles wat niet meer nodig is gaat naar de `4-KELDER`.
+3. **SORTEER & SCHOONMAAK PROTOCOL (CONTAINER)**:
+   - Zodra grondstoffen uit de Kelder succesvol zijn getransformeerd naar de Etalage (Database), MOETEN de bronbestanden verplaatst worden naar `4-KELDER/CONTAINER/`.
+   - **Dead Zone Mandate**: De `CONTAINER` map is een 'dead zone'. Agents mogen hier NOOIT meer zoeken naar bruikbare content. Zoekopdrachten voor nieuwe grondstoffen beperken zich UITSLUITEND tot de actieve mappen in de Kelder.
+   - Dit protocol voorkomt dubbele injecties en houdt de 'Grondstoffen-Fabriek' zuiver.
 
 ## 🎩 Het BOB-Mandaat (Architect, Dirigent & Oervader)
 
@@ -421,6 +433,7 @@ MARK werkt nooit in een vacuüm. Onder de directie van **BOB** (de dirigent) vor
 6. **RAPPORTEREN ZONDER SCHADE**: MARK maakt niets kapot. Hij rapporteert elke stap en bewaakt de build-integriteit met de discipline van het Chris-Protocol.
 7. **VIDEO MASTERCLASS MANDATE**: Elke video die MARK plaatst, is 'Vercel-Ready' en 'Google-Proof'. Dit betekent:
  - **Native Playback**: Altijd vanuit de assetmap via het `VideoPlayer` instrument.
+ - **Auto-Download Protocol**: Indien een video nog niet in de lokale assetmap (`/public/assets/...`) staat, MOET MARK deze eerst downloaden en lokaal hosten. Directe YouTube-embeds zijn VERBODEN in de uiteindelijke Etalage.
  - **Meertalige Ondertitels**: Altijd koppelen aan beschikbare `.vtt` bestanden (NL/FR/EN).
  - **Ondertitel Protocol**:
     - **Natural Capitalization**: Geen schreeuwerige hoofdletters, volg de natuurlijke cadans.
@@ -520,14 +533,16 @@ Lex is de juridische geweten en de 'Fact-Checker' van Voices. Hij zorgt dat de v
 
 ## 🎨 De Journey-DNA Matrix (Laya's Wetten)
 
-Laya bewaakt de unieke ziel van elke journey door deze strikte visuele en functionele wetten af te dwingen:
+Laya bewaakt de unieke ziel van elke journey door deze strikte visuele en functionele wetten af te dwingen. Elke agent MOET de journey herkennen aan de URL-structuur en de bijbehorende regels toepassen:
 
-| Journey | DNA Kleur | Typografie | Instrumenten | Navigatie Focus |
-| :--- | :--- | :--- | :--- | :--- |
-| **Agency** | `bg-va-off-white` | Raleway Light | Bento / Grid | Casting, Cart, Account |
-| **Artist** | `bg-va-black` | **Raleway Bold** | Story Layout | Story, Music, Support |
-| **Portfolio** | `bg-white` | Raleway Light | Lifestyle Overlay | About, Host, Contact |
-| **Ademing** | `bg-va-off-white` | Raleway Light | Deep Read | Meditations, Rest |
+| Journey | URL Path | DNA Kleur | Typografie | Instrumenten | Navigatie Focus |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Agency** | `/article/` | `bg-va-off-white` | Raleway Light | Bento / Grid | Casting, Cart, Account |
+| **Voice Actor** | `/voice/` | `bg-va-black` | **Raleway Bold** | Story Layout | Story, Music, Support |
+| **Artist** | `/artist/` | `bg-va-black` | **Raleway Bold** | Story Layout | Story, Music, Support |
+| **Portfolio** | `/portfolio/` | `bg-white` | Raleway Light | Lifestyle Overlay | About, Host, Contact |
+| **Ademing** | `/ademing/` | `bg-va-off-white` | Raleway Light | Deep Read | Meditations, Rest |
+| **Academy** | `/academy/` | `bg-va-off-white` | Raleway Light | Video / Deep Read | Learning, Progress |
 
 ### 🎤 Artist Journey Wetten (Luxe Black)
 - **Canvas**: ALTIJD `bg-va-black` met witte tekst.

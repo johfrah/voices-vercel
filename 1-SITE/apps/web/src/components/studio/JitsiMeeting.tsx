@@ -119,7 +119,7 @@ export const JitsiMeeting: React.FC<JitsiMeetingProps> = ({ roomName, userName }
         <ContainerInstrument className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-10">
           <ContainerInstrument className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
           <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/60 ">
-            <VoiceglotText strokeWidth={1.5} translationKey="studio.meeting.preparing" defaultText="Meeting room voorbereiden..." / />
+            <VoiceglotText  translationKey="studio.meeting.preparing" defaultText="Meeting room voorbereiden..." />
           </TextInstrument>
         </ContainerInstrument>
       )}

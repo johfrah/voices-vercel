@@ -6,6 +6,7 @@ import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Lock, Sparkles } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
 
 interface VoiceglotTextProps {
   translationKey: string;
@@ -125,7 +126,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
       translate={noTranslate ? "no" : undefined}
       data-no-translate={noTranslate}
     >
-      <span
+      <TextInstrument as="span"
         ref={textRef}
         contentEditable={isEditMode && !noTranslate}
         suppressContentEditableWarning
@@ -139,19 +140,19 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
         )}
       >
         {content}
-      </span>
+      </TextInstrument>
 
       {isHealing && (
-        <div className="absolute -right-6 top-1/2 -translate-y-1/2">
+        <ContainerInstrument className="absolute -right-6 top-1/2 -translate-y-1/2">
           <Sparkles strokeWidth={1.5} size={12} className="text-primary animate-spin" />
-        </div>
+        </ContainerInstrument>
       )}
 
       {isEditMode && !noTranslate && (
-        <div className="absolute -top-6 left-0 opacity-0 group-hover/edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[15px] font-black tracking-widest pointer-events-none z-50">
+        <ContainerInstrument className="absolute -top-6 left-0 opacity-0 group-hover/edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[15px] md:text-[15px] font-black tracking-widest pointer-events-none z-50 shadow-lg ">
           <Lock strokeWidth={1.5} size={8} className="text-primary" />
           Voiceglot: {translationKey}
-        </div>
+        </ContainerInstrument>
       )}
     </Component>
   );

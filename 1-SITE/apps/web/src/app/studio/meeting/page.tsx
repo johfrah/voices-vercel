@@ -4,8 +4,14 @@ import {
   PageWrapperInstrument, 
   SectionInstrument, 
   HeadingInstrument,
-  TextInstrument
+  TextInstrument,
+  ContainerInstrument,
+  ButtonInstrument,
+  LoadingScreenInstrument,
+  LabelInstrument,
+  InputInstrument
 } from '@/components/ui/LayoutInstruments';
+import { ArrowLeft } from "lucide-react";
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 export const dynamic = 'force-dynamic';
@@ -22,18 +28,18 @@ export default function MeetingPage({
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-32 pb-20 px-6">
       <SectionInstrument className="max-w-6xl mx-auto space-y-12">
         <ContainerInstrument className="text-center space-y-4">
-          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
-            <VoiceglotText strokeWidth={1.5} translationKey="studio.meeting.title" defaultText="Studio Meeting" / />
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
+            <VoiceglotText  translationKey="studio.meeting.title" defaultText="Studio Meeting" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-medium text-lg">
-            <VoiceglotText strokeWidth={1.5} 
+            <VoiceglotText  
               translationKey="studio.meeting.subtitle" 
               defaultText="Welkom in de virtuele studio. Johfrah laat je zo dadelijk binnen." 
-            / />
+            />
           </TextInstrument>
         </ContainerInstrument>
 
-        <JitsiMeeting strokeWidth={1.5} roomName={roomName} userName={userName} / />
+        <JitsiMeeting  roomName={roomName} userName={userName} />
       </SectionInstrument>
     </PageWrapperInstrument>
   );

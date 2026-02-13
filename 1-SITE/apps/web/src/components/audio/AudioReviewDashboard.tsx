@@ -55,18 +55,18 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
           <div className="flex justify-between items-start mb-6">
             <div>
               <span className="text-[15px] font-black tracking-widest text-primary mb-1 block">
-                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.mode" defaultText="Review Mode" / />
+                <VoiceglotText  translationKey="audio.review.mode" defaultText="Review Mode" />
               </span>
-              <h2 className="text-2xl font-black tracking-tight text-gray-900 ">{projectName}</h2>
+              <h2 className="text-2xl font-light tracking-tight text-gray-900 ">{projectName}</h2>
               <p className="text-[15px] font-black tracking-widest text-gray-400">
-                <VoiceglotText strokeWidth={1.5} translationKey="common.order_number" defaultText="Order #" / />{orderId}
+                <VoiceglotText  translationKey="common.order_number" defaultText="Order #" />{orderId}
               </p>
             </div>
             <div className={`px-3 py-1 rounded-full text-[15px] font-bold uppercase tracking-wider ${isProcessing ? 'bg-blue-50 text-blue-500 animate-pulse' : 'bg-green-50 text-green-600'}`}>
               {isProcessing ? (
-                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.processing" defaultText="Processing Mix..." / />
+                <VoiceglotText  translationKey="audio.review.processing" defaultText="Processing Mix..." />
               ) : (
-                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.ready" defaultText="Ready for Review" / />
+                <VoiceglotText  translationKey="audio.review.ready" defaultText="Ready for Review" />
               )}
             </div>
           </div>
@@ -93,7 +93,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
             onClick={() => setIsPlaying(!isPlaying)}
             className="w-16 h-16 bg-gray-900 text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg"
           >
-            {isPlaying ? <Pause strokeWidth={1.5} fill="currentColor" / /> : <Play strokeWidth={1.5} className="ml-1" fill="currentColor" / />}
+            {isPlaying ? <Pause strokeWidth={1.5} fill="currentColor" /> : <Play strokeWidth={1.5} className="ml-1" fill="currentColor" />}
           </button>
           
           <div className="flex-1">
@@ -114,18 +114,18 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
       {/* 2. Smart Mix Control (Bento Small) */}
       <div className="bg-white p-8 rounded-[24px] shadow-sm border border-gray-50 flex flex-col gap-6">
         <div>
-          <h3 className="text-[15px] font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Music strokeWidth={1.5} size={16} className="text-primary" / /> Smart Mix
+          <h3 className="text-[15px] font-light text-gray-900 mb-4 flex items-center gap-2">
+            <Music strokeWidth={1.5} size={16} className="text-primary" /> Smart Mix
           </h3>
           
           <div className="space-y-6">
             <div>
               <div className="flex justify-between text-[15px] font-bold text-gray-400 tracking-wider mb-3">
                 <span>
-                  <VoiceglotText strokeWidth={1.5} translationKey="audio.review.voice" defaultText="Stem" / />
+                  <VoiceglotText  translationKey="audio.review.voice" defaultText="Stem" />
                 </span>
                 <span>
-                  <VoiceglotText strokeWidth={1.5} translationKey="audio.review.music" defaultText="Muziek" / />
+                  <VoiceglotText  translationKey="audio.review.music" defaultText="Muziek" />
                 </span>
               </div>
               <input 
@@ -141,11 +141,11 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
 
             <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
               <span className="text-[15px] font-bold text-gray-400 block mb-2">
-                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.selected_track" defaultText="Geselecteerde Track" / />
+                <VoiceglotText  translationKey="audio.review.selected_track" defaultText="Geselecteerde Track" />
               </span>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
-                  <Music strokeWidth={1.5} size={14} / />
+                  <Music strokeWidth={1.5} size={14} />
                 </div>
                 <span className="text-[15px] font-bold text-gray-700 truncate">Corporate Uplifting v2</span>
               </div>
@@ -154,7 +154,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
         </div>
 
         <button className="mt-auto w-full py-4 bg-primary text-white rounded-2xl font-bold text-[15px] flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-          <CheckCircle2 strokeWidth={1.5} size={18} /> <VoiceglotText strokeWidth={1.5} translationKey="common.approve" defaultText="Goedkeuren" / />
+          <CheckCircle2 strokeWidth={1.5} size={18} /> <VoiceglotText  translationKey="common.approve" defaultText="Goedkeuren" />
         </button>
       </div>
 
@@ -167,10 +167,10 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
             </div>
             <div>
               <span className="block text-[15px] font-bold opacity-60 tracking-widest">
-                <VoiceglotText strokeWidth={1.5} translationKey="common.feedback" defaultText="Feedback" / />
+                <VoiceglotText  translationKey="common.feedback" defaultText="Feedback" />
               </span>
               <span className="text-[15px] font-medium">
-                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.leave_comment" defaultText="Laat een opmerking achter" / />
+                <VoiceglotText  translationKey="audio.review.leave_comment" defaultText="Laat een opmerking achter" />
               </span>
             </div>
           </div>
@@ -179,14 +179,14 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
         <div className="bg-white p-6 rounded-[24px] border border-gray-100 flex items-center justify-between group cursor-pointer hover:border-primary/30 transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary">
-              <RotateCcw strokeWidth={1.5} size={18} / />
+              <RotateCcw strokeWidth={1.5} size={18} />
             </div>
             <div>
               <span className="block text-[15px] font-bold text-gray-400 tracking-widest">
-                <VoiceglotText strokeWidth={1.5} translationKey="common.revision" defaultText="Revisie" / />
+                <VoiceglotText  translationKey="common.revision" defaultText="Revisie" />
               </span>
               <span className="text-[15px] font-medium text-gray-700">
-                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.request_retake" defaultText="Vraag een retake aan" / />
+                <VoiceglotText  translationKey="audio.review.request_retake" defaultText="Vraag een retake aan" />
               </span>
             </div>
           </div>
@@ -195,14 +195,14 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
         <div className="bg-white p-6 rounded-[24px] border border-gray-100 flex items-center justify-between group cursor-pointer hover:border-primary/30 transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary">
-              <Volume2 strokeWidth={1.5} size={18} / />
+              <Volume2 strokeWidth={1.5} size={18} />
             </div>
             <div>
               <span className="block text-[15px] font-bold text-gray-400 tracking-widest">
-                <VoiceglotText strokeWidth={1.5} translationKey="common.export" defaultText="Export" / />
+                <VoiceglotText  translationKey="common.export" defaultText="Export" />
               </span>
               <span className="text-[15px] font-medium text-gray-700">
-                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.download_all" defaultText="Download alle formaten" / />
+                <VoiceglotText  translationKey="audio.review.download_all" defaultText="Download alle formaten" />
               </span>
             </div>
           </div>

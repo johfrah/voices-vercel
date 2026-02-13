@@ -5,6 +5,12 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
 import { GlossaryTooltip } from './GlossaryTooltip';
 
+import { 
+  ContainerInstrument, 
+  TextInstrument,
+  HeadingInstrument
+} from '@/components/ui/LayoutInstruments';
+
 interface AcademyContentProps {
   translationKey: string;
   defaultHtml: string;
@@ -62,18 +68,18 @@ export const AcademyContent: React.FC<AcademyContentProps> = ({
   // en parsen deze daarna.
   
   const processedContent = useMemo(() => {
-    if (glossary.length === 0) return <div dangerouslySetInnerHTML={{ __html: rawContent }} />;
+    if (glossary.length === 0) return <ContainerInstrument dangerouslySetInnerHTML={{ __html: rawContent }} className="py-8 md:py-12" />;
 
     // We splitsen de content op in stukken: HTML tags en tekst
     // We willen alleen termen vervangen in de tekststukken, niet in de tags zelf.
     const parts = rawContent.split(/(<[^>]*>)/g);
     
     return (
-      <div className={cn("academy-content-inner", className)}>
+      <ContainerInstrument className={cn("academy-content-inner", className)}>
         {parts.map((part, index) => {
           if (part.startsWith('<')) {
             // Het is een HTML tag, render direct
-            return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
+            return <TextInstrument as="span" key={index} dangerouslySetInnerHTML={{ __html: part }} />;
           } else {
             // Het is tekst, zoek naar glossary termen
             let textParts: (string | React.ReactNode)[] = [part];
@@ -112,7 +118,7 @@ export const AcademyContent: React.FC<AcademyContentProps> = ({
             return <React.Fragment key={index}>{textParts}</React.Fragment>;
           }
         })}
-      </div>
+      </ContainerInstrument>
     );
   }, [rawContent, glossary, className]);
 

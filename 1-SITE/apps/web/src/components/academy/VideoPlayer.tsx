@@ -7,6 +7,7 @@ interface VideoPlayerProps {
   url: string;
   poster?: string;
   title?: React.ReactNode;
+  slug?: string; // Added for tracking
   subtitles?: {
     src: string;
     lang: string;
@@ -14,21 +15,43 @@ interface VideoPlayerProps {
   }[];
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, subtitles }) => {
+export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, slug, subtitles }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  // 📊 MAT TRACKING: Log interactions
+  const trackEvent = (event: string, data: any = {}) => {
+    if (typeof window !== 'undefined' && (window as any).va) {
+      (window as any).va('event', {
+        name: `video_${event}`,
+        data: {
+          video_url: url,
+          video_slug: slug,
+          video_title: typeof title === 'string' ? title : slug,
+          ...data
+        }
+      });
+    }
+  };
+
   const togglePlay = () => {
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
+        trackEvent('pause', { timestamp: videoRef.current.currentTime });
       } else {
         videoRef.current.play();
+        trackEvent('play', { timestamp: videoRef.current.currentTime });
       }
       setIsPlaying(!isPlaying);
     }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    trackEvent('complete');
   };
 
   const handleTimeUpdate = () => {
@@ -58,6 +81,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, su
         className="w-full h-full object-cover"
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
+        onEnded={handleEnded}
         onClick={togglePlay}
         crossOrigin="anonymous"
       >
@@ -82,7 +106,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, su
             onClick={togglePlay}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-primary text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-all z-10"
           >
-            <Play strokeWidth={1.5} size={40} fill="currentColor" className="ml-2" / />
+            <Play strokeWidth={1.5} size={40} fill="currentColor" className="ml-2" />
           </button>
         )}
 
@@ -100,7 +124,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, su
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <button onClick={togglePlay} className="text-white hover:text-primary transition-colors">
-                {isPlaying ? <Pause strokeWidth={1.5} size={24} fill="currentColor" / /> : <Play strokeWidth={1.5} size={24} fill="currentColor" / />}
+                {isPlaying ? <Pause strokeWidth={1.5} size={24} fill="currentColor" /> : <Play strokeWidth={1.5} size={24} fill="currentColor" />}
               </button>
               <div className="text-white/60 text-[15px] font-black tracking-widest tabular-nums">
                 <span className="text-white">{formatTime(videoRef.current?.currentTime || 0)}</span> / {formatTime(duration)}
@@ -108,9 +132,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, su
             </div>
 
             <div className="flex items-center gap-6 text-white/40">
-              <button className="hover:text-white transition-colors"><RotateCcw strokeWidth={1.5} size={20} / /></button>
-              <button className="hover:text-white transition-colors"><Settings strokeWidth={1.5} size={20} / /></button>
-              <button className="hover:text-white transition-colors"><Maximize strokeWidth={1.5} size={20} / /></button>
+              <button className="hover:text-white transition-colors"><RotateCcw strokeWidth={1.5} size={20} /></button>
+              <button className="hover:text-white transition-colors"><Settings strokeWidth={1.5} size={20} /></button>
+              <button className="hover:text-white transition-colors"><Maximize strokeWidth={1.5} size={20} /></button>
             </div>
           </div>
         </div>

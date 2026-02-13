@@ -164,16 +164,16 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
           </ContainerInstrument>
           <ContainerInstrument>
             <HeadingInstrument level={3} className="text-3xl font-light tracking-tight">
-              <VoiceglotText strokeWidth={1.5} translationKey="academy.recorder.title" defaultText="Jouw Opname" / />
+              <VoiceglotText  translationKey="academy.recorder.title" defaultText="Jouw Opname" />
             </HeadingInstrument>
             <ContainerInstrument className="flex items-center gap-4 mt-1">
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 ">
                 {isRecording ? (
-                  <VoiceglotText strokeWidth={1.5} translationKey="academy.recorder.recording" defaultText="Nu aan het opnemen..." / />
+                  <VoiceglotText  translationKey="academy.recorder.recording" defaultText="Nu aan het opnemen..." />
                 ) : audioBlob ? (
-                  <VoiceglotText strokeWidth={1.5} translationKey="academy.recorder.completed" defaultText="Opname voltooid" / />
+                  <VoiceglotText  translationKey="academy.recorder.completed" defaultText="Opname voltooid" />
                 ) : (
-                  <VoiceglotText strokeWidth={1.5} translationKey="academy.recorder.ready" defaultText="Klaar voor opname" / />
+                  <VoiceglotText  translationKey="academy.recorder.ready" defaultText="Klaar voor opname" />
                 )}
               </TextInstrument>
               <ButtonInstrument 
@@ -184,7 +184,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
                 )}
               >
                 <Monitor strokeWidth={1.5} size={10} />
-                {showTeleprompter ? <VoiceglotText strokeWidth={1.5} translationKey="academy.recorder.teleprompter.on" defaultText="Teleprompter AAN" / /> : <VoiceglotText strokeWidth={1.5} translationKey="academy.recorder.teleprompter.off" defaultText="Teleprompter UIT" / />}
+                {showTeleprompter ? <VoiceglotText  translationKey="academy.recorder.teleprompter.on" defaultText="Teleprompter AAN" /> : <VoiceglotText  translationKey="academy.recorder.teleprompter.off" defaultText="Teleprompter UIT" />}
               </ButtonInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -227,7 +227,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
                 className="w-16 accent-primary"
               />
               <TextInstrument className="text-[15px] font-light text-white tracking-widest ">
-                <VoiceglotText strokeWidth={1.5} translationKey="academy.recorder.tempo" defaultText="Tempo" / />
+                <VoiceglotText  translationKey="academy.recorder.tempo" defaultText="Tempo" />
               </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -235,7 +235,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
           <>
             {!audioBlob && !isRecording && (
               <TextInstrument className="text-va-black/10 font-light tracking-[0.2em] text-[15px] ">
-                <VoiceglotText strokeWidth={1.5} translationKey="academy.recorder.input_ready" defaultText="Microphone Input Ready" / />
+                <VoiceglotText  translationKey="academy.recorder.input_ready" defaultText="Microphone Input Ready" />
               </TextInstrument>
             )}
             {isRecording && (
@@ -283,7 +283,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
             >
               <CheckCircle2 strokeWidth={1.5} size={20} /> 
               <TextInstrument className="font-light tracking-widest text-[15px] ">
-                <VoiceglotText strokeWidth={1.5} translationKey="academy.recorder.submit" defaultText="INLEVEREN VOOR FEEDBACK" / />
+                <VoiceglotText  translationKey="academy.recorder.submit" defaultText="INLEVEREN VOOR FEEDBACK" />
               </TextInstrument>
             </ButtonInstrument>
           </>

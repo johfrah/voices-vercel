@@ -36,29 +36,29 @@ export const EmailComposerInstrument = ({
       <ContainerInstrument className="va-composer-modal">
         {/* Header */}
         <ContainerInstrument className="va-composer-header">
-          <HeadingInstrument level={3} className="va-composer-title font-light"><VoiceglotText strokeWidth={1.5} translationKey="mailbox.compose" defaultText="Nieuw bericht" / /></HeadingInstrument>
+          <HeadingInstrument level={3} className="va-composer-title font-light"><VoiceglotText  translationKey="mailbox.compose" defaultText="Nieuw bericht" /></HeadingInstrument>
           <ButtonInstrument onClick={onClose} className="p-2 hover:bg-black/5 rounded-full">
             <X strokeWidth={1.5} size={20} className="text-va-black/40" />
           </ButtonInstrument>
         </ContainerInstrument>
 
         {/* Body */}
-        <ContainerInstrument className="va-composer-body">
+        <ContainerInstrument className="va-composer-body space-y-4 md:space-y-6">
           <ContainerInstrument className="va-composer-field">
-            <TextInstrument as="label" className="va-composer-label font-light"><VoiceglotText strokeWidth={1.5} translationKey="mailbox.to" defaultText="Aan" / /></TextInstrument>
+            <TextInstrument as="label" className="va-composer-label font-light"><VoiceglotText  translationKey="mailbox.to" defaultText="Aan" /></TextInstrument>
             <InputInstrument 
               value={to}
-              onChange={(e) => setTo(e.target.value)}
+              onChange={(e: any) => setTo(e.target.value)}
               placeholder="ontvanger@email.com"
               className="va-composer-input"
             />
           </ContainerInstrument>
 
           <ContainerInstrument className="va-composer-field">
-            <TextInstrument as="label" className="va-composer-label font-light"><VoiceglotText strokeWidth={1.5} translationKey="mailbox.subject" defaultText="Onderwerp" / /></TextInstrument>
+            <TextInstrument as="label" className="va-composer-label font-light"><VoiceglotText  translationKey="mailbox.subject" defaultText="Onderwerp" /></TextInstrument>
             <InputInstrument 
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              onChange={(e: any) => setSubject(e.target.value)}
               placeholder="Onderwerp van je bericht..."
               className="va-composer-input"
             />
@@ -69,18 +69,18 @@ export const EmailComposerInstrument = ({
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="Schrijf je bericht..."
-              className="va-composer-textarea"
+              className="va-composer-textarea min-h-[200px] p-3 md:p-4 rounded-xl border border-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px]"
             />
           </ContainerInstrument>
         </ContainerInstrument>
 
         {/* Footer */}
         <ContainerInstrument className="va-composer-footer">
-          <ButtonInstrument onClick={onClose} className="va-composer-btn-discard"><VoiceglotText strokeWidth={1.5} translationKey="common.cancel" defaultText="Annuleren" / /></ButtonInstrument>
+          <ButtonInstrument onClick={onClose} className="va-composer-btn-discard"><VoiceglotText  translationKey="common.cancel" defaultText="Annuleren" /></ButtonInstrument>
           
           <ContainerInstrument className="flex items-center gap-4">
             <ButtonInstrument className="p-2 text-va-black/40 hover:text-primary transition-colors">
-              <Paperclip strokeWidth={1.5} size={20} / />
+              <Paperclip strokeWidth={1.5} size={20} />
             </ButtonInstrument>
             <ButtonInstrument 
               onClick={handleSend}
@@ -88,7 +88,7 @@ export const EmailComposerInstrument = ({
               className="va-composer-btn-send"
             >
               <Send strokeWidth={1.5} size={14} className={isSending ? 'animate-pulse' : ''} />
-              <VoiceglotText strokeWidth={1.5} translationKey="mailbox.send" defaultText={isSending ? "Verzenden..." : "Verzenden"} / />
+              <VoiceglotText  translationKey="mailbox.send" defaultText={isSending ? "Verzenden..." : "Verzenden"} />
             </ButtonInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

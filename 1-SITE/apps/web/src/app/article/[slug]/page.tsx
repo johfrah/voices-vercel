@@ -18,8 +18,8 @@ export const dynamic = 'force-dynamic';
 export default function ArticlePage({ params }: { params: { slug: string } }) {
   return (
     <PageWrapperInstrument>
-      <Suspense strokeWidth={1.5} fallback={<ArticleSkeleton strokeWidth={1.5} / / />}>
-        <ArticleContent strokeWidth={1.5} slug={params.slug} / />
+      <Suspense  fallback={<ArticleSkeleton  />}>
+        <ArticleContent strokeWidth={1.5} slug={params.slug} />
       </Suspense>
     </PageWrapperInstrument>
   );
@@ -30,7 +30,7 @@ async function ArticleContent({ slug }: { slug: string }) {
 
   if (!article) return (
     <ContainerInstrument className="p-20 text-center">
-      <TextInstrument><VoiceglotText strokeWidth={1.5} translationKey="article.not_found" defaultText="Artikel niet gevonden." / /></TextInstrument>
+      <TextInstrument><VoiceglotText  translationKey="article.not_found" defaultText="Artikel niet gevonden." /></TextInstrument>
     </ContainerInstrument>
   );
 
@@ -38,19 +38,19 @@ async function ArticleContent({ slug }: { slug: string }) {
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       {/* Header / Breadcrumbs */}
       <SectionInstrument className="mb-12 flex items-center justify-between">
-        <Link strokeWidth={1.5} 
+        <Link  
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all "
         >
           <ArrowLeft strokeWidth={1.5} size={14} /> 
-          <VoiceglotText strokeWidth={1.5} translationKey="article.back_to_overview" defaultText="Terug" / />
+          <VoiceglotText  translationKey="article.back_to_overview" defaultText="Terug" />
         </Link>
         <ContainerInstrument className="flex gap-4">
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Heart strokeWidth={1.5} size={18} / />
+            <Heart strokeWidth={1.5} size={18} />
           </ButtonInstrument>
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Share2 strokeWidth={1.5} size={18} / />
+            <Share2 strokeWidth={1.5} size={18} />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -59,19 +59,19 @@ async function ArticleContent({ slug }: { slug: string }) {
         {/* Title & Meta Card */}
         <BentoCard span="xl" className="bg-white shadow-aura p-12 !rounded-[20px]">
           <ContainerInstrument className="flex items-center gap-4 mb-6">
-            <ContainerInstrument className="px-3 py-1 bg-va-off-white rounded-full text-[15px] font-light tracking-widest text-va-black/40 border border-black/5 "><VoiceglotText strokeWidth={1.5} translationKey={`journey.${article.meta?.llm_context?.journey?.[0]?.toLowerCase() || 'inspiration'}`} defaultText={article.meta?.llm_context?.journey?.[0] || 'Inspiratie'} / /></ContainerInstrument>
+            <ContainerInstrument className="px-3 py-1 bg-va-off-white rounded-full text-[15px] font-light tracking-widest text-va-black/40 border border-black/5 "><VoiceglotText  translationKey={`journey.${article.meta?.llm_context?.journey?.[0]?.toLowerCase() || 'inspiration'}`} defaultText={article.meta?.llm_context?.journey?.[0] || 'Inspiratie'} /></ContainerInstrument>
             <TextInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
               <Calendar strokeWidth={1.5} size={12} /> {new Date(article.date).toLocaleDateString('nl-BE')}
             </TextInstrument>
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-8 leading-[0.9] text-va-black "><VoiceglotText strokeWidth={1.5} translationKey={`article.${article.id}.title`} defaultText={article.title} / /></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-8 leading-[0.9] text-va-black "><VoiceglotText  translationKey={`article.${article.id}.title`} defaultText={article.title} /></HeadingInstrument>
           <ContainerInstrument className="flex items-center gap-3">
             <ContainerInstrument className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-light text-[15px]">
               {article.meta?.llm_context?.author?.[0] || 'V'}
             </ContainerInstrument>
             <ContainerInstrument>
-              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black "><VoiceglotText strokeWidth={1.5} translationKey={`author.${article.meta?.llm_context?.author?.toLowerCase() || 'voices'}`} defaultText={article.meta?.llm_context?.author || 'Voices'} / /></TextInstrument>
-              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText strokeWidth={1.5} translationKey="article.expert_author" defaultText="Auteur" / /></TextInstrument>
+              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black "><VoiceglotText  translationKey={`author.${article.meta?.llm_context?.author?.toLowerCase() || 'voices'}`} defaultText={article.meta?.llm_context?.author || 'Voices'} /></TextInstrument>
+              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="article.expert_author" defaultText="Auteur" /></TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </BentoCard>
@@ -83,9 +83,9 @@ async function ArticleContent({ slug }: { slug: string }) {
 
         <BentoCard span="md" className="hred text-white p-12 flex flex-col justify-between !rounded-[20px]">
           <ContainerInstrument>
-            <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-4 "><VoiceglotText strokeWidth={1.5} translationKey="article.cta.title" defaultText="Klaar voor de volgende stap?" / /><TextInstrument className="text-[15px] font-light opacity-80 mb-8 leading-relaxed"><VoiceglotText strokeWidth={1.5} translationKey="article.cta.text" defaultText="Onze experts staan klaar om je te helpen met je project of je carrière." / /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-4 "><VoiceglotText  translationKey="article.cta.title" defaultText="Klaar voor de volgende stap?" /><TextInstrument className="text-[15px] font-light opacity-80 mb-8 leading-relaxed"><VoiceglotText  translationKey="article.cta.text" defaultText="Onze experts staan klaar om je te helpen met je project of je carrière." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <Link strokeWidth={1.5} href="/agency" className="va-btn-pro !bg-white !text-va-black w-full text-center !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText strokeWidth={1.5} translationKey="article.cta.button" defaultText="Ontdek de Mogelijkheden" / /></Link>
+          <Link  href="/agency" className="va-btn-pro !bg-white !text-va-black w-full text-center !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText  translationKey="article.cta.button" defaultText="Ontdek de Mogelijkheden" /></Link>
         </BentoCard>
       </BentoGrid>
 

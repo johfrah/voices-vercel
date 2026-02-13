@@ -48,7 +48,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
   };
 
   return (
-    <BentoGrid strokeWidth={1.5} className="mb-32">
+    <BentoGrid strokeWidth={1.5} className="mb-16 md:mb-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -56,99 +56,99 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
       
       {/* 🚀 DYNAMIC MAIN CARD: Verandert op basis van DNA */}
       {detectedSector === 'it' || lastIntent === 'telephony' ? (
-        <BentoCard span="xl" className="h-[500px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
+        <BentoCard span="xl" className="h-auto md:h-[500px] flex flex-col justify-between group overflow-hidden relative p-8 md:p-12 bg-va-black text-white border-none shadow-aura">
           <ContainerInstrument plain className="relative z-10">
-            <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[15px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
+            <ContainerInstrument plain className="w-12 h-12 md:w-16 md:h-16 bg-primary rounded-[15px] flex items-center justify-center text-va-black mb-6 md:mb-8 shadow-lg shadow-primary/20">
               <Image  
                 src="/assets/common/branding/icons/INFO.svg" 
                 alt="Zap" 
                 width={32} 
                 height={32} 
                 style={{ filter: 'invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)' }}
-              / />
+              />
             </ContainerInstrument>
-            <HeadingInstrument level={3} className="text-5xl font-light tracking-tighter mb-6 leading-none text-primary "><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.telephony.title" defaultText="Slimme Telefonie" / /><TextInstrument className="text-white/40 font-light max-w-sm text-lg leading-relaxed"><VoiceglotText strokeWidth={1.5} 
+            <HeadingInstrument level={3} className="text-3xl md:text-5xl font-light tracking-tighter mb-4 md:mb-6 leading-none text-primary "><VoiceglotText  translationKey="home.showcase.telephony.title" defaultText="Slimme Telefonie" /><TextInstrument className="text-white/40 font-light max-w-sm text-base md:text-lg leading-relaxed"><VoiceglotText  
                 translationKey="home.showcase.telephony.description" 
                 defaultText="Ik zag dat je interesse hebt in telefonie. Onze IVR-experts staan klaar om jouw centrale naar een hoger niveau te tillen." 
-              / /></TextInstrument></HeadingInstrument>
+              /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <ContainerInstrument plain className="relative z-10 flex gap-4">
-            <Link strokeWidth={1.5} href="/ivr" className="va-btn-pro flex items-center gap-3 !bg-primary !text-va-black !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.telephony.cta" defaultText="Configureer je keuzemenu" / /><Image  
+          <ContainerInstrument plain className="relative z-10 flex gap-3 md:gap-4 mt-6 md:mt-0">
+            <Link  href="/ivr" className="va-btn-pro flex items-center gap-2 md:gap-3 !bg-primary !text-va-black !rounded-[10px] !font-light !tracking-widest !py-3 md:!py-4"><VoiceglotText  translationKey="home.showcase.telephony.cta" defaultText="Configureer je keuzemenu" /><Image  
                 src="/assets/common/branding/icons/FORWARD.svg" 
                 alt="Forward" 
                 width={18} 
                 height={18} 
                 style={{ filter: 'invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)' }}
-              / /></Link>
+              /></Link>
           </ContainerInstrument>
-          <ContainerInstrument className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
+          <ContainerInstrument className="absolute -bottom-40 -right-40 w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-primary/5 rounded-full blur-[120px]" />
         </BentoCard>
       ) : (
-        <BentoCard span="xl" className="h-[500px] flex flex-col justify-between group overflow-hidden relative p-12 bg-white border border-black/[0.03] shadow-aura">
+        <BentoCard span="xl" className="h-auto md:h-[500px] flex flex-col justify-between group overflow-hidden relative p-8 md:p-12 bg-white border border-black/[0.03] shadow-aura">
           <ContainerInstrument className="absolute inset-0 z-0">
             <Image  
               src="/assets/voice-photo.jpg" 
               alt="Casting" 
               fill 
               className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-1000"
-            / />
+            />
           </ContainerInstrument>
           <ContainerInstrument plain className="relative z-10">
-            <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[15px] flex items-center justify-center text-white mb-8 shadow-lg shadow-primary/10">
+            <ContainerInstrument plain className="w-12 h-12 md:w-16 md:h-16 bg-primary rounded-[15px] flex items-center justify-center text-white mb-6 md:mb-8 shadow-lg shadow-primary/10">
               <Image  
                 src="/assets/common/branding/icons/INFO.svg" 
                 alt="Mic" 
                 width={32} 
                 height={32} 
                 className="brightness-0 invert"
-              / />
+              />
             </ContainerInstrument>
-            <HeadingInstrument level={3} className="text-5xl font-light tracking-tighter mb-6 leading-none text-va-black "><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.casting.title" defaultText="Persoonlijke Casting" / /><TextInstrument className="text-va-black/40 font-light max-w-sm text-lg leading-relaxed"><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.casting.description" defaultText="Luister naar demo's. Filter op karakter. Vind direct de match voor jouw project." / /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-3xl md:text-5xl font-light tracking-tighter mb-4 md:mb-6 leading-none text-va-black "><VoiceglotText  translationKey="home.showcase.casting.title" defaultText="Persoonlijke Casting" /><TextInstrument className="text-va-black/40 font-light max-w-sm text-base md:text-lg leading-relaxed"><VoiceglotText  translationKey="home.showcase.casting.description" defaultText="Luister naar demo's. Filter op karakter. Vind direct de match voor jouw project." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <ContainerInstrument plain className="relative z-10 flex gap-4">
-            <Link strokeWidth={1.5} href="/agency" className="va-btn-pro flex items-center gap-3 !bg-va-dark-soft !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.casting.cta" defaultText="Start jouw zoektocht" / /><Image  
+          <ContainerInstrument plain className="relative z-10 flex gap-3 md:gap-4 mt-6 md:mt-0">
+            <Link  href="/agency" className="va-btn-pro flex items-center gap-2 md:gap-3 !bg-va-dark-soft !rounded-[10px] !font-light !tracking-widest !py-3 md:!py-4"><VoiceglotText  translationKey="home.showcase.casting.cta" defaultText="Start jouw zoektocht" /><Image  
                 src="/assets/common/branding/icons/FORWARD.svg" 
                 alt="Forward" 
                 width={18} 
                 height={18} 
                 className="brightness-0 invert"
-              / /></Link>
+              /></Link>
           </ContainerInstrument>
-          <ContainerInstrument plain className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/3 rounded-full blur-[120px] group-hover:bg-primary/6 transition-all duration-1000" />
+          <ContainerInstrument plain className="absolute -bottom-40 -right-40 w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-primary/3 rounded-full blur-[120px] group-hover:bg-primary/6 transition-all duration-1000" />
         </BentoCard>
       )}
 
-      <ContainerInstrument plain className="space-y-8">
-        <BentoCard span="sm" className="bg-va-dark-soft text-white p-8 flex flex-col justify-between h-[240px] border-none !rounded-[20px]">
+      <ContainerInstrument plain className="space-y-4 md:space-y-8">
+        <BentoCard span="sm" className="bg-va-dark-soft text-white p-6 md:p-8 flex flex-col justify-between h-auto md:h-[240px] border-none !rounded-[20px]">
           <ContainerInstrument plain>
-            <ContainerInstrument className="mb-4">
+            <ContainerInstrument className="mb-3 md:mb-4">
               <Image  
                 src="/assets/common/branding/icons/INFO.svg" 
                 alt="Speed" 
                 width={24} 
                 height={24} 
                 style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              / />
+              />
             </ContainerInstrument>
-            <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2 text-primary"><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.speed.title" defaultText="Snelheid" / /><TextInstrument className="text-white/60 text-[15px] font-light leading-relaxed"><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.speed.description" defaultText="Opnames in topkwaliteit. Vaak al binnen 24 uur geleverd." / /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2 text-primary"><VoiceglotText  translationKey="home.showcase.speed.title" defaultText="Snelheid" /><TextInstrument className="text-white/60 text-[15px] font-light leading-relaxed"><VoiceglotText  translationKey="home.showcase.speed.description" defaultText="Opnames in topkwaliteit. Vaak al binnen 24 uur geleverd." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-white/30"><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.speed.footer" defaultText="Directe levering" / /></TextInstrument>
+          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-white/30 mt-4 md:mt-0"><VoiceglotText  translationKey="home.showcase.speed.footer" defaultText="Directe levering" /></TextInstrument>
         </BentoCard>
 
-        <BentoCard span="sm" className="hred text-white p-8 flex flex-col justify-between h-[240px] border-none !rounded-[20px]">
+        <BentoCard span="sm" className="hred text-white p-6 md:p-8 flex flex-col justify-between h-auto md:h-[240px] border-none !rounded-[20px]">
           <ContainerInstrument plain>
-            <ContainerInstrument className="mb-4">
+            <ContainerInstrument className="mb-3 md:mb-4">
               <Image  
                 src="/assets/common/branding/icons/FAVORITES.svg" 
                 alt="Quality" 
                 width={24} 
                 height={24} 
                 className="brightness-0 invert"
-              / />
+              />
             </ContainerInstrument>
-            <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2"><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.quality.title" defaultText="Kwaliteit" / /><TextInstrument className="text-white/90 text-[15px] font-light leading-relaxed"><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.quality.description" defaultText="Wij werken alleen met stemacteurs die hun vak verstaan." / /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2"><VoiceglotText  translationKey="home.showcase.quality.title" defaultText="Kwaliteit" /><TextInstrument className="text-white/90 text-[15px] font-light leading-relaxed"><VoiceglotText  translationKey="home.showcase.quality.description" defaultText="Wij werken alleen met stemacteurs die hun vak verstaan." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-white/50"><VoiceglotText strokeWidth={1.5} translationKey="home.showcase.quality.footer" defaultText="Geselecteerde stemmen" / /></TextInstrument>
+          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-white/50 mt-4 md:mt-0"><VoiceglotText  translationKey="home.showcase.quality.footer" defaultText="Geselecteerde stemmen" /></TextInstrument>
         </BentoCard>
       </ContainerInstrument>
     </BentoGrid>

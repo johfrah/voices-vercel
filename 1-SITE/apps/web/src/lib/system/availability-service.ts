@@ -23,11 +23,11 @@ export class AvailabilityService {
   static async getActorAvailability(actorId: number): Promise<AvailabilityStatus> {
     const [actor] = await db.select().from(actors).where(eq(actors.id, actorId));
     
-    if (!actor) return { isAvailable: false, reason: 'Acteur niet gevonden' };
+    if (!actor) return { isAvailable: false, reason: 'common.error.actor_not_found' };
 
     // 1. Check expliciete status
     if (actor.status === 'unavailable') {
-      return { isAvailable: false, reason: 'Tijdelijk niet beschikbaar' };
+      return { isAvailable: false, reason: 'common.status.unavailable' };
     }
 
     // 2. Check vakantie schema in JSONB
@@ -41,7 +41,7 @@ export class AvailabilityService {
       if (now >= start && now <= end) {
         return { 
           isAvailable: false, 
-          reason: period.reason || 'Vakantie', 
+          reason: period.reason || 'common.status.vacation', 
           until: end 
         };
       }

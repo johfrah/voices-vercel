@@ -37,6 +37,12 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { 
+  ButtonInstrument, 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument 
+} from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 
 interface MenuItem {
@@ -161,7 +167,7 @@ export const SpotlightDashboard: React.FC = () => {
       }}
       className="fixed bottom-8 right-8 w-16 h-16 rounded-full bg-va-black text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-all z-[100] group"
     >
-      <Command strokeWidth={1.5} size={24} className="group-hover:rotate-12 transition-transform" / />
+      <Command strokeWidth={1.5} size={24} className="group-hover:rotate-12 transition-transform" />
     </button>
   );
 
@@ -171,37 +177,37 @@ export const SpotlightDashboard: React.FC = () => {
   );
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-va-black/60 backdrop-blur-2xl animate-fade-in">
-      <div className="w-full max-w-5xl bg-white rounded-[40px] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[85vh]">
+    <ContainerInstrument className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 bg-va-black/60 backdrop-blur-2xl animate-fade-in">
+      <ContainerInstrument className="w-full max-w-5xl bg-white rounded-[32px] md:rounded-[40px] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[90vh] md:max-h-[85vh]">
         {/* Search Header */}
-        <div className="p-10 border-b border-black/5 flex items-center gap-8">
-          <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-            <Search strokeWidth={1.5} size={32} / />
-          </div>
+        <ContainerInstrument className="p-6 md:p-10 border-b border-black/5 flex items-center gap-4 md:gap-8">
+          <ContainerInstrument className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary">
+            <Search strokeWidth={1.5} size={24} md:size={32} />
+          </ContainerInstrument>
           <input 
             autoFocus
             type="text" 
             placeholder={t('admin.spotlight.placeholder', 'Wat wil je beheren? (CMD + K)...')}
-            className="flex-1 bg-transparent border-none text-3xl font-black tracking-tighter focus:ring-0 placeholder:text-va-black/10 "
+            className="flex-1 bg-transparent border-none text-xl md:text-3xl font-black tracking-tighter focus:ring-0 placeholder:text-va-black/10 "
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button 
+          <ButtonInstrument 
             onClick={() => {
               setIsOpen(false);
               playClick('soft');
             }}
-            className="w-14 h-14 rounded-2xl bg-va-off-white flex items-center justify-center text-va-black/40 hover:text-va-black transition-all active:scale-90"
+            className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-va-off-white flex items-center justify-center text-va-black/40 hover:text-va-black transition-all active:scale-90 p-0"
           >
-            <X strokeWidth={1.5} size={28} />
-          </button>
-        </div>
+            <X strokeWidth={1.5} size={20} md:size={28} />
+          </ButtonInstrument>
+        </ContainerInstrument>
 
         {/* Results Grid */}
-        <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ContainerInstrument className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {filteredItems.map((item, i) => (
-              <button
+              <ButtonInstrument
                 key={i}
                 onMouseEnter={() => playSwell()}
                 onClick={() => {
@@ -209,60 +215,60 @@ export const SpotlightDashboard: React.FC = () => {
                   router.push(item.href);
                   setIsOpen(false);
                 }}
-                className="flex items-center gap-5 p-6 rounded-[32px] bg-va-off-white border border-black/5 hover:border-primary/30 hover:bg-white hover:shadow-[0_20px_40px_rgba(0,0,0,0.05)] transition-all group text-left relative overflow-hidden"
+                className="flex items-center gap-4 md:gap-5 p-4 md:p-6 rounded-[24px] md:rounded-[32px] bg-va-off-white border border-black/5 hover:border-primary/30 hover:bg-white hover:shadow-[0_20px_40px_rgba(0,0,0,0.05)] transition-all group text-left relative overflow-hidden"
               >
-                <div className={`w-14 h-14 rounded-2xl bg-white flex items-center justify-center ${item.color} shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500`}>
-                  <item.icon size={24} />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-black tracking-tight text-[15px] text-va-black/80">
-                    <VoiceglotText strokeWidth={1.5} translationKey={`admin.menu.${item.title.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.title} / />
-                  </h4>
-                  <p className="text-[15px] font-bold text-va-black/20 tracking-[0.2em] mt-1.5">
-                    <VoiceglotText strokeWidth={1.5} translationKey={`admin.group.${item.group.toLowerCase()}`} defaultText={item.group} / />
-                  </p>
-                </div>
+                <ContainerInstrument className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white flex items-center justify-center ${item.color} shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500 shrink-0`}>
+                  <item.icon size={20} md:size={24} />
+                </ContainerInstrument>
+                <ContainerInstrument className="flex-1 min-w-0">
+                  <HeadingInstrument level={4} className="font-light tracking-tight text-[15px] md:text-[15px] text-va-black/80 truncate">
+                    <VoiceglotText  translationKey={`admin.menu.${item.title.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.title} />
+                  </HeadingInstrument>
+                  <TextInstrument className="text-[15px] md:text-[15px] font-bold text-va-black/20 tracking-[0.2em] mt-1 md:mt-1.5 ">
+                    <VoiceglotText  translationKey={`admin.group.${item.group.toLowerCase()}`} defaultText={item.group} />
+                  </TextInstrument>
+                </ContainerInstrument>
                 {item.badge && (
-                  <span className="absolute top-4 right-4 bg-primary text-white text-[15px] font-black px-2 py-1 rounded-full shadow-lg shadow-primary/20">
+                  <TextInstrument as="span" className="absolute top-3 right-3 md:top-4 md:right-4 bg-primary text-white text-[15px] md:text-[15px] font-black px-1.5 md:px-2 py-0.5 md:py-1 rounded-full shadow-lg shadow-primary/20">
                     {item.badge}
-                  </span>
+                  </TextInstrument>
                 )}
-                <ArrowRight strokeWidth={1.5} size={16} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-              </button>
+                <ArrowRight strokeWidth={1.5} size={14} md:size={16} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              </ButtonInstrument>
             ))}
-          </div>
+          </ContainerInstrument>
 
           {filteredItems.length === 0 && (
-            <div className="py-32 text-center space-y-6">
-              <div className="w-24 h-24 bg-va-off-white rounded-full flex items-center justify-center mx-auto animate-pulse">
-                <Brain strokeWidth={1.5} size={48} className="text-va-black/10" / />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-2xl font-black tracking-tighter">
-                  <VoiceglotText strokeWidth={1.5} translationKey="admin.spotlight.no_results" defaultText={`Geen resultaten voor "${search}"`} / />
-                </h3>
-                <p className="text-va-black/40 text-[15px] font-medium">
-                  <VoiceglotText strokeWidth={1.5} translationKey="admin.spotlight.ask_voicy" defaultText="Vraag Voicy om deze module voor je te bouwen of te vinden." / />
-                </p>
-              </div>
-            </div>
+            <ContainerInstrument className="py-24 md:py-32 text-center space-y-4 md:space-y-6">
+              <ContainerInstrument className="w-20 h-20 md:w-24 md:h-24 bg-va-off-white rounded-full flex items-center justify-center mx-auto animate-pulse">
+                <Brain strokeWidth={1.5} size={40} md:size={48} className="text-va-black/10" />
+              </ContainerInstrument>
+              <ContainerInstrument className="space-y-2">
+                <HeadingInstrument level={3} className="text-xl md:text-2xl font-light tracking-tighter">
+                  <VoiceglotText  translationKey="admin.spotlight.no_results" defaultText={`Geen resultaten voor "${search}"`} />
+                </HeadingInstrument>
+                <TextInstrument className="text-va-black/40 text-[15px] md:text-[15px] font-medium">
+                  <VoiceglotText  translationKey="admin.spotlight.ask_voicy" defaultText="Vraag Voicy om deze module voor je te bouwen of te vinden." />
+                </TextInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
           )}
-        </div>
+        </ContainerInstrument>
 
         {/* Footer */}
-        <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center text-[15px] font-black tracking-widest text-va-black/30">
-          <div className="flex gap-8">
-            <span className="flex items-center gap-2 text-va-black/60">
-              <MousePointer2 strokeWidth={1.5} size={12} className="text-primary" / /> 
-              <VoiceglotText strokeWidth={1.5} translationKey={`admin.instruction.${journey}`} defaultText={currentInstruction} / />
-            </span>
-          </div>
-          <div className="flex items-center gap-3 text-primary">
+        <ContainerInstrument className="p-6 md:p-8 bg-va-off-white border-t border-black/5 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 text-[15px] md:text-[15px] font-black tracking-widest text-va-black/30">
+          <ContainerInstrument className="flex gap-4 md:gap-8">
+            <TextInstrument as="span" className="flex items-center gap-2 text-va-black/60 font-light">
+              <MousePointer2 strokeWidth={1.5} size={12} className="text-primary" /> 
+              <VoiceglotText  translationKey={`admin.instruction.${journey}`} defaultText={currentInstruction} />
+            </TextInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument className="flex items-center gap-3 text-primary">
             <ShieldCheck strokeWidth={1.5} size={14} />
             {journey.toUpperCase()} MODE
-          </div>
-        </div>
-      </div>
-    </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 };

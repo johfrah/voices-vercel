@@ -29,5 +29,5 @@ export default function FooterWrapper() {
   //   return null;
   // }
 
-  return <GlobalFooter strokeWidth={1.5} / />;
+  return <GlobalFooter strokeWidth={1.5} />;
 }

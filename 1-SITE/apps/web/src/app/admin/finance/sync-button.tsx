@@ -33,9 +33,9 @@ export function SyncButton() {
       className="flex items-center gap-2 px-4 py-2 bg-va-black text-white rounded-[10px] hover:bg-gray-800 transition-colors disabled:opacity-50"
     >
       {isLoading ? (
-        <Loader2 strokeWidth={1.5} className="w-4 h-4 animate-spin" / />
+        <Loader2 strokeWidth={1.5} className="w-4 h-4 animate-spin" />
       ) : (
-        <RefreshCw strokeWidth={1.5} className="w-4 h-4" / />
+        <RefreshCw strokeWidth={1.5} className="w-4 h-4" />
       )}
       Sync Yuki & Ponto
     </button>

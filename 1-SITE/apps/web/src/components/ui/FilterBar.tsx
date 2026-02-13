@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { SearchFilters } from '@/types';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
@@ -15,6 +16,7 @@ import {
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { Search, ChevronDown, X } from 'lucide-react';
 
 interface FilterBarProps {
   filters: SearchFilters;
@@ -58,14 +60,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
       <ContainerInstrument className="bg-white/80 backdrop-blur-2xl border border-black/5 rounded-[20px] p-4 md:p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-4 group/search">
         <ContainerInstrument className="flex-1 w-full relative group">
           <ContainerInstrument className="absolute left-6 top-1/2 -translate-y-1/2">
-            <VoiceglotImage strokeWidth={1.5} 
+            <VoiceglotImage  
               src="/assets/common/branding/icons/SEARCH.svg" 
               alt="Search" 
               width={20} 
               height={20} 
               className="opacity-20 group-focus-within:opacity-100 transition-opacity"
               style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-            / />
+            />
           </ContainerInstrument>
           <InputInstrument 
             type="text" 
@@ -87,19 +89,19 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
               value={combinedParams.language || ''}
               onChange={(e) => { updateQuery({ language: e.target.value || undefined }); }}
             >
-              <OptionInstrument value=""><VoiceglotText strokeWidth={1.5} translationKey="agency.filter.all_languages" defaultText="Alle talen" / /></OptionInstrument>
+              <OptionInstrument value=""><VoiceglotText  translationKey="agency.filter.all_languages" defaultText="Alle talen" /></OptionInstrument>
               {sortedLanguages.map(lang => (
                 <OptionInstrument key={lang} value={lang}>{lang}</OptionInstrument>
               ))}
             </SelectInstrument>
             <ContainerInstrument className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-hover/select:opacity-100 transition-opacity">
-              <VoiceglotImage strokeWidth={1.5} 
+              <VoiceglotImage  
                 src="/assets/common/branding/icons/DOWN.svg" 
                 alt="Select" 
                 width={14} 
                 height={14} 
                 style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              / />
+              />
             </ContainerInstrument>
           </ContainerInstrument>
 
@@ -109,19 +111,19 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
               value={combinedParams.gender || ''}
               onChange={(e) => { updateQuery({ gender: e.target.value || undefined }); }}
             >
-              <OptionInstrument value=""><VoiceglotText strokeWidth={1.5} translationKey="agency.filter.gender" defaultText="Geslacht" / /></OptionInstrument>
+              <OptionInstrument value=""><VoiceglotText  translationKey="agency.filter.gender" defaultText="Geslacht" /></OptionInstrument>
               {filters.genders.map(g => (
                 <OptionInstrument key={g} value={g}>{g}</OptionInstrument>
               ))}
             </SelectInstrument>
             <ContainerInstrument className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-hover/select:opacity-100 transition-opacity">
-              <VoiceglotImage strokeWidth={1.5} 
+              <VoiceglotImage  
                 src="/assets/common/branding/icons/DOWN.svg" 
                 alt="Select" 
                 width={14} 
                 height={14} 
                 style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              / />
+              />
             </ContainerInstrument>
           </ContainerInstrument>
 
@@ -129,7 +131,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
             onClick={() => { setIsSheetOpen(true); }}
             className="w-16 h-16 rounded-[10px] bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all duration-500 shadow-lg active:scale-95"
           >
-            <VoiceglotImage strokeWidth={1.5} src="/assets/common/branding/icons/MENU.svg" width={20} height={20} alt="Filter" className="brightness-0 invert" / />
+            <VoiceglotImage  src="/assets/common/branding/icons/MENU.svg" width={20} height={20} alt="Filter" className="brightness-0 invert" />
           </ButtonInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
@@ -153,7 +155,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
             onClick={() => { updateQuery({ search: undefined, gender: undefined, style: undefined, language: undefined }); }}
             className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors ml-2"
           >
-            <VoiceglotText strokeWidth={1.5} translationKey="agency.filter.clear_all" defaultText="Wis alles" / />
+            <VoiceglotText  translationKey="agency.filter.clear_all" defaultText="Wis alles" />
           </ButtonInstrument>
         </ContainerInstrument>
       )}
@@ -174,7 +176,7 @@ const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => (
   <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-[20px] text-[15px] font-light tracking-widest shadow-sm">
     <TextInstrument>{label}</TextInstrument>
     <ButtonInstrument onClick={() => { onRemove(); }} className="hover:text-primary transition-colors">
-      <Image  src="/assets/common/branding/icons/BACK.svg" width={12} height={12} alt="Remove" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} / />
+      <Image  src="/assets/common/branding/icons/BACK.svg" width={12} height={12} alt="Remove" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
     </ButtonInstrument>
   </ContainerInstrument>
 );

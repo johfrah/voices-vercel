@@ -6,6 +6,12 @@ import { Mic, Music, Pause, Play, Sliders, Trash2 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import { VoiceglotText } from '../ui/VoiceglotText';
+import { 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument,
+  ButtonInstrument
+} from '@/components/ui/LayoutInstruments';
 
 interface LiveMixerInstrumentProps {
   title: string;
@@ -128,87 +134,87 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-[32px] p-6 border border-black/5 shadow-sm hover:shadow-xl transition-all group"
+      className="bg-white rounded-[32px] p-4 md:p-6 border border-black/5 shadow-sm hover:shadow-xl transition-all group"
     >
-      <div className="flex flex-col gap-6">
+      <ContainerInstrument className="flex flex-col gap-4 md:gap-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-va-black flex items-center justify-center text-white shadow-lg">
-              <Mic strokeWidth={1.5} size={18} / />
-            </div>
-            <div>
-              <h4 className="font-black text-[15px] tracking-tight">
-                {title || <VoiceglotText strokeWidth={1.5} translationKey="common.untitled_file" defaultText="Naamloos bestand" / />}
-              </h4>
-              <p className="text-[15px] font-bold text-va-black/30 tracking-widest">
+        <ContainerInstrument className="flex items-center justify-between">
+          <ContainerInstrument className="flex items-center gap-3">
+            <ContainerInstrument className="w-10 h-10 rounded-2xl bg-va-black flex items-center justify-center text-white shadow-lg">
+              <Mic strokeWidth={1.5} size={18} />
+            </ContainerInstrument>
+            <ContainerInstrument>
+              <HeadingInstrument level={4} className="font-light text-[15px] tracking-tight">
+                {title || <VoiceglotText  translationKey="common.untitled_file" defaultText="Naamloos bestand" />}
+              </HeadingInstrument>
+              <TextInstrument className="text-[15px] font-bold text-va-black/30 tracking-widest">
                 {formatTime(currentTime)} / {formatTime(duration)}
-              </p>
-            </div>
-          </div>
+              </TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
           
-          <div className="flex items-center gap-2">
-            <button 
+          <ContainerInstrument className="flex items-center gap-2">
+            <ButtonInstrument 
               onClick={togglePlay}
               className={cn(
                 "w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-md active:scale-95",
                 isPlaying ? "bg-va-black text-white" : "bg-primary text-white hover:bg-va-black"
               )}
             >
-              {isPlaying ? <Pause strokeWidth={1.5} size={20} fill="currentColor" / /> : <Play strokeWidth={1.5} size={20} fill="currentColor" className="ml-1" / />}
-            </button>
+              {isPlaying ? <Pause strokeWidth={1.5} size={20} fill="currentColor" /> : <Play strokeWidth={1.5} size={20} fill="currentColor" className="ml-1" />}
+            </ButtonInstrument>
             {onRemove && (
-              <button 
+              <ButtonInstrument 
                 onClick={onRemove}
                 className="w-12 h-12 rounded-2xl bg-va-black/5 text-va-black/20 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
               >
-                <Trash2 strokeWidth={1.5} size={18} / />
-              </button>
+                <Trash2 strokeWidth={1.5} size={18} />
+              </ButtonInstrument>
             )}
-          </div>
-        </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
 
         {/* Waveforms Container */}
-        <div className="relative bg-va-off-white/50 rounded-[24px] p-4 overflow-hidden border border-black/5">
+        <ContainerInstrument className="relative bg-va-off-white/50 rounded-[24px] p-3 md:p-4 overflow-hidden border border-black/5">
           {/* Music Waveform (Background) */}
-          <div ref={musicWaveformRef} className="absolute inset-0 pointer-events-none opacity-50" />
+          <ContainerInstrument ref={musicWaveformRef} className="absolute inset-0 pointer-events-none opacity-50" />
           
           {/* Voice Waveform (Foreground) */}
-          <div ref={voiceWaveformRef} className="relative z-10" />
+          <ContainerInstrument ref={voiceWaveformRef} className="relative z-10" />
           
           {/* Labels */}
-          <div className="absolute top-2 left-4 flex gap-4 pointer-events-none">
-            <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-              <span className="text-[15px] font-black tracking-widest text-va-black/40">
-                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.voice" defaultText="Stem" / />
-              </span>
-            </div>
+          <ContainerInstrument className="absolute top-2 left-4 flex gap-4 pointer-events-none">
+            <ContainerInstrument className="flex items-center gap-1.5">
+              <ContainerInstrument className="w-1.5 h-1.5 rounded-full bg-primary" />
+              <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/40">
+                <VoiceglotText  translationKey="audio.review.voice" defaultText="Stem" />
+              </TextInstrument>
+            </ContainerInstrument>
             {musicUrl && (
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-va-black/10" />
-                <span className="text-[15px] font-black tracking-widest text-va-black/40">
-                  <VoiceglotText strokeWidth={1.5} translationKey="audio.review.music" defaultText="Muziek" / />
-                </span>
-              </div>
+              <ContainerInstrument className="flex items-center gap-1.5">
+                <ContainerInstrument className="w-1.5 h-1.5 rounded-full bg-va-black/10" />
+                <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/40">
+                  <VoiceglotText  translationKey="audio.review.music" defaultText="Muziek" />
+                </TextInstrument>
+              </ContainerInstrument>
             )}
-          </div>
-        </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
 
         {/* Controls */}
         {musicUrl && (
-          <div className="flex items-center gap-6 bg-va-off-white/30 p-4 rounded-2xl border border-black/5">
-            <div className="flex items-center gap-3 flex-1">
-              <div className="p-2 rounded-lg bg-white shadow-sm text-va-black/40">
-                <Music strokeWidth={1.5} size={14} / />
-              </div>
-              <div className="flex-1 space-y-1">
-                <div className="flex justify-between items-center">
-                  <span className="text-[15px] font-black tracking-widest text-va-black/40">
-                    <VoiceglotText strokeWidth={1.5} translationKey="audio.review.mix_volume" defaultText="Mix Volume" / />
-                  </span>
-                  <span className="text-[15px] font-black text-primary">{Math.round(musicVolume * 100)}%</span>
-                </div>
+          <ContainerInstrument className="flex items-center gap-4 md:gap-6 bg-va-off-white/30 p-3 md:p-4 rounded-2xl border border-black/5">
+            <ContainerInstrument className="flex items-center gap-3 flex-1">
+              <ContainerInstrument className="p-2 rounded-lg bg-white shadow-sm text-va-black/40">
+                <Music strokeWidth={1.5} size={14} />
+              </ContainerInstrument>
+              <ContainerInstrument className="flex-1 space-y-1">
+                <ContainerInstrument className="flex justify-between items-center">
+                  <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/40">
+                    <VoiceglotText  translationKey="audio.review.mix_volume" defaultText="Mix Volume" />
+                  </TextInstrument>
+                  <TextInstrument className="text-[15px] font-black text-primary">{Math.round(musicVolume * 100)}%</TextInstrument>
+                </ContainerInstrument>
                 <input 
                   type="range" 
                   min="0" 
@@ -218,18 +224,18 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
                   onChange={(e) => setMusicVolume(parseFloat(e.target.value))}
                   className="w-full h-1.5 bg-va-black/5 rounded-full appearance-none cursor-pointer accent-primary"
                 />
-              </div>
-            </div>
+              </ContainerInstrument>
+            </ContainerInstrument>
             
-            <div className="flex items-center gap-2 text-va-black/20">
-              <Sliders strokeWidth={1.5} size={14} / />
-              <span className="text-[15px] font-black tracking-widest">
-                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.live_mix" defaultText="Live Mix" / />
-              </span>
-            </div>
-          </div>
+            <ContainerInstrument className="flex items-center gap-2 text-va-black/20">
+              <Sliders strokeWidth={1.5} size={14} />
+              <TextInstrument className="text-[15px] font-black tracking-widest">
+                <VoiceglotText  translationKey="audio.review.live_mix" defaultText="Live Mix" />
+              </TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
         )}
-      </div>
+      </ContainerInstrument>
     </motion.div>
   );
 };

@@ -47,12 +47,12 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
           <ContainerInstrument className="bg-white rounded-[20px] p-6 md:p-8 shadow-aura border border-va-off-white">
             <ContainerInstrument className="flex items-center justify-between mb-6 md:mb-8">
               <HeadingInstrument level={3} className="text-xl font-light">
-                <VoiceglotText strokeWidth={1.5} translationKey="auto.collaborativestudio.de_booth.766115" defaultText="De Booth" / />
+                <VoiceglotText  translationKey="auto.collaborativestudio.de_booth.766115" defaultText="De Booth" />
               </HeadingInstrument>
               <ContainerInstrument className="hidden md:flex items-center gap-2 text-va-black/40 text-[15px]">
                 <LucideInfo size={16} strokeWidth={1.5} />
                 <TextInstrument>
-                  <VoiceglotText strokeWidth={1.5} translationKey="auto.collaborativestudio.klik_op_de_waveform_.a895c2" defaultText="Klik op de waveform voor feedback" / />
+                  <VoiceglotText  translationKey="auto.collaborativestudio.klik_op_de_waveform_.a895c2" defaultText="Klik op de waveform voor feedback" />
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -82,7 +82,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                       
                       {!track.auditionUrl && track.status === 'pending' && (
                         <LabelInstrument className="cursor-pointer bg-primary/10 text-primary px-4 py-2 rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary/20 transition-all">
-                          <VoiceglotText strokeWidth={1.5} translationKey="studio.upload_audition" defaultText="UPLOAD AUDITIE" / />
+                          <VoiceglotText  translationKey="studio.upload_audition" defaultText="UPLOAD AUDITIE" />
                           <InputInstrument 
                             type="file" 
                             className="hidden" 
@@ -102,7 +102,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                       ) : (
                         <ContainerInstrument className="flex items-center gap-2 text-va-black/20 italic text-[15px]">
                           <ContainerInstrument className="w-2 h-2 bg-va-black/10 rounded-full animate-pulse" />
-                          <VoiceglotText strokeWidth={1.5} translationKey="auto.collaborativestudio.bezig___.8e640b" defaultText="Bezig..." / />
+                          <VoiceglotText  translationKey="auto.collaborativestudio.bezig___.8e640b" defaultText="Bezig..." />
                         </ContainerInstrument>
                       )}
                     </ContainerInstrument>
@@ -131,7 +131,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                       <ContainerInstrument className="flex items-center gap-2 mb-2">
                         <LucideInfo size={14} className="text-primary" strokeWidth={1.5} />
                         <TextInstrument className="text-[15px] font-bold tracking-widest text-primary/60">
-                          <VoiceglotText strokeWidth={1.5} translationKey="auto.collaborativestudio.toelichting_van_de_s.5ec02d" defaultText="Toelichting van de stem" / />
+                          <VoiceglotText  translationKey="auto.collaborativestudio.toelichting_van_de_s.5ec02d" defaultText="Toelichting van de stem" />
                         </TextInstrument>
                       </ContainerInstrument>
                       <TextInstrument className="text-[15px] font-light leading-relaxed italic">
@@ -148,7 +148,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
           <ContainerInstrument className="bg-white rounded-[20px] p-6 md:p-8 shadow-aura border border-va-off-white">
             <ContainerInstrument className="flex items-center justify-between mb-4 md:mb-6">
               <HeadingInstrument level={3} className="text-lg md:text-xl font-light">
-                <VoiceglotText strokeWidth={1.5} translationKey="auto.collaborativestudio.het_script.5ccfdb" defaultText="Het Script" / />
+                <VoiceglotText  translationKey="auto.collaborativestudio.het_script.5ccfdb" defaultText="Het Script" />
               </HeadingInstrument>
               <ButtonInstrument className="text-va-black/40 hover:text-va-black transition-colors p-2">
                 <LucideDownload size={18} strokeWidth={1.5} />
@@ -156,10 +156,10 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
             </ContainerInstrument>
             <ContainerInstrument>
               <TextInstrument className="text-base md:text-lg font-light leading-relaxed text-va-black/80 italic">
-                <VoiceglotText strokeWidth={1.5} 
+                <VoiceglotText  
                   translationKey="auto.collaborativestudio._quot_welkom_bij_voi.667eb2" 
                   defaultText="&quot;Welkom bij Voices.be. Waar elke stem een verhaal vertelt. Onze passie is jouw boodschap tot leven brengen met de perfecte toon.&quot;" 
-                / />
+                />
               </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -171,17 +171,17 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
             <ContainerInstrument className="p-4 md:p-6 border-b border-va-black/5 bg-va-off-white/30 flex items-center gap-3">
               <LucideMessageSquare size={18} className="text-va-black/40" strokeWidth={1.5} />
               <HeadingInstrument level={4} className="text-base md:text-lg font-light tracking-widest">
-                <VoiceglotText strokeWidth={1.5} translationKey="studio.chat_title" defaultText="Voicy Chat" / />
+                <VoiceglotText  translationKey="studio.chat_title" defaultText="Voicy Chat" />
               </HeadingInstrument>
             </ContainerInstrument>
             
             <ContainerInstrument className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4">
               <ContainerInstrument className="bg-va-off-white rounded-[20px] rounded-tl-none p-3 md:p-4 max-w-[90%] md:max-w-[85%]">
                 <TextInstrument className="text-[15px] font-light leading-relaxed">
-                  <VoiceglotText strokeWidth={1.5} translationKey="auto.collaborativestudio.hoi_thomas__ik_heb_j.05eb00" defaultText="Hoi Thomas! Ik heb je briefing ontvangen. Ik ga direct aan de slag met de demo." / />
+                  <VoiceglotText  translationKey="auto.collaborativestudio.hoi_thomas__ik_heb_j.05eb00" defaultText="Hoi Thomas! Ik heb je briefing ontvangen. Ik ga direct aan de slag met de demo." />
                 </TextInstrument>
                 <TextInstrument className="text-[15px] text-va-black/20 mt-2 tracking-widest font-light">
-                  <VoiceglotText strokeWidth={1.5} translationKey="studio.track_label" defaultText="Stem 1" / /> • 10:45
+                  <VoiceglotText  translationKey="studio.track_label" defaultText="Stem 1" /> • 10:45
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -201,10 +201,10 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
               <ContainerInstrument className="bg-va-black text-white rounded-[20px] p-6 md:p-8 shadow-aura-lg text-center space-y-4 md:space-y-6">
                 <ContainerInstrument className="space-y-2">
                   <HeadingInstrument level={3} className="text-xl md:text-2xl font-light text-white">
-                    <VoiceglotText strokeWidth={1.5} translationKey="auto.collaborativestudio.de_juiste_match_.e578cd" defaultText="De juiste match?" / />
+                    <VoiceglotText  translationKey="auto.collaborativestudio.de_juiste_match_.e578cd" defaultText="De juiste match?" />
                   </HeadingInstrument>
                   <TextInstrument className="text-white/60 text-[15px] leading-relaxed font-light">
-                    <VoiceglotText strokeWidth={1.5} translationKey="auto.collaborativestudio.zodra_je_de_perfecte.7320f0" defaultText="Zodra je de perfecte stem hebt gevonden, kun je direct de volledige productie starten." / />
+                    <VoiceglotText  translationKey="auto.collaborativestudio.zodra_je_de_perfecte.7320f0" defaultText="Zodra je de perfecte stem hebt gevonden, kun je direct de volledige productie starten." />
                   </TextInstrument>
                 </ContainerInstrument>
                 <ButtonInstrument 
@@ -213,7 +213,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                 >
                   <LucideCheckCircle size={18} strokeWidth={1.5} />
                   <TextInstrument>
-                    <VoiceglotText strokeWidth={1.5} translationKey="studio.choose_voice" defaultText="Kies deze stem" / />
+                    <VoiceglotText  translationKey="studio.choose_voice" defaultText="Kies deze stem" />
                   </TextInstrument>
                 </ButtonInstrument>
               </ContainerInstrument>

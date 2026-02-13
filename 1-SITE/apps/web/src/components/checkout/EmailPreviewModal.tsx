@@ -33,7 +33,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
         <div className="p-8 border-b border-black/5 flex justify-between items-center bg-va-off-white">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-primary/10 rounded-[10px] flex items-center justify-center text-primary">
-              <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+              <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             </div>
             <div>
               <h3 className="text-xl font-light tracking-tighter text-va-black">Offerte preview</h3>
@@ -47,7 +47,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
             }}
             className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 hover:text-va-black transition-all"
           >
-            <Image  src="/assets/common/branding/icons/BACK.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} / />
+            <Image  src="/assets/common/branding/icons/BACK.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
           </button>
         </div>
 
@@ -64,7 +64,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
 
           <div className="bg-primary/5 rounded-[20px] p-8 border border-primary/10 flex items-start gap-6">
             <div className="w-12 h-12 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm">
-              <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+              <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             </div>
             <div className="flex-1">
               <h4 className="text-[15px] font-light tracking-tight mb-1 text-va-black">Bijlage: Offerte_Voices.pdf</h4>
@@ -79,7 +79,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
         {/* Footer */}
         <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center">
           <div className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/30">
-            <Image  src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} / />
+            <Image  src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
             Core Admin Protocol Active
           </div>
           <button 
@@ -89,7 +89,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
             }}
             className="va-btn-pro !bg-primary flex items-center gap-3 !px-10"
           >
-            Offerte verzenden <Image  src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert" / />
+            Offerte verzenden <Image  src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert" />
           </button>
         </div>
       </div>

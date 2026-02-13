@@ -58,7 +58,7 @@ export default function StudioReviewsPage() {
   if (!isAdmin && !isLoading) return null;
   if (loading) return (
     <ContainerInstrument className="min-h-screen flex items-center justify-center">
-      <Loader2 strokeWidth={1.5} className="animate-spin text-primary" size={40} / />
+      <Loader2 strokeWidth={1.5} className="animate-spin text-primary" size={40} />
     </ContainerInstrument>
   );
 
@@ -67,11 +67,11 @@ export default function StudioReviewsPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link strokeWidth={1.5} href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText strokeWidth={1.5} translationKey="admin.back_to_cockpit" defaultText="Terug" / />
+            <VoiceglotText  translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter "><VoiceglotText strokeWidth={1.5} translationKey="admin.reviews.title" defaultText="Review Intelligence" / /></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.reviews.title" defaultText="Review Intelligence" /></HeadingInstrument>
         </ContainerInstrument>
         
         <ContainerInstrument className="flex gap-4">
@@ -84,7 +84,7 @@ export default function StudioReviewsPage() {
                   filter === f ? 'bg-va-black text-white shadow-lg' : 'text-va-black/30 hover:text-va-black'
                 }`}
               >
-                <VoiceglotText strokeWidth={1.5} translationKey={`admin.reviews.filter.${f}`} defaultText={f} / />
+                <VoiceglotText  translationKey={`admin.reviews.filter.${f}`} defaultText={f} />
               </button>
             ))}
           </ContainerInstrument>
@@ -94,25 +94,25 @@ export default function StudioReviewsPage() {
       {/* Stats */}
       <BentoGrid strokeWidth={1.5} columns={4}>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.reviews.stats.avg_score" defaultText="Gemiddelde Score" / /></TextInstrument>
+          <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText  translationKey="admin.reviews.stats.avg_score" defaultText="Gemiddelde Score" /></TextInstrument>
           <ContainerInstrument className="flex items-center gap-2">
-            <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">4.9</HeadingInstrument>
+            <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter">4.9</HeadingInstrument>
             <ContainerInstrument className="flex text-primary">
               {[...Array(5)].map((_, i) => <Star strokeWidth={1.5} key={i} size={16} fill="currentColor" />)}
             </ContainerInstrument>
           </ContainerInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.reviews.stats.total" defaultText="Totaal Reviews" / /></TextInstrument>
-          <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">{reviews.length}</HeadingInstrument>
+          <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText  translationKey="admin.reviews.stats.total" defaultText="Totaal Reviews" /></TextInstrument>
+          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter">{reviews.length}</HeadingInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.reviews.stats.pending" defaultText="Wachtend" / /></TextInstrument>
-          <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-orange-500">{reviews.filter(r  => r.status === 'pending').length})</HeadingInstrument>
+          <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText  translationKey="admin.reviews.stats.pending" defaultText="Wachtend" /></TextInstrument>
+          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-orange-500">{reviews.filter(r  => r.status === 'pending').length})</HeadingInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.reviews.stats.sentiment" defaultText="Sentiment" / /></TextInstrument>
-          <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-green-500"><VoiceglotText strokeWidth={1.5} translationKey="admin.reviews.stats.sentiment_value" defaultText="98% POSITIEF" / /></HeadingInstrument>
+          <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText  translationKey="admin.reviews.stats.sentiment" defaultText="Sentiment" /></TextInstrument>
+          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-green-500"><VoiceglotText  translationKey="admin.reviews.stats.sentiment_value" defaultText="98% POSITIEF" /></HeadingInstrument>
         </BentoCard>
       </BentoGrid>
 
@@ -153,11 +153,11 @@ export default function StudioReviewsPage() {
             <ContainerInstrument className="mt-8 flex gap-2">
               {review.status === 'pending' && (
                 <ButtonInstrument className="va-btn-pro !py-3 flex-1">
-                  <CheckCircle strokeWidth={1.5} size={14} / /> <VoiceglotText strokeWidth={1.5} translationKey="admin.reviews.action.approve" defaultText="Goedkeuren" / />
+                  <CheckCircle strokeWidth={1.5} size={14} /> <VoiceglotText  translationKey="admin.reviews.action.approve" defaultText="Goedkeuren" />
                 </ButtonInstrument>
               )}
               <ButtonInstrument className="va-btn-secondary !py-3 !px-4 !bg-va-off-white !text-va-black/20 hover:!text-red-500">
-                <XCircle strokeWidth={1.5} size={14} / />
+                <XCircle strokeWidth={1.5} size={14} />
               </ButtonInstrument>
             </ContainerInstrument>
           </BentoCard>

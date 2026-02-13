@@ -6,7 +6,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { 
+  ButtonInstrument, 
+  ContainerInstrument, 
+  FormInstrument, 
+  InputInstrument, 
+  TextInstrument 
+} from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 
 /**
@@ -51,34 +58,34 @@ export function MobileFloatingDock() {
   ];
 
   return (
-    <div className="fixed bottom-8 left-0 right-0 z-50 px-6 md:hidden pointer-events-none">
+    <ContainerInstrument className="fixed bottom-6 md:bottom-8 left-0 right-0 z-50 px-4 md:px-6 md:hidden pointer-events-none">
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div
             initial={{ y: 20, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 20, opacity: 0, scale: 0.95 }}
-            className="absolute bottom-24 left-6 right-6 pointer-events-auto"
+            className="absolute bottom-20 md:bottom-24 left-4 md:left-6 right-4 md:right-6 pointer-events-auto"
           >
-            <form onSubmit={handleSearch} className="relative">
-              <input
+            <FormInstrument onSubmit={handleSearch} className="relative">
+              <InputInstrument
                 autoFocus
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: any) => setSearchQuery(e.target.value)}
                 placeholder="Zoek een stem..."
-                className="w-full bg-va-black/95 backdrop-blur-2xl text-white border border-white/10 rounded-[24px] py-4 pl-12 pr-4 shadow-2xl focus:ring-2 focus:ring-primary/50 outline-none transition-all"
+                className="w-full bg-va-black/95 backdrop-blur-2xl text-white border border-white/10 rounded-[20px] md:rounded-[24px] py-3 md:py-4 pl-10 md:pl-12 pr-4 shadow-2xl focus:ring-2 focus:ring-primary/50 outline-none transition-all text-[15px] md:text-[15px]"
               />
-              <div className="absolute left-4 top-1/2 -translate-y-1/2">
+              <ContainerInstrument className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2">
                 <Image  
                   src="/assets/common/branding/icons/SEARCH.svg" 
                   alt="Search" 
-                  width={18} 
-                  height={18} 
+                  width={16} md:width={18} 
+                  height={16} md:height={18} 
                   className="opacity-40 brightness-0 invert"
-                / />
-              </div>
-            </form>
+                />
+              </ContainerInstrument>
+            </FormInstrument>
           </motion.div>
         )}
       </AnimatePresence>
@@ -87,42 +94,42 @@ export function MobileFloatingDock() {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-        className="mx-auto max-w-sm bg-va-black/90 backdrop-blur-2xl rounded-[32px] p-2 shadow-aura-lg border border-white/10 flex justify-between items-center pointer-events-auto relative"
+        className="mx-auto max-w-sm bg-va-black/90 backdrop-blur-2xl rounded-[24px] md:rounded-[32px] p-1.5 md:p-2 shadow-aura-lg border border-white/10 flex justify-between items-center pointer-events-auto relative"
       >
         {navItems.map((item) => {
           const isActive = item.href ? (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))) : isSearchOpen;
 
           const content = (
-            <div className="relative flex flex-col items-center justify-center w-14 h-14 group">
+            <ContainerInstrument plain className="relative flex flex-col items-center justify-center w-12 h-12 md:w-14 md:h-14 group">
               <AnimatePresence>
                 {isActive && (
                   <motion.div 
                     layoutId="active-pill"
-                    className="absolute inset-0 bg-primary rounded-2xl"
+                    className="absolute inset-0 bg-primary rounded-xl md:rounded-2xl"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
               </AnimatePresence>
               
-              <div className={`relative z-10 transition-all duration-300 ${isActive ? 'scale-110 text-white' : 'opacity-40 group-hover:opacity-70 text-white'}`}>
+              <ContainerInstrument plain className={`relative z-10 transition-all duration-300 ${isActive ? 'scale-110 text-white' : 'opacity-40 group-hover:opacity-70 text-white'}`}>
                 <Image  
                   src={item.src} 
                   alt={item.label} 
-                  width={24} 
-                  height={24} 
+                  width={20} md:width={24} 
+                  height={20} md:height={24} 
                   className="brightness-0 invert"
-                / />
-              </div>
+                />
+              </ContainerInstrument>
               
-              <span className="sr-only">
-                <VoiceglotText strokeWidth={1.5} translationKey={item.key} defaultText={item.label} / />
-              </span>
-            </div>
+              <TextInstrument as="span" className="sr-only font-light">
+                <VoiceglotText  translationKey={item.key} defaultText={item.label} />
+              </TextInstrument>
+            </ContainerInstrument>
           );
 
           if (item.href) {
             return (
-              <Link strokeWidth={1.5} 
+              <Link  
                 key={item.href}
                 href={item.href}
                 onClick={() => {
@@ -136,12 +143,12 @@ export function MobileFloatingDock() {
           }
 
           return (
-            <button key={item.key} onClick={item.onClick}>
+            <ButtonInstrument key={item.key} onClick={item.onClick} className="p-0 bg-transparent">
               {content}
-            </button>
+            </ButtonInstrument>
           );
         })}
       </motion.nav>
-    </div>
+    </ContainerInstrument>
   );
 }

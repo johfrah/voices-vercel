@@ -40,18 +40,18 @@ async function TrackGrid() {
             </ContainerInstrument>
           </ContainerInstrument>
 
-          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.8] mb-12 text-black/80"><VoiceglotText strokeWidth={1.5} 
+          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.8] mb-12 text-black/80"><VoiceglotText  
               translationKey={`ademing.track.${track.id}.title`} 
               defaultText={track.title} 
               noTranslate={true}
-            / /></HeadingInstrument>
+            /></HeadingInstrument>
           
           <ContainerInstrument className="mt-auto flex justify-center">
             <ButtonInstrument 
               className="w-16 h-16 rounded-full bg-va-black text-white flex items-center justify-center hover:scale-110 hover:bg-primary transition-all duration-500 shadow-lg active:scale-95"
               data-voices-sonic-dna="click-pro"
             >
-              <Play strokeWidth={1.5} size={24} fill="currentColor" / />
+              <Play strokeWidth={1.5} size={24} fill="currentColor" />
             </ButtonInstrument>
           </ContainerInstrument>
         </BentoCard>
@@ -75,74 +75,74 @@ export default async function AdemingPage() {
 
       <SectionInstrument className="px-8 mb-24 text-center flex flex-col items-center">
         <ContainerInstrument className="max-w-4xl">
-          <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[15px] font-light px-6 py-2 rounded-full mb-10 tracking-[0.3em] border border-primary/10"><VoiceglotText strokeWidth={1.5} translationKey="ademing.hero.badge" defaultText="Ademing" / /></ContainerInstrument>
+          <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[15px] font-light px-6 py-2 rounded-full mb-10 tracking-[0.3em] border border-primary/10"><VoiceglotText  translationKey="ademing.hero.badge" defaultText="Ademing" /></ContainerInstrument>
           <HeadingInstrument level={1} className="text-[12vw] md:text-[8vw] font-extralight tracking-tighter leading-[0.75] mb-12 ">
-            <VoiceglotText strokeWidth={1.5} translationKey="ademing.hero.title_part1" defaultText="Kom tot " / />
+            <VoiceglotText  translationKey="ademing.hero.title_part1" defaultText="Kom tot " />
             <TextInstrument as="span" className="text-black/10 font-light">
-              <VoiceglotText strokeWidth={1.5} translationKey="ademing.hero.title_part2" defaultText="rust." / />
+              <VoiceglotText  translationKey="ademing.hero.title_part2" defaultText="rust." />
             </TextInstrument>
           </HeadingInstrument>
-          <TextInstrument className="text-2xl md:text-3xl text-black/40 font-light leading-relaxed tracking-tight italic max-w-2xl mx-auto"><VoiceglotText strokeWidth={1.5} 
+          <TextInstrument className="text-2xl md:text-3xl text-black/40 font-light leading-relaxed tracking-tight italic max-w-2xl mx-auto"><VoiceglotText  
               translationKey="ademing.hero.subtitle" 
               defaultText="Adem in. Kom tot rust. Luister en verbind met de stilte in jezelf." 
-            / /></TextInstrument>
+            /></TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
-      <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
-        <TrackGrid strokeWidth={1.5} / />
+      <Suspense  fallback={<LoadingScreenInstrument />}>
+        <TrackGrid strokeWidth={1.5} />
       </Suspense>
 
       {/* 🧘 DE GIDSEN VAN ADEMING */}
       <SectionInstrument className="max-w-7xl mx-auto px-8 mt-40">
         <ContainerInstrument className="mb-16">
-          <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-black/20"><VoiceglotText strokeWidth={1.5} translationKey="ademing.guides.title" defaultText="De Gidsen" / /></HeadingInstrument>
+          <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-black/20"><VoiceglotText  translationKey="ademing.guides.title" defaultText="De Gidsen" /></HeadingInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="grid md:grid-cols-2 gap-12">
           <BentoCard className="p-12 bg-white/40 backdrop-blur-md border-white/20 rounded-[20px] shadow-aura group">
             <ContainerInstrument className="flex items-center gap-8 mb-10">
               <ContainerInstrument className="w-24 h-24 rounded-[15px] bg-primary/10 flex items-center justify-center overflow-hidden shadow-inner relative">
-                <VoiceglotImage strokeWidth={1.5} 
+                <VoiceglotImage  
                   src="/assets/ademing/julie-avatar.jpg" 
                   alt="Julie" 
                   fill 
                   journey="ademing"
                   category="guides"
                   className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" 
-                / />
+                />
               </ContainerInstrument>
               <ContainerInstrument>
-                <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-primary mb-1"><VoiceglotText strokeWidth={1.5} translationKey="ademing.guide.julie.title" defaultText="Gids" / /></HeadingInstrument>
-                <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter"><VoiceglotText strokeWidth={1.5} translationKey="ademing.guide.julie.name" defaultText="Julie" noTranslate={true} / /></HeadingInstrument>
+                <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-primary mb-1"><VoiceglotText  translationKey="ademing.guide.julie.title" defaultText="Gids" /></HeadingInstrument>
+                <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter"><VoiceglotText  translationKey="ademing.guide.julie.name" defaultText="Julie" noTranslate={true} /></HeadingInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <TextInstrument className="text-xl text-black/50 font-light leading-relaxed"><VoiceglotText strokeWidth={1.5} 
+            <TextInstrument className="text-xl text-black/50 font-light leading-relaxed"><VoiceglotText  
                 translationKey="ademing.guide.julie.bio" 
                 defaultText="Julie helpt je om je innerlijke world te transformeren. Ze stimuleert verbinding en bewustwording om blokkades aan te pakken." 
-              / /></TextInstrument>
+              /></TextInstrument>
           </BentoCard>
 
           <BentoCard className="p-12 bg-white/40 backdrop-blur-md border-white/20 rounded-[20px] shadow-aura group">
             <ContainerInstrument className="flex items-center gap-8 mb-10">
               <ContainerInstrument className="w-24 h-24 rounded-[15px] bg-black/5 flex items-center justify-center overflow-hidden shadow-inner relative">
-                <VoiceglotImage strokeWidth={1.5} 
+                <VoiceglotImage  
                   src="/assets/ademing/johfrah-avatar.jpg" 
                   alt="Johfrah" 
                   fill 
                   journey="ademing"
                   category="guides"
                   className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" 
-                / />
+                />
               </ContainerInstrument>
               <ContainerInstrument>
-                <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/30 mb-1"><VoiceglotText strokeWidth={1.5} translationKey="ademing.guide.johfrah.title" defaultText="Gids" / /></HeadingInstrument>
-                <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter"><VoiceglotText strokeWidth={1.5} translationKey="ademing.guide.johfrah.name" defaultText="Johfrah" noTranslate={true} / /></HeadingInstrument>
+                <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/30 mb-1"><VoiceglotText  translationKey="ademing.guide.johfrah.title" defaultText="Gids" /></HeadingInstrument>
+                <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter"><VoiceglotText  translationKey="ademing.guide.johfrah.name" defaultText="Johfrah" noTranslate={true} /></HeadingInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <TextInstrument className="text-xl text-black/50 font-light leading-relaxed"><VoiceglotText strokeWidth={1.5} 
+            <TextInstrument className="text-xl text-black/50 font-light leading-relaxed"><VoiceglotText  
                 translationKey="ademing.guide.johfrah.bio" 
                 defaultText="Johfrah neemt je mee op een speelse ontdekkingsreis. Hij experimenteert met de kracht van zijn stem als instrument voor groei." 
-              / /></TextInstrument>
+              /></TextInstrument>
           </BentoCard>
         </ContainerInstrument>
       </SectionInstrument>
