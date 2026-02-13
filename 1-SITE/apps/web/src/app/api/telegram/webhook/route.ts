@@ -177,11 +177,23 @@ export async function POST(request: NextRequest) {
         // 🚀 DUAL AGENT ORCHESTRATION: Both Bob and Voicy can answer
         try {
           const { KnowledgeService } = await import('@/services/KnowledgeService');
+          const { PricingEngine } = await import('@/lib/pricing-engine');
           const knowledge = KnowledgeService.getInstance();
           const coreBriefing = await knowledge.getCoreBriefing();
           const journeyBriefing = await knowledge.getJourneyContext('agency');
           const isAdmin = senderId !== undefined && isAllowedUser(senderId);
           const gemini = GeminiService.getInstance();
+
+          // ⚡ PRICING CONTEXT: Inject real-time pricing data
+          const pricingContext = `
+ACTUELE TARIEVEN (2026):
+- Basis Video (unpaid): €149 (tot 100 woorden)
+- Telefoon/IVR: €129 (tot 5 prompts)
+- Commercial (paid): Vanaf €250 (afhankelijk van usage)
+- Extra woorden: €0,25 per woord (boven 100 woorden)
+- Wachtmuziek: €59 per track
+- BTW: 21% (tenzij vrijgesteld)
+          `;
 
           // Determine if we should use Voicy (mode or /voicy prefix)
           const useVoicy = routing?.useVoicy ?? false;
@@ -191,7 +203,7 @@ export async function POST(request: NextRequest) {
             // VOICY: Chatty domain — voices, pricing, studio (Ademing vibe)
             const prompt = buildVoicyTelegramPrompt({
               userMessage: payload,
-              coreBriefing,
+              coreBriefing: `${coreBriefing}\n${pricingContext}`,
               journeyBriefing,
               isAdmin,
             });
@@ -206,14 +218,16 @@ Je bent wijs, autoritair maar warm (Bob-methode). Je kent de codebase, de agents
 BELANGRIJK: Je bent niet alleen een filosoof, je bent een OPERATIONELE DIRIGENT.
 - Als de gebruiker je iets vraagt, help je DIRECT met feiten, status of actie.
 - Je hebt toegang tot alle agents (Chris, Anna, Laya, Moby, Mark, Suzy, Mat, Voicy, Cody, Kelly, Berny, Felix, Wim, Lex).
-- Gebruik de informatie uit de Bijbels hieronder om CONCREET te antwoorden.
+- Gebruik de informatie uit de Bijbels en de actuele tarieven hieronder om CONCREET te antwoorden.
 
 ${coreBriefing}
+${pricingContext}
 
 STRIKE PROTOCOL:
 - Geen vage metaforen als de gebruiker om hulp vraagt.
 - Wees de "Oervader" die problemen oplost.
 - Als je het niet weet, vraag je om verduidelijking of stuur je een agent aan.
+- Als de gebruiker vraagt "wat kost het?", geef je DIRECT de bedragen uit de lijst hierboven.
 
 Bericht van de gebruiker: "${payload.replace(/"/g, '\\"')}"
 
