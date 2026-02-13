@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, SkipBack, SkipForward, X } from 'lucide-react';
 import { Demo } from '@/types';
+import { useSonicDNA } from '@/lib/sonic-dna';
 
 interface MediaMasterProps {
   demo: Demo;
@@ -10,6 +11,7 @@ interface MediaMasterProps {
 }
 
 export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
+  const { playClick } = useSonicDNA();
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
