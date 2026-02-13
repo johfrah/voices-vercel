@@ -38,12 +38,12 @@ export const WorkshopProgram: React.FC<WorkshopProgramProps> = ({ dagindeling, i
           )}
         </div>
         <div className="relative rounded-[32px] overflow-hidden aspect-square md:aspect-auto">
-          <Image 
+          <Image strokeWidth={1.5} 
             src={image || "/assets/studio/programma.jpg"} 
             alt="Programma"
             fill
             className="object-cover grayscale"
-          />
+          / />
         </div>
       </div>
     </BentoCard>

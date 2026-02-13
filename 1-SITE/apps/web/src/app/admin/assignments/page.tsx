@@ -98,7 +98,7 @@ export default async function ActorAssignmentCockpit() {
             <ContainerInstrument key={item.id} className="bg-white rounded-[20px] p-6 border border-black/[0.03] shadow-sm flex items-center justify-between group hover:shadow-md transition-all duration-300">
               <ContainerInstrument className="flex items-center gap-6 flex-1">
                 <ContainerInstrument className="w-12 h-12 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 group-hover:bg-va-primary/10 group-hover:text-va-primary transition-colors">
-                  <Mic size={20} />
+                  <Mic strokeWidth={1.5} size={20} / />
                 </ContainerInstrument>
                 
                 <ContainerInstrument className="min-w-[200px]">
@@ -118,7 +118,7 @@ export default async function ActorAssignmentCockpit() {
                     <TextInstrument className="text-[15px] font-light mt-1"><VoiceglotText translationKey="common.sent" defaultText="Sent" /></TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="flex flex-col items-center">
-                    <Eye size={14} className={clsx(item.emailStatus === 'opened' ? "text-blue-500" : "text-va-black/20")} />
+                    <Eye strokeWidth={1.5} size={14} className={clsx(item.emailStatus === 'opened' ? "text-blue-500" : "text-va-black/20")} / />
                     <TextInstrument className="text-[15px] font-light mt-1"><VoiceglotText translationKey="common.read" defaultText="Read" /></TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -131,7 +131,7 @@ export default async function ActorAssignmentCockpit() {
                     </TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="flex items-center gap-2">
-                    <Clock size={10} className={clsx(item.isOverdue ? "text-red-500" : "text-black/20")} />
+                    <Clock strokeWidth={1.5} size={10} className={clsx(item.isOverdue ? "text-red-500" : "text-black/20")} / />
                     <TextInstrument className={clsx("text-[15px] font-light tracking-tight", item.isOverdue ? "text-red-500" : "text-black/60")}>
                       {item.expectedAtFormatted}
                     </TextInstrument>
@@ -143,12 +143,12 @@ export default async function ActorAssignmentCockpit() {
                     "px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2 uppercase",
                     item.deliveryStatus === 'approved' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
                   )}>
-                    {item.deliveryStatus === 'approved' ? <CheckCircle2 strokeWidth={1.5} size={12} /> : <Clock size={12} />}
+                    {item.deliveryStatus === 'approved' ? <CheckCircle2 strokeWidth={1.5} size={12} /> : <Clock strokeWidth={1.5} size={12} / />}
                     <VoiceglotText translationKey={`common.status.${item.deliveryStatus}`} defaultText={item.deliveryStatus || ''} />
                   </ContainerInstrument>
                   {item.isOverdue && (
                     <ContainerInstrument className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2 ">
-                      <AlertCircle size={12} /> <VoiceglotText translationKey="common.overdue" defaultText="Overdue" />
+                      <AlertCircle strokeWidth={1.5} size={12} / /> <VoiceglotText translationKey="common.overdue" defaultText="Overdue" />
                     </ContainerInstrument>
                   )}
                 </ContainerInstrument>
@@ -158,7 +158,7 @@ export default async function ActorAssignmentCockpit() {
                     "px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2 uppercase",
                     item.hasInvoice ? "bg-blue-100 text-blue-700" : "bg-va-off-white text-va-black/40"
                   )}>
-                    <FileText size={12} />
+                    <FileText strokeWidth={1.5} size={12} / />
                     {item.hasInvoice ? <VoiceglotText translationKey="common.invoice_ok" defaultText="Factuur OK" /> : <VoiceglotText translationKey="common.no_invoice" defaultText="Geen Factuur" />}
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -166,7 +166,7 @@ export default async function ActorAssignmentCockpit() {
 
               <ContainerInstrument className="flex items-center gap-2">
                 <ButtonInstrument as={Link} href={`/backoffice/orders/${item.displayOrderId}`} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/20 hover:text-va-black">
-                  <ExternalLink size={18} />
+                  <ExternalLink strokeWidth={1.5} size={18} / />
                 </ButtonInstrument>
                 {item.deliveryStatus === 'approved' && item.hasInvoice && (
                   <ButtonInstrument className="va-btn-pro py-2 px-4 text-[15px]"><VoiceglotText translationKey="admin.cta.pay_ponto" defaultText="PAY WITH PONTO" /></ButtonInstrument>

@@ -101,7 +101,7 @@ export default function VisitorPlayerPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-center">
         <ContainerInstrument className="space-y-2">
-          <Link href="/admin/marketing/visitors" className="flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[15px] font-black tracking-widest mb-4">
+          <Link strokeWidth={1.5} href="/admin/marketing/visitors" className="flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[15px] font-black tracking-widest mb-4">
             <ArrowLeft strokeWidth={1.5} size={12} /><VoiceglotText translationKey="auto.page.terug_naar_cockpit.87606e" defaultText="Terug naar cockpit" /></Link>
           <ContainerInstrument className="flex items-center gap-3">
             <ContainerInstrument className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
@@ -131,7 +131,7 @@ export default function VisitorPlayerPage() {
             </ContainerInstrument>
             
             {session.user && (
-              <Link href={`/admin/users/${session.userId}`} className="flex items-center gap-4 bg-va-black text-white p-6 rounded-[24px] shadow-lg hover:bg-primary transition-all group">
+              <Link strokeWidth={1.5} href={`/admin/users/${session.userId}`} className="flex items-center gap-4 bg-va-black text-white p-6 rounded-[24px] shadow-lg hover:bg-primary transition-all group">
                 <ContainerInstrument className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center font-black text-[15px]">
                   {session.user.firstName?.[0]}{session.user.lastName?.[0]}
                 </ContainerInstrument>
@@ -157,7 +157,7 @@ export default function VisitorPlayerPage() {
             ) : error ? (
               <ContainerInstrument className="bg-red-500/10 border border-red-500/20 p-8 rounded-3xl text-center max-w-md">
                 <TextInstrument className="text-red-500 font-bold mb-4">{error}</TextInstrument>
-                <Link href="/admin/marketing/visitors" className="va-btn-pro !bg-white !text-va-black"><VoiceglotText translationKey="auto.page.terug_naar_cockpit.dada9f" defaultText="Terug naar Cockpit" /></Link>
+                <Link strokeWidth={1.5} href="/admin/marketing/visitors" className="va-btn-pro !bg-white !text-va-black"><VoiceglotText translationKey="auto.page.terug_naar_cockpit.dada9f" defaultText="Terug naar Cockpit" /></Link>
               </ContainerInstrument>
             ) : (
               <ContainerInstrument ref={playerContainerRef} className="w-full h-full" />
@@ -183,7 +183,7 @@ export default function VisitorPlayerPage() {
               </ContainerInstrument>
 
               <ContainerInstrument className="bg-va-black text-white p-8 rounded-[32px] shadow-sm">
-                <Clock className="text-primary mb-4" size={24} />
+                <Clock strokeWidth={1.5} className="text-primary mb-4" size={24} / />
                 <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2 text-white"><VoiceglotText translationKey="auto.page.retentie_policy.4c86b2" defaultText="Retentie Policy" /><TextInstrument className="text-white/40 text-[15px] leading-relaxed font-light"><VoiceglotText translationKey="auto.page.deze_opname_wordt_co.8fd284" defaultText="Deze opname wordt conform het Zero-Mandaat 14 dagen bewaard. Daarna worden de ruwe events automatisch gewist." /></TextInstrument></HeadingInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -194,11 +194,11 @@ export default function VisitorPlayerPage() {
         <ContainerInstrument className="space-y-6">
           <ContainerInstrument className="bg-white border border-black/5 rounded-[32px] p-6 shadow-sm h-fit">
             <HeadingInstrument level={2} className="text-[15px] font-black tracking-widest text-va-black/40 mb-6 flex items-center gap-2">
-              <Play size={12} fill="currentColor" /><VoiceglotText translationKey="auto.page.intelligence_playlis.05eaf7" defaultText="Intelligence Playlist" /></HeadingInstrument>
+              <Play strokeWidth={1.5} size={12} fill="currentColor" / /><VoiceglotText translationKey="auto.page.intelligence_playlis.05eaf7" defaultText="Intelligence Playlist" /></HeadingInstrument>
             
             <ContainerInstrument className="space-y-3 max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
               {recentSessions.map((s) => (
-                <Link 
+                <Link strokeWidth={1.5} 
                   key={s.id} 
                   href={`/admin/marketing/visitors/${s.visitorHash}`}
                   className={cn(

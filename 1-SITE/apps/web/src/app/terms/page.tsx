@@ -50,7 +50,7 @@ export default function TermsPage() {
 
           <section className="space-y-4">
             <ContainerInstrument className="flex items-center gap-3 text-primary mb-4">
-              <FileText size={20} />
+              <FileText strokeWidth={1.5} size={20} / />
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.3__betaling___leveri.a7878f" defaultText="3. Betaling & Levering" /></HeadingInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-va-black/60 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.bestellingen_worden_.69c2ec" defaultText="Bestellingen worden in behandeling genomen zodra de betaling is ontvangen (via Mollie of overschrijving). De levertijd gaat in op het moment dat het volledige script en alle instructies door de stemacteur zijn ontvangen." /></TextInstrument>

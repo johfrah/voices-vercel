@@ -56,7 +56,7 @@ export default function VoiceManagerPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link strokeWidth={1.5} href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
@@ -65,7 +65,7 @@ export default function VoiceManagerPage() {
 
         <ContainerInstrument className="flex gap-4 items-center">
           <ContainerInstrument className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
+            <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={18} / />
             <InputInstrument 
               type="text" 
               placeholder="Zoek..."
@@ -123,7 +123,7 @@ export default function VoiceManagerPage() {
                 actor.status === 'live' ? 'bg-green-500/10 text-green-600' : 'bg-yellow-500/10 text-yellow-600'
               }`}
             >
-              {actor.status === 'live' ? <CheckCircle2 strokeWidth={1.5} size={14} /> : <Clock size={14} />}
+              {actor.status === 'live' ? <CheckCircle2 strokeWidth={1.5} size={14} /> : <Clock strokeWidth={1.5} size={14} / />}
               <TextInstrument as="span" className="text-[15px] font-black tracking-widest">{actor.status}</TextInstrument>
             </ContainerInstrument>
 
@@ -170,11 +170,11 @@ export default function VoiceManagerPage() {
                   onClick={() => playClick('success')}
                   className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center hover:scale-110 transition-all shadow-lg shadow-primary/20"
                 >
-                  <Save size={16} />
+                  <Save strokeWidth={1.5} size={16} / />
                 </ButtonInstrument>
               )}
               <ButtonInstrument className="w-10 h-10 bg-va-off-white text-va-black/20 rounded-xl flex items-center justify-center hover:text-va-black transition-all">
-                <MoreVertical size={16} />
+                <MoreVertical strokeWidth={1.5} size={16} / />
               </ButtonInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

@@ -70,7 +70,7 @@ export const BlueprintExplorer: React.FC<{ journey: string }> = ({ journey }) =>
                 <Target size={12} className="text-primary" /> {selected.goal}
               </div>
               <div className="flex items-center gap-1.5 text-[15px] font-black tracking-widest text-va-black/30">
-                <Clock size={12} className="text-primary" /> {selected.timing}
+                <Clock strokeWidth={1.5} size={12} className="text-primary" / /> {selected.timing}
               </div>
             </div>
           </div>

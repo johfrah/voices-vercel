@@ -81,7 +81,7 @@ export default async function InstructorDashboardPage() {
 
         <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>
-            <Users className="text-primary mb-6" size={24} />
+            <Users strokeWidth={1.5} className="text-primary mb-6" size={24} / />
             <TextInstrument className="text-[15px] tracking-widest text-black/30 font-light"><VoiceglotText translationKey="studio.beheer.stats.capacity" defaultText="Totale Capaciteit" /></TextInstrument>
             <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter mt-2">{totalParticipants}</HeadingInstrument>
           </ContainerInstrument>
@@ -94,12 +94,12 @@ export default async function InstructorDashboardPage() {
             <TextInstrument className="text-[15px] tracking-widest text-white/30 font-light"><VoiceglotText translationKey="studio.beheer.stats.impact" defaultText="Jouw Impact" /></TextInstrument>
             <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter mt-2">4.9/5</HeadingInstrument>
           </ContainerInstrument>
-          <Link href="/studio/reviews" className="text-[15px] font-black tracking-widest text-primary hover:underline mt-8 flex items-center gap-2"><VoiceglotText translationKey="studio.beheer.stats.reviews_cta" defaultText="BEKIJK REVIEWS" /><ExternalLink size={12} /></Link>
+          <Link strokeWidth={1.5} href="/studio/reviews" className="text-[15px] font-black tracking-widest text-primary hover:underline mt-8 flex items-center gap-2"><VoiceglotText translationKey="studio.beheer.stats.reviews_cta" defaultText="BEKIJK REVIEWS" /><ExternalLink strokeWidth={1.5} size={12} / /></Link>
         </BentoCard>
 
         {/* ACTIVE EDITIONS LIST */}
         <BentoCard span="lg" className="bg-white shadow-aura p-10 border border-black/5">
-          <HeadingInstrument level={2} className="text-[15px] tracking-widest text-black/30 mb-8"><VoiceglotText translationKey="studio.beheer.active_workshops" defaultText="Jouw Actieve Workshops" /></HeadingInstrument>
+          <HeadingInstrument level={2} className="text-[15px] tracking-widest text-black/30 mb-8 font-light"><VoiceglotText translationKey="studio.beheer.active_workshops" defaultText="Jouw Actieve Workshops" /></HeadingInstrument>
           
           <ContainerInstrument className="space-y-4">
             {upcomingEditions.length > 0 ? upcomingEditions.map((edition) => (
@@ -115,10 +115,10 @@ export default async function InstructorDashboardPage() {
                     </HeadingInstrument>
                     <ContainerInstrument className="flex flex-wrap gap-4 mt-1">
                       <ContainerInstrument className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
-                        <MapPin size={10} /> {edition.location?.name || 'Gent'}
+                        <MapPin strokeWidth={1.5} size={10} / /> {edition.location?.name || 'Gent'}
                       </ContainerInstrument>
                       <ContainerInstrument className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
-                        <Clock size={10} /> {edition.date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}
+                        <Clock strokeWidth={1.5} size={10} / /> {edition.date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}
                       </ContainerInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>
@@ -136,8 +136,8 @@ export default async function InstructorDashboardPage() {
                       <TextInstrument className="text-[15px] font-black">6/{edition.capacity}</TextInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>
-                  <Link href={`/studio/inschrijvingen/editie/${edition.id}`} className="va-btn-secondary !p-4 !rounded-xl">
-                    <Settings size={16} className="text-black/20 group-hover/btn:text-primary transition-colors" />
+                  <Link strokeWidth={1.5} href={`/studio/inschrijvingen/editie/${edition.id}`} className="va-btn-secondary !p-4 !rounded-xl">
+                    <Settings strokeWidth={1.5} size={16} className="text-black/20 group-hover/btn:text-primary transition-colors" / />
                   </Link>
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -152,7 +152,7 @@ export default async function InstructorDashboardPage() {
         {/* QUICK ACTIONS / TIPS */}
         <BentoCard span="sm" className="bg-va-off-white p-10 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>
-            <HeadingInstrument level={3} className="text-[15px] tracking-widest text-black/30 mb-6"><VoiceglotText translationKey="studio.beheer.tips.title" defaultText="Tips voor succes" /></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-[15px] tracking-widest text-black/30 mb-6 font-light"><VoiceglotText translationKey="studio.beheer.tips.title" defaultText="Tips voor succes" /></HeadingInstrument>
             <ContainerInstrument className="space-y-6">
               <ContainerInstrument className="flex gap-4">
                 <ContainerInstrument className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">

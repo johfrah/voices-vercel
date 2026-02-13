@@ -31,7 +31,7 @@ export const GlossaryCard: React.FC<GlossaryCardProps> = ({ term }) => {
       <div>
         <h4 className="text-[15px] font-black tracking-widest mb-1">{def.title}</h4>
         <p className="text-[15px] text-va-black/60 leading-relaxed mb-3">{def.text}</p>
-        <Link href={`/glossary/${term}`} className="inline-flex items-center gap-1.5 text-[15px] font-black tracking-widest text-primary hover:gap-2 transition-all">
+        <Link strokeWidth={1.5} href={`/glossary/${term}`} className="inline-flex items-center gap-1.5 text-[15px] font-black tracking-widest text-primary hover:gap-2 transition-all">
           Lees meer in de kennisbank <ArrowRight strokeWidth={1.5} size={10} />
         </Link>
       </div>

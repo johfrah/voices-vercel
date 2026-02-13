@@ -36,7 +36,7 @@ async function ParticipantsContent() {
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       {/* Header */}
       <SectionInstrument className="mb-16 space-y-4">
-        <Link 
+        <Link strokeWidth={1.5} 
           href="/studio" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-all mb-4"
         >
@@ -54,7 +54,7 @@ async function ParticipantsContent() {
       <BentoGrid>
         {/* Stats Summary */}
         <BentoCard span="sm" className="bg-va-black text-white p-8">
-          <Users className="text-primary mb-6" size={32} />
+          <Users strokeWidth={1.5} className="text-primary mb-6" size={32} / />
           <ContainerInstrument className="text-4xl font-light tracking-tighter mb-2">{participants.length}</ContainerInstrument>
           <TextInstrument className="text-[15px] font-light tracking-widest text-white/40"><VoiceglotText translationKey="studio.participants.total_label" defaultText="Totaal" /></TextInstrument>
         </BentoCard>
@@ -81,7 +81,7 @@ async function ParticipantsContent() {
             <HeadingInstrument level={3} className="text-2xl font-light tracking-tight"><VoiceglotText translationKey="studio.participants.list_title" defaultText="Lijst" /></HeadingInstrument>
             <ContainerInstrument className="flex items-center gap-4 w-full md:w-auto">
               <ContainerInstrument className="relative flex-1 md:w-64">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} />
+                <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} / />
                 <InputInstrument 
                   type="text" 
                   placeholder="Zoeken..." 
@@ -89,7 +89,7 @@ async function ParticipantsContent() {
                 />
               </ContainerInstrument>
               <ButtonInstrument className="p-3 rounded-full bg-va-off-white border border-black/5 text-va-black/40 hover:text-primary transition-all">
-                <Filter size={18} />
+                <Filter strokeWidth={1.5} size={18} / />
               </ButtonInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

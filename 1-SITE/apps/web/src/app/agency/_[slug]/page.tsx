@@ -34,7 +34,7 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       {/* Header / Breadcrumbs */}
       <SectionInstrument className="mb-12 flex items-center justify-between">
-        <Link 
+        <Link strokeWidth={1.5} 
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
@@ -43,10 +43,10 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
         </Link>
         <ContainerInstrument className="flex gap-4">
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Heart size={18} />
+            <Heart strokeWidth={1.5} size={18} / />
           </ButtonInstrument>
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Share2 size={18} />
+            <Share2 strokeWidth={1.5} size={18} / />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -55,12 +55,12 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
         {/* Profile Card */}
         <BentoCard span="sm" className="!p-0 overflow-hidden bg-white shadow-aura">
           <ContainerInstrument className="aspect-[4/5] relative">
-            <Image 
+            <Image strokeWidth={1.5} 
               src={actor.photo_url} 
               alt={actor.display_name} 
               fill
               className="object-cover"
-            />
+            / />
             <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent" />
             <ContainerInstrument className="absolute bottom-8 left-8 right-8">
               <HeadingInstrument level={1} className="text-3xl font-black text-white tracking-tighter mb-2"><VoiceglotText translationKey={`actor.${actor.id}.name`} defaultText={actor.display_name} /></HeadingInstrument>
@@ -93,7 +93,7 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
               >
                 <ContainerInstrument className="flex items-center gap-4">
                   <ContainerInstrument className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                    <Play size={20} fill="currentColor" className="ml-1" />
+                    <Play strokeWidth={1.5} size={20} fill="currentColor" className="ml-1" / />
                   </ContainerInstrument>
                   <ContainerInstrument>
                     <HeadingInstrument level={4} className="font-black tracking-tight text-[15px]">
@@ -128,7 +128,7 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
                 <TextInstrument as="span" className="font-black text-primary">v.a. €450</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <ButtonInstrument className="va-btn-pro w-full mt-8 !bg-primary flex items-center justify-center gap-2 group"><VoiceglotText translationKey="actor.book_now" defaultText="Nu Boeken" /><Mic size={16} /></ButtonInstrument>
+            <ButtonInstrument className="va-btn-pro w-full mt-8 !bg-primary flex items-center justify-center gap-2 group"><VoiceglotText translationKey="actor.book_now" defaultText="Nu Boeken" /><Mic strokeWidth={1.5} size={16} / /></ButtonInstrument>
           </BentoCard>
 
           <BentoCard span="sm" className="hred text-white p-8">

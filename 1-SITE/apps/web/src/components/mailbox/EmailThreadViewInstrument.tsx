@@ -138,13 +138,13 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
               <ContainerInstrument className="px-6 py-5 flex items-start justify-between">
                   <ContainerInstrument className="flex items-center gap-4">
                     <ContainerInstrument className="w-10 h-10 rounded-full bg-va-black text-white flex items-center justify-center text-[15px] font-light relative overflow-hidden shrink-0">
-                      <Image 
+                      <Image strokeWidth={1.5} 
                         src={gravatarUrl} 
                         alt="" 
                         fill
                         className="object-cover z-10" 
                         unoptimized
-                      />
+                      / />
                       <TextInstrument className="relative z-0 font-light">{initial}</TextInstrument>
                     </ContainerInstrument>
                     <ContainerInstrument>
@@ -213,7 +213,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                       >
                         <ContainerInstrument className={`aspect-square rounded-2xl border flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden ${focusedAttachmentId === att.id ? 'bg-gray-50 border-va-black/20 shadow-md' : 'bg-white border-gray-100 shadow-sm'}`}>
                           <ContainerInstrument className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
-                            {isPdf(att.filename) ? <FileText size={24} /> : isAudio(att.filename) ? <Mic size={24} /> : isVideo(att.filename) ? <Play size={24} /> : <ImageIcon size={24} />}
+                            {isPdf(att.filename) ? <FileText strokeWidth={1.5} size={24} / /> : isAudio(att.filename) ? <Mic strokeWidth={1.5} size={24} / /> : isVideo(att.filename) ? <Play strokeWidth={1.5} size={24} / /> : <ImageIcon size={24} />}
                           </ContainerInstrument>
                           <ContainerInstrument className="text-center px-2">
                             <p className="text-[15px] font-light text-gray-900 truncate w-full max-w-[100px]">{att.filename}</p>
@@ -223,7 +223,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                           {/* Hover Actions */}
                           <ContainerInstrument className="absolute inset-0 bg-va-black/5 opacity-0 group-hover/att:opacity-100 transition-opacity flex items-center justify-center gap-2">
                             <ContainerInstrument className="bg-white p-2 rounded-full shadow-lg text-va-black">
-                              <Maximize2 size={14} />
+                              <Maximize2 strokeWidth={1.5} size={14} / />
                             </ContainerInstrument>
                           </ContainerInstrument>
                         </ContainerInstrument>
@@ -288,7 +288,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                   download={spotlightFile.filename}
                   className="bg-white text-va-black px-6 py-3 rounded-2xl font-light tracking-widest flex items-center gap-2 hover:bg-primary hover:text-white transition-all"
                 >
-                  <Download size={18} />
+                  <Download strokeWidth={1.5} size={18} / />
                   Downloaden
                 </a>
               </ContainerInstrument>
@@ -303,17 +303,17 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                   />
                 ) : isImage(spotlightFile.filename) ? (
                   <ContainerInstrument className="relative w-full h-full">
-                    <Image 
+                    <Image strokeWidth={1.5} 
                       src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 
                       alt={spotlightFile.filename}
                       fill
                       className="object-contain"
-                    />
+                    / />
                   </ContainerInstrument>
                 ) : isAudio(spotlightFile.filename) ? (
                   <ContainerInstrument className="flex flex-col items-center gap-8 w-full p-12">
                     <ContainerInstrument className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center animate-pulse">
-                      <Mic size={48} className="text-white" />
+                      <Mic strokeWidth={1.5} size={48} className="text-white" / />
                     </ContainerInstrument>
                     <audio 
                       src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 
@@ -329,7 +329,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                   />
                 ) : (
                   <ContainerInstrument className="text-center space-y-4">
-                    <FileText size={64} className="mx-auto text-white/20" />
+                    <FileText strokeWidth={1.5} size={64} className="mx-auto text-white/20" / />
                     <p className="text-white/50 font-light">Voorvertoning niet beschikbaar voor dit bestandstype.</p>
                   </ContainerInstrument>
                 )}

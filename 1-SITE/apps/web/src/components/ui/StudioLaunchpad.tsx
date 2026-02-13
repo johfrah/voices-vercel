@@ -42,7 +42,34 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [isExtracting, setIsExtracting] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
+  const [isMatching, setIsMatching] = useState(false);
+  const [matchResults, setMatchResults] = useState<Record<number, number>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleScriptAnalysis = async (text: string) => {
+    if (text.length < 20) return;
+    
+    setIsMatching(true);
+    try {
+      // Sherlock: We sturen het script naar onze onzichtbare matchmaker
+      const res = await fetch('/api/studio/audit', { // We hergebruiken de audit route voor analyse
+        method: 'POST',
+        body: JSON.stringify({ 
+          text, 
+          mode: 'matchmaker',
+          actors: initialActors.map(a => ({ id: a.id, tags: a.ai_tags }))
+        })
+      });
+      const data = await res.json();
+      if (data.matches) {
+        setMatchResults(data.matches);
+      }
+    } catch (error) {
+      console.error('[Sherlock] Matching failed:', error);
+    } finally {
+      setIsMatching(false);
+    }
+  };
 
   const removeActor = (actor: any) => {
     toggleActorSelection(actor);
@@ -100,7 +127,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
           <ContainerInstrument className="mb-12 space-y-8">
             <ContainerInstrument className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <ContainerInstrument className="space-y-2">
-                <Link 
+                <Link strokeWidth={1.5} 
                   href="/search" 
                   className="inline-flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[15px] font-light group"
                 >
@@ -111,13 +138,13 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                   <VoiceglotText translationKey="auto.studiolaunchpad.jouw_proefopname.e1fa5b" defaultText="Jouw proefopname" />
                 </HeadingInstrument>
                 <ContainerInstrument className="flex items-center gap-2 text-va-black/40 bg-va-black/5 px-4 py-2 rounded-full w-fit">
-                  <Image 
+                  <Image strokeWidth={1.5} 
                     src="/assets/common/branding/icons/INFO.svg" 
                     alt="Info" 
                     width={14} 
                     height={14} 
                     style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                  />
+                  / />
                   <TextInstrument className="text-[15px] font-light tracking-tight"><VoiceglotText translationKey="auto.studiolaunchpad.commercials___video.38a0aa" defaultText="Commercials & video" /></TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -147,7 +174,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                     >
                       <ContainerInstrument className="relative w-12 h-12 rounded-[15px] overflow-hidden bg-va-off-white">
                         {actor.photoUrl ? (
-                          <Image src={actor.photoUrl} alt={actor.firstName} fill className="object-cover" />
+                          <Image strokeWidth={1.5} src={actor.photoUrl} alt={actor.firstName} fill className="object-cover" / />
                         ) : (
                           <ContainerInstrument className="w-full h-full flex items-center justify-center font-light text-va-black/20 text-lg">
                             {actor.firstName[0]}
@@ -172,13 +199,13 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                 <ContainerInstrument className="p-8 bg-white/50 backdrop-blur-sm rounded-[30px] border border-va-black/5">
                   <ContainerInstrument className="flex items-center gap-3 mb-8">
                     <ContainerInstrument className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                      <Image 
+                      <Image strokeWidth={1.5} 
                         src="/assets/common/branding/icons/MIC.svg" 
                         alt="Mic" 
                         width={20} 
                         height={20} 
                         style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                      />
+                      / />
                     </ContainerInstrument>
                     <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40 "><VoiceglotText translationKey="auto.studiolaunchpad.selecteer_stemmen_vo.7278c6" defaultText="Selecteer stemmen voor jouw briefing" /></TextInstrument>
                   </ContainerInstrument>
@@ -188,7 +215,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                     ))}
                   </ContainerInstrument>
                   <ContainerInstrument className="mt-8 text-center">
-                    <Link 
+                    <Link strokeWidth={1.5} 
                       href="/search" 
                       className="text-[15px] font-light text-primary hover:underline tracking-widest "
                     ><VoiceglotText translationKey="auto.studiolaunchpad.bekijk_alle_stemmen.517883" defaultText="Bekijk alle stemmen" /></Link>
@@ -239,13 +266,13 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                           <TextInstrument className="text-[15px] font-medium text-va-black/70">{file.name}</TextInstrument>
                         </ContainerInstrument>
                         <button onClick={() => removeFile(i)} className="text-va-black/20 hover:text-red-500 transition-colors">
-                          <Image 
+                          <Image strokeWidth={1.5} 
                             src="/assets/common/branding/icons/TRASH.svg" 
                             alt="Verwijder" 
                             width={18} 
                             height={18} 
                             style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                          />
+                          / />
                         </button>
                       </ContainerInstrument>
                     ))}
@@ -260,14 +287,14 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                     <LabelInstrument className="text-[15px] font-light tracking-widest ml-0 opacity-40"><VoiceglotText translationKey="auto.studiolaunchpad.youtube_of_vimeo_lin.1c2443" defaultText="YouTube of Vimeo link (optioneel)" /></LabelInstrument>
                     <ContainerInstrument className="relative">
                       <ContainerInstrument className="absolute left-5 top-1/2 -translate-y-1/2">
-                        <Image 
+                        <Image strokeWidth={1.5} 
                           src="/assets/common/branding/icons/FORWARD.svg" 
                           alt="Link" 
                           width={20} 
                           height={20} 
                           className="opacity-20"
                           style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                        />
+                        / />
                       </ContainerInstrument>
                       <InputInstrument 
                         placeholder="https://..." 

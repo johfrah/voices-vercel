@@ -172,13 +172,13 @@ export default function GlobalFooter() {
                   <VoiceglotText translationKey="auto.globalfooter.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" />
                 </TextInstrument>
               ) : (
-                <Image 
+                <Image strokeWidth={1.5} 
                   src={market.logo_url} 
                   alt={market.name} 
                   width={142} 
                   height={56}
                   className="h-14 w-auto transition-transform duration-500 group-hover:scale-105"
-                />
+                / />
               )}
             </ButtonInstrument>
             <TextInstrument className="text-va-black/40 text-lg font-light leading-relaxed max-w-sm">

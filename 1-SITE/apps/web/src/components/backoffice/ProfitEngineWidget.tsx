@@ -61,12 +61,12 @@ export const ProfitEngineWidget: React.FC = () => {
             <Zap strokeWidth={1.5} size={20} />
           </ContainerInstrument>
           <ContainerInstrument className="text-right">
-            <TextInstrument className="text-[12px] font-light tracking-widest text-va-black/30 ">
+            <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 ">
               <VoiceglotText translationKey="common.status" defaultText="Status" />
             </TextInstrument>
             <ContainerInstrument className="flex items-center gap-2 text-emerald-500">
               <ContainerInstrument className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <TextInstrument className="text-[12px] font-light tracking-widest ">
+              <TextInstrument className="text-[15px] font-light tracking-widest ">
                 <VoiceglotText translationKey="order.financial.profitable" defaultText="Winstgevend" />
               </TextInstrument>
             </ContainerInstrument>
@@ -75,7 +75,7 @@ export const ProfitEngineWidget: React.FC = () => {
 
         <ContainerInstrument className="space-y-6">
           <ContainerInstrument>
-            <HeadingInstrument level={3} className="text-[12px] font-light tracking-widest text-va-black/40 mb-1 ">
+            <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-va-black/40 mb-1 ">
               <VoiceglotText translationKey="order.financial.net_profit_30d" defaultText="Netto Winst (30d)" />
             </HeadingInstrument>
             <TextInstrument className="text-5xl font-light tracking-tighter text-va-black">
@@ -85,13 +85,13 @@ export const ProfitEngineWidget: React.FC = () => {
 
           <ContainerInstrument className="grid grid-cols-2 gap-4">
             <ContainerInstrument className="p-4 bg-va-off-white rounded-[20px] border border-va-black/5">
-              <TextInstrument className="text-[12px] font-light tracking-widest text-va-black/30 mb-1 ">
+              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 mb-1 ">
                 <VoiceglotText translationKey="order.financial.revenue" defaultText="Omzet" />
               </TextInstrument>
               <TextInstrument className="text-lg font-light tracking-tight text-va-black">{stats.revenue.formatted}</TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="p-4 bg-va-off-white rounded-[20px] border border-va-black/5">
-              <TextInstrument className="text-[12px] font-light tracking-widest text-va-black/30 mb-1 ">
+              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 mb-1 ">
                 <VoiceglotText translationKey="order.financial.margin" defaultText="Marge" />
               </TextInstrument>
               <TextInstrument className="text-lg font-light tracking-tight text-emerald-500">{stats.margin.formatted}</TextInstrument>
@@ -101,7 +101,7 @@ export const ProfitEngineWidget: React.FC = () => {
       </ContainerInstrument>
 
       <ContainerInstrument className="relative z-10 mt-8 pt-6 border-t border-va-black/5 flex items-center justify-between">
-        <ContainerInstrument className="flex items-center gap-2 text-[12px] font-light tracking-widest text-va-black/40 ">
+        <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 ">
           <TrendingUp size={14} className="text-emerald-500" strokeWidth={1.5} />
           <TextInstrument>+12% vs vorige maand</TextInstrument>
         </ContainerInstrument>

@@ -170,7 +170,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         <ContainerInstrument className="p-6 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center justify-between group animate-fade-in">
           <ContainerInstrument className="flex items-center gap-4">
             <ContainerInstrument className="w-12 h-12 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
-              <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
             </ContainerInstrument>
             <ContainerInstrument>
               <HeadingInstrument level={4} className="text-[15px] font-light tracking-tight">
@@ -199,7 +199,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       <ContainerInstrument className="bg-white p-8 rounded-[20px] border border-va-black/5 shadow-aura space-y-6">
         <ContainerInstrument className="flex items-center gap-3 mb-2">
           <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-            <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
           </ContainerInstrument>
           <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
             <VoiceglotText translationKey="checkout.details.title" defaultText="Jouw gegevens" />
@@ -272,17 +272,17 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               {vatStatus.validating ? <Loader2 className="animate-spin text-primary" size={18} strokeWidth={1.5} /> : 
                vatStatus.valid ? (
                  <ContainerInstrument className="flex items-center gap-2 text-green-600 animate-fade-in">
-                   <TextInstrument className="text-[13px] font-light tracking-widest ">
+                   <TextInstrument className="text-[15px] font-light tracking-widest ">
                      <VoiceglotText translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" />
                    </TextInstrument>
                    <CheckCircle2 strokeWidth={1.5} size={18} />
                  </ContainerInstrument>
                ) : vatStatus.valid === false ? (
                  <ContainerInstrument className="flex items-center gap-2 text-red-500 animate-shake">
-                   <TextInstrument className="text-[13px] font-light tracking-widest ">
+                   <TextInstrument className="text-[15px] font-light tracking-widest ">
                      <VoiceglotText translationKey="checkout.form.vat_invalid" defaultText="Ongeldig" />
                    </TextInstrument>
-                   <Image src="/assets/common/branding/icons/INFO.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                   <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
                  </ContainerInstrument>
                ) : null}
             </ContainerInstrument>
@@ -343,7 +343,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         <ContainerInstrument className="bg-white p-8 rounded-[20px] border border-va-black/5 shadow-aura space-y-6">
           <ContainerInstrument className="flex items-center gap-3 mb-2">
             <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-              <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
             </ContainerInstrument>
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
               <VoiceglotText translationKey="checkout.payment.title" defaultText="Betaalmethode" />
@@ -382,14 +382,14 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                       selectedMethod === method.id ? 'border-primary bg-primary/5' : 'border-va-black/5 hover:border-va-black/10'
                     )}
                   >
-                    <Image 
+                    <Image strokeWidth={1.5} 
                       src={method.image.size2x} 
                       alt={method.description} 
                       width={64} 
                       height={32} 
                       className="h-8 object-contain" 
-                    />
-                    <TextInstrument className="font-light tracking-widest text-[12px] text-va-black/60 ">
+                    / />
+                    <TextInstrument className="font-light tracking-widest text-[15px] text-va-black/60 ">
                       <VoiceglotText translationKey={`checkout.method.${method.id}`} defaultText={method.description} />
                     </TextInstrument>
                   </ButtonInstrument>
@@ -401,7 +401,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       ) : (
         <ContainerInstrument className="p-8 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center gap-6 animate-fade-in">
           <ContainerInstrument className="w-14 h-14 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm">
-            <Image src="/assets/common/branding/icons/INFO.svg" width={28} height={28} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={28} height={28} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
           </ContainerInstrument>
           <ContainerInstrument>
             <HeadingInstrument level={4} className="text-lg font-light tracking-tight">
@@ -452,15 +452,15 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           {isSubmitting ? (
             <><Loader2 className="animate-spin" size={24} strokeWidth={1.5} /> <VoiceglotText translationKey="common.processing" defaultText="Verwerken..." /></>
           ) : formData.isQuote ? (
-            <><VoiceglotText translationKey="checkout.cta.quote" defaultText="Preview offerte e-mail" /> <Image src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert" /></>
+            <><VoiceglotText translationKey="checkout.cta.quote" defaultText="Preview offerte e-mail" /> <Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert" / /></>
           ) : (
             <>
               <VoiceglotText translationKey="checkout.cta.pay" defaultText={`Nu betalen via ${selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1)}`} />
-              <Image src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert group-hover:translate-x-1 transition-transform" />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert group-hover:translate-x-1 transition-transform" / />
             </>
           )}
         </ButtonInstrument>
-        <TextInstrument className="text-center text-[13px] font-light tracking-widest text-va-black/20 mt-6 ">
+        <TextInstrument className="text-center text-[15px] font-light tracking-widest text-va-black/20 mt-6 ">
           <VoiceglotText translationKey="checkout.terms_agreement" defaultText="Door af te ronden ga je akkoord met onze algemene voorwaarden." />
         </TextInstrument>
       </ContainerInstrument>

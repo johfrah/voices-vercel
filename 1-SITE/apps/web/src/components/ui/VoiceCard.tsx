@@ -176,7 +176,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 />
               ) : (
                 <ContainerInstrument className="w-full h-full bg-va-off-white flex items-center justify-center">
-                  <Mic size={32} className="text-va-black/20" />
+                  <Mic strokeWidth={1.5} size={32} className="text-va-black/20" / />
                 </ContainerInstrument>
               )}
               
@@ -194,7 +194,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 }}
               >
                 <ContainerInstrument className="w-12 h-12 rounded-full bg-white text-va-black flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform duration-500">
-                  {activeDemo?.actor_name === voice.display_name ? <Volume2 size={24} className="animate-pulse" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+                  {activeDemo?.actor_name === voice.display_name ? <Volume2 strokeWidth={1.5} size={24} className="animate-pulse" / /> : <Play strokeWidth={1.5} size={24} fill="currentColor" className="ml-1" / />}
                 </ContainerInstrument>
               </ContainerInstrument>
 

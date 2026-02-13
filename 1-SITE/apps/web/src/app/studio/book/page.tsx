@@ -48,7 +48,7 @@ function BookingContent() {
               /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="pt-8">
-            <Link href="/account/orders" className="va-btn-pro"><VoiceglotText translationKey="studio.booking.success.cta" defaultText="Bekijk mijn bestelling" /></Link>
+            <Link strokeWidth={1.5} href="/account/orders" className="va-btn-pro"><VoiceglotText translationKey="studio.booking.success.cta" defaultText="Bekijk mijn bestelling" /></Link>
           </ContainerInstrument>
         </ContainerInstrument>
       </>

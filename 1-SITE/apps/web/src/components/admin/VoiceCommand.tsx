@@ -76,10 +76,10 @@ export default function VoiceCommand() {
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           >
-            <Play className="text-white fill-white" size={24} />
+            <Play strokeWidth={1.5} className="text-white fill-white" size={24} / />
           </motion.div>
         ) : (
-          <Mic className={`text-white ${isRecording ? 'animate-pulse' : ''}`} size={24} />
+          <Mic strokeWidth={1.5} className={`text-white ${isRecording ? 'animate-pulse' : ''}`} size={24} / />
         )}
       </button>
     </div>

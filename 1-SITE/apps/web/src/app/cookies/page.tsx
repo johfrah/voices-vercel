@@ -42,7 +42,7 @@ export default function CookiesPage() {
 
           <section className="space-y-4">
             <ContainerInstrument className="flex items-center gap-3 text-primary mb-4">
-              <Eye size={20} />
+              <Eye strokeWidth={1.5} size={20} / />
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.analytische_cookies.58f50b" defaultText="Analytische Cookies" /></HeadingInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-va-black/60 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.we_gebruiken_geanoni.d9a96b" defaultText="We gebruiken geanonimiseerde data om te begrijpen hoe bezoekers onze site gebruiken. Dit helpt ons om de navigatie en de snelheid van de site continu te verbeteren." /></TextInstrument>
@@ -50,7 +50,7 @@ export default function CookiesPage() {
 
           <section className="space-y-4">
             <ContainerInstrument className="flex items-center gap-3 text-primary mb-4">
-              <Settings size={20} />
+              <Settings strokeWidth={1.5} size={20} / />
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.jouw_voorkeuren.1003ed" defaultText="Jouw Voorkeuren" /></HeadingInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-va-black/60 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.je_kunt_je_cookie_in.771b39" defaultText="Je kunt je cookie-instellingen op elk moment aanpassen via de instellingen van je browser." /></TextInstrument>

@@ -32,7 +32,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
   return (
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">
       {/* 🔙 BACK BUTTON */}
-      <Link 
+      <Link strokeWidth={1.5} 
         href="/studio/inschrijvingen" 
         className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
       >
@@ -50,7 +50,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
         <BentoCard span="lg" className="bg-white shadow-aura border border-black/5 overflow-hidden">
           <ContainerInstrument className="p-8 border-b border-black/5 bg-va-off-white/50 flex justify-between items-center">
             <ContainerInstrument className="flex items-center gap-3">
-              <Users size={20} className="text-primary" />
+              <Users strokeWidth={1.5} size={20} className="text-primary" / />
               <TextInstrument className="text-[15px] font-black tracking-tight">
                 {participants.length} Deelnemers bevestigd
               </TextInstrument>
@@ -128,7 +128,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
             
             <ContainerInstrument className="space-y-4">
               <ContainerInstrument className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
-                <Info size={16} className="text-primary" />
+                <Info strokeWidth={1.5} size={16} className="text-primary" / />
                 <TextInstrument className="text-[15px] font-bold tracking-widest"><VoiceglotText translationKey="auto.page.80__beginners.b68114" defaultText="80% Beginners" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -136,7 +136,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
 
           <BentoCard span="sm" className="bg-va-off-white p-10 border border-black/5">
             <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest text-black/30 mb-6"><VoiceglotText translationKey="auto.page.hulp_nodig_.064cd1" defaultText="Hulp nodig?" /><TextInstrument className="text-[15px] font-medium text-black/60 leading-relaxed mb-8"><VoiceglotText translationKey="auto.page.vragen_over_de_deeln.67c93a" defaultText="Vragen over de deelnemers of de logistiek? Neem contact op met de admin." /></TextInstrument></HeadingInstrument>
-            <Link href="/studio/afspraak" className="text-[15px] font-black tracking-widest text-primary hover:underline"><VoiceglotText translationKey="auto.page.contacteer_admin.95d7f1" defaultText="CONTACTEER ADMIN" /></Link>
+            <Link strokeWidth={1.5} href="/studio/afspraak" className="text-[15px] font-black tracking-widest text-primary hover:underline"><VoiceglotText translationKey="auto.page.contacteer_admin.95d7f1" defaultText="CONTACTEER ADMIN" /></Link>
           </BentoCard>
         </ContainerInstrument>
       </BentoGrid>

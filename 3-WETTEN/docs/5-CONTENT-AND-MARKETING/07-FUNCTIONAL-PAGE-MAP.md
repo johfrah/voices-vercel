@@ -21,7 +21,7 @@ Dit document beschrijft alle pagina's van het platform en de specifieke functies
     - **VoiceCard Functies:**
         - Apple-style zoom op foto.
         - Instant Play (Sonic DNA feedback).
-        - "Online" status badge (Stripe style).
+        - "Online" status badge (Mollie style).
         - Directe prijsindicatie.
 - **Hoe werkt het? (Shortcode Conversie):**
     - 3-stappen proces met grote gradient-nummers.
@@ -82,7 +82,7 @@ Dit document beschrijft alle pagina's van het platform en de specifieke functies
 - **Stap 1: Briefing:** Tekstveld voor script + upload voor PDF/Docx.
 - **Stap 2: Opties:** Muziek toevoegen, extra snelle levering, etc.
 - **Stap 3: Review:** Overzicht van alle kosten (Excl. BTW mandaat).
-- **Stap 4: Betaling:** Stripe/Apple Pay integratie zonder pagina-refresh.
+- **Stap 4: Betaling:** Mollie/Apple Pay integratie zonder pagina-refresh.
 
 ---
 

@@ -22,7 +22,7 @@ export default function MusicArticlePage() {
       
       <SectionInstrument className="max-w-6xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-12">
-          <Link 
+          <Link strokeWidth={1.5} 
             href="/nieuws" 
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
@@ -39,7 +39,7 @@ export default function MusicArticlePage() {
             className="hmagic text-white p-16 flex flex-col md:flex-row items-center gap-12 !rounded-[20px]"
           >
             <ContainerInstrument className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center shrink-0 animate-pulse">
-              <Music size={48} className="text-white" />
+              <Music strokeWidth={1.5} size={48} className="text-white" / />
             </ContainerInstrument>
             <ContainerInstrument className="space-y-6">
               <HeadingInstrument level={2} className="text-4xl font-light tracking-tight "><VoiceglotText translationKey="music.psychology.title" defaultText="De psychologie van het wachten" /><TextInstrument className="text-white/80 text-lg font-light leading-relaxed"><VoiceglotText 

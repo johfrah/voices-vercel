@@ -80,29 +80,29 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
         <SectionInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-32 items-start">
           <ContainerInstrument className="lg:col-span-5">
             <ContainerInstrument className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg group">
-              <Image 
+              <Image strokeWidth={1.5} 
                 src={artistData.photo_url || '/placeholder-artist.jpg'} 
                 alt={artistData.display_name} 
                 fill
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
                 priority
-              />
+              / />
             </ContainerInstrument>
             
             {/* Social Links */}
             {isYoussef && (
               <ContainerInstrument className="flex justify-center gap-6 mt-8">
                 {artistData.socials?.instagram && (
-                  <Link href={artistData.socials.instagram} target="_blank" rel="noopener noreferrer" className="text-white/20 hover:text-primary transition-colors">
+                  <Link strokeWidth={1.5} href={artistData.socials.instagram} target="_blank" rel="noopener noreferrer" className="text-white/20 hover:text-primary transition-colors">
                     <Instagram strokeWidth={1.5} size={24} />
                   </Link>
                 )}
                 {artistData.socials?.youtube && (
-                  <Link href={artistData.socials.youtube} target="_blank" rel="noopener noreferrer" className="text-white/20 hover:text-primary transition-colors">
+                  <Link strokeWidth={1.5} href={artistData.socials.youtube} target="_blank" rel="noopener noreferrer" className="text-white/20 hover:text-primary transition-colors">
                     <Youtube strokeWidth={1.5} size={24} />
                   </Link>
                 )}
-                <Link href="#" className="text-white/20 hover:text-primary transition-colors">
+                <Link strokeWidth={1.5} href="#" className="text-white/20 hover:text-primary transition-colors">
                   <Music strokeWidth={1.5} size={24} />
                 </Link>
               </ContainerInstrument>
@@ -112,7 +112,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
           <ContainerInstrument className="lg:col-span-7 pt-8">
             <ContainerInstrument className="flex items-center gap-3 mb-6">
               <TextInstrument className={cn(
-                "px-3 py-1 rounded-full text-[12px] font-light tracking-widest uppercase border",
+                "px-3 py-1 rounded-full text-[15px] font-light tracking-widest uppercase border",
                 isYoussef ? 'bg-primary/20 text-primary border-primary/20' : 'bg-primary/10 text-primary border border-primary/10'
               )}>
                 <VoiceglotText translationKey="artist.badge.featured" defaultText="Voices Artist" />
@@ -162,7 +162,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
                   className="w-full va-btn-pro !py-6 text-base !rounded-[10px] !bg-primary !text-white flex items-center justify-center gap-2 group"
                 >
                   <Heart strokeWidth={1.5} size={18} className="group-hover:scale-110 transition-transform" />
-                  <TextInstrument className="font-light tracking-widest text-[13px] ">
+                  <TextInstrument className="font-light tracking-widest text-[15px] ">
                     <VoiceglotText translationKey="auto.artistdetailclient.support_youssef.c901c7" defaultText="Support Youssef" />
                   </TextInstrument>
                 </ButtonInstrument>
@@ -175,7 +175,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
                 isYoussef ? '!bg-white/5 !text-white border border-white/10 hover:!bg-white/10' : '!bg-white !text-va-black border border-va-black/5'
               )}>
                 <Play strokeWidth={1.5} size={18} className="group-hover:text-primary transition-colors" />
-                <TextInstrument className={cn(isYoussef ? 'font-light tracking-widest text-[13px] uppercase' : 'font-light')}>
+                <TextInstrument className={cn(isYoussef ? 'font-light tracking-widest text-[15px] uppercase' : 'font-light')}>
                   <VoiceglotText translationKey="artist.listen_all" defaultText="Listen to Demos" />
                 </TextInstrument>
               </ButtonInstrument>
@@ -191,19 +191,19 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
             </HeadingInstrument>
             <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <ContainerInstrument className="relative aspect-video rounded-[20px] overflow-hidden shadow-aura group cursor-pointer bg-va-black border border-white/5">
-                <Image 
+                <Image strokeWidth={1.5} 
                   src="https://www.voices.be/wp-content/uploads/portfolio/276051/hero.jpg" 
                   alt="Live performance" 
                   fill 
                   className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" 
-                />
+                / />
                 <ContainerInstrument className="absolute inset-0 flex items-center justify-center">
                   <ContainerInstrument className="w-16 h-16 rounded-full bg-primary/20 backdrop-blur-md border border-primary/30 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                     <Play strokeWidth={1.5} size={24} fill="currentColor" className="ml-1" />
                   </ContainerInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="absolute bottom-6 left-6 right-6">
-                  <TextInstrument className="text-white/40 text-[12px] font-light tracking-widest ">
+                  <TextInstrument className="text-white/40 text-[15px] font-light tracking-widest ">
                     <VoiceglotText translationKey="auto.artistdetailclient.the_voice_france.ba498e" defaultText="The Voice France" />
                   </TextInstrument>
                   <HeadingInstrument level={4} className="text-white text-xl font-light tracking-tight">
@@ -212,19 +212,19 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
                 </ContainerInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="relative aspect-video rounded-[20px] overflow-hidden shadow-aura group cursor-pointer bg-va-black border border-white/5">
-                <Image 
+                <Image strokeWidth={1.5} 
                   src="https://www.voices.be/wp-content/uploads/portfolio/276051/hero.jpg" 
                   alt="Live performance" 
                   fill 
                   className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" 
-                />
+                / />
                 <ContainerInstrument className="absolute inset-0 flex items-center justify-center">
                   <ContainerInstrument className="w-16 h-16 rounded-full bg-primary/20 backdrop-blur-md border border-primary/30 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                     <Play strokeWidth={1.5} size={24} fill="currentColor" className="ml-1" />
                   </ContainerInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="absolute bottom-6 left-6 right-6">
-                  <TextInstrument className="text-white/40 text-[12px] font-light tracking-widest ">
+                  <TextInstrument className="text-white/40 text-[15px] font-light tracking-widest ">
                     <VoiceglotText translationKey="auto.artistdetailclient.brussels_street_sess.8cb980" defaultText="Brussels Street Session" />
                   </TextInstrument>
                   <HeadingInstrument level={4} className="text-white text-xl font-light tracking-tight">
@@ -264,7 +264,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
                       <HeadingInstrument level={4} className={cn("tracking-tight text-[15px] font-light", isYoussef ? 'text-white' : 'text-va-black')}>
                         {demo.title}
                       </HeadingInstrument>
-                      <TextInstrument className={cn("text-[12px] tracking-widest font-light uppercase", isYoussef ? 'text-white/20' : 'text-va-black/20')}>
+                      <TextInstrument className={cn("text-[15px] tracking-widest font-light uppercase", isYoussef ? 'text-white/20' : 'text-va-black/20')}>
                         {demo.category}
                       </TextInstrument>
                     </ContainerInstrument>

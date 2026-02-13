@@ -707,7 +707,7 @@ function JohfraiContent() {
                         </ContainerInstrument>
                       </ContainerInstrument>
                       <ButtonInstrument onClick={handleShare} disabled={isSharing || !text} className={cn("va-btn-nav !px-6 !py-2 !shadow-sm shrink-0", shareSuccess ? "bg-green-500 text-white" : "")}>
-                        {shareSuccess ? <Check strokeWidth={1.5} size={14} /> : <Share2 size={14} />}
+                        {shareSuccess ? <Check strokeWidth={1.5} size={14} /> : <Share2 strokeWidth={1.5} size={14} / />}
                         {shareSuccess ? <VoiceglotText translationKey="common.copied" defaultText="Gekopieerd!" /> : <VoiceglotText translationKey="common.share_link" defaultText="Deel link" />}
                       </ButtonInstrument>
                     </ContainerInstrument>
@@ -759,7 +759,7 @@ function JohfraiContent() {
                               </>
                             ) : (
                               <>
-                                <Play size={16} fill="currentColor" /> 
+                                <Play strokeWidth={1.5} size={16} fill="currentColor" / /> 
                                 {isAdmin ? (
                                   <VoiceglotText translationKey="admin.preview" defaultText="Admin Preview" />
                                 ) : (
@@ -814,7 +814,7 @@ function JohfraiContent() {
                           </ContainerInstrument>
 
                           <ContainerInstrument className="flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-black/5">
-                            <Clock size={10} className="text-va-black/40" />
+                            <Clock strokeWidth={1.5} size={10} className="text-va-black/40" / />
                             <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-va-black/60">± {estimatedDuration}s</TextInstrument>
                           </ContainerInstrument>
                         </ContainerInstrument>
@@ -844,7 +844,7 @@ function JohfraiContent() {
                   </AnimatePresence>
 
                   <ContainerInstrument className="space-y-4">
-                    <ButtonInstrument onClick={() => setShowTemplates(!showTemplates)} className="flex items-center gap-2 text-[15px] font-black tracking-[0.2em] text-primary hover:text-va-black transition-colors outline-none"><Sparkles strokeWidth={1.5} size={14} /> <VoiceglotText translationKey="johfrai.editor.suggestions" defaultText="Slimme Suggesties" />{showTemplates ? <ChevronUp size={14} /> : <ChevronDown strokeWidth={1.5} size={14} />}</ButtonInstrument>
+                    <ButtonInstrument onClick={() => setShowTemplates(!showTemplates)} className="flex items-center gap-2 text-[15px] font-black tracking-[0.2em] text-primary hover:text-va-black transition-colors outline-none"><Sparkles strokeWidth={1.5} size={14} /> <VoiceglotText translationKey="johfrai.editor.suggestions" defaultText="Slimme Suggesties" />{showTemplates ? <ChevronUp strokeWidth={1.5} size={14} / /> : <ChevronDown strokeWidth={1.5} size={14} />}</ButtonInstrument>
                     <AnimatePresence>{showTemplates && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden space-y-6">
                         <ContainerInstrument className="p-6 bg-va-off-white/50 rounded-[32px] border border-black/5 space-y-6">
@@ -921,7 +921,7 @@ function JohfraiContent() {
                   <ContainerInstrument className="space-y-4">
                     <ContainerInstrument className="flex items-center justify-between bg-va-off-white/50 p-6 rounded-2xl border border-black/5">
                       <ContainerInstrument className="flex items-center gap-4">
-                        <ContainerInstrument className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all", (checkoutState.music.asBackground || checkoutState.music.asHoldMusic) ? "bg-primary/10 text-primary" : "bg-va-black/5 text-va-black/20")}><Music size={18} /></ContainerInstrument>
+                        <ContainerInstrument className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all", (checkoutState.music.asBackground || checkoutState.music.asHoldMusic) ? "bg-primary/10 text-primary" : "bg-va-black/5 text-va-black/20")}><Music strokeWidth={1.5} size={18} / /></ContainerInstrument>
                         <ContainerInstrument>
                           <TextInstrument className="text-[15px] font-black tracking-widest">Wachtmuziek toevoegen (+€{pricingConfig.music_mix})</TextInstrument>
                           <TextInstrument className="text-[15px] font-bold text-va-black/40 tracking-tighter"><VoiceglotText translationKey="auto.page.inclusief_mix___loss.0da798" defaultText="Inclusief mix + losse bestanden in HD & 8kHz" /></TextInstrument>
@@ -950,7 +950,7 @@ function JohfraiContent() {
                                   <TextInstrument className={cn("text-[15px] font-black uppercase tracking-widest", checkoutState.music.trackId === track.id ? "text-primary" : "text-va-black/40")}>{track.title}</TextInstrument>
                                   <TextInstrument className="text-[15px] font-bold text-va-black/20 tracking-tighter leading-none">{track.vibe}</TextInstrument>
                                 </ButtonInstrument>
-                                <ButtonInstrument type="button" onClick={(e) => { e.stopPropagation(); const audio = new Audio(track.preview); audio.play(); }} className="absolute top-2 right-2 p-1.5 rounded-[20px] bg-va-black/5 text-va-black/20 hover:bg-primary hover:text-white transition-all opacity-0 group-hover/track:opacity-100" title="Beluister demo"><Play size={10} fill="currentColor" /></ButtonInstrument>
+                                <ButtonInstrument type="button" onClick={(e) => { e.stopPropagation(); const audio = new Audio(track.preview); audio.play(); }} className="absolute top-2 right-2 p-1.5 rounded-[20px] bg-va-black/5 text-va-black/20 hover:bg-primary hover:text-white transition-all opacity-0 group-hover/track:opacity-100" title="Beluister demo"><Play strokeWidth={1.5} size={10} fill="currentColor" / /></ButtonInstrument>
                               </ContainerInstrument>
                             ))
                           )}
@@ -959,7 +959,7 @@ function JohfraiContent() {
                         {/* 🎵 USE CASE SELECTION */}
                         <ContainerInstrument className="bg-white p-6 rounded-2xl border border-primary/10 space-y-4">
                           <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/60 flex items-center gap-2">
-                            <Info size={14} className="text-primary" /><VoiceglotText translationKey="auto.page.hoe_wil_je_deze_muzi.e4e63c" defaultText="Hoe wil je deze muziek gebruiken?" /></TextInstrument>
+                            <Info strokeWidth={1.5} size={14} className="text-primary" / /><VoiceglotText translationKey="auto.page.hoe_wil_je_deze_muzi.e4e63c" defaultText="Hoe wil je deze muziek gebruiken?" /></TextInstrument>
                           <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <ButtonInstrument 
                               onClick={() => updateMusic({ asBackground: !checkoutState.music.asBackground })}

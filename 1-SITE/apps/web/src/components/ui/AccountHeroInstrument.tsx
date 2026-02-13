@@ -28,14 +28,14 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
     <div className="va-account-hero">
       <div className="va-account-hero-content">
         <div className="va-account-badge">
-          <Image 
+          <Image strokeWidth={1.5} 
             src="/assets/common/branding/icons/ACCOUNT.svg" 
             alt="User" 
             width={12} 
             height={12} 
             className="w-3 h-3"
             style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-          /> 
+          / /> 
           <VoiceglotText 
             translationKey="account.hero.welcome" 
             defaultText={`Welkom terug, ${userName}`} 

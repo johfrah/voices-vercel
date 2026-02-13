@@ -39,13 +39,13 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
           {/* Badge */}
           <div className="va-badge-container">
             <div className="va-badge">
-              <Image 
+              <Image strokeWidth={1.5} 
                 src="/assets/common/branding/icons/INFO.svg" 
                 alt="Info" 
                 width={12} 
                 height={12} 
                 style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              /> 
+              / /> 
               <VoiceglotText 
                 translationKey="agency.hero.badge" 
                 defaultText={market === 'BE' ? 'De beste Vlaamse en internationale stemmen' : 'De beste Nederlandse en internationale stemmen'} 

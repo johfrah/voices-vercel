@@ -93,7 +93,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
             onClick={() => setIsPlaying(!isPlaying)}
             className="w-16 h-16 bg-gray-900 text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg"
           >
-            {isPlaying ? <Pause fill="currentColor" /> : <Play className="ml-1" fill="currentColor" />}
+            {isPlaying ? <Pause strokeWidth={1.5} fill="currentColor" / /> : <Play strokeWidth={1.5} className="ml-1" fill="currentColor" / />}
           </button>
           
           <div className="flex-1">
@@ -115,7 +115,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
       <div className="bg-white p-8 rounded-[24px] shadow-sm border border-gray-50 flex flex-col gap-6">
         <div>
           <h3 className="text-[15px] font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Music size={16} className="text-primary" /> Smart Mix
+            <Music strokeWidth={1.5} size={16} className="text-primary" / /> Smart Mix
           </h3>
           
           <div className="space-y-6">
@@ -145,7 +145,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
               </span>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
-                  <Music size={14} />
+                  <Music strokeWidth={1.5} size={14} / />
                 </div>
                 <span className="text-[15px] font-bold text-gray-700 truncate">Corporate Uplifting v2</span>
               </div>
@@ -195,7 +195,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
         <div className="bg-white p-6 rounded-[24px] border border-gray-100 flex items-center justify-between group cursor-pointer hover:border-primary/30 transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary">
-              <Volume2 size={18} />
+              <Volume2 strokeWidth={1.5} size={18} / />
             </div>
             <div>
               <span className="block text-[15px] font-bold text-gray-400 tracking-widest">

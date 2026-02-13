@@ -73,7 +73,7 @@ export const VoiceStep: React.FC = () => {
           placeholder="Zoek op naam..."
           className="w-full bg-va-off-white border-none rounded-[20px] py-5 pl-14 pr-8 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
         />
-        <Image src="/assets/common/branding/icons/SEARCH.svg" width={20} height={20} alt="" className="absolute left-6 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+        <Image strokeWidth={1.5} src="/assets/common/branding/icons/SEARCH.svg" width={20} height={20} alt="" className="absolute left-6 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
       </ContainerInstrument>
 
       {loading ? (
@@ -102,7 +102,7 @@ export const VoiceStep: React.FC = () => {
                <VoiceCard voice={actor} />
               {state.selectedActor?.id === actor.id && (
                 <ContainerInstrument className="absolute top-6 right-6 bg-primary text-white p-3 rounded-[20px] shadow-lg z-20 animate-in zoom-in duration-300">
-                  <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="brightness-0 invert" />
+                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="brightness-0 invert" / />
                 </ContainerInstrument>
               )}
             </ContainerInstrument>

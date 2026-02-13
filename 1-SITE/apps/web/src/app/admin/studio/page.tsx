@@ -125,8 +125,8 @@ export default async function StudioAdminPage() {
                       <VoiceglotText translationKey={`common.status.${edition.status}`} defaultText={edition.status || ''} />
                     </TextInstrument>
                   </ContainerInstrument>
-                  <Link href={`/admin/studio/edities/${edition.id}`} className="p-4 rounded-xl bg-white border border-black/5 hover:border-primary transition-all">
-                    <Settings size={16} className="text-black/20" />
+                  <Link strokeWidth={1.5} href={`/admin/studio/edities/${edition.id}`} className="p-4 rounded-xl bg-white border border-black/5 hover:border-primary transition-all">
+                    <Settings strokeWidth={1.5} size={16} className="text-black/20" / />
                   </Link>
                 </ContainerInstrument>
               </ContainerInstrument>

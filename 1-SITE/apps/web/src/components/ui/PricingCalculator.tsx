@@ -371,7 +371,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     "w-10 h-10 rounded-full flex items-center justify-center transition-all",
                     (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary/10 text-primary" : "bg-va-black/5 text-va-black/20"
                   )}>
-                    <Music size={20} />
+                    <Music strokeWidth={1.5} size={20} / />
                   </ContainerInstrument>
                   <ContainerInstrument>
                     <HeadingInstrument level={3} className="text-[15px] font-medium tracking-tight">
@@ -448,7 +448,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                 className="va-btn-pro w-full !bg-primary flex items-center justify-center gap-2 group"
               >
                 <VoiceglotText translationKey="pricing.cta" defaultText="Kies je stem" />
-                <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                <ChevronRight strokeWidth={1.5} size={18} className="group-hover:translate-x-1 transition-transform" / />
               </ButtonInstrument>
               <ContainerInstrument className="space-y-2 opacity-0">
                 <TextInstrument className="text-[15px] font-medium text-primary animate-pulse">

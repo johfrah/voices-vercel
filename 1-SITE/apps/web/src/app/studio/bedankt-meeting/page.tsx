@@ -14,13 +14,13 @@ export default function BedanktMeetingPage() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white flex items-center justify-center px-6">
       <ContainerInstrument className="max-w-xl w-full bg-white p-12 md:p-16 rounded-[40px] shadow-aura text-center space-y-8 border border-black/5">
         <ContainerInstrument className="relative w-48 h-12 mx-auto mb-8">
-          <Image 
+          <Image strokeWidth={1.5} 
             src="/assets/studio/vstudio-logo.webp" 
             alt="Voices Studio" 
             fill
             className="object-contain"
             priority
-          />
+          / />
         </ContainerInstrument>
         
         <ContainerInstrument className="space-y-4">
@@ -31,7 +31,7 @@ export default function BedanktMeetingPage() {
         </ContainerInstrument>
 
         <ContainerInstrument className="pt-8">
-          <Link href="/studio" className="va-btn-pro inline-block"><VoiceglotText translationKey="studio.meeting.thanks.cta" defaultText="Terug naar de Studio" /></Link>
+          <Link strokeWidth={1.5} href="/studio" className="va-btn-pro inline-block"><VoiceglotText translationKey="studio.meeting.thanks.cta" defaultText="Terug naar de Studio" /></Link>
         </ContainerInstrument>
       </ContainerInstrument>
     </PageWrapperInstrument>

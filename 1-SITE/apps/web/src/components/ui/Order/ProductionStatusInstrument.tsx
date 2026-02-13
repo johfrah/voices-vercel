@@ -37,14 +37,14 @@ export const ProductionStatusInstrument: React.FC<ProductionStatusInstrumentProp
               </ContainerInstrument>
               <ContainerInstrument>
                 <TextInstrument className="font-medium text-va-black">{item.name}</TextInstrument>
-                <TextInstrument className="text-[13px] text-va-black/40 tracking-widest font-light">
+                <TextInstrument className="text-[15px] text-va-black/40 tracking-widest font-light">
                   {item.meta_data?.usage || <VoiceglotText translationKey="order.item.no_usage" defaultText="No usage defined" />}
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-6">
               <ContainerInstrument className="text-right">
-                <TextInstrument className="text-[12px] text-va-black/20 font-bold tracking-widest ">
+                <TextInstrument className="text-[15px] text-va-black/20 font-bold tracking-widest ">
                   <VoiceglotText translationKey="order.item.deadline" defaultText="Deadline" />
                 </TextInstrument>
                 <TextInstrument className="font-light text-[15px] flex items-center gap-1">
@@ -52,7 +52,7 @@ export const ProductionStatusInstrument: React.FC<ProductionStatusInstrumentProp
                 </TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className={cn(
-                "px-3 py-1 rounded-full text-[12px] font-light uppercase tracking-widest",
+                "px-3 py-1 rounded-full text-[15px] font-light uppercase tracking-widest",
                 item.delivery_status === 'approved' ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
               )}>
                 <VoiceglotText translationKey={`order.delivery_status.${item.delivery_status}`} defaultText={item.delivery_status} />

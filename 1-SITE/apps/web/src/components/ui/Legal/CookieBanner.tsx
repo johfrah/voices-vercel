@@ -62,7 +62,7 @@ export const CookieBanner: React.FC = () => {
                   translationKey="legal.cookie.text" 
                   defaultText="Wij gebruiken cookies om jouw ervaring te personaliseren." 
                 />{' '}
-                <Link 
+                <Link strokeWidth={1.5} 
                   href="/cookies/" 
                   className="text-white/80 underline underline-offset-2 hover:text-white transition-colors"
                 >

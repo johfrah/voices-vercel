@@ -28,13 +28,13 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
               {item.title}
             </HeadingInstrument>
             <ContainerInstrument className={`p-2 rounded-full bg-va-black/5 transition-all duration-500 flex items-center justify-center ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
-              <Image 
+              <Image strokeWidth={1.5} 
                 src="/assets/common/branding/icons/DOWN.svg" 
                 alt="Toggle" 
                 width={18} 
                 height={18} 
                 style={openId === item.id ? { filter: 'invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)' } : { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              />
+              / />
             </ContainerInstrument>
           </button>
           <ContainerInstrument 

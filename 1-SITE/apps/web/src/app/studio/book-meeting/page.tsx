@@ -31,7 +31,7 @@ export default function BookMeetingPage() {
               /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="pt-8">
-            <Link href="/studio" className="va-btn-pro"><VoiceglotText translationKey="common.back_to_home" defaultText="Terug naar home" /></Link>
+            <Link strokeWidth={1.5} href="/studio" className="va-btn-pro"><VoiceglotText translationKey="common.back_to_home" defaultText="Terug naar home" /></Link>
           </ContainerInstrument>
         </ContainerInstrument>
       </PageWrapperInstrument>

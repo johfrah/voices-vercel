@@ -95,7 +95,7 @@ export const WorkshopInterestForm: React.FC = () => {
     return (
       <ContainerInstrument className="max-w-xl mx-auto text-center space-y-8 py-16 px-4 sm:py-24">
         <ContainerInstrument className="w-16 h-16 sm:w-20 sm:h-20 bg-green-500/10 text-green-500 rounded-[20px] flex items-center justify-center mx-auto transition-transform duration-100">
-          <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="sm:w-10 sm:h-10" />
+          <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="sm:w-10 sm:h-10" / />
         </ContainerInstrument>
         <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-va-black">
           <VoiceglotText translationKey="workshop.interest.success.title" defaultText="Bedankt!" />
@@ -120,7 +120,7 @@ export const WorkshopInterestForm: React.FC = () => {
           {/* Workshop Selection */}
           <ContainerInstrument className="space-y-6">
             <ContainerInstrument className="flex items-center gap-3 mb-6 sm:mb-8">
-              <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="shrink-0" />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="shrink-0" / />
               <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
                 <VoiceglotText translationKey="workshop.interest.title" defaultText="Voor welke workshop(s) heb je interesse?" />
               </HeadingInstrument>
@@ -148,7 +148,7 @@ export const WorkshopInterestForm: React.FC = () => {
                       ? "bg-primary border-primary"
                       : "border-black/10 group-hover:border-primary/30"
                   )}>
-                    {selectedWorkshops.includes(w.id) && <Image src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" className="brightness-0 invert" />}
+                    {selectedWorkshops.includes(w.id) && <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" className="brightness-0 invert" / />}
                   </ContainerInstrument>
                 </button>
               ))}
@@ -197,7 +197,7 @@ export const WorkshopInterestForm: React.FC = () => {
               className="w-full py-5 sm:py-6 rounded-[10px] bg-black text-white font-light tracking-tight text-[15px] hover:bg-primary transition-all duration-100 shadow-aura flex items-center justify-center gap-3 group min-h-[52px] active:scale-[0.99] disabled:opacity-50 disabled:active:scale-100"
             >
               <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" />
-              <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert group-hover:translate-x-1 transition-transform duration-100" />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert group-hover:translate-x-1 transition-transform duration-100" / />
             </ButtonInstrument>
           </ContainerInstrument>
         </form>
@@ -205,13 +205,13 @@ export const WorkshopInterestForm: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-10 sm:space-y-12 animate-in fade-in slide-in-from-right-4 duration-300">
           {submitError && (
             <ContainerInstrument className="flex items-center gap-3 p-4 rounded-[10px] bg-red-500/10 text-red-600 border border-red-500/20" role="alert">
-              <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="shrink-0" />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="shrink-0" / />
               <TextInstrument className="text-[15px] font-light">{submitError}</TextInstrument>
             </ContainerInstrument>
           )}
           <ContainerInstrument className="space-y-6">
             <ContainerInstrument className="flex items-center gap-3 mb-6 sm:mb-8">
-              <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="shrink-0" />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="shrink-0" / />
               <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
                 <VoiceglotText translationKey="workshop.interest.step2.title" defaultText="Help ons je beter te leren kennen" />
               </HeadingInstrument>
@@ -277,7 +277,7 @@ export const WorkshopInterestForm: React.FC = () => {
               className="flex-1 py-5 sm:py-6 rounded-[10px] bg-black text-white font-light tracking-tight text-[15px] hover:bg-primary transition-all duration-100 shadow-aura flex items-center justify-center gap-3 group min-h-[52px] active:scale-[0.99] disabled:opacity-50 disabled:active:scale-100"
             >
               {isLoading ? <VoiceglotText translationKey="common.processing" defaultText="Verwerken…" /> : <VoiceglotText translationKey="workshop.interest.submit" defaultText="Inschrijving voltooien" />}
-              <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className={cn("brightness-0 invert shrink-0 transition-transform duration-100", isLoading && "opacity-50")} />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className={cn("brightness-0 invert shrink-0 transition-transform duration-100", isLoading && "opacity-50")} / />
             </ButtonInstrument>
           </ContainerInstrument>
         </form>

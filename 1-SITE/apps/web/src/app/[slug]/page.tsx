@@ -68,7 +68,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
       if (c.includes('kwaliteit') || c.includes('veiligheid')) return <ShieldCheck strokeWidth={1.5} className="text-primary/40" size={40} />;
       if (c.includes('levering') || c.includes('annulering')) return <Zap strokeWidth={1.5} className="text-primary/40" size={40} />;
       if (c.includes('betaling') || c.includes('inschrijving')) return <CreditCard className="text-primary/40" size={40} />;
-      return <Info className="text-primary/40" size={40} />;
+      return <Info strokeWidth={1.5} className="text-primary/40" size={40} / />;
     };
 
     const extractTitle = (content: string) => {
@@ -332,8 +332,8 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                   <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block"><VoiceglotText translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
                   <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9]"><VoiceglotText translationKey="cta.ready_title" defaultText="wil je onze stemmen beluisteren?" /></HeadingInstrument>
                   <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-10">
-                    <Link href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-tight hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white"><VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" /></Link>
-                    <Link href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-tight flex items-center gap-4 group transition-all duration-700">
+                    <Link strokeWidth={1.5} href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-tight hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white"><VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" /></Link>
+                    <Link strokeWidth={1.5} href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-tight flex items-center gap-4 group transition-all duration-700">
                       <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" />
                       <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
                     </Link>

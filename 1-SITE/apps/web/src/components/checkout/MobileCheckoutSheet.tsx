@@ -133,7 +133,7 @@ export const MobileCheckoutSheet: React.FC = () => {
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-xl font-black text-primary">€{total.toFixed(2)}</span>
-                <ChevronUp className="text-primary animate-bounce" size={20} />
+                <ChevronUp strokeWidth={1.5} className="text-primary animate-bounce" size={20} / />
               </div>
             </div>
           )}
@@ -155,12 +155,12 @@ export const MobileCheckoutSheet: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-gray-100 overflow-hidden relative">
                       {state.selectedActor?.photo_url && (
-                        <Image 
+                        <Image strokeWidth={1.5} 
                           src={state.selectedActor.photo_url} 
                           alt="" 
                           fill
                           className="object-cover" 
-                        />
+                        / />
                       )}
                     </div>
                     <span className="font-bold text-[15px]">{state.selectedActor?.display_name || 'Selecteer stem'}</span>
@@ -175,7 +175,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                     <VoiceglotText translationKey="common.briefing" defaultText="Briefing" />
                   </p>
                   <div className="flex items-center gap-2 text-primary">
-                    <Mic size={16} />
+                    <Mic strokeWidth={1.5} size={16} / />
                     <span className="font-bold text-[15px]">{transcription ? 'Ingebroken' : 'Voice-to-Text'}</span>
                   </div>
                 </BentoCard>
@@ -230,7 +230,7 @@ export const MobileCheckoutSheet: React.FC = () => {
             >
               <div className="flex items-center gap-4">
                 <button onClick={() => setStep('summary')} className="p-2 bg-black/5 rounded-full">
-                  <ChevronUp className="-rotate-90" size={20} />
+                  <ChevronUp strokeWidth={1.5} className="-rotate-90" size={20} / />
                 </button>
                 <h2 className="text-3xl font-black tracking-tighter">
                   <VoiceglotText translationKey="checkout.mobile.voice_briefing_title" defaultText="Spreek je briefing in" />
@@ -247,7 +247,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                   onClick={toggleRecording}
                   className="w-32 h-32 rounded-full flex items-center justify-center text-white shadow-2xl"
                 >
-                  <Mic size={48} fill={isRecording ? 'currentColor' : 'none'} />
+                  <Mic strokeWidth={1.5} size={48} fill={isRecording ? 'currentColor' : 'none'} / />
                 </motion.button>
                 
                 <div className="text-center">

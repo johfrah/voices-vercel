@@ -66,7 +66,7 @@
 ## 🎓 FASE 3: ACADEMY & COMMERCE (20/20) ✅
 - [x] **Academy Bridge**: TypeScript port van LMS logica.
 - [x] **Course Video Player**: Bento-grid video component.
-- [x] **Stripe/Mollie Direct**: Directe betalings-integratie live.
+- [x] **Mollie Direct**: Directe betalings-integratie live.
 - [x] **Yuki Peppol Bridge**: Facturatie in Node.js logic port.
 - [x] **Course Nudge Engine**: AI motivatie-systeem in Next.js.
 - [x] **Commerce Rules**: Buy-out calculator in TypeScript.

@@ -16,7 +16,7 @@ export default function OverOnsPage() {
         
         {/* HEADER */}
         <SectionInstrument className="mb-20 space-y-4">
-          <Link 
+          <Link strokeWidth={1.5} 
             href="/studio" 
             className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all mb-4"
           >
@@ -33,12 +33,12 @@ export default function OverOnsPage() {
         {/* FOUNDER SECTION */}
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mb-32">
           <ContainerInstrument className="relative aspect-square rounded-[20px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
-            <Image 
+            <Image strokeWidth={1.5} 
               src="/assets/common/founder/johfrah-avatar-be.png" 
               alt="Johfrah Lefebvre"
               fill
               className="object-cover"
-            />
+            / />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-8">
             <ContainerInstrument className="space-y-4">
@@ -52,7 +52,7 @@ export default function OverOnsPage() {
                 /></TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-4">
-              <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText translationKey="auto.page.international_emmy_a.39163c" defaultText="International Emmy Award winner" /></TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -72,32 +72,32 @@ export default function OverOnsPage() {
                 /></TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-4">
-              <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText translationKey="studio.about.coach.badge" defaultText="VRT stemcoach & expert" /></TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="order-1 md:order-2 relative aspect-square rounded-[20px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
-            <Image 
+            <Image strokeWidth={1.5} 
               src="/assets/common/coaches/bernadette.jpg" 
               alt="Bernadette Timmermans"
               fill
               className="object-cover"
-            />
+            / />
           </ContainerInstrument>
         </ContainerInstrument>
 
         {/* PHILOSOPHY */}
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
           <ContainerInstrument className="p-10 rounded-[20px] bg-white border border-black/5 shadow-aura space-y-6">
-            <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="auto.page.top_selectie.e9e6c4" defaultText="Top-selectie" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed"><VoiceglotText translationKey="auto.page.geen_eindeloze_lijst.b1c678" defaultText="Geen eindeloze lijsten, maar een gecureerde groep stemmen die we persoonlijk kennen en regisseren." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="p-10 rounded-[20px] bg-white border border-black/5 shadow-aura space-y-6">
-            <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="auto.page.technische_perfectie.ea0d36" defaultText="Technische perfectie" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed"><VoiceglotText translationKey="auto.page.alles_wordt_geleverd.dd6681" defaultText="Alles wordt geleverd in 48kHz studiokwaliteit, genormaliseerd volgens de strengste loudness-normen." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="p-10 rounded-[20px] bg-va-black text-white space-y-6">
-            <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" className="brightness-0 invert" />
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" className="brightness-0 invert" / />
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-white"><VoiceglotText translationKey="auto.page.digitale_kluis.571296" defaultText="Digitale kluis" /><TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed"><VoiceglotText translationKey="auto.page.we_bewaren_al_je_scr.a10adf" defaultText="We bewaren al je scripts en instellingen. Een pickup over een jaar klinkt daardoor exact zoals vandaag." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

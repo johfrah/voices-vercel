@@ -326,15 +326,15 @@ export default function MailboxPage() {
       <ContainerInstrument className="flex-grow flex flex-col px-6 pb-6 max-w-none min-h-0">
           
           <ContainerInstrument className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-4 flex-shrink-0">
-            <ContainerInstrument className="space-y-4">
-              <ButtonInstrument onClick={() => router.push('/admin/dashboard')} className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors">
-                <ArrowLeft strokeWidth={1.5} size={14} />
-                <VoiceglotText translationKey="common.back" defaultText="Terug" />
-              </ButtonInstrument>
-              <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
-                <VoiceglotText translationKey="mailbox.title" defaultText="Mailbox" />
-              </HeadingInstrument>
-            </ContainerInstrument>
+          <ContainerInstrument className="space-y-4">
+            <ButtonInstrument onClick={() => router.push('/admin/dashboard')} className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors">
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/BACK.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} / />
+              <VoiceglotText translationKey="common.back" defaultText="Terug" />
+            </ButtonInstrument>
+            <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="mailbox.title" defaultText="Mailbox" />
+            </HeadingInstrument>
+          </ContainerInstrument>
 
             <ContainerInstrument className="flex items-center gap-4">
               {isSyncing && (
@@ -359,11 +359,11 @@ export default function MailboxPage() {
                 disabled={isSyncing}
                 className="bg-va-black text-white px-6 py-3 rounded-[10px] text-[15px] font-light tracking-widest flex items-center gap-2 transition-all disabled:opacity-50"
               >
-                <Brain size={14} className={isSyncing ? 'animate-pulse' : ''} />
-                <VoiceglotText translationKey="mailbox.ai_sync" defaultText={isSyncing ? "Syncing..." : "Start AI Brain Sync"} />
+                <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" className={isSyncing ? 'animate-pulse brightness-0 invert' : 'brightness-0 invert'} / />
+                <VoiceglotText translationKey="mailbox.ai_sync" defaultText={isSyncing ? "Syncing..." : "Start AI brain sync"} />
               </ButtonInstrument>
               <ButtonInstrument onClick={handleCompose} className="bg-white text-va-black border border-black/5 px-6 py-3 rounded-[10px] text-[15px] font-light tracking-widest flex items-center gap-2 transition-all">
-                <Plus strokeWidth={1.5} size={14} />
+                <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
                 <VoiceglotText translationKey="mailbox.compose" defaultText="Nieuw bericht" />
               </ButtonInstrument>
               <ButtonInstrument 
@@ -371,10 +371,10 @@ export default function MailboxPage() {
                 className={`p-3 rounded-[10px] border transition-all ${sortByValue ? 'bg-va-black text-white border-va-black' : 'bg-va-off-white border-black/5 text-va-black/40'}`}
                 title="Sorteer op commerciële waarde"
               >
-                <TrendingUp size={16} />
+                <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className={sortByValue ? 'brightness-0 invert' : ''} style={!sortByValue ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 } : {}} / />
               </ButtonInstrument>
               <ButtonInstrument onClick={() => refreshInbox()} disabled={isRefreshing} className={`p-3 rounded-[10px] bg-va-off-white border border-black/5 transition-all ${isRefreshing ? 'opacity-50 cursor-not-allowed' : ''}`} title="Synchroniseren">
-                <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
+                <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className={isRefreshing ? 'animate-spin' : ''} style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} / />
               </ButtonInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -397,7 +397,7 @@ export default function MailboxPage() {
                 </ContainerInstrument>
 
                 <ContainerInstrument className="relative mb-4">
-                  <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" />
+                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/SEARCH.svg" width={16} height={16} alt="" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
                   <InputInstrument type="text" placeholder="Zoek..." className="w-full bg-white border border-black/5 rounded-[10px] py-2.5 pl-12 pr-4 text-[15px] font-light focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
                 </ContainerInstrument>
                 
@@ -434,17 +434,17 @@ export default function MailboxPage() {
                   <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-gray-400 mb-3 px-2">
                     <VoiceglotText translationKey="mailbox.intelligence" defaultText="Intelligence" />
                   </HeadingInstrument>
-                  <ContainerInstrument className="space-y-1.5">
-                    {[
-                      { name: 'Trends & SWOT', id: 'insights', icon: <TrendingUp size={16} /> },
-                      { name: 'FAQ Proposals', id: 'faq', icon: <MessageSquare strokeWidth={1.5} size={16} /> },
-                    ].map((tag) => (
-                      <ButtonInstrument key={tag.id} onClick={() => { if (tag.id === 'insights' || tag.id === 'faq') { setActiveTab(tag.id as MailboxTab); setSelectedThread(null); } }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[15px] transition-all ${activeTab === tag.id ? 'bg-white shadow-sm ring-1 ring-black/5 font-light text-va-black' : 'text-gray-500 hover:text-va-black hover:bg-gray-50'}`}>
-                        {tag.icon}
-                        <VoiceglotText translationKey={`mailbox.tag.${tag.id}`} defaultText={tag.name} />
-                      </ButtonInstrument>
-                    ))}
-                  </ContainerInstrument>
+                <ContainerInstrument className="space-y-1.5">
+                  {[
+                    { name: 'Trends & SWOT', id: 'insights', icon: <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} / /> },
+                    { name: 'FAQ proposals', id: 'faq', icon: <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} / /> },
+                  ].map((tag) => (
+                    <ButtonInstrument key={tag.id} onClick={() => { if (tag.id === 'insights' || tag.id === 'faq') { setActiveTab(tag.id as MailboxTab); setSelectedThread(null); } }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[15px] transition-all ${activeTab === tag.id ? 'bg-white shadow-sm ring-1 ring-black/5 font-light text-va-black' : 'text-gray-500 hover:text-va-black hover:bg-gray-50'}`}>
+                      {tag.icon}
+                      <VoiceglotText translationKey={`mailbox.tag.${tag.id}`} defaultText={tag.name} />
+                    </ButtonInstrument>
+                  ))}
+                </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -646,7 +646,7 @@ export default function MailboxPage() {
                   <TextInstrument as="span" className="text-[15px] tracking-widest opacity-50 font-light">{spotlightFile.category} • {(spotlightFile.fileSize / 1024 / 1024).toFixed(2)} MB</TextInstrument>
                 </ContainerInstrument>
                 <ButtonInstrument as="a" href={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.filePath || spotlightFile.path)}`} download={spotlightFile.originalName || spotlightFile.filename} className="bg-white text-va-black px-6 py-3 rounded-2xl font-light tracking-widest flex items-center gap-2 hover:bg-primary hover:text-white transition-all">
-                  <Download size={18} /><VoiceglotText translationKey="auto.page.downloaden.993469" defaultText="Downloaden" />
+                  <Download strokeWidth={1.5} size={18} / /><VoiceglotText translationKey="auto.page.downloaden.993469" defaultText="Downloaden" />
                 </ButtonInstrument>
               </ContainerInstrument>
             </motion.div>

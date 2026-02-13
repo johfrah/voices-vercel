@@ -248,7 +248,7 @@ export default function ContactPage() {
             </ContainerInstrument>
             <ContainerInstrument className="bg-white/50 backdrop-blur-md p-8 rounded-[20px] border border-black/5 flex items-center gap-6">
               <ContainerInstrument className="w-12 h-12 bg-va-black rounded-[10px] flex items-center justify-center text-white shrink-0">
-                <MapPin size={20} />
+                <MapPin strokeWidth={1.5} size={20} / />
               </ContainerInstrument>
               <ContainerInstrument>
                 <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText translationKey="contact.info.address_label" defaultText="Bezoek ons" /></TextInstrument>

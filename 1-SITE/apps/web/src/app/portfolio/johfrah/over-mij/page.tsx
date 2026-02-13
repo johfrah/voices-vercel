@@ -23,18 +23,18 @@ export default function JohfrahAboutPage() {
         <ContainerInstrument className="max-w-7xl mx-auto px-6">
           <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mb-24">
             <ContainerInstrument className="relative aspect-[3/4] rounded-[20px] overflow-hidden shadow-aura sticky top-32">
-              <Image 
+              <Image strokeWidth={1.5} 
                 src="/assets/common/branding/johfrah/johfrah-about.jpg" 
                 alt="Johfrah Lefebvre"
                 fill
                 className="object-cover"
-              />
+              / />
             </ContainerInstrument>
 
             <ContainerInstrument className="space-y-12">
               <ContainerInstrument className="space-y-6">
                 <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest">
-                  <Heart size={12} fill="currentColor" /> 
+                  <Heart strokeWidth={1.5} size={12} fill="currentColor" / /> 
                   <VoiceglotText translationKey="portfolio.johfrah.about.badge" defaultText="Mijn Verhaal" />
                 </ContainerInstrument>
                 
@@ -61,7 +61,7 @@ export default function JohfrahAboutPage() {
 
                 <ContainerInstrument className="space-y-4">
                   <ContainerInstrument className="flex items-center gap-3 text-primary">
-                    <Mic size={20} />
+                    <Mic strokeWidth={1.5} size={20} / />
                     <TextInstrument className="font-light text-[15px] tracking-widest"><VoiceglotText translationKey="auto.page.vakmanschap.301957" defaultText="Vakmanschap" /></TextInstrument>
                   </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-light"><VoiceglotText translationKey="auto.page.duizenden_producties.93c3b5" defaultText="Duizenden producties voor nationale en internationale merken. Van intieme meditaties tot knallende commercials." /></TextInstrument>

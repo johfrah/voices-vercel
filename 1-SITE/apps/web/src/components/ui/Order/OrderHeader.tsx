@@ -31,12 +31,12 @@ export const OrderHeader: React.FC<OrderHeaderProps> = ({ id, date, journey, sta
       </ContainerInstrument>
       <ContainerInstrument className="flex gap-3">
         <ContainerInstrument className={cn(
-          "px-4 py-1.5 rounded-full text-[12px] font-light uppercase tracking-widest",
+          "px-4 py-1.5 rounded-full text-[15px] font-light uppercase tracking-widest",
           isStudio ? "bg-primary/10 text-primary" : "bg-va-black/5 text-va-black/60"
         )}>
           <VoiceglotText translationKey={`journey.${journey}`} defaultText={journey} />
         </ContainerInstrument>
-        <ContainerInstrument className="px-4 py-1.5 rounded-full bg-va-black text-white text-[12px] font-light tracking-widest">
+        <ContainerInstrument className="px-4 py-1.5 rounded-full bg-va-black text-white text-[15px] font-light tracking-widest">
           <VoiceglotText translationKey={`order.status.${status}`} defaultText={status} />
         </ContainerInstrument>
       </ContainerInstrument>

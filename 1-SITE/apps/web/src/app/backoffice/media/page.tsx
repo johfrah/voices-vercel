@@ -24,7 +24,7 @@ export default function MediaPage() {
       <PageWrapperInstrument className="min-h-screen bg-va-off-white flex items-center justify-center p-6">
         <SectionInstrument className="bg-white p-12 rounded-[40px] shadow-aura text-center max-w-md space-y-6">
           <ContainerInstrument className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto">
-            <ShieldAlert className="text-red-500" size={32} />
+            <ShieldAlert strokeWidth={1.5} className="text-red-500" size={32} / />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-2xl font-black tracking-tighter"><VoiceglotText translationKey="admin.access_denied.title" defaultText="Toegang Geweigerd" /><TextInstrument className="text-va-black/40 font-medium leading-relaxed"><VoiceglotText 
               translationKey="admin.access_denied.text" 

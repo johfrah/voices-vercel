@@ -446,13 +446,13 @@ export default function PhotoMatcherPage() {
                       >
                         {/* Foto Preview */}
                         <ContainerInstrument className="w-56 h-56 flex-shrink-0 relative rounded-[32px] overflow-hidden bg-va-off-white border border-black/[0.03]">
-                          <Image 
+                          <Image strokeWidth={1.5} 
                             src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(item.path || item.filePath)}`}
                             alt={item.fileName}
                             fill
                             className="object-cover"
                             unoptimized
-                          />
+                          / />
                           {(item.source === 'Combell Uploads' || item.id) && (
                             <ContainerInstrument className="absolute top-4 right-4 bg-va-primary w-3 h-3 rounded-full border-2 border-white shadow-sm" />
                           )}

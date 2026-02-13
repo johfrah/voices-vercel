@@ -29,7 +29,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
   return (
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">
       {/* 🔙 BACK BUTTON */}
-      <Link 
+      <Link strokeWidth={1.5} 
         href="/studio/instructeurs" 
         className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
       >
@@ -42,12 +42,12 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
         <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between">
           <ContainerInstrument>
             <ContainerInstrument className="relative w-48 h-48 rounded-3xl overflow-hidden mb-8 border-2 border-white/10 mx-auto">
-              <Image 
+              <Image strokeWidth={1.5} 
                 src={instructor.photo?.filePath ? `/assets/${instructor.photo.filePath}` : "/assets/common/founder/johfrah-avatar-be.png"} 
                 alt={instructor.name}
                 fill
                 className="object-cover"
-              />
+              / />
             </ContainerInstrument>
             <HeadingInstrument level={1} className="text-3xl font-black tracking-tighter text-center mb-2">
               {instructor.name}
@@ -94,7 +94,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
           
           <ContainerInstrument className="grid md:grid-cols-2 gap-6">
             {workshops.length > 0 ? workshops.map((workshop) => (
-              <Link 
+              <Link strokeWidth={1.5} 
                 key={workshop.id} 
                 href={`/studio/${workshop.slug}`}
                 className="group bg-white p-6 rounded-2xl border border-black/5 hover:border-primary/20 hover:shadow-xl transition-all duration-500"
@@ -114,7 +114,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
                       : "Binnenkort"}
                   </ContainerInstrument>
                   <ContainerInstrument className="flex items-center gap-2 text-[15px] font-bold text-black/40 tracking-widest">
-                    <MapPin size={12} /> {workshop.editions?.[0]?.location || "Gent"}
+                    <MapPin strokeWidth={1.5} size={12} / /> {workshop.editions?.[0]?.location || "Gent"}
                   </ContainerInstrument>
                 </ContainerInstrument>
               </Link>

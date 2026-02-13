@@ -25,7 +25,7 @@ export default async function InstructorsPage() {
         
         {/* HEADER */}
         <SectionInstrument className="mb-20 space-y-4">
-          <Link 
+          <Link strokeWidth={1.5} 
             href="/studio" 
             className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all mb-4"
           >
@@ -43,15 +43,15 @@ export default async function InstructorsPage() {
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {allInstructors.map((instructor) => (
             <ContainerInstrument key={instructor.id} className="group space-y-6">
-              <Link href={`/studio/instructeurs/${instructor.slug || instructor.id}`} className="block">
+              <Link strokeWidth={1.5} href={`/studio/instructeurs/${instructor.slug || instructor.id}`} className="block">
                 <ContainerInstrument className="relative aspect-[4/5] rounded-[40px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
                   <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-                  <Image 
+                  <Image strokeWidth={1.5} 
                     src={instructor.photo ? `/assets/${instructor.photo.filePath}` : "/assets/common/founder/johfrah-avatar-be.png"} 
                     alt={instructor.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                  />
+                  / />
                   <ContainerInstrument className="absolute bottom-8 left-8 right-8">
                     <TextInstrument className="text-white/60 text-[15px] font-black tracking-widest mb-2"><VoiceglotText translationKey={`studio.instructor.${instructor.id}.tagline`} defaultText={instructor.tagline || 'Workshopgever'} /></TextInstrument>
                     <HeadingInstrument level={4} className="text-3xl font-black text-white tracking-tighter leading-none"><VoiceglotText translationKey={`studio.instructor.${instructor.id}.name`} defaultText={instructor.name} /></HeadingInstrument>

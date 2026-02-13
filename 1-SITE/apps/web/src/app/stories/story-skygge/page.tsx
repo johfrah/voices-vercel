@@ -71,7 +71,7 @@ export default function SkyggeStoryPage() {
             <ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-black tracking-tight mb-2"><VoiceglotText translationKey="story.skygge.cta.title" defaultText="Ook zo'n eerste indruk maken?" /><TextInstrument className="opacity-80 font-light"><VoiceglotText translationKey="story.skygge.cta.text" defaultText="Ontdek hoe wij jouw bedrijf kunnen laten klinken." /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>
-            <Link href="/agency" className="va-btn-pro !bg-white !text-va-black"><VoiceglotText translationKey="story.skygge.cta.button" defaultText="Bekijk de Stemmen" /></Link>
+            <Link strokeWidth={1.5} href="/agency" className="va-btn-pro !bg-white !text-va-black"><VoiceglotText translationKey="story.skygge.cta.button" defaultText="Bekijk de Stemmen" /></Link>
           </BentoCard>
         </BentoGrid>
       </SectionInstrument>

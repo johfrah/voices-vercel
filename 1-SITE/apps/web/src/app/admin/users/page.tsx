@@ -57,7 +57,7 @@ export default function AdminUsersPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link strokeWidth={1.5} href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
@@ -66,7 +66,7 @@ export default function AdminUsersPage() {
         
         <ContainerInstrument className="flex gap-4">
           <ContainerInstrument className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} />
+            <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} / />
             <input 
               type="text" 
               placeholder="Zoek op naam of email..." 
@@ -76,7 +76,7 @@ export default function AdminUsersPage() {
             />
           </ContainerInstrument>
           <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
-            <UserPlus size={16} /> <VoiceglotText translationKey="admin.users.add" defaultText="Nieuwe Gebruiker" />
+            <UserPlus strokeWidth={1.5} size={16} / /> <VoiceglotText translationKey="admin.users.add" defaultText="Nieuwe Gebruiker" />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -131,7 +131,7 @@ export default function AdminUsersPage() {
                   <ContainerInstrument className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
                     user.role === 'admin' ? 'bg-va-black text-white' : 'bg-va-off-white text-va-black/40'
                   }`}>
-                    {user.role === 'admin' ? <Shield strokeWidth={1.5} size={10} /> : <Users size={10} />}
+                    {user.role === 'admin' ? <Shield strokeWidth={1.5} size={10} /> : <Users strokeWidth={1.5} size={10} / />}
                     {user.role}
                   </ContainerInstrument>
                 </td>
@@ -155,7 +155,7 @@ export default function AdminUsersPage() {
                       <Mail strokeWidth={1.5} size={14} />
                     </button>
                     <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
-                      <MoreHorizontal size={14} />
+                      <MoreHorizontal strokeWidth={1.5} size={14} / />
                     </button>
                   </ContainerInstrument>
                 </td>

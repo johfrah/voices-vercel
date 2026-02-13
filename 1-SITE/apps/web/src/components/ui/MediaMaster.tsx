@@ -102,7 +102,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
                 />
               ) : (
                 <ContainerInstrument className="w-full h-full bg-primary flex items-center justify-center text-white animate-pulse">
-                  <Volume2 size={24} />
+                  <Volume2 strokeWidth={1.5} size={24} / />
                 </ContainerInstrument>
               )}
               {/* Live Indicator Overlay */}
@@ -151,7 +151,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               }}
               className="w-16 h-16 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-105 active:scale-90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
             >
-              {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
+              {isPlaying ? <Pause strokeWidth={1.5} size={32} fill="currentColor" / /> : <Play strokeWidth={1.5} size={32} fill="currentColor" className="ml-1" / />}
             </ButtonInstrument>
             <ButtonInstrument 
               onClick={() => {

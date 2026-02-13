@@ -55,7 +55,7 @@ export default function AdminSecurityPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link strokeWidth={1.5} href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
@@ -73,13 +73,13 @@ export default function AdminSecurityPage() {
               <HeadingInstrument level={3} className="text-3xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.multi_factor_auth.c21bd5" defaultText="Multi-Factor Auth" /><TextInstrument className="text-va-black/40 font-medium max-w-md"><VoiceglotText translationKey="auto.page.beveilig_de_toegang_.044ee4" defaultText="Beveilig de toegang tot je mailbox en de database met een extra code via je telefoon." /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>
             <ContainerInstrument className={`p-4 rounded-2xl ${isMfaActive ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-              {isMfaActive ? <ShieldCheck strokeWidth={1.5} size={32} /> : <ShieldAlert size={32} />}
+              {isMfaActive ? <ShieldCheck strokeWidth={1.5} size={32} /> : <ShieldAlert strokeWidth={1.5} size={32} / />}
             </ContainerInstrument>
           </ContainerInstrument>
 
           <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
             <ContainerInstrument className="p-6 bg-va-off-white rounded-[32px] space-y-4 border border-black/5">
-              <Smartphone className="text-va-black/20" size={24} />
+              <Smartphone strokeWidth={1.5} className="text-va-black/20" size={24} / />
               <HeadingInstrument level={4} className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.authenticator_app.5c5737" defaultText="Authenticator App" /><TextInstrument className="text-[15px] font-medium text-va-black/40 leading-relaxed"><VoiceglotText translationKey="auto.page.gebruik_google_authe.93d11f" defaultText="Gebruik Google Authenticator, Authy of iCloud Keychain voor tijdgebonden codes." /></TextInstrument></HeadingInstrument>
               <ButtonInstrument 
                 onClick={handleToggleMfa}

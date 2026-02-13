@@ -11,7 +11,7 @@ export default function OrdersPage() {
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       <SectionInstrument className="mb-16">
-        <Link 
+        <Link strokeWidth={1.5} 
           href="/account" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors mb-8"
         >
@@ -47,10 +47,10 @@ export default function OrdersPage() {
             </ContainerInstrument>
             <ContainerInstrument className="flex gap-4">
               <ButtonInstrument className="p-4 rounded-2xl bg-va-off-white hover:bg-va-black hover:text-white transition-all group shadow-sm">
-                <FileText size={18} className="opacity-40 group-hover:opacity-100" />
+                <FileText strokeWidth={1.5} size={18} className="opacity-40 group-hover:opacity-100" / />
               </ButtonInstrument>
               <ButtonInstrument className="p-4 rounded-2xl bg-va-off-white hover:bg-va-black hover:text-white transition-all group shadow-sm">
-                <ExternalLink size={18} className="opacity-40 group-hover:opacity-100" />
+                <ExternalLink strokeWidth={1.5} size={18} className="opacity-40 group-hover:opacity-100" / />
               </ButtonInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

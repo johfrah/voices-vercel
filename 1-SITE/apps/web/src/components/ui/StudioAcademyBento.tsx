@@ -18,16 +18,16 @@ export const StudioAcademyBento = () => {
       {/* 🎙️ MAIN CARD: Workshops */}
       <BentoCard span="xl" className="h-[450px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
         <ContainerInstrument className="absolute inset-0 z-0">
-          <Image 
+          <Image strokeWidth={1.5} 
             src="/assets/perfect-photo.jpg" 
             alt="Studio" 
             fill 
             className="object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-1000"
-          />
+          / />
         </ContainerInstrument>
         <ContainerInstrument plain className="relative z-10">
           <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
-            <Mic size={32} fill="currentColor" />
+            <Mic strokeWidth={1.5} size={32} fill="currentColor" / />
           </ContainerInstrument>
           <HeadingInstrument level={3} className="text-5xl font-black tracking-tighter mb-6 leading-none text-primary"><VoiceglotText translationKey="studio.hero.title" defaultText="Master je Stem" /><TextInstrument className="text-white/40 font-medium max-w-md text-lg"><VoiceglotText 
               translationKey="studio.hero.description" 
@@ -56,7 +56,7 @@ export const StudioAcademyBento = () => {
       {/* 🌟 De Coaches (Bernadette & Johfrah) */}
       <BentoCard span="md" className="bg-va-off-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
-          <Users className="text-va-black/20 mb-4" size={24} />
+          <Users strokeWidth={1.5} className="text-va-black/20 mb-4" size={24} / />
           <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black"><VoiceglotText translationKey="studio.coaches.title" defaultText="Topcoaches" /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="studio.coaches.description" defaultText="Bernadette Timmermans (VRT) & Johfrah Lefebvre delen hun jarenlange ervaring." /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
       </BentoCard>

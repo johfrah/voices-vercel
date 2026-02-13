@@ -63,9 +63,9 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
               
               <ContainerInstrument className="pt-6 border-t border-black/5 flex justify-between items-center">
                 <TextInstrument className="flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40">
-                  <Clock size={12} /> {course.duration}
+                  <Clock strokeWidth={1.5} size={12} / /> {course.duration}
                 </TextInstrument>
-                <Link 
+                <Link strokeWidth={1.5} 
                   href={`/academy/lesson/${course.id}`}
                   className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 group-hover:gap-3 transition-all"
                 >

@@ -47,7 +47,7 @@ export default function IVRPage() {
           <BentoCard span="lg" className="bg-va-black text-white p-12 flex flex-col justify-between group">
             <ContainerInstrument>
               <ContainerInstrument className="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center text-white mb-8 shadow-lg shadow-primary/20">
-                <Settings size={28} />
+                <Settings strokeWidth={1.5} size={28} / />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-black tracking-tight mb-4">
                 <VoiceglotText translationKey="ivr.configurator.title" defaultText="IVR Configurator" />
@@ -65,7 +65,7 @@ export default function IVRPage() {
           <BentoCard span="sm" className="bg-white shadow-aura p-12 flex flex-col justify-between group">
             <ContainerInstrument>
               <ContainerInstrument className="w-14 h-14 bg-va-off-white rounded-2xl flex items-center justify-center text-va-black mb-8">
-                <Mic size={28} />
+                <Mic strokeWidth={1.5} size={28} / />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-black tracking-tight mb-4">
                 <VoiceglotText translationKey="ivr.voices.title" defaultText="Stemkeuze" />
@@ -83,7 +83,7 @@ export default function IVRPage() {
           <BentoCard span="full" className="hmagic text-white p-12 flex flex-col md:flex-row items-center justify-between gap-12">
             <ContainerInstrument className="flex items-center gap-8">
               <ContainerInstrument className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center shrink-0">
-                <Music size={40} />
+                <Music strokeWidth={1.5} size={40} / />
               </ContainerInstrument>
               <ContainerInstrument>
                 <HeadingInstrument level={3} className="text-3xl font-black tracking-tight">

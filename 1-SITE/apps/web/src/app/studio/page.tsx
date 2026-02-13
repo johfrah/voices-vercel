@@ -85,13 +85,13 @@ export default async function StudioPage() {
             <BentoCard span="lg" className="bg-blue-600 p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[500px] rounded-[20px]">
               <ContainerInstrument className="relative z-10">
                 <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-white/20 backdrop-blur-md flex items-center justify-center mb-8">
-                  <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" />
+                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" / />
                 </ContainerInstrument>
                 <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none mb-8 "><VoiceglotText translationKey="studio.bento.guide.title" defaultText="Welke workshop past bij jou?" /><TextInstrument className="text-white/70 font-light max-w-sm text-[15px] leading-relaxed"><VoiceglotText translationKey="studio.bento.guide.text" defaultText="Geen blabla. Focus op de actie. Ontdek welk traject het beste bij jouw doelen aansluit." /></TextInstrument></HeadingInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="relative z-10">
-                <Link href="/studio/quiz">
-                  <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group !rounded-[10px] font-light tracking-widest "><VoiceglotText translationKey="studio.bento.guide.cta" defaultText="Doe de quiz" /><Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="group-hover:translate-x-2 transition-transform" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /></ButtonInstrument>
+                <Link strokeWidth={1.5} href="/studio/quiz">
+                  <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group !rounded-[10px] font-light tracking-widest "><VoiceglotText translationKey="studio.bento.guide.cta" defaultText="Doe de quiz" /><Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="group-hover:translate-x-2 transition-transform" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / /></ButtonInstrument>
                 </Link>
               </ContainerInstrument>
               <ContainerInstrument className="absolute -right-20 -bottom-20 w-96 h-96 bg-white/10 rounded-[20px] blur-3xl" />
@@ -100,7 +100,7 @@ export default async function StudioPage() {
             {/* 💬 AFSPRAAK BENTO */}
             <BentoCard span="sm" className="bg-va-black text-white p-12 flex flex-col justify-between rounded-[20px] shadow-aura-lg">
               <ContainerInstrument>
-                <Image src="/assets/common/branding/icons/INFO.svg" width={48} height={48} alt="" className="text-primary mb-8 brightness-0 invert opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={48} height={48} alt="" className="text-primary mb-8 brightness-0 invert opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
                 <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 leading-none">
                   <VoiceglotText translationKey="studio.bento.appointment.title" defaultText="Samen aan de slag" />
                   <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed">
@@ -116,7 +116,7 @@ export default async function StudioPage() {
             {/* 🎓 ACADEMY BRIDGE HITL */}
             <BentoCard span="sm" className="bg-white p-12 flex flex-col justify-between rounded-[20px] shadow-aura border border-black/5">
               <ContainerInstrument>
-                <Image src="/assets/common/branding/icons/INFO.svg" width={48} height={48} alt="" className="text-primary mb-8" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={48} height={48} alt="" className="text-primary mb-8" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
                 <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 leading-none">
                   <VoiceglotText translationKey="studio.bento.academy_bridge.title" defaultText="Academy talent" />
                   <TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-8">
@@ -143,7 +143,7 @@ export default async function StudioPage() {
             <ContainerInstrument className="md:col-span-2 space-y-12 pt-12">
               <ContainerInstrument className="flex justify-between items-end px-4">
                 <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-black/30"><VoiceglotText translationKey="studio.grid_label" defaultText="Aan de slag in de studio" /></HeadingInstrument>
-                <Link href="/studio/kalender" className="text-[15px] font-light tracking-widest text-primary hover:underline flex items-center gap-2"><VoiceglotText translationKey="studio.calendar_link" defaultText="Volledige kalender" /><Image src="/assets/common/branding/icons/FORWARD.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /></Link>
+                <Link strokeWidth={1.5} href="/studio/kalender" className="text-[15px] font-light tracking-widest text-primary hover:underline flex items-center gap-2"><VoiceglotText translationKey="studio.calendar_link" defaultText="Volledige kalender" /><Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / /></Link>
               </ContainerInstrument>
               {activeWorkshops.length === 0 ? (
                 <ContainerInstrument className="p-12 text-center rounded-[20px] border-2 border-dashed border-black/5 bg-va-off-white/30">
@@ -171,7 +171,7 @@ export default async function StudioPage() {
                           <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                           <ContainerInstrument className="absolute bottom-4 left-6 flex items-center gap-2">
                             <ContainerInstrument className="w-8 h-8 rounded-[10px] bg-primary/80 backdrop-blur-md flex items-center justify-center text-white">
-                              <Image src="/assets/common/branding/icons/PLAY.svg" width={14} height={14} alt="" className="brightness-0 invert ml-1" />
+                              <Image strokeWidth={1.5} src="/assets/common/branding/icons/PLAY.svg" width={14} height={14} alt="" className="brightness-0 invert ml-1" / />
                             </ContainerInstrument>
                             <TextInstrument className="text-[15px] font-light text-white tracking-widest">
                               <VoiceglotText translationKey="studio.aftermovie" defaultText="Aftermovie" />
@@ -186,7 +186,7 @@ export default async function StudioPage() {
                             <VoiceglotText translationKey="studio.workshop_badge" defaultText="Workshop" />
                           </ContainerInstrument>
                           <TextInstrument className="text-[15px] font-light text-black/30 tracking-widest flex items-center gap-2">
-                            <Image src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> {new Date(workshop.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })}
+                            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} / /> {new Date(workshop.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })}
                           </TextInstrument>
                         </ContainerInstrument>
 
@@ -207,10 +207,10 @@ export default async function StudioPage() {
                             </TextInstrument>
                             <TextInstrument className="text-2xl font-light tracking-tighter">€ {workshop.price}</TextInstrument>
                           </ContainerInstrument>
-                          <Link 
+                          <Link strokeWidth={1.5} 
                             href={`/studio/book?id=${workshop.id}`}
                             className="flex items-center gap-3 text-[15px] font-light tracking-widest text-primary group/btn"
-                          ><VoiceglotText translationKey="studio.book_cta" defaultText="Ik kom ook" /><Image src="/assets/common/branding/icons/FORWARD.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="group-hover/btn:translate-x-2 transition-transform" /></Link>
+                          ><VoiceglotText translationKey="studio.book_cta" defaultText="Ik kom ook" /><Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="group-hover/btn:translate-x-2 transition-transform" / /></Link>
                         </ContainerInstrument>
                       </ContainerInstrument>
                     </ContainerInstrument>
@@ -231,12 +231,12 @@ export default async function StudioPage() {
                   <ContainerInstrument key={t.id} className="group space-y-6">
                     <ContainerInstrument className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
                       <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-                      <Image 
+                      <Image strokeWidth={1.5} 
                         src={t.photo ? `/assets/${t.photo.filePath}` : "/assets/common/founder/johfrah-avatar-be.png"} 
                         alt={t.name}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                      />
+                      / />
                       <ContainerInstrument className="absolute bottom-8 left-8 right-8">
                         <TextInstrument className="text-white/60 text-[15px] font-light tracking-widest mb-2 ">
                           <VoiceglotText translationKey={`studio.instructor.${t.id}.tagline`} defaultText={t.tagline || 'Workshopgever'} />

@@ -150,12 +150,12 @@ export default function AgentCommandCenter() {
                                 )}
                             >
                                 <ContainerInstrument className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary/20 transition-all">
-                                    <Image src={agent.avatar} alt={agent.name} fill className="object-cover" />
+                                    <Image strokeWidth={1.5} src={agent.avatar} alt={agent.name} fill className="object-cover" / />
                                 </ContainerInstrument>
                                 <ContainerInstrument>
                                     <TextInstrument className="text-[15px] font-light block">{agent.name}</TextInstrument>
                                     <TextInstrument className={cn(
-                                        "text-[12px] font-light opacity-40 uppercase tracking-widest",
+                                        "text-[15px] font-light opacity-40 uppercase tracking-widest",
                                         selectedAgent.id === agent.id ? 'text-white' : ''
                                     )}>
                                         {agent.role}
@@ -173,7 +173,7 @@ export default function AgentCommandCenter() {
                         {/* Agent Header */}
                         <ContainerInstrument className="p-8 border-b border-black/5 flex items-center gap-6 bg-va-off-white/30">
                             <ContainerInstrument className="w-16 h-16 rounded-full overflow-hidden shadow-aura relative">
-                                <Image src={selectedAgent.avatar} alt={selectedAgent.name} width={64} height={64} className="object-cover" />
+                                <Image strokeWidth={1.5} src={selectedAgent.avatar} alt={selectedAgent.name} width={64} height={64} className="object-cover" / />
                             </ContainerInstrument>
                             <ContainerInstrument>
                                 <HeadingInstrument level={2} className="text-2xl font-light tracking-tighter">
@@ -208,7 +208,7 @@ export default function AgentCommandCenter() {
                                         )}>
                                             <TextInstrument>{msg.content}</TextInstrument>
                                             <TextInstrument className={cn(
-                                                "text-[12px] mt-2 opacity-30 font-light uppercase tracking-widest",
+                                                "text-[15px] mt-2 opacity-30 font-light uppercase tracking-widest",
                                                 msg.role === 'user' ? 'text-right' : 'text-left'
                                             )}>
                                                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -274,7 +274,7 @@ export default function AgentCommandCenter() {
                                             )}
                                             <ContainerInstrument className="flex-1 min-w-0">
                                                 <TextInstrument className="text-[15px] font-light block truncate">{task.name}</TextInstrument>
-                                                <TextInstrument className="text-[12px] font-light opacity-40 tracking-widest ">
+                                                <TextInstrument className="text-[15px] font-light opacity-40 tracking-widest ">
                                                     {task.status} • {task.time}
                                                 </TextInstrument>
                                             </ContainerInstrument>

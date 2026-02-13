@@ -63,7 +63,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                 onClick={() => { playClick('soft'); onClose(); }}
                 className="text-white/40 hover:text-white transition-colors"
               >
-                <ChevronRight size={24} />
+                <ChevronRight strokeWidth={1.5} size={24} / />
               </button>
             </div>
 
@@ -164,7 +164,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
           <div className="p-8 border-t border-white/10 bg-black/20">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-white/40">
-                <Database size={12} />
+                <Database strokeWidth={1.5} size={12} / />
                 Master Registry
               </div>
               <div className="text-[15px] font-black text-primary">ENCRYPTED</div>

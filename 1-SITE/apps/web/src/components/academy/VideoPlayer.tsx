@@ -82,7 +82,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, su
             onClick={togglePlay}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-primary text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-all z-10"
           >
-            <Play size={40} fill="currentColor" className="ml-2" />
+            <Play strokeWidth={1.5} size={40} fill="currentColor" className="ml-2" / />
           </button>
         )}
 
@@ -100,7 +100,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, su
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <button onClick={togglePlay} className="text-white hover:text-primary transition-colors">
-                {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
+                {isPlaying ? <Pause strokeWidth={1.5} size={24} fill="currentColor" / /> : <Play strokeWidth={1.5} size={24} fill="currentColor" / />}
               </button>
               <div className="text-white/60 text-[15px] font-black tracking-widest tabular-nums">
                 <span className="text-white">{formatTime(videoRef.current?.currentTime || 0)}</span> / {formatTime(duration)}
@@ -109,7 +109,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, su
 
             <div className="flex items-center gap-6 text-white/40">
               <button className="hover:text-white transition-colors"><RotateCcw size={20} /></button>
-              <button className="hover:text-white transition-colors"><Settings size={20} /></button>
+              <button className="hover:text-white transition-colors"><Settings strokeWidth={1.5} size={20} / /></button>
               <button className="hover:text-white transition-colors"><Maximize size={20} /></button>
             </div>
           </div>

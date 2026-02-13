@@ -161,7 +161,7 @@ export const SpotlightDashboard: React.FC = () => {
       }}
       className="fixed bottom-8 right-8 w-16 h-16 rounded-full bg-va-black text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-all z-[100] group"
     >
-      <Command size={24} className="group-hover:rotate-12 transition-transform" />
+      <Command strokeWidth={1.5} size={24} className="group-hover:rotate-12 transition-transform" / />
     </button>
   );
 
@@ -176,7 +176,7 @@ export const SpotlightDashboard: React.FC = () => {
         {/* Search Header */}
         <div className="p-10 border-b border-black/5 flex items-center gap-8">
           <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-            <Search size={32} />
+            <Search strokeWidth={1.5} size={32} / />
           </div>
           <input 
             autoFocus

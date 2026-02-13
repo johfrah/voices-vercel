@@ -102,11 +102,11 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
 
   const widgets: BuilderWidget[] = [
     { type: 'text', label: 'Tekst Blok', icon: <Type size={18} />, description: 'Voiceglot-ready tekst' },
-    { type: 'actor-feed', label: 'Actor Feed', icon: <Users size={18} />, description: 'Live stemmen lijst' },
-    { type: 'video', label: 'Video Focus', icon: <Video size={18} />, description: 'Bento video speler' },
-    { type: 'audio', label: 'Audio Demo', icon: <Music size={18} />, description: 'Sonic DNA player' },
+    { type: 'actor-feed', label: 'Actor Feed', icon: <Users strokeWidth={1.5} size={18} / />, description: 'Live stemmen lijst' },
+    { type: 'video', label: 'Video Focus', icon: <Video strokeWidth={1.5} size={18} / />, description: 'Bento video speler' },
+    { type: 'audio', label: 'Audio Demo', icon: <Music strokeWidth={1.5} size={18} / />, description: 'Sonic DNA player' },
     { type: 'cta', label: 'Call to Action', icon: <MousePointer2 size={18} />, description: 'Conversie knop' },
-    { type: 'grid', label: 'Bento Grid', icon: <Layout size={18} />, description: 'Nieuwe sectie' },
+    { type: 'grid', label: 'Bento Grid', icon: <Layout strokeWidth={1.5} size={18} / />, description: 'Nieuwe sectie' },
   ];
 
   return (
@@ -124,7 +124,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Layout size={18} className="text-white" />
+                  <Layout strokeWidth={1.5} size={18} className="text-white" / />
                 </div>
               <h2 className="text-[15px] font-light tracking-[0.2em] text-white Raleway">Architect</h2>
             </div>
@@ -132,7 +132,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
               onClick={() => { playClick('soft'); onClose(); }}
               className="text-white/40 hover:text-white transition-colors"
             >
-              <ChevronRight size={24} />
+              <ChevronRight strokeWidth={1.5} size={24} / />
             </button>
           </div>
 
@@ -231,7 +231,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
           <div className="p-8 border-t border-white/10 bg-black/20">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-white/40">
-                <Database size={12} />
+                <Database strokeWidth={1.5} size={12} / />
                 Atomic Sync
               </div>
               <div className="text-[15px] font-black text-primary">LIVE</div>

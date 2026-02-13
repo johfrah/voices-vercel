@@ -71,7 +71,7 @@ export default function SearchPage() {
             {/* Voices Results */}
             <SectionInstrument className="space-y-8">
               <HeadingInstrument level={2} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 flex items-center gap-3">
-                <Mic size={14} /><VoiceglotText translationKey="auto.page.stemacteurs.72986a" defaultText="Stemacteurs" /></HeadingInstrument>
+                <Mic strokeWidth={1.5} size={14} / /><VoiceglotText translationKey="auto.page.stemacteurs.72986a" defaultText="Stemacteurs" /></HeadingInstrument>
               {results.voices?.length > 0 ? (
                 <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {results.voices.map((voice: any) => (

@@ -1,5 +1,5 @@
 # 🏗️ MOCKUP: DE NIEUWE STEMMENBANK (2026)
-## *De "Tone of Voice" in actie: Airbnb-flow, Apple-luxe, Stripe-kracht*
+## *De "Tone of Voice" in actie: Airbnb-flow, Apple-luxe, Mollie-kracht*
 
 Dit document beschrijft de visuele en interactieve opbouw van de nieuwe Stemmenbank op `voices.be`. Het is de eerste volledige implementatie van onze nieuwe psychologische wetten.
 
@@ -39,7 +39,7 @@ Dit document beschrijft de visuele en interactieve opbouw van de nieuwe Stemmenb
 *Doel: Vertrouwen bouwen door eerlijkheid.*
 
 *   **Sticky Decision Box:** Aan de rechterkant zweeft een compacte kaart met de prijs.
-    *   **Live Pricing (Stripe-style):** Terwijl de klant opties kiest (bijv. 'Online Media'), zie je de prijs karakter-voor-karakter verspringen (`render_price`).
+    *   **Live Pricing (Mollie-style):** Terwijl de klant opties kiest (bijv. 'Online Media'), zie je de prijs karakter-voor-karakter verspringen (`render_price`).
 *   **Bento Options:** Gebruikstypes en extra's worden gepresenteerd in kleine Bento-vakjes met grote iconen. Geen dropdown-lijsten, maar visuele keuzes.
 *   **The Pro Action:** De finale knop "Bevestig Briefing" is een **zwarte `va-btn-pro`** met een subtiele `.hmagic` shimmer. Bij de klik hoor je de solide "Pro Thud".
 

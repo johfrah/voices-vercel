@@ -172,7 +172,7 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
                   isRecording ? "bg-red-500 text-white animate-pulse" : "bg-primary text-white hover:scale-105 active:scale-95"
                 )}
               >
-                {isRecording ? <><Square size={18} fill="currentColor" /> <VoiceglotText translationKey="teleprompter.stop" defaultText="Stop" /></> : <><Mic size={18} /> <VoiceglotText translationKey="teleprompter.start" defaultText="Start Opname" /></>}
+                {isRecording ? <><Square strokeWidth={1.5} size={18} fill="currentColor" / /> <VoiceglotText translationKey="teleprompter.stop" defaultText="Stop" /></> : <><Mic strokeWidth={1.5} size={18} / /> <VoiceglotText translationKey="teleprompter.start" defaultText="Start Opname" /></>}
               </motion.button>
             ) : (
               <motion.div
@@ -183,7 +183,7 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
               >
                 <div className="bg-va-off-white p-4 rounded-2xl flex items-center gap-3">
                   <button onClick={() => playClick('pro')} className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-primary hover:scale-110 transition-transform">
-                    <Play size={16} fill="currentColor" className="ml-1" />
+                    <Play strokeWidth={1.5} size={16} fill="currentColor" className="ml-1" / />
                   </button>
                   <div className="flex-1 h-1 bg-black/5 rounded-full overflow-hidden">
                     <div className="h-full bg-primary w-1/3" />
@@ -195,13 +195,13 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
                     onClick={() => { playClick('soft'); setAudioUrl(null); }}
                     className="flex-1 py-4 bg-va-off-white text-va-black/40 rounded-2xl text-[15px] font-medium tracking-widest hover:text-red-500 transition-all"
                   >
-                    <Trash2 size={14} className="mx-auto" />
+                    <Trash2 strokeWidth={1.5} size={14} className="mx-auto" / />
                   </button>
                   <button
                     onClick={handleDownload}
                     className="flex-[3] py-4 bg-va-black text-white rounded-2xl text-[15px] font-medium tracking-widest flex items-center justify-center gap-2 hover:bg-primary transition-all"
                   >
-                    <Download size={14} /> <VoiceglotText translationKey="teleprompter.download" defaultText="Download .WAV" />
+                    <Download strokeWidth={1.5} size={14} / /> <VoiceglotText translationKey="teleprompter.download" defaultText="Download .WAV" />
                   </button>
                 </div>
               </motion.div>

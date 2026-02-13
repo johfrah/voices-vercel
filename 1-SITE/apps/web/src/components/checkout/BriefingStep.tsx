@@ -37,7 +37,7 @@ export const BriefingStep: React.FC = () => {
         state.usage === 'telefonie' ? 'lg:col-span-2' : ''
       )}>
         <ContainerInstrument className="space-y-6">
-          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 ">
+          <LabelInstrument className="block text-[15px] font-light tracking-widest text-va-black/30 ">
             <VoiceglotText translationKey="checkout.briefing.step1" defaultText="1. Wat is het script?" />
           </LabelInstrument>
           <textarea
@@ -46,8 +46,8 @@ export const BriefingStep: React.FC = () => {
             placeholder="Plak hier je tekst..."
             className="w-full h-64 bg-va-off-white border-none rounded-[20px] p-8 text-lg font-light focus:ring-2 focus:ring-primary/20 transition-all resize-none"
           />
-          <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light tracking-widest text-va-black/20 ">
-            <Image src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
+          <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/20 ">
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} / />
             {state.usage === 'telefonie' ? (
               <TextInstrument>
                 <VoiceglotText 
@@ -67,7 +67,7 @@ export const BriefingStep: React.FC = () => {
         </ContainerInstrument>
 
         <ContainerInstrument className="space-y-6">
-          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 ">
+          <LabelInstrument className="block text-[15px] font-light tracking-widest text-va-black/30 ">
             <VoiceglotText translationKey="checkout.briefing.step2" defaultText="2. Uitspraak instructies (optioneel)" />
           </LabelInstrument>
           <input
@@ -80,7 +80,7 @@ export const BriefingStep: React.FC = () => {
         </ContainerInstrument>
 
         <ContainerInstrument className="space-y-6">
-          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 ">
+          <LabelInstrument className="block text-[15px] font-light tracking-widest text-va-black/30 ">
             <VoiceglotText translationKey="checkout.briefing.step3" defaultText="3. Hoe wordt de opname gebruikt?" />
           </LabelInstrument>
           <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -93,7 +93,7 @@ export const BriefingStep: React.FC = () => {
                 key={type.id}
                 onClick={() => updateUsage(type.id as any)}
                 className={cn(
-                  "py-5 px-6 rounded-[10px] border-2 font-light tracking-widest text-[12px] transition-all",
+                  "py-5 px-6 rounded-[10px] border-2 font-light tracking-widest text-[15px] transition-all",
                   state.usage === type.id 
                     ? 'border-primary bg-primary/5 text-primary' 
                     : 'border-va-black/5 hover:border-va-black/10 text-va-black/40'

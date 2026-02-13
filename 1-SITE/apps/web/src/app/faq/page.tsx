@@ -65,7 +65,7 @@ export default function FAQPage() {
         
         {/* Header */}
         <ContainerInstrument className="text-center mb-20 space-y-6">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[12px] font-light tracking-widest shadow-sm border border-black/5 ">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest shadow-sm border border-black/5 ">
             <Search strokeWidth={1.5} size={12} className="text-primary" /> 
             <VoiceglotText translationKey="faq.badge" defaultText="Kennisbank" />
           </ContainerInstrument>
@@ -97,7 +97,7 @@ export default function FAQPage() {
                 className="w-full px-10 py-8 flex items-center justify-between text-left hover:bg-va-off-white transition-colors"
               >
                 <HeadingInstrument level={3} className="text-xl font-light tracking-tight"><VoiceglotText translationKey={`${faq.key}.q`} defaultText={faq.q} /></HeadingInstrument>
-                {openIndex === i ? <ChevronUp className="text-primary" /> : <ChevronDown strokeWidth={1.5} className="text-va-black/20" />}
+                {openIndex === i ? <ChevronUp strokeWidth={1.5} className="text-primary" / /> : <ChevronDown strokeWidth={1.5} className="text-va-black/20" />}
               </ButtonInstrument>
               {openIndex === i && (
                 <ContainerInstrument className="px-10 pb-10 animate-in slide-in-from-top-4 duration-300">

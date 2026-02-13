@@ -71,7 +71,7 @@ export const AcademyPdfButton: React.FC<AcademyPdfButtonProps> = ({
       {isGenerating ? (
         <Loader2 size={14} className="animate-spin" />
       ) : (
-        <FileText size={14} />
+        <FileText strokeWidth={1.5} size={14} / />
       )}
       <VoiceglotText 
         translationKey="academy.lesson.download_pdf" 

@@ -29,7 +29,7 @@ export default function JohfrahHostPage() {
           <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
             <ContainerInstrument className="space-y-8">
               <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 rounded-full text-blue-600 text-[15px] font-black tracking-widest">
-                <Tv size={12} /> 
+                <Tv strokeWidth={1.5} size={12} / /> 
                 <VoiceglotText translationKey="portfolio.johfrah.host.badge" defaultText="Host & Reporter" />
               </ContainerInstrument>
               
@@ -45,7 +45,7 @@ export default function JohfrahHostPage() {
                   <TextInstrument className="text-[15px] font-bold"><VoiceglotText translationKey="auto.page.regisseur.eccc5e" defaultText="Regisseur" /></TextInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="p-6 bg-white rounded-3xl shadow-sm border border-black/5">
-                  <Camera className="text-primary mb-4" size={24} />
+                  <Camera strokeWidth={1.5} className="text-primary mb-4" size={24} / />
                   <TextInstrument className="font-black text-[15px] tracking-widest mb-1"><VoiceglotText translationKey="auto.page.expertise.57b0ea" defaultText="Expertise" /></TextInstrument>
                   <TextInstrument className="text-[15px] font-bold"><VoiceglotText translationKey="auto.page.regie___presentatie.687c0d" defaultText="Regie & Presentatie" /></TextInstrument>
                 </ContainerInstrument>
@@ -53,12 +53,12 @@ export default function JohfrahHostPage() {
             </ContainerInstrument>
 
             <ContainerInstrument className="relative aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl">
-              <Image 
+              <Image strokeWidth={1.5} 
                 src="/assets/common/branding/johfrah/johfrah-host.jpg" 
                 alt="Johfrah as Host"
                 fill
                 className="object-cover"
-              />
+              / />
             </ContainerInstrument>
           </ContainerInstrument>
 

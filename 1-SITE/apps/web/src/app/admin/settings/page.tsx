@@ -124,7 +124,7 @@ export default function AdminSettingsPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link strokeWidth={1.5} href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
@@ -142,7 +142,7 @@ export default function AdminSettingsPage() {
               : 'bg-va-black text-white hover:bg-va-black/80'
           }`}
         >
-          {isEditMode ? <Shield strokeWidth={1.5} size={14} /> : <Settings size={14} />}
+          {isEditMode ? <Shield strokeWidth={1.5} size={14} /> : <Settings strokeWidth={1.5} size={14} / />}
           {isEditMode ? 'Beheer Modus Actief' : 'Systeem Beheer'}
         </ButtonInstrument>
       </SectionInstrument>
@@ -227,7 +227,7 @@ export default function AdminSettingsPage() {
               disabled={saving}
               className="va-btn-pro !bg-va-black w-full flex items-center justify-center gap-2"
             >
-              {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+              {saving ? <Loader2 className="animate-spin" size={16} /> : <Save strokeWidth={1.5} size={16} / />}
               <VoiceglotText translationKey="admin.settings.save_company" defaultText="Bedrijfsinfo Opslaan" />
             </ButtonInstrument>
           )}
@@ -237,7 +237,7 @@ export default function AdminSettingsPage() {
         <BentoCard span="sm" className="bg-white border border-black/5 p-10 space-y-8">
           <ContainerInstrument className="flex items-center gap-4 border-b border-black/5 pb-6">
             <ContainerInstrument className="w-12 h-12 bg-orange-500/10 text-orange-600 rounded-2xl flex items-center justify-center">
-              <Clock size={24} />
+              <Clock strokeWidth={1.5} size={24} / />
             </ContainerInstrument>
             <ContainerInstrument>
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.algemeen.c132c7" defaultText="Algemeen" /></HeadingInstrument>
@@ -283,7 +283,7 @@ export default function AdminSettingsPage() {
               disabled={saving}
               className="va-btn-pro !bg-va-black w-full flex items-center justify-center gap-2"
             >
-              {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+              {saving ? <Loader2 className="animate-spin" size={16} /> : <Save strokeWidth={1.5} size={16} / />}
               <VoiceglotText translationKey="admin.settings.save_general" defaultText="Instellingen Opslaan" />
             </ButtonInstrument>
           )}
@@ -370,7 +370,7 @@ export default function AdminSettingsPage() {
                   disabled={saving}
                   className="va-btn-pro !bg-primary !text-va-black w-full flex items-center justify-center gap-2"
                 >
-                  {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+                  {saving ? <Loader2 className="animate-spin" size={16} /> : <Save strokeWidth={1.5} size={16} / />}
                   <VoiceglotText translationKey="admin.settings.activate_vacation" defaultText="Vakantieregeling Activeren" />
                 </ButtonInstrument>
               )}

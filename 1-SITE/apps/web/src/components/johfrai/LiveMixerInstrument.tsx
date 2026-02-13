@@ -135,7 +135,7 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-va-black flex items-center justify-center text-white shadow-lg">
-              <Mic size={18} />
+              <Mic strokeWidth={1.5} size={18} / />
             </div>
             <div>
               <h4 className="font-black text-[15px] tracking-tight">
@@ -155,14 +155,14 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
                 isPlaying ? "bg-va-black text-white" : "bg-primary text-white hover:bg-va-black"
               )}
             >
-              {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
+              {isPlaying ? <Pause strokeWidth={1.5} size={20} fill="currentColor" / /> : <Play strokeWidth={1.5} size={20} fill="currentColor" className="ml-1" / />}
             </button>
             {onRemove && (
               <button 
                 onClick={onRemove}
                 className="w-12 h-12 rounded-2xl bg-va-black/5 text-va-black/20 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
               >
-                <Trash2 size={18} />
+                <Trash2 strokeWidth={1.5} size={18} / />
               </button>
             )}
           </div>
@@ -200,7 +200,7 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
           <div className="flex items-center gap-6 bg-va-off-white/30 p-4 rounded-2xl border border-black/5">
             <div className="flex items-center gap-3 flex-1">
               <div className="p-2 rounded-lg bg-white shadow-sm text-va-black/40">
-                <Music size={14} />
+                <Music strokeWidth={1.5} size={14} / />
               </div>
               <div className="flex-1 space-y-1">
                 <div className="flex justify-between items-center">

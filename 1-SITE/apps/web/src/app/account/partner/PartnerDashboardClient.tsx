@@ -32,7 +32,7 @@ export default function PartnerDashboardClient() {
 
   const stats = [
     { label: 'Actieve Projecten', value: '12', icon: <Briefcase strokeWidth={1.5} size={20} />, trend: '+2' },
-    { label: 'Totaal Bereik', value: '45.2k', icon: <Users size={20} />, trend: '+12%' },
+    { label: 'Totaal Bereik', value: '45.2k', icon: <Users strokeWidth={1.5} size={20} / />, trend: '+12%' },
     { label: 'Conversie', value: '3.8%', icon: <TrendingUp size={20} />, trend: '+0.4%' },
     { label: 'Inkomsten (30d)', value: '€ 2.450', icon: <BarChart3 size={20} />, trend: '+15%' },
   ];
@@ -40,7 +40,7 @@ export default function PartnerDashboardClient() {
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       <SectionInstrument className="mb-16">
-        <Link 
+        <Link strokeWidth={1.5} 
           href="/account" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors mb-8"
         >
@@ -94,7 +94,7 @@ export default function PartnerDashboardClient() {
         {/* Affiliate Links */}
         <BentoCard span="sm" className="bg-white border border-black/5 p-10 flex flex-col justify-between h-[400px] group hover:border-primary/20 transition-all">
           <ContainerInstrument>
-            <ExternalLink className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
+            <ExternalLink strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} / />
             <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText translationKey="account.partner.links.title" defaultText="Affiliate Links" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed"><VoiceglotText 
                 translationKey="account.partner.links.text" 
                 defaultText="Genereer unieke links en verdien commissie op elke succesvolle casting." 

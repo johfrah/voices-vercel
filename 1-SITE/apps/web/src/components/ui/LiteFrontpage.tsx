@@ -27,7 +27,7 @@ export default function LiteFrontpage() {
             />
           </p>
           <div className="flex gap-4">
-            <Link href="/agency" className="va-btn-pro !px-10 !py-6 text-base font-light tracking-widest"><VoiceglotText translationKey="lite.cta" defaultText="Bekijk Stemmen" /></Link>
+            <Link strokeWidth={1.5} href="/agency" className="va-btn-pro !px-10 !py-6 text-base font-light tracking-widest"><VoiceglotText translationKey="lite.cta" defaultText="Bekijk Stemmen" /></Link>
           </div>
         </div>
       </div>

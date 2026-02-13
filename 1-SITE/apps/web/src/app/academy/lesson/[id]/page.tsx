@@ -150,7 +150,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
       <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
         <ContainerInstrument className="bg-blue-50 border-l-4 border-blue-500 p-8 rounded-xl">
           <ContainerInstrument className="flex items-center gap-4">
-            <Info className="text-blue-500" size={32} />
+            <Info strokeWidth={1.5} className="text-blue-500" size={32} / />
             <TextInstrument className="text-blue-700 font-bold">{data.message}</TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
@@ -178,11 +178,11 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
               <EyeOff size={20} className="text-primary" />
               <TextInstrument className="text-[15px] font-black tracking-tight text-primary"><VoiceglotText translationKey="auto.page.student_preview_modu.c2e4cb" defaultText="Student Preview Modus" /></TextInstrument>
             </ContainerInstrument>
-            <Link href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[15px]"><VoiceglotText translationKey="auto.page.terug_naar_admin_mod.f246ba" defaultText="Terug naar Admin Mode" /></Link>
+            <Link strokeWidth={1.5} href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[15px]"><VoiceglotText translationKey="auto.page.terug_naar_admin_mod.f246ba" defaultText="Terug naar Admin Mode" /></Link>
           </ContainerInstrument>
         )}
         <SectionInstrument className="mb-12 space-y-6">
-          <Link 
+          <Link strokeWidth={1.5} 
             href="/academy" 
             className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
           >
@@ -198,7 +198,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         <BentoGrid>
           <BentoCard span="xl" className="hred p-16 text-white text-center space-y-8">
             <ContainerInstrument className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8">
-              {isLockedByDrip ? <Info size={48} className="text-white" /> : <ShieldCheck strokeWidth={1.5} size={48} className="text-white" />}
+              {isLockedByDrip ? <Info strokeWidth={1.5} size={48} className="text-white" / /> : <ShieldCheck strokeWidth={1.5} size={48} className="text-white" />}
             </ContainerInstrument>
             <HeadingInstrument level={2} className="text-5xl font-black tracking-tighter leading-none"><VoiceglotText 
                 translationKey={isLockedByDrip ? "academy.drip.title" : "academy.paywall.title"} 
@@ -223,7 +223,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
               )}
             </TextInstrument>
             <ContainerInstrument className="pt-8">
-              <Link 
+              <Link strokeWidth={1.5} 
                 href="/academy" 
                 className="va-btn-pro !bg-white !text-black !px-12 !py-4"
               ><VoiceglotText 
@@ -350,7 +350,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
       {isAdmin && (
         <ContainerInstrument className="mb-8 p-4 bg-va-black rounded-2xl flex items-center justify-between shadow-xl border border-white/5">
           <ContainerInstrument className="flex items-center gap-3 text-white">
-            <Eye size={20} className="text-primary" />
+            <Eye strokeWidth={1.5} size={20} className="text-primary" / />
             <TextInstrument className="text-[15px] font-black tracking-tight"><VoiceglotText translationKey="auto.page.admin_mode_actief.f3753b" defaultText="Admin Mode Actief" /></TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="flex gap-4">
@@ -360,19 +360,19 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
                   onClick={() => window.print()} 
                   className="va-btn-pro !bg-white/10 !text-white !py-2 !px-4 !text-[15px] hover:!bg-white/20 flex items-center gap-2"
                 >
-                  <FileText size={14} /><VoiceglotText translationKey="auto.page.print_workshop__pdf_.3934f2" defaultText="Print Workshop (PDF)" />
+                  <FileText strokeWidth={1.5} size={14} / /><VoiceglotText translationKey="auto.page.print_workshop__pdf_.3934f2" defaultText="Print Workshop (PDF)" />
                 </button>
-                <Link href={`/academy/lesson/${params.id}?preview=student`} className="va-btn-pro !bg-white/10 !text-white !py-2 !px-4 !text-[15px] hover:!bg-white/20"><VoiceglotText translationKey="auto.page.preview_als_student.9f9b1c" defaultText="Preview als Student" /></Link>
+                <Link strokeWidth={1.5} href={`/academy/lesson/${params.id}?preview=student`} className="va-btn-pro !bg-white/10 !text-white !py-2 !px-4 !text-[15px] hover:!bg-white/20"><VoiceglotText translationKey="auto.page.preview_als_student.9f9b1c" defaultText="Preview als Student" /></Link>
               </>
             ) : (
-              <Link href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[15px]"><VoiceglotText translationKey="auto.page.terug_naar_admin_mod.f246ba" defaultText="Terug naar Admin Mode" /></Link>
+              <Link strokeWidth={1.5} href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[15px]"><VoiceglotText translationKey="auto.page.terug_naar_admin_mod.f246ba" defaultText="Terug naar Admin Mode" /></Link>
             )}
           </ContainerInstrument>
         </ContainerInstrument>
       )}
       {/* Header */}
       <SectionInstrument className="mb-12 space-y-6">
-        <Link 
+        <Link strokeWidth={1.5} 
           href="/academy" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
@@ -483,7 +483,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           {/* Technical Briefing */}
           <BentoCard span="sm" className="hred text-white">
             <HeadingInstrument level={4} className="text-[15px] font-black tracking-widest text-white/40 mb-6 flex items-center gap-2">
-              <Info size={14} /> 
+              <Info strokeWidth={1.5} size={14} / /> 
               <VoiceglotText translationKey="academy.lesson.technical_briefing" defaultText="Briefing" />
             </HeadingInstrument>
             <ContainerInstrument as="ul" className="space-y-4 text-[15px] font-medium">

@@ -397,8 +397,27 @@ class AgentOrchestrator {
 }
 
 const orchestrator = new AgentOrchestrator();
-if (process.argv[2] === 'live') {
+const mode = process.argv[2];
+
+if (mode === 'live') {
   orchestrator.runContinuous();
+} else if (mode === 'fix') {
+  console.log(`${COLORS.cyan}🔧 BOB-FIX: Start gecoördineerde herstel-operatie...${COLORS.reset}`);
+  orchestrator.runAgentCycle('CHRIS', async () => {
+    execSync('npx ts-node 3-WETTEN/scripts/watchdog.ts audit 1-SITE/apps/web/src', { stdio: 'inherit' });
+  }, async () => {
+    execSync('npx ts-node 3-WETTEN/scripts/watchdog.ts fix 1-SITE/apps/web/src', { stdio: 'inherit' });
+  }).then(() => {
+    return orchestrator.runAgentCycle('ANNA', async () => {
+      execSync('npm run lint', { cwd: '1-SITE/apps/web', stdio: 'inherit' });
+    }, async () => {
+      execSync('npm run lint:fix', { cwd: '1-SITE/apps/web', stdio: 'inherit' });
+    });
+  }).then(() => {
+    console.log(`${COLORS.green}✅ BOB-FIX: Herstel-operatie voltooid.${COLORS.reset}`);
+  });
+} else if (mode === 'deep-clean') {
+  orchestrator.runFelixBasic();
 } else {
   orchestrator.runConcert();
 }

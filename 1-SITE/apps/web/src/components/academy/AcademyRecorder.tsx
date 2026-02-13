@@ -167,7 +167,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
               <VoiceglotText translationKey="academy.recorder.title" defaultText="Jouw Opname" />
             </HeadingInstrument>
             <ContainerInstrument className="flex items-center gap-4 mt-1">
-              <TextInstrument className="text-[12px] font-light tracking-widest text-va-black/30 ">
+              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 ">
                 {isRecording ? (
                   <VoiceglotText translationKey="academy.recorder.recording" defaultText="Nu aan het opnemen..." />
                 ) : audioBlob ? (
@@ -179,7 +179,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
               <ButtonInstrument 
                 onClick={() => setShowTeleprompter(!showTeleprompter)}
                 className={cn(
-                  "flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-light uppercase tracking-widest transition-all",
+                  "flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[15px] font-light uppercase tracking-widest transition-all",
                   showTeleprompter ? 'bg-va-black text-white border-va-black' : 'bg-transparent text-va-black/30 border-va-black/10 hover:border-va-black/30'
                 )}
               >
@@ -226,7 +226,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
                 onChange={(e) => setScrollSpeed(parseInt(e.target.value))}
                 className="w-16 accent-primary"
               />
-              <TextInstrument className="text-[12px] font-light text-white tracking-widest ">
+              <TextInstrument className="text-[15px] font-light text-white tracking-widest ">
                 <VoiceglotText translationKey="academy.recorder.tempo" defaultText="Tempo" />
               </TextInstrument>
             </ContainerInstrument>
@@ -234,7 +234,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
         ) : (
           <>
             {!audioBlob && !isRecording && (
-              <TextInstrument className="text-va-black/10 font-light tracking-[0.2em] text-[12px] ">
+              <TextInstrument className="text-va-black/10 font-light tracking-[0.2em] text-[15px] ">
                 <VoiceglotText translationKey="academy.recorder.input_ready" defaultText="Microphone Input Ready" />
               </TextInstrument>
             )}
@@ -282,7 +282,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
               data-voices-sonic-dna="click-premium"
             >
               <CheckCircle2 strokeWidth={1.5} size={20} /> 
-              <TextInstrument className="font-light tracking-widest text-[13px] ">
+              <TextInstrument className="font-light tracking-widest text-[15px] ">
                 <VoiceglotText translationKey="academy.recorder.submit" defaultText="INLEVEREN VOOR FEEDBACK" />
               </TextInstrument>
             </ButtonInstrument>

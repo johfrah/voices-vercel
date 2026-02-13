@@ -85,9 +85,9 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       <ContainerInstrument className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <ButtonInstrument 
           onClick={() => setShowInterestForm(false)}
-          className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-va-black transition-colors flex items-center gap-2 p-0 bg-transparent "
+          className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-va-black transition-colors flex items-center gap-2 p-0 bg-transparent "
         >
-          <Image src="/assets/common/branding/icons/BACK.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 
+          <Image strokeWidth={1.5} src="/assets/common/branding/icons/BACK.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} / /> 
           <VoiceglotText translationKey="common.back_to_overview" defaultText="Terug naar overzicht" />
         </ButtonInstrument>
         <ContainerInstrument className="p-8 bg-va-off-white rounded-[20px] border border-va-black/5">
@@ -106,7 +106,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
               placeholder={t('common.placeholder.email', 'Jouw e-mailadres')} 
               className="w-full p-4 !rounded-[10px] border border-va-black/10 text-[15px] outline-none transition-all"
             />
-            <ButtonInstrument className="w-full py-4 bg-va-black text-white rounded-[10px] font-light tracking-widest text-[13px] hover:bg-primary transition-all ">
+            <ButtonInstrument className="w-full py-4 bg-va-black text-white rounded-[10px] font-light tracking-widest text-[15px] hover:bg-primary transition-all ">
               <VoiceglotText translationKey="common.send" defaultText="Verzenden" />
             </ButtonInstrument>
           </form>
@@ -137,7 +137,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
               placeholder={t('studio.booking.search_voice', "Zoek een stem (bijv. 'johfra')...")}
               className="w-full bg-va-off-white border border-va-black/5 rounded-[20px] py-4 pl-12 pr-4 text-[15px] font-light focus:ring-2 focus:ring-primary/20 outline-none transition-all group-hover:border-va-black/10"
             />
-            <Image src="/assets/common/branding/icons/SEARCH.svg" width={16} height={16} alt="" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/SEARCH.svg" width={16} height={16} alt="" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
             {isSearching && (
               <ContainerInstrument className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></ContainerInstrument>
             )}
@@ -146,7 +146,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
         <AnimatePresence>
           {foundVoices.length > 0 && (
             <ContainerInstrument className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
-              <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 px-2 ">
+              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 px-2 ">
                 <VoiceglotText translationKey="studio.booking.found_voices" defaultText="Gevonden Stemmen" />
               </TextInstrument>
               {foundVoices.map((voice) => (
@@ -166,11 +166,11 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       {/* DATE SELECTOR */}
       <ContainerInstrument className="space-y-4">
         <ContainerInstrument className="flex items-center justify-between">
-          <HeadingInstrument level={4} className="text-[13px] font-light tracking-widest text-va-black/40 ">
+          <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 ">
             <VoiceglotText translationKey="studio.booking.available_dates" defaultText="Beschikbare Data" />
           </HeadingInstrument>
-          <TextInstrument className="text-[13px] font-light text-primary tracking-widest flex items-center gap-1 ">
-            <Image src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /> 
+          <TextInstrument className="text-[15px] font-light text-primary tracking-widest flex items-center gap-1 ">
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / /> 
             <VoiceglotText translationKey="studio.booking.limited_spots" defaultText="Slechts enkele plaatsen" />
           </TextInstrument>
         </ContainerInstrument>
@@ -199,12 +199,12 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                   "w-10 h-10 rounded-[10px] flex flex-col items-center justify-center transition-colors",
                   selectedDateIndex === index ? "bg-white/10" : "bg-va-black/5"
                 )}>
-                  <Image src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className={selectedDateIndex === index ? "brightness-0 invert" : ""} style={selectedDateIndex !== index ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 } : {}} />
+                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className={selectedDateIndex === index ? "brightness-0 invert" : ""} style={selectedDateIndex !== index ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 } : {}} / />
                 </ContainerInstrument>
                 <ContainerInstrument className="text-left">
                   <TextInstrument className="text-[15px] font-light tracking-tight">{date.date_raw}</TextInstrument>
-                  <TextInstrument className="text-[12px] font-light opacity-40 tracking-widest flex items-center gap-2 mt-0.5 ">
-                    <Image src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> {date.location}
+                  <TextInstrument className="text-[15px] font-light opacity-40 tracking-widest flex items-center gap-2 mt-0.5 ">
+                    <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} / /> {date.location}
                   </TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -214,12 +214,12 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
             </ButtonInstrument>
           )) : (
             <ContainerInstrument className="p-8 rounded-[20px] bg-va-off-white border border-dashed border-va-black/10 text-center">
-              <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 ">
+              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 ">
                 <VoiceglotText translationKey="studio.booking.no_dates" defaultText="Geen data gepland" />
               </TextInstrument>
               <ButtonInstrument 
                 onClick={() => setShowInterestForm(true)}
-                className="text-[13px] font-light tracking-widest text-primary mt-2 hover:underline p-0 bg-transparent "
+                className="text-[15px] font-light tracking-widest text-primary mt-2 hover:underline p-0 bg-transparent "
               >
                 <VoiceglotText translationKey="studio.booking.notify_me.cta" defaultText="Houd me op de hoogte" />
               </ButtonInstrument>
@@ -232,18 +232,18 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       <ContainerInstrument className="pt-8 border-t border-va-black/5 space-y-6">
         <ContainerInstrument className="flex justify-between items-end">
           <ContainerInstrument>
-            <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 mb-1 ">
+            <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 mb-1 ">
               <VoiceglotText translationKey="studio.booking.total_investment" defaultText="Totaal Investering" />
             </TextInstrument>
             <TextInstrument className="text-4xl font-light tracking-tighter">€{priceExclVatValue}</TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="text-right">
-            <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light text-emerald-500 tracking-widest mb-1 ">
-              <Image src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /> 
+            <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light text-emerald-500 tracking-widest mb-1 ">
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / /> 
               <VoiceglotText translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
             </ContainerInstrument>
-            <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light text-emerald-500 tracking-widest ">
-              <Image src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /> 
+            <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light text-emerald-500 tracking-widest ">
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / /> 
               <VoiceglotText translationKey="studio.booking.certificate" defaultText="Certificaat" />
             </ContainerInstrument>
           </ContainerInstrument>
@@ -253,7 +253,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           onClick={handleBooking}
           disabled={isBooking || dates.length === 0}
           className={cn(
-            "w-full py-6 rounded-[10px] font-light tracking-widest text-[13px] transition-all duration-500 shadow-aura flex items-center justify-center gap-3 group relative overflow-hidden",
+            "w-full py-6 rounded-[10px] font-light tracking-widest text-[15px] transition-all duration-500 shadow-aura flex items-center justify-center gap-3 group relative overflow-hidden",
             isBooking ? "bg-va-black/80 cursor-wait" : "bg-va-black text-white hover:bg-primary active:scale-95"
           )}
         >
@@ -265,12 +265,12 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           ) : (
             <>
               <VoiceglotText translationKey="studio.booking.cta" defaultText="Nu inschrijven" /> 
-              <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert group-hover:translate-x-2 transition-transform" />
+              <Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert group-hover:translate-x-2 transition-transform" / />
             </>
           )}
         </ButtonInstrument>
         
-        <TextInstrument className="text-[12px] text-center text-va-black/30 font-light tracking-widest ">
+        <TextInstrument className="text-[15px] text-center text-va-black/30 font-light tracking-widest ">
           <VoiceglotText translationKey="studio.booking.security_info" defaultText="Veilig betalen via Mollie • Directe bevestiging" />
         </TextInstrument>
       </ContainerInstrument>

@@ -184,11 +184,11 @@ export default function LiveVisitorCockpit() {
                         </ContainerInstrument>
                       </td>
                       <td className="p-6 text-right">
-                        <Link 
+                        <Link strokeWidth={1.5} 
                           href={`/admin/marketing/visitors/${v.visitorHash}`}
                           className="inline-flex items-center gap-2 bg-va-black text-white px-4 py-2 rounded-xl text-[15px] font-light tracking-widest hover:bg-primary transition-all group-hover:scale-105"
                         >
-                          <Eye size={14} />
+                          <Eye strokeWidth={1.5} size={14} / />
                           <TextInstrument as="span"><VoiceglotText translationKey="auto.page.details.3ec365" defaultText="Details" /></TextInstrument>
                         </Link>
                       </td>
@@ -206,23 +206,23 @@ export default function LiveVisitorCockpit() {
         <ContainerInstrument className="bg-va-black text-white p-10 rounded-[40px] relative overflow-hidden">
           <MousePointer2 className="text-primary mb-6" size={32} />
           <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText translationKey="auto.page.heatmap_insights.66123f" defaultText="Heatmap insights" /><TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText translationKey="auto.page.meest_geklikte_eleme.7483c3" defaultText="Meest geklikte elementen in de laatste 24 uur. Focus op de &apos;Tarieven&apos; knop bij Agency." /></TextInstrument></HeadingInstrument>
-          <Link href="#" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2">
+          <Link strokeWidth={1.5} href="#" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2">
             Bekijk Heatmap <ArrowRight strokeWidth={1.5} size={12} />
           </Link>
         </ContainerInstrument>
 
         <ContainerInstrument className="bg-white border border-black/5 p-10 rounded-[40px]">
-          <Users className="text-va-black/20 mb-6" size={32} />
+          <Users strokeWidth={1.5} className="text-va-black/20 mb-6" size={32} / />
           <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText translationKey="auto.page.customer_dna.d578eb" defaultText="Customer DNA" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText translationKey="auto.page.80__van_de_huidige_b.6971bf" defaultText="80% van de huidige bezoekers zijn &apos;Decision Makers&apos; binnen de Agency journey." /></TextInstrument></HeadingInstrument>
-          <Link href="/admin/users" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
+          <Link strokeWidth={1.5} href="/admin/users" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
             User DNA Dashboard <ArrowRight strokeWidth={1.5} size={12} />
           </Link>
         </ContainerInstrument>
 
         <ContainerInstrument className="bg-va-off-white border border-black/5 p-10 rounded-[40px]">
-          <Eye className="text-va-black/20 mb-6" size={32} />
+          <Eye strokeWidth={1.5} className="text-va-black/20 mb-6" size={32} / />
           <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText translationKey="auto.page.drop_off_radar.e0c6b4" defaultText="Drop-off radar" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText translationKey="auto.page.hoge_bounce_rate_op_.61ffa3" defaultText="Hoge bounce-rate op de &apos;Over Ons&apos; pagina. AI stelt voor om de CTA te verduidelijken." /></TextInstrument></HeadingInstrument>
-          <Link href="#" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
+          <Link strokeWidth={1.5} href="#" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
             Analyseer Flow <ArrowRight strokeWidth={1.5} size={12} />
           </Link>
         </ContainerInstrument>

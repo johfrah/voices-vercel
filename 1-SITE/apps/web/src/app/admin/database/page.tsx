@@ -49,7 +49,7 @@ export default function AdminDatabasePage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link strokeWidth={1.5} href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
@@ -60,7 +60,7 @@ export default function AdminDatabasePage() {
         
         <ContainerInstrument className="flex gap-4">
           <ContainerInstrument className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} />
+            <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} / />
             <input 
               type="text" 
               placeholder="Zoek tabel..." 
@@ -80,7 +80,7 @@ export default function AdminDatabasePage() {
         <BentoCard span="sm" className="bg-va-black text-white p-8 space-y-4">
           <ContainerInstrument className="flex items-center gap-3">
             <ContainerInstrument className="p-2 bg-primary/20 text-primary rounded-[20px]">
-              <Database size={20} />
+              <Database strokeWidth={1.5} size={20} / />
             </ContainerInstrument>
             <TextInstrument className="text-[15px] font-black tracking-widest opacity-40 text-white"><VoiceglotText translationKey="auto.page.status.ec53a8" defaultText="Status" /></TextInstrument>
           </ContainerInstrument>
@@ -101,7 +101,7 @@ export default function AdminDatabasePage() {
 
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
           <ContainerInstrument className="flex items-center gap-3 text-va-black/40">
-            <HardDrive size={20} />
+            <HardDrive strokeWidth={1.5} size={20} / />
             <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.storage.8c4aa5" defaultText="Storage" /></TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">1.2 GB</HeadingInstrument>
@@ -138,7 +138,7 @@ export default function AdminDatabasePage() {
               </ContainerInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="absolute -right-4 -bottom-4 text-va-black/[0.02] group-hover:text-primary/[0.05] transition-all">
-              <Database size={120} />
+              <Database strokeWidth={1.5} size={120} / />
             </ContainerInstrument>
           </BentoCard>
         ))}
@@ -147,7 +147,7 @@ export default function AdminDatabasePage() {
       {/* Warning */}
       <ContainerInstrument className="p-8 bg-red-500/5 border border-red-500/10 rounded-[32px] flex items-center gap-6">
         <ContainerInstrument className="w-16 h-16 bg-red-500 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-red-500/20">
-          <ShieldAlert size={32} />
+          <ShieldAlert strokeWidth={1.5} size={32} / />
         </ContainerInstrument>
         <ContainerInstrument className="space-y-1">
           <HeadingInstrument level={4} className="text-red-500 font-black tracking-tight"><VoiceglotText translationKey="auto.page.nuclear_warning.0b1dd5" defaultText="NUCLEAR WARNING" /><TextInstrument className="text-[15px] text-red-900/60 font-medium"><VoiceglotText translationKey="auto.page.wijzigingen_in_de_da.5827f8" defaultText="Wijzigingen in de database zijn onomkeerbaar. Gebruik deze tool uitsluitend voor onderhoud en debugging. Maak altijd een backup via de `scripts/maintenance/backup.sh` voordat je destructieve acties uitvoert." /></TextInstrument></HeadingInstrument>

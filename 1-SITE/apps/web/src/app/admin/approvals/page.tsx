@@ -72,7 +72,7 @@ export default function AdminApprovalsPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link strokeWidth={1.5} href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
@@ -115,7 +115,7 @@ export default function AdminApprovalsPage() {
                   <ContainerInstrument className="space-y-2">
                     {item.isValueSensitive && (
                       <ContainerInstrument className="flex items-center gap-2 p-2 bg-red-500/5 border border-red-500/10 rounded-[20px]">
-                        <ShieldAlert size={12} className="text-red-500" />
+                        <ShieldAlert strokeWidth={1.5} size={12} className="text-red-500" / />
                         <TextInstrument className="text-[15px] font-black text-red-500 tracking-widest"><VoiceglotText translationKey="auto.page.waarde_alarm__kortin.381129" defaultText="Waarde-Alarm (Korting)" /></TextInstrument>
                       </ContainerInstrument>
                     )}

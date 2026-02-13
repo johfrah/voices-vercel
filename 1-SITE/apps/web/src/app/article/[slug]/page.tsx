@@ -38,7 +38,7 @@ async function ArticleContent({ slug }: { slug: string }) {
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       {/* Header / Breadcrumbs */}
       <SectionInstrument className="mb-12 flex items-center justify-between">
-        <Link 
+        <Link strokeWidth={1.5} 
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all "
         >
@@ -47,10 +47,10 @@ async function ArticleContent({ slug }: { slug: string }) {
         </Link>
         <ContainerInstrument className="flex gap-4">
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Heart size={18} />
+            <Heart strokeWidth={1.5} size={18} / />
           </ButtonInstrument>
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Share2 size={18} />
+            <Share2 strokeWidth={1.5} size={18} / />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -85,7 +85,7 @@ async function ArticleContent({ slug }: { slug: string }) {
           <ContainerInstrument>
             <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-4 "><VoiceglotText translationKey="article.cta.title" defaultText="Klaar voor de volgende stap?" /><TextInstrument className="text-[15px] font-light opacity-80 mb-8 leading-relaxed"><VoiceglotText translationKey="article.cta.text" defaultText="Onze experts staan klaar om je te helpen met je project of je carrière." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <Link href="/agency" className="va-btn-pro !bg-white !text-va-black w-full text-center !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText translationKey="article.cta.button" defaultText="Ontdek de Mogelijkheden" /></Link>
+          <Link strokeWidth={1.5} href="/agency" className="va-btn-pro !bg-white !text-va-black w-full text-center !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText translationKey="article.cta.button" defaultText="Ontdek de Mogelijkheden" /></Link>
         </BentoCard>
       </BentoGrid>
 

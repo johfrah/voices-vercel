@@ -11,7 +11,7 @@ export default function SettingsPage() {
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       <SectionInstrument className="mb-16">
-        <Link 
+        <Link strokeWidth={1.5} 
           href="/account" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors mb-8"
         >
@@ -20,7 +20,7 @@ export default function SettingsPage() {
         </Link>
         <ContainerInstrument className="space-y-4">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest border border-primary/10">
-            <Settings size={12} fill="currentColor" /> 
+            <Settings strokeWidth={1.5} size={12} fill="currentColor" / /> 
             <VoiceglotText translationKey="account.settings.badge" defaultText="Account Instellingen" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter"><VoiceglotText translationKey="account.settings.title_part1" defaultText="Jouw " /><TextInstrument as="span" className="text-primary font-light"><VoiceglotText translationKey="account.settings.title_part2" defaultText="Profiel" /></TextInstrument></HeadingInstrument>

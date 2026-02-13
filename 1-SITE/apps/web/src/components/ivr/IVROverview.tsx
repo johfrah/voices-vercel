@@ -54,7 +54,7 @@ export const IVROverview: React.FC = () => {
           </div>
         </div>
         <button className="va-btn-pro flex items-center gap-2" data-voices-sonic-dna="click-premium">
-          <Save size={16} /> <VoiceglotText translationKey="common.save" defaultText="OPSLAAN" />
+          <Save strokeWidth={1.5} size={16} / /> <VoiceglotText translationKey="common.save" defaultText="OPSLAAN" />
         </button>
       </div>
 
@@ -105,8 +105,8 @@ export const IVROverview: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button className="p-2 hover:text-primary transition-colors"><Play size={18} /></button>
-              <button onClick={() => removeStep(step.id)} className="p-2 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
+              <button className="p-2 hover:text-primary transition-colors"><Play strokeWidth={1.5} size={18} / /></button>
+              <button onClick={() => removeStep(step.id)} className="p-2 hover:text-red-500 transition-colors"><Trash2 strokeWidth={1.5} size={18} / /></button>
             </div>
           </div>
         ))}
@@ -123,7 +123,7 @@ export const IVROverview: React.FC = () => {
       <div className="mt-12 pt-12 border-t border-black/5 grid grid-cols-2 gap-8">
         <div className="bg-va-off-white rounded-[32px] p-6 border-none shadow-none">
           <div className="flex items-center gap-3 mb-4 text-black/40">
-            <Music size={18} />
+            <Music strokeWidth={1.5} size={18} / />
             <span className="text-[15px] font-light tracking-widest">
               <VoiceglotText translationKey="ivr.configurator.hold_music" defaultText="Wachtmuziek" />
             </span>

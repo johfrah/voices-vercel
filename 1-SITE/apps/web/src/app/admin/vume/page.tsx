@@ -141,10 +141,10 @@ export default function VumeAdminPage() {
                   </ContainerInstrument>
                   <ContainerInstrument>
                     <TextInstrument className="font-bold text-[15px]">{t.name}</TextInstrument>
-                    <TextInstrument className="text-[13px] opacity-40 tracking-widest font-light">{t.journey}</TextInstrument>
+                    <TextInstrument className="text-[15px] opacity-40 tracking-widest font-light">{t.journey}</TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
-                <TextInstrument className="text-[14px] text-va-black/60 leading-relaxed font-light">{t.description}</TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/60 leading-relaxed font-light">{t.description}</TextInstrument>
               </ButtonInstrument>
             ))}
           </ContainerInstrument>
@@ -158,10 +158,10 @@ export default function VumeAdminPage() {
                   <ContainerInstrument className="w-3 h-3 rounded-full bg-yellow-400/20" />
                   <ContainerInstrument className="w-3 h-3 rounded-full bg-green-400/20" />
                 </ContainerInstrument>
-                <TextInstrument className="text-[13px] font-mono text-va-black/40 ml-4">Subject: {selectedTemplate.previewSubject}</TextInstrument>
+                <TextInstrument className="text-[15px] font-mono text-va-black/40 ml-4">Subject: {selectedTemplate.previewSubject}</TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex gap-2">
-                <ButtonInstrument className="p-2 rounded-lg hover:bg-white transition-all text-va-black/40 hover:text-va-black"><Eye size={16} /></ButtonInstrument>
+                <ButtonInstrument className="p-2 rounded-lg hover:bg-white transition-all text-va-black/40 hover:text-va-black"><Eye strokeWidth={1.5} size={16} / /></ButtonInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             
@@ -212,11 +212,11 @@ export default function VumeAdminPage() {
               <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-6 ">IAP Context</HeadingInstrument>
               <ContainerInstrument className="space-y-4">
                 <ContainerInstrument className="p-4 bg-va-off-white rounded-xl space-y-1">
-                  <TextInstrument className="text-[12px] tracking-widest text-va-black/30 font-light">Journey</TextInstrument>
+                  <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light">Journey</TextInstrument>
                   <TextInstrument className="font-bold text-[15px] capitalize">{selectedTemplate.journey}</TextInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="p-4 bg-va-off-white rounded-xl space-y-1">
-                  <TextInstrument className="text-[12px] tracking-widest text-va-black/30 font-light">Persona</TextInstrument>
+                  <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light">Persona</TextInstrument>
                   <TextInstrument className="font-bold text-[15px]">Professional Voice-over</TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>

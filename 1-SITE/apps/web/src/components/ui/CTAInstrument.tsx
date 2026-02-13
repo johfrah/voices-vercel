@@ -37,8 +37,8 @@ export const CTAInstrument: React.FC = () => {
         <HeadingInstrument level={2} className="text-6xl md:text-8xl font-light tracking-tighter leading-none"><VoiceglotText translationKey="home.cta.title_part1" defaultText="Jouw verhaal verdient " /><br /><TextInstrument as="span" className="text-white font-light italic"><VoiceglotText translationKey="home.cta.title_highlight" defaultText="de beste" /></TextInstrument><VoiceglotText translationKey="home.cta.title_part2" defaultText=" stem." /></HeadingInstrument>
         <TextInstrument className="text-xl text-white/40 max-w-2xl mx-auto font-medium"><VoiceglotText translationKey="home.cta.subtitle" defaultText="Sluit je aan bij honderden bedrijven die hun merk versterken met Voices.be." /></TextInstrument>
         <ContainerInstrument className="flex justify-center gap-6 pt-4">
-          <Link href="/agency" className="va-btn-pro !px-12 !py-6 text-lg !bg-primary"><VoiceglotText translationKey="home.cta.primary" defaultText="Vind jouw stem" /></Link>
-          <Link href="/contact" className="px-12 py-6 rounded-va-lg font-medium tracking-widest text-[15px] border-2 border-white/10 hover:border-primary transition-all bg-white/5 backdrop-blur-sm"><VoiceglotText translationKey="home.cta.secondary" defaultText="Neem contact op" /></Link>
+          <Link strokeWidth={1.5} href="/agency" className="va-btn-pro !px-12 !py-6 text-lg !bg-primary"><VoiceglotText translationKey="home.cta.primary" defaultText="Vind jouw stem" /></Link>
+          <Link strokeWidth={1.5} href="/contact" className="px-12 py-6 rounded-va-lg font-medium tracking-widest text-[15px] border-2 border-white/10 hover:border-primary transition-all bg-white/5 backdrop-blur-sm"><VoiceglotText translationKey="home.cta.secondary" defaultText="Neem contact op" /></Link>
         </ContainerInstrument>
       </ContainerInstrument>
       <ContainerInstrument className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">

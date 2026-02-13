@@ -55,7 +55,7 @@ export default function Error({
         <p className="text-red-400 font-mono text-[15px] mt-2">Digest: {error.digest || 'no-digest'}</p>
       </ContainerInstrument>
       <ContainerInstrument className="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center">
-        <AlertCircle size={40} />
+        <AlertCircle strokeWidth={1.5} size={40} / />
       </ContainerInstrument>
 
       <ContainerInstrument className="text-center space-y-2">

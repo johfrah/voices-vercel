@@ -48,7 +48,7 @@ export default function AcademyRecorderPage() {
         <ContainerInstrument className="space-y-8">
           <BentoCard span="sm" className="bg-white p-8 shadow-aura border-black/5 flex flex-col items-center justify-center text-center">
             <ContainerInstrument className="w-24 h-24 rounded-full bg-va-off-white flex items-center justify-center mb-8 group hover:bg-primary transition-all cursor-pointer">
-              <Mic size={40} className="text-va-black group-hover:text-white transition-all" />
+              <Mic strokeWidth={1.5} size={40} className="text-va-black group-hover:text-white transition-all" / />
             </ContainerInstrument>
             <HeadingInstrument level={4} className="text-xl font-black tracking-tight mb-2"><VoiceglotText translationKey="academy.recorder.start_opname" defaultText="Start Opname" /><TextInstrument className="text-va-black/40 text-[15px] font-medium mb-8"><VoiceglotText translationKey="academy.recorder.start_hint" defaultText="Klik om te beginnen met inspreken." /></TextInstrument></HeadingInstrument>
             

@@ -34,7 +34,7 @@ export default function PrivacyPage() {
         <ContainerInstrument className="bg-white shadow-aura rounded-[40px] p-12 space-y-12">
           <section className="space-y-4">
             <ContainerInstrument className="flex items-center gap-3 text-primary mb-4">
-              <Eye size={20} />
+              <Eye strokeWidth={1.5} size={20} / />
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.welke_gegevens_verza.3f2ccd" defaultText="Welke gegevens verzamelen we?" /></HeadingInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-va-black/60 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.we_verzamelen_alleen.f7b480" defaultText="We verzamelen alleen de gegevens die nodig zijn om onze diensten te leveren. Dit omvat je naam, e-mailadres, bedrijfsgegevens en de informatie die je verstrekt in briefings voor stemacteurs." /></TextInstrument>
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
 
           <section className="space-y-4">
             <ContainerInstrument className="flex items-center gap-3 text-primary mb-4">
-              <FileText size={20} />
+              <FileText strokeWidth={1.5} size={20} / />
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.jouw_rechten.73346d" defaultText="Jouw Rechten" /></HeadingInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-va-black/60 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.je_hebt_op_elk_momen.4459b6" defaultText="Je hebt op elk moment het recht om je gegevens in te zien, te corrigeren of te laten verwijderen. Dit kun je eenvoudig doen via je accountinstellingen of door contact met ons op te nemen." /></TextInstrument>

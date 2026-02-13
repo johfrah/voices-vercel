@@ -30,7 +30,7 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
       <nav className="va-artist-nav">
         <div className="va-container va-artist-nav-content">
           <div className="va-artist-nav-left">
-            <Link href="/agency" className="va-artist-back-link">
+            <Link strokeWidth={1.5} href="/agency" className="va-artist-back-link">
               <div className="va-artist-back-icon">
                 <ArrowLeft strokeWidth={1.5} size={18} />
               </div>
@@ -80,12 +80,12 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
           
           <div className="va-artist-hero-visual">
             <div className="va-artist-image-wrapper">
-              <Image 
+              <Image strokeWidth={1.5} 
                 src={image} 
                 alt={name} 
                 fill
                 className="va-artist-image"
-              />
+              / />
               <div className="va-artist-image-overlay"></div>
             </div>
             <div className="va-artist-aura-primary"></div>

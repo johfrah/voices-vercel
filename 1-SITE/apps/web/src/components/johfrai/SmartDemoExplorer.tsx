@@ -171,7 +171,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
                         playingId === demo.id ? "bg-primary text-white scale-110" : "bg-va-black text-white group-hover:scale-105"
                       )}
                     >
-                      {playingId === demo.id ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
+                      {playingId === demo.id ? <Pause strokeWidth={1.5} size={20} fill="currentColor" / /> : <Play strokeWidth={1.5} size={20} fill="currentColor" className="ml-1" / />}
                     </button>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-black text-[15px] truncate">{demo.title}</h4>
@@ -185,7 +185,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
                         className="p-3 rounded-xl bg-va-black/5 text-va-black/40 hover:bg-primary hover:text-white transition-all group/btn"
                         title={isAdmin ? "Adopteer Script (Admin)" : "Gebruik dit script"}
                       >
-                        <Copy size={16} className="group-hover/btn:scale-110 transition-transform" />
+                        <Copy strokeWidth={1.5} size={16} className="group-hover/btn:scale-110 transition-transform" / />
                       </button>
                     )}
                   </div>

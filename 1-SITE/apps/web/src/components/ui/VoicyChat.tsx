@@ -333,14 +333,14 @@ export const VoicyChat: React.FC = () => {
               >
                 {chip.src ? (
                   <ContainerInstrument plain className="w-5 h-5 flex items-center justify-center">
-                    <Image 
+                    <Image strokeWidth={1.5} 
                       src={chip.src} 
                       alt={chip.label} 
                       width={20} 
                       height={20} 
                       className="w-full h-full group-hover:invert group-hover:brightness-0 transition-all"
                       style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                    />
+                    / />
                   </ContainerInstrument>
                 ) : (
                   <ContainerInstrument plain className="w-5 h-5 flex items-center justify-center">
@@ -368,12 +368,12 @@ export const VoicyChat: React.FC = () => {
       >
         {isOpen ? <X strokeWidth={1.5} size={28} /> : (
           <ContainerInstrument plain className="relative w-full h-full rounded-full overflow-hidden">
-            <Image 
+            <Image strokeWidth={1.5} 
               src={VOICES_CONFIG.assets.placeholders.voicy} 
               alt="Voicy" 
               fill
               className="object-contain p-1"
-            />
+            / />
           </ContainerInstrument>
         )}
         {!isOpen && (
@@ -404,7 +404,7 @@ export const VoicyChat: React.FC = () => {
               onClick={() => setIsFullMode(!isFullMode)}
               className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/60 hover:text-white"
             >
-              {isFullMode ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+              {isFullMode ? <Minimize2 strokeWidth={1.5} size={18} / /> : <Maximize2 strokeWidth={1.5} size={18} / />}
             </ButtonInstrument>
           </ContainerInstrument>
 
@@ -624,7 +624,7 @@ export const VoicyChat: React.FC = () => {
                       href="/checkout"
                       className="w-full py-4 bg-va-black text-white rounded-2xl text-[15px] font-light tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2 shadow-lg"
                     >
-                      Direct afrekenen <ChevronRight size={14} />
+                      Direct afrekenen <ChevronRight strokeWidth={1.5} size={14} / />
                     </ButtonInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -778,14 +778,14 @@ export const VoicyChat: React.FC = () => {
                 >
                   <ContainerInstrument plain className="flex items-center gap-4">
                     <ContainerInstrument plain className={`w-10 h-10 rounded-full flex items-center justify-center ${isEditMode ? 'bg-white/20' : 'bg-va-black/5'}`}>
-                      <Image 
+                      <Image strokeWidth={1.5} 
                         src="/assets/common/branding/icons/MENU.svg" 
                         alt="Edit Mode" 
                         width={20} 
                         height={20} 
                         className={isEditMode ? 'brightness-0 invert' : ''}
                         style={!isEditMode ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' } : {}}
-                      />
+                      / />
                     </ContainerInstrument>
                     <ContainerInstrument plain className="text-left">
                       <TextInstrument className="text-[15px] font-light tracking-tight"><VoiceglotText translationKey="admin.edit_mode.title" defaultText="Edit Mode" /></TextInstrument>
@@ -806,14 +806,14 @@ export const VoicyChat: React.FC = () => {
                     className="p-4 rounded-2xl bg-va-off-white hover:bg-black/5 transition-all text-left space-y-1"
                   >
                     <ContainerInstrument plain className="w-4 h-4 mb-1">
-                      <Image 
+                      <Image strokeWidth={1.5} 
                         src="/assets/common/branding/icons/INFO.svg" 
                         alt="Dashboard" 
                         width={16} 
                         height={16} 
                         className="opacity-40"
                         style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                      />
+                      / />
                     </ContainerInstrument>
                     <TextInstrument className="text-[15px] font-light tracking-widest block"><VoiceglotText translationKey="nav.dashboard" defaultText="Dashboard" /></TextInstrument>
                   </ButtonInstrument>
@@ -823,14 +823,14 @@ export const VoicyChat: React.FC = () => {
                     className="p-4 rounded-2xl bg-va-off-white hover:bg-black/5 transition-all text-left space-y-1"
                   >
                     <ContainerInstrument plain className="w-4 h-4 mb-1">
-                      <Image 
+                      <Image strokeWidth={1.5} 
                         src="/assets/common/branding/icons/ACCOUNT.svg" 
                         alt="Mailbox" 
                         width={16} 
                         height={16} 
                         className="opacity-40"
                         style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                      />
+                      / />
                     </ContainerInstrument>
                     <TextInstrument className="text-[15px] font-light tracking-widest block"><VoiceglotText translationKey="nav.mailbox" defaultText="Mailbox" /></TextInstrument>
                   </ButtonInstrument>

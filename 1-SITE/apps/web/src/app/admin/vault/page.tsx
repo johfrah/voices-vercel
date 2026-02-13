@@ -47,11 +47,11 @@ export default function VaultBrowserPage() {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'script': return <FileText size={16} className="text-blue-500" />;
+      case 'script': return <FileText strokeWidth={1.5} size={16} className="text-blue-500" / />;
       case 'briefing': return <Shield strokeWidth={1.5} size={16} className="text-orange-500" />;
-      case 'demo_inbound': return <Mic size={16} className="text-purple-500" />;
-      case 'example_video': return <Video size={16} className="text-red-500" />;
-      default: return <FileText size={16} className="text-va-black/20" />;
+      case 'demo_inbound': return <Mic strokeWidth={1.5} size={16} className="text-purple-500" / />;
+      case 'example_video': return <Video strokeWidth={1.5} size={16} className="text-red-500" / />;
+      default: return <FileText strokeWidth={1.5} size={16} className="text-va-black/20" / />;
     }
   };
 
@@ -82,7 +82,7 @@ export default function VaultBrowserPage() {
           {/* Filters Bar */}
           <ContainerInstrument className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-white p-4 rounded-[20px] border border-black/5 shadow-sm">
             <ContainerInstrument className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} />
+              <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} / />
               <InputInstrument 
                 placeholder="Zoek op bestandsnaam..." 
                 className="pl-12 py-3 bg-va-off-white border-none rounded-[10px] text-[15px] font-light"
@@ -137,7 +137,7 @@ export default function VaultBrowserPage() {
                     </ContainerInstrument>
                     <ContainerInstrument className="flex gap-2">
                       <ButtonInstrument className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/20 hover:text-va-black">
-                        <Download size={16} />
+                        <Download strokeWidth={1.5} size={16} / />
                       </ButtonInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>

@@ -67,7 +67,7 @@ export default function StudioReviewsPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link strokeWidth={1.5} href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
@@ -153,7 +153,7 @@ export default function StudioReviewsPage() {
             <ContainerInstrument className="mt-8 flex gap-2">
               {review.status === 'pending' && (
                 <ButtonInstrument className="va-btn-pro !py-3 flex-1">
-                  <CheckCircle size={14} /> <VoiceglotText translationKey="admin.reviews.action.approve" defaultText="Goedkeuren" />
+                  <CheckCircle strokeWidth={1.5} size={14} / /> <VoiceglotText translationKey="admin.reviews.action.approve" defaultText="Goedkeuren" />
                 </ButtonInstrument>
               )}
               <ButtonInstrument className="va-btn-secondary !py-3 !px-4 !bg-va-off-white !text-va-black/20 hover:!text-red-500">

@@ -66,7 +66,7 @@ export default function StudioDashboardPage() {
           {/* 🎙️ LAATSTE OPNAME BENTO */}
           <BentoCard span="lg" className="hblue p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[400px]">
             <ContainerInstrument>
-              <Mic className="text-white/20 mb-8" size={48} />
+              <Mic strokeWidth={1.5} className="text-white/20 mb-8" size={48} / />
               <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter mb-4">
                 <VoiceglotText translationKey="studio.dashboard.latest_audio" defaultText="Jouw Laatste Opnames" />
                 <TextInstrument className="text-white/60 font-medium max-w-sm">
@@ -86,7 +86,7 @@ export default function StudioDashboardPage() {
                 >
                   <ContainerInstrument className="flex items-center gap-4">
                     <ContainerInstrument className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                      <Download size={18} />
+                      <Download strokeWidth={1.5} size={18} / />
                     </ContainerInstrument>
                     <ContainerInstrument>
                       <TextInstrument className="text-[15px] font-black">{item.name}</TextInstrument>
@@ -117,7 +117,7 @@ export default function StudioDashboardPage() {
                     <ContainerInstrument>
                       <TextInstrument className="text-[15px] font-black leading-tight mb-1">{reg.name}</TextInstrument>
                       <ContainerInstrument className="flex items-center gap-2 text-va-black/30">
-                        <Clock size={12} />
+                        <Clock strokeWidth={1.5} size={12} / />
                         <TextInstrument className="text-[15px] font-medium tracking-widest">10:00 - 17:00</TextInstrument>
                       </ContainerInstrument>
                     </ContainerInstrument>
@@ -153,10 +153,10 @@ export default function StudioDashboardPage() {
                 <Star strokeWidth={1.5} className="text-primary" size={24} fill="currentColor" />
               </ContainerInstrument>
               <ContainerInstrument className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center border border-white/5 opacity-30">
-                <Mic size={24} />
+                <Mic strokeWidth={1.5} size={24} / />
               </ContainerInstrument>
               <ContainerInstrument className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center border border-white/5 opacity-30">
-                <Play size={24} />
+                <Play strokeWidth={1.5} size={24} / />
               </ContainerInstrument>
             </ContainerInstrument>
 

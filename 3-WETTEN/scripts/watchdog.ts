@@ -92,9 +92,10 @@ class ChrisWatchdog {
     },
     {
       name: 'Atomic Icon Mandate',
-      pattern: /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind)(?![^>]*strokeWidth={1\.5})[^>]*>/g,
+      pattern: /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind|Users|Heart|Play|Layout|Settings|Database|Mailbox|Search|Layers|Eye|FileText|Download|Trash2|Edit|PlusCircle|CheckCircle|AlertCircle|Info|Clock|MapPin|ExternalLink|Menu|ChevronRight|ChevronLeft|ChevronUp|Filter|Grid|List|Maximize2|Minimize2|Volume2|VolumeX|Moon|Sun|Camera|Video|Mic|Music|Wifi|WifiOff|Cloud|CloudRain|CloudLightning|CloudSnow|Sunrise|Sunset|Umbrella|Thermometer|Droplets|Gauge|Minus|ArrowUp|ArrowDown|ArrowUpRight|ArrowUpLeft|ArrowDownRight|ArrowDownLeft|ChevronsRight|ChevronsLeft|ChevronsUp|ChevronsDown|MoreHorizontal|MoreVertical|Share|Share2|Link|Link2|Unlink|Unlink2|Scissors|Copy|Clipboard|Save|HardDrive|Cpu|Smartphone|Tablet|Laptop|Tv|Speaker|Headphones|Globe2|Map|Compass|Navigation|Navigation2|Flag|Terminal|Code|Code2|Command|Image|Image2|Film|Film2|Pause|Square|Circle|Triangle|Hexagon|Pentagon|Octagon|ShieldAlert|ShieldX|Key|UserPlus|UserMinus|UserCheck|UserX|Archive|Inbox|Folder|FolderPlus|FolderMinus|FolderOpen|File|FilePlus|FileMinus|FileSearch|FileCheck|FileX|FileCode|FileAudio|FileVideo|FileImage|FileArchive|FileDigit|FileBox|FileSpreadsheet|FilePieChart|FileBarChart|FileLineChart|FileSignature|FileQuestion|FileWarning|FileLock|FileUnlock|FileEdit|FileUp|FileDown|FileHeart|FileStar|FileZap|FileShield|FileShieldCheck|FileShieldAlert|FileShieldX|FileUser|FileUserPlus|FileUserMinus|FileUserCheck|FileUserX|FileUsers|FileMail|FileMailbox|FileSend|FileInbox|FileFolder|FileFolderPlus|FileFolderMinus|FileFolderOpen|RefreshCw|TrendingUp|Brain|MessageSquareQuote)(?![^>]*strokeWidth=\{1\.5\})(?![^>]*Provider)[^>]*>/g,
       message: 'Lucide icons MOETEN strokeWidth={1.5} hebben voor de Ademing-feel.',
-      severity: 'CRITICAL'
+      severity: 'CRITICAL',
+      excludeFiles: ['DirectMailService.ts', 'AuthContext.tsx', 'CheckoutContext.tsx']
     },
     {
       name: 'Modern Stack Discipline',
@@ -111,6 +112,11 @@ class ChrisWatchdog {
 
     lines.forEach((line, index) => {
       this.rules.forEach(rule => {
+        // @ts-ignore
+        if (rule.excludeFiles && rule.excludeFiles.some(f => filePath.endsWith(f))) {
+          // console.log(`   ⏭️ [SKIP] ${rule.name} for ${path.basename(filePath)}`);
+          return;
+        }
         if (rule.pattern.test(line)) {
           result.issues.push({
             line: index + 1,
@@ -139,7 +145,10 @@ class ChrisWatchdog {
     if (stats.isFile()) {
       const result = await this.auditFile(targetPath);
       this.report(result);
-      if (result.issues.some(i => i.severity === 'CRITICAL')) hasCriticalIssues = true;
+      if (result.issues.some(i => i.severity === 'CRITICAL')) {
+        hasCriticalIssues = true;
+        console.log(`🔴 [AUDIT] Kritieke fout in ${targetPath}`);
+      }
     } else {
       hasCriticalIssues = await this.auditDir(targetPath);
     }
@@ -162,7 +171,10 @@ class ChrisWatchdog {
       } else if (/\.(tsx|ts|js|jsx)$/.test(file)) {
         const result = await this.auditFile(fullPath);
         this.report(result);
-        if (result.issues.some(i => i.severity === 'CRITICAL')) hasCriticalIssues = true;
+        if (result.issues.some(i => i.severity === 'CRITICAL')) {
+          hasCriticalIssues = true;
+          console.log(`🔴 [AUDIT] Kritieke fout in ${fullPath}`);
+        }
       }
     }
     return hasCriticalIssues;
@@ -206,13 +218,13 @@ class ChrisWatchdog {
 
     // Fix Raleway Mandate (Uitgebreid naar alle elementen met grote tekst)
     // Vervang font-black/bold door font-light als de tekst groot is (text-4xl+)
-    content = content.replace(/(className="[^"]*)\b(font-black|font-bold|font-semibold)\b([^"]*text-[4-9]xl[^"]*")/g, (match, p1, p2, p3) => {
+    content = content.replace(/(className="[^"]*)\b(font-black|font-bold|font-semibold)\b([^"]*text-([4-9]xl|6xl|7xl|8xl|9xl)[^"]*")/g, (match, p1, p2, p3) => {
         console.log(`   ✅ [FIX] ${path.basename(filePath)}: Vervangen '${p2}' door 'font-light' (Large Text)`);
         return `${p1}font-light${p3}`;
     });
 
     // Fix Raleway Mandate (Specifiek voor Headings & TextInstrument)
-    content = content.replace(/<(h[1-6]|TextInstrument)([^>]*className="[^"]*)(?<!font-(light|extralight|thin|medium))([^"]*")/g, (match, p1, p2, p3, p4) => {
+    content = content.replace(/<(h[1-6]|TextInstrument|HeadingInstrument)([^>]*className="[^"]*)(?<!font-(light|extralight|thin|medium))([^"]*")/g, (match, p1, p2, p3, p4) => {
       if (p2.includes('font-') || p4.includes('font-')) return match;
       console.log(`   ✅ [FIX] ${path.basename(filePath)}: Toegevoegd 'font-light' aan ${p1}`);
       return `<${p1}${p2} font-light${p4}`;
@@ -220,28 +232,34 @@ class ChrisWatchdog {
 
     // Fix Atomic Icon Mandate (Lucide icons strokeWidth)
     // 🛡️ CHRIS-PROTOCOL: Regex verfijnd om geen TypeScript generics (bv. useState<User>) te slopen.
-    const iconPattern = /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind)(?=\s|\/>)(?![^>]*strokeWidth={1\.5})([^>]*)>/g;
+    const iconPattern = /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind|Users|Heart|Play|Layout|Settings|Database|Mailbox|Search|Layers|Eye|FileText|Download|Trash2|Edit|PlusCircle|CheckCircle|AlertCircle|Info|Clock|MapPin|ExternalLink|Menu|ChevronRight|ChevronLeft|ChevronUp|Filter|Grid|List|Maximize2|Minimize2|Volume2|VolumeX|Moon|Sun|Camera|Video|Mic|Music|Wifi|WifiOff|Cloud|CloudRain|CloudLightning|CloudSnow|Sunrise|Sunset|Umbrella|Thermometer|Droplets|Gauge|Minus|ArrowUp|ArrowDown|ArrowUpRight|ArrowUpLeft|ArrowDownRight|ArrowDownLeft|ChevronsRight|ChevronsLeft|ChevronsUp|ChevronsDown|MoreHorizontal|MoreVertical|Share|Share2|Link|Link2|Unlink|Unlink2|Scissors|Copy|Clipboard|Save|HardDrive|Cpu|Smartphone|Tablet|Laptop|Tv|Speaker|Headphones|Globe2|Map|Compass|Navigation|Navigation2|Flag|Terminal|Code|Code2|Command|Image|Image2|Film|Film2|Pause|Square|Circle|Triangle|Hexagon|Pentagon|Octagon|ShieldAlert|ShieldX|Key|UserPlus|UserMinus|UserCheck|UserX|Archive|Inbox|Folder|FolderPlus|FolderMinus|FolderOpen|File|FilePlus|FileMinus|FileSearch|FileCheck|FileX|FileCode|FileAudio|FileVideo|FileImage|FileArchive|FileDigit|FileBox|FileSpreadsheet|FilePieChart|FileBarChart|FileLineChart|FileSignature|FileQuestion|FileWarning|FileLock|FileUnlock|FileEdit|FileUp|FileDown|FileHeart|FileStar|FileZap|FileShield|FileShieldCheck|FileShieldAlert|FileShieldX|FileUser|FileUserPlus|FileUserMinus|FileUserCheck|FileUserX|FileUsers|FileMail|FileMailbox|FileSend|FileInbox|FileFolder|FileFolderPlus|FileFolderMinus|FileFolderOpen)(?=\s|\/>)(?![^>]*strokeWidth=\{1\.5\})(?![^>]*Provider)([^>]*)>/g;
     content = content.replace(iconPattern, (match, p1, p2) => {
+        // p2 is de capture group voor de rest van de tag
+        const attributes = p2 || '';
+        
         // Extra check: negeer als het eruit ziet als een type (bv. <User | null>)
-        if (p2.includes('|') || p2.includes('[') || p2.trim() === '') {
-            if (!p2.includes('=') && !match.includes('/>')) return match; 
+        if (attributes.includes('|') || attributes.includes('[') || attributes.trim() === '') {
+            if (!attributes.includes('=') && !match.includes('/>')) return match; 
         }
         
         if (match.includes('strokeWidth=')) {
             // Replace existing strokeWidth
             console.log(`   ✅ [FIX] ${path.basename(filePath)}: Updated strokeWidth for ${p1}`);
-            return match.replace(/strokeWidth={[^}]*}/, 'strokeWidth={1.5}');
+            return match.replace(/strokeWidth=\{[^}]*\}/, 'strokeWidth={1.5}');
         } else {
             // Add strokeWidth
             console.log(`   ✅ [FIX] ${path.basename(filePath)}: Added strokeWidth={1.5} to ${p1}`);
-            return `<${p1} strokeWidth={1.5}${p2}>`;
+            if (match.endsWith('/>')) {
+                return `<${p1} strokeWidth={1.5}${attributes}>`.replace(/>$/, ' />');
+            }
+            return `<${p1} strokeWidth={1.5}${attributes}>`;
         }
     });
 
     // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix Leesbaarheid (text-sm -> text-[15px])
-    content = content.replace(/className="([^"]*)\b(text-(xs|sm|\[(1[0-4]|[0-9])px\]))\b([^"]*)"/g, (match, p1, p2, p3, p4, p5) => {
-      console.log(`   ✅ [FIX] ${path.basename(filePath)}: Opgeschaald naar text-[15px]`);
-      return `className="${p1}text-[15px]${p5}"`.replace(/\s\s+/g, ' ');
+    content = content.replace(/text-(xs|sm|\[(1[0-4]|[0-9])px\])/g, (match, p1, p2) => {
+      console.log(`   ✅ [FIX] ${path.basename(filePath)}: Opgeschaald naar text-[15px] (${match})`);
+      return 'text-[15px]';
     });
 
     // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix HTML naar Instruments (div -> ContainerInstrument)

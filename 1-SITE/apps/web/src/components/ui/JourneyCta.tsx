@@ -58,7 +58,7 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
         <p className="text-white/70 text-[15px] font-light max-w-md">{config.text}</p>
       </div>
       
-      <Link 
+      <Link strokeWidth={1.5} 
         href={config.href}
         className="relative z-10 px-10 py-5 bg-white text-va-black rounded-[10px] font-light tracking-widest text-[15px] hover:scale-105 transition-all flex items-center gap-3 shadow-xl "
       >

@@ -66,7 +66,7 @@ export const JourneyFaq: React.FC<JourneyFaqProps> = ({ journey, limit = 3 }) =>
               className="w-full p-5 flex items-center justify-between text-left outline-none"
             >
               <span className="text-[15px] font-light text-va-black pr-8">{faq.questionNl}</span>
-              {openId === faq.id ? <ChevronUp size={16} className="text-primary shrink-0" /> : <ChevronDown strokeWidth={1.5} size={16} className="text-va-black/20 shrink-0" />}
+              {openId === faq.id ? <ChevronUp strokeWidth={1.5} size={16} className="text-primary shrink-0" / /> : <ChevronDown strokeWidth={1.5} size={16} className="text-va-black/20 shrink-0" />}
             </button>
             
             {openId === faq.id && (

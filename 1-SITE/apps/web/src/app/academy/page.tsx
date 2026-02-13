@@ -58,13 +58,13 @@ async function LessonGrid() {
               <TextInstrument className="text-va-black/40 group-hover:text-white/40 text-[15px] mb-8 font-light leading-relaxed">
                 {lesson.description}
               </TextInstrument>
-              <Link href={`/academy/lesson/${lesson.id}`} className="mt-auto flex justify-between items-end">
+              <Link strokeWidth={1.5} href={`/academy/lesson/${lesson.id}`} className="mt-auto flex justify-between items-end">
                 <ContainerInstrument>
-                  <TextInstrument className="text-[12px] text-va-black/40 group-hover:text-white/40 font-light tracking-widest mb-1 transition-colors "><VoiceglotText translationKey="academy.start_now" defaultText="Start nu" /></TextInstrument>
+                  <TextInstrument className="text-[15px] text-va-black/40 group-hover:text-white/40 font-light tracking-widest mb-1 transition-colors "><VoiceglotText translationKey="academy.start_now" defaultText="Start nu" /></TextInstrument>
                   <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors"><VoiceglotText translationKey="academy.view_lesson" defaultText="Bekijk les" /></TextInstrument>
                 </ContainerInstrument>
                 <ButtonInstrument className="!bg-va-black group-hover:!bg-white group-hover:!text-va-black !rounded-[10px] !px-6 transition-all">
-                  <Play size={16} fill="currentColor" />
+                  <Play strokeWidth={1.5} size={16} fill="currentColor" / />
                 </ButtonInstrument>
               </Link>
             </BentoCard>
@@ -93,20 +93,20 @@ async function LessonGrid() {
             data-voices-intent="start-learning"
           >
             <ContainerInstrument className="flex justify-between items-start mb-12">
-              <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[12px] font-light px-3 py-1 rounded-full tracking-widest transition-colors "><VoiceglotText translationKey="academy.badge" defaultText="Academy" /></ContainerInstrument>
-              <TextInstrument className="text-[12px] font-light text-va-black/30 group-hover:text-white/30 tracking-widest transition-colors "><VoiceglotText translationKey="academy.type" defaultText="Lessen" /></TextInstrument>
+              <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[15px] font-light px-3 py-1 rounded-full tracking-widest transition-colors "><VoiceglotText translationKey="academy.badge" defaultText="Academy" /></ContainerInstrument>
+              <TextInstrument className="text-[15px] font-light text-va-black/30 group-hover:text-white/30 tracking-widest transition-colors "><VoiceglotText translationKey="academy.type" defaultText="Lessen" /></TextInstrument>
             </ContainerInstrument>
 
             <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.9] mb-8 text-va-black group-hover:text-white transition-colors"><VoiceglotText translationKey={`academy.lesson.${lesson.id}.title`} defaultText={lesson.title} /></HeadingInstrument>
             <TextInstrument className="text-va-black/40 group-hover:text-white/40 text-[15px] mb-8 font-light leading-relaxed"><VoiceglotText translationKey={`academy.lesson.${lesson.id}.description`} defaultText={lesson.description || ""} /></TextInstrument>
 
-            <Link href={`/academy/lesson/${lesson.id}`} className="mt-auto flex justify-between items-end">
+            <Link strokeWidth={1.5} href={`/academy/lesson/${lesson.id}`} className="mt-auto flex justify-between items-end">
               <ContainerInstrument>
-                <TextInstrument className="text-[12px] text-va-black/40 group-hover:text-white/40 font-light tracking-widest mb-1 transition-colors "><VoiceglotText translationKey="academy.start_now" defaultText="Start nu" /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 group-hover:text-white/40 font-light tracking-widest mb-1 transition-colors "><VoiceglotText translationKey="academy.start_now" defaultText="Start nu" /></TextInstrument>
                 <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors"><VoiceglotText translationKey="academy.view_lesson" defaultText="Bekijk les" /></TextInstrument>
               </ContainerInstrument>
               <ButtonInstrument className="!bg-va-black group-hover:!bg-white group-hover:!text-va-black !rounded-[10px] !px-6 transition-all">
-                <Play size={16} fill="currentColor" />
+                <Play strokeWidth={1.5} size={16} fill="currentColor" / />
               </ButtonInstrument>
             </Link>
           </BentoCard>
@@ -149,7 +149,7 @@ async function AcademyReviews() {
               </TextInstrument>
               <ContainerInstrument className="mt-auto">
                 <TextInstrument className="font-light text-[15px] tracking-widest ">{review.name}</TextInstrument>
-                <TextInstrument className="text-[12px] text-va-black/20 font-light tracking-widest ">{review.date}</TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/20 font-light tracking-widest ">{review.date}</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           ))}
@@ -180,7 +180,7 @@ export default async function AcademyPage() {
 
       <SectionInstrument className="mb-16">
         <ContainerInstrument>
-          <ContainerInstrument className="inline-block bg-va-black text-white text-[12px] font-light px-3 py-1 rounded-full mb-6 tracking-widest "><VoiceglotText translationKey="academy.hero.badge" defaultText="Academy" /></ContainerInstrument>
+          <ContainerInstrument className="inline-block bg-va-black text-white text-[15px] font-light px-3 py-1 rounded-full mb-6 tracking-widest "><VoiceglotText translationKey="academy.hero.badge" defaultText="Academy" /></ContainerInstrument>
           <HeadingInstrument level={1} className="text-[8vw] md:text-[6vw] font-light tracking-tighter leading-[0.85] mb-8"><VoiceglotText 
               translationKey="page.academy.title" 
               defaultText={pageData?.title || "Ontwikkel je eigen stem."} 
@@ -241,7 +241,7 @@ export default async function AcademyPage() {
               </TextInstrument>
             </HeadingInstrument>
             <ContainerInstrument className="pt-8">
-              <Link 
+              <Link strokeWidth={1.5} 
                 href={`/checkout?journey=academy&price=149`} 
                 className="inline-block bg-white text-va-black px-16 py-6 text-xl rounded-[10px] font-light tracking-widest hover:scale-105 transition-transform shadow-xl"
               >

@@ -43,7 +43,7 @@ We maken de bestaande routes weer werkend binnen de headless omgeving.
 ## 💳 STAP 4: DE CHECKOUT JOURNEY (NUCLEAR GOLD)
 *   [ ] **Frictieloze Flow:** De 5-stappen checkout omzetten naar een Single Page App ervaring.
 *   [ ] **Real-time Pricing:** Live prijsberekening tijdens het typen van de briefing.
-*   [ ] **Apple Pay / Stripe:** Directe integratie zonder redirects.
+*   [ ] **Apple Pay / Mollie:** Directe integratie zonder redirects.
 
 ---
 

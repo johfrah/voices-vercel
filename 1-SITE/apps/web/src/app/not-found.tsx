@@ -77,12 +77,12 @@ export default function NotFound() {
             <ContainerInstrument className="prose prose-va max-w-none">
               <div dangerouslySetInnerHTML={{ __html: ghostContent.replace(/\n/g, '<br/>') }} />
             </ContainerInstrument>
-            <Link href="/agency" className="va-btn-pro mt-12 inline-block"><VoiceglotText translationKey="auto.not_found.bekijk_onze_stemmen.a6c827" defaultText="Bekijk onze stemmen" /></Link>
+            <Link strokeWidth={1.5} href="/agency" className="va-btn-pro mt-12 inline-block"><VoiceglotText translationKey="auto.not_found.bekijk_onze_stemmen.a6c827" defaultText="Bekijk onze stemmen" /></Link>
           </ContainerInstrument>
         ) : (
           <>
             <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10">
-              <Search size={12} /> <VoiceglotText translationKey="404.badge" defaultText="Error 404" />
+              <Search strokeWidth={1.5} size={12} / /> <VoiceglotText translationKey="404.badge" defaultText="Error 404" />
             </ContainerInstrument>
             
             <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-none"><VoiceglotText translationKey="404.title" defaultText="Spoorloos." /><TextInstrument className="text-va-black/40 font-medium text-lg max-w-md mx-auto leading-relaxed"><VoiceglotText 
@@ -92,7 +92,7 @@ export default function NotFound() {
 
             {healingStatus === 'voicy-offered' && (
               <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-bold tracking-widest animate-pulse">
-                <Heart size={12} /> <VoiceglotText translationKey="404.voicy_help" defaultText="Voicy helpt je verder →" />
+                <Heart strokeWidth={1.5} size={12} / /> <VoiceglotText translationKey="404.voicy_help" defaultText="Voicy helpt je verder →" />
               </ContainerInstrument>
             )}
 
@@ -103,7 +103,7 @@ export default function NotFound() {
             )}
 
             <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-              <Link href="/" className="va-btn-pro w-full sm:w-auto">
+              <Link strokeWidth={1.5} href="/" className="va-btn-pro w-full sm:w-auto">
                 <Home size={18} />
                 <VoiceglotText translationKey="404.cta.home" defaultText="Naar de hoofdpagina" />
               </Link>

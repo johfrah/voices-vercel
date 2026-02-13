@@ -254,7 +254,7 @@ export const MediaLibrary: React.FC = () => {
       {/* 👤 ACTOR SIDEBAR */}
       <ContainerInstrument className="w-full lg:w-64 space-y-6">
         <ContainerInstrument className="bg-white rounded-[20px] shadow-aura p-6 space-y-4 border border-va-black/5">
-          <ContainerInstrument className="flex items-center gap-2 text-va-black font-light tracking-widest text-[12px] ">
+          <ContainerInstrument className="flex items-center gap-2 text-va-black font-light tracking-widest text-[15px] ">
             <User strokeWidth={1.5} size={16} />
             <VoiceglotText translationKey="common.voice_actors" defaultText="Stemacteurs" />
           </ContainerInstrument>
@@ -288,7 +288,7 @@ export const MediaLibrary: React.FC = () => {
         {selectedActorId && youtubeUrl && (
           <ContainerInstrument className="bg-red-500/5 rounded-[20px] p-6 space-y-4 border border-red-500/10 animate-in fade-in slide-in-from-left duration-500">
             <ContainerInstrument className="flex items-center justify-between">
-              <ContainerInstrument className="flex items-center gap-2 text-red-600 font-light tracking-widest text-[12px] ">
+              <ContainerInstrument className="flex items-center gap-2 text-red-600 font-light tracking-widest text-[15px] ">
                 <Youtube size={18} strokeWidth={1.5} />
                 YouTube
               </ContainerInstrument>
@@ -305,7 +305,7 @@ export const MediaLibrary: React.FC = () => {
             </ContainerInstrument>
 
             {youtubeUrl.startsWith('local:') ? (
-              <ContainerInstrument className="p-4 bg-emerald-500/10 text-emerald-600 rounded-[10px] text-[13px] font-light tracking-widest flex items-center gap-2">
+              <ContainerInstrument className="p-4 bg-emerald-500/10 text-emerald-600 rounded-[10px] text-[15px] font-light tracking-widest flex items-center gap-2">
                 <CheckSquare size={14} strokeWidth={1.5} /> 
                 <VoiceglotText translationKey="media.converted" defaultText="Geconverteerd" />
               </ContainerInstrument>
@@ -318,14 +318,14 @@ export const MediaLibrary: React.FC = () => {
                 <ContainerInstrument className="absolute inset-0 flex items-center justify-center text-white/20 group-hover:text-white/40 transition-colors">
                   <Youtube size={40} strokeWidth={1.5} />
                 </ContainerInstrument>
-                <ContainerInstrument className="absolute bottom-2 left-2 right-2 p-2 bg-va-black/60 backdrop-blur-md rounded-lg text-[12px] text-white font-light truncate tracking-widest">
+                <ContainerInstrument className="absolute bottom-2 left-2 right-2 p-2 bg-va-black/60 backdrop-blur-md rounded-lg text-[15px] text-white font-light truncate tracking-widest">
                   {youtubeUrl}
                 </ContainerInstrument>
               </a>
             )}
             
             {!youtubeUrl.startsWith('local:') && (
-              <TextInstrument className="text-[13px] text-red-600/60 font-light leading-relaxed">
+              <TextInstrument className="text-[15px] text-red-600/60 font-light leading-relaxed">
                 <VoiceglotText translationKey="media.youtube_hint" defaultText="Klik op de refresh knop om deze video direct in onze eigen player af te spelen." />
               </TextInstrument>
             )}
@@ -369,7 +369,7 @@ export const MediaLibrary: React.FC = () => {
             <SelectInstrument 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white border border-va-black/5 rounded-[10px] py-4 px-6 shadow-aura text-[12px] font-light tracking-widest focus:ring-2 focus:ring-primary/20"
+              className="bg-white border border-va-black/5 rounded-[10px] py-4 px-6 shadow-aura text-[15px] font-light tracking-widest focus:ring-2 focus:ring-primary/20"
             >
               <OptionInstrument value="newest">Nieuwst</OptionInstrument>
               <OptionInstrument value="oldest">Oudst</OptionInstrument>
@@ -378,7 +378,7 @@ export const MediaLibrary: React.FC = () => {
             </SelectInstrument>
 
             <label className={cn(
-              "flex items-center gap-2 px-8 py-4 rounded-[10px] font-light uppercase tracking-widest text-[13px] cursor-pointer transition-all shadow-aura",
+              "flex items-center gap-2 px-8 py-4 rounded-[10px] font-light uppercase tracking-widest text-[15px] cursor-pointer transition-all shadow-aura",
               isUploading ? "bg-va-black/10 text-va-black/30" : "bg-va-black text-white hover:scale-105 active:scale-95"
             )}>
               {isUploading ? <Upload className="animate-bounce" size={16} strokeWidth={1.5} /> : <Plus strokeWidth={1.5} size={16} />}
@@ -392,7 +392,7 @@ export const MediaLibrary: React.FC = () => {
         {selectedIds.length > 0 && (
           <ContainerInstrument className="bg-va-black text-white p-4 rounded-[20px] shadow-aura flex items-center justify-between animate-in slide-in-from-top duration-500">
             <ContainerInstrument className="flex items-center gap-4 ml-4">
-              <TextInstrument className="text-[13px] font-light tracking-widest ">
+              <TextInstrument className="text-[15px] font-light tracking-widest ">
                 {selectedIds.length} <VoiceglotText translationKey="common.selected" defaultText="geselecteerd" />
               </TextInstrument>
               <ButtonInstrument 
@@ -404,13 +404,13 @@ export const MediaLibrary: React.FC = () => {
             </ContainerInstrument>
             
             <ContainerInstrument className="flex items-center gap-2">
-              <ButtonInstrument onClick={() => handleBulkVisibility(true)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-[10px] transition-all text-[12px] font-light tracking-widest bg-transparent text-white border border-white/10">
+              <ButtonInstrument onClick={() => handleBulkVisibility(true)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-[10px] transition-all text-[15px] font-light tracking-widest bg-transparent text-white border border-white/10">
                 <Eye size={14} strokeWidth={1.5} /> <VoiceglotText translationKey="common.public" defaultText="Publiek" />
               </ButtonInstrument>
-              <ButtonInstrument onClick={() => handleBulkVisibility(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-[10px] transition-all text-[12px] font-light tracking-widest bg-transparent text-white border border-white/10">
+              <ButtonInstrument onClick={() => handleBulkVisibility(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-[10px] transition-all text-[15px] font-light tracking-widest bg-transparent text-white border border-white/10">
                 <EyeOff size={14} strokeWidth={1.5} /> <VoiceglotText translationKey="common.private" defaultText="Privé" />
               </ButtonInstrument>
-              <ButtonInstrument onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-[10px] transition-all text-[12px] font-light tracking-widest text-white">
+              <ButtonInstrument onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-[10px] transition-all text-[15px] font-light tracking-widest text-white">
                 <Trash2 size={14} strokeWidth={1.5} /> <VoiceglotText translationKey="common.delete" defaultText="Verwijderen" />
               </ButtonInstrument>
             </ContainerInstrument>
@@ -426,7 +426,7 @@ export const MediaLibrary: React.FC = () => {
                   key={j}
                   onClick={() => { playClick('light'); setFilterJourney(j); }}
                   className={cn(
-                    "px-6 py-2 rounded-full text-[12px] font-light uppercase tracking-widest transition-all whitespace-nowrap",
+                    "px-6 py-2 rounded-full text-[15px] font-light uppercase tracking-widest transition-all whitespace-nowrap",
                     filterJourney === j ? 'bg-primary text-white shadow-aura' : 'bg-white text-va-black/40 hover:bg-va-off-white shadow-sm border border-va-black/5'
                   )}
                 >
@@ -438,7 +438,7 @@ export const MediaLibrary: React.FC = () => {
             <ButtonInstrument
               onClick={() => { playClick('light'); setFilterStatus(filterStatus === 'orphans' ? 'all' : 'orphans'); }}
               className={cn(
-                "px-6 py-2 rounded-full text-[12px] font-light uppercase tracking-widest transition-all flex items-center gap-2",
+                "px-6 py-2 rounded-full text-[15px] font-light uppercase tracking-widest transition-all flex items-center gap-2",
                 filterStatus === 'orphans' ? 'bg-orange-500 text-white shadow-aura' : 'bg-white text-va-black/40 hover:bg-va-off-white shadow-sm border border-va-black/5'
               )}
             >
@@ -488,13 +488,13 @@ export const MediaLibrary: React.FC = () => {
                 {/* Preview Area */}
                 <ContainerInstrument className="aspect-square bg-va-off-white flex items-center justify-center relative overflow-hidden">
                   {item.fileType.startsWith('image/') ? (
-                    <Image 
+                    <Image strokeWidth={1.5} 
                       src={`https://www.voices.be/assets/${item.filePath}`} 
                       alt={item.fileName}
                       width={400}
                       height={400}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
+                    / />
                   ) : item.fileType.startsWith('video/') ? (
                     <video 
                       src={`https://www.voices.be/assets/${item.filePath}`}
@@ -514,7 +514,7 @@ export const MediaLibrary: React.FC = () => {
                     <ButtonInstrument 
                       onClick={(e) => { e.stopPropagation(); toggleVisibility(item.id, item.isPublic); }}
                       className={cn(
-                        "px-3 py-1 backdrop-blur-md rounded-full text-[10px] font-light uppercase tracking-widest transition-all flex items-center gap-1 border-none",
+                        "px-3 py-1 backdrop-blur-md rounded-full text-[15px] font-light uppercase tracking-widest transition-all flex items-center gap-1 border-none",
                         item.isPublic ? 'bg-emerald-500/80 text-white' : 'bg-va-black/80 text-white'
                       )}
                     >
@@ -522,7 +522,7 @@ export const MediaLibrary: React.FC = () => {
                       {item.isPublic ? 'Public' : 'Private'}
                     </ButtonInstrument>
                     {item.isOrphan && (
-                      <ContainerInstrument className="px-3 py-1 bg-orange-500/80 backdrop-blur-md text-white rounded-full text-[10px] font-light tracking-widest flex items-center gap-1">
+                      <ContainerInstrument className="px-3 py-1 bg-orange-500/80 backdrop-blur-md text-white rounded-full text-[15px] font-light tracking-widest flex items-center gap-1">
                         <AlertCircle size={10} strokeWidth={1.5} /> Wees
                       </ContainerInstrument>
                     )}
@@ -533,7 +533,7 @@ export const MediaLibrary: React.FC = () => {
                 <ContainerInstrument className="p-6 space-y-4">
                   <ContainerInstrument className="space-y-1">
                     <HeadingInstrument level={4} className="text-[15px] font-medium truncate tracking-tight text-va-black">{item.fileName}</HeadingInstrument>
-                    <ContainerInstrument className="flex items-center gap-2 text-[12px] font-light text-va-black/30 tracking-widest ">
+                    <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
                       <TextInstrument>{(item.fileSize / 1024).toFixed(0)} KB</TextInstrument>
                       <ContainerInstrument className="w-1 h-1 rounded-full bg-va-black/10" />
                       <TextInstrument>{new Date(item.createdAt).toLocaleDateString('nl-BE')}</TextInstrument>
@@ -545,7 +545,7 @@ export const MediaLibrary: React.FC = () => {
                     <ContainerInstrument className="space-y-1.5 pt-3 border-t border-va-black/5">
                       <ContainerInstrument className="flex flex-wrap gap-1">
                         {item.relations.map((rel, i) => (
-                          <ContainerInstrument key={i} className="px-2 py-1 bg-primary/5 text-primary rounded-lg text-[12px] font-light tracking-widest">
+                          <ContainerInstrument key={i} className="px-2 py-1 bg-primary/5 text-primary rounded-lg text-[15px] font-light tracking-widest">
                             <TextInstrument className="opacity-40 font-light">{rel.type}:</TextInstrument> {rel.name}
                           </ContainerInstrument>
                         ))}

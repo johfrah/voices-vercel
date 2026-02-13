@@ -45,7 +45,7 @@ export default function ScriptsArticlePage() {
       
       <SectionInstrument className="max-w-6xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-12">
-          <Link 
+          <Link strokeWidth={1.5} 
             href="/nieuws" 
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
@@ -66,7 +66,7 @@ export default function ScriptsArticlePage() {
               <ContainerInstrument>
                 <ContainerInstrument className="flex items-center gap-3 mb-6">
                   <ContainerInstrument className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                    <FileText size={20} />
+                    <FileText strokeWidth={1.5} size={20} / />
                   </ContainerInstrument>
                   <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black "><VoiceglotText translationKey={`${cat.key}.title`} defaultText={cat.title} /></HeadingInstrument>
                 </ContainerInstrument>
@@ -78,7 +78,7 @@ export default function ScriptsArticlePage() {
               </ContainerInstrument>
               
               <button className="mt-8 flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/30 hover:text-primary transition-all ">
-                <Copy size={14} />
+                <Copy strokeWidth={1.5} size={14} / />
                 <VoiceglotText translationKey="scripts.copy_button" defaultText="Kopieer Tekst" />
               </button>
             </BentoCard>

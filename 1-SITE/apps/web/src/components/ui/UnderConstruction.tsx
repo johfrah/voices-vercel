@@ -35,7 +35,7 @@ export default function UnderConstruction() {
       {/* ⚡ ADMIN BYPASS LINK */}
       {isAdmin && (
         <div className="fixed top-8 right-8 z-50">
-          <Link 
+          <Link strokeWidth={1.5} 
             href="/auth/login" 
             className="text-[15px] font-black tracking-widest bg-va-black text-white px-6 py-3 rounded-full hover:bg-primary transition-all shadow-lg"
             onClick={() => playClick('pro')}
@@ -57,13 +57,13 @@ export default function UnderConstruction() {
           onMouseEnter={() => playSwell()}
           onClick={() => playClick('soft')}
         >
-          <Image 
+          <Image strokeWidth={1.5} 
             src={market.logo_url} 
             alt={market.name} 
             width={240}
             height={96}
             className="h-16 md:h-24 w-auto drop-shadow-aura"
-          />
+          / />
         </div>
 
         {/* BENTO STATUS BOX */}

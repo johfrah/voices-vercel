@@ -17,12 +17,12 @@ export const GuaranteesBento = () => {
       {/* 🛡️ MAIN CARD: 100% Tevredenheid */}
       <BentoCard span="xl" className="h-[400px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
         <ContainerInstrument className="absolute inset-0 z-0">
-          <Image 
+          <Image strokeWidth={1.5} 
             src="/assets/service-photo.jpg" 
             alt="Service" 
             fill 
             className="object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-1000"
-          />
+          / />
         </ContainerInstrument>
         <ContainerInstrument plain className="relative z-10">
           <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
@@ -63,7 +63,7 @@ export const GuaranteesBento = () => {
       {/* 🗄️ Digitaal Archief */}
       <BentoCard span="sm" className="bg-va-off-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
-          <Archive className="text-va-black/20 mb-4" size={24} />
+          <Archive strokeWidth={1.5} className="text-va-black/20 mb-4" size={24} / />
           <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black"><VoiceglotText translationKey="guarantees.archive.title" defaultText="Veilig Archief" /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="guarantees.archive.description" defaultText="Al je scripts en opnames veilig bewaard in je persoonlijke kluis. Altijd bereikbaar." /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
       </BentoCard>

@@ -92,7 +92,7 @@ export const CommandPalette = () => {
     >
       <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col animate-in fade-in zoom-in duration-200">
         <div className="flex items-center px-6 py-4 border-b border-gray-50">
-          <Search className="w-5 h-5 text-gray-400 mr-3" />
+          <Search strokeWidth={1.5} className="w-5 h-5 text-gray-400 mr-3" / />
           <Command.Input
             placeholder="Zoek een actie, pagina of klant..."
             className="flex-grow bg-transparent border-none outline-none text-lg font-medium text-va-black placeholder:text-gray-300"
@@ -117,56 +117,56 @@ export const CommandPalette = () => {
             </Item>
             <Item onSelect={() => runAgent('bob')}>
               <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
-                <Image src="/assets/bob-avatar-voicy.png" alt="Bob" width={24} height={24} className="object-cover" />
+                <Image strokeWidth={1.5} src="/assets/bob-avatar-voicy.png" alt="Bob" width={24} height={24} className="object-cover" / />
               </div>
               <span><VoiceglotText translationKey="agent.bob" defaultText="Start Bob (Live Concert)" /></span>
               <Shortcut>B</Shortcut>
             </Item>
             <Item onSelect={() => runAgent('mark')}>
               <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
-                <Image src="/assets/mark-avatar-voicy.png" alt="Mark" width={24} height={24} className="object-cover" />
+                <Image strokeWidth={1.5} src="/assets/mark-avatar-voicy.png" alt="Mark" width={24} height={24} className="object-cover" / />
               </div>
               <span><VoiceglotText translationKey="agent.mark" defaultText="Mark: Voiceglot Surgeon" /></span>
             </Item>
             <Item onSelect={() => runAgent('chris')}>
               <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
-                <Image src="/assets/chris-avatar-voicy.png" alt="Chris" width={24} height={24} className="object-cover" />
+                <Image strokeWidth={1.5} src="/assets/chris-avatar-voicy.png" alt="Chris" width={24} height={24} className="object-cover" / />
               </div>
               <span><VoiceglotText translationKey="agent.chris" defaultText="Chris: Watchdog Audit" /></span>
             </Item>
             <Item onSelect={() => runAgent('anna')}>
               <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
-                <Image src="/assets/anna-avatar-voicy.png" alt="Anna" width={24} height={24} className="object-cover" />
+                <Image strokeWidth={1.5} src="/assets/anna-avatar-voicy.png" alt="Anna" width={24} height={24} className="object-cover" / />
               </div>
               <span><VoiceglotText translationKey="agent.anna" defaultText="Anna: Stability Check" /></span>
             </Item>
             <Item onSelect={() => runAgent('laya')}>
               <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
-                <Image src="/assets/laya-avatar-voicy.png" alt="Laya" width={24} height={24} className="object-cover" />
+                <Image strokeWidth={1.5} src="/assets/laya-avatar-voicy.png" alt="Laya" width={24} height={24} className="object-cover" / />
               </div>
               <span><VoiceglotText translationKey="agent.laya" defaultText="Laya: Aesthetic Guard" /></span>
             </Item>
             <Item onSelect={() => runAgent('moby')}>
               <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
-                <Image src="/assets/moby-avatar-voicy.png" alt="Moby" width={24} height={24} className="object-cover" />
+                <Image strokeWidth={1.5} src="/assets/moby-avatar-voicy.png" alt="Moby" width={24} height={24} className="object-cover" / />
               </div>
               <span><VoiceglotText translationKey="agent.moby" defaultText="Moby: Mobile-First Regie" /></span>
             </Item>
             <Item onSelect={() => runAgent('suzy')}>
               <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
-                <Image src="/assets/suzy-avatar-voicy.png" alt="Suzy" width={24} height={24} className="object-cover" />
+                <Image strokeWidth={1.5} src="/assets/suzy-avatar-voicy.png" alt="Suzy" width={24} height={24} className="object-cover" / />
               </div>
               <span><VoiceglotText translationKey="agent.suzy" defaultText="Suzy: SEO & LLM Schema" /></span>
             </Item>
             <Item onSelect={() => runAgent('felix')}>
               <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
-                <Image src="/assets/felix-avatar-voicy.png" alt="Felix" width={24} height={24} className="object-cover" />
+                <Image strokeWidth={1.5} src="/assets/felix-avatar-voicy.png" alt="Felix" width={24} height={24} className="object-cover" / />
               </div>
               <span><VoiceglotText translationKey="agent.felix" defaultText="Felix: Nood Deep Clean" /></span>
             </Item>
             <Item onSelect={() => runAgent('sherlock')}>
               <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
-                <Image src="/assets/sherlock-avatar-voicy.png" alt="Sherlock" width={24} height={24} className="object-cover" />
+                <Image strokeWidth={1.5} src="/assets/sherlock-avatar-voicy.png" alt="Sherlock" width={24} height={24} className="object-cover" / />
               </div>
               <span><VoiceglotText translationKey="agent.sherlock" defaultText="Sherlock: Trend Detective" /></span>
             </Item>
@@ -202,17 +202,17 @@ export const CommandPalette = () => {
 
           <Command.Group heading={<VoiceglotText translationKey="command.palette.group.mgmt" defaultText="Beheer" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400 mt-4">
             <Item onSelect={() => runCommand(() => router.push('/admin/voices'))}>
-              <Mic className="w-4 h-4 mr-3" />
+              <Mic strokeWidth={1.5} className="w-4 h-4 mr-3" / />
               <span><VoiceglotText translationKey="admin.voices.title" defaultText="Voices Manager" /></span>
               <Shortcut>G S</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/pages'))}>
-              <Layers className="w-4 h-4 mr-3" />
+              <Layers strokeWidth={1.5} className="w-4 h-4 mr-3" / />
               <span><VoiceglotText translationKey="admin.pages.title" defaultText="Pages & Layouts" /></span>
               <Shortcut>G P</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/studio'))}>
-              <Music className="w-4 h-4 mr-3" />
+              <Music strokeWidth={1.5} className="w-4 h-4 mr-3" / />
               <span><VoiceglotText translationKey="admin.studio.title" defaultText="Studio & Workshops" /></span>
               <Shortcut>G W</Shortcut>
             </Item>
@@ -221,7 +221,7 @@ export const CommandPalette = () => {
               <span><VoiceglotText translationKey="admin.media.title" defaultText="Media Manager" /></span>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/photo-matcher'))}>
-              <Camera className="w-4 h-4 mr-3" />
+              <Camera strokeWidth={1.5} className="w-4 h-4 mr-3" / />
               <span><VoiceglotText translationKey="admin.photo_matcher.title" defaultText="Photo Matcher" /></span>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/voiceglot'))}>
@@ -247,7 +247,7 @@ export const CommandPalette = () => {
               <span><VoiceglotText translationKey="admin.studio.calendar" defaultText="Studio Kalender" /></span>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/studio/participants'))}>
-              <Users className="w-4 h-4 mr-3" />
+              <Users strokeWidth={1.5} className="w-4 h-4 mr-3" / />
               <span><VoiceglotText translationKey="admin.studio.participants" defaultText="Deelnemers Overzicht" /></span>
             </Item>
           </Command.Group>
@@ -258,7 +258,7 @@ export const CommandPalette = () => {
               <span><VoiceglotText translationKey="admin.partner.title" defaultText="Partner Dashboard" /></span>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/settings'))}>
-              <Settings className="w-4 h-4 mr-3" />
+              <Settings strokeWidth={1.5} className="w-4 h-4 mr-3" / />
               <span><VoiceglotText translationKey="admin.settings.title" defaultText="Systeem Instellingen" /></span>
               <Shortcut>G ,</Shortcut>
             </Item>
@@ -288,7 +288,7 @@ export const CommandPalette = () => {
               <Shortcut>S</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/settings'))}>
-              <Settings className="w-4 h-4 mr-3" />
+              <Settings strokeWidth={1.5} className="w-4 h-4 mr-3" / />
               <span><VoiceglotText translationKey="common.settings" defaultText="Instellingen" /></span>
             </Item>
           </Command.Group>

@@ -62,7 +62,7 @@ export const CodyPreviewBanner = () => {
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-3 py-1 bg-black/10 rounded-full border border-white/10">
-              <Eye size={12} />
+              <Eye strokeWidth={1.5} size={12} / />
               <span className="text-[15px] font-black tracking-widest">Alleen zichtbaar voor jou</span>
             </div>
             <button 

@@ -51,7 +51,7 @@ async function TrackGrid() {
               className="w-16 h-16 rounded-full bg-va-black text-white flex items-center justify-center hover:scale-110 hover:bg-primary transition-all duration-500 shadow-lg active:scale-95"
               data-voices-sonic-dna="click-pro"
             >
-              <Play size={24} fill="currentColor" />
+              <Play strokeWidth={1.5} size={24} fill="currentColor" / />
             </ButtonInstrument>
           </ContainerInstrument>
         </BentoCard>

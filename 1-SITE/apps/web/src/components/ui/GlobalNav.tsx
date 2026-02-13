@@ -105,7 +105,7 @@ const HeaderIcon = ({
             as={motion.span}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[11px] font-light rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
+            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[15px] font-light rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
           >
             {badgeText || badge}
           </TextInstrument>
@@ -184,7 +184,7 @@ const DropdownItem = ({
             {badge}
           </TextInstrument>
         )}
-        <ChevronRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+        <ChevronRight strokeWidth={1.5} size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" / />
       </ContainerInstrument>
     </ButtonInstrument>
   );

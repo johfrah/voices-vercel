@@ -70,13 +70,13 @@ export function MobileFloatingDock() {
                 className="w-full bg-va-black/95 backdrop-blur-2xl text-white border border-white/10 rounded-[24px] py-4 pl-12 pr-4 shadow-2xl focus:ring-2 focus:ring-primary/50 outline-none transition-all"
               />
               <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <Image 
+                <Image strokeWidth={1.5} 
                   src="/assets/common/branding/icons/SEARCH.svg" 
                   alt="Search" 
                   width={18} 
                   height={18} 
                   className="opacity-40 brightness-0 invert"
-                />
+                / />
               </div>
             </form>
           </motion.div>
@@ -105,13 +105,13 @@ export function MobileFloatingDock() {
               </AnimatePresence>
               
               <div className={`relative z-10 transition-all duration-300 ${isActive ? 'scale-110 text-white' : 'opacity-40 group-hover:opacity-70 text-white'}`}>
-                <Image 
+                <Image strokeWidth={1.5} 
                   src={item.src} 
                   alt={item.label} 
                   width={24} 
                   height={24} 
                   className="brightness-0 invert"
-                />
+                / />
               </div>
               
               <span className="sr-only">
@@ -122,7 +122,7 @@ export function MobileFloatingDock() {
 
           if (item.href) {
             return (
-              <Link 
+              <Link strokeWidth={1.5} 
                 key={item.href}
                 href={item.href}
                 onClick={() => {

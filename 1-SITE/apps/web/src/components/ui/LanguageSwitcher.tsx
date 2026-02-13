@@ -83,15 +83,15 @@ export const LanguageSwitcher: React.FC = () => {
         }}
         className="relative p-2 rounded-xl transition-all duration-500 cursor-pointer group flex items-center justify-center min-w-[40px] h-[40px] hover:bg-va-black/5"
       >
-        <Image 
+        <Image strokeWidth={1.5} 
           src="/assets/common/branding/icons/LANGUAGEa.svg" 
           alt="Language" 
           width={22}
           height={22}
           className="w-5.5 h-5.5 transition-transform duration-500 group-hover:scale-110" 
           style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-        />
-        <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 ">
+        / />
+        <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-primary text-white text-[15px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 ">
           {currentLang}
         </span>
       </button>
@@ -126,22 +126,22 @@ export const LanguageSwitcher: React.FC = () => {
                       </div>
                     </div>
                     {isActive ? (
-                      <Image 
+                      <Image strokeWidth={1.5} 
                         src="/assets/common/branding/icons/INFO.svg" 
                         alt="Active" 
                         width={14} 
                         height={14} 
                         className="brightness-0 invert"
-                      />
+                      / />
                     ) : (
-                      <Image 
+                      <Image strokeWidth={1.5} 
                         src="/assets/common/branding/icons/FORWARD.svg" 
                         alt="Forward" 
                         width={12} 
                         height={12} 
                         className="opacity-0 group-hover:opacity-40 transition-opacity"
                         style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                      />
+                      / />
                     )}
                   </button>
                 );

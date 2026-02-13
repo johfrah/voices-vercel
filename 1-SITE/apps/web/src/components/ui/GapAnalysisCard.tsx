@@ -83,7 +83,7 @@ export const GapAnalysisCard: React.FC = () => {
                   {hasAsset(req.id) ? (
                     <CheckCircle2 strokeWidth={1.5} size={16} className="text-green-500" />
                   ) : (
-                    <AlertCircle size={16} className="text-primary" />
+                    <AlertCircle strokeWidth={1.5} size={16} className="text-primary" / />
                   )}
                   <span className="text-[15px] font-light tracking-widest">{req.label}</span>
                 </div>

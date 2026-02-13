@@ -159,7 +159,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
         }}
       />
       <SectionInstrument className="mb-12 flex items-center justify-between">
-        <Link 
+        <Link strokeWidth={1.5} 
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
@@ -168,10 +168,10 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
         </Link>
         <ContainerInstrument className="flex gap-4">
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Image src="/assets/common/branding/icons/FAVORITES.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/FAVORITES.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
           </ButtonInstrument>
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -179,12 +179,12 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
       <BentoGrid className="mb-20">
         <BentoCard span="sm" className="!p-0 overflow-hidden bg-white shadow-aura">
           <ContainerInstrument className="aspect-[4/5] relative">
-            <Image 
+            <Image strokeWidth={1.5} 
               src={actor.photo_url || '/assets/common/placeholders/placeholder-voice.jpg'} 
               alt={actor.display_name} 
               fill
               className="object-cover"
-            />
+            / />
             <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent" />
             <ContainerInstrument className="absolute bottom-8 left-8 right-8">
               <HeadingInstrument level={1} className="text-3xl font-light text-white tracking-tighter mb-2">
@@ -199,7 +199,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
                   <VoiceglotText translationKey="common.craftsman" defaultText="Vakman" />
                 </ContainerInstrument>
                 <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[15px] font-light tracking-widest">
-                  <Image src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" className="brightness-0 invert" /> 
+                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" className="brightness-0 invert" / /> 
                   {actor.voice_score}
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -222,7 +222,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
               >
                 <ContainerInstrument className="flex items-center gap-4">
                   <ContainerInstrument className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                    <Image src="/assets/common/branding/icons/PLAY.svg" width={20} height={20} alt="" className="group-hover:brightness-0 group-hover:invert ml-1" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                    <Image strokeWidth={1.5} src="/assets/common/branding/icons/PLAY.svg" width={20} height={20} alt="" className="group-hover:brightness-0 group-hover:invert ml-1" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
                   </ContainerInstrument>
                   <ContainerInstrument>
                     <HeadingInstrument level={4} className="font-light tracking-tight text-[15px]">
@@ -249,7 +249,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
             {hasCustomVideo && (
               <BentoCard span="full" className="aspect-video bg-black rounded-[20px] overflow-hidden relative group">
                 <ContainerInstrument className="absolute inset-0 flex items-center justify-center bg-va-black/40">
-                  <Image src="/assets/common/branding/icons/INFO.svg" width={48} height={48} alt="" className="opacity-20 brightness-0 invert" />
+                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={48} height={48} alt="" className="opacity-20 brightness-0 invert" / />
                 </ContainerInstrument>
                 <ContainerInstrument className="absolute bottom-8 left-8">
                   <p className="text-white font-light tracking-widest text-[15px]">
@@ -261,14 +261,14 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
             {hasCustomReels && (
               <>
                 <BentoCard span="sm" className="bg-white p-8 border border-black/5 shadow-sm rounded-[20px]">
-                  <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="mb-4" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="mb-4" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
                   <p className="font-light tracking-tight text-[15px]"><VoiceglotText translationKey="auto.voicedetailclient.tesla_navigation.b45eba" defaultText="Tesla Navigation" /></p>
                   <p className="text-[15px] text-va-black/40 mt-2 font-light">
                     <VoiceglotText translationKey="common.tesla_desc" defaultText="De stem van autoriteit en rust." />
                   </p>
                 </BentoCard>
                 <BentoCard span="sm" className="bg-white p-8 border border-black/5 shadow-sm rounded-[20px]">
-                  <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="mb-4" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="mb-4" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
                   <p className="font-light tracking-tight text-[15px]"><VoiceglotText translationKey="auto.voicedetailclient.samsung_global.8d9a4b" defaultText="Samsung Global" /></p>
                   <p className="text-[15px] text-va-black/40 mt-2 font-light">
                     <VoiceglotText translationKey="common.samsung_desc" defaultText="Technologische perfectie." />

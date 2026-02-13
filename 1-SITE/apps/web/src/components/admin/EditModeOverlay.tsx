@@ -100,7 +100,7 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
                   }}
                   className="va-admin-btn-action"
                 >
-                  <Layout size={14} className="va-btn-icon-scale" />
+                  <Layout strokeWidth={1.5} size={14} className="va-btn-icon-scale" / />
                   <VoiceglotText translationKey="admin.toolbar.architect" defaultText="Architect" />
                 </button>
               </div>
@@ -123,7 +123,7 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
                   onClick={() => playClick('success')}
                   className="va-admin-btn-save"
                 >
-                  <Save size={14} />
+                  <Save strokeWidth={1.5} size={14} / />
                   <VoiceglotText translationKey="admin.toolbar.save" defaultText="Opslaan" />
                 </button>
               </div>

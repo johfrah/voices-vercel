@@ -99,13 +99,13 @@ async function JohfrahContent() {
 
             <ContainerInstrument className="lg:col-span-5 relative group">
               <ContainerInstrument className="aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg relative transition-all duration-700 va-bezier">
-                <Image 
+                <Image strokeWidth={1.5} 
                   src={data.image} 
                   alt={data.name}
                   fill
                   className="object-cover transition-transform duration-[2000ms] group-hover:scale-105 va-bezier"
                   priority
-                />
+                / />
                 <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/10 to-transparent opacity-30" />
               </ContainerInstrument>
               
@@ -193,7 +193,7 @@ async function JohfrahContent() {
                 >
                   <div>
                     <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 group-hover:bg-primary group-hover:text-white transition-all duration-700 shadow-sm mb-6">
-                      <Mic size={20} />
+                      <Mic strokeWidth={1.5} size={20} / />
                     </ContainerInstrument>
                     <TextInstrument className="font-bold tracking-widest text-[15px] text-va-black/30 group-hover:text-primary transition-colors mb-2"><VoiceglotText translationKey={`portfolio.johfrah.demo.${i}.category`} defaultText={demo.category} /></TextInstrument>
                     <HeadingInstrument level={3} className="text-lg font-light tracking-tight text-va-black"><VoiceglotText translationKey={`portfolio.johfrah.demo.${i}.title`} defaultText={demo.title} /></HeadingInstrument>

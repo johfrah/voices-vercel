@@ -36,7 +36,7 @@ export const EmailComposerInstrument = ({
       <ContainerInstrument className="va-composer-modal">
         {/* Header */}
         <ContainerInstrument className="va-composer-header">
-          <HeadingInstrument level={3} className="va-composer-title"><VoiceglotText translationKey="mailbox.compose" defaultText="Nieuw bericht" /></HeadingInstrument>
+          <HeadingInstrument level={3} className="va-composer-title font-light"><VoiceglotText translationKey="mailbox.compose" defaultText="Nieuw bericht" /></HeadingInstrument>
           <ButtonInstrument onClick={onClose} className="p-2 hover:bg-black/5 rounded-full">
             <X strokeWidth={1.5} size={20} className="text-va-black/40" />
           </ButtonInstrument>

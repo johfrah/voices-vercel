@@ -63,7 +63,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-            <Music size={20} />
+            <Music strokeWidth={1.5} size={20} / />
           </div>
           <div>
             <h4 className="text-[15px] font-black tracking-tight">
@@ -100,7 +100,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
                 "w-8 h-8 rounded-full flex items-center justify-center transition-all",
                 state.music.trackId === track.id ? "bg-primary text-white" : "bg-va-black/5 text-va-black/20 group-hover:bg-va-black group-hover:text-white"
               )} onClick={(e) => { e.stopPropagation(); togglePlay(track); }}>
-                {playingId === track.id ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
+                {playingId === track.id ? <Pause strokeWidth={1.5} size={14} fill="currentColor" / /> : <Play strokeWidth={1.5} size={14} fill="currentColor" className="ml-0.5" / />}
               </div>
             </button>
             {state.music.trackId === track.id && (
@@ -115,7 +115,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
       {state.music.trackId && (
         <div className="bg-white p-6 rounded-2xl border border-primary/10 space-y-4 animate-in slide-in-from-top-2 duration-500">
           <div className="flex items-center gap-2 mb-2">
-            <Info size={14} className="text-primary" />
+            <Info strokeWidth={1.5} size={14} className="text-primary" / />
             <p className="text-[15px] font-black tracking-widest text-va-black/60">
               <VoiceglotText translationKey="music.options.title" defaultText="Hoe wil je deze muziek gebruiken?" />
             </p>

@@ -50,7 +50,7 @@ export default function JohfrahContactPage() {
 
               <ContainerInstrument className="flex items-center gap-4 group">
                 <ContainerInstrument className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
-                  <MapPin size={20} />
+                  <MapPin strokeWidth={1.5} size={20} / />
                 </ContainerInstrument>
                 <ContainerInstrument>
                   <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.locatie.e7a1cf" defaultText="Locatie" /></TextInstrument>

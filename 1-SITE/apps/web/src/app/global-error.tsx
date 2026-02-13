@@ -31,7 +31,7 @@ export default function GlobalError({
         <ContainerInstrument className="min-h-screen flex items-center justify-center p-6">
           <ContainerInstrument className="max-w-md w-full bg-white rounded-[40px] p-12 shadow-aura border border-black/5 text-center space-y-8">
             <ContainerInstrument className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto">
-              <AlertCircle size={40} />
+              <AlertCircle strokeWidth={1.5} size={40} / />
             </ContainerInstrument>
             
             <ContainerInstrument className="space-y-2">

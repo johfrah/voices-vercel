@@ -54,7 +54,7 @@ async function PortfolioGrid() {
               data-voices-sonic-dna="click-pro"
             ><VoiceglotText translationKey="artist.view_portfolio" defaultText="VIEW PORTFOLIO" /></ButtonInstrument>
             <ContainerInstrument className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-orange-400/50 group-hover:bg-orange-400/10 transition-all duration-500">
-              <Music size={20} className="text-white/20 group-hover:text-orange-400 transition-colors" />
+              <Music strokeWidth={1.5} size={20} className="text-white/20 group-hover:text-orange-400 transition-colors" / />
             </ContainerInstrument>
           </ContainerInstrument>
 

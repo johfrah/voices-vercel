@@ -38,7 +38,7 @@ export default function MusicExperiencePage() {
             className="hmagic text-white p-16 flex flex-col md:flex-row items-center gap-12"
           >
             <ContainerInstrument className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center shrink-0 animate-pulse">
-              <Music size={48} className="text-white" />
+              <Music strokeWidth={1.5} size={48} className="text-white" / />
             </ContainerInstrument>
             <ContainerInstrument className="space-y-6">
               <HeadingInstrument level={2} className="text-4xl font-black tracking-tight"><VoiceglotText translationKey="music.psychology.title" defaultText="De psychologie van het wachten" /><TextInstrument className="text-white/80 text-lg leading-relaxed font-light"><VoiceglotText 
@@ -77,7 +77,7 @@ export default function MusicExperiencePage() {
             <ContainerInstrument>
               <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText translationKey="music.cta.title" defaultText="Kies je sfeer" /><TextInstrument className="text-va-black/40 mb-8 font-light"><VoiceglotText translationKey="music.cta.text" defaultText="Van rustgevende piano tot energieke beats." /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>
-            <Link href="/agency" className="va-btn-pro w-full text-center"><VoiceglotText translationKey="music.cta.button" defaultText="Beluister de Bibliotheek" /></Link>
+            <Link strokeWidth={1.5} href="/agency" className="va-btn-pro w-full text-center"><VoiceglotText translationKey="music.cta.button" defaultText="Beluister de Bibliotheek" /></Link>
           </BentoCard>
         </BentoGrid>
       </SectionInstrument>

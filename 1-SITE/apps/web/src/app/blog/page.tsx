@@ -239,7 +239,7 @@ export default function BlogPage() {
             
             return (
               <BentoCard key={article.id} span={i === 0 ? "lg" : "sm"} className="bg-white shadow-sm hover:shadow-aura transition-all group overflow-hidden flex flex-col !rounded-[20px]">
-                <Link href={`/article/${article.slug}`} className="flex-1 flex flex-col p-8">
+                <Link strokeWidth={1.5} href={`/article/${article.slug}`} className="flex-1 flex flex-col p-8">
                   <ContainerInstrument className="flex items-center gap-4 mb-6">
                     <ContainerInstrument className="px-3 py-1 bg-va-off-white rounded-full text-[15px] font-light tracking-widest text-va-black/40 border border-black/5 flex items-center gap-2 ">
                       <Icon size={10} className="text-primary" />

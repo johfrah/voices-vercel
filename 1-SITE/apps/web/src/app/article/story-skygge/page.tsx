@@ -22,7 +22,7 @@ export default function SkyggeArticlePage() {
       
       <SectionInstrument className="max-w-5xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-12">
-          <Link 
+          <Link strokeWidth={1.5} 
             href="/nieuws" 
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >

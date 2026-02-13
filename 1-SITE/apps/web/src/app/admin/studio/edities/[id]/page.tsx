@@ -28,7 +28,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">
-      <Link 
+      <Link strokeWidth={1.5} 
         href="/admin/studio" 
         className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
       >
@@ -46,7 +46,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
         <BentoCard span="lg" className="bg-white shadow-aura border border-black/5 overflow-hidden">
           <ContainerInstrument className="p-8 border-b border-black/5 bg-va-off-white/50 flex justify-between items-center">
             <ContainerInstrument className="flex items-center gap-3">
-              <Users size={20} className="text-primary" />
+              <Users strokeWidth={1.5} size={20} className="text-primary" / />
               <TextInstrument className="text-[15px] font-light tracking-tight">
                 {participants.length} Deelnemers
               </TextInstrument>
@@ -79,7 +79,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                         <CheckCircle2 strokeWidth={1.5} size={14} /><VoiceglotText translationKey="auto.page.audio_live.4d370c" defaultText="Audio Live" /></ContainerInstrument>
                     ) : (
                       <ButtonInstrument className="flex items-center gap-2 px-4 py-3 bg-va-off-white border border-black/5 text-[15px] font-light tracking-widest rounded-xl hover:border-primary transition-all">
-                        <FileAudio size={14} /><VoiceglotText translationKey="auto.page.upload_audio.92cb1a" defaultText="Upload Audio" />
+                        <FileAudio strokeWidth={1.5} size={14} / /><VoiceglotText translationKey="auto.page.upload_audio.92cb1a" defaultText="Upload Audio" />
                       </ButtonInstrument>
                     )}
                   </ContainerInstrument>

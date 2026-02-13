@@ -47,7 +47,7 @@ export const WorkshopFunnel: React.FC<{ data: any }> = ({ data }) => {
           label={t('studio.funnel.total', 'Totaal')} 
           value={stats.total_workshops || 0} 
           subLabel={t('studio.funnel.total_sub', "Alle workshops")}
-          icon={<Filter size={18} />}
+          icon={<Filter strokeWidth={1.5} size={18} / />}
           color="bg-va-black border border-white/10"
           onClick={() => handleStepClick('Totaal')}
         />
@@ -55,7 +55,7 @@ export const WorkshopFunnel: React.FC<{ data: any }> = ({ data }) => {
           label={t('studio.funnel.upcoming', 'Aankomend')} 
           value={stats.upcoming_workshops || 0} 
           subLabel={t('studio.funnel.upcoming_sub', "In de pijplijn")}
-          icon={<UserPlus size={18} />}
+          icon={<UserPlus strokeWidth={1.5} size={18} / />}
           color="bg-primary"
           onClick={() => handleStepClick('Aankomend')}
         />
@@ -63,7 +63,7 @@ export const WorkshopFunnel: React.FC<{ data: any }> = ({ data }) => {
           label={t('studio.funnel.completed', 'Voltooid')} 
           value={stats.completed_workshops || 0} 
           subLabel={t('studio.funnel.completed_sub', "Succesvol afgerond")}
-          icon={<UserCheck size={18} />}
+          icon={<UserCheck strokeWidth={1.5} size={18} / />}
           color="bg-green-500"
           onClick={() => handleStepClick('Voltooid')}
         />
@@ -71,7 +71,7 @@ export const WorkshopFunnel: React.FC<{ data: any }> = ({ data }) => {
           label={t('studio.funnel.cancelled', 'Geannuleerd')} 
           value={stats.cancelled_workshops || 0} 
           subLabel={t('studio.funnel.cancelled_sub', "Niet doorgegaan")}
-          icon={<AlertCircle size={18} />}
+          icon={<AlertCircle strokeWidth={1.5} size={18} / />}
           color="bg-red-500"
           onClick={() => handleStepClick('Geannuleerd')}
         />

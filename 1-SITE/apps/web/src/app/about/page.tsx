@@ -52,7 +52,7 @@ export default function AboutPage() {
             span="xl" 
             className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-12 flex flex-col justify-between min-h-[400px]"
             title={<VoiceglotText translationKey="about.mission.label" defaultText="Onze Missie" />}
-            icon={<Users size={20} />}
+            icon={<Users strokeWidth={1.5} size={20} / />}
           >
             <ContainerInstrument className="space-y-6">
               <HeadingInstrument level={2} className="text-4xl font-light tracking-tight">
@@ -71,7 +71,7 @@ export default function AboutPage() {
             span="sm" 
             className="bg-va-black text-white p-12 flex flex-col justify-between min-h-[400px]"
             title={<VoiceglotText translationKey="about.values.label" defaultText="Kernwaarden" />}
-            icon={<Heart size={20} className="text-primary" />}
+            icon={<Heart strokeWidth={1.5} size={20} className="text-primary" / />}
           >
             <ContainerInstrument className="space-y-4">
               <ContainerInstrument className="flex items-center gap-3">

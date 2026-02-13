@@ -22,7 +22,7 @@ export const HeroInstrument: React.FC = () => {
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="relative z-10">
           <div className="va-hero-badge inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-[20px] text-primary text-[15px] font-light tracking-widest border border-primary/10 mb-8">
-            <Image src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /> <VoiceglotText translationKey="home.hero.badge" defaultText="De beste stemmen van de Benelux" />
+            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / /> <VoiceglotText translationKey="home.hero.badge" defaultText="De beste stemmen van de Benelux" />
           </div>
           <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black mb-8">
             <VoiceglotText translationKey="home.hero.title_part1" defaultText="Vind de " />
@@ -36,18 +36,18 @@ export const HeroInstrument: React.FC = () => {
             <VoiceglotText translationKey="home.hero.subtitle" defaultText="Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap." />
           </p>
           <div className="flex items-center gap-4">
-            <Link href={ctaHref} className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px]"><VoiceglotText translationKey="home.hero.cta_primary" defaultText={isPortfolio ? "Bekijk mijn stemmen" : "Vind jouw stem"} /></Link>
+            <Link strokeWidth={1.5} href={ctaHref} className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px]"><VoiceglotText translationKey="home.hero.cta_primary" defaultText={isPortfolio ? "Bekijk mijn stemmen" : "Vind jouw stem"} /></Link>
           </div>
         </div>
 
         <div className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg group">
-          <Image 
+          <Image strokeWidth={1.5} 
             src="/assets/voices-photo.jpg" 
             alt="Voices Artist"
             fill
             className="object-cover transition-transform duration-1000 group-hover:scale-105"
             priority
-          />
+          / />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         </div>
       </div>

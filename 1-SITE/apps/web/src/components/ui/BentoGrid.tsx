@@ -155,14 +155,14 @@ export function BentoCard({
             onClick={() => playClick('pro')}
             className="bg-va-black text-white p-2.5 rounded-xl hover:bg-primary transition-all shadow-xl active:scale-90"
           >
-            <Maximize2 size={12} />
+            <Maximize2 strokeWidth={1.5} size={12} / />
           </ButtonInstrument>
           <ButtonInstrument 
             onMouseEnter={() => playSwell()}
             onClick={() => playClick('soft')}
             className="bg-va-black text-white p-2.5 rounded-xl hover:bg-red-500 transition-all shadow-xl active:scale-90"
           >
-            <Trash2 size={12} />
+            <Trash2 strokeWidth={1.5} size={12} / />
           </ButtonInstrument>
         </ContainerInstrument>
       )}

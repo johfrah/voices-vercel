@@ -62,7 +62,7 @@ function AfspraakContent() {
               /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="pt-8">
-            <Link href="/studio" className="va-btn-pro"><VoiceglotText translationKey="common.back_to_home" defaultText="Terug naar home" /></Link>
+            <Link strokeWidth={1.5} href="/studio" className="va-btn-pro"><VoiceglotText translationKey="common.back_to_home" defaultText="Terug naar home" /></Link>
           </ContainerInstrument>
         </ContainerInstrument>
       </>
@@ -95,11 +95,11 @@ function AfspraakContent() {
         </ContainerInstrument>
 
         <ContainerInstrument className="pt-8 flex flex-col gap-4">
-          <Link href="/studio/afspraak" className="va-btn-pro inline-flex items-center justify-center gap-2">
+          <Link strokeWidth={1.5} href="/studio/afspraak" className="va-btn-pro inline-flex items-center justify-center gap-2">
             <RefreshCcw size={16} />
             <VoiceglotText translationKey="studio.appointment.cancel.cta" defaultText="Nu herplannen" />
           </Link>
-          <Link href="/studio" className="text-[15px] font-light tracking-widest text-va-black/30 hover:text-primary transition-all"><VoiceglotText translationKey="common.back_to_home" defaultText="Terug naar home" /></Link>
+          <Link strokeWidth={1.5} href="/studio" className="text-[15px] font-light tracking-widest text-va-black/30 hover:text-primary transition-all"><VoiceglotText translationKey="common.back_to_home" defaultText="Terug naar home" /></Link>
         </ContainerInstrument>
       </ContainerInstrument>
     );
@@ -120,8 +120,8 @@ function AfspraakContent() {
         </ContainerInstrument>
 
         <ContainerInstrument className="pt-8 flex flex-col gap-4">
-          <Link href={`/studio/afspraak/?manage=${manageToken}&cancel=1`} className="va-btn-pro bg-red-500 hover:bg-red-600 border-red-500 hover:border-red-600 inline-block"><VoiceglotText translationKey="studio.appointment.manage.cancel_btn" defaultText="Afspraak annuleren" /></Link>
-          <Link href="/studio" className="text-[15px] font-light tracking-widest text-va-black/30 hover:text-primary transition-all"><VoiceglotText translationKey="common.back_to_home" defaultText="Terug naar home" /></Link>
+          <Link strokeWidth={1.5} href={`/studio/afspraak/?manage=${manageToken}&cancel=1`} className="va-btn-pro bg-red-500 hover:bg-red-600 border-red-500 hover:border-red-600 inline-block"><VoiceglotText translationKey="studio.appointment.manage.cancel_btn" defaultText="Afspraak annuleren" /></Link>
+          <Link strokeWidth={1.5} href="/studio" className="text-[15px] font-light tracking-widest text-va-black/30 hover:text-primary transition-all"><VoiceglotText translationKey="common.back_to_home" defaultText="Terug naar home" /></Link>
         </ContainerInstrument>
       </ContainerInstrument>
     );
