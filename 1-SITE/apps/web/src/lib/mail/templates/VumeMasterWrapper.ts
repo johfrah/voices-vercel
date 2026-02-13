@@ -21,17 +21,18 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const { title, previewText, journey = 'agency', host = 'voices.be', showSignature = true, headerImage } = options;
   const market = MarketManager.getCurrentMarket(host);
   
-  // 🎨 Laya's Refined Gradients (Based on Legacy, but smoother)
+  // 🎨 Laya's Refined Gradients (Voices 2.0 - Liquid DNA)
   const gradients = {
-    agency: 'linear-gradient(135deg, #83CBBC 0%, #5CAED1 100%)',
-    studio: 'linear-gradient(135deg, #FFD54F 0%, #FFB300 100%)',
-    artist: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
-    auth: 'linear-gradient(135deg, #83CBBC 0%, #5CAED1 100%)',
-    portfolio: 'linear-gradient(135deg, #FBFBF9 0%, #E0E0E0 100%)'
+    agency: 'linear-gradient(135deg, #FBFBF9 0%, #E8F4F1 50%, #E1EEF3 100%)', // Liquid Agency 2.0
+    studio: 'linear-gradient(135deg, #FFFBF2 0%, #FFF3E0 100%)', // Warm Studio 2.0
+    artist: 'linear-gradient(135deg, #000000 0%, #1A1A1A 100%)',
+    auth: 'linear-gradient(135deg, #FBFBF9 0%, #E8F4F1 50%, #E1EEF3 100%)',
+    portfolio: 'linear-gradient(135deg, #FFFFFF 0%, #FBFBF9 100%)'
   };
 
   const primaryGradient = gradients[journey] || gradients.agency;
   const isDark = journey === 'artist';
+  const isAgency20 = journey === 'agency' || journey === 'auth';
 
   // 🖼️ Header Logic: Specific image or dynamic banner
   const headerHtml = headerImage ? `
@@ -42,8 +43,8 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     </tr>
   ` : `
     <tr>
-      <td align="center" style="background: ${primaryGradient}; padding: 40px 20px; border-radius: 20px 20px 0 0;">
-        <h1 style="margin: 0; color: #FFFFFF; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -0.02em;">
+      <td align="center" style="background: ${primaryGradient}; padding: 50px 20px; border-radius: 20px 20px 0 0; border-bottom: 1px solid #F0F0F0;">
+        <h1 style="margin: 0; color: ${isAgency20 ? '#1A1A1A' : '#FFFFFF'}; font-family: 'Raleway', sans-serif; font-weight: 300; font-size: 28px; letter-spacing: -0.01em; line-height: 1.2;">
           ${title}
         </h1>
       </td>
