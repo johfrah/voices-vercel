@@ -67,8 +67,13 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handleAudioError = () => {
-    console.error("Audio playback error");
+  const handleAudioError = (e: any) => {
+    const error = e.currentTarget.error;
+    console.error("❌ MediaMaster: Audio playback error", {
+      code: error?.code,
+      message: error?.message,
+      src: demo.audio_url
+    });
     setIsPlaying(false);
   };
 

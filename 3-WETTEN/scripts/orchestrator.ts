@@ -212,7 +212,16 @@ class AgentOrchestrator {
     if (!fs.existsSync('node_modules')) {
         try { execSync('npm install', { stdio: 'inherit' }); } catch(e) {}
     }
-    this.log('FELIX', 'FIX', 'Uitvoeren van Deep Clean (Next.js Cache)...');
+    this.log('FELIX', 'FIX', 'Uitvoeren van Deep Clean (Next.js Cache & Namespace Slop)...');
+    
+    // 🚀 FELIX UPGRADE: Verwijder JSX Namespace Slop (md:size etc)
+    try {
+      this.log('FELIX', 'FIX', 'Felix verwijdert JSX Namespace slop (md:size, md:width)...');
+      execSync('npx ts-node 3-WETTEN/scripts/watchdog.ts fix 1-SITE/apps/web/src', { stdio: 'inherit' });
+    } catch (e) {
+      this.log('FELIX', 'WARNING', 'Felix kon de Namespace slop niet volledig automatisch herstellen.');
+    }
+
     try {
       if (fs.existsSync('1-SITE/apps/web/.next')) {
         fs.rmSync('1-SITE/apps/web/.next', { recursive: true, force: true });
