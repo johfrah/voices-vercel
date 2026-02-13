@@ -268,12 +268,20 @@ export default function GlobalNav() {
           }
         }, key: 'nav.contact' }
       ]);
+    } else if (pathname.startsWith('/studio')) {
+      setLinks([
+        { name: 'Workshops', href: '/studio', key: 'nav.studio_workshops' },
+        { name: 'Academy', href: '/academy', key: 'nav.studio_academy' },
+        { name: 'FAQ', href: '/studio/veelgestelde-vragen', key: 'nav.studio_faq' },
+        { name: 'Contact', href: '/contact', key: 'nav.contact' }
+      ]);
     }
-  }, [market.market_code]);
+  }, [market.market_code, pathname]);
 
   if (!mounted) return null;
 
   const isSpecialJourney = market.market_code === 'JOHFRAH' || market.market_code === 'YOUSSEF' || market.market_code === 'ADEMING';
+  const isStudioJourney = pathname.startsWith('/studio') || pathname.startsWith('/academy');
 
   return (
     <ContainerInstrument as="nav" className="fixed top-0 left-0 right-0 z-40 px-4 md:px-6 py-4 md:py-6 flex justify-between items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve">
@@ -288,6 +296,21 @@ export default function GlobalNav() {
           <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap"><VoiceglotText  translationKey="auto.globalnav.johfrah_lefebvre.95a724" defaultText="JOHFRAH LEFEBVRE" /></TextInstrument>
         ) : market.market_code === 'YOUSSEF' ? (
           <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap"><VoiceglotText  translationKey="auto.globalnav.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" /></TextInstrument>
+        ) : isStudioJourney ? (
+          <ContainerInstrument className="flex items-center gap-3">
+            <VoiceglotImage  
+              src={market.logo_url} 
+              alt={market.name} 
+              width={120} 
+              height={48}
+              priority={true}
+              className="h-8 md:h-10 w-auto transition-transform duration-500 group-hover:scale-105"
+            />
+            <ContainerInstrument className="h-6 w-px bg-va-black/10 mx-1" />
+            <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-va-black uppercase">
+              <VoiceglotText translationKey="nav.studio_label" defaultText="Studio" />
+            </TextInstrument>
+          </ContainerInstrument>
         ) : (
           <VoiceglotImage  
             src={market.logo_url} 
@@ -345,7 +368,7 @@ export default function GlobalNav() {
 
       <ContainerInstrument className="flex gap-4 items-center ml-auto">
         {/* ❤️ FAVORITES ICON */}
-        {!isSpecialJourney && (
+        {!isSpecialJourney && !isStudioJourney && (
           <HeaderIcon strokeWidth={1.5} 
             src="/assets/common/branding/icons/FAVORITES.svg" 
             alt="Favorieten"
@@ -355,7 +378,7 @@ export default function GlobalNav() {
         )}
 
         {/* 🛍️ CART ICON */}
-        {!isSpecialJourney && (
+        {!isSpecialJourney && !isStudioJourney && (
           <HeaderIcon strokeWidth={1.5} 
             src="/assets/common/branding/icons/CART.svg" 
             alt="Winkelmandje" 

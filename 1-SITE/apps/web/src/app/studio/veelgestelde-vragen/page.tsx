@@ -24,7 +24,7 @@ export default async function StudioFaqPage() {
   }));
 
   return (
-    <PageWrapperInstrument className="min-h-screen pt-40 pb-40 bg-va-off-white">
+    <PageWrapperInstrument className="min-h-screen pt-48 pb-40 bg-va-off-white">
       <LiquidBackground strokeWidth={1.5} />
       
       <ContainerInstrument className="relative z-10 max-w-6xl mx-auto px-6">
@@ -42,12 +42,12 @@ export default async function StudioFaqPage() {
 
         <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           {/* 🎯 LINKS: VIDEO QUIZ (5 Kolommen) */}
-          <ContainerInstrument className="lg:col-span-5 sticky top-40 animate-in fade-in slide-in-from-left-8 duration-1000">
+          <ContainerInstrument className="lg:col-span-5 sticky top-40">
             <WorkshopQuiz />
           </ContainerInstrument>
 
           {/* 🎙️ RECHTS: FAQ VRAGEN (7 Kolommen) */}
-          <ContainerInstrument className="lg:col-span-7 space-y-12 animate-in fade-in slide-in-from-right-8 duration-1000">
+          <ContainerInstrument className="lg:col-span-7 space-y-12">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tight mb-8 border-b border-black/10 pb-6 text-va-black">
               Veelgestelde vragen
             </HeadingInstrument>

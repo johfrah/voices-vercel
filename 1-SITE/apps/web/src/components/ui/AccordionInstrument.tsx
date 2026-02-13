@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import Image from 'next/image';
-import { ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
+import { ContainerInstrument, HeadingInstrument } from './LayoutInstruments';
+import { ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useSonicDNA } from '@/lib/sonic-dna';
 
 interface AccordionItem {
   id: string;
@@ -10,40 +12,60 @@ interface AccordionItem {
   content: string;
 }
 
+/**
+ * 🎙️ ACCORDION INSTRUMENT (VOICES 2026)
+ * 
+ * Volgt de Ademing-feel:
+ * - Minimale padding voor een strakke look.
+ * - Subtiele Chevron in plaats van zware knoppen.
+ * - Zijdezachte animaties via va-bezier.
+ */
 export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ items }) => {
   const [openId, setOpenId] = useState<string | null>(null);
+  const { playClick } = useSonicDNA();
+
+  const handleToggle = (id: string) => {
+    setOpenId(openId === id ? null : id);
+    playClick('soft');
+  };
 
   return (
-    <ContainerInstrument className="w-full space-y-4">
+    <ContainerInstrument className="w-full space-y-3">
       {items.map((item) => (
         <ContainerInstrument 
           key={item.id} 
-          className="border border-va-black/5 rounded-[32px] bg-white overflow-hidden transition-all duration-500 hover:shadow-lg"
+          className={cn(
+            "rounded-[20px] border transition-all duration-500",
+            openId === item.id 
+              ? "bg-white border-primary/20 shadow-aura" 
+              : "bg-white/50 border-black/5 hover:border-black/10"
+          )}
         >
           <button
-            onClick={() => setOpenId(openId === item.id ? null : item.id)}
-            className="w-full px-10 py-8 flex items-center justify-between text-left group"
+            onClick={() => handleToggle(item.id)}
+            className="w-full px-8 py-6 flex items-center justify-between text-left group outline-none"
           >
-            <HeadingInstrument level={4} className="text-[17px] font-light tracking-wider text-va-black group-hover:text-primary transition-colors">
+            <HeadingInstrument level={4} className="text-[17px] font-light tracking-tight text-va-black group-hover:text-primary transition-colors pr-8">
               {item.title}
             </HeadingInstrument>
-            <ContainerInstrument className={`p-2 rounded-full bg-va-black/5 transition-all duration-500 flex items-center justify-center ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
-              <Image  
-                src="/assets/common/branding/icons/DOWN.svg" 
-                alt="Toggle" 
-                width={18} 
-                height={18} 
-                style={openId === item.id ? { filter: 'invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)' } : { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              />
-            </ContainerInstrument>
+            <ChevronDown 
+              strokeWidth={1.5} 
+              size={20} 
+              className={cn(
+                "text-va-black/20 transition-transform duration-500 ease-va-bezier shrink-0",
+                openId === item.id && "rotate-180 text-primary"
+              )} 
+            />
           </button>
+          
           <ContainerInstrument 
-            className={`transition-all duration-500 ease-in-out ${
-              openId === item.id ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
-            }`}
+            className={cn(
+              "transition-all duration-500 ease-va-bezier overflow-hidden",
+              openId === item.id ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+            )}
           >
-            <ContainerInstrument className="px-10 pb-10 prose prose-lg text-va-black/70 font-light leading-relaxed">
-              <ContainerInstrument dangerouslySetInnerHTML={{ __html: item.content }} />
+            <ContainerInstrument className="px-8 pb-8 text-va-black/60 font-light leading-relaxed text-[15px]">
+              <div dangerouslySetInnerHTML={{ __html: item.content }} />
             </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

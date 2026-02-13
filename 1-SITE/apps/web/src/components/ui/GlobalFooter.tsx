@@ -135,14 +135,43 @@ export default function GlobalFooter() {
     }
   ];
 
+  const studioSections = [
+    {
+      title: t('footer.workshops', 'Workshops'),
+      links: [
+        { name: t('nav.studio', 'Voices Studio'), href: '/studio' },
+        { name: t('nav.academy', 'Academy'), href: '/academy' },
+        { name: t('nav.faq', 'Veelgestelde Vragen'), href: '/studio/veelgestelde-vragen' },
+      ]
+    },
+    {
+      title: t('footer.support', 'Support'),
+      links: [
+        { name: market.phone, href: `tel:${market.phone.replace(/\s+/g, '')}` },
+        { name: market.email, href: `mailto:${market.email}` },
+        { name: t('footer.contact', 'Contact'), href: '/contact' },
+      ]
+    },
+    {
+      title: t('footer.voices', 'Voices'),
+      links: [
+        { name: t('nav.voices_back', 'Terug naar Voices'), href: 'https://voices.be' },
+        { name: t('footer.about', 'Ons verhaal'), href: '/about' },
+      ]
+    }
+  ];
+
   let footerSections = standardSections;
   if (market.market_code === 'ADEMING') footerSections = ademingSections;
   if (market.market_code === 'JOHFRAH') footerSections = portfolioSections;
   if (market.market_code === 'YOUSSEF') footerSections = youssefSections;
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/studio')) footerSections = studioSections;
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/academy')) footerSections = studioSections;
 
   const isPortfolio = market.market_code === 'JOHFRAH';
   const isArtist = market.market_code === 'YOUSSEF';
   const isSpecial = isPortfolio || isArtist || market.market_code === 'ADEMING';
+  const isStudio = typeof window !== 'undefined' && (window.location.pathname.startsWith('/studio') || window.location.pathname.startsWith('/academy'));
 
   return (
     <ContainerInstrument as="footer" className="bg-va-off-white text-va-black pt-24 pb-12 overflow-hidden relative border-t border-black/5">
@@ -153,12 +182,12 @@ export default function GlobalFooter() {
         {/* Dynamic Journey Elements */}
         {!isSpecial && (
           <ContainerInstrument className="mb-24">
-            <JourneyCta strokeWidth={1.5} journey={state.current_journey} />
+            <JourneyCta strokeWidth={1.5} journey={isStudio ? 'studio' as any : state.current_journey} />
             <ContainerInstrument className="mt-12">
-              <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 mb-8 ">
-                <VoiceglotText  translationKey="footer.journey_faq" defaultText="Veelgestelde vragen voor deze journey" />
+              <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 mb-8 uppercase">
+                <VoiceglotText  translationKey="footer.journey_faq" defaultText={isStudio ? "Veelgestelde vragen over de Studio" : "Veelgestelde vragen voor deze journey"} />
               </HeadingInstrument>
-              <JourneyFaq strokeWidth={1.5} journey={state.current_journey} limit={4} />
+              <JourneyFaq strokeWidth={1.5} journey={isStudio ? 'Workshops' : state.current_journey} limit={4} />
             </ContainerInstrument>
           </ContainerInstrument>
         )}

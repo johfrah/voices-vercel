@@ -84,7 +84,7 @@ export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentPr
   ...props
 }, ref) => {
   return (
-    <Component strokeWidth={1.5} 
+    <Component 
       ref={ref} 
       className={cn(
         (plain || className.includes('max-w-')) ? className : cn("va-container", className),
@@ -122,7 +122,7 @@ export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumen
 }, ref) => {
   const Tag = `h${level}` as any;
   return (
-    <Tag strokeWidth={1.5} 
+    <Tag 
       ref={ref} 
       className={cn(
         "font-light text-[15px]", // 🛡️ CHRIS MANDATE: Default to light and 15px
@@ -163,7 +163,7 @@ export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({
   ...props
 }, ref) => {
   return (
-    <Component strokeWidth={1.5} 
+    <Component 
       ref={ref} 
       className={cn(
         "text-[15px] font-light", // 🛡️ CHRIS MANDATE: Default to 15px and light
@@ -207,7 +207,7 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
   const { playClick } = useSonicDNA();
   const { href, ...otherProps } = props;
   return (
-    <Component strokeWidth={1.5} 
+    <Component 
       ref={ref}
       type={Component === 'button' ? type : undefined}
       href={(Component === 'a' || Component === Link) ? href : undefined}
