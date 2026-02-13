@@ -18,37 +18,36 @@ export function VumeMagicLinkTemplate(options: MagicLinkOptions) {
 
   const content = {
     nl: {
-      title: 'Welkom terug in de Schouwburg',
-      greeting: name ? `Hoi ${name},` : 'Hoi,',
+      title: 'Welkom terug',
+      greeting: name ? `Beste ${name},` : 'Beste,',
       body: 'Je bent slechts één klik verwijderd van je cockpit. We hebben alles voor je klaargezet.',
-      button: 'Direct inloggen',
+      button: 'DIRECT INLOGGEN',
       footer: 'Deze link is 15 minuten geldig. Heb je deze mail niet aangevraagd? Dan kun je hem veilig negeren.'
     },
     fr: {
-      title: 'Bienvenue au Théâtre des Voix',
-      greeting: name ? `Bonjour ${name},` : 'Bonjour,',
+      title: 'Bienvenue',
+      greeting: name ? `Cher ${name},` : 'Cher,',
       body: 'Vous n\'êtes qu\'à un clic de votre cockpit. Nous avons tout préparé pour vous.',
-      button: 'Se connecter maintenant',
+      button: 'SE CONNECTER MAINTENANT',
       footer: 'Ce lien est valable 15 minutes. Vous n\'avez pas demandé cet e-mail ? Vous pouvez l\'ignorer en toute sécurité.'
     },
     en: {
-      title: 'Welcome back to the Theater',
-      greeting: name ? `Hi ${name},` : 'Hi there,',
+      title: 'Welcome back',
+      greeting: name ? `Dear ${name},` : 'Dear,',
       body: 'You\'re just one click away from your cockpit. Everything is ready for you.',
-      button: 'Login directly',
+      button: 'LOGIN DIRECTLY',
       footer: 'This link is valid for 15 minutes. Didn\'t request this email? You can safely ignore it.'
     }
   }[language as 'nl' | 'fr' | 'en'] || content.nl;
 
   const html = `
-    <h1 style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 200; font-size: 32px; margin: 0 0 30px 0; line-height: 1.2; color: #1A1A1A;">${content.title}</h1>
     <p style="margin: 0 0 20px 0;">${content.greeting}</p>
     <p style="margin: 0 0 32px 0;">${content.body}</p>
     
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
       <tr>
         <td align="center" style="padding: 10px 0 20px 0;">
-          <a href="${link}" style="display: inline-block; padding: 18px 36px; background-color: #FF4F00; color: #FFFFFF; text-decoration: none; border-radius: 14px; font-weight: 500; font-size: 16px;">${content.button}</a>
+          <a href="${link}" style="display: inline-block; padding: 18px 36px; background-color: #000000; color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 14px; letter-spacing: 0.05em;">${content.button}</a>
         </td>
       </tr>
     </table>
