@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
           const { PricingEngine } = await import('@/lib/pricing-engine');
           const knowledge = KnowledgeService.getInstance();
           const coreBriefing = await knowledge.getCoreBriefing();
-          const journeyBriefing = await knowledge.getJourneyContext('agency');
+          const voicyBriefing = await knowledge.getFullVoicyBriefing();
           const isAdmin = senderId !== undefined && isAllowedUser(senderId);
           const gemini = GeminiService.getInstance();
 
@@ -203,12 +203,11 @@ ACTUELE TARIEVEN (2026):
             // VOICY: Chatty domain — voices, pricing, studio (Ademing vibe)
             const prompt = buildVoicyTelegramPrompt({
               userMessage: payload,
-              coreBriefing: `${coreBriefing}\n${pricingContext}`,
-              journeyBriefing,
+              coreBriefing: `${coreBriefing}\n${voicyBriefing}\n${pricingContext}`,
               isAdmin,
             });
             replyText = await gemini.generateText(prompt);
-            console.log('[Telegram-Voicy] Response generated for chat', chatId);
+            console.log('[Telegram-Voicy] Full Knowledge Response generated for chat', chatId);
           } else {
             // BOB: AI-powered response via Gemini
             const prompt = `
