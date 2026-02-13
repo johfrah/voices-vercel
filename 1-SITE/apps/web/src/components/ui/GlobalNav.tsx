@@ -5,21 +5,177 @@ import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { MarketManager } from '@config/market-manager';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Activity, Bell, Brain, Lock, Mail, Unlock } from 'lucide-react';
+import { 
+  Activity, 
+  Bell, 
+  Brain, 
+  Lock, 
+  Mail, 
+  Unlock, 
+  User, 
+  Heart, 
+  ShoppingBag, 
+  LogOut, 
+  Settings, 
+  LayoutDashboard,
+  ChevronRight,
+  Globe
+} from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState, useRef } from 'react';
 
 import { TextInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
-
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 /**
- * GLOBAL NAVIGATION
- * Focus: Menselijkheid & Duidelijkheid (Bijbel-compliant)
+ * 💎 HEADER ICON INSTRUMENT
+ * Focus: High-End Interactie & Duidelijkheid
  */
+const HeaderIcon = ({ 
+  src, 
+  icon: Icon,
+  alt, 
+  badge, 
+  children,
+  onClick,
+  href,
+  isActive
+}: { 
+  src?: string, 
+  icon?: any,
+  alt: string, 
+  badge?: number, 
+  children?: React.ReactNode,
+  onClick?: () => void,
+  href?: string,
+  isActive?: boolean
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const timeoutRef = useRef<any>(null);
+  const { playClick, playSwell } = useSonicDNA();
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setIsOpen(true);
+    playSwell();
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setIsOpen(false), 300);
+  };
+
+  const content = (
+    <div 
+      className="relative"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div 
+        onClick={() => {
+          playClick('soft');
+          if (onClick) onClick();
+        }}
+        className={`p-2 rounded-xl transition-all duration-500 cursor-pointer group/icon ${
+          isActive ? 'bg-primary/10 text-primary' : 'hover:bg-va-black/5 text-va-black'
+        }`}
+      >
+        {src ? (
+          <img 
+            src={src} 
+            alt={alt} 
+            className="w-6 h-6 transition-transform duration-500 group-hover/icon:scale-110" 
+            style={{ filter: 'brightness(0)' }}
+          />
+        ) : Icon ? (
+          <Icon size={22} strokeWidth={1.5} className="transition-transform duration-500 group-hover/icon:scale-110" />
+        ) : null}
+
+        {badge !== undefined && badge > 0 && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+            {badge}
+          </span>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {isOpen && children && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-full right-0 mt-2 w-64 bg-white/80 backdrop-blur-2xl rounded-[24px] shadow-aura border border-black/5 overflow-hidden z-50"
+          >
+            <div className="p-2">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  if (href && !children) {
+    return <Link href={href}>{content}</Link>;
+  }
+
+  return content;
+};
+
+/**
+ * 💎 DROPDOWN ITEM
+ */
+const DropdownItem = ({ 
+  icon: Icon, 
+  label, 
+  href, 
+  onClick, 
+  variant = 'default',
+  badge 
+}: { 
+  icon: any, 
+  label: string | React.ReactNode, 
+  href?: string, 
+  onClick?: () => void, 
+  variant?: 'default' | 'danger' | 'primary',
+  badge?: string | number
+}) => {
+  const { playClick } = useSonicDNA();
+  const router = useRouter();
+
+  const handleClick = () => {
+    playClick(variant === 'primary' ? 'pro' : 'soft');
+    if (onClick) onClick();
+    if (href) router.push(href);
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${
+        variant === 'danger' ? 'hover:bg-red-50 text-red-500' : 
+        variant === 'primary' ? 'hover:bg-primary/10 text-primary' :
+        'hover:bg-va-black/5 text-va-black/60 hover:text-va-black'
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <Icon size={16} strokeWidth={variant === 'primary' ? 2 : 1.5} />
+        <span className="text-[11px] font-black uppercase tracking-widest">{label}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        {badge && (
+          <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-[8px] font-black rounded-md">
+            {badge}
+          </span>
+        )}
+        <ChevronRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+      </div>
+    </button>
+  );
+};
 
 export default function GlobalNav() {
   const pathname = usePathname();
@@ -28,10 +184,7 @@ export default function GlobalNav() {
   const auth = useAuth();
   const isAdmin = auth.isAdmin;
   const market = MarketManager.getCurrentMarket(); 
-  const showVoicy = market.has_voicy || market.market_code === 'BE' || market.market_code === 'NLNL' || market.market_code === 'JOHFRAI';
-  const isPortfolio = market.market_code === 'JOHFRAH';
   const [mounted, setMounted] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [links, setLinks] = useState<any[]>([
     { name: 'Onze Stemmen', href: '/agency', key: 'nav.my_voice' },
     { name: 'Werkwijze', href: '/#how-it-works', key: 'nav.how_it_works' },
@@ -40,6 +193,7 @@ export default function GlobalNav() {
   ]);
 
   useEffect(() => {
+    setMounted(true);
     if (market.market_code === 'ADEMING') {
       setLinks([
         { name: 'Meditaties', href: '/ademing', key: 'nav.meditations' },
@@ -56,44 +210,7 @@ export default function GlobalNav() {
     }
   }, [market.market_code]);
 
-  const notifications = [
-    { id: 1, title: 'Nieuwe offerte-aanvraag', user: 'Greenpeace', type: 'mail', time: '5m' },
-    { id: 2, title: 'Factuur Christina', user: 'Wacht op goedkeuring', type: 'approval', time: '12m' },
-    { id: 3, title: 'Nieuwe FAQ gevonden', user: 'Voicy Brain', type: 'ai', time: '1u' },
-  ];
-
-  useEffect(() => {
-    setMounted(true);
-    async function fetchNav() {
-      try {
-        const response = await fetch('/api/config/nav/main_nav');
-        if (!response.ok) {
-          console.warn('Nav API returned non-ok status, using defaults');
-          return;
-        }
-        const data = await response.json();
-        
-        // 🛡️ CHRIS-FIX: Overschrijf alleen als we data hebben EN we niet in een specifieke journey zitten die eigen links heeft
-        if (data && data.items && data.items.length > 0 && market.market_code !== 'ADEMING' && market.market_code !== 'JOHFRAH') {
-          setLinks(data.items);
-        } else {
-          console.log('🛡️ Keeping journey-specific or default links');
-        }
-      } catch (error) {
-        console.error('Failed to fetch nav, using defaults:', error);
-      }
-    }
-    fetchNav();
-  }, []);
-
   if (!mounted) return null;
-
-  // Verberg navigatie in de mailbox
-  if (pathname.includes('/account/mailbox')) {
-    return null;
-  }
-
-  // Navigatie is altijd zichtbaar voor alle gebruikers op alle pagina's
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 px-8 py-6 flex justify-between items-center bg-white/50 backdrop-blur-xl border-b border-black/5 golden-curve md:px-8 md:py-6 px-4 py-4">
@@ -104,14 +221,14 @@ export default function GlobalNav() {
         onMouseEnter={() => playSwell()}
       >
         {market.market_code === 'JOHFRAH' || (typeof window !== 'undefined' && window.location.host.includes('johfrah.be')) ? (
-          <span className="text-xl font-black tracking-tighter uppercase transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap">
+          <span className="text-xl font-black tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap">
             JOHFRAH LEFEBVRE
           </span>
         ) : (
           <VoiceglotImage 
             src={market.logo_url} 
             alt={market.name} 
-            width={142}
+            width={142} 
             height={56}
             priority={true}
             journey="common"
@@ -129,7 +246,7 @@ export default function GlobalNav() {
             href={link.href}
             onClick={() => playClick('soft')}
             onMouseEnter={() => playSwell()}
-            className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
+            className={`text-[10px] font-black tracking-[0.2em] transition-all duration-500 ${
               pathname.startsWith(link.href) ? 'text-primary' : 'text-va-black/30 hover:text-va-black'
             }`}
           >
@@ -138,126 +255,133 @@ export default function GlobalNav() {
         ))}
       </div>
 
-      <div className="flex gap-4 items-center">
-        {isAdmin && (
-          <div className="relative">
-            <button
-              onClick={() => {
-                playClick('soft');
-                setShowNotifications(!showNotifications);
-              }}
-              className={`p-3 rounded-full transition-all relative ${showNotifications ? 'bg-va-black text-white' : 'bg-va-black/5 text-va-black hover:bg-va-black/10'}`}
-            >
-              <Bell size={16} />
-              <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-primary border-2 border-white rounded-full" />
-            </button>
-
-            <AnimatePresence>
-              {showNotifications && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute top-full right-0 mt-4 w-80 bg-white rounded-[32px] shadow-2xl border border-black/5 overflow-hidden z-[100]"
-                >
-                  <div className="p-6 border-b border-black/5 flex justify-between items-center">
-                    <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/40">
-                      <VoiceglotText translationKey="nav.notifications.title" defaultText="Meldingencentrum" />
-                    </TextInstrument>
-                    <span className="px-2 py-0.5 bg-primary text-white text-[8px] font-black rounded-full uppercase">
-                      3 <VoiceglotText translationKey="common.new" defaultText="Nieuw" />
-                    </span>
-                  </div>
-                  <div className="max-h-[400px] overflow-y-auto">
-                    {notifications.map((n) => (
-                      <Link 
-                        key={n.id} 
-                        href={n.type === 'mail' ? '/account/mailbox' : n.type === 'approval' ? '/admin/approvals' : '/admin/dashboard'}
-                        onClick={() => {
-                          playClick('soft');
-                          setShowNotifications(false);
-                          if (n.type === 'ai') {
-                            window.dispatchEvent(new CustomEvent('voicy:suggestion', {
-                              detail: {
-                                title: n.title,
-                                content: `Ik heb een nieuwe FAQ suggestie voor je gevonden: "${n.title}". Wil je dat ik deze toevoeg aan de kennisbank?`,
-                                type: 'ai'
-                              }
-                            }));
-                          }
-                        }}
-                        className="block p-4 hover:bg-va-off-white transition-colors border-b border-black/[0.02] cursor-pointer group"
-                      >
-                        <div className="flex gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                            n.type === 'mail' ? 'bg-blue-500/10 text-blue-500' : 
-                            n.type === 'approval' ? 'bg-orange-500/10 text-orange-500' : 
-                            'bg-purple-500/10 text-purple-500'
-                          }`}>
-                            {n.type === 'mail' ? <Mail size={16} /> : n.type === 'approval' ? <Activity size={16} /> : <Brain size={16} />}
-                          </div>
-                          <div className="min-w-0">
-                            <TextInstrument className="text-xs font-black text-gray-900 truncate">
-                              <VoiceglotText translationKey={`admin.notification.${n.id}.title`} defaultText={n.title} noTranslate={true} />
-                            </TextInstrument>
-                            <TextInstrument className="text-[10px] text-va-black/40 font-bold uppercase tracking-tight">
-                              <VoiceglotText translationKey={`admin.notification.${n.id}.user`} defaultText={n.user} noTranslate={true} />
-                            </TextInstrument>
-                            <TextInstrument className="text-[9px] text-va-black/20 mt-1 font-bold">{n.time}</TextInstrument>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                  <Link 
-                    href="/admin/dashboard" 
-                    onClick={() => setShowNotifications(false)}
-                    className="block p-4 bg-va-black text-white text-center text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all"
-                  >
-                    <VoiceglotText translationKey="nav.notifications.view_all" defaultText="Bekijk alle meldingen" />
-                  </Link>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
-
+      <div className="flex gap-2 items-center">
+        {/* 🛠️ EDIT MODE ICON */}
         {canEdit && (
-          <button
-            onClick={() => {
-              playClick('pro');
-              toggleEditMode();
-            }}
-            className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full transition-all duration-500 ${
-              isEditMode 
-                ? 'bg-primary text-white shadow-primary/20' 
-                : 'bg-va-black/5 text-va-black hover:bg-va-black/10'
-            }`}
+          <HeaderIcon 
+            icon={isEditMode ? Unlock : Lock} 
+            alt="Edit Mode" 
+            isActive={isEditMode}
+            onClick={toggleEditMode}
           >
-            {isEditMode ? <Unlock size={12} /> : <Lock size={12} />}
-            {isEditMode ? (
-              <VoiceglotText translationKey="nav.edit_mode_on" defaultText="Edit Mode ON" />
-            ) : (
-              <VoiceglotText translationKey="nav.edit_mode" defaultText="Edit Mode" />
-            )}
-          </button>
+            <div className="p-4 space-y-4">
+              <div className="flex items-center gap-3 text-primary mb-2">
+                {isEditMode ? <Unlock size={18} /> : <Lock size={18} />}
+                <TextInstrument className="text-xs font-black uppercase tracking-widest">
+                  Edit Mode: {isEditMode ? 'Aan' : 'Uit'}
+                </TextInstrument>
+              </div>
+              <TextInstrument className="text-[10px] text-va-black/40 leading-relaxed font-medium">
+                In Edit Mode kun je teksten en beelden direct op de pagina aanpassen via Voiceglot.
+              </TextInstrument>
+              <button 
+                onClick={toggleEditMode}
+                className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                  isEditMode ? 'bg-va-black text-white' : 'bg-primary text-white shadow-lg shadow-primary/20'
+                }`}
+              >
+                {isEditMode ? 'Uitschakelen' : 'Inschakelen'}
+              </button>
+            </div>
+          </HeaderIcon>
         )}
+
+        {/* 🌐 LANGUAGE ICON */}
         <LanguageSwitcher />
-        {!isPortfolio && (
-        <Link 
-          href={isAdmin ? "/admin/dashboard" : "/auth/login"}
-          onClick={() => playClick('pro')}
-          onMouseEnter={() => playSwell()}
-          className="va-btn-nav hidden md:flex"
+
+        {/* 👤 ACCOUNT ICON */}
+        <HeaderIcon 
+          src="/assets/common/branding/icons/ACCOUNT.svg" 
+          alt="Account"
+          isActive={auth.isAuthenticated}
         >
-            {isAdmin ? (
-              <VoiceglotText translationKey="nav.dashboard" defaultText="Dashboard" />
-            ) : (
-              <VoiceglotText translationKey="nav.login" defaultText="Inloggen" />
-            )}
-          </Link>
-        )}
+          {auth.isAuthenticated ? (
+            <>
+              <div className="px-4 py-4 border-b border-black/5 mb-2">
+                <TextInstrument className="text-[10px] font-black text-va-black/30 uppercase tracking-widest mb-1">Ingelogd als</TextInstrument>
+                <TextInstrument className="text-sm font-black text-va-black truncate">{auth.user?.email}</TextInstrument>
+              </div>
+              {isAdmin && (
+                <DropdownItem 
+                  icon={LayoutDashboard} 
+                  label="Admin Dashboard" 
+                  href="/admin/dashboard" 
+                  variant="primary"
+                  badge="God Mode"
+                />
+              )}
+              <DropdownItem icon={User} label="Mijn Profiel" href="/account" />
+              <DropdownItem icon={ShoppingBag} label="Bestellingen" href="/account/orders" />
+              <DropdownItem icon={Heart} label="Favorieten" href="/account/favorites" />
+              <DropdownItem icon={Settings} label="Instellingen" href="/account/settings" />
+              <div className="mt-2 pt-2 border-t border-black/5">
+                <DropdownItem 
+                  icon={LogOut} 
+                  label="Uitloggen" 
+                  onClick={() => auth.logout()} 
+                  variant="danger" 
+                />
+              </div>
+            </>
+          ) : (
+            <div className="p-4 space-y-4 text-center">
+              <div className="w-12 h-12 bg-va-black/5 rounded-full flex items-center justify-center mx-auto mb-2">
+                <User size={24} className="text-va-black/20" />
+              </div>
+              <div>
+                <HeadingInstrument level={4} className="text-sm font-black uppercase tracking-tight mb-1">Welkom bij Voices</HeadingInstrument>
+                <TextInstrument className="text-[10px] text-va-black/40 font-medium">Log in om je favoriete stemmen op te slaan en bestellingen te beheren.</TextInstrument>
+              </div>
+              <div className="space-y-2">
+                <Link href="/auth/login" className="block w-full py-3 bg-va-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all">
+                  Inloggen
+                </Link>
+                <Link href="/auth/register" className="block w-full py-3 border border-black/10 text-va-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-va-black/5 transition-all">
+                  Account aanmaken
+                </Link>
+              </div>
+            </div>
+          )}
+        </HeaderIcon>
+
+        {/* ❤️ FAVORITES ICON */}
+        <HeaderIcon 
+          src="/assets/common/branding/icons/FAVORITES.svg" 
+          alt="Favorieten"
+          href="/account/favorites"
+        >
+          <div className="p-4 text-center">
+            <Heart size={24} className="text-primary/20 mx-auto mb-3" />
+            <TextInstrument className="text-xs font-black uppercase tracking-widest mb-2">Jouw Favorieten</TextInstrument>
+            <TextInstrument className="text-[10px] text-va-black/40 font-medium mb-4">Je hebt nog geen stemmen opgeslagen.</TextInstrument>
+            <Link href="/agency" className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">
+              Ontdek stemmen
+            </Link>
+          </div>
+        </HeaderIcon>
+
+        {/* 🛍️ CART ICON */}
+        <HeaderIcon 
+          src="/assets/common/branding/icons/CART.svg" 
+          alt="Winkelmandje" 
+          badge={0}
+          href="/checkout"
+        >
+          <div className="p-4 text-center">
+            <ShoppingBag size={24} className="text-va-black/10 mx-auto mb-3" />
+            <TextInstrument className="text-xs font-black uppercase tracking-widest mb-2">Winkelmandje</TextInstrument>
+            <TextInstrument className="text-[10px] text-va-black/40 font-medium mb-4">Je mandje is nog leeg.</TextInstrument>
+            <Link href="/agency" className="block w-full py-3 bg-va-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all">
+              Start een project
+            </Link>
+          </div>
+        </HeaderIcon>
       </div>
     </nav>
   );
+}
+
+function HeadingInstrument({ level, className, children }: { level: number, className?: string, children: React.ReactNode }) {
+  const Tag = `h${level}` as any;
+  return <Tag className={className}>{children}</Tag>;
 }
