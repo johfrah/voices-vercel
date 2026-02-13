@@ -25,9 +25,9 @@ export class GeminiService {
    * Helper om het model op te halen met de juiste v1beta compatibiliteit
    */
   private getModel() {
-    // 🚀 GEMINI 2026 UPGRADE: Gebruik gemini-2.0-flash voor optimale performance
+    // 🚀 GEMINI 2026 UPGRADE: Gebruik gemini-1.5-flash voor maximale stabiliteit
     // Fallback naar gemini-flash-latest voor maximale stabiliteit
-    return this.genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
+    return this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   }
 
   /**
