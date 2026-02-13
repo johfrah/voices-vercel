@@ -9,7 +9,7 @@ Bij Voices.be staat kwaliteit centraal. Van de eerste proefopname tot de uiteind
 
 ## Onze kwaliteitsgarantie
 ### 100% tevredenheid of een heropname
-Een tekst inspreken blijft mensenwerk. Onze klanten zijn voor 99,9% tevreden. Toch kan er altijd iets verbeterd worden. Is de toon niet helemaal wat je zocht? Vraag dan met één klik een gratis retake aan via je dashboard. Wij gaan door tot je tevreden bent.
+Een tekst inspreken blijft mensenwerk. Onze klanten zijn voor 99,9% tevreden. Toch kan er altijd iets verbeterd worden. Is de toon niet helemaal wat je zocht? Vraag dan met één klik een gratis retake aan via je dashboard. Wij gaan door tot je tevreden bent. Let op: voor tekstwijzigingen achteraf rekenen we een klein supplement.
 
 ### Echte moedertaalsprekers
 Al onze stemmen zijn moedertaalsprekers. Ze wonen en werken in hun eigen land. Dat garandeert de juiste uitspraak. Zo krijg je ook de juiste culturele nuance voor je internationale klanten.

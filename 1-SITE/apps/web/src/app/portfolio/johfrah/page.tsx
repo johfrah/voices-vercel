@@ -20,7 +20,7 @@ import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: "Johfrah | De Stem achter het Verhaal",
-  description: "Warme Vlaamse voice-over & International Emmy Award winnend regisseur.",
+  description: "Warme Vlaamse voice-over & regisseur.",
 };
 
 export default function JohfrahPortfolioPage() {
@@ -50,7 +50,7 @@ async function JohfrahContent() {
       title: "Presentator & Reporter",
       intro: "Ik breng uw verhaal op een authentieke en boeiende manier tot leven.",
       experience: "Mijn ervaring als televisieregisseur helpt mij om uw boodschap op een warme, spontane en authentieke manier over te brengen.",
-      award: "International Emmy Award winnaar."
+      award: "Regisseur."
     },
     reporter_videos: {
       unizo: "fma3fyhhz",
@@ -115,13 +115,13 @@ async function JohfrahContent() {
                 <div className="absolute inset-0 bg-gradient-to-t from-va-black/10 to-transparent opacity-30" />
               </div>
               
-              {/* Floating Award Badge */}
-              <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-[20px] shadow-aura flex items-center gap-4 max-w-[200px] animate-float border border-black/[0.03]">
+              {/* Floating Award Badge - Removed per user request */}
+              {/* <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-[20px] shadow-aura flex items-center gap-4 max-w-[200px] animate-float border border-black/[0.03]">
                 <Award className="text-primary shrink-0" size={32} strokeWidth={1.5} />
                 <TextInstrument className="text-[10px] font-black leading-tight uppercase tracking-wider text-va-black/60">
                   Emmy Award Winnaar
                 </TextInstrument>
-              </div>
+              </div> */}
             </div>
           </div>
         </ContainerInstrument>

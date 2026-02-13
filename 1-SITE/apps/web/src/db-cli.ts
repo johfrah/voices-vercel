@@ -1,6 +1,6 @@
-import { syncAllData, seedInstructorBios, db } from './lib/sync/bridge';
 import { contentArticles, contentBlocks } from '@db/schema';
 import { eq } from "drizzle-orm";
+import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
 
 /**
  * VOICES OS - DATABASE CLI TOOL (MARK & MOBY EDITION)
@@ -29,7 +29,7 @@ async function injectMarkMobyContent() {
   const garIntro = "Kwaliteit zonder omwegen. Wij staan achter ons ambacht.";
 
   const garItems = [
-    { title: "Retakes inbegrepen", content: "Niet helemaal tevreden over de uitspraak of het tempo? We passen het aan tot het perfect is. Zonder extra kosten.", order: 1 },
+    { title: "Retakes inbegrepen", content: "Niet helemaal tevreden over de uitspraak of het tempo? We passen het kosteloos aan tot het perfect is. Let op: voor tekstwijzigingen achteraf rekenen we een klein supplement.", order: 1 },
     { title: "Snelle levering", content: "Tijd is kostbaar. De meeste opnames worden binnen 24 uur geleverd, vaak zelfs sneller.", order: 2 },
     { title: "Professionele mix", content: "Elke opname wordt in onze studio afgemixt op 48kHz broadcast kwaliteit. Klaar voor elk platform.", order: 3 },
     { title: "Opknippen inbegrepen", content: "Heb je losse bestanden nodig voor je telefooncentrale? Wij knippen ze voor je op en leveren ze in het juiste formaat.", order: 4 }
@@ -43,7 +43,7 @@ async function injectMarkMobyContent() {
   const faqItems = [
     { title: "Hoe snel heb ik mijn opname?", content: "Meestal heb je de opname de volgende dag al. We garanderen levering binnen 3 werkdagen. Heb je haast? Laat het ons weten via de chat, dan kijken we wat er direct mogelijk is.", order: 1 },
     { title: "Wat kost een stem?", content: "De prijs hangt af van de lengte van je tekst en het type project. Een voicemail heeft een ander tarief dan een nationale TV-spot. Gebruik onze calculator voor een directe prijsopgave zonder verrassingen.", order: 2 },
-    { title: "Kan ik de opname nog aanpassen?", content: "Natuurlijk. Een retake voor uitspraak, tempo of intonatie is altijd inbegrepen. We stoppen pas als het precies zo klinkt als jij in je hoofd hebt.", order: 3 }
+    { title: "Kan ik de opname nog aanpassen?", content: "Natuurlijk. Een retake voor uitspraak, tempo of intonatie is altijd inbegrepen. Voor wijzigingen in de tekst na de opname rekenen we een vast tarief.", order: 3 }
   ];
 
   try {

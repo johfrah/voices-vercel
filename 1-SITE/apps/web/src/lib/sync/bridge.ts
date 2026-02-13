@@ -1,9 +1,9 @@
 export { db } from '@db';
-import { 
-  actors, 
-  actorDemos, 
-  users,
-  instructors
+import {
+    actorDemos,
+    actors,
+    instructors,
+    users
 } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import * as fs from 'fs';

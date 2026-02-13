@@ -1,10 +1,9 @@
 "use client";
 
-import { CheckCircle2, ShieldCheck, Zap, Globe, DollarSign, Archive } from "lucide-react";
-import React from 'react';
+import { Archive, DollarSign, Globe, ShieldCheck, Zap } from "lucide-react";
 import { BentoCard, BentoGrid } from "./BentoGrid";
-import { VoiceglotText } from "./VoiceglotText";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
+import { VoiceglotText } from "./VoiceglotText";
 
 /**
  * GUARANTEES BENTO
@@ -26,7 +25,7 @@ export const GuaranteesBento = () => {
           <TextInstrument className="text-white/40 font-medium max-w-md text-lg">
             <VoiceglotText 
               translationKey="guarantees.satisfaction.description" 
-              defaultText="Is de toon niet helemaal wat je zocht? Vraag met één klik een gratis retake aan. Wij gaan door tot het perfect klinkt." 
+              defaultText="Is de toon niet helemaal wat je zocht? Vraag met één klik een gratis retake aan. Let op: voor tekstwijzigingen achteraf rekenen we een klein supplement." 
             />
           </TextInstrument>
         </ContainerInstrument>

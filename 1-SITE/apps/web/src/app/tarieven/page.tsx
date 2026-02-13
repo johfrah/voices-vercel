@@ -34,7 +34,7 @@ export default function TarievenPage() {
             <p>
               <VoiceglotText 
                 translationKey="pricing.footer_text" 
-                defaultText="Onze tarieven zijn inclusief studiosessie, nabewerking en onbeperkte retakes op tone-of-voice. Geen verrassingen achteraf, gewoon de beste kwaliteit voor de scherpste prijs." 
+                defaultText="Onze tarieven zijn inclusief studiosessie, nabewerking en retakes op tone-of-voice. Voor tekstwijzigingen achteraf rekenen we een klein supplement. Geen verrassingen achteraf, gewoon de beste kwaliteit." 
               />
             </p>
           </div>

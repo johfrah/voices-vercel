@@ -13,7 +13,7 @@ import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: "Over Johfrah | De stem achter het verhaal",
-  description: "Ontdek het verhaal van Johfrah Lefebvre: van Emmy Award winnend regisseur tot warme Vlaamse voice-over.",
+  description: "Ontdek het verhaal van Johfrah Lefebvre: van regisseur tot warme Vlaamse voice-over.",
 };
 
 export default function JohfrahAboutPage() {
@@ -55,7 +55,7 @@ export default function JohfrahAboutPage() {
                   Vandaag combineer ik die twee werelden. Ik spreek niet alleen teksten in; ik regisseer ze terwijl ik ze uitspreek. Ik begrijp wat een editor nodig heeft, wat een regisseur zoekt en vooral: wat een luisteraar wil horen.
                 </p>
                 <p>
-                  Met een International Emmy Award op de schouw en duizenden uren in de studio, breng ik een niveau van professionaliteit en rust mee naar elk project.
+                  Met duizenden uren in de studio, breng ik een niveau van professionaliteit en rust mee naar elk project.
                 </p>
               </div>
 
@@ -66,7 +66,7 @@ export default function JohfrahAboutPage() {
                     <TextInstrument className="font-black uppercase text-xs tracking-widest">Erkenning</TextInstrument>
                   </div>
                   <TextInstrument className="text-sm font-medium">
-                    Winnaar van een International Emmy Award voor regie. Een bewijs van mijn oog voor detail en vertelkracht.
+                    Regisseur met een oog voor detail en vertelkracht.
                   </TextInstrument>
                 </div>
 

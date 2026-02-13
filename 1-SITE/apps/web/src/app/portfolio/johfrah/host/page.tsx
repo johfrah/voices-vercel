@@ -13,7 +13,7 @@ import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: "Host & Reporter | Johfrah",
-  description: "Internationaal bekroonde regisseur en reporter. Johfrah brengt verhalen tot leven als host en presentator.",
+  description: "Regisseur en reporter. Johfrah brengt verhalen tot leven als host en presentator.",
 };
 
 export default function JohfrahHostPage() {
@@ -38,14 +38,14 @@ export default function JohfrahHostPage() {
               </HeadingInstrument>
               
               <TextInstrument className="text-xl text-va-black/60 leading-relaxed">
-                Als internationaal Emmy Award winnend regisseur begrijp ik hoe een verhaal verteld moet worden. Niet als een &apos;pratend hoofd&apos;, maar als een menselijke verbinder.
+                Als regisseur begrijp ik hoe een verhaal verteld moet worden. Niet als een &apos;pratend hoofd&apos;, maar als een menselijke verbinder.
               </TextInstrument>
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="p-6 bg-white rounded-3xl shadow-sm border border-black/5">
                   <Award className="text-primary mb-4" size={24} />
                   <TextInstrument className="font-black uppercase text-[10px] tracking-widest mb-1">Ervaring</TextInstrument>
-                  <TextInstrument className="text-sm font-bold">Emmy Award Winnaar</TextInstrument>
+                  <TextInstrument className="text-sm font-bold">Regisseur</TextInstrument>
                 </div>
                 <div className="p-6 bg-white rounded-3xl shadow-sm border border-black/5">
                   <Camera className="text-primary mb-4" size={24} />

@@ -446,7 +446,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   ) : (
                     <VoiceglotText 
                       translationKey="pricing.disclaimer" 
-                      defaultText="Inclusief studiosessie, nabewerking en retakes. Geen verrassingen." 
+                      defaultText="Inclusief studiosessie, nabewerking en retakes op tone-of-voice. Geen verrassingen." 
                     />
                   )}
                 </p>

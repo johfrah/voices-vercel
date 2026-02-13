@@ -83,42 +83,21 @@ export async function middleware(request: NextRequest) {
   // Als de site in 'under construction' modus staat, laten we alleen admins door.
   // We gebruiken een environment variable of een cookie voor de bypass.
   const isUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true'
-  const isAdmin = request.cookies.get('voices_role')?.value === 'admin'
+  const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || request.cookies.get('sb-access-token') !== undefined
   const isAuthPath = pathname.startsWith('/auth')
-  const isUnderConstructionPath = pathname === '/under-construction'
+  const isUnderConstructionPath = pathname === '/under-construction' || pathname === '/under-construction/'
+
+  if (isUnderConstruction && !isAdmin && !isAuthPath && !isUnderConstructionPath) {
+    url.pathname = '/under-construction'
+    const response = NextResponse.redirect(url)
+    // Voeg een header toe zodat we in de layout weten dat we in construction mode zitten
+    response.headers.set('x-voices-under-construction', 'true')
+    return response
+  }
 
   // 🛡️ REDIRECT OLD SIGNUP TO UNIVERSAL LOGIN
   if (pathname === '/auth/signup') {
     url.pathname = '/auth/login'
-    return NextResponse.redirect(url)
-  }
-
-  // 🩹 SELF-HEALING: Redirect kapotte links naar de juiste pagina
-  // Alleen redirecten als we zeker weten dat het een oude link is die niet door de slug handler wordt gepakt
-  const priceRedirects: Record<string, string> = {
-    '/prices': '/price',
-    '/tarieven': '/price',
-    '/prijzen': '/price',
-    '/price': '/agency', // 🩹 TEMP FIX: Redirect /price to agency until dedicated page exists
-  }
-  const normalizedPath = pathname.replace(/\/$/, '') || '/'
-  
-  // Voorkom oneindige redirects: redirect alleen als het pad NIET al /price is
-  if (normalizedPath !== '/price' && (priceRedirects[normalizedPath] || priceRedirects[pathname])) {
-    url.pathname = priceRedirects[normalizedPath] || priceRedirects[pathname]
-    return NextResponse.redirect(url)
-  }
-
-  // 🩹 SELF-HEALING: Redirect /[locale]/price naar /price
-  // Anders 404 wanneer iemand op FR/EN klikt en naar prijzen gaat
-  const localePriceMatch = pathname.match(/^\/(fr|en|nl|de|es|it|pt)\/(price|prices|tarieven|prijzen)\/?$/i)
-  if (localePriceMatch) {
-    url.pathname = `/price`
-    return NextResponse.redirect(url)
-  }
-
-  if (isUnderConstruction && !isAdmin && !isAuthPath && !isUnderConstructionPath) {
-    url.pathname = '/under-construction'
     return NextResponse.redirect(url)
   }
 

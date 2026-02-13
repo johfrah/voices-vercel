@@ -105,6 +105,7 @@ export default function RootLayout({
 }>) {
   const headersList = headers();
   const host = headersList.get("host") || "voices.be";
+  const isUnderConstruction = headersList.get('x-voices-under-construction') === 'true' || headersList.get('x-voices-pathname') === '/under-construction';
   const market = getMarketSafe(host);
   const isAdeming = market.market_code === 'ADEMING';
 
@@ -126,6 +127,20 @@ export default function RootLayout({
       "availableLanguage": ["Dutch", "French", "English"]
     }
   };
+
+  // 🚧 UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer
+  if (isUnderConstruction) {
+    return (
+      <RootLayoutInstrument lang={market.language} className={`${raleway.className} theme-${market.theme} ${raleway.variable}`}>
+        <Providers>
+          <SonicDNAHandler />
+          <PageWrapperInstrument>
+            {children}
+          </PageWrapperInstrument>
+        </Providers>
+      </RootLayoutInstrument>
+    );
+  }
 
   return (
     <RootLayoutInstrument lang={market.language} className={`${raleway.className} theme-${market.theme} ${raleway.variable}`}>
