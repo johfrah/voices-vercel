@@ -50,7 +50,7 @@ export default function AdminDatabasePage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft size={12} /> 
+            <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -109,7 +109,7 @@ export default function AdminDatabasePage() {
 
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
           <div className="flex items-center gap-3 text-va-black/40">
-            <Zap size={20} />
+            <Zap strokeWidth={1.5} size={20} />
             <TextInstrument className="text-[15px] font-black tracking-widest">Queries/sec</TextInstrument>
           </div>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-primary">142</HeadingInstrument>
@@ -147,7 +147,7 @@ export default function AdminDatabasePage() {
       {/* Warning */}
       <ContainerInstrument className="p-8 bg-red-500/5 border border-red-500/10 rounded-[32px] flex items-center gap-6">
         <div className="w-16 h-16 bg-red-500 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-red-500/20">
-          <ShieldAlert size={32} />
+          <Shield strokeWidth={1.5}Alert size={32} />
         </div>
         <div className="space-y-1">
           <HeadingInstrument level={4} className="text-red-500 font-black tracking-tight">NUCLEAR WARNING</HeadingInstrument>

@@ -22,7 +22,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <EditModeProvider>
           <VoicesStateProvider>
             <GlobalAudioProvider>
-              <CheckoutProvider>
+              <Check strokeWidth={1.5}outProvider>
                 {children}
               </CheckoutProvider>
             </GlobalAudioProvider>

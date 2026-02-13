@@ -125,7 +125,7 @@ export const LanguageSwitcher: React.FC = () => {
                         <span className={`text-[15px] mt-0.5 font-medium ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>{lang.native}</span>
                       </div>
                     </div>
-                    {isActive ? <Check size={14} className="text-white" /> : <ChevronRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
+                    {isActive ? <Check strokeWidth={1.5} size={14} className="text-white" /> : <ChevronRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
                   </button>
                 );
               })}

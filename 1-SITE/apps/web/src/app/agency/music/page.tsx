@@ -128,7 +128,7 @@ export default function MusicLibraryPage() {
                             selectedTrackId === track.id ? "bg-primary text-white" : "bg-va-black text-white hover:bg-primary"
                           )}
                         >
-                          {selectedTrackId === track.id ? <Check size={20} /> : <ArrowRight size={20} />}
+                          {selectedTrackId === track.id ? <Check strokeWidth={1.5} size={20} /> : <ArrowRight strokeWidth={1.5} size={20} />}
                         </button>
                       </div>
                     </div>
@@ -171,7 +171,7 @@ export default function MusicLibraryPage() {
                               )}
                             >
                               <div className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center", options.asBackground ? "bg-primary border-primary text-white" : "border-white/20")}>
-                                {options.asBackground && <Check size={12} />}
+                                {options.asBackground && <Check strokeWidth={1.5} size={12} />}
                               </div>
                               <div>
                                 <p className="text-[15px] font-black tracking-tight">Achtergrondmuziek</p>
@@ -187,7 +187,7 @@ export default function MusicLibraryPage() {
                               )}
                             >
                               <div className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center", options.asHoldMusic ? "bg-primary border-primary text-white" : "border-white/20")}>
-                                {options.asHoldMusic && <Check size={12} />}
+                                {options.asHoldMusic && <Check strokeWidth={1.5} size={12} />}
                               </div>
                               <div>
                                 <p className="text-[15px] font-black tracking-tight">Wachtmuziek</p>

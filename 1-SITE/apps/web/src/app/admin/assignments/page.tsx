@@ -116,7 +116,7 @@ export default async function ActorAssignmentCockpit() {
 
                 <div className="flex items-center gap-4 px-6 border-l border-black/5">
                   <div className="flex flex-col items-center">
-                    <Mail size={14} className={clsx(item.emailStatus ? "text-green-500" : "text-slate-300")} />
+                    <Mail strokeWidth={1.5} size={14} className={clsx(item.emailStatus ? "text-green-500" : "text-slate-300")} />
                     <TextInstrument className="text-[15px] font-black mt-1">
                       <VoiceglotText translationKey="common.sent" defaultText="Sent" />
                     </TextInstrument>
@@ -131,7 +131,7 @@ export default async function ActorAssignmentCockpit() {
 
                 <div className="flex flex-col gap-1 px-6 border-l border-black/5 min-w-[140px]">
                   <div className="flex items-center gap-2">
-                    <Send size={10} className="text-black/20" />
+                    <Send strokeWidth={1.5} size={10} className="text-black/20" />
                     <TextInstrument className="text-[15px] font-bold text-black/40 tracking-tight">
                       {item.sentAtFormatted}
                     </TextInstrument>
@@ -149,7 +149,7 @@ export default async function ActorAssignmentCockpit() {
                     "px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest flex items-center gap-2",
                     item.deliveryStatus === 'approved' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
                   )}>
-                    {item.deliveryStatus === 'approved' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
+                    {item.deliveryStatus === 'approved' ? <Check strokeWidth={1.5}Circle2 size={12} /> : <Clock size={12} />}
                     <VoiceglotText translationKey={`common.status.${item.deliveryStatus}`} defaultText={item.deliveryStatus || ''} />
                   </div>
                   {item.isOverdue && (

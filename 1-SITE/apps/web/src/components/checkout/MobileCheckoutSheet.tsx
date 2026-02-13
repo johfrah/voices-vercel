@@ -279,7 +279,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                     onClick={() => setStep('summary')}
                     className="mt-6 w-full py-4 bg-va-black text-white rounded-xl text-[15px] font-black tracking-widest flex items-center justify-center gap-2"
                   >
-                    <VoiceglotText translationKey="checkout.mobile.confirm_briefing" defaultText="Bevestig Briefing" /> <ArrowRight size={14} />
+                    <VoiceglotText translationKey="checkout.mobile.confirm_briefing" defaultText="Bevestig Briefing" /> <ArrowRight strokeWidth={1.5} size={14} />
                   </button>
                 </BentoCard>
               )}
@@ -293,7 +293,7 @@ export const MobileCheckoutSheet: React.FC = () => {
               className="py-12 text-center space-y-6"
             >
               <div className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 size={48} />
+                <Check strokeWidth={1.5}Circle2 size={48} />
               </div>
               <h2 className="text-4xl font-black tracking-tighter">
                 <VoiceglotText translationKey="checkout.mobile.success_title" defaultText="Bestelling Gelukt!" />

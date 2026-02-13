@@ -77,7 +77,7 @@ export default async function StudioAdminPage() {
         {/* QUICK ACTIONS (Step 3) */}
         <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>
-            <Mail className="text-primary mb-6" size={24} />
+            <Mail strokeWidth={1.5} className="text-primary mb-6" size={24} />
             <TextInstrument className="text-[15px] font-black tracking-widest text-black/30">
               <VoiceglotText translationKey="admin.studio.mail_triggers" defaultText="Smart Mail Triggers" />
             </TextInstrument>
@@ -108,7 +108,7 @@ export default async function StudioAdminPage() {
             </TextInstrument>
           </ContainerInstrument>
           <ButtonInstrument className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all mt-8">
-            <VoiceglotText translationKey="admin.studio.start_upload" defaultText="START BATCH UPLOAD" /> <ArrowRight size={14} />
+            <VoiceglotText translationKey="admin.studio.start_upload" defaultText="START BATCH UPLOAD" /> <ArrowRight strokeWidth={1.5} size={14} />
           </ButtonInstrument>
         </BentoCard>
 

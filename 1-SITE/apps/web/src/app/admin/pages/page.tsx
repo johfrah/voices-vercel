@@ -65,7 +65,7 @@ export default function PageArchitectPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft size={12} /> 
+            <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -86,7 +86,7 @@ export default function PageArchitectPage() {
           </ContainerInstrument>
           
           <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
-            <Plus size={16} /> <VoiceglotText translationKey="admin.architect.new" defaultText="Nieuwe Pagina" />
+            <Plus strokeWidth={1.5} size={16} /> <VoiceglotText translationKey="admin.architect.new" defaultText="Nieuwe Pagina" />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -115,7 +115,7 @@ export default function PageArchitectPage() {
 
             <ContainerInstrument className="flex items-center justify-between pt-8 border-t border-black/5">
               <div className="flex items-center gap-2 text-va-black/20">
-                <Globe size={12} />
+                <Globe strokeWidth={1.5} size={12} />
                 <span className="text-[15px] font-bold tracking-widest">
                   <VoiceglotText translationKey="common.status.live" defaultText="Live" />
                 </span>
@@ -129,7 +129,7 @@ export default function PageArchitectPage() {
 
         <BentoCard span="sm" className="bg-va-black text-white p-8 rounded-[40px] relative overflow-hidden flex flex-col justify-between">
           <ContainerInstrument className="relative z-10">
-            <Zap className="text-primary mb-6" size={32} />
+            <Zap strokeWidth={1.5} className="text-primary mb-6" size={32} />
             <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-4">
               Page Intelligence
             </HeadingInstrument>
@@ -138,7 +138,7 @@ export default function PageArchitectPage() {
             </TextInstrument>
           </ContainerInstrument>
           <ButtonInstrument className="relative z-10 text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
-            Bekijk Suggesties <ArrowRight size={12} />
+            Bekijk Suggesties <ArrowRight strokeWidth={1.5} size={12} />
           </ButtonInstrument>
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[60px]" />
         </BentoCard>

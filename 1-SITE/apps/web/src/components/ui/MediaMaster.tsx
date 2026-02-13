@@ -167,7 +167,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               }}
               className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"
             >
-              <X size={20} />
+              <X strokeWidth={1.5} size={20} />
             </button>
           </div>
           
@@ -176,7 +176,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
             onClick={onClose}
             className="md:hidden absolute -top-2 -right-2 w-8 h-8 rounded-full bg-va-black border border-white/10 flex items-center justify-center text-white/40 shadow-xl"
           >
-            <X size={14} />
+            <X strokeWidth={1.5} size={14} />
           </button>
         </div>
 

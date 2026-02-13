@@ -147,7 +147,7 @@ export function BentoCard({
             onClick={() => playClick('lock')}
             className="bg-va-black text-white p-2.5 rounded-xl hover:bg-primary transition-all shadow-xl active:scale-90"
           >
-            <Lock size={12} />
+            <Lock strokeWidth={1.5} size={12} />
           </ButtonInstrument>
           <ButtonInstrument 
             onMouseEnter={() => playSwell()}

@@ -81,7 +81,7 @@ export const ReviewsInstrument: React.FC<{
             <ContainerInstrument className="space-y-6">
               <ContainerInstrument className="flex gap-1">
                 {[...Array(review.rating)].map((_, i) => (
-                  <Star key={i} size={14} className="text-primary" fill="currentColor" />
+                  <Star strokeWidth={1.5} key={i} size={14} className="text-primary" fill="currentColor" />
                 ))}
               </ContainerInstrument>
               <TextInstrument className="text-sm font-medium leading-relaxed text-va-black/70 italic">

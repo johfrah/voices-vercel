@@ -33,7 +33,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
         href="/studio/instructeurs" 
         className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
       >
-        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeft strokeWidth={1.5} size={14} className="group-hover:-translate-x-1 transition-transform" />
         <VoiceglotText translationKey="common.back_to_instructors" defaultText="TERUG NAAR OVERZICHT" />
       </Link>
 
@@ -70,7 +70,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
               )}
               {instructor.socials?.website && (
                 <a href={instructor.socials.website} target="_blank" className="text-white/20 hover:text-white transition-colors">
-                  <Globe size={20} />
+                  <Globe strokeWidth={1.5} size={20} />
                 </a>
               )}
             </ContainerInstrument>
@@ -110,12 +110,12 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
                   <HeadingInstrument level={4} className="text-lg font-black tracking-tight group-hover:text-primary transition-colors">
                     {workshop.title}
                   </HeadingInstrument>
-                  <ArrowRight size={18} className="text-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                  <ArrowRight strokeWidth={1.5} size={18} className="text-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
                 </div>
                 
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-[15px] font-bold text-black/40 tracking-widest">
-                    <Calendar size={12} /> 
+                    <Calendar strokeWidth={1.5} size={12} /> 
                     {workshop.editions?.[0] 
                       ? new Date(workshop.editions[0].date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })
                       : "Binnenkort"}

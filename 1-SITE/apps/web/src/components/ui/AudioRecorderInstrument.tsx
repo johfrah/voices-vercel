@@ -143,7 +143,7 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
                 {isUploading ? (
                   <><Loader2 size={16} className="animate-spin" /> <VoiceglotText translationKey="recorder.uploading" defaultText="Bezig..." /></>
                 ) : (
-                  <><CheckCircle2 size={16} /> <VoiceglotText translationKey="recorder.send" defaultText="Versturen" /></>
+                  <><Check strokeWidth={1.5}Circle2 size={16} /> <VoiceglotText translationKey="recorder.send" defaultText="Versturen" /></>
                 )}
               </button>
             </div>

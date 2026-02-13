@@ -27,7 +27,7 @@ export default function SkyggeArticlePage() {
             href="/blog" 
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
-            <ArrowLeft size={14} /> 
+            <ArrowLeft strokeWidth={1.5} size={14} /> 
             <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
           </Link>
           <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 ">
@@ -43,7 +43,7 @@ export default function SkyggeArticlePage() {
             span="full" 
             className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-16 !rounded-[20px]"
           >
-            <Quote size={48} className="text-primary/20 mb-8" />
+            <Quote strokeWidth={1.5} size={48} className="text-primary/20 mb-8" />
             <HeadingInstrument level={2} className="text-4xl font-light italic leading-tight mb-8 text-va-black">
               <VoiceglotText 
                 translationKey="story.skygge.quote1" 

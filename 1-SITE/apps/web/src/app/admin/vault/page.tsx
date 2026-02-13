@@ -48,7 +48,7 @@ export default function VaultBrowserPage() {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'script': return <FileText size={16} className="text-blue-500" />;
-      case 'briefing': return <Shield size={16} className="text-orange-500" />;
+      case 'briefing': return <Shield strokeWidth={1.5} size={16} className="text-orange-500" />;
       case 'demo_inbound': return <Mic size={16} className="text-purple-500" />;
       case 'example_video': return <Video size={16} className="text-red-500" />;
       default: return <FileText size={16} className="text-gray-400" />;
@@ -65,7 +65,7 @@ export default function VaultBrowserPage() {
             <ContainerInstrument>
               <ContainerInstrument className="flex items-center gap-3 mb-2">
                 <ButtonInstrument onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-                  <ArrowLeft size={16} />
+                  <ArrowLeft strokeWidth={1.5} size={16} />
                 </ButtonInstrument>
                 <HeadingInstrument level={1} className="text-4xl font-bold tracking-tight text-black">
                   <VoiceglotText translationKey="admin.vault.title" defaultText="The Vault" />
@@ -75,7 +75,7 @@ export default function VaultBrowserPage() {
                 </HeadingInstrument>
               </ContainerInstrument>
               <TextInstrument className="text-gray-500 tracking-widest text-[15px] font-black flex items-center gap-2">
-                <Shield size={12} />
+                <Shield strokeWidth={1.5} size={12} />
                 <VoiceglotText translationKey="admin.vault.description" defaultText="Beveiligde Documenten & Inbound Assets" />
               </TextInstrument>
             </ContainerInstrument>
@@ -150,13 +150,13 @@ export default function VaultBrowserPage() {
                   
                   <ContainerInstrument className="space-y-2">
                     <ContainerInstrument className="flex items-center gap-2 text-[15px] text-gray-400 font-bold tracking-widest">
-                      <Calendar size={10} />
+                      <Calendar strokeWidth={1.5} size={10} />
                       {format(new Date(file.createdAt), 'dd MMM yyyy', { locale: nl })}
                     </ContainerInstrument>
                     
                     {file.customer && (
                       <ContainerInstrument className="flex items-center gap-2 text-[15px] text-gray-600 font-bold">
-                        <User size={10} />
+                        <User strokeWidth={1.5} size={10} />
                         {file.customer.firstName} {file.customer.lastName}
                       </ContainerInstrument>
                     )}
@@ -172,7 +172,7 @@ export default function VaultBrowserPage() {
             </ContainerInstrument>
           ) : (
             <ContainerInstrument className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-              <Shield size={48} className="mx-auto text-gray-300 mb-4" />
+              <Shield strokeWidth={1.5} size={48} className="mx-auto text-gray-300 mb-4" />
               <TextInstrument className="text-gray-500 font-bold">
                 <VoiceglotText translationKey="admin.vault.empty" defaultText="Geen bestanden gevonden in de kluis." />
               </TextInstrument>

@@ -87,7 +87,7 @@ export default async function StudioDashboardPage() {
                         </div>
                       </div>
                     </div>
-                    <ArrowRight size={20} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
+                    <ArrowRight strokeWidth={1.5} size={20} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
                   </a>
                 )
               ))}
@@ -97,7 +97,7 @@ export default async function StudioDashboardPage() {
           {/* 📅 GEPLANDE WORKSHOPS */}
           <BentoCard span="sm" className="bg-white p-10 flex flex-col justify-between border border-black/5 shadow-aura">
             <ContainerInstrument>
-              <Calendar className="text-primary mb-8" size={32} />
+              <Calendar strokeWidth={1.5} className="text-primary mb-8" size={32} />
               <HeadingInstrument level={3} className="text-2xl font-black tracking-tighter mb-6">
                 <VoiceglotText translationKey="studio.dashboard.upcoming" defaultText="Gepland" />
               </HeadingInstrument>
@@ -118,14 +118,14 @@ export default async function StudioDashboardPage() {
             </ContainerInstrument>
             
             <Link href="/studio/kalender" className="text-[15px] font-black tracking-widest text-black/20 hover:text-primary transition-colors flex items-center gap-2">
-              <VoiceglotText translationKey="studio.dashboard.view_calendar" defaultText="BEKIJK VOLLEDIGE KALENDER" /> <ArrowRight size={12} />
+              <VoiceglotText translationKey="studio.dashboard.view_calendar" defaultText="BEKIJK VOLLEDIGE KALENDER" /> <ArrowRight strokeWidth={1.5} size={12} />
             </Link>
           </BentoCard>
 
           {/* 🧬 USER DNA BENTO */}
           <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between">
             <ContainerInstrument>
-              <Star className="text-primary mb-8" size={32} />
+              <Star strokeWidth={1.5} className="text-primary mb-8" size={32} />
               <HeadingInstrument level={3} className="text-2xl font-black tracking-tighter mb-6">
                 <VoiceglotText translationKey="studio.dashboard.dna" defaultText="Jouw User DNA" />
               </HeadingInstrument>
@@ -171,7 +171,7 @@ export default async function StudioDashboardPage() {
               </TextInstrument>
               <Link href="/studio/perfectie-van-intonatie">
                 <ButtonInstrument className="va-btn-pro flex items-center gap-4 group">
-                  <VoiceglotText translationKey="studio.dashboard.next_step_cta" defaultText="ONTDEK DEZE WORKSHOP" /> <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                  <VoiceglotText translationKey="studio.dashboard.next_step_cta" defaultText="ONTDEK DEZE WORKSHOP" /> <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform" />
                 </ButtonInstrument>
               </Link>
             </ContainerInstrument>

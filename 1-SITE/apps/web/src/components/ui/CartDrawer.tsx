@@ -52,7 +52,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               <h2 className="text-xl font-black tracking-tighter">Jouw <span className="text-primary">Mandje</span></h2>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-va-off-white rounded-full transition-all">
-              <X size={24} className="text-va-black/20" />
+              <X strokeWidth={1.5} size={24} className="text-va-black/20" />
             </button>
           </div>
 
@@ -111,7 +111,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 onClick={onClose}
                 className="va-btn-pro w-full flex items-center justify-center gap-3 group !bg-va-black"
               >
-                Doorgaan naar Kassa <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                Doorgaan naar Kassa <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           )}
