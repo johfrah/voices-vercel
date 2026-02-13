@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState } from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument 
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { ChevronDown, ChevronUp, Search, Sparkles } from 'lucide-react';
-import { useSonicDNA } from '@/lib/sonic-dna';
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useSonicDNA } from '@/lib/sonic-dna';
+import { ChevronDown, ChevronUp, Search, Sparkles } from 'lucide-react';
+import { useState } from 'react';
 
 /**
  * ❓ FAQ PAGE (NUCLEAR 2026)

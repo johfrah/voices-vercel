@@ -239,7 +239,7 @@ export default function AdminSettingsPage() {
             <ContainerInstrument className="w-12 h-12 bg-orange-500/10 text-orange-600 rounded-2xl flex items-center justify-center">
               <Clock size={24} />
             </ContainerInstrument>
-            <div>
+            <ContainerInstrument>
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.algemeen.c132c7" defaultText="Algemeen" /></HeadingInstrument>
               <TextInstrument className="text-[15px] text-va-black/40 font-medium"><VoiceglotText translationKey="auto.page.systeem_brede_parame.6a6443" defaultText="Systeem-brede parameters." /></TextInstrument>
             </ContainerInstrument>

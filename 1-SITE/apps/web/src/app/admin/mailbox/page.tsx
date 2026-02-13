@@ -9,7 +9,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useHotkeys } from '@/hooks/useHotkeys';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, ArrowLeft, Brain, Download, FileText, Hash, History, Lock, Mail, MessageSquare, MessageSquareQuote, Mic, Plus, RefreshCw, Search, ShieldCheck, TrendingUp, X, Zap, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';

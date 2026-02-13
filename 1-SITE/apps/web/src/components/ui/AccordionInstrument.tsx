@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { HeadingInstrument, TextInstrument } from './LayoutInstruments';
+import { ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 
 interface AccordionItem {
   id: string;
@@ -43,7 +43,7 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
             }`}
           >
             <ContainerInstrument className="px-10 pb-10 prose prose-lg text-va-black/40 font-light">
-              <div dangerouslySetInnerHTML={{ __html: item.content }} />
+              <ContainerInstrument dangerouslySetInnerHTML={{ __html: item.content }} />
             </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

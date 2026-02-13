@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { HeadingInstrument } from './LayoutInstruments';
+import { ContainerInstrument, HeadingInstrument } from './LayoutInstruments';
 
 interface TabItem {
   id: string;
@@ -40,7 +40,7 @@ export const TabsInstrument: React.FC<{ items: TabItem[] }> = ({ items }) => {
               }`}
             >
               <ContainerInstrument className="prose prose-2xl prose-invert max-w-4xl font-medium leading-tight opacity-80">
-                <div dangerouslySetInnerHTML={{ __html: item.content }} />
+                <ContainerInstrument dangerouslySetInnerHTML={{ __html: item.content }} />
               </ContainerInstrument>
             </ContainerInstrument>
           ))}

@@ -1,22 +1,22 @@
 "use client";
 
-import React, { useState } from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument,
-  InputInstrument,
-  LabelInstrument
+import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    InputInstrument,
+    LabelInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { Terminal, Zap, Sparkles, Code2, Play, Save, History, ArrowLeft, Loader2, ShieldAlert, RefreshCw, X } from 'lucide-react';
-import Link from 'next/link';
-import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
+import { ArrowLeft, Code2, History, Loader2, Play, RefreshCw, Save, ShieldAlert, Sparkles, X, Zap } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 /**
  * ⚡ VIBECODE BACKEND (NUCLEAR 2026)

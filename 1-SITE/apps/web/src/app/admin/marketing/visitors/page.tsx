@@ -189,7 +189,7 @@ export default function LiveVisitorCockpit() {
                           className="inline-flex items-center gap-2 bg-va-black text-white px-4 py-2 rounded-xl text-[15px] font-light tracking-widest hover:bg-primary transition-all group-hover:scale-105"
                         >
                           <Eye size={14} />
-                          <span><VoiceglotText translationKey="auto.page.details.3ec365" defaultText="Details" /></TextInstrument>
+                          <TextInstrument as="span"><VoiceglotText translationKey="auto.page.details.3ec365" defaultText="Details" /></TextInstrument>
                         </Link>
                       </td>
                     </tr>

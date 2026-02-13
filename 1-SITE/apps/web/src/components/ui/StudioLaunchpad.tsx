@@ -105,7 +105,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                   className="inline-flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[15px] font-light group"
                 >
                   <LucideArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                  <span><VoiceglotText translationKey="auto.studiolaunchpad.meer_stemmen_toevoeg.27de65" defaultText="Meer stemmen toevoegen" /></TextInstrument>
+                  <TextInstrument as="span"><VoiceglotText translationKey="auto.studiolaunchpad.meer_stemmen_toevoeg.27de65" defaultText="Meer stemmen toevoegen" /></TextInstrument>
                 </Link>
                 <HeadingInstrument level={1} className="text-4xl md:text-5xl font-light tracking-tight">
                   <VoiceglotText translationKey="auto.studiolaunchpad.jouw_proefopname.e1fa5b" defaultText="Jouw proefopname" />
@@ -127,7 +127,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                   className="text-va-black/20 hover:text-red-500 transition-colors text-[15px] font-light flex items-center gap-2"
                 >
                   <LucideTrash2 size={16} />
-                  <span><VoiceglotText translationKey="auto.studiolaunchpad.selectie_wissen.8a5df3" defaultText="Selectie wissen" /></TextInstrument>
+                  <TextInstrument as="span"><VoiceglotText translationKey="auto.studiolaunchpad.selectie_wissen.8a5df3" defaultText="Selectie wissen" /></TextInstrument>
                 </button>
               )}
             </ContainerInstrument>
@@ -326,7 +326,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                   className="w-full bg-primary hover:bg-primary/90 text-white py-6 rounded-[20px] text-lg font-light flex items-center justify-center gap-3 shadow-lg shadow-primary/20 active:scale-95 transition-all tracking-widest"
                   onClick={() => window.location.href = '/casting/session/'}
                 >
-                  <span><VoiceglotText translationKey="auto.studiolaunchpad.vraag_proefopname_aa.8c2d12" defaultText="Vraag proefopname aan" /></TextInstrument>
+                  <TextInstrument as="span"><VoiceglotText translationKey="auto.studiolaunchpad.vraag_proefopname_aa.8c2d12" defaultText="Vraag proefopname aan" /></TextInstrument>
                   <LucideCheckCircle size={24} strokeWidth={1.5} />
                 </ButtonInstrument>
 

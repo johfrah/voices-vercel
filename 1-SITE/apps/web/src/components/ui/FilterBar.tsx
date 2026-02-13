@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { SlidersHorizontal, X } from 'lucide-react';
 import { SearchFilters } from '@/types';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
@@ -56,7 +55,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 
   return (
     <ContainerInstrument className="space-y-6">
-      <ContainerInstrument className="bg-white/80 backdrop-blur-2xl border border-black/5 rounded-[40px] p-4 md:p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-4 group/search">
+      <ContainerInstrument className="bg-white/80 backdrop-blur-2xl border border-black/5 rounded-[20px] p-4 md:p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-4 group/search">
         <ContainerInstrument className="flex-1 w-full relative group">
           <ContainerInstrument className="absolute left-6 top-1/2 -translate-y-1/2">
             <VoiceglotImage 
@@ -71,7 +70,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
           <InputInstrument 
             type="text" 
             placeholder={t('agency.filter.search_placeholder', 'Zoek op naam, stijl of kenmerk...')}
-            className="w-full bg-va-off-white border-none rounded-[24px] py-5 pl-16 pr-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20"
+            className="w-full bg-va-off-white border-none rounded-[10px] py-5 pl-16 pr-6 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20"
             defaultValue={combinedParams.search}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -84,11 +83,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
         <ContainerInstrument className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
           <ContainerInstrument className="flex-1 lg:w-56 relative group/select">
             <SelectInstrument 
-              className="w-full bg-va-off-white border-none rounded-[24px] py-5 px-8 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
+              className="w-full bg-va-off-white border-none rounded-[10px] py-5 px-8 text-[15px] font-light tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
               value={combinedParams.language || ''}
               onChange={(e) => { updateQuery({ language: e.target.value || undefined }); }}
             >
-              <OptionInstrument value=""><VoiceglotText translationKey="agency.filter.all_languages" defaultText="Alle Talen" /></OptionInstrument>
+              <OptionInstrument value=""><VoiceglotText translationKey="agency.filter.all_languages" defaultText="Alle talen" /></OptionInstrument>
               {sortedLanguages.map(lang => (
                 <OptionInstrument key={lang} value={lang}>{lang}</OptionInstrument>
               ))}
@@ -106,7 +105,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 
           <ContainerInstrument className="hidden md:block lg:w-44 relative group/select">
             <SelectInstrument 
-              className="w-full bg-va-off-white border-none rounded-[24px] py-5 px-8 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
+              className="w-full bg-va-off-white border-none rounded-[10px] py-5 px-8 text-[15px] font-light tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
               value={combinedParams.gender || ''}
               onChange={(e) => { updateQuery({ gender: e.target.value || undefined }); }}
             >
@@ -128,9 +127,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 
           <ButtonInstrument 
             onClick={() => { setIsSheetOpen(true); }}
-            className="w-16 h-16 rounded-[24px] bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all duration-500 shadow-lg active:scale-95"
+            className="w-16 h-16 rounded-[10px] bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all duration-500 shadow-lg active:scale-95"
           >
-            <SlidersHorizontal size={20} />
+            <VoiceglotImage src="/assets/common/branding/icons/MENU.svg" width={20} height={20} alt="Filter" className="brightness-0 invert" />
           </ButtonInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
@@ -152,7 +151,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
           )}
           <ButtonInstrument 
             onClick={() => { updateQuery({ search: undefined, gender: undefined, style: undefined, language: undefined }); }}
-            className="text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-colors ml-2"
+            className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors ml-2"
           >
             <VoiceglotText translationKey="agency.filter.clear_all" defaultText="Wis alles" />
           </ButtonInstrument>
@@ -172,10 +171,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 };
 
 const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => (
-  <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-full text-[15px] font-black tracking-widest shadow-sm">
+  <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-[20px] text-[15px] font-light tracking-widest shadow-sm">
     <TextInstrument>{label}</TextInstrument>
     <ButtonInstrument onClick={() => { onRemove(); }} className="hover:text-primary transition-colors">
-      <X strokeWidth={1.5} size={12} />
+      <Image src="/assets/common/branding/icons/BACK.svg" width={12} height={12} alt="Remove" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
     </ButtonInstrument>
   </ContainerInstrument>
 );

@@ -221,20 +221,20 @@ export default function AccountDashboardClient() {
           <ContainerInstrument className="flex flex-col md:flex-row gap-12">
             <ContainerInstrument className="flex-1 space-y-6">
               <ContainerInstrument className="flex items-center gap-3 text-primary">
-                <ShieldCheck strokeWidth={1.5} className="text-primary" size={32} />
-                <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter"><VoiceglotText translationKey="account.security.title" defaultText="Beveiliging & Privacy" /></HeadingInstrument>
+                <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter text-va-black"><VoiceglotText translationKey="account.security.title" defaultText="Beveiliging & privacy" /></HeadingInstrument>
               </ContainerInstrument>
               <TextInstrument className="text-va-black/40 font-light leading-relaxed max-w-md"><VoiceglotText 
                   translationKey="account.security.text" 
                   defaultText="Je data is versleuteld. We delen nooit informatie met derden zonder jouw expliciete toestemming." 
                 /></TextInstrument>
               <ContainerInstrument className="flex gap-4">
-                <ContainerInstrument className="px-4 py-2 bg-white rounded-xl border border-black/5 text-[15px] font-light tracking-widest text-va-black/40 "><VoiceglotText translationKey="account.security.badge1" defaultText="Privacy First" /></ContainerInstrument>
-                <ContainerInstrument className="px-4 py-2 bg-white rounded-xl border border-black/5 text-[15px] font-light tracking-widest text-va-black/40 "><VoiceglotText translationKey="account.security.badge2" defaultText="Veilig" /></ContainerInstrument>
+                <ContainerInstrument className="px-4 py-2 bg-white rounded-[10px] border border-black/5 text-[15px] font-light tracking-widest text-va-black/40 "><VoiceglotText translationKey="account.security.badge1" defaultText="Privacy first" /></ContainerInstrument>
+                <ContainerInstrument className="px-4 py-2 bg-white rounded-[10px] border border-black/5 text-[15px] font-light tracking-widest text-va-black/40 "><VoiceglotText translationKey="account.security.badge2" defaultText="Veilig" /></ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             
-            <ContainerInstrument className="w-full md:w-48 aspect-square bg-va-black rounded-3xl flex items-center justify-center relative overflow-hidden">
+            <ContainerInstrument className="w-full md:w-48 aspect-square bg-va-black rounded-[20px] flex items-center justify-center relative overflow-hidden">
               <ContainerInstrument className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
             </ContainerInstrument>
           </ContainerInstrument>

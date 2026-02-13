@@ -135,7 +135,7 @@ export default function VisitorPlayerPage() {
                 <ContainerInstrument className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center font-black text-[15px]">
                   {session.user.firstName?.[0]}{session.user.lastName?.[0]}
                 </ContainerInstrument>
-                <div>
+                <ContainerInstrument>
                   <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.bekijk_dna.9a6c88" defaultText="Bekijk DNA" /></TextInstrument>
                   <TextInstrument className="text-[15px] font-bold text-white/60 group-hover:text-white">{session.user.firstName} {session.user.lastName}</TextInstrument>
                 </ContainerInstrument>
