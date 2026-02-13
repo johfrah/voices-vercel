@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db'; // Veronderstelde db import
-import { studioSessions, studioScripts, chatConversations } from '@/packages/database/schema'; // Paden kunnen variëren afhankelijk van setup
+import { db } from "@db";
+import { studioSessions, studioScripts, chatConversations } from "@db/schema";
 
 export async function POST(req: Request) {
   try {
@@ -8,7 +8,6 @@ export async function POST(req: Request) {
     const { actorIds, script, briefing, clientEmail, clientFirstName } = body;
 
     // 1. Maak een nieuwe chat conversatie aan (Voicy Chat)
-    // In een echte implementatie zouden we hier ook de client/user logica afhandelen
     const [conversation] = await db.insert(chatConversations).values({
       guestEmail: clientEmail,
       guestName: clientFirstName,
@@ -24,7 +23,7 @@ export async function POST(req: Request) {
       status: 'active',
       settings: { 
         castingMode: 'blind',
-        actorIds: actorIds // Alleen voor admin/systeem zichtbaar
+        actorIds: actorIds 
       }
     }).returning();
 
@@ -36,13 +35,10 @@ export async function POST(req: Request) {
       isCurrent: true
     });
 
-    // 4. Trigger notificaties naar acteurs (Simulatie)
-    // Hier zouden we een service aanroepen die e-mails/notificaties stuurt naar de geselecteerde acteurs
-
     return NextResponse.json({ 
       success: true, 
       sessionId: session.id,
-      studioUrl: `/studio/session/${session.id}` // In een echte app zou dit een hash of magic link zijn
+      studioUrl: `/studio/session/${session.id}`
     });
 
   } catch (error) {
