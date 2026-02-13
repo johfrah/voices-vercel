@@ -1,0 +1,60 @@
+"use client";
+
+import React, { useRef } from 'react';
+import { ContainerInstrument } from "@/components/ui/LayoutInstruments";
+import { WorkshopCard } from './WorkshopCard';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useSonicDNA } from '@/lib/sonic-dna';
+
+interface WorkshopCarouselProps {
+  workshops: any[];
+}
+
+export const WorkshopCarousel: React.FC<WorkshopCarouselProps> = ({ workshops }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { playClick } = useSonicDNA();
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      playClick('light');
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+      scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <ContainerInstrument className="relative group/carousel">
+      {/* Navigation Buttons */}
+      <ContainerInstrument className="absolute -top-20 right-4 flex gap-4 z-20">
+        <button 
+          onClick={() => scroll('left')}
+          className="w-12 h-12 rounded-full bg-white border border-black/5 shadow-sm flex items-center justify-center text-black/40 hover:text-primary hover:border-primary/20 transition-all active:scale-90"
+        >
+          <ChevronLeft strokeWidth={1.5} size={24} />
+        </button>
+        <button 
+          onClick={() => scroll('right')}
+          className="w-12 h-12 rounded-full bg-white border border-black/5 shadow-sm flex items-center justify-center text-black/40 hover:text-primary hover:border-primary/20 transition-all active:scale-90"
+        >
+          <ChevronRight strokeWidth={1.5} size={24} />
+        </button>
+      </ContainerInstrument>
+
+      {/* Carousel Container */}
+      <ContainerInstrument 
+        ref={scrollRef}
+        className="flex gap-8 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-12 -mx-4 px-4 lg:-mx-12 lg:px-12"
+      >
+        {workshops.map((workshop) => (
+          <ContainerInstrument 
+            key={workshop.id} 
+            className="min-w-[300px] md:min-w-[400px] snap-start"
+          >
+            <WorkshopCard workshop={workshop} />
+          </ContainerInstrument>
+        ))}
+      </ContainerInstrument>
+    </ContainerInstrument>
+  );
+};

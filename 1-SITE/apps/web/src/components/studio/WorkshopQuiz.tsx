@@ -173,7 +173,7 @@ export const WorkshopQuiz: React.FC = () => {
         document.head.appendChild(link);
       }
     });
-  }, [currentStepId, isMounted]);
+  }, [currentStep.choices, isMounted]);
 
   // 🛡️ CHRIS-PROTOCOL: Deterministic Skeleton (Server-side safe)
   if (!isMounted || isLoading) {
