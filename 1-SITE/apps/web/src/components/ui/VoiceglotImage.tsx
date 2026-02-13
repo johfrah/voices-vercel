@@ -77,15 +77,21 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
 
   return (
     <div className={cn("relative group/image-edit", isEditMode && "cursor-pointer")}>
-      <Image  
-        src={currentSrc} 
-        alt={alt}
-        className={cn(
-          className,
-          isEditMode && "ring-2 ring-primary/0 hover:ring-primary/50 transition-all duration-300"
-        )}
-        {...props}
-      />
+      {currentSrc ? (
+        <Image  
+          src={currentSrc} 
+          alt={alt}
+          className={cn(
+            className,
+            isEditMode && "ring-2 ring-primary/0 hover:ring-primary/50 transition-all duration-300"
+          )}
+          {...props}
+        />
+      ) : (
+        <div className={cn("bg-va-off-white flex items-center justify-center", className)} {...(props as any)}>
+          <ImageIcon className="text-va-black/10" />
+        </div>
+      )}
 
       {isEditMode && (
         <>
