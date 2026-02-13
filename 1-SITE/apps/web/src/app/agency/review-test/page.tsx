@@ -1,4 +1,3 @@
-import { HeadingInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import React from 'react';
 import { AudioReviewDashboard } from '@/components/audio/AudioReviewDashboard';
 import GlobalNav from '@/components/ui/GlobalNav';
@@ -22,7 +21,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 export default function AudioReviewTestPage() {
   return (
     <main className="min-h-screen bg-[#FDFCFB]">
-      <GlobalNav strokeWidth={1.5} />
+      <GlobalNav />
       
       <ContainerInstrument className="max-w-7xl mx-auto pt-32 pb-20 px-6">
         <ContainerInstrument className="mb-12">
@@ -34,7 +33,7 @@ export default function AudioReviewTestPage() {
             bekijk de geanimeerde waveform en simuleer de Dropbox-export." /></TextInstrument>
         </ContainerInstrument>
 
-        <AudioReviewDashboard strokeWidth={1.5} 
+        <AudioReviewDashboard 
           orderId="8842"
           projectName="Astra Corporate Explainer"
           voiceUrl="/assets/temp/voice-sample.mp3"
@@ -66,7 +65,7 @@ export default function AudioReviewTestPage() {
         </ContainerInstrument>
       </ContainerInstrument>
 
-      <GlobalFooter strokeWidth={1.5} />
+      <GlobalFooter />
     </main>
   );
 }
