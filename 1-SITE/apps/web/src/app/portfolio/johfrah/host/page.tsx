@@ -34,11 +34,11 @@ export default function JohfrahHostPage() {
               </div>
               
               <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter">
-                Authentieke <br /> Presentatie.
+                Echt en <br /> dichtbij.
               </HeadingInstrument>
               
               <TextInstrument className="text-xl text-va-black/60 leading-relaxed">
-                Als regisseur begrijp ik hoe een verhaal verteld moet worden. Niet als een &apos;pratend hoofd&apos;, maar als een menselijke verbinder.
+                Als regisseur weet ik hoe je een verhaal vertelt. Geen ingestudeerde praatjes, maar een menselijke verbinding die echt binnenkomt.
               </TextInstrument>
 
               <div className="grid grid-cols-2 gap-6">
@@ -85,13 +85,13 @@ export default function JohfrahHostPage() {
 
           <div className="bg-primary text-white p-16 rounded-[60px] text-center space-y-8 mb-24">
             <HeadingInstrument level={2} className="text-5xl font-black uppercase tracking-tighter">
-              Klaar voor de camera?
+              Samen iets moois maken?
             </HeadingInstrument>
             <TextInstrument className="text-xl text-white/80 max-w-2xl mx-auto">
-              Laten we samen kijken hoe we jouw merk of event menselijk en boeiend kunnen presenteren.
+              Laten we kijken hoe we jouw merk of event een menselijk gezicht kunnen geven.
             </TextInstrument>
             <ButtonInstrument as="a" href="/contact" className="va-btn-pro !bg-white !text-primary">
-              Boek Johfrah als Host
+              Laten we praten
             </ButtonInstrument>
           </div>
         </ContainerInstrument>

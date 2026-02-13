@@ -39,23 +39,23 @@ export default function JohfrahAboutPage() {
                 </div>
                 
                 <HeadingInstrument level={1} className="text-6xl font-black leading-[0.9] tracking-tighter">
-                  Verhalen vertellen <br /> is mijn natuur.
+                  Verhalen vertellen <br /> zit in mijn bloed.
                 </HeadingInstrument>
                 
                 <TextInstrument className="text-xl text-va-black/70 leading-relaxed">
-                  Of het nu is via een lens, een edit-suite of een microfoon: mijn passie ligt bij het overbrengen van emotie en informatie op een manier die mensen raakt.
+                  Of het nu door een lens is of voor een microfoon: ik zoek altijd naar de emotie die mensen echt raakt.
                 </TextInstrument>
               </div>
 
               <div className="prose prose-va max-w-none text-va-black/60 space-y-6">
                 <p>
-                  Mijn reis begon achter de schermen. Als televisieregisseur leerde ik hoe je een verhaal structureert en hoe je de juiste toon zet. Die ervaring bleek goud waard toen ik de stap zette naar de microfoon.
+                  Mijn weg begon achter de schermen. Als regisseur leerde ik hoe je een verhaal bouwt en de juiste toon zet. Die blik neem ik nu mee naar de studio.
                 </p>
                 <p>
-                  Vandaag combineer ik die twee werelden. Ik spreek niet alleen teksten in; ik regisseer ze terwijl ik ze uitspreek. Ik begrijp wat een editor nodig heeft, wat een regisseur zoekt en vooral: wat een luisteraar wil horen.
+                  Ik spreek niet alleen teksten in; ik begrijp wat een regisseur zoekt en wat een editor nodig heeft. Ik voel de cadans van een montage en weet precies waar de klemtoon moet liggen om de boodschap te laten landen.
                 </p>
                 <p>
-                  Met duizenden uren in de studio, breng ik een niveau van professionaliteit en rust mee naar elk project.
+                  Met jaren ervaring en duizenden uren in de studio breng ik rust en professionaliteit naar elk project. Geen gedoe, gewoon goed werk.
                 </p>
               </div>
 
@@ -66,7 +66,7 @@ export default function JohfrahAboutPage() {
                     <TextInstrument className="font-black uppercase text-xs tracking-widest">Erkenning</TextInstrument>
                   </div>
                   <TextInstrument className="text-sm font-medium">
-                    Regisseur met een oog voor detail en vertelkracht.
+                    Jarenlange ervaring als regisseur. Ik weet hoe je een verhaal vertelt dat blijft hangen.
                   </TextInstrument>
                 </div>
 

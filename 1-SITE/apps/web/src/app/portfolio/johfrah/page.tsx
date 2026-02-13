@@ -45,11 +45,11 @@ async function JohfrahContent() {
     name: artistData?.display_name || "Johfrah Lefebvre",
     title: "Vlaamse Voice-over & Regisseur",
     image: artistData?.photo_url || "/assets/common/branding/johfrah/johfrah-hero.jpg",
-    extended_bio: artistData?.bio || "Mijn stem klinkt diep, warm, naturel en vertrouwd. Perfect voor documentaires en meditatie-apps. Ik breng verhalen tot leven met een heldere, begrijpbare toon, maar kan ook de energie leveren die een commercial nodig heeft om eruit te springen.",
+    extended_bio: artistData?.bio || "Mijn stem is mijn instrument om jouw verhaal te vertellen. Warm, naturel en met een rust die blijft hangen. Of het nu gaat om een documentaire die diepgang vraagt of een commercial die moet binnenkomen: ik zoek altijd naar de menselijke klik.",
     host_content: {
-      title: "Presentator & Reporter",
-      intro: "Ik breng uw verhaal op een authentieke en boeiende manier tot leven.",
-      experience: "Mijn ervaring als televisieregisseur helpt mij om uw boodschap op een warme, spontane en authentieke manier over te brengen.",
+      title: "Host & Reporter",
+      intro: "Ik breng verhalen tot leven, recht voor de camera of midden in de actie.",
+      experience: "Als regisseur zie ik het grotere plaatje. Dat helpt me om als host de juiste snaar te raken: spontaan, oprecht en altijd met focus op de inhoud.",
       award: "Regisseur."
     },
     reporter_videos: {
@@ -208,11 +208,11 @@ async function JohfrahContent() {
           <BentoCard id="demos" span="full" className="bg-white p-16 rounded-[20px] shadow-aura border border-black/[0.02]">
             <div className="max-w-2xl mb-16">
               <HeadingInstrument level={2} className="text-5xl md:text-6xl font-light tracking-tighter leading-none mb-8 text-va-black">
-                De <span className="text-primary/60 italic">Stem</span> <br />
-                achter het verhaal.
+                De <span className="text-primary/60 italic">stem</span> <br />
+                die jouw verhaal draagt.
               </HeadingInstrument>
               <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
-                Beluister mijn meest recente werk. Van high-energy commercials tot diepe, rustgevende documentaires.
+                Luister naar mijn werk. Van intieme verhalen tot krachtige commercials. Altijd met de juiste nuance.
               </TextInstrument>
             </div>
 
