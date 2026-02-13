@@ -1,8 +1,8 @@
 # 🎼 Bob's Podium Licht (Live Status)
 
-**Huidige Fase**: FINALE
-**Bericht**: Golden Standard Check...
-**Laatste Update**: 11:28:29 AM
+**Huidige Fase**: ABORTED
+**Bericht**: Gestopt door fout: Concert Halted by MARK (Felix Failed)
+**Laatste Update**: 11:28:39 AM
 
 ---
 *Dit bestand wordt live bijgewerkt door Bob de Dirigent.*
