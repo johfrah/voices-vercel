@@ -50,7 +50,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; border-top: 1px solid #F0F0F0; padding-top: 30px;">
           <tr>
             <td width="70" style="vertical-align: middle; padding-right: 20px;">
-              <img src="https://www.voices.be/assets/common/branding/johfrah/signature-photo.png" 
+              <img src="https://www.voices.be/assets/common/branding/founder/johfrah-avatar-be.png" 
                    alt="Johfrah" width="70" height="70" style="display: block; border-radius: 50%; border: 2px solid #F0F0F0;" />
             </td>
             <td style="vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
@@ -84,7 +84,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
               <!-- LOGO HEADER -->
               <tr>
                 <td align="center" style="padding: 40px 0;">
-                  <img src="https://www.voices.be/assets/common/branding/logo-color.png" alt="Voices.be" width="120" style="display: block; border: 0;" />
+                  <img src="https://www.voices.be/assets/common/branding/email/logos/email-logo.png" alt="Voices.be" width="120" style="display: block; border: 0;" />
                 </td>
               </tr>
               
