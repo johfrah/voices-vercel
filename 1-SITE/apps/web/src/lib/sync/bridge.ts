@@ -190,7 +190,7 @@ export async function syncAllData() {
       for (const user of userData) {
         try {
           await db.insert(users).values({
-            wpUserId: user.id,
+            wpUserId: Number(user.id),
             email: user.email,
             firstName: user.first_name,
             lastName: user.last_name,
@@ -248,7 +248,7 @@ export async function syncAllData() {
           const photoPath = actor.photo_url || getExactAssetPath(actor, null, 'photo');
 
           await db.insert(actors).values({
-            wpProductId: actor.product_id,
+            wpProductId: Number(actor.product_id),
             firstName: actor.first_name,
             lastName: actor.last_name,
             email: actor.email,
