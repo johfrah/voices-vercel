@@ -352,12 +352,14 @@ export const VoicyChat: React.FC = () => {
         }`}
       >
         {isOpen ? <X size={28} /> : (
-          <Image 
-            src={VOICES_CONFIG.assets.placeholders.voicy} 
-            alt="Voicy" 
-            fill
-            className="object-cover"
-          />
+          <div className="relative w-full h-full rounded-full overflow-hidden bg-transparent">
+            <Image 
+              src={VOICES_CONFIG.assets.placeholders.voicy} 
+              alt="Voicy" 
+              fill
+              className="object-cover"
+            />
+          </div>
         )}
         {!isOpen && (
           <ContainerInstrument className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
