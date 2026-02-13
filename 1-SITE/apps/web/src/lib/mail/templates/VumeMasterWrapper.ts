@@ -43,7 +43,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   ` : `
     <tr>
       <td align="center" style="background: ${primaryGradient}; padding: 40px 20px; border-radius: 20px 20px 0 0;">
-        <h1 style="margin: 0; color: #FFFFFF; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 900; font-size: 24px; text-transform: uppercase; letter-spacing: 0.1em;">
+        <h1 style="margin: 0; color: #FFFFFF; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -0.02em;">
           ${title}
         </h1>
       </td>
@@ -98,22 +98,28 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #FAFAFA; padding-bottom: 60px;">
         <tr>
           <td align="center" style="padding: 40px 20px;">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.04);">
-              <!-- LOGO HEADER -->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+              <!-- LOGO ABOVE CARD -->
               <tr>
-                <td align="center" style="padding: 40px 0;">
-                  <img src="https://www.voices.be/assets/common/branding/email/logos/email-logo.png" alt="Voices.be" width="120" style="display: block; border: 0;" />
+                <td align="center" style="padding-bottom: 40px;">
+                  <img src="https://www.voices.be/assets/common/branding/email/logos/email-logo.png" alt="Voices.be" width="140" style="display: block; border: 0;" />
                 </td>
               </tr>
               
-              <!-- DYNAMIC HEADER (IMAGE OR BANNER) -->
-              ${headerHtml}
-
-              <!-- CONTENT -->
               <tr>
-                <td style="padding: 50px; color: #333333; font-size: 16px; line-height: 1.6; font-weight: 400;">
-                  ${content}
-                  ${signatureHtml}
+                <td style="background-color: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.04);">
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <!-- DYNAMIC HEADER (IMAGE OR BANNER) -->
+                    ${headerHtml}
+
+                    <!-- CONTENT -->
+                    <tr>
+                      <td style="padding: 50px; color: #333333; font-size: 16px; line-height: 1.6; font-weight: 400;">
+                        ${content}
+                        ${signatureHtml}
+                      </td>
+                    </tr>
+                  </table>
                 </td>
               </tr>
               
