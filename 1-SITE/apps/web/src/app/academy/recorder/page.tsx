@@ -80,7 +80,7 @@ export default function AcademyRecorderPage() {
 
           <BentoCard span="sm" className="hmagic text-white p-8 shadow-aura flex flex-col justify-between">
             <ContainerInstrument>
-              <MessageSquare className="mb-6" size={32} />
+              <MessageSquare strokeWidth={1.5} className="mb-6" size={32} />
               <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2">
                 <VoiceglotText translationKey="academy.recorder.mentor_title" defaultText="Mentor" />
               </HeadingInstrument>

@@ -95,7 +95,7 @@ export const CommandPalette = () => {
               <Shortcut>G O</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/account/mailbox'))}>
-              <Mail className="w-4 h-4 mr-3" />
+              <Mail strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="common.mailbox" defaultText="Mailbox" /></span>
               <Shortcut>G M</Shortcut>
             </Item>
@@ -105,7 +105,7 @@ export const CommandPalette = () => {
               <Shortcut>G A</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/vault'))}>
-              <ShieldCheck className="w-4 h-4 mr-3" />
+              <ShieldCheck strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="common.vault" defaultText="The Vault" /></span>
               <Shortcut>G V</Shortcut>
             </Item>
@@ -128,7 +128,7 @@ export const CommandPalette = () => {
               <Shortcut>G W</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/backoffice/media'))}>
-              <Plus className="w-4 h-4 mr-3" />
+              <Plus strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.media.title" defaultText="Media Manager" /></span>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/photo-matcher'))}>
@@ -136,17 +136,17 @@ export const CommandPalette = () => {
               <span><VoiceglotText translationKey="admin.photo_matcher.title" defaultText="Photo Matcher" /></span>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/voiceglot'))}>
-              <Globe className="w-4 h-4 mr-3" />
+              <Globe strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.voiceglot.title" defaultText="Voiceglot Intelligence" /></span>
               <Shortcut>G L</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/vibecode'))}>
-              <Zap className="w-4 h-4 mr-3" />
+              <Zap strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.vibecode.title" defaultText="Cody Engine" /></span>
               <Shortcut>G B</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/security'))}>
-              <ShieldCheck className="w-4 h-4 mr-3" />
+              <ShieldCheck strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.security.title" defaultText="Security Center" /></span>
               <Shortcut>G S</Shortcut>
             </Item>
@@ -158,7 +158,7 @@ export const CommandPalette = () => {
               <span><VoiceglotText translationKey="admin.studio.calendar" defaultText="Studio Kalender" /></span>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/studio/participants'))}>
-              <Users className="w-4 h-4 mr-3" />
+              <User strokeWidth={1.5}s className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.studio.participants" defaultText="Deelnemers Overzicht" /></span>
             </Item>
           </Command.Group>
@@ -180,7 +180,7 @@ export const CommandPalette = () => {
               toast.success('Nieuw bericht venster geopend');
               // Trigger compose logic via event of state
             })}>
-              <Plus className="w-4 h-4 mr-3" />
+              <Plus strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="mailbox.compose.new" defaultText="Nieuw Bericht opstellen" /></span>
               <Shortcut>C</Shortcut>
             </Item>

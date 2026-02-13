@@ -16,7 +16,7 @@ export default function IVRPage() {
       <SectionInstrument className="max-w-7xl mx-auto px-6 pt-20">
         <ContainerInstrument className="mb-16 space-y-4">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/20">
-            <Phone size={12} fill="currentColor" /> 
+            <Phone strokeWidth={1.5} size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="ivr.badge" defaultText="Telefonie" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85]">
@@ -44,7 +44,7 @@ export default function IVRPage() {
               </TextInstrument>
             </ContainerInstrument>
             <Link href="/johfrai" className="flex items-center gap-2 text-primary font-black tracking-widest text-[15px] mt-8 group-hover:gap-4 transition-all">
-              <VoiceglotText translationKey="ivr.configurator.cta" defaultText="Start Configuratie" /> <ArrowRight size={14} />
+              <VoiceglotText translationKey="ivr.configurator.cta" defaultText="Start Configuratie" /> <ArrowRight strokeWidth={1.5} size={14} />
             </Link>
           </BentoCard>
 
@@ -61,7 +61,7 @@ export default function IVRPage() {
               </TextInstrument>
             </ContainerInstrument>
             <Link href="/agency" className="flex items-center gap-2 text-blue-500 font-black tracking-widest text-[15px] mt-8 group-hover:gap-4 transition-all">
-              <VoiceglotText translationKey="ivr.voices.cta" defaultText="Bekijk Stemmen" /> <ArrowRight size={14} />
+              <VoiceglotText translationKey="ivr.voices.cta" defaultText="Bekijk Stemmen" /> <ArrowRight strokeWidth={1.5} size={14} />
             </Link>
           </BentoCard>
 
@@ -78,7 +78,7 @@ export default function IVRPage() {
               </TextInstrument>
             </ContainerInstrument>
             <Link href="/agency/music" className="flex items-center gap-2 text-white font-black tracking-widest text-[15px] mt-8 group-hover:gap-4 transition-all">
-              <VoiceglotText translationKey="ivr.music.cta" defaultText="Beluister Muziek" /> <ArrowRight size={14} />
+              <VoiceglotText translationKey="ivr.music.cta" defaultText="Beluister Muziek" /> <ArrowRight strokeWidth={1.5} size={14} />
             </Link>
           </BentoCard>
         </BentoGrid>

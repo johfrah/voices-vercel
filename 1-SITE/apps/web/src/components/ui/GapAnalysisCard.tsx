@@ -54,7 +54,7 @@ export const GapAnalysisCard: React.FC = () => {
         <div className="space-y-8">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-              <Sparkles size={20} className="text-white" />
+              <Sparkles strokeWidth={1.5} size={20} className="text-white" />
             </div>
             <h4 className="text-[15px] font-black tracking-[0.2em] text-primary">
               Portfolio Analyse
@@ -83,7 +83,7 @@ export const GapAnalysisCard: React.FC = () => {
               >
                 <div className="flex items-center gap-3">
                   {hasAsset(req.id) ? (
-                    <CheckCircle2 size={16} className="text-green-500" />
+                    <Check strokeWidth={1.5}Circle2 size={16} className="text-green-500" />
                   ) : (
                     <AlertCircle size={16} className="text-primary" />
                   )}
@@ -107,7 +107,7 @@ export const GapAnalysisCard: React.FC = () => {
             <p className="text-[15px] font-black tracking-widest opacity-60 mb-1">Direct Bestellen</p>
             <h5 className="text-sm font-black tracking-tight">Configureer ontbrekende assets</h5>
           </div>
-          <ArrowRight className="group-hover/btn:translate-x-2 transition-transform" />
+          <ArrowRight strokeWidth={1.5} className="group-hover/btn:translate-x-2 transition-transform" />
         </button>
       </div>
 

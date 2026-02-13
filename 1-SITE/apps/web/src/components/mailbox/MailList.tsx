@@ -68,7 +68,7 @@ export const MailList = ({ mails, selectedMailId, onSelect }: MailListProps) => 
 
           <ContainerInstrument className="absolute right-4 bottom-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             {mail.hasAttachments && <Paperclip size={12} className="text-va-black/40" />}
-            {mail.isStarred && <Star size={12} className="text-yellow-400 fill-yellow-400" />}
+            {mail.isStarred && <Star strokeWidth={1.5} size={12} className="text-yellow-400 fill-yellow-400" />}
           </ContainerInstrument>
         </ButtonInstrument>
       ))}

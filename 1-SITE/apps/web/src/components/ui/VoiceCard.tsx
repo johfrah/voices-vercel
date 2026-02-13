@@ -165,12 +165,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
               >
                 {isSelected ? (
                   <>
-                    <Check size={12} />
+                    <Check strokeWidth={1.5} size={12} />
                     <span className="text-[15px] font-bold tracking-widest ">In Studio</span>
                   </>
                 ) : (
                   <>
-                    <Plus size={12} />
+                    <Plus strokeWidth={1.5} size={12} />
                     <span className="text-[15px] font-bold tracking-widest text-white/80">Gratis Demo</span>
                   </>
                 )}
@@ -187,7 +187,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 </h3>
                 {voice.voice_score > 90 && (
                   <div className="flex items-center gap-1 px-2 py-0.5 bg-yellow-400/10 text-yellow-600 rounded-full">
-                    <Star size={10} fill="currentColor" />
+                    <Star strokeWidth={1.5} size={10} fill="currentColor" />
                     <span className="text-[15px] font-medium tracking-widest">
                       <VoiceglotText translationKey="common.selected" defaultText="Geselecteerd" />
                     </span>
@@ -231,7 +231,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
           {sectorDemo ? (
             <div className="mb-6 p-5 bg-primary/5 rounded-3xl border border-primary/10 animate-in fade-in zoom-in-95 duration-700">
               <div className="flex items-center gap-2 mb-2 text-primary">
-                <Quote size={12} fill="currentColor" />
+                <Quote strokeWidth={1.5} size={12} fill="currentColor" />
                 <span className="text-[15px] font-medium tracking-[0.2em]">
                   <VoiceglotText translationKey="common.for_your_sector" defaultText="Voor uw sector" />
                 </span>
@@ -274,7 +274,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
         <div className="pt-6 border-t border-black/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-1.5 text-[15px] font-medium text-va-black/30 tracking-widest mb-1">
-              <Calendar size={10} className="text-primary" />
+              <Calendar strokeWidth={1.5} size={10} className="text-primary" />
               <VoiceglotText translationKey="common.ready" defaultText="Klaar" />: {deliveryInfo.formattedShort}
             </div>
             <p className="text-2xl font-light tracking-tighter text-va-black">€{displayPrice}</p>

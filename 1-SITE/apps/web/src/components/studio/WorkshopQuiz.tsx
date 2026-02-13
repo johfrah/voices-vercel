@@ -141,7 +141,7 @@ export const WorkshopQuiz: React.FC = () => {
                   className="w-full py-4 px-6 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-xl text-white font-medium text-left flex items-center justify-between group/btn transition-all active:scale-[0.98]"
                 >
                   <span>{choice.text}</span>
-                  <ArrowRight size={18} className="opacity-0 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all" />
+                  <ArrowRight strokeWidth={1.5} size={18} className="opacity-0 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all" />
                 </button>
               ))}
             </div>

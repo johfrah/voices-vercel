@@ -36,7 +36,7 @@ export default function JohfrahContactPage() {
             <div className="space-y-8">
               <div className="flex items-center gap-4 group">
                 <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
-                  <Mail size={20} />
+                  <Mail strokeWidth={1.5} size={20} />
                 </div>
                 <div>
                   <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Email</TextInstrument>
@@ -46,7 +46,7 @@ export default function JohfrahContactPage() {
 
               <div className="flex items-center gap-4 group">
                 <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
-                  <Phone size={20} />
+                  <Phone strokeWidth={1.5} size={20} />
                 </div>
                 <div>
                   <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Telefoon</TextInstrument>

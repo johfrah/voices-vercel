@@ -41,7 +41,7 @@ async function ParticipantsContent() {
           href="/studio" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all mb-4"
         >
-          <ArrowLeft size={14} /> 
+          <ArrowLeft strokeWidth={1.5} size={14} /> 
           <VoiceglotText translationKey="studio.back_to_studio" defaultText="Terug" />
         </Link>
         <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
@@ -55,7 +55,7 @@ async function ParticipantsContent() {
       <BentoGrid>
         {/* Stats Summary */}
         <BentoCard span="sm" className="bg-va-black text-white p-8">
-          <Users className="text-primary mb-6" size={32} />
+          <User strokeWidth={1.5}s className="text-primary mb-6" size={32} />
           <ContainerInstrument className="text-4xl font-black tracking-tighter mb-2">{participants.length}</ContainerInstrument>
           <TextInstrument className="text-[15px] font-black tracking-widest text-white/40">
             <VoiceglotText translationKey="studio.participants.total_label" defaultText="Totaal" />
@@ -63,7 +63,7 @@ async function ParticipantsContent() {
         </BentoCard>
 
         <BentoCard span="sm" className="bg-white p-8 border border-black/5">
-          <Mail className="text-va-black mb-6" size={32} />
+          <Mail strokeWidth={1.5} className="text-va-black mb-6" size={32} />
           <ContainerInstrument className="text-4xl font-black tracking-tighter mb-2">
             {participants.filter(p => p.status === 'lead').length}
           </ContainerInstrument>
@@ -73,7 +73,7 @@ async function ParticipantsContent() {
         </BentoCard>
 
         <BentoCard span="sm" className="hblue text-white p-8">
-          <Calendar className="mb-6" size={32} />
+          <Calendar strokeWidth={1.5} className="mb-6" size={32} />
           <ContainerInstrument className="text-4xl font-black tracking-tighter mb-2">
             {participants.filter(p => p.status === 'confirmed').length}
           </ContainerInstrument>
@@ -136,11 +136,11 @@ async function ParticipantsContent() {
                     <ContainerInstrument as="td" className="py-6">
                       <ContainerInstrument className="flex flex-col gap-1">
                         <TextInstrument className="flex items-center gap-2 text-[15px] font-bold text-va-black/60">
-                          <Mail size={12} className="text-va-black/20" /> {participant.email}
+                          <Mail strokeWidth={1.5} size={12} className="text-va-black/20" /> {participant.email}
                         </TextInstrument>
                         {participant.phone && (
                           <TextInstrument className="flex items-center gap-2 text-[15px] font-bold text-va-black/60">
-                            <Phone size={12} className="text-va-black/20" /> {participant.phone}
+                            <Phone strokeWidth={1.5} size={12} className="text-va-black/20" /> {participant.phone}
                           </TextInstrument>
                         )}
                       </ContainerInstrument>

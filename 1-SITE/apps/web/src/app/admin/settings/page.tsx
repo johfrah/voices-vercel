@@ -125,7 +125,7 @@ export default function AdminSettingsPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft size={12} /> 
+            <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -144,7 +144,7 @@ export default function AdminSettingsPage() {
               : 'bg-va-black text-white hover:bg-va-black/80'
           }`}
         >
-          {isEditMode ? <Shield size={14} /> : <Settings size={14} />}
+          {isEditMode ? <Shield strokeWidth={1.5} size={14} /> : <Settings size={14} />}
           {isEditMode ? 'Beheer Modus Actief' : 'Systeem Beheer'}
         </ButtonInstrument>
       </SectionInstrument>
@@ -154,7 +154,7 @@ export default function AdminSettingsPage() {
         <BentoCard span="lg" className="bg-white border border-black/5 p-10 space-y-8">
           <ContainerInstrument className="flex items-center gap-4 border-b border-black/5 pb-6">
             <div className="w-12 h-12 bg-blue-500/10 text-blue-600 rounded-2xl flex items-center justify-center">
-              <Building2 size={24} />
+              <Building2 strokeWidth={1.5} size={24} />
             </div>
             <div>
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight">Bedrijfsinformatie</HeadingInstrument>

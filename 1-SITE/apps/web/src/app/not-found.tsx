@@ -72,7 +72,7 @@ export default function NotFound() {
         {healingStatus === 'ghost-generated' && ghostContent ? (
           <ContainerInstrument className="text-left bg-white p-12 rounded-[40px] shadow-aura border border-black/5 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <ContainerInstrument className="flex items-center gap-2 mb-8 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest w-fit">
-              <Sparkles size={12} /> Voicy Ghost Content (Live Generated)
+              <Sparkles strokeWidth={1.5} size={12} /> Voicy Ghost Content (Live Generated)
             </ContainerInstrument>
             <div className="prose prose-va max-w-none">
               <div dangerouslySetInnerHTML={{ __html: ghostContent.replace(/\n/g, '<br/>') }} />
@@ -119,7 +119,7 @@ export default function NotFound() {
                 onClick={() => window.history.back()}
                 className="va-btn-secondary w-full sm:w-auto"
               >
-                <ArrowLeft size={16} />
+                <ArrowLeft strokeWidth={1.5} size={16} />
                 <VoiceglotText translationKey="404.cta.back" defaultText="Ga terug" />
               </button>
             </ContainerInstrument>

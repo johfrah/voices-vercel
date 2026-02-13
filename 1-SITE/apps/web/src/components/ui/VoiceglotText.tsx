@@ -143,13 +143,13 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
 
       {isHealing && (
         <div className="absolute -right-6 top-1/2 -translate-y-1/2">
-          <Sparkles size={12} className="text-primary animate-spin" />
+          <Sparkles strokeWidth={1.5} size={12} className="text-primary animate-spin" />
         </div>
       )}
 
       {isEditMode && !noTranslate && (
         <div className="absolute -top-6 left-0 opacity-0 group-hover/edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[15px] font-black tracking-widest pointer-events-none z-50">
-          <Lock size={8} className="text-primary" />
+          <Lock strokeWidth={1.5} size={8} className="text-primary" />
           Voiceglot: {translationKey}
         </div>
       )}

@@ -53,7 +53,7 @@ export default function SuccessPageClient() {
 
       <ContainerInstrument className="max-w-2xl text-center space-y-8 relative z-10">
         <ContainerInstrument className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto animate-in zoom-in duration-700">
-          <CheckCircle2 size={48} />
+          <Check strokeWidth={1.5}Circle2 size={48} />
         </ContainerInstrument>
         
         <ContainerInstrument className="space-y-2">
@@ -95,13 +95,13 @@ export default function SuccessPageClient() {
               />
             </TextInstrument>
             <Link href="/account/orders" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
-              <VoiceglotText translationKey="checkout.success.status.cta" defaultText="Mijn Bestellingen" /> <ArrowRight size={12} />
+              <VoiceglotText translationKey="checkout.success.status.cta" defaultText="Mijn Bestellingen" /> <ArrowRight strokeWidth={1.5} size={12} />
             </Link>
           </BentoCard>
 
           <BentoCard span="sm" className="bg-va-black text-white p-8 rounded-[32px] text-left space-y-4 relative overflow-hidden">
             <div className="w-10 h-10 bg-primary text-va-black rounded-xl flex items-center justify-center relative z-10">
-              <Sparkles size={20} />
+              <Sparkles strokeWidth={1.5} size={20} />
             </div>
             <HeadingInstrument level={3} className="text-xl font-black tracking-tight relative z-10">
               <VoiceglotText translationKey="checkout.success.next.title" defaultText="Volgende Stap" />
