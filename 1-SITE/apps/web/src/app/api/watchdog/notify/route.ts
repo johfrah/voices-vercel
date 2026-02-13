@@ -7,6 +7,8 @@ import { NextResponse } from 'next/server';
  * Verstuurt technische details naar johfrah@voices.be.
  */
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const { message, cause, url, digest } = await request.json();
