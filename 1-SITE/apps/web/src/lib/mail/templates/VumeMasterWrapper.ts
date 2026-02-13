@@ -105,14 +105,9 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
                 </td>
               </tr>
               
-              <!-- FOOTER & SOCIAL PROOF -->
+              <!-- FOOTER & BRANDING -->
               <tr>
                 <td align="center" style="padding: 40px; border-top: 1px solid #F0F0F0; background-color: #FFFFFF;">
-                  <div style="font-size: 12px; color: #999999; margin-bottom: 30px; line-height: 1.8;">
-                    <span style="color: #FFD54F; font-size: 16px;">★ ★ ★ ★ ★</span><br />
-                    "Super snelle en professionele service!" - Dimitry S.<br />
-                    "Professioneel ingesproken voicemail. Warm aanbevolen!" - Patrick V.
-                  </div>
                   <div style="font-size: 11px; color: #CCCCCC; text-transform: uppercase; letter-spacing: 0.1em;">
                     Voices.be &bull; Jules Delhaizestraat 42/2, 1080 Brussel &bull; +32 (0)2 793 19 91
                   </div>
