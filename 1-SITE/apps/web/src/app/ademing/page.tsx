@@ -87,7 +87,7 @@ export default async function AdemingPage() {
               <VoiceglotText translationKey="ademing.hero.title_part2" defaultText="rust." />
             </TextInstrument>
           </HeadingInstrument>
-          <TextInstrument className="text-2xl md:text-3xl text-black/40 font-medium leading-relaxed tracking-tight italic max-w-2xl mx-auto">
+          <TextInstrument className="text-2xl md:text-3xl text-black/40 font-light leading-relaxed tracking-tight italic max-w-2xl mx-auto">
             <VoiceglotText 
               translationKey="ademing.hero.subtitle" 
               defaultText="Adem in. Kom tot rust. Luister en verbind met de stilte in jezelf." 

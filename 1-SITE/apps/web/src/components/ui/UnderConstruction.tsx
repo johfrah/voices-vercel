@@ -102,6 +102,26 @@ export default function UnderConstruction() {
           "market": market.market_code
         }
       })}} />
+
+      {/* 🚪 MAT: VISITOR INTELLIGENCE TRACKER */}
+      <script dangerouslySetInnerHTML={{ __html: `
+        (function() {
+          const hash = document.cookie.split('; ').find(row => row.startsWith('voices_visitor_hash='))?.split('=')[1];
+          if (hash) {
+            fetch('/api/marketing/track', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                event: 'pageview',
+                pathname: window.location.pathname,
+                referrer: document.referrer,
+                intent: 'under_construction',
+                iapContext: { status: 'waiting', domain: window.location.hostname }
+              })
+            }).catch(() => {});
+          }
+        })();
+      `}} />
     </main>
   );
 }

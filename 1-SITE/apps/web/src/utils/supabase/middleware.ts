@@ -57,7 +57,15 @@ export async function updateSession(request: NextRequest) {
   // 2. System CONTEXT DETECTION (De Vier-Eenheid)
   const url = new URL(request.url)
   const host = request.headers.get('host') || ''
+  const userAgent = request.headers.get('user-agent') || ''
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1'
   
+  // 🚪 MAT: VISITOR INTELLIGENCE (Server-Side Fingerprinting)
+  // We genereren een deterministische hash op basis van IP en User Agent.
+  // Dit is de 'Mat-Signature'.
+  const visitorHash = request.cookies.get('voices_visitor_hash')?.value || 
+                     Buffer.from(`${ip}-${userAgent}`).toString('base64').replace(/=/g, '').slice(-16)
+
   // A. Market Detection (BE, NL, FR, etc.)
   let market = 'NL' // Default
   if (host.includes('.be')) market = 'BE'
@@ -82,6 +90,16 @@ export async function updateSession(request: NextRequest) {
   response.headers.set('x-voices-journey', journey)
   response.headers.set('x-voices-intent', intent)
   response.headers.set('x-voices-user-id', user?.id || 'guest')
+  response.headers.set('x-voices-visitor-hash', visitorHash)
+
+  // 🚪 MAT: Set visitor cookie if missing
+  if (!request.cookies.has('voices_visitor_hash')) {
+    response.cookies.set('voices_visitor_hash', visitorHash, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365, // 1 jaar
+      sameSite: 'lax',
+    })
+  }
 
   // Beveiliging: Redirect naar login voor beschermde routes
   const protectedPaths = [

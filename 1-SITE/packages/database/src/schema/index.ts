@@ -939,12 +939,41 @@ export const visitors = pgTable('visitors', {
   utmSource: text('utm_source'),
   utmMedium: text('utm_medium'),
   utmCampaign: text('utm_campaign'),
+  utmContent: text('utm_content'),
+  utmTerm: text('utm_term'),
   companyName: text('company_name'),
   locationCity: text('location_city'),
   locationCountry: text('location_country'),
   isBusiness: boolean('is_business').default(false),
+  journeyState: text('journey_state'), // De laatst bekende journey
+  market: text('market'), // BE, NL, FR, etc.
+  firstVisitAt: timestamp('first_visit_at').defaultNow(),
   lastVisitAt: timestamp('last_visit_at').defaultNow(),
 });
+
+export const visitorLogs = pgTable('visitor_logs', {
+  id: serial('id').primaryKey(),
+  visitorHash: text('visitor_hash').notNull(),
+  pathname: text('pathname').notNull(),
+  referrer: text('referrer'),
+  journey: text('journey'), // agency, artist, portfolio, ademing
+  market: text('market'),
+  intent: text('intent'),
+  event: text('event').default('pageview'), // pageview, click, conversion
+  iapContext: jsonb('iap_context'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const visitorsRelations = relations(visitors, ({ many }) => ({
+  logs: many(visitorLogs),
+}));
+
+export const visitorLogsRelations = relations(visitorLogs, ({ one }) => ({
+  visitor: one(visitors, {
+    fields: [visitorLogs.visitorHash],
+    references: [visitors.visitorHash],
+  }),
+}));
 
 // ⭐ REVIEWS (Intelligence-Rich)
 export const reviews = pgTable('reviews', {
