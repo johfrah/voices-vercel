@@ -311,7 +311,9 @@ export const translations = pgTable("translations", {
 	status: text().default('active'),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 	isManuallyEdited: boolean("is_manually_edited").default(false),
-});
+}, (table) => [
+	unique("translations_key_lang_unique").on(table.translationKey, table.lang),
+]);
 
 export const partnerWidgets = pgTable("partner_widgets", {
 	id: serial().primaryKey().notNull(),

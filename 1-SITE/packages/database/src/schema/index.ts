@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { bigint, boolean, decimal, integer, jsonb, pgEnum, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { bigint, boolean, decimal, integer, jsonb, pgEnum, pgTable, serial, text, timestamp, unique } from 'drizzle-orm/pg-core';
 
 export * from './config';
 export * from './fame';
@@ -451,6 +451,12 @@ export const orders = pgTable('orders', {
   internalNotes: text('internal_notes'), // Privé admin notities over de order
   isPrivate: boolean('is_private').default(false), // Voor gevoelige of handmatige orders
   isManuallyEdited: boolean('is_manually_edited').default(false), // 🛡️ NUCLEAR LOCK MANDATE
+  
+  // 🛡️ KELLY'S INTEGRITY (B2B & Fraud)
+  viesValidatedAt: timestamp('vies_validated_at'),
+  viesCountryCode: text('vies_country_code'),
+  ipAddress: text('ip_address'), // Hashed IP for fraud analysis
+  
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -927,7 +933,9 @@ export const translations = pgTable('translations', {
   status: text('status').default('active'),
   isManuallyEdited: boolean('is_manually_edited').default(false), // 🛡️ NUCLEAR LOCK MANDATE
   updatedAt: timestamp('updated_at').defaultNow(),
-});
+}, (table) => [
+  unique("translations_key_lang_unique").on(table.translationKey, table.lang),
+]);
 
 // 📊 System TRACKING
 export const visitors = pgTable('visitors', {

@@ -175,7 +175,7 @@ const DropdownItem = ({
       }`}
     >
       <ContainerInstrument className="flex items-center gap-3">
-        <Icon size={16} strokeWidth={variant === 'primary' ? 2 : 1.5} />
+        {typeof Icon === 'function' ? <Icon size={16} strokeWidth={variant === 'primary' ? 2 : 1.5} /> : Icon}
         <TextInstrument className="text-[15px] font-light tracking-widest">{label}</TextInstrument>
       </ContainerInstrument>
       <ContainerInstrument className="flex items-center gap-2">
@@ -346,7 +346,154 @@ export default function GlobalNav() {
         })}
       </ContainerInstrument>
 
-      <ContainerInstrument className="flex gap-2 items-center ml-auto">
+      <ContainerInstrument className="flex gap-4 items-center ml-auto">
+        {/* ❤️ FAVORITES ICON */}
+        {!isSpecialJourney && (
+          <HeaderIcon 
+            src="/assets/common/branding/icons/FAVORITES.svg" 
+            alt="Favorieten"
+            badge={favoritesCount}
+            href="/account/favorites"
+          />
+        )}
+
+        {/* 🛍️ CART ICON */}
+        {!isSpecialJourney && (
+          <HeaderIcon 
+            src="/assets/common/branding/icons/CART.svg" 
+            alt="Winkelmandje" 
+            badge={cartCount}
+            href="/checkout"
+          />
+        )}
+
+        {/* 🔔 NOTIFICATIONS ICON */}
+        {!isSpecialJourney && (
+          <HeaderIcon 
+            src="/assets/common/branding/icons/INFO.svg" 
+            alt="Notificaties"
+            badge={notificationsCount}
+          >
+            <ContainerInstrument className="p-2 space-y-1">
+              <ContainerInstrument className="px-4 py-3 border-b border-black/5 mb-2 flex justify-between items-center">
+                <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText translationKey="nav.notifications_title" defaultText="Notificaties" /></TextInstrument>
+                {notificationsCount > 0 && (
+                  <ButtonInstrument 
+                    onClick={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
+                    className="text-[15px] font-light text-primary hover:underline"
+                  >
+                    <VoiceglotText translationKey="nav.notifications_clear" defaultText="Wis alles" />
+                  </ButtonInstrument>
+                )}
+              </ContainerInstrument>
+              
+              <ContainerInstrument className="max-h-[400px] overflow-y-auto no-scrollbar">
+                {notifications.length > 0 ? (
+                  notifications.map((n) => (
+                    <ButtonInstrument
+                      key={n.id}
+                      onClick={() => markAsRead(n.id)}
+                      className={`w-full text-left p-4 rounded-xl transition-all duration-300 group mb-1 last:mb-0 flex gap-4 ${
+                        n.read ? 'opacity-50 hover:bg-va-black/5' : 'bg-primary/5 hover:bg-primary/10'
+                      }`}
+                    >
+                      <ContainerInstrument className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                        n.type === 'voice' ? 'bg-blue-500/10 text-blue-500' :
+                        n.type === 'order' ? 'bg-green-500/10 text-green-500' :
+                        'bg-primary/10 text-primary'
+                      }`}>
+                        {n.type === 'voice' ? <Mic2 strokeWidth={1.5} size={18} /> : 
+                         n.type === 'order' ? <ShoppingBag size={18} /> : 
+                         <Bell size={18} />}
+                      </ContainerInstrument>
+                      <ContainerInstrument className="flex-1 min-w-0">
+                        <ContainerInstrument className="flex justify-between items-start mb-1">
+                          <TextInstrument className="text-[15px] font-light text-va-black truncate pr-2">{n.title}</TextInstrument>
+                          <TextInstrument className="text-[15px] text-va-black/30 whitespace-nowrap font-light">{n.time}</TextInstrument>
+                        </ContainerInstrument>
+                        <TextInstrument className="text-[15px] text-va-black/60 leading-relaxed line-clamp-2 font-light">{n.message}</TextInstrument>
+                      </ContainerInstrument>
+                      {!n.read && (
+                        <ContainerInstrument className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                      )}
+                    </ButtonInstrument>
+                  ))
+                ) : (
+                  <ContainerInstrument className="p-8 text-center">
+                    <Bell size={32} className="text-va-black/10 mx-auto mb-3" />
+                    <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="nav.notifications_empty" defaultText="Geen nieuwe meldingen." /></TextInstrument>
+                  </ContainerInstrument>
+                )}
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </HeaderIcon>
+        )}
+
+        {/* 🌐 LANGUAGE ICON */}
+        <LanguageSwitcher />
+
+        {/* 👤 ACCOUNT ICON */}
+        {!isSpecialJourney && (
+          <HeaderIcon 
+            src="/assets/common/branding/icons/ACCOUNT.svg" 
+            alt="Account"
+            isActive={auth.isAuthenticated}
+          >
+            {auth.isAuthenticated ? (
+              <>
+                <ContainerInstrument className="px-4 py-4 border-b border-black/5 mb-2">
+                  <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-1 "><VoiceglotText translationKey="nav.logged_in_as" defaultText="Ingelogd als" /></TextInstrument>
+                  <TextInstrument className="text-[15px] font-light text-va-black truncate">{auth.user?.email}</TextInstrument>
+                </ContainerInstrument>
+                {isAdmin && (
+                  <DropdownItem 
+                    icon={LayoutDashboard} 
+                    label="Admin Dashboard" 
+                    href="/admin/dashboard" 
+                    variant="primary" 
+                    badge="God Mode"
+                  />
+                )}
+                <DropdownItem icon={() => <VoiceglotImage src="/assets/common/branding/icons/ACCOUNT.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Mijn profiel" href="/account" />
+                <DropdownItem icon={() => <VoiceglotImage src="/assets/common/branding/icons/CART.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Bestellingen" href="/account/orders" />
+                <DropdownItem icon={() => <VoiceglotImage src="/assets/common/branding/icons/FAVORITES.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Favorieten" href="/account/favorites" badge={favoritesCount > 0 ? favoritesCount : undefined} />
+                <DropdownItem icon={() => <VoiceglotImage src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Instellingen" href="/account/settings" />
+                <DropdownItem 
+                  icon={LogOut} 
+                  label={<VoiceglotText translationKey="nav.logout" defaultText="Uitloggen" />} 
+                  onClick={() => auth.logout()} 
+                  variant="danger" 
+                />
+              </>
+            ) : (
+              <ContainerInstrument className="p-4 space-y-4 text-center">
+                <ContainerInstrument className="w-12 h-12 bg-va-black/5 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <VoiceglotImage src="/assets/common/branding/icons/ACCOUNT.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
+                </ContainerInstrument>
+                <ContainerInstrument>
+                  <HeadingInstrument level={4} className="text-xl font-light tracking-tight mb-1 "><VoiceglotText translationKey="nav.welcome_title" defaultText="Welkom bij Voices" /><TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="nav.welcome_text" defaultText="Log in om je favoriete stemmen op te slaan en bestellingen te beheren." /></TextInstrument></HeadingInstrument>
+                </ContainerInstrument>
+                <ContainerInstrument className="space-y-2">
+                  <ButtonInstrument 
+                    as={Link}
+                    href="/auth/login" 
+                    className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all "
+                  >
+                    <VoiceglotText translationKey="nav.login_cta" defaultText="Inloggen" />
+                  </ButtonInstrument>
+                  <ButtonInstrument 
+                    as={Link}
+                    href="/auth/register" 
+                    className="block w-full py-3 border border-black/10 text-va-black rounded-[10px] text-[15px] font-light tracking-widest hover:bg-va-black/5 transition-all "
+                  >
+                    <VoiceglotText translationKey="nav.register_cta" defaultText="Account aanmaken" />
+                  </ButtonInstrument>
+                </ContainerInstrument>
+              </ContainerInstrument>
+            )}
+          </HeaderIcon>
+        )}
+
         {/* 🍔 MENU ICON */}
         <HeaderIcon 
           src="/assets/common/branding/icons/MENU.svg" 
@@ -438,185 +585,6 @@ export default function GlobalNav() {
             </ContainerInstrument>
           </ContainerInstrument>
         </HeaderIcon>
-
-        {/* 🌐 LANGUAGE ICON */}
-        <LanguageSwitcher />
-
-        {/* 🔔 NOTIFICATIONS ICON */}
-        {!isSpecialJourney && (
-          <HeaderIcon 
-            icon={Bell} 
-            alt="Notificaties"
-            badge={notificationsCount}
-          >
-            <ContainerInstrument className="p-2 space-y-1">
-              <ContainerInstrument className="px-4 py-3 border-b border-black/5 mb-2 flex justify-between items-center">
-                <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText translationKey="nav.notifications_title" defaultText="Notificaties" /></TextInstrument>
-                {notificationsCount > 0 && (
-                  <ButtonInstrument 
-                    onClick={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
-                    className="text-[15px] font-light text-primary hover:underline"
-                  >
-                    <VoiceglotText translationKey="nav.notifications_clear" defaultText="Wis alles" />
-                  </ButtonInstrument>
-                )}
-              </ContainerInstrument>
-              
-              <ContainerInstrument className="max-h-[400px] overflow-y-auto no-scrollbar">
-                {notifications.length > 0 ? (
-                  notifications.map((n) => (
-                    <ButtonInstrument
-                      key={n.id}
-                      onClick={() => markAsRead(n.id)}
-                      className={`w-full text-left p-4 rounded-xl transition-all duration-300 group mb-1 last:mb-0 flex gap-4 ${
-                        n.read ? 'opacity-50 hover:bg-va-black/5' : 'bg-primary/5 hover:bg-primary/10'
-                      }`}
-                    >
-                      <ContainerInstrument className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                        n.type === 'voice' ? 'bg-blue-500/10 text-blue-500' :
-                        n.type === 'order' ? 'bg-green-500/10 text-green-500' :
-                        'bg-primary/10 text-primary'
-                      }`}>
-                        {n.type === 'voice' ? <Mic2 strokeWidth={1.5} size={18} /> : 
-                         n.type === 'order' ? <ShoppingBag size={18} /> : 
-                         <Bell size={18} />}
-                      </ContainerInstrument>
-                      <ContainerInstrument className="flex-1 min-w-0">
-                        <ContainerInstrument className="flex justify-between items-start mb-1">
-                          <TextInstrument className="text-[15px] font-light text-va-black truncate pr-2">{n.title}</TextInstrument>
-                          <TextInstrument className="text-[15px] text-va-black/30 whitespace-nowrap font-light">{n.time}</TextInstrument>
-                        </ContainerInstrument>
-                        <TextInstrument className="text-[15px] text-va-black/60 leading-relaxed line-clamp-2 font-light">{n.message}</TextInstrument>
-                      </ContainerInstrument>
-                      {!n.read && (
-                        <ContainerInstrument className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                      )}
-                    </ButtonInstrument>
-                  ))
-                ) : (
-                  <ContainerInstrument className="p-8 text-center">
-                    <Bell size={32} className="text-va-black/10 mx-auto mb-3" />
-                    <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="nav.notifications_empty" defaultText="Geen nieuwe meldingen." /></TextInstrument>
-                  </ContainerInstrument>
-                )}
-              </ContainerInstrument>
-            </ContainerInstrument>
-          </HeaderIcon>
-        )}
-
-        {/* 👤 ACCOUNT ICON */}
-        {!isSpecialJourney && (
-          <HeaderIcon 
-            src="/assets/common/branding/icons/ACCOUNT.svg" 
-            alt="Account"
-            isActive={auth.isAuthenticated}
-          >
-            {auth.isAuthenticated ? (
-              <>
-                <ContainerInstrument className="px-4 py-4 border-b border-black/5 mb-2">
-                  <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-1 "><VoiceglotText translationKey="nav.logged_in_as" defaultText="Ingelogd als" /></TextInstrument>
-                  <TextInstrument className="text-[15px] font-light text-va-black truncate">{auth.user?.email}</TextInstrument>
-                </ContainerInstrument>
-                {isAdmin && (
-                  <DropdownItem 
-                    icon={LayoutDashboard} 
-                    label="Admin Dashboard" 
-                    href="/admin/dashboard" 
-                    variant="primary" 
-                    badge="God Mode"
-                  />
-                )}
-                <DropdownItem icon={() => <VoiceglotImage src="/assets/common/branding/icons/ACCOUNT.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Mijn profiel" href="/account" />
-                <DropdownItem icon={() => <VoiceglotImage src="/assets/common/branding/icons/CART.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Bestellingen" href="/account/orders" />
-                <DropdownItem icon={() => <VoiceglotImage src="/assets/common/branding/icons/FAVORITES.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Favorieten" href="/account/favorites" badge={favoritesCount > 0 ? favoritesCount : undefined} />
-                <DropdownItem icon={() => <VoiceglotImage src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Instellingen" href="/account/settings" />
-                <DropdownItem 
-                  icon={LogOut} 
-                  label={<VoiceglotText translationKey="nav.logout" defaultText="Uitloggen" />} 
-                  onClick={() => auth.logout()} 
-                  variant="danger" 
-                />
-              </>
-            ) : (
-              <ContainerInstrument className="p-4 space-y-4 text-center">
-                <ContainerInstrument className="w-12 h-12 bg-va-black/5 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <VoiceglotImage src="/assets/common/branding/icons/ACCOUNT.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
-                </ContainerInstrument>
-                <ContainerInstrument>
-                  <HeadingInstrument level={4} className="text-xl font-light tracking-tight mb-1 "><VoiceglotText translationKey="nav.welcome_title" defaultText="Welkom bij Voices" /><TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="nav.welcome_text" defaultText="Log in om je favoriete stemmen op te slaan en bestellingen te beheren." /></TextInstrument></HeadingInstrument>
-                </ContainerInstrument>
-                <ContainerInstrument className="space-y-2">
-                  <ButtonInstrument 
-                    as={Link}
-                    href="/auth/login" 
-                    className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all "
-                  >
-                    <VoiceglotText translationKey="nav.login_cta" defaultText="Inloggen" />
-                  </ButtonInstrument>
-                  <ButtonInstrument 
-                    as={Link}
-                    href="/auth/register" 
-                    className="block w-full py-3 border border-black/10 text-va-black rounded-[10px] text-[15px] font-light tracking-widest hover:bg-va-black/5 transition-all "
-                  >
-                    <VoiceglotText translationKey="nav.register_cta" defaultText="Account aanmaken" />
-                  </ButtonInstrument>
-                </ContainerInstrument>
-              </ContainerInstrument>
-            )}
-          </HeaderIcon>
-        )}
-
-        {/* ❤️ FAVORITES ICON */}
-        {!isSpecialJourney && (
-          <HeaderIcon 
-            src="/assets/common/branding/icons/FAVORITES.svg" 
-            alt="Favorieten"
-            badge={favoritesCount}
-            href="/account/favorites"
-          >
-            <ContainerInstrument className="p-4 text-center">
-              <VoiceglotImage src="/assets/common/branding/icons/FAVORITES.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} className="mx-auto mb-3" />
-              <TextInstrument className="text-[15px] font-light tracking-widest mb-2 "><VoiceglotText translationKey="nav.favorites_title" defaultText="Jouw Favorieten" /></TextInstrument>
-              <TextInstrument className="text-[15px] text-va-black/40 font-light mb-4">
-                {favoritesCount > 0 ? (
-                  <VoiceglotText translationKey="nav.favorites_count" defaultText={`Je hebt ${favoritesCount} stemmen opgeslagen.`} />
-                ) : (
-                  <VoiceglotText translationKey="nav.favorites_empty" defaultText="Je hebt nog geen stemmen opgeslagen." />
-                )}
-              </TextInstrument>
-              <ButtonInstrument 
-                as={Link}
-                href="/agency" 
-                className="text-[15px] font-light text-primary tracking-widest hover:underline "
-              >
-                <VoiceglotText translationKey="nav.favorites_cta" defaultText="Ontdek stemmen" />
-              </ButtonInstrument>
-            </ContainerInstrument>
-          </HeaderIcon>
-        )}
-
-        {/* 🛍️ CART ICON */}
-        {!isSpecialJourney && (
-          <HeaderIcon 
-            src="/assets/common/branding/icons/CART.svg" 
-            alt="Winkelmandje" 
-            badge={cartCount}
-            href="/checkout"
-          >
-            <ContainerInstrument className="p-4 text-center">
-              <VoiceglotImage src="/assets/common/branding/icons/CART.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} className="mx-auto mb-3" />
-              <TextInstrument className="text-[15px] font-light tracking-widest mb-2 "><VoiceglotText translationKey="nav.cart_title" defaultText="Winkelmandje" /></TextInstrument>
-              <TextInstrument className="text-[15px] text-va-black/40 font-light mb-4"><VoiceglotText translationKey="nav.cart_empty" defaultText="Je mandje is nog leeg." /></TextInstrument>
-              <ButtonInstrument 
-                as={Link}
-                href="/agency" 
-                className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all "
-              >
-                <VoiceglotText translationKey="nav.cart_cta" defaultText="Start een project" />
-              </ButtonInstrument>
-            </ContainerInstrument>
-          </HeaderIcon>
-        )}
       </ContainerInstrument>
     </ContainerInstrument>
   );

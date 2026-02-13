@@ -86,12 +86,12 @@ export const LanguageSwitcher: React.FC = () => {
         <Image 
           src="/assets/common/branding/icons/LANGUAGEa.svg" 
           alt="Language" 
-          width={24}
-          height={24}
-          className="w-6 h-6 transition-transform duration-500 group-hover:scale-110" 
+          width={22}
+          height={22}
+          className="w-5.5 h-5.5 transition-transform duration-500 group-hover:scale-110" 
           style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
         />
-        <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[15px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 ">
+        <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 uppercase">
           {currentLang}
         </span>
       </button>

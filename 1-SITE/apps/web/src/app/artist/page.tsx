@@ -1,5 +1,6 @@
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, LoadingScreenInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { db } from "@db";
 import { actors } from "@db/schema";
@@ -49,7 +50,7 @@ async function PortfolioGrid() {
           
           <ContainerInstrument className="mt-auto flex justify-between items-center relative z-10">
             <ButtonInstrument 
-              className="va-btn-pro !bg-white !text-black !rounded-full !px-8 !py-3 text-[15px] font-black tracking-widest hover:scale-105 transition-all active:scale-95"
+              className="va-btn-pro !bg-white !text-black !rounded-[10px] !px-8 !py-3 text-[15px] font-black tracking-widest hover:scale-105 transition-all active:scale-95"
               data-voices-sonic-dna="click-pro"
             ><VoiceglotText translationKey="artist.view_portfolio" defaultText="VIEW PORTFOLIO" /></ButtonInstrument>
             <ContainerInstrument className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-orange-400/50 group-hover:bg-orange-400/10 transition-all duration-500">
@@ -73,6 +74,7 @@ export default async function ArtistPage() {
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-32 pb-32 bg-va-black text-white relative overflow-hidden">
+      <LiquidBackground />
       {/* 🧪 ANALOG WARMTH LAYER */}
       <ContainerInstrument className="fixed inset-0 -z-10 opacity-[0.05] pointer-events-none">
         <ContainerInstrument className="absolute inset-0 hred rotate-180 animate-slow-pulse" />
@@ -82,7 +84,7 @@ export default async function ArtistPage() {
         <ContainerInstrument className="max-w-5xl">
           <ContainerInstrument className="inline-block bg-white/5 text-white/40 text-[15px] font-black px-6 py-2 rounded-full mb-10 tracking-[0.3em] border border-white/10"><VoiceglotText translationKey="artist.hero.badge" defaultText="Voices Artists" /></ContainerInstrument>
           <HeadingInstrument level={1} className="text-[10vw] md:text-[7vw] font-black tracking-tighter leading-[0.85] mb-10 "><VoiceglotText translationKey="artist.hero.title_part1" defaultText="YOUR SOUND, " /><TextInstrument as="span" className="text-orange-500 font-light"><VoiceglotText translationKey="artist.hero.title_highlight" defaultText="UNFILTERED." /></TextInstrument></HeadingInstrument>
-          <TextInstrument className="text-2xl md:text-4xl text-white/30 font-medium leading-tight tracking-tight max-w-3xl italic"><VoiceglotText 
+          <TextInstrument className="text-2xl md:text-4xl text-white/30 font-light leading-tight tracking-tight max-w-3xl italic"><VoiceglotText 
               translationKey="artist.hero.subtitle" 
               defaultText="The Artist journey is about raw talent and sonic integrity. Manage your portfolio with care." 
             /></TextInstrument>

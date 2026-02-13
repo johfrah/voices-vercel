@@ -390,10 +390,10 @@ export const VoicyChat: React.FC = () => {
           : 'w-[400px] h-[600px]'
       }`}>
         {/* Header */}
-        <ContainerInstrument plain className="p-6 bg-va-black text-white flex justify-between items-center relative overflow-hidden">
+        <ContainerInstrument plain className="p-8 bg-va-black text-white flex justify-between items-center relative overflow-hidden">
           <ContainerInstrument plain className="relative z-10">
-            <HeadingInstrument level={3} className="text-lg font-light tracking-tighter"><VoiceglotText translationKey="chat.title" defaultText="Voicy" /></HeadingInstrument>
-            <ContainerInstrument plain className="flex items-center gap-2">
+            <HeadingInstrument level={3} className="text-xl font-light tracking-tighter"><VoiceglotText translationKey="chat.title" defaultText="Voicy" /></HeadingInstrument>
+            <ContainerInstrument plain className="flex items-center gap-2 mt-1">
               <TextInstrument as="span" className="w-2 h-2 rounded-full bg-green-500 animate-pulse font-light" />
               <TextInstrument as="span" className="text-[15px] font-light tracking-widest opacity-60"><VoiceglotText translationKey="chat.status.online" defaultText="Online & Klaar" /></TextInstrument>
             </ContainerInstrument>
@@ -412,7 +412,7 @@ export const VoicyChat: React.FC = () => {
         </ContainerInstrument>
 
         {/* Tabs */}
-        <ContainerInstrument plain className="flex border-b border-black/5 p-2 gap-1">
+        <ContainerInstrument plain className="flex border-b border-black/5 p-4 gap-2">
           {[
             { id: 'chat', icon: MessageSquare, label: 'Chat', translationKey: 'chat.tabs.chat' },
             { id: 'mail', icon: Mail, label: 'Mail', translationKey: 'chat.tabs.mail' },
@@ -426,7 +426,7 @@ export const VoicyChat: React.FC = () => {
                 playClick('light');
                 setActiveTab(tab.id as any);
               }}
-              className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-2xl transition-all ${
+              className={`flex-1 flex flex-col items-center gap-2 py-3 rounded-2xl transition-all ${
                 activeTab === tab.id ? 'bg-primary/5 text-primary' : 'text-va-black/30 hover:bg-black/5'
               }`}
             >
@@ -438,17 +438,17 @@ export const VoicyChat: React.FC = () => {
 
         {/* Mode Selector (Ask vs Agent) */}
         {activeTab === 'chat' && (
-          <ContainerInstrument plain className="px-6 py-2 bg-va-off-white/50 border-b border-black/5 flex justify-center">
-            <ContainerInstrument plain className="flex bg-white p-1 rounded-full border border-black/5 shadow-sm">
+          <ContainerInstrument plain className="px-8 py-4 bg-va-off-white/50 border-b border-black/5 flex justify-center">
+            <ContainerInstrument plain className="flex bg-white p-1.5 rounded-full border border-black/5 shadow-sm">
               <ButtonInstrument 
                 onClick={() => { setChatMode('ask'); playClick('light'); }}
-                className={`px-6 py-1.5 rounded-full text-[15px] font-light tracking-widest transition-all ${chatMode === 'ask' ? 'bg-va-black text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
+                className={`px-8 py-2.5 rounded-full text-[15px] font-light tracking-widest transition-all ${chatMode === 'ask' ? 'bg-va-black text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
               >
                 <VoiceglotText translationKey="chat.mode.ask" defaultText="Ask" />
               </ButtonInstrument>
               <ButtonInstrument 
                 onClick={() => { setChatMode('agent'); playClick('pro'); }}
-                className={`px-6 py-1.5 rounded-full text-[15px] font-light tracking-widest transition-all flex items-center gap-2 ${chatMode === 'agent' ? 'bg-primary text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
+                className={`px-8 py-2.5 rounded-full text-[15px] font-light tracking-widest transition-all flex items-center gap-2 ${chatMode === 'agent' ? 'bg-primary text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
               >
                 {chatMode === 'agent' && <Zap strokeWidth={1.5} size={10} className="animate-pulse" />}
                 <VoiceglotText translationKey="chat.mode.agent" defaultText="Agent" />
@@ -462,14 +462,14 @@ export const VoicyChat: React.FC = () => {
           {activeTab === 'chat' && (
             <ContainerInstrument plain className={`flex-1 overflow-hidden relative flex ${isFullMode ? 'flex-row' : 'flex-col'}`}>
               <ContainerInstrument plain className="flex-1 flex flex-col overflow-hidden border-r border-black/5">
-                <ContainerInstrument plain ref={scrollRef} className="flex-1 overflow-y-auto p-3 md:p-4 space-y-4 custom-scrollbar">
+                <ContainerInstrument plain ref={scrollRef} className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar">
                   {messages.map((msg) => (
                     <ContainerInstrument
                       plain
                       key={msg.id}
                       className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                      <ContainerInstrument plain className={`max-w-[85%] p-3 md:p-4 rounded-[24px] text-[15px] font-light leading-relaxed ${
+                      <ContainerInstrument plain className={`max-w-[85%] p-4 md:p-6 rounded-[24px] text-[15px] font-light leading-relaxed ${
                         msg.role === 'user' 
                           ? 'bg-primary text-white rounded-tr-none shadow-lg shadow-primary/10' 
                           : 'bg-va-off-white text-va-black rounded-tl-none'
@@ -564,18 +564,18 @@ export const VoicyChat: React.FC = () => {
                 </ContainerInstrument>
 
                 {/* Input Area */}
-                <ContainerInstrument plain className="p-3 md:p-4 border-t border-black/5 bg-white">
+                <ContainerInstrument plain className="p-6 md:p-8 border-t border-black/5 bg-white">
                   <FormInstrument onSubmit={handleSend} className="relative">
                     <InputInstrument
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder="Typ je bericht..."
-                      className="w-full bg-va-off-white border-none rounded-full py-3 md:py-4 pl-5 md:pl-6 pr-12 md:pr-14 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
+                      className="w-full bg-va-off-white border-none rounded-full py-4 md:py-5 pl-6 md:pl-8 pr-14 md:pr-16 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
                     />
                     <ButtonInstrument
                       type="submit"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-va-black text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-va-black text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
                     >
                       <Send strokeWidth={1.5} size={18} />
                     </ButtonInstrument>

@@ -27,26 +27,26 @@ export const CustomerInstrument: React.FC<CustomerInstrumentProps> = ({
       className="col-span-2"
     >
       <div className="flex items-center gap-4 mt-4">
-        <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-xl font-bold">
+        <div className="w-12 h-12 rounded-full bg-va-off-white flex items-center justify-center text-xl font-light">
           {firstName[0]}{lastName[0]}
         </div>
         <div>
-          <div className="font-bold text-lg">{firstName} {lastName}</div>
-          <div className="text-slate-500">{email}</div>
+          <div className="font-light text-lg">{firstName} {lastName}</div>
+          <div className="text-va-black/40 font-light">{email}</div>
         </div>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-4 text-[15px]">
-        <div className="p-3 bg-slate-50 rounded-xl">
-          <div className="text-slate-400 text-[15px] font-bold tracking-widest">
+        <div className="p-3 bg-va-off-white rounded-[20px]">
+          <div className="text-va-black/20 text-[15px] font-light tracking-widest uppercase">
             <VoiceglotText translationKey="order.customer.company" defaultText="Bedrijf" />
           </div>
-          <div className="font-medium">{company || <VoiceglotText translationKey="common.private" defaultText="Privé" />}</div>
+          <div className="font-light">{company || <VoiceglotText translationKey="common.private" defaultText="Privé" />}</div>
         </div>
-        <div className="p-3 bg-slate-50 rounded-xl">
-          <div className="text-slate-400 text-[15px] font-bold tracking-widest">
+        <div className="p-3 bg-va-off-white rounded-[20px]">
+          <div className="text-va-black/20 text-[15px] font-light tracking-widest uppercase">
             <VoiceglotText translationKey="order.customer.total_spent" defaultText="Total Spent" />
           </div>
-          <div className="font-medium">€{totalSpent}</div>
+          <div className="font-light">€{totalSpent}</div>
         </div>
       </div>
     </BentoCard>

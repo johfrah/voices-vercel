@@ -143,34 +143,34 @@ export function LoginPageClient() {
 
       <ContainerInstrument className="w-full max-w-xl relative z-10">
         <ContainerInstrument className="text-center mb-12 space-y-4">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-black tracking-widest shadow-sm border border-gray-100/50">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest shadow-sm border border-gray-100/50 uppercase">
             <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText translationKey="auth.login.secure_access" defaultText="Toegang" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
             <VoiceglotText translationKey="auth.login.title_prefix" defaultText="Toegang tot" />
-            <TextInstrument as="span" className="text-primary font-light">
+            <TextInstrument as="span" className="text-primary font-extralight">
               <VoiceglotText translationKey="auto.loginpageclient.voices.d342f8" defaultText="Voices" />
             </TextInstrument>
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-medium max-w-sm mx-auto">
+          <TextInstrument className="text-va-black/40 font-light max-w-sm mx-auto">
             <VoiceglotText translationKey="auth.login.subtitle" defaultText="Vul je e-mailadres in. Je ontvangt direct een magische link in je inbox om veilig in te loggen." />
           </TextInstrument>
         </ContainerInstrument>
 
         <BentoCard span="full" className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-12">
           {supabaseUnavailable && (
-            <ContainerInstrument className="mb-6 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-800 text-[15px] font-bold tracking-widest rounded-r-xl">
+            <ContainerInstrument className="mb-6 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-800 text-[15px] font-light tracking-widest rounded-r-xl">
               <VoiceglotText translationKey="auto.loginpageclient.de_inlogservice_is_t.ea33a3" defaultText="De inlogservice is tijdelijk niet beschikbaar. Probeer het later opnieuw." />
             </ContainerInstrument>
           )}
           <FormInstrument onSubmit={handleSubmit} className="space-y-8">
             {error && (
-              <ContainerInstrument className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-[15px] font-bold tracking-widest rounded-r-xl animate-in fade-in slide-in-from-top-2">
+              <ContainerInstrument className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-[15px] font-light tracking-widest rounded-r-xl animate-in fade-in slide-in-from-top-2">
                 {error}
               </ContainerInstrument>
             )}
             {message && (
-              <ContainerInstrument className="p-4 bg-green-50 border-l-4 border-green-500 text-green-700 text-[15px] font-bold tracking-widest rounded-r-xl animate-in fade-in slide-in-from-top-2">
+              <ContainerInstrument className="p-4 bg-green-50 border-l-4 border-green-500 text-green-700 text-[15px] font-light tracking-widest rounded-r-xl animate-in fade-in slide-in-from-top-2">
                 {message}
               </ContainerInstrument>
             )}
@@ -208,7 +208,7 @@ export function LoginPageClient() {
                       setShowPassword(false);
                       setPassword('');
                     }}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-[15px] font-bold tracking-widest text-primary hover:opacity-70 transition-opacity"
+                    className="absolute right-6 top-1/2 -translate-y-1/2 text-[15px] font-light tracking-widest text-primary hover:opacity-70 transition-opacity uppercase"
                   >
                     <VoiceglotText translationKey="auto.loginpageclient.gebruik_magic_link.e10a3c" defaultText="Gebruik Magic Link" />
                   </ButtonInstrument>
@@ -217,7 +217,7 @@ export function LoginPageClient() {
                 <ContainerInstrument className="flex justify-center">
                   <ButtonInstrument 
                     onClick={() => setShowPassword(true)}
-                    className="text-[15px] font-bold tracking-widest text-va-black/40 hover:text-primary transition-colors"
+                    className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors uppercase"
                   >
                     Ik wil inloggen met een wachtwoord
                   </ButtonInstrument>
@@ -252,7 +252,7 @@ export function LoginPageClient() {
         <ContainerInstrument className="mt-12 text-center">
           <ContainerInstrument className="flex items-center justify-center gap-2 text-primary">
             <Star strokeWidth={1.5} size={12} fill="currentColor" />
-            <TextInstrument as="span" className="text-[15px] font-black tracking-widest">
+            <TextInstrument as="span" className="text-[15px] font-light tracking-widest uppercase">
               <VoiceglotText translationKey="auth.login.footer" defaultText="Voices" />
             </TextInstrument>
           </ContainerInstrument>

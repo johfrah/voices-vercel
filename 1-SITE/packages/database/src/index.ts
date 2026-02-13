@@ -7,6 +7,7 @@ if (!process.env.DATABASE_URL) {
   dotenv.config({ path: '.env.local' });
   dotenv.config({ path: '.env' });
 }
+console.log('🔌 DB Connection String:', process.env.DATABASE_URL?.substring(0, 20) + '...');
 
 /**
  * DATABASE CONNECTION (Voices)

@@ -36,24 +36,24 @@ export default function AudioReviewTestPage() {
 
         <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-gray-100 pt-12">
           <div>
-            <HeadingInstrument level={3} className="text-lg font-bold text-gray-900 mb-4"><VoiceglotText translationKey="auto.page.hoe_werkt_dit_.8f1504" defaultText="Hoe werkt dit?" /></HeadingInstrument>
-            <ul className="space-y-4 text-gray-600 text-[15px]">
+            <HeadingInstrument level={3} className="text-lg font-light text-va-black mb-4"><VoiceglotText translationKey="auto.page.hoe_werkt_dit_.8f1504" defaultText="Hoe werkt dit?" /></HeadingInstrument>
+            <ul className="space-y-4 text-va-black/60 text-[15px]">
               <li className="flex gap-3">
-                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[15px] font-bold shrink-0">1</TextInstrument>
+                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[15px] font-light shrink-0">1</TextInstrument>
                 <TextInstrument as="span">De <strong><VoiceglotText translationKey="auto.page.smart_mix.efdf9b" defaultText="Smart Mix" /></strong><VoiceglotText translationKey="auto.page.slider_stuurt_live_o.95f79a" defaultText="slider stuurt live opdrachten naar de backend (FFMPEG) om de ducking-intensiteit aan te passen." /></TextInstrument>
               </li>
               <li className="flex gap-3">
-                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[15px] font-bold shrink-0">2</TextInstrument>
+                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[15px] font-light shrink-0">2</TextInstrument>
                 <TextInstrument as="span">De <strong><VoiceglotText translationKey="auto.page.sonic_dna_waveform.90d655" defaultText="Sonic DNA Waveform" /></strong><VoiceglotText translationKey="auto.page.visualiseert_de_audi.4d02b0" defaultText="visualiseert de audio en reageert op interacties." /></TextInstrument>
               </li>
               <li className="flex gap-3">
-                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[15px] font-bold shrink-0">3</TextInstrument>
+                <TextInstrument as="span" className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[15px] font-light shrink-0">3</TextInstrument>
                 <TextInstrument as="span">Bij <strong><VoiceglotText translationKey="auto.page.goedkeuring.d09d55" defaultText="Goedkeuring" /></strong><VoiceglotText translationKey="auto.page.wordt_de_finale_mast.ff3aab" defaultText="wordt de finale mastering chain toegepast en gesynct naar Dropbox." /></TextInstrument>
               </li>
             </ul>
           </div>
-          <div className="bg-gray-50 p-8 rounded-[32px] border border-gray-100">
-            <HeadingInstrument level={3} className="text-lg font-bold text-gray-900 mb-2"><VoiceglotText translationKey="auto.page.core_mandaat.834017" defaultText="Core Mandaat" /><TextInstrument className="text-[15px] text-gray-500 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.dit_is_een_100__next.743f24" defaultText="Dit is een 100% Next.js implementatie. Er wordt geen PHP gebruikt voor de rendering of de audio-logica. 
+          <div className="bg-va-off-white p-8 rounded-[20px] border border-black/5">
+            <HeadingInstrument level={3} className="text-lg font-light text-va-black mb-2"><VoiceglotText translationKey="auto.page.core_mandaat.834017" defaultText="Core Mandaat" /><TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.dit_is_een_100__next.743f24" defaultText="Dit is een 100% Next.js implementatie. Er wordt geen PHP gebruikt voor de rendering of de audio-logica. 
               De data-bridge communiceert direct met de Node.js services." /></TextInstrument></HeadingInstrument>
           </div>
         </div>
