@@ -292,8 +292,65 @@ class AgentOrchestrator {
   async runContinuous() {
     this.log('BOB', 'INFO', '♾️  STARTING CONTINUOUS CONCERT SERIES...');
     while (true) {
-      await this.runConcert();
-      this.log('BOB', 'INFO', '⏳ Pauze voor het volgende concert (30s)...');
+      // PHASE 1: REHEARSAL (The Pause / Work Phase)
+      this.log('BOB', 'INFO', '🎼 Start Repetitie (Individueel Huiswerk)...');
+      this.updateStatus('REHEARSAL', 'Agents werken aan hun taken...');
+      
+      let allReady = false;
+      let retryCount = 0;
+      const MAX_RETRIES = 5;
+
+      while (!allReady && retryCount < MAX_RETRIES) {
+        retryCount++;
+        let failures = 0;
+        
+        // CIRCUIT BREAKER: ESCALATIE NAAR FELIX (Poging 4)
+        if (retryCount === 4) {
+            this.log('BOB', 'WARNING', '⚠️ ESCALATIE: Repetitie stokt. Felix start Deep Clean Protocol...');
+            await this.runFelixBasic();
+        }
+
+        // CHRIS (Code & Esthetiek)
+        try {
+            console.log(`${COLORS.blue}[CHRIS]${COLORS.reset} Repeteert: Audit & Fix (Poging ${retryCount})...`);
+            execSync('npx ts-node 3-WETTEN/scripts/watchdog.ts fix 1-SITE/apps/web/src', { stdio: 'inherit' });
+            execSync('npx ts-node 3-WETTEN/scripts/watchdog.ts audit 1-SITE/apps/web/src', { stdio: 'inherit' });
+        } catch (e) {
+            failures++;
+            console.log(`${COLORS.yellow}[CHRIS]${COLORS.reset} Nog niet tevreden. Werkt verder...`);
+        }
+
+        // ANNA (Build & Lint)
+        try {
+            console.log(`${COLORS.blue}[ANNA]${COLORS.reset} Repeteert: Linting (Poging ${retryCount})...`);
+            execSync('npm run lint', { cwd: '1-SITE/apps/web', stdio: 'ignore' });
+        } catch (e) {
+            failures++;
+            console.log(`${COLORS.yellow}[ANNA]${COLORS.reset} Linting faalt. Start auto-fix...`);
+            try { execSync('npm run lint:fix', { cwd: '1-SITE/apps/web', stdio: 'ignore' }); } catch(err) {}
+        }
+
+        if (failures === 0) {
+            allReady = true;
+            this.log('BOB', 'SUCCESS', '✨ Iedereen is klaar! Het orkest is gestemd.');
+        } else {
+            if (retryCount < MAX_RETRIES) {
+                this.log('BOB', 'INFO', `⏳ Poging ${retryCount}/${MAX_RETRIES} mislukt. Korte pauze (5s)...`);
+                await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+        }
+      }
+
+      if (allReady) {
+        // PHASE 2: THE CONCERT (Performance)
+        await this.runConcert();
+      } else {
+        // CIRCUIT BREAKER: ABORT (Poging 5 mislukt)
+        this.log('BOB', 'CRITICAL', '🛑 CIRCUIT BREAKER: Repetitie faalde na 5 pogingen. Cyclus afgebroken om infinite loop te voorkomen.');
+        this.updateStatus('HALTED', 'Repetitie oneindige loop gedetecteerd. Manual review needed.');
+      }
+      
+      this.log('BOB', 'INFO', '⏳ Pauze voor de volgende cyclus (30s)...');
       await new Promise(resolve => setTimeout(resolve, 30000));
     }
   }

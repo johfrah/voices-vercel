@@ -75,7 +75,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
           </ContainerInstrument>
           <ContainerInstrument plain className="relative z-10 flex gap-4">
             <Link href="/ivr" className="va-btn-pro flex items-center gap-3 !bg-primary !text-va-black !rounded-[10px] !font-light !tracking-widest !">
-              <VoiceglotText translationKey="home.showcase.telephony.cta" defaultText="Configureer je keuzemenu" /> <ArrowRight size={18} />
+              <VoiceglotText translationKey="home.showcase.telephony.cta" defaultText="Configureer je keuzemenu" /> <ArrowRight strokeWidth={1.5} size={18} />
             </Link>
           </ContainerInstrument>
           <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
@@ -103,7 +103,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
           </ContainerInstrument>
           <ContainerInstrument plain className="relative z-10 flex gap-4">
             <Link href="/agency" className="va-btn-pro flex items-center gap-3 !bg-va-dark-soft !rounded-[10px] !font-light !tracking-widest !">
-              <VoiceglotText translationKey="home.showcase.casting.cta" defaultText="Start jouw zoektocht" /> <ArrowRight size={18} />
+              <VoiceglotText translationKey="home.showcase.casting.cta" defaultText="Start jouw zoektocht" /> <ArrowRight strokeWidth={1.5} size={18} />
             </Link>
           </ContainerInstrument>
           <ContainerInstrument plain className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/3 rounded-full blur-[120px] group-hover:bg-primary/6 transition-all duration-1000" />

@@ -79,7 +79,7 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
                   onClick={() => playClick('pro')}
                   className="va-admin-btn-action"
                 >
-                  <Plus size={14} className="va-btn-icon-rotate" />
+                  <Plus strokeWidth={1.5} size={14} className="va-btn-icon-rotate" />
                   <VoiceglotText translationKey="admin.toolbar.add_section" defaultText="Sectie" />
                 </button>
                 
@@ -88,7 +88,7 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
                   onClick={() => playClick('pop')}
                   className="va-admin-btn-action"
                 >
-                  <Sparkles size={14} className="va-btn-icon-scale" />
+                  <Sparkles strokeWidth={1.5} size={14} className="va-btn-icon-scale" />
                   <VoiceglotText translationKey="admin.toolbar.predictive" defaultText="Predictive" />
                 </button>
 
@@ -116,7 +116,7 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
                   }}
                   className="va-admin-btn-close"
                 >
-                  <X size={16} />
+                  <X strokeWidth={1.5} size={16} />
                 </button>
                 <button 
                   onMouseEnter={() => playSwell()}

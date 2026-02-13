@@ -45,7 +45,7 @@ export default function LiteFrontpage() {
         <div className="grid grid-cols-1 gap-8">
           <BentoCard span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between h-[184px] shadow-sm">
             <div>
-              <Zap className="text-primary mb-4" size={24} fill="currentColor" />
+              <Zap strokeWidth={1.5} className="text-primary mb-4" size={24} fill="currentColor" />
               <h3 className="text-xl font-black tracking-tight mb-2">Snelheid</h3>
               <p className="text-va-black/40 text-[15px] font-medium leading-relaxed">
                 Geleverd binnen 24 uur, direct in uw inbox.
@@ -55,7 +55,7 @@ export default function LiteFrontpage() {
 
           <BentoCard span="sm" className="hmagic text-white p-8 flex flex-col justify-between h-[184px]">
             <div>
-              <Star className="mb-4 text-white" size={24} fill="currentColor" />
+              <Star strokeWidth={1.5} className="mb-4 text-white" size={24} fill="currentColor" />
               <h3 className="text-xl font-black tracking-tight mb-2">Kwaliteit</h3>
               <p className="text-white/80 text-[15px] font-medium leading-relaxed">
                 Alleen de beste stemmen, handmatig geselecteerd.

@@ -90,7 +90,15 @@ export async function middleware(request: NextRequest) {
                          host.includes('youssefzaki.eu') ||
                          host.includes('johfrai.be') ||
                          host.includes('localhost') || // 🧪 LOCAL TEST BYPASS
-                         url.searchParams.get('moby') === 'true') && !host.includes('voices.be') // 🚨 MAT: voices.be mag NIET door de bypass als het onder constructie is
+                         url.searchParams.get('moby') === 'true') && !host.includes('voices.be')
+
+  // 🧠 LLM CONTEXT & INTENT FILTER (Project DNA-Filter)
+  const intent = url.searchParams.get('intent') || 'explore'
+  const persona = url.searchParams.get('persona') || 'visitor'
+  
+  // Injecteer context in headers voor server components
+  response.headers.set('x-voices-intent', intent)
+  response.headers.set('x-voices-persona', persona)
 
   const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || request.cookies.get('sb-access-token') !== undefined
   const isAuthPath = pathname.startsWith('/auth')

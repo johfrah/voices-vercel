@@ -25,7 +25,7 @@ export default function AboutPage() {
       <SectionInstrument className="max-w-7xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="text-center mb-20 space-y-6">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-black tracking-widest shadow-sm border border-black/5">
-            <ShieldCheck size={12} className="text-primary" /> 
+            <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> 
             <VoiceglotText translationKey="about.badge" defaultText="Ons Verhaal" />
           </ContainerInstrument>
           
@@ -44,7 +44,7 @@ export default function AboutPage() {
             className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-12 flex flex-col justify-between min-h-[400px]"
           >
             <ContainerInstrument className="space-y-8">
-              <Quote size={40} className="text-primary/20" />
+              <Quote strokeWidth={1.5} size={40} className="text-primary/20" />
               <HeadingInstrument level={2} className="text-4xl font-black tracking-tight leading-none">
                 <VoiceglotText translationKey="about.founder.title" defaultText="Wij geloven in de kracht van een warm geluid." />
               </HeadingInstrument>
@@ -89,7 +89,7 @@ export default function AboutPage() {
             className="bg-va-off-white p-12 flex flex-col md:flex-row items-center gap-12"
           >
             <ContainerInstrument className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Users size={32} className="text-primary" />
+              <User strokeWidth={1.5}s size={32} className="text-primary" />
             </ContainerInstrument>
             <ContainerInstrument className="space-y-4">
               <HeadingInstrument level={2} className="text-3xl font-black tracking-tight">

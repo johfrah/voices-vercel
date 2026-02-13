@@ -379,7 +379,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   )}
                 >
                   <div className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center", state.music.asBackground ? "bg-primary border-primary text-white" : "border-black/10")}>
-                    {state.music.asBackground && <Check size={12} strokeWidth={4} />}
+                    {state.music.asBackground && <Check size={12} strokeWidth={1.5} />}
                   </div>
                   <div>
                     <p className="text-[15px] font-medium tracking-tight">Achtergrondmuziek</p>
@@ -395,7 +395,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   )}
                 >
                   <div className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center", state.music.asHoldMusic ? "bg-primary border-primary text-white" : "border-black/10")}>
-                    {state.music.asHoldMusic && <Check size={12} strokeWidth={4} />}
+                    {state.music.asHoldMusic && <Check size={12} strokeWidth={1.5} />}
                   </div>
                   <div>
                     <p className="text-[15px] font-medium tracking-tight">Wachtmuziek</p>

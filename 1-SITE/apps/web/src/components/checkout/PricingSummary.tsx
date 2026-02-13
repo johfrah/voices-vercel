@@ -59,7 +59,7 @@ export const PricingSummary: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="flex items-center gap-4 relative z-10">
               <div className="w-12 h-12 rounded-[10px] bg-primary/20 flex items-center justify-center text-primary shadow-inner">
-                <Zap size={24} fill="currentColor" className="animate-pulse" />
+                <Zap strokeWidth={1.5} size={24} fill="currentColor" className="animate-pulse" />
               </div>
               <div>
                 <h4 className="font-light text-lg tracking-tight">Johfrai {state.plan}</h4>

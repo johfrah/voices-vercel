@@ -23,7 +23,7 @@ export const CustomerInstrument: React.FC<CustomerInstrumentProps> = ({
   return (
     <BentoCard 
       title={<VoiceglotText translationKey="order.customer.title" defaultText="Klant" />}
-      icon={<Users className="w-5 h-5" />}
+      icon={<User strokeWidth={1.5}s className="w-5 h-5" />}
       className="col-span-2"
     >
       <div className="flex items-center gap-4 mt-4">

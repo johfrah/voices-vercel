@@ -22,7 +22,7 @@ export const WorkshopPlanningInstrument: React.FC<WorkshopPlanningInstrumentProp
     <>
       <BentoCard 
         title={<VoiceglotText translationKey="order.workshop.planning_title" defaultText="Planning & Deelnemers" />}
-        icon={<Calendar className="w-5 h-5" />}
+        icon={<Calendar strokeWidth={1.5} className="w-5 h-5" />}
         className="col-span-3"
       >
         <div className="mt-4 flex gap-6">
@@ -37,7 +37,7 @@ export const WorkshopPlanningInstrument: React.FC<WorkshopPlanningInstrumentProp
               {time || '00:00'}
             </div>
             <button className="mt-4 flex items-center gap-2 text-sm font-bold text-purple-700 hover:underline">
-              <Calendar className="w-4 h-4" /> <VoiceglotText translationKey="order.workshop.reschedule" defaultText="Reschedule" />
+              <Calendar strokeWidth={1.5} className="w-4 h-4" /> <VoiceglotText translationKey="order.workshop.reschedule" defaultText="Reschedule" />
             </button>
           </div>
           <div className="flex-1 space-y-3">
@@ -45,11 +45,11 @@ export const WorkshopPlanningInstrument: React.FC<WorkshopPlanningInstrumentProp
               <VoiceglotText translationKey="order.workshop.details" defaultText="Details" />
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <Check strokeWidth={1.5}Circle2 className="w-4 h-4 text-emerald-500" />
               <span className="font-medium"><VoiceglotText translationKey="order.workshop.age" defaultText="Leeftijd:" /></span> {age || 'N/A'}
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <Check strokeWidth={1.5}Circle2 className="w-4 h-4 text-emerald-500" />
               <span className="font-medium"><VoiceglotText translationKey="order.workshop.profession" defaultText="Beroep:" /></span> {profession || 'N/A'}
             </div>
           </div>

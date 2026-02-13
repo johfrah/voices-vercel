@@ -425,11 +425,11 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           {isSubmitting ? (
             <><Loader2 className="animate-spin" size={24} /> <VoiceglotText translationKey="common.processing" defaultText="Verwerken..." /></>
           ) : formData.isQuote ? (
-            <><VoiceglotText translationKey="checkout.cta.quote" defaultText="Preview Offerte E-mail" /> <Send size={20} /></>
+            <><VoiceglotText translationKey="checkout.cta.quote" defaultText="Preview Offerte E-mail" /> <Send strokeWidth={1.5} size={20} /></>
           ) : (
             <>
               <VoiceglotText translationKey="checkout.cta.pay" defaultText={`Nu Betalen via ${selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1)}`} />
-              <Send size={20} className="group-hover:translate-x-1 transition-transform" />
+              <Send strokeWidth={1.5} size={20} className="group-hover:translate-x-1 transition-transform" />
             </>
           )}
         </ButtonInstrument>

@@ -32,24 +32,26 @@ import Link from 'next/link';
 
 export default function LiveVisitorCockpit() {
   const [visitors, setVisitors] = useState<any[]>([]);
-  const [recentSessions, setRecentSessions] = useState<any[]>([]);
+  const [logs, setLogs] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [liveRes, recentRes] = await Promise.all([
-          fetch('/api/admin/visitors/live'),
-          fetch('/api/admin/visitors/recent')
+        const [liveRes, statsRes] = await Promise.all([
+          fetch('/api/admin/marketing/live'),
+          fetch('/api/admin/marketing/stats')
         ]);
         
         const liveData = await liveRes.json();
-        const recentData = await recentRes.json();
+        const statsData = await statsRes.json();
         
         setVisitors(liveData.visitors || []);
-        setRecentSessions(recentData.sessions || []);
+        setLogs(liveData.logs || []);
+        setStats(statsData.stats || null);
       } catch (err) {
-        console.error('❌ Failed to fetch visitor data:', err);
+        console.error('❌ Failed to fetch Mat Radar data:', err);
       } finally {
         setLoading(false);
       }
@@ -66,7 +68,7 @@ export default function LiveVisitorCockpit() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-2">
           <ContainerInstrument className="flex items-center gap-2 text-primary">
-            <Activity size={16} />
+            <Activity strokeWidth={1.5} size={16} />
             <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em]">
               <VoiceglotText translationKey="admin.visitors.badge" defaultText="Live Intelligence" />
             </TextInstrument>
@@ -78,13 +80,13 @@ export default function LiveVisitorCockpit() {
         
         <ContainerInstrument className="flex gap-4 bg-va-black text-white p-6 rounded-[24px] border border-white/5">
           <div className="flex flex-col">
-            <span className="text-[15px] font-black tracking-widest text-white/40">Live Bezoekers</span>
-            <span className="text-3xl font-black text-primary">{visitors.length}</span>
+            <span className="text-[15px] font-black tracking-widest text-white/40">Live Radar</span>
+            <span className="text-3xl font-black text-primary">{visitors.filter(v => new Date(v.lastVisitAt).getTime() > Date.now() - 300000).length}</span>
           </div>
           <div className="w-px h-full bg-white/10 mx-4" />
           <div className="flex flex-col">
-            <span className="text-[15px] font-black tracking-widest text-white/40">Sessies Vandaag</span>
-            <span className="text-3xl font-black">142</span>
+            <span className="text-[15px] font-black tracking-widest text-white/40">Uniek Vandaag</span>
+            <span className="text-3xl font-black">{stats?.totalToday || 0}</span>
           </div>
         </ContainerInstrument>
       </SectionInstrument>
@@ -122,65 +124,64 @@ export default function LiveVisitorCockpit() {
                 <tr>
                   <td colSpan={6} className="p-20 text-center">
                     <div className="flex flex-col items-center gap-4">
-                      <Activity className="text-primary animate-spin" size={40} />
-                      <span className="text-[15px] font-bold tracking-widest text-va-black/20">Laden van data...</span>
+                      <Activity strokeWidth={1.5} className="text-primary animate-spin" size={40} />
+                      <span className="text-[15px] font-bold tracking-widest text-va-black/20">Laden van Mat Radar...</span>
                     </div>
                   </td>
                 </tr>
-              ) : recentSessions.length === 0 ? (
+              ) : visitors.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="p-20 text-center">
-                    <TextInstrument className="text-va-black/40 font-medium">Geen sessies gevonden.</TextInstrument>
+                    <TextInstrument className="text-va-black/40 font-medium">Geen bezoekers op de radar.</TextInstrument>
                   </td>
                 </tr>
               ) : (
-                recentSessions.map((v) => {
-                  const isLive = visitors.some(l => l.visitorHash === v.visitorHash);
+                visitors.map((v) => {
+                  const isLive = new Date(v.lastVisitAt).getTime() > Date.now() - 300000;
                   return (
                     <tr key={v.id} className="hover:bg-va-off-white transition-colors group">
                       <td className="p-6">
                         <div className="flex items-center gap-4">
-                          <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center font-black text-[15px]", isLive ? "bg-va-black text-white" : "bg-va-black/5 text-va-black/40")}>
-                            {v.visitorHash.substring(3, 5).toUpperCase()}
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-[15px] ${isLive ? "bg-va-black text-white" : "bg-va-black/5 text-va-black/40"}`}>
+                            {v.visitorHash.substring(0, 2).toUpperCase()}
                           </div>
                           <div>
                             <TextInstrument className="text-sm font-black text-va-black">
-                              {v.user?.firstName ? `${v.user.firstName} ${v.user.lastName}` : 'Anonieme Bezoeker'}
+                              {v.companyName || 'Anonieme Bezoeker'}
                             </TextInstrument>
                             <TextInstrument className="text-[15px] text-va-black/40 font-bold tracking-widest">
-                              {new Date(v.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {v.visitorHash}
+                              {v.locationCity ? `${v.locationCity}, ${v.locationCountry}` : v.visitorHash}
                             </TextInstrument>
                           </div>
                         </div>
                       </td>
                       <td className="p-6">
-                        {isLive ? (
-                          <div className="flex items-center gap-2 text-green-500 text-[15px] font-black ">
-                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                            Live
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-1.5 h-1.5 rounded-full ${isLive ? "bg-green-500 animate-pulse" : "bg-va-black/20"}`} />
+                            <span className={`text-[15px] font-black ${isLive ? "text-green-500" : "text-va-black/20"}`}>
+                              {isLive ? 'Live' : 'Recent'}
+                            </span>
                           </div>
-                        ) : (
-                          <div className="text-va-black/20 text-[15px] font-black ">
-                            Voltooid
-                          </div>
-                        )}
+                          <span className="text-[12px] font-bold text-va-black/20 tracking-widest ">{v.journeyState}</span>
+                        </div>
                       </td>
                       <td className="p-6">
                         <div className="flex items-center gap-2 text-[15px] font-bold bg-va-black/5 px-3 py-1.5 rounded-lg w-fit max-w-[200px] truncate">
-                          <Monitor size={12} className="text-va-black/20" />
-                          <span>{v.url?.replace('https://www.voices.be', '') || '/'}</span>
+                          <Monitor strokeWidth={1.5} size={12} className="text-va-black/20" />
+                          <span>{v.currentPage || '/'}</span>
                         </div>
                       </td>
                       <td className="p-6">
                         <div className="flex items-center gap-2 text-[15px] font-bold">
-                          <Clock size={12} className="text-va-black/20" />
-                          <span>{Math.floor(v.duration / 60)}m {v.duration % 60}s</span>
+                          <Globe strokeWidth={1.5} size={12} className="text-va-black/20" />
+                          <span>{v.market}</span>
                         </div>
                       </td>
                       <td className="p-6">
-                        <div className="flex items-center gap-2 text-[15px] font-bold">
-                          <MousePointer2 size={12} className="text-primary" />
-                          <span>{v.eventCount} events</span>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[13px] font-bold text-va-black/60">{v.utmSource || 'Direct'}</span>
+                          <span className="text-[11px] font-medium text-va-black/20">{v.utmMedium || '-'}</span>
                         </div>
                       </td>
                       <td className="p-6 text-right">
@@ -188,8 +189,8 @@ export default function LiveVisitorCockpit() {
                           href={`/admin/marketing/visitors/${v.visitorHash}`}
                           className="inline-flex items-center gap-2 bg-va-black text-white px-4 py-2 rounded-xl text-[15px] font-black tracking-widest hover:bg-primary transition-all group-hover:scale-105"
                         >
-                          <PlayCircle size={14} />
-                          <span>{isLive ? 'Live View' : 'Replay'}</span>
+                          <Eye size={14} />
+                          <span>Details</span>
                         </Link>
                       </td>
                     </tr>
@@ -212,12 +213,12 @@ export default function LiveVisitorCockpit() {
             Meest geklikte elementen in de laatste 24 uur. Focus op de &apos;Tarieven&apos; knop bij Agency.
           </TextInstrument>
           <Link href="#" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2">
-            Bekijk Heatmap <ArrowRight size={12} />
+            Bekijk Heatmap <ArrowRight strokeWidth={1.5} size={12} />
           </Link>
         </ContainerInstrument>
 
         <ContainerInstrument className="bg-white border border-black/5 p-10 rounded-[40px]">
-          <Users className="text-va-black/20 mb-6" size={32} />
+          <User strokeWidth={1.5}s className="text-va-black/20 mb-6" size={32} />
           <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
             Customer DNA
           </HeadingInstrument>
@@ -225,7 +226,7 @@ export default function LiveVisitorCockpit() {
             80% van de huidige bezoekers zijn &apos;Decision Makers&apos; binnen de Agency journey.
           </TextInstrument>
           <Link href="/admin/users" className="text-[15px] font-black tracking-widest text-va-black/40 flex items-center gap-2">
-            User DNA Dashboard <ArrowRight size={12} />
+            User DNA Dashboard <ArrowRight strokeWidth={1.5} size={12} />
           </Link>
         </ContainerInstrument>
 
@@ -238,7 +239,7 @@ export default function LiveVisitorCockpit() {
             Hoge bounce-rate op de &apos;Over Ons&apos; pagina. AI stelt voor om de CTA te verduidelijken.
           </TextInstrument>
           <Link href="#" className="text-[15px] font-black tracking-widest text-va-black/40 flex items-center gap-2">
-            Analyseer Flow <ArrowRight size={12} />
+            Analyseer Flow <ArrowRight strokeWidth={1.5} size={12} />
           </Link>
         </ContainerInstrument>
       </div>

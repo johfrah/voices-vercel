@@ -29,10 +29,10 @@ export const HitlActionCardInstrument = ({
 }) => {
   const getIcon = () => {
     switch (type) {
-      case 'reorder': return <Zap size={14} className="text-yellow-500" />;
-      case 'offer': return <Zap size={14} className="text-green-500" />;
-      case 'bridge': return <Zap size={14} className="text-blue-500" />;
-      default: return <Zap size={14} className="text-primary" />;
+      case 'reorder': return <Zap strokeWidth={1.5} size={14} className="text-yellow-500" />;
+      case 'offer': return <Zap strokeWidth={1.5} size={14} className="text-green-500" />;
+      case 'bridge': return <Zap strokeWidth={1.5} size={14} className="text-blue-500" />;
+      default: return <Zap strokeWidth={1.5} size={14} className="text-primary" />;
     }
   };
 

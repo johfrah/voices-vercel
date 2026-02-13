@@ -206,7 +206,7 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
       ref={ref}
       type={Component === 'button' ? type : undefined}
       href={Component === 'a' ? href : undefined}
-      className={cn(className, noTranslate && "notranslate", "rounded-[10px] active:scale-95 transition-transform duration-100 text-[15px]")}
+      className={cn(className, noTranslate && "notranslate", "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] va-bezier")}
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
       onClick={(e: any) => {

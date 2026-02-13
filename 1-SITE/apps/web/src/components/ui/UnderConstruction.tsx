@@ -9,6 +9,8 @@ import Link from 'next/link';
 
 import Image from 'next/image';
 import { VoiceglotText } from './VoiceglotText';
+import { matTrack } from '@/lib/mat-intelligence';
+import { useEffect } from 'react';
 
 /**
  * UNDER CONSTRUCTION PAGE (2026)
@@ -19,6 +21,14 @@ export default function UnderConstruction() {
   const market = MarketManager.getCurrentMarket();
   const { playClick, playSwell } = useSonicDNA();
   const { isAdmin } = useAuth();
+
+  useEffect(() => {
+    matTrack({
+      event: 'pageview',
+      intent: 'under_construction_view',
+      iapContext: { market: market.market_code }
+    });
+  }, [market.market_code]);
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden bg-va-off-white">
@@ -79,7 +89,7 @@ export default function UnderConstruction() {
               onClick={() => playClick('pro')}
               className="va-btn-pro inline-flex items-center gap-4 !px-12 !py-8 text-lg group"
             >
-              <Mail size={24} className="group-hover:rotate-12 transition-transform" />
+              <Mail strokeWidth={1.5} size={24} className="group-hover:rotate-12 transition-transform" />
               {market.email}
             </a>
           </div>
@@ -102,26 +112,6 @@ export default function UnderConstruction() {
           "market": market.market_code
         }
       })}} />
-
-      {/* 🚪 MAT: VISITOR INTELLIGENCE TRACKER */}
-      <script dangerouslySetInnerHTML={{ __html: `
-        (function() {
-          const hash = document.cookie.split('; ').find(row => row.startsWith('voices_visitor_hash='))?.split('=')[1];
-          if (hash) {
-            fetch('/api/marketing/track', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                event: 'pageview',
-                pathname: window.location.pathname,
-                referrer: document.referrer,
-                intent: 'under_construction',
-                iapContext: { status: 'waiting', domain: window.location.hostname }
-              })
-            }).catch(() => {});
-          }
-        })();
-      `}} />
     </main>
   );
 }

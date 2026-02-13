@@ -79,7 +79,7 @@ export default async function StudioPage() {
             <BentoCard span="lg" className="bg-blue-600 p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[500px] rounded-[48px]">
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-8">
-                  <Star size={24} fill="currentColor" />
+                  <Star strokeWidth={1.5} size={24} fill="currentColor" />
                 </div>
                 <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none mb-8 ">
                   <VoiceglotText translationKey="studio.bento.guide.title" defaultText="Welke workshop past bij jou?" />
@@ -91,7 +91,7 @@ export default async function StudioPage() {
               <div className="relative z-10">
                 <Link href="/studio/quiz">
                   <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group">
-                    <VoiceglotText translationKey="studio.bento.guide.cta" defaultText="DOE DE QUIZ" /> <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                    <VoiceglotText translationKey="studio.bento.guide.cta" defaultText="DOE DE QUIZ" /> <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform" />
                   </ButtonInstrument>
                 </Link>
               </div>
@@ -101,7 +101,7 @@ export default async function StudioPage() {
             {/* 💬 AFSPRAAK BENTO */}
             <BentoCard span="sm" className="bg-va-black text-white p-12 flex flex-col justify-between rounded-[48px] shadow-aura-lg">
               <div>
-                <MessageSquare className="text-primary mb-8" size={48} />
+                <MessageSquare strokeWidth={1.5} className="text-primary mb-8" size={48} />
                 <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 leading-none">
                   <VoiceglotText translationKey="studio.bento.appointment.title" defaultText="Samen aan de slag" />
                 </HeadingInstrument>
@@ -147,7 +147,7 @@ export default async function StudioPage() {
                   <VoiceglotText translationKey="studio.grid_label" defaultText="Aan de slag in de studio" />
                 </HeadingInstrument>
                 <Link href="/studio/kalender" className="text-[15px] font-black tracking-widest text-primary hover:underline flex items-center gap-2">
-                  <VoiceglotText translationKey="studio.calendar_link" defaultText="VOLLEDIGE KALENDER" /> <ArrowRight size={12} />
+                  <VoiceglotText translationKey="studio.calendar_link" defaultText="VOLLEDIGE KALENDER" /> <ArrowRight strokeWidth={1.5} size={12} />
                 </Link>
               </div>
               {activeWorkshops.length === 0 ? (
@@ -195,7 +195,7 @@ export default async function StudioPage() {
                             <VoiceglotText translationKey="studio.workshop_badge" defaultText="Workshop" />
                           </div>
                           <span className="text-[15px] font-bold text-black/30 tracking-widest flex items-center gap-2">
-                            <Calendar size={12} /> {new Date(workshop.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })}
+                            <Calendar strokeWidth={1.5} size={12} /> {new Date(workshop.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })}
                           </span>
                         </div>
 
@@ -221,7 +221,7 @@ export default async function StudioPage() {
                             href={`/studio/book?id=${workshop.id}`}
                             className="flex items-center gap-3 text-[15px] font-black tracking-widest text-primary group/btn"
                           >
-                            <VoiceglotText translationKey="studio.book_cta" defaultText="Ik kom ook" /> <ArrowRight size={16} className="group-hover/btn:translate-x-2 transition-transform" />
+                            <VoiceglotText translationKey="studio.book_cta" defaultText="Ik kom ook" /> <ArrowRight strokeWidth={1.5} size={16} className="group-hover/btn:translate-x-2 transition-transform" />
                           </Link>
                         </div>
                       </div>

@@ -90,7 +90,7 @@ export default function VoicePageClient({ actors }: { actors: any[] }) {
                     <VoiceglotText translationKey={`actor.${actor.id}.name`} defaultText={actor.display_name} noTranslate={true} />
                   </HeadingInstrument>
                   <ContainerInstrument className="flex items-center gap-1 text-[15px] font-bold text-primary">
-                    <Star size={10} fill="currentColor" /> {actor.voice_score}
+                    <Star strokeWidth={1.5} size={10} fill="currentColor" /> {actor.voice_score}
                   </ContainerInstrument>
                 </ContainerInstrument>
                 <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">

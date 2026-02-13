@@ -92,7 +92,7 @@ class ChrisWatchdog {
     },
     {
       name: 'Atomic Icon Mandate',
-      pattern: /<(Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind)(?!.*strokeWidth={1.5})[^>]*>/g,
+      pattern: /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind)(?![^>]*strokeWidth={1\.5})[^>]*>/g,
       message: 'Lucide icons MOETEN strokeWidth={1.5} hebben voor de Ademing-feel.',
       severity: 'CRITICAL'
     }
@@ -205,6 +205,20 @@ class ChrisWatchdog {
       if (p2.includes('font-') || p4.includes('font-')) return match;
       console.log(`   ✅ [FIX] ${path.basename(filePath)}: Toegevoegd 'font-light' aan ${p1}`);
       return `<${p1}${p2} font-light${p4}`;
+    });
+
+    // Fix Atomic Icon Mandate (Lucide icons strokeWidth)
+    const iconPattern = /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind)(?![^>]*strokeWidth={1\.5})([^>]*)>/g;
+    content = content.replace(iconPattern, (match, p1, p2) => {
+        if (match.includes('strokeWidth=')) {
+            // Replace existing strokeWidth
+            console.log(`   ✅ [FIX] ${path.basename(filePath)}: Updated strokeWidth for ${p1}`);
+            return match.replace(/strokeWidth={[^}]*}/, 'strokeWidth={1.5}');
+        } else {
+            // Add strokeWidth
+            console.log(`   ✅ [FIX] ${path.basename(filePath)}: Added strokeWidth={1.5} to ${p1}`);
+            return `<${p1} strokeWidth={1.5}${p2}>`;
+        }
     });
 
     if (content !== originalContent) {

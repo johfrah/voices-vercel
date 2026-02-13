@@ -26,7 +26,7 @@ export const GuaranteesBento = () => {
         </div>
         <ContainerInstrument plain className="relative z-10">
           <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
-            <ShieldCheck size={32} fill="currentColor" />
+            <ShieldCheck strokeWidth={1.5} size={32} fill="currentColor" />
           </ContainerInstrument>
           <HeadingInstrument level={3} className="text-5xl font-black tracking-tighter mb-6 leading-none text-primary">
             <VoiceglotText translationKey="guarantees.satisfaction.title" defaultText="100% Tevredenheid" />
@@ -44,7 +44,7 @@ export const GuaranteesBento = () => {
       {/* 🌍 Native Speakers */}
       <BentoCard span="sm" className="bg-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
-          <Globe className="text-primary mb-4" size={24} />
+          <Globe strokeWidth={1.5} className="text-primary mb-4" size={24} />
           <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black">
             <VoiceglotText translationKey="guarantees.native.title" defaultText="Native Speakers" />
           </HeadingInstrument>
@@ -57,7 +57,7 @@ export const GuaranteesBento = () => {
       {/* ⚡ Snelheid */}
       <BentoCard span="sm" className="bg-va-dark-soft text-white p-8 flex flex-col justify-between h-[280px] border-none">
         <ContainerInstrument plain>
-          <Zap className="text-primary mb-4" size={24} fill="currentColor" />
+          <Zap strokeWidth={1.5} className="text-primary mb-4" size={24} fill="currentColor" />
           <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-primary">
             <VoiceglotText translationKey="guarantees.speed.title" defaultText="Razendsnel" />
           </HeadingInstrument>

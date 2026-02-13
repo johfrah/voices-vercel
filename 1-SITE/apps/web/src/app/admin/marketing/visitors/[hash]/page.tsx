@@ -101,11 +101,11 @@ export default function VisitorPlayerPage() {
       <SectionInstrument className="flex justify-between items-center">
         <div className="space-y-2">
           <Link href="/admin/marketing/visitors" className="flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[15px] font-black tracking-widest mb-4">
-            <ArrowLeft size={12} /> Terug naar cockpit
+            <ArrowLeft strokeWidth={1.5} size={12} /> Terug naar cockpit
           </Link>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
-              <Activity size={20} />
+              <Activity strokeWidth={1.5} size={20} />
             </div>
             <div>
               <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter ">
@@ -153,7 +153,7 @@ export default function VisitorPlayerPage() {
           <SectionInstrument className="bg-va-black rounded-[40px] overflow-hidden shadow-2xl border border-white/5 relative min-h-[700px] flex items-center justify-center">
             {loading ? (
               <div className="flex flex-col items-center gap-4">
-                <Activity className="text-primary animate-spin" size={48} />
+                <Activity strokeWidth={1.5} className="text-primary animate-spin" size={48} />
                 <TextInstrument className="text-white/40 text-[15px] font-black tracking-widest">Reconstrueren van sessie...</TextInstrument>
               </div>
             ) : error ? (
@@ -179,7 +179,7 @@ export default function VisitorPlayerPage() {
               </ContainerInstrument>
 
               <ContainerInstrument className="bg-white border border-black/5 p-8 rounded-[32px] shadow-sm">
-                <Monitor className="text-va-black/20 mb-4" size={24} />
+                <Monitor strokeWidth={1.5} className="text-va-black/20 mb-4" size={24} />
                 <HeadingInstrument level={3} className="text-sm font-black tracking-widest mb-2">Device Info</HeadingInstrument>
                 <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light">
                   Browser: {session?.userAgent?.split(') ')[1] || 'Chrome/120.0.0'} <br />
@@ -238,7 +238,7 @@ export default function VisitorPlayerPage() {
 
           {/* AI Insights Card */}
           <ContainerInstrument className="bg-va-black text-white p-8 rounded-[32px] shadow-lg relative overflow-hidden">
-            <Sparkles className="text-primary mb-4" size={24} />
+            <Sparkles strokeWidth={1.5} className="text-primary mb-4" size={24} />
             <HeadingInstrument level={3} className="text-sm font-black tracking-widest mb-2">AI Analyse</HeadingInstrument>
             <TextInstrument className="text-[15px] text-white/40 leading-relaxed font-light">
               Voicy merkt op dat deze bezoeker twijfelt tussen de &apos;Pro&apos; en &apos;Studio&apos; plannen. 

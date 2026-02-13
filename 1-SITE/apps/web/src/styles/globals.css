@@ -30,6 +30,28 @@
   --va-dark: #FFFFFF;
 }
 
+/* 🧪 PROJECT ADEMHALING: Globale Interactie Wetten */
+.va-interactive {
+  @apply transition-all duration-500;
+  transition-timing-function: var(--va-bezier);
+}
+
+.va-interactive:hover {
+  @apply shadow-aura scale-[1.02];
+}
+
+.va-interactive:active {
+  @apply scale-[0.98];
+}
+
+.va-card-dna {
+  @apply bg-white rounded-[20px] shadow-aura border border-black/[0.03] overflow-hidden va-interactive;
+}
+
+.va-button-dna {
+  @apply rounded-[10px] font-light tracking-widest uppercase va-interactive;
+}
+
 body {
   background-color: var(--va-background);
   color: var(--va-dark);
@@ -486,19 +508,19 @@ body {
 }
 
 .va-account-badge {
-  @apply inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10;
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest border border-primary/10 uppercase;
 }
 
 .va-account-title {
-  @apply text-6xl font-black tracking-tighter;
+  @apply text-6xl font-light tracking-tighter;
 }
 
 .va-account-subtitle {
-  @apply text-va-black/40 font-medium;
+  @apply text-va-black/40 font-light;
 }
 
 .va-account-logout-btn {
-  @apply flex items-center gap-3 px-8 py-4 bg-va-black text-white rounded-va-lg text-[15px] font-black tracking-widest hover:bg-primary transition-all shadow-xl;
+  @apply flex items-center gap-3 px-8 py-4 bg-va-black text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all shadow-xl uppercase va-bezier;
 }
 
 .va-text-primary {

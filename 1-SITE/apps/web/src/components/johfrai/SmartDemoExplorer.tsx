@@ -83,7 +83,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
       {/* 🏷️ SECTOR SELECTOR */}
       <div className="space-y-4">
         <h3 className="text-sm font-black tracking-widest text-va-black/40 flex items-center gap-2">
-          <Briefcase size={14} /> 
+          <Briefcase strokeWidth={1.5} size={14} /> 
           <VoiceglotText translationKey="johfrai.explorer.sectors" defaultText="Kies je sector" />
         </h3>
         <div className="flex flex-wrap gap-3">
@@ -110,7 +110,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
       {/* 🎭 VIBE SELECTOR */}
       <div className="space-y-4">
         <h3 className="text-sm font-black tracking-widest text-va-black/40 flex items-center gap-2">
-          <Sparkles size={14} /> 
+          <Sparkles strokeWidth={1.5} size={14} /> 
           <VoiceglotText translationKey="johfrai.explorer.vibes" defaultText="Kies de vibe" />
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -193,7 +193,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
               ))
             ) : (
               <div className="col-span-full py-12 flex flex-col items-center justify-center text-va-black/20 space-y-4 bg-va-black/5 rounded-[32px] border-2 border-dashed border-va-black/10">
-                <Sparkles size={32} />
+                <Sparkles strokeWidth={1.5} size={32} />
                 <div className="text-center">
                   <p className="text-[15px] font-black tracking-widest">
                     <VoiceglotText translationKey="johfrai.explorer.no_match" defaultText="Geen specifieke match gevonden" />

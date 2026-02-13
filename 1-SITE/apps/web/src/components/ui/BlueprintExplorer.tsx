@@ -95,7 +95,7 @@ export const BlueprintExplorer: React.FC<{ journey: string }> = ({ journey }) =>
             <h4 className="text-lg font-black tracking-tight leading-none">Kies je stem</h4>
             <p className="text-[15px] text-white/60 leading-relaxed">Onze top-selectie van stemacteurs staat klaar om jouw unieke script tot leven te brengen.</p>
             <button className="w-full py-4 bg-primary text-white rounded-2xl text-[15px] font-black tracking-widest hover:scale-105 transition-all flex items-center justify-center gap-2">
-              Bekijk alle stemmen <ArrowRight size={14} />
+              Bekijk alle stemmen <ArrowRight strokeWidth={1.5} size={14} />
             </button>
           </div>
         </div>

@@ -22,7 +22,7 @@ export default function PrivacyPage() {
         {/* Header */}
         <SectionInstrument className="mb-16">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10 mb-8">
-            <Shield size={12} fill="currentColor" /> 
+            <Shield strokeWidth={1.5} size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="privacy.badge" defaultText="Privacy & Veiligheid" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6">
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
 
           <section className="space-y-4">
             <div className="flex items-center gap-3 text-primary mb-4">
-              <Lock size={20} />
+              <Lock strokeWidth={1.5} size={20} />
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight">Hoe beschermen we je data?</HeadingInstrument>
             </div>
             <TextInstrument className="text-va-black/60 leading-relaxed font-light">

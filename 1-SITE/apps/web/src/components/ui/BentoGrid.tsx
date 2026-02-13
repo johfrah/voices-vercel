@@ -3,6 +3,7 @@
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from "@/lib/utils";
+import { matTrack } from '@/lib/mat-intelligence';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Lock, Maximize2, Trash2 } from 'lucide-react';
@@ -100,16 +101,32 @@ export function BentoCard({
     full: 'md:col-span-3'
   };
 
+  const handleInteraction = (type: 'click' | 'hover') => {
+    if (isEditMode) return;
+    
+    matTrack({
+      event: type,
+      intent: `bento_card_${id || 'unnamed'}`,
+      iapContext: { card_title: typeof title === 'string' ? title : id }
+    });
+  };
+
   return (
     <ContainerInstrument 
       plain
       ref={setNodeRef}
       style={combinedStyle}
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
+      onClick={() => {
+        handleInteraction('click');
+        onClick?.();
+      }}
+      onMouseEnter={() => {
+        handleInteraction('hover');
+        onMouseEnter?.();
+      }}
       {...(dangerouslySetInnerHTML ? { dangerouslySetInnerHTML } : {})}
       className={cn(
-        "rounded-va-lg overflow-hidden transition-all duration-500 relative group/card",
+        "rounded-[20px] overflow-hidden transition-all duration-500 relative group/card va-interactive",
         isEditMode && "ring-2 ring-primary/20 hover:ring-primary/50",
         spanClasses[span],
         className
@@ -130,7 +147,7 @@ export function BentoCard({
             onClick={() => playClick('lock')}
             className="bg-va-black text-white p-2.5 rounded-xl hover:bg-primary transition-all shadow-xl active:scale-90"
           >
-            <Lock size={12} />
+            <Lock strokeWidth={1.5} size={12} />
           </ButtonInstrument>
           <ButtonInstrument 
             onMouseEnter={() => playSwell()}

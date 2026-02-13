@@ -124,7 +124,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
     <BentoCard 
       span="md" 
       className={cn(
-        "group cursor-pointer bg-white border rounded-[40px] p-8 transition-all duration-700 hover:shadow-[0_40px_80px_-16px_rgba(0,0,0,0.12)] hover:-translate-y-1 relative overflow-hidden golden-curve",
+        "group cursor-pointer bg-white border rounded-[20px] p-8 transition-all duration-700 hover:shadow-aura hover:-translate-y-1 relative overflow-hidden va-interactive",
         isSelected ? "border-primary ring-1 ring-primary/20" : "border-gray-100"
       )}
       onClick={() => {
@@ -165,12 +165,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
               >
                 {isSelected ? (
                   <>
-                    <Check size={12} strokeWidth={3} />
+                    <Check size={12} strokeWidth={1.5} />
                     <span className="text-[15px] font-bold tracking-widest ">In Studio</span>
                   </>
                 ) : (
                   <>
-                    <Plus size={12} strokeWidth={3} />
+                    <Plus size={12} strokeWidth={1.5} />
                     <span className="text-[15px] font-bold tracking-widest text-white/80">Gratis Demo</span>
                   </>
                 )}
@@ -287,7 +287,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 window.location.href = `/voice/${voice.slug}`;
               }
             }}
-            className="w-full sm:w-auto bg-va-dark text-white px-6 py-4 rounded-2xl text-[15px] font-medium tracking-widest hover:bg-primary transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-xl shadow-black/5 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-va-dark text-white px-6 py-4 rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-xl shadow-black/5 flex items-center justify-center gap-2 "
           >
             <VoiceglotText translationKey="common.order_fast" defaultText="Snel Bestellen" />
             <ChevronRight size={14} />

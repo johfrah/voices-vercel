@@ -40,7 +40,7 @@ export const EmailComposerInstrument = ({
             <VoiceglotText translationKey="mailbox.compose" defaultText="Nieuw bericht" />
           </HeadingInstrument>
           <ButtonInstrument onClick={onClose} className="p-2 hover:bg-black/5 rounded-full">
-            <X size={20} className="text-va-black/40" />
+            <X strokeWidth={1.5} size={20} className="text-va-black/40" />
           </ButtonInstrument>
         </ContainerInstrument>
 
@@ -95,7 +95,7 @@ export const EmailComposerInstrument = ({
               disabled={isSending}
               className="va-composer-btn-send"
             >
-              <Send size={14} className={isSending ? 'animate-pulse' : ''} />
+              <Send strokeWidth={1.5} size={14} className={isSending ? 'animate-pulse' : ''} />
               <VoiceglotText translationKey="mailbox.send" defaultText={isSending ? "Verzenden..." : "Verzenden"} />
             </ButtonInstrument>
           </ContainerInstrument>

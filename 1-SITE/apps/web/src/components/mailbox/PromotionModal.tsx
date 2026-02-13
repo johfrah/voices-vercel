@@ -58,7 +58,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
               <Rocket size={24} />
             </div>
             <ButtonInstrument onClick={onClose} className="p-2 hover:bg-gray-50 rounded-xl transition-colors">
-              <X size={20} className="text-gray-400" />
+              <X strokeWidth={1.5} size={20} className="text-gray-400" />
             </ButtonInstrument>
           </div>
 
@@ -72,7 +72,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
           {isSuccess ? (
             <div className="py-12 text-center space-y-4">
               <div className="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto animate-bounce">
-                <Check size={32} />
+                <Check strokeWidth={1.5} size={32} />
               </div>
               <p className="font-bold text-green-600">Succesvol gepromoveerd!</p>
             </div>

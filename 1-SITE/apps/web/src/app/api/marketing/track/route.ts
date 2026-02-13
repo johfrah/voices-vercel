@@ -14,6 +14,8 @@ export async function POST(request: NextRequest) {
     const visitorHash = request.cookies.get('voices_visitor_hash')?.value
     const market = request.headers.get('x-voices-market') || 'BE'
     const journey = request.headers.get('x-voices-journey') || 'agency'
+    const userAgent = request.headers.get('user-agent') || ''
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1'
 
     if (!visitorHash) {
       return new NextResponse('Missing visitor hash', { status: 400 })
@@ -21,8 +23,14 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY! // Gebruik service role voor database writes
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
+
+    // 🕵️ MAT: UTM Extraction from URL if present in pathname
+    const url = new URL(pathname, `https://${request.headers.get('host') || 'voices.be'}`)
+    const utmSource = url.searchParams.get('utm_source')
+    const utmMedium = url.searchParams.get('utm_medium')
+    const utmCampaign = url.searchParams.get('utm_campaign')
 
     // 1. Update of maak visitor record
     const { data: visitor, error: visitorError } = await supabase
@@ -33,7 +41,11 @@ export async function POST(request: NextRequest) {
         current_page: pathname,
         referrer: referrer,
         market: market,
-        journey_state: journey
+        journey_state: journey,
+        utm_source: utmSource,
+        utm_medium: utmMedium,
+        utm_campaign: utmCampaign,
+        // 🌍 MAT: Toekomstige uitbreiding: IP-geolocatie via externe service
       }, { onConflict: 'visitor_hash' })
       .select()
       .single()
