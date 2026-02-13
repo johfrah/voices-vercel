@@ -19,7 +19,7 @@ export interface PricingConfig {
 }
 
 export const DEFAULT_PRICING_CONFIG: PricingConfig = {
-  basePrice: 149,
+  basePrice: 239,
   wordRate: 0.25,
   vatRate: 0.21,
   musicSurcharge: 59,
@@ -62,7 +62,7 @@ export class PricingEngine {
       else if (input.plan === 'studio') base = 99;
       else base = 29;
     } else if (input.usage === 'telefonie') {
-      base = 129; // Speciaal tarief voor telefonie
+      base = 89; // Speciaal tarief voor telefonie
     }
 
     // 2. Word/Prompt Surcharge

@@ -184,11 +184,11 @@ export async function POST(request: NextRequest) {
           const isAdmin = senderId !== undefined && isAllowedUser(senderId);
           const gemini = GeminiService.getInstance();
 
-          // ⚡ PRICING CONTEXT: Inject real-time pricing data
+          // ⚡ PRICING CONTEXT: Inject real-time pricing data from PricingEngine
           const pricingContext = `
 ACTUELE TARIEVEN (2026):
-- Basis Video (unpaid): €149 (tot 100 woorden)
-- Telefoon/IVR: €129 (tot 5 prompts)
+- Basis Video (unpaid): €239 (tot 100 woorden)
+- Telefoon/IVR: €89 (tot 5 prompts)
 - Commercial (paid): Vanaf €250 (afhankelijk van usage)
 - Extra woorden: €0,25 per woord (boven 100 woorden)
 - Wachtmuziek: €59 per track
