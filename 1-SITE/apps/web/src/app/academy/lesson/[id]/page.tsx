@@ -19,9 +19,15 @@ import { AcademyContent } from "@/components/ui/AcademyContent";
 import { SecurityService } from '@/lib/security-service';
 import { MobileBridge } from '@/lib/mobile-bridge';
 import { createClient } from "@/utils/supabase/server";
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { db } from "@db";
 import { courseProgress, users } from "@db/schema";
 import { and, eq } from "drizzle-orm";
+
+// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 
 import { AcademyPdfButton } from "@/components/ui/AcademyPdfButton";
 
@@ -41,9 +47,21 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
   const supabaseUser = supabase ? (await supabase.auth.getUser()).data.user : null;
 
   // Fetch full user profile from DB to get role and ID
-  const [user] = supabaseUser 
-    ? await db.select().from(users).where(eq(users.email, supabaseUser.email!)).limit(1)
-    : [null];
+  let user: any = null;
+  if (supabaseUser?.email) {
+    try {
+      const [dbUser] = await db.select().from(users).where(eq(users.email, supabaseUser.email!)).limit(1);
+      user = dbUser;
+    } catch (dbError) {
+      console.warn('⚠️ Academy Lesson Drizzle failed, falling back to SDK');
+      const { data: sdkUser } = await sdkClient
+        .from('users')
+        .select('*')
+        .eq('email', supabaseUser.email!)
+        .single();
+      user = sdkUser;
+    }
+  }
 
   const isAdmin = user?.role === 'admin';
   const isPreviewMode = isAdmin && searchParams.preview === 'student';

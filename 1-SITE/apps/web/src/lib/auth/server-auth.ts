@@ -4,11 +4,17 @@
  * Voor Server Components en layouts. Gebruikt Supabase + users table.
  */
 
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
 import { db } from '@db';
 import { users } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
+
+// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 
 export interface ServerUser {
   id: number;
@@ -24,12 +30,26 @@ export async function getServerUser(): Promise<ServerUser | null> {
   if (!supabase) return null;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user?.email) return null;
-  const [dbUser] = await db.select({ id: users.id, email: users.email, role: users.role })
-    .from(users)
-    .where(eq(users.email, user.email))
-    .limit(1);
-  if (!dbUser) return null;
-  return { id: dbUser.id, email: dbUser.email, role: dbUser.role };
+
+  try {
+    const [dbUser] = await db.select({ id: users.id, email: users.email, role: users.role })
+      .from(users)
+      .where(eq(users.email, user.email))
+      .limit(1);
+    
+    if (!dbUser) return null;
+    return { id: dbUser.id, email: dbUser.email, role: dbUser.role };
+  } catch (dbError) {
+    console.warn('⚠️ Auth Drizzle failed, falling back to SDK');
+    const { data, error } = await sdkClient
+      .from('users')
+      .select('id, email, role')
+      .eq('email', user.email)
+      .single();
+    
+    if (error || !data) return null;
+    return { id: data.id, email: data.email, role: data.role };
+  }
 }
 
 /**

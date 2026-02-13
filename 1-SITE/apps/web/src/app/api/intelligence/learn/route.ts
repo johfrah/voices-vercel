@@ -19,9 +19,27 @@ export async function POST(request: NextRequest) {
       const { db } = await import('@db');
       const { users } = await import('@db/schema');
       const { eq } = await import('drizzle-orm');
+      const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
       
-      const [dbUser] = await db.select().from(users).where(eq(users.email, user.email)).limit(1);
-      numericUserId = dbUser?.id;
+      try {
+        const [dbUser] = await db.select().from(users).where(eq(users.email, user.email)).limit(1);
+        numericUserId = dbUser?.id;
+      } catch (dbError) {
+        console.warn('⚠️ Learn API Drizzle failed, falling back to SDK');
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+        const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
+        
+        const { data, error } = await sdkClient
+          .from('users')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+        
+        if (!error && data) {
+          numericUserId = data.id;
+        }
+      }
     }
 
     const analysis = await IntentLearningEngine.learnFromInteraction({

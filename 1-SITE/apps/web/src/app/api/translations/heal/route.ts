@@ -13,6 +13,8 @@ import { MarketManager } from '@config/market-manager';
  * en de admin notificeren.
  */
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const { key, originalText, currentLang } = await request.json();

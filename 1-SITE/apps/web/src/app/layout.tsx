@@ -163,7 +163,7 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <VoicyBridge />
           </Suspense>
-          {market.has_voicy !== false && <VoicyChat />}
+          <VoicyChat />
           <PageWrapperInstrument>
             <Suspense fallback={<LoadingScreenInstrument />}>
               {children}

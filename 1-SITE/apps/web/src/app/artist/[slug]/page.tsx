@@ -66,7 +66,7 @@ async function ArtistDetailContent({ params }: { params: { slug: string } }) {
   };
 
   return (
-    <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+    <PageWrapperInstrument className="max-w-6xl mx-auto px-6 py-20 relative z-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -74,7 +74,7 @@ async function ArtistDetailContent({ params }: { params: { slug: string } }) {
       <SectionInstrument className="mb-12 flex items-center justify-between">
         <Link 
           href="/artist" 
-          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-all"
+          className="inline-flex items-center gap-2 text-[10px] font-light tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
           <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="artist.back_to_artists" defaultText="Terug naar alle artiesten" />
@@ -89,90 +89,118 @@ async function ArtistDetailContent({ params }: { params: { slug: string } }) {
         </ContainerInstrument>
       </SectionInstrument>
 
-      <BentoGrid className="mb-20">
-        <BentoCard span="sm" className="!p-0 overflow-hidden bg-white shadow-aura">
-          <ContainerInstrument className="aspect-[4/5] relative">
+      {/* 🎭 STORY LAYOUT HERO */}
+      <SectionInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-32 items-start">
+        <div className="lg:col-span-5">
+          <div className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg group">
             <Image 
               src={artist.photo_url || '/placeholder-artist.jpg'} 
               alt={artist.display_name} 
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-1000 group-hover:scale-105"
+              priority
             />
-            <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent" />
-            <ContainerInstrument className="absolute bottom-8 left-8 right-8">
-              <HeadingInstrument level={1} className="text-3xl font-light text-white tracking-tighter mb-2">
-                <VoiceglotText translationKey={`artist.${artist.id}.name`} defaultText={artist.display_name} noTranslate={true} />
-              </HeadingInstrument>
-              <ContainerInstrument className="flex items-center gap-2">
-                <ContainerInstrument className="px-3 py-1 bg-primary rounded-full text-[8px] font-medium text-white uppercase tracking-widest">
-                  <VoiceglotText translationKey="artist.badge.featured" defaultText="Stem" />
-                </ContainerInstrument>
-                <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[10px] font-medium uppercase tracking-widest">
-                  <Star size={10} className="text-primary" fill="currentColor" /> 
-                  <VoiceglotText translationKey="artist.score" defaultText="9.8" />
-                </ContainerInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
-          </ContainerInstrument>
-        </BentoCard>
+            <div className="absolute inset-0 bg-gradient-to-t from-va-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          </div>
+        </div>
+        
+        <div className="lg:col-span-7 pt-8">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-light tracking-widest border border-primary/10">
+              <VoiceglotText translationKey="artist.badge.featured" defaultText="Voice Artist" />
+            </span>
+            <div className="flex items-center gap-1 text-va-black/40 text-[10px] font-light tracking-widest">
+              <Star size={10} className="text-primary" fill="currentColor" /> 
+              <VoiceglotText translationKey="artist.score" defaultText="9.8 Rating" />
+            </div>
+          </div>
 
-        <BentoCard span="xl" className="bg-va-off-white/50 backdrop-blur-md border-white/20 shadow-aura p-12">
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black mb-8">
+            <VoiceglotText translationKey={`artist.${artist.id}.name`} defaultText={artist.display_name} noTranslate={true} />
+          </HeadingInstrument>
+
+          <p className="text-xl md:text-2xl font-light text-va-black/60 leading-tight tracking-tight max-w-xl mb-12">
+            <VoiceglotText 
+              translationKey={`artist.${artist.id}.bio`} 
+              defaultText={`Ontmoet de stem achter het verhaal. ${artist.display_name} brengt karakter, warmte en autoriteit naar elk project.`} 
+            />
+          </p>
+
+          <div className="flex flex-wrap gap-4">
+            <ButtonInstrument className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px] !bg-va-black !text-white flex items-center gap-2 group">
+              <VoiceglotText translationKey="artist.book_now" defaultText="Direct Boeken" />
+              <Mic size={18} className="group-hover:rotate-12 transition-transform" />
+            </ButtonInstrument>
+            <ButtonInstrument className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px] !bg-white !text-va-black border border-black/5 flex items-center gap-2">
+              <Play size={18} />
+              <VoiceglotText translationKey="artist.listen_all" defaultText="Beluister Demos" />
+            </ButtonInstrument>
+          </div>
+        </div>
+      </SectionInstrument>
+
+      {/* 🎞️ BEHIND THE SCENES / VIDEO SECTION */}
+      <SectionInstrument className="mb-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-va-off-white p-12 rounded-[20px] border border-black/[0.03] flex flex-col justify-center">
+            <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-6">
+              <VoiceglotText translationKey="artist.video.title" defaultText="In de " />
+              <span className="text-primary italic">Studio</span>
+            </HeadingInstrument>
+            <p className="text-lg font-light text-va-black/40 leading-relaxed mb-8">
+              <VoiceglotText 
+                translationKey="artist.video.text" 
+                defaultText="Bekijk hoe deze stem tot leven komt. Van de eerste take tot de perfecte master." 
+              />
+            </p>
+          </div>
+          <div className="relative aspect-video rounded-[20px] overflow-hidden shadow-aura group cursor-pointer bg-va-black flex items-center justify-center">
+            {/* Placeholder voor video - in werkelijkheid artist.video_url */}
+            <div className="absolute inset-0 opacity-40">
+              <Image src={artist.photo_url || ''} alt="Video background" fill className="object-cover blur-sm" />
+            </div>
+            <div className="relative z-10 w-20 h-20 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-500">
+              <Play size={32} fill="currentColor" className="ml-1" />
+            </div>
+          </div>
+        </div>
+      </SectionInstrument>
+
+      <BentoGrid className="mb-32">
+        <BentoCard span="full" className="bg-white shadow-aura p-12 !rounded-[20px]">
           <ContainerInstrument className="flex justify-between items-center mb-12">
             <HeadingInstrument level={2} className="text-3xl font-light tracking-tight">
               <VoiceglotText translationKey="artist.portfolio.title" defaultText="Portfolio & " />
-              <TextInstrument as="span" className="text-primary italic">
-                <VoiceglotText translationKey="artist.portfolio.subtitle" defaultText="Werken" />
-              </TextInstrument>
+              <span className="text-primary italic">
+                <VoiceglotText translationKey="artist.portfolio.subtitle" defaultText="Demos" />
+              </span>
             </HeadingInstrument>
           </ContainerInstrument>
 
-          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {artist.demos?.map((demo: any, i: number) => (
               <ContainerInstrument 
                 key={i}
-                className="group p-6 rounded-[24px] bg-white border border-black/5 hover:border-primary/20 transition-all flex items-center justify-between cursor-pointer"
+                className="group p-5 rounded-[15px] bg-va-off-white border border-black/[0.02] hover:bg-white hover:shadow-aura transition-all flex items-center justify-between cursor-pointer"
               >
-                <ContainerInstrument className="flex items-center gap-4">
-                  <ContainerInstrument className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                    <Play size={20} fill="currentColor" className="ml-1" />
-                  </ContainerInstrument>
-                  <ContainerInstrument>
-                    <HeadingInstrument level={4} className="font-medium tracking-tight text-sm">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-[10px] bg-white flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                    <span className="text-xs font-light">0{i+1}</span>
+                  </div>
+                  <div>
+                    <HeadingInstrument level={4} className="font-light tracking-tight text-sm text-va-black">
                       <VoiceglotText translationKey={`artist.demo.${i}.title`} defaultText={demo.title} />
                     </HeadingInstrument>
-                  </ContainerInstrument>
-                </ContainerInstrument>
-                <TextInstrument className="text-[10px] font-medium text-va-black/20 uppercase tracking-widest">
-                  <VoiceglotText translationKey={`artist.demo.${i}.category`} defaultText={demo.category} />
-                </TextInstrument>
+                    <TextInstrument className="text-[10px] font-light text-va-black/20 tracking-widest">
+                      <VoiceglotText translationKey={`artist.demo.${i}.category`} defaultText={demo.category} />
+                    </TextInstrument>
+                  </div>
+                </div>
+                <Play size={14} className="text-va-black/10 group-hover:text-primary transition-colors" />
               </ContainerInstrument>
             ))}
           </ContainerInstrument>
         </BentoCard>
-
-        <ContainerInstrument className="space-y-8">
-          <BentoCard span="sm" className="bg-va-black text-white p-8">
-            <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-6">
-              <VoiceglotText translationKey="artist.booking.title" defaultText="Boeking" />
-            </HeadingInstrument>
-            <ButtonInstrument className="va-btn-pro w-full mt-8 !bg-primary flex items-center justify-center gap-2 group">
-              <VoiceglotText translationKey="artist.book_now" defaultText="Nu Boeken" /> <Mic size={16} />
-            </ButtonInstrument>
-          </BentoCard>
-
-          <BentoCard span="sm" className="hred text-white p-8">
-            <HeadingInstrument level={4} className="text-[10px] font-medium uppercase tracking-widest text-white/40 mb-4 flex items-center gap-2">
-              <ShieldCheck size={14} /> 
-              <VoiceglotText translationKey="artist.guarantee.title" defaultText="Kwaliteit" />
-            </HeadingInstrument>
-            <TextInstrument className="text-xs font-light leading-relaxed">
-              <VoiceglotText 
-                translationKey="artist.guarantee.text" 
-                defaultText="Elke stem op ons platform is zorgvuldig gescreend op kwaliteit en professionaliteit." 
-              />
-            </TextInstrument>
-          </BentoCard>
-        </ContainerInstrument>
       </BentoGrid>
 
       {/* 🌟 REVIEWS SPECIFIEK VOOR DEZE STEM */}

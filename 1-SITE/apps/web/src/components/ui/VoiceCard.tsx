@@ -1,10 +1,11 @@
 "use client";
 
 import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { calculateDeliveryDate } from '@/lib/delivery-logic';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { Actor } from '@/types';
-import { Calendar, ChevronRight, Mic, Play, Quote, Star } from 'lucide-react';
+import { Actor, Demo } from '@/types';
+import { Calendar, ChevronRight, Mic, Play, Quote, Star, Monitor, Radio, Globe, Mic2, Phone, Building2, BookOpen, Wind } from 'lucide-react';
 import Image from 'next/image';
 import React, { useMemo } from 'react';
 import { BentoCard } from './BentoGrid';
@@ -15,9 +16,24 @@ interface VoiceCardProps {
   onSelect?: (voice: Actor) => void;
 }
 
+/**
+ * CATEGORY DEFINITIONS (The Big 8)
+ */
+const CATEGORIES = [
+  { id: 'tv', icon: Monitor, label: 'TV', key: 'category.tv' },
+  { id: 'radio', icon: Radio, label: 'Radio', key: 'category.radio' },
+  { id: 'online', icon: Globe, label: 'Online', key: 'category.online' },
+  { id: 'podcast', icon: Mic2, label: 'Podcast', key: 'category.podcast' },
+  { id: 'telefonie', icon: Phone, label: 'Telefonie', key: 'category.telephony' },
+  { id: 'corporate', icon: Building2, label: 'Corporate', key: 'category.corporate' },
+  { id: 'e-learning', icon: BookOpen, label: 'E-learning', key: 'category.elearning' },
+  { id: 'meditatie', icon: Wind, label: 'Meditatie', key: 'category.meditation' },
+];
+
 export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
   const { playClick, playSwell } = useSonicDNA();
   const { state, getPlaceholderValue } = useVoicesState();
+  const { activeDemo, playDemo } = useGlobalAudio();
 
   const deliveryInfo = useMemo(() => {
     return calculateDeliveryDate({
@@ -28,10 +44,35 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
     });
   }, [voice]);
 
-  const handlePlayDemo = (e: React.MouseEvent) => {
+  // Map demo's naar categorieën op basis van titel/type
+  const categorizedDemos = useMemo(() => {
+    const map: Record<string, Demo> = {};
+    if (!voice.demos) return map;
+
+    voice.demos.forEach(demo => {
+      const title = demo.title.toLowerCase();
+      if (title.includes('tv')) map['tv'] = demo;
+      else if (title.includes('radio')) map['radio'] = demo;
+      else if (title.includes('online') || title.includes('social')) map['online'] = demo;
+      else if (title.includes('podcast')) map['podcast'] = demo;
+      else if (title.includes('ivr') || title.includes('telefoon') || title.includes('telefonie')) map['telefonie'] = demo;
+      else if (title.includes('corporate') || title.includes('bedrijf')) map['corporate'] = demo;
+      else if (title.includes('learning') || title.includes('uitleg')) map['e-learning'] = demo;
+      else if (title.includes('meditatie') || title.includes('ademing')) map['meditatie'] = demo;
+    });
+
+    // Fallback: als er geen matches zijn, zet de eerste demo in de meest logische categorie of 'online'
+    if (Object.keys(map).length === 0 && voice.demos.length > 0) {
+      map['online'] = voice.demos[0];
+    }
+
+    return map;
+  }, [voice.demos]);
+
+  const handleCategoryClick = (e: React.MouseEvent, demo: Demo) => {
     e.stopPropagation();
     playClick('pro');
-    onSelect?.(voice);
+    playDemo(demo);
   };
 
   const displayPrice = voice.starting_price || 0;
@@ -110,22 +151,31 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
             </div>
           </div>
 
-          {/* Audio Player (MediaMaster Lite) */}
-          <div 
-            className="bg-va-off-white/50 rounded-3xl p-4 flex items-center gap-4 group/player cursor-pointer mb-6 border border-black/5 hover:bg-white transition-colors duration-500" 
-            onClick={handlePlayDemo}
-          >
-            <div className="w-12 h-12 rounded-2xl bg-white text-va-black shadow-sm flex items-center justify-center group-hover/player:bg-primary group-hover/player:text-white transition-all duration-500 group-hover/player:scale-110">
-              <Play size={20} fill="currentColor" className="ml-1" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] mb-1">
-                <VoiceglotText translationKey="common.listen_demo" defaultText="Beluister demo" />
-              </p>
-              <div className="h-1 bg-black/5 rounded-full overflow-hidden">
-                <div className="h-full bg-primary w-0 group-hover/player:w-1/3 transition-all duration-[2000ms]"></div>
-              </div>
-            </div>
+          {/* Category Selector (The Big 8) */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {CATEGORIES.map((cat) => {
+              const demo = categorizedDemos[cat.id];
+              if (!demo) return null;
+              const isActive = activeDemo?.id === demo.id;
+              const Icon = cat.icon;
+
+              return (
+                <button
+                  key={cat.id}
+                  onClick={(e) => handleCategoryClick(e, demo)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-primary border-primary text-va-black shadow-lg shadow-primary/20 scale-105' 
+                      : 'bg-va-off-white border-black/5 text-va-black/40 hover:border-primary/30 hover:text-primary'
+                  }`}
+                >
+                  <Icon size={12} strokeWidth={isActive ? 2.5 : 1.5} />
+                  <span className="text-[9px] font-black uppercase tracking-widest">
+                    <VoiceglotText translationKey={cat.key} defaultText={cat.label} />
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Sector Demo (Beheer-modus) */}

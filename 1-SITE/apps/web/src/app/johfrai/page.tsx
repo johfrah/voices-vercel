@@ -24,7 +24,6 @@ import { getActors, getMusicLibrary } from "@/lib/api";
 import { PricingEngine, PlanType } from "@/lib/pricing-engine";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { LiveMixerInstrument } from "@/components/johfrai/LiveMixerInstrument";
-import { VoicyChat } from "@/components/ui/VoicyChat";
 
 const TELEPHONY_TEMPLATES = [
   {
@@ -1171,9 +1170,6 @@ function JohfraiContent() {
         </ContainerInstrument>
       </SectionInstrument>
       
-      {/* 🤖 VOICY CHAT INTEGRATION */}
-      <VoicyChat />
-
       {/* 🧠 LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"

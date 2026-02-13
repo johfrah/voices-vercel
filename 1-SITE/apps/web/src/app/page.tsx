@@ -9,8 +9,12 @@ import { VoiceGrid } from "@/components/ui/VoiceGrid";
 import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { OrderStepsInstrument } from "@/components/ui/OrderStepsInstrument";
 import { useAuth } from "@/contexts/AuthContext";
+import { MarketManager } from "@config/market-manager";
 import { Suspense, useEffect, useState } from 'react';
 import { Actor } from "@/types";
+
+import { FilterBar } from "@/components/ui/FilterBar";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 /**
  * HOME CONTENT (GOD MODE 2026 - AIRBNB STYLE)
@@ -27,6 +31,7 @@ import { Actor } from "@/types";
  */
 function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [customerDNA, setCustomerDNA] = useState<any>(null);
 
   useEffect(() => {
@@ -40,18 +45,32 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
 
   const isTelephony = customerDNA?.intelligence?.lastIntent === 'telephony' || customerDNA?.intelligence?.detectedSector === 'it';
 
+  // Mock filters voor de homepage (of haal ze op via API indien nodig)
+  const filters = {
+    languages: ['Vlaams', 'Nederlands', 'Frans', 'Engels', 'Duits'],
+    genders: ['Mannelijke stem', 'Vrouwelijke stem'],
+    styles: [],
+    categories: []
+  };
+
   return (
     <>
       <LiquidBackground />
       <SpotlightDashboard />
       <HeroInstrument />
       
+      <SectionInstrument className="!pt-0 -mt-12 relative z-30">
+        <ContainerInstrument className="max-w-5xl mx-auto px-6">
+          <FilterBar filters={filters} params={{}} />
+        </ContainerInstrument>
+      </SectionInstrument>
+
       <OrderStepsInstrument currentStep="voice" isTelephony={isTelephony} />
       
       <SectionInstrument>
         <ContainerInstrument>
           <Suspense fallback={<LoadingScreenInstrument />}>
-            <VoiceGrid actors={actors} />
+            <VoiceGrid actors={actors} featured={true} />
           </Suspense>
         </ContainerInstrument>
       </SectionInstrument>
@@ -90,7 +109,8 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
-    fetch('/api/actors')
+    const market = MarketManager.getCurrentMarket();
+    fetch(`/api/actors?market=${market.market_code}`)
       .then(res => res.json())
       .then(resData => {
         if (!resData || !resData.results) {

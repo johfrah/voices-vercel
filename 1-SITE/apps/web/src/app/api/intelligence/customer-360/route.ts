@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { UCIService } from '@/lib/intelligence/uci-service';
 import { createClient } from '@/utils/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { db } from '@db';
 import { users } from '@db/schema';
 import { eq } from 'drizzle-orm';
@@ -12,11 +13,29 @@ import { eq } from 'drizzle-orm';
  * 🛡️ Admin of eigen email/userId only.
  */
 
+// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
+
 async function checkIsAdmin(email: string | undefined): Promise<boolean> {
   if (!email) return false;
   if (email === 'johfrah@voices.be') return true;
-  const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, email)).limit(1);
-  return dbUser?.role === 'admin';
+
+  try {
+    const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, email)).limit(1);
+    return dbUser?.role === 'admin';
+  } catch (dbError) {
+    console.warn('⚠️ Customer 360 Drizzle failed, falling back to SDK');
+    const { data, error } = await sdkClient
+      .from('users')
+      .select('role')
+      .eq('email', email)
+      .single();
+    
+    if (error || !data) return false;
+    return data.role === 'admin';
+  }
 }
 
 export async function GET(request: NextRequest) {

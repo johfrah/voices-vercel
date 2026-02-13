@@ -5,6 +5,7 @@
  * Gebruikt Supabase Auth + users table voor role-check (johfrah@voices.be of role === 'admin').
  */
 
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
 import type { User } from '@supabase/supabase-js';
@@ -12,14 +13,32 @@ import { db } from '@db';
 import { users } from '@db/schema';
 import { eq } from 'drizzle-orm';
 
+// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
+
 /**
  * Bepaal of de gebruiker admin is. Haalt role op uit users table.
  */
 async function checkIsAdmin(user: User | null): Promise<boolean> {
   if (!user?.email) return false;
   if (user.email === 'johfrah@voices.be') return true;
-  const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, user.email)).limit(1);
-  return dbUser?.role === 'admin';
+
+  try {
+    const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, user.email)).limit(1);
+    return dbUser?.role === 'admin';
+  } catch (dbError) {
+    console.warn('⚠️ API Auth Drizzle failed, falling back to SDK');
+    const { data, error } = await sdkClient
+      .from('users')
+      .select('role')
+      .eq('email', user.email)
+      .single();
+    
+    if (error || !data) return false;
+    return data.role === 'admin';
+  }
 }
 
 /**

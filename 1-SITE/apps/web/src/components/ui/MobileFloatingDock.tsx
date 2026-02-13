@@ -3,9 +3,9 @@
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { MarketManager } from '@config/market-manager';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Home, Mic2, Phone, ShoppingCart, User } from 'lucide-react';
+import { Home, Mic2, Phone, ShoppingCart, User, Search } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { VoiceglotText } from './VoiceglotText';
 
@@ -16,9 +16,12 @@ import { VoiceglotText } from './VoiceglotText';
  */
 export function MobileFloatingDock() {
   const pathname = usePathname();
+  const router = useRouter();
   const { playClick } = useSonicDNA();
   const market = MarketManager.getCurrentMarket();
   const [mounted, setMounted] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -26,16 +29,52 @@ export function MobileFloatingDock() {
 
   if (!mounted) return null;
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      playClick('pro');
+      router.push(`/agency?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
+
   const navItems = [
     { icon: Home, label: 'Home', href: '/', key: 'nav.home' },
     { icon: Mic2, label: 'Stemmen', href: '/agency', key: 'nav.my_voice' },
+    { icon: Search, label: 'Zoeken', onClick: () => {
+      playClick('soft');
+      setIsSearchOpen(!isSearchOpen);
+    }, key: 'nav.search' },
     { icon: ShoppingCart, label: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
-    { icon: Phone, label: 'Contact', href: '/contact', key: 'nav.contact' },
     { icon: User, label: 'Account', href: '/account', key: 'nav.account' },
   ];
 
   return (
     <div className="fixed bottom-8 left-0 right-0 z-50 px-6 md:hidden pointer-events-none">
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ y: 20, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 20, opacity: 0, scale: 0.95 }}
+            className="absolute bottom-20 left-6 right-6 pointer-events-auto"
+          >
+            <form onSubmit={handleSearch} className="relative">
+              <input
+                autoFocus
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Zoek een stem..."
+                className="w-full bg-va-black/95 backdrop-blur-2xl text-white border border-white/10 rounded-[24px] py-4 pl-12 pr-4 shadow-2xl focus:ring-2 focus:ring-primary/50 outline-none transition-all"
+              />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={18} />
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.nav 
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -43,16 +82,11 @@ export function MobileFloatingDock() {
         className="mx-auto max-w-sm bg-va-black/90 backdrop-blur-2xl rounded-[32px] p-2 shadow-aura-lg border border-white/10 flex justify-between items-center pointer-events-auto"
       >
         {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+          const isActive = item.href ? (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))) : isSearchOpen;
           const Icon = item.icon;
 
-          return (
-            <Link 
-              key={item.href}
-              href={item.href}
-              onClick={() => playClick('soft')}
-              className="relative flex flex-col items-center justify-center w-14 h-14 group"
-            >
+          const content = (
+            <div className="relative flex flex-col items-center justify-center w-14 h-14 group">
               <AnimatePresence>
                 {isActive && (
                   <motion.div 
@@ -67,11 +101,31 @@ export function MobileFloatingDock() {
                 <Icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
               </div>
               
-              {/* Tooltip-achtige label voor accessibility/duidelijkheid bij long press of hover */}
               <span className="sr-only">
                 <VoiceglotText translationKey={item.key} defaultText={item.label} />
               </span>
-            </Link>
+            </div>
+          );
+
+          if (item.href) {
+            return (
+              <Link 
+                key={item.href}
+                href={item.href}
+                onClick={() => {
+                  playClick('soft');
+                  setIsSearchOpen(false);
+                }}
+              >
+                {content}
+              </Link>
+            );
+          }
+
+          return (
+            <button key={item.key} onClick={item.onClick}>
+              {content}
+            </button>
           );
         })}
       </motion.nav>
