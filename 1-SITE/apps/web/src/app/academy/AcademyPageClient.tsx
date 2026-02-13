@@ -52,7 +52,7 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
               <ContainerInstrument>
                 <ContainerInstrument className="flex justify-between items-start mb-8">
                   <ContainerInstrument className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all">
-                    <BookOpen strokeWidth={1.5} size={24} />
+                    <BookOpen size={24} />
                   </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/20">
                     {course.level}
@@ -74,7 +74,7 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
                   href={`/academy/lesson/${course.id}`}
                   className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 group-hover:gap-3 transition-all"
                 >
-                  <VoiceglotText translationKey="academy.client.start_lesson" defaultText="Start Les" /> <ArrowRight strokeWidth={1.5} size={14} />
+                  <VoiceglotText translationKey="academy.client.start_lesson" defaultText="Start Les" /> <ArrowRight size={14} />
                 </Link>
               </ContainerInstrument>
             </ContainerInstrument>

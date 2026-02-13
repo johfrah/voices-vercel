@@ -32,7 +32,7 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
           <div className="va-artist-nav-left">
             <Link href="/agency" className="va-artist-back-link">
               <div className="va-artist-back-icon">
-                <ArrowLeft size={18} strokeWidth={1.5} />
+                <ArrowLeft size={18} />
               </div>
               <span className="va-artist-back-text">Agency</span>
             </Link>

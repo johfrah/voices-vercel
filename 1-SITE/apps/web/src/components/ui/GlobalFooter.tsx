@@ -186,7 +186,7 @@ export default function GlobalFooter() {
                   onClick={() => playClick('light')}
                   className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
                 >
-                  <Icon size={18} strokeWidth={1.5} />
+                  <Icon size={18} />
                 </ButtonInstrument>
               ))}
             </ContainerInstrument>

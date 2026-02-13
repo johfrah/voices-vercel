@@ -61,7 +61,7 @@ export default function VoiceManagerPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -92,7 +92,7 @@ export default function VoiceManagerPage() {
                 : 'bg-va-black text-white hover:bg-va-black/80'
             }`}
           >
-            {isEditMode ? <Unlock strokeWidth={1.5} size={14} /> : <Lock strokeWidth={1.5} size={14} />}
+            {isEditMode ? <Unlock size={14} /> : <Lock size={14} />}
             {isEditMode ? <VoiceglotText translationKey="admin.edit_mode_on" defaultText="Bewerken" /> : <VoiceglotText translationKey="admin.edit_mode" defaultText="Bewerken" />}
           </ButtonInstrument>
         </ContainerInstrument>
@@ -133,7 +133,7 @@ export default function VoiceManagerPage() {
                 actor.status === 'live' ? 'bg-green-500/10 text-green-600' : 'bg-yellow-500/10 text-yellow-600'
               }`}
             >
-              {actor.status === 'live' ? <Check strokeWidth={1.5}Circle2 size={14} /> : <Clock size={14} />}
+              {actor.status === 'live' ? <CheckCircle2 size={14} /> : <Clock size={14} />}
               <TextInstrument as="span" className="text-[15px] font-black tracking-widest">{actor.status}</TextInstrument>
             </ContainerInstrument>
 

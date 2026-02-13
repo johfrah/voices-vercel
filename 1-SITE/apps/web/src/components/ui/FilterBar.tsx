@@ -147,7 +147,7 @@ const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => (
   <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-full text-[15px] font-black tracking-widest shadow-sm">
     {label}
     <button onClick={onRemove} className="hover:text-primary transition-colors">
-      <X strokeWidth={1.5} size={12} />
+      <X size={12} />
     </button>
   </div>
 );

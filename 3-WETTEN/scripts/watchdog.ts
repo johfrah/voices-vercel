@@ -198,10 +198,15 @@ class ChrisWatchdog {
       return `className="${p1}${p2}"`.replace(/\s\s+/g, ' ');
     });
 
-    // Fix Raleway Mandate (simpele injectie van font-light als het een kop is zonder gewicht)
-    // Wees voorzichtig met deze regex om false positives te voorkomen
+    // Fix Raleway Mandate (Uitgebreid naar alle elementen met grote tekst)
+    // Vervang font-black/bold door font-light als de tekst groot is (text-4xl+)
+    content = content.replace(/(className="[^"]*)\b(font-black|font-bold|font-semibold)\b([^"]*text-[4-9]xl[^"]*")/g, (match, p1, p2, p3) => {
+        console.log(`   ✅ [FIX] ${path.basename(filePath)}: Vervangen '${p2}' door 'font-light' (Large Text)`);
+        return `${p1}font-light${p3}`;
+    });
+
+    // Fix Raleway Mandate (Specifiek voor Headings & TextInstrument)
     content = content.replace(/<(h[1-6]|TextInstrument)([^>]*className="[^"]*)(?<!font-(light|extralight|thin|medium))([^"]*")/g, (match, p1, p2, p3, p4) => {
-      // Check of er al een font-weight class is (dubbele check voor veiligheid)
       if (p2.includes('font-') || p4.includes('font-')) return match;
       console.log(`   ✅ [FIX] ${path.basename(filePath)}: Toegevoegd 'font-light' aan ${p1}`);
       return `<${p1}${p2} font-light${p4}`;

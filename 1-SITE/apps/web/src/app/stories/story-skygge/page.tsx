@@ -44,7 +44,7 @@ export default function SkyggeStoryPage() {
             span="full" 
             className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-16"
           >
-            <Quote strokeWidth={1.5} size={48} className="text-primary/20 mb-8" />
+            <Quote size={48} className="text-primary/20 mb-8" />
             <HeadingInstrument level={2} className="text-4xl font-light italic leading-tight mb-8">
               <VoiceglotText 
                 translationKey="story.skygge.quote1" 

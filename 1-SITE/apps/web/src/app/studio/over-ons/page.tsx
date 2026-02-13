@@ -22,7 +22,7 @@ export default function OverOnsPage() {
             href="/studio" 
             className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all mb-4"
           >
-            <ArrowLeft strokeWidth={1.5} size={14} /> 
+            <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="studio.back_to_studio" defaultText="Terug naar Studio" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none">
@@ -75,14 +75,14 @@ export default function OverOnsPage() {
         {/* PHILOSOPHY */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
           <div className="p-10 rounded-[40px] bg-white border border-black/5 shadow-aura space-y-6">
-            <Star strokeWidth={1.5} className="text-primary" size={32} />
+            <Star className="text-primary" size={32} />
             <HeadingInstrument level={3} className="text-xl font-black tracking-tight">Top-selectie</HeadingInstrument>
             <TextInstrument className="text-va-black/40 text-sm font-medium leading-relaxed">
               Geen eindeloze lijsten, maar een gecureerde groep stemmen die we persoonlijk kennen en regisseren.
             </TextInstrument>
           </div>
           <div className="p-10 rounded-[40px] bg-white border border-black/5 shadow-aura space-y-6">
-            <ShieldCheck strokeWidth={1.5} className="text-primary" size={32} />
+            <ShieldCheck className="text-primary" size={32} />
             <HeadingInstrument level={3} className="text-xl font-black tracking-tight">Technische Perfectie</HeadingInstrument>
             <TextInstrument className="text-va-black/40 text-sm font-medium leading-relaxed">
               Alles wordt geleverd in 48kHz studiokwaliteit, genormaliseerd volgens de strengste loudness-normen.

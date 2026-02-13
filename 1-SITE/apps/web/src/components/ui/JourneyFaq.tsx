@@ -46,7 +46,7 @@ export const JourneyFaq: React.FC<JourneyFaqProps> = ({ journey, limit = 3 }) =>
     <section className="py-12 border-t border-black/5">
       <div className="flex items-center gap-3 mb-8">
         <div className="w-8 h-8 rounded-full bg-va-black text-white flex items-center justify-center">
-          <HelpCircle strokeWidth={1.5} size={16} />
+          <HelpCircle size={16} />
         </div>
         <h3 className="text-sm font-black tracking-widest text-va-black">Veelgestelde vragen</h3>
       </div>
@@ -65,7 +65,7 @@ export const JourneyFaq: React.FC<JourneyFaqProps> = ({ journey, limit = 3 }) =>
               className="w-full p-5 flex items-center justify-between text-left outline-none"
             >
               <span className="text-[15px] font-bold text-va-black pr-8">{faq.questionNl}</span>
-              {openId === faq.id ? <ChevronUp size={16} className="text-primary shrink-0" /> : <ChevronDown strokeWidth={1.5} size={16} className="text-va-black/20 shrink-0" />}
+              {openId === faq.id ? <ChevronUp size={16} className="text-primary shrink-0" /> : <ChevronDown size={16} className="text-va-black/20 shrink-0" />}
             </button>
             
             {openId === faq.id && (

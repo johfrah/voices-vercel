@@ -57,13 +57,13 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
             {isYoussef && (
               <div className="flex justify-center gap-6 mt-8">
                 <a href={artistData.socials.instagram} target="_blank" className="text-white/20 hover:text-primary transition-colors">
-                  <Instagram size={24} strokeWidth={1.5} />
+                  <Instagram size={24} />
                 </a>
                 <a href={artistData.socials.youtube} target="_blank" className="text-white/20 hover:text-primary transition-colors">
-                  <Youtube size={24} strokeWidth={1.5} />
+                  <Youtube size={24} />
                 </a>
                 <a href="#" className="text-white/20 hover:text-primary transition-colors">
-                  <Music size={24} strokeWidth={1.5} />
+                  <Music size={24} />
                 </a>
               </div>
             )}

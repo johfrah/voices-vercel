@@ -80,7 +80,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
       <ul className="space-y-3 mb-8">
         {config.features.map((feature, i) => (
           <li key={i} className="flex items-center gap-2 text-[15px] font-medium text-va-black/60">
-            <Check strokeWidth={1.5}Circle2 size={14} className="text-green-500 shrink-0" />
+            <CheckCircle2 size={14} className="text-green-500 shrink-0" />
             {feature}
           </li>
         ))}
@@ -88,7 +88,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
 
       <div className="pt-6 border-top border-black/5">
         <div className="flex items-center gap-2 text-[15px] font-black tracking-[0.2em] text-primary group-hover:gap-3 transition-all">
-          Vul je aantal woorden in voor de prijs <Zap strokeWidth={1.5} size={10} fill="currentColor" />
+          Vul je aantal woorden in voor de prijs <Zap size={10} fill="currentColor" />
         </div>
       </div>
     </div>

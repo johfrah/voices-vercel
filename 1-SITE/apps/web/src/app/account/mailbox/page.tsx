@@ -27,7 +27,7 @@ export default function MailboxPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [activeFolder, setActiveFolder] = useState('INBOX');
   const [activeAccount, setActiveAccount] = useState('johfrah@voices.be');
-  const [activeTab, setActiveTab] = useState<Mail strokeWidth={1.5}boxTab>('inbox');
+  const [activeTab, setActiveTab] = useState<MailboxTab>('inbox');
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -406,7 +406,7 @@ export default function MailboxPage() {
           <ContainerInstrument className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-4 flex-shrink-0">
             <ContainerInstrument className="space-y-4">
               <ButtonInstrument onClick={() => router.push('/account')} className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors">
-                <ArrowLeft strokeWidth={1.5} size={14} />
+                <ArrowLeft size={14} />
                 <VoiceglotText translationKey="common.back" defaultText="Terug" />
               </ButtonInstrument>
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
@@ -441,7 +441,7 @@ export default function MailboxPage() {
                 <VoiceglotText translationKey="mailbox.ai_sync" defaultText={isSyncing ? "Syncing..." : "Start AI Brain Sync"} />
               </ButtonInstrument>
               <ButtonInstrument onClick={handleCompose} className="bg-white text-va-black border border-black/5 px-6 py-3 rounded-[10px] text-[15px] font-light tracking-widest flex items-center gap-2 transition-all">
-                <Plus strokeWidth={1.5} size={14} />
+                <Plus size={14} />
                 <VoiceglotText translationKey="mailbox.compose" defaultText="Nieuw bericht" />
               </ButtonInstrument>
               <ButtonInstrument 
@@ -515,7 +515,7 @@ export default function MailboxPage() {
                   <ContainerInstrument className="space-y-1.5">
                     {[
                       { name: 'Trends & SWOT', id: 'insights', icon: <TrendingUp size={16} /> },
-                      { name: 'FAQ Proposals', id: 'faq', icon: <MessageSquare strokeWidth={1.5} size={16} /> },
+                      { name: 'FAQ Proposals', id: 'faq', icon: <MessageSquare size={16} /> },
                       { name: 'Kansen', id: 'leads', icon: <AlertCircle size={16} /> },
                     ].map((tag) => (
                       <ButtonInstrument key={tag.id} onClick={() => { if (tag.id === 'insights' || tag.id === 'faq') { setActiveTab(tag.id as MailboxTab); setSelectedThread(null); } }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all ${activeTab === tag.id ? 'bg-white shadow-sm ring-1 ring-black/5 font-bold text-va-black' : 'text-gray-500 hover:text-va-black hover:bg-gray-50'}`}>
@@ -745,7 +745,7 @@ export default function MailboxPage() {
                               <ContainerInstrument className="flex justify-between items-start mb-4">
                                 <ContainerInstrument className="flex items-center gap-3">
                                   <ContainerInstrument className="w-10 h-10 bg-primary/5 text-primary rounded-[10px] flex items-center justify-center">
-                                    <MessageSquareQuote size={20} strokeWidth={1.5} />
+                                    <MessageSquareQuote size={20} />
                                   </ContainerInstrument>
                                   <ContainerInstrument>
                                     <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40">
@@ -766,7 +766,7 @@ export default function MailboxPage() {
                               <ContainerInstrument className="p-4 bg-va-off-white rounded-[10px] border border-black/[0.02] italic text-sm text-va-black/60 font-light">&quot;{proposal.suggestedAnswer}&quot;</ContainerInstrument>
                               <ContainerInstrument className="mt-4 flex items-center gap-4">
                                 <ContainerInstrument className="flex items-center gap-1.5 text-[15px] font-light tracking-widest text-va-black/20">
-                                  <Brain size={12} strokeWidth={1.5} />Confidence: {(proposal.confidence * 100).toFixed(0)}%
+                                  <Brain size={12} />Confidence: {(proposal.confidence * 100).toFixed(0)}%
                                 </ContainerInstrument>
                               </ContainerInstrument>
                             </ContainerInstrument>
@@ -807,7 +807,7 @@ export default function MailboxPage() {
                       <ContainerInstrument className="w-80 flex-shrink-0 border-l border-gray-100 bg-white overflow-y-auto h-full hidden xl:block custom-scrollbar">
                         <div className="p-6">
                               <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-6 flex items-center gap-2">
-                            <ShieldCheck strokeWidth={1.5} size={12} className="text-va-black" />
+                            <ShieldCheck size={12} className="text-va-black" />
                             <VoiceglotText translationKey="mailbox.customer_dna" defaultText="Customer DNA" />
                           </HeadingInstrument>
                           {customerDna ? (
@@ -841,7 +841,7 @@ export default function MailboxPage() {
                               {timeTravelContext && (
                                 <ContainerInstrument className={`p-4 rounded-[15px] border ${timeTravelContext.sentiment === 'Attention Required' ? 'bg-red-50 border-red-100' : 'bg-va-off-white border-black/[0.03]'}`}>
                                   <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-2 flex items-center gap-2">
-                                    <History size={12} strokeWidth={1.5} />
+                                    <History size={12} />
                                     Vibe Check: {timeTravelContext.vibe}
                                   </HeadingInstrument>
                                   <TextInstrument className="text-[15px] font-light text-va-black leading-relaxed">{timeTravelContext.summary}</TextInstrument>
@@ -860,7 +860,7 @@ export default function MailboxPage() {
                               {customerDna.actorAssignments && customerDna.actorAssignments.length > 0 && (
                                 <ContainerInstrument className="bg-primary/5 border border-primary/10 p-4 rounded-[15px]">
                                   <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-primary mb-4 flex items-center gap-2">
-                                    <Mic size={12} strokeWidth={1.5} />
+                                    <Mic size={12} />
                                     Assignments ({customerDna.actorAssignments.filter((a: any) => a.status === 'approved').length} voltooid)
                                   </HeadingInstrument>
                                   <ContainerInstrument className="space-y-3">
@@ -908,7 +908,7 @@ export default function MailboxPage() {
                                 </ContainerInstrument>
                               {projectDna && (
                                 <ContainerInstrument className="bg-va-black text-white p-4 rounded-[20px] shadow-aura-lg border border-white/5">
-                                  <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-white/40 mb-3 flex items-center gap-2"><Hash size={12} strokeWidth={1.5} />Project DNA #{projectDna.order.wpOrderId}</HeadingInstrument>
+                                  <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-white/40 mb-3 flex items-center gap-2"><Hash size={12} />Project DNA #{projectDna.order.wpOrderId}</HeadingInstrument>
                                   <ContainerInstrument className="space-y-4">
                                     <ContainerInstrument className="flex justify-between items-center">
                                       <TextInstrument as="span" className="text-[15px] font-light opacity-40">
@@ -932,7 +932,7 @@ export default function MailboxPage() {
                                     className={`py-2 px-4 rounded-[10px] text-[15px] font-light tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${draftMethod === 'semantic_matching' ? 'bg-primary text-white' : 'bg-white/10 text-white'}`}
                                   >
                                     <div className="flex items-center gap-2">
-                                      <Brain size={12} className={isDrafting ? 'animate-spin' : ''} strokeWidth={1.5} />
+                                      <Brain size={12} className={isDrafting ? 'animate-spin' : ''} />
                                       {isDrafting ? 'Drafting...' : 'Voicy Draft'}
                                     </div>
                                     {draftMethod === 'semantic_matching' && (
@@ -965,12 +965,12 @@ export default function MailboxPage() {
                               </ContainerInstrument>
                             )}
                             <ContainerInstrument>
-                              <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-3 flex items-center gap-2"><Lock size={10} strokeWidth={1.5} /><VoiceglotText translationKey="mailbox.dna.vault_title" defaultText="The Vault (Kluis)" /></HeadingInstrument>
+                              <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-3 flex items-center gap-2"><Lock size={10} /><VoiceglotText translationKey="mailbox.dna.vault_title" defaultText="The Vault (Kluis)" /></HeadingInstrument>
                               <ContainerInstrument className="space-y-2">
                                 {customerDna.vault.length > 0 ? customerDna.vault.slice(0, 5).map((file: any) => (
                                   <ContainerInstrument key={file.id} className="flex items-center gap-3 p-2 hover:bg-va-off-white rounded-[10px] transition-colors cursor-pointer group border border-transparent hover:border-black/[0.03]" onClick={() => setSpotlightFile(file)}>
                                     <ContainerInstrument className="w-8 h-8 bg-primary/5 text-primary rounded-[6px] flex items-center justify-center">
-                                      {file.category === 'demo_inbound' ? <Mic size={14} strokeWidth={1.5} /> : <FileText size={14} strokeWidth={1.5} />}
+                                      {file.category === 'demo_inbound' ? <Mic size={14} /> : <FileText size={14} />}
                                     </ContainerInstrument>
                                     <ContainerInstrument className="flex-grow min-w-0">
                                       <div className="flex items-center gap-2">
@@ -984,7 +984,7 @@ export default function MailboxPage() {
                               </ContainerInstrument>
                             </ContainerInstrument>
                             <ContainerInstrument>
-                              <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-3 flex items-center gap-2"><History size={10} strokeWidth={1.5} /><VoiceglotText translationKey="mailbox.dna.history_title" defaultText="Bestelgeschiedenis" /></HeadingInstrument>
+                              <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-3 flex items-center gap-2"><History size={10} /><VoiceglotText translationKey="mailbox.dna.history_title" defaultText="Bestelgeschiedenis" /></HeadingInstrument>
                               <ContainerInstrument className="space-y-2">
                                 {customerDna.orders.length > 0 ? customerDna.orders.map((order: any) => (
                                   <ContainerInstrument key={order.id} className="p-3 bg-va-off-white rounded-[10px] border border-black/[0.03]"><ContainerInstrument className="flex justify-between items-start mb-1"><TextInstrument className="text-[15px] font-light text-va-black">#{order.wpOrderId || order.id}</TextInstrument><TextInstrument className="text-[15px] font-light text-primary">€{order.total}</TextInstrument></ContainerInstrument><TextInstrument className="text-[15px] text-va-black/20 font-light tracking-widest">{new Date(order.createdAt).toLocaleDateString()}</TextInstrument></ContainerInstrument>
@@ -1016,7 +1016,7 @@ export default function MailboxPage() {
             onClick={() => setSpotlightFile(null)}
           >
             <button className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors" onClick={() => setSpotlightFile(null)}>
-              <X strokeWidth={1.5} size={32} />
+              <X size={32} />
             </button>
 
             <motion.div 
@@ -1108,7 +1108,7 @@ export default function MailboxPage() {
                   <HeadingInstrument level={2} className="text-2xl font-light text-va-black">{selectedInsight.label || selectedInsight.text || "Detail Analyse"}</HeadingInstrument>
                 </div>
                 <ButtonInstrument onClick={() => setSelectedInsight(null)} className="p-2 hover:bg-va-off-white rounded-full transition-colors">
-                  <ArrowLeft className="rotate-90" strokeWidth={1.5} />
+                  <ArrowLeft className="rotate-90" />
                 </ButtonInstrument>
               </div>
 
@@ -1116,7 +1116,7 @@ export default function MailboxPage() {
                 {/* 🚀 ACTIONABLE RECOMMENDATIONS */}
                 <div className="space-y-6">
                   <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
-                    <Zap size={14} strokeWidth={1.5} />
+                    <Zap size={14} />
                     Vooruitdenkende Acties
                   </HeadingInstrument>
                   <div className="space-y-3">
@@ -1134,7 +1134,7 @@ export default function MailboxPage() {
                 {/* 📧 SOURCE EVIDENCE */}
                 <div className="space-y-6">
                   <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
-                    <Mail size={14} strokeWidth={1.5} />
+                    <Mail size={14} />
                     Bewijslast (E-mails)
                   </HeadingInstrument>
                   <div className="space-y-3">

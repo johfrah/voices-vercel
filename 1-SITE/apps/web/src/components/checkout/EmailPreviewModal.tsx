@@ -33,7 +33,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
         <div className="p-8 border-b border-black/5 flex justify-between items-center bg-va-off-white">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-              <Mail strokeWidth={1.5} size={24} />
+              <Mail size={24} />
             </div>
             <div>
               <h3 className="text-xl font-black tracking-tighter">Offerte Preview</h3>
@@ -47,7 +47,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
             }}
             className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-va-black/20 hover:text-va-black transition-all"
           >
-            <X strokeWidth={1.5} size={24} />
+            <X size={24} />
           </button>
         </div>
 
@@ -79,7 +79,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
         {/* Footer */}
         <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center">
           <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/30">
-            <Sparkles strokeWidth={1.5} size={14} className="text-primary" />
+            <Sparkles size={14} className="text-primary" />
             Core Admin Protocol Active
           </div>
           <button 
@@ -89,7 +89,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
             }}
             className="va-btn-pro !bg-primary flex items-center gap-3 !px-10"
           >
-            Offerte Verzenden <Send strokeWidth={1.5} size={18} />
+            Offerte Verzenden <Send size={18} />
           </button>
         </div>
       </div>

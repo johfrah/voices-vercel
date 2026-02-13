@@ -49,7 +49,7 @@ export default function TermsPage() {
 
           <section className="space-y-4">
             <div className="flex items-center gap-3 text-primary mb-4">
-              <Shield strokeWidth={1.5} size={20} />
+              <Shield size={20} />
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight">2. Gebruiksrechten (Buy-outs)</HeadingInstrument>
             </div>
             <TextInstrument className="text-va-black/60 leading-relaxed font-light">

@@ -59,7 +59,7 @@ export const PricingSummary: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="flex items-center gap-4 relative z-10">
               <div className="w-12 h-12 rounded-[10px] bg-primary/20 flex items-center justify-center text-primary shadow-inner">
-                <Zap strokeWidth={1.5} size={24} fill="currentColor" className="animate-pulse" />
+                <Zap size={24} fill="currentColor" className="animate-pulse" />
               </div>
               <div>
                 <h4 className="font-light text-lg tracking-tight">Johfrai {state.plan}</h4>
@@ -112,7 +112,7 @@ export const PricingSummary: React.FC = () => {
           <div className="flex justify-between items-center p-4 bg-white rounded-[20px] border border-black/[0.03] shadow-aura">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-                <FileText size={20} strokeWidth={1.5} />
+                <FileText size={20} />
               </div>
               <div>
                 <h4 className="font-light text-sm text-va-black">
@@ -135,7 +135,7 @@ export const PricingSummary: React.FC = () => {
           <div className="flex justify-between items-center p-4 bg-white rounded-[20px] border border-black/[0.03] shadow-aura border-l-4 border-primary">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-                <Music size={20} strokeWidth={1.5} />
+                <Music size={20} />
               </div>
               <div>
                 <h4 className="font-light text-sm text-va-black">
@@ -159,7 +159,7 @@ export const PricingSummary: React.FC = () => {
         {isJohfrai && (
           <div className="p-6 bg-primary/5 border border-primary/10 rounded-[20px] space-y-3 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="flex items-center gap-2 text-primary">
-              <ShieldCheck size={16} strokeWidth={1.5} />
+              <ShieldCheck size={16} />
               <span className="text-[15px] font-light tracking-widest ">
                 <VoiceglotText translationKey="common.human_guarantee" defaultText="De Menselijke Garantie" />
               </span>

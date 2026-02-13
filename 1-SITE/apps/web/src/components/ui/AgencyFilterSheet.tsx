@@ -67,7 +67,7 @@ export const AgencyFilterSheet: React.FC<{
                 {/* Language Section */}
                 <section className="space-y-4">
                   <div className="flex items-center gap-2 text-va-black/40">
-                    <Globe strokeWidth={1.5} size={14} />
+                    <Globe size={14} />
                     <h3 className="text-[15px] font-black tracking-widest">Taal</h3>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -85,7 +85,7 @@ export const AgencyFilterSheet: React.FC<{
                 {/* Gender Section */}
                 <section className="space-y-4">
                   <div className="flex items-center gap-2 text-va-black/40">
-                    <User strokeWidth={1.5}s size={14} />
+                    <Users size={14} />
                     <h3 className="text-[15px] font-black tracking-widest">Geslacht</h3>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -103,7 +103,7 @@ export const AgencyFilterSheet: React.FC<{
                 {/* Style Section */}
                 <section className="space-y-4">
                   <div className="flex items-center gap-2 text-va-black/40">
-                    <Mic2 strokeWidth={1.5} size={14} />
+                    <Mic2 size={14} />
                     <h3 className="text-[15px] font-black tracking-widest">Stijl</h3>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -158,7 +158,7 @@ const FilterChip = ({ label, selected, onClick }: { label: string, selected: boo
           </span>
         )}
       </div>
-      {selected && <Check strokeWidth={1.5} size={14} className="shrink-0" />}
+      {selected && <Check size={14} className="shrink-0" />}
     </button>
   );
 };

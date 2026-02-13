@@ -65,10 +65,10 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
 
     const getIcon = (cat: string) => {
       const c = cat.toLowerCase();
-      if (c.includes('kwaliteit') || c.includes('veiligheid')) return <ShieldCheck className="text-primary/40" size={40} strokeWidth={1.5} />;
-      if (c.includes('levering') || c.includes('annulering')) return <Zap className="text-primary/40" size={40} strokeWidth={1.5} />;
-      if (c.includes('betaling') || c.includes('inschrijving')) return <CreditCard className="text-primary/40" size={40} strokeWidth={1.5} />;
-      return <Info className="text-primary/40" size={40} strokeWidth={1.5} />;
+      if (c.includes('kwaliteit') || c.includes('veiligheid')) return <ShieldCheck className="text-primary/40" size={40} />;
+      if (c.includes('levering') || c.includes('annulering')) return <Zap className="text-primary/40" size={40} />;
+      if (c.includes('betaling') || c.includes('inschrijving')) return <CreditCard className="text-primary/40" size={40} />;
+      return <Info className="text-primary/40" size={40} />;
     };
 
     const extractTitle = (content: string) => {
@@ -96,7 +96,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
               <div className="lg:col-span-5 relative">
                 <div className="aspect-[4/5] bg-va-black rounded-[80px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000 flex items-center justify-center group">
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                  <span className="text-primary/10 font-black text-9xl rotate-12 tracking-tighter">VOICES</span>
+                  <span className="text-primary/10 font-light text-9xl rotate-12 tracking-tighter">VOICES</span>
                 </div>
                 <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-[100px] animate-pulse" />
               </div>
@@ -108,7 +108,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
             <section key={block.id} className="py-48 bg-va-off-white border border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32 rounded-[100px] shadow-aura relative overflow-hidden group animate-in fade-in duration-1000 fill-mode-both">
               <div className="relative z-10">
                 <div className="flex items-center gap-6 mb-20">
-                  <Star className="text-primary/40 fill-primary/10" size={32} strokeWidth={1.5} />
+                  <Star className="text-primary/40 fill-primary/10" size={32} />
                   <HeadingInstrument level={2} className="text-5xl font-light tracking-tight text-va-black">{title || 'Onze Partners'}</HeadingInstrument>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -310,7 +310,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                       <VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" />
                     </Link>
                     <Link href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-tight flex items-center gap-4 group transition-all duration-700">
-                      <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" /> <ArrowRight size={24} strokeWidth={1.5} className="group-hover:translate-x-3 transition-transform duration-700" />
+                      <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" /> <ArrowRight size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
                     </Link>
                   </div>
                 </div>

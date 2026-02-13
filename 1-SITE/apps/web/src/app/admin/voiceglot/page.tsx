@@ -70,7 +70,7 @@ export default function VoiceglotAdminPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -84,7 +84,7 @@ export default function VoiceglotAdminPage() {
             disabled={isSyncing}
             className={`va-btn-pro !bg-va-black flex items-center gap-2 ${isSyncing ? 'opacity-50' : ''}`}
           >
-            {isSyncing ? <RefreshCw className="animate-spin" size={16} /> : <Sparkles strokeWidth={1.5} size={16} />}
+            {isSyncing ? <RefreshCw className="animate-spin" size={16} /> : <Sparkles size={16} />}
             <VoiceglotText translationKey="admin.voiceglot.heal" defaultText="Self-Heal All" />
           </ButtonInstrument>
         </ContainerInstrument>
@@ -95,7 +95,7 @@ export default function VoiceglotAdminPage() {
         <BentoCard span="sm" className="bg-va-black text-white p-8 space-y-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/20 text-primary rounded-lg">
-              <Globe strokeWidth={1.5} size={20} />
+              <Globe size={20} />
             </div>
             <TextInstrument className="va-text-[15px] opacity-40 text-white font-light">
               <VoiceglotText translationKey="admin.voiceglot.registry" defaultText="Registry" />
@@ -152,7 +152,7 @@ export default function VoiceglotAdminPage() {
                   <TextInstrument className="text-sm font-medium text-va-black/60 line-clamp-1">{s.sourceText}</TextInstrument>
                 </div>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ButtonInstrument className="p-2 hover:text-primary transition-colors"><Zap strokeWidth={1.5} size={14} /></ButtonInstrument>
+                  <ButtonInstrument className="p-2 hover:text-primary transition-colors"><Zap size={14} /></ButtonInstrument>
                 </div>
               </div>
             ))}
@@ -161,7 +161,7 @@ export default function VoiceglotAdminPage() {
 
         <BentoCard span="sm" className="bg-primary text-white p-10 space-y-6 flex flex-col justify-between">
           <div className="space-y-4">
-            <ShieldCheck strokeWidth={1.5} size={40} />
+            <ShieldCheck size={40} />
             <HeadingInstrument level={3} className="text-3xl font-black tracking-tighter leading-none">
               <VoiceglotText translationKey="admin.voiceglot.seo_title" defaultText="AI SEO AUTOMATION" />
             </HeadingInstrument>
@@ -189,7 +189,7 @@ export default function VoiceglotAdminPage() {
       {/* Warning / Info */}
       <ContainerInstrument className="p-8 bg-va-black text-white rounded-[32px] flex items-center gap-6">
         <div className="w-16 h-16 bg-primary text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
-          <Zap strokeWidth={1.5} size={32} />
+          <Zap size={32} />
         </div>
         <div className="space-y-1">
           <HeadingInstrument level={4} className="text-primary font-black tracking-tight">

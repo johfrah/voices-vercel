@@ -105,7 +105,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
             </button>
             {state.music.trackId === track.id && (
               <div className="absolute -top-2 -right-2 w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
-                <Check size={12} strokeWidth={1.5} />
+                <Check size={12} />
               </div>
             )}
           </div>
@@ -130,7 +130,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
               )}
             >
               <div className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center", state.music.asBackground ? "bg-primary border-primary text-white" : "border-black/10")}>
-                {state.music.asBackground && <Check size={12} strokeWidth={1.5} />}
+                {state.music.asBackground && <Check size={12} />}
               </div>
               <div>
                 <p className="text-[15px] font-black tracking-tight">
@@ -150,7 +150,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
               )}
             >
               <div className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center", state.music.asHoldMusic ? "bg-primary border-primary text-white" : "border-black/10")}>
-                {state.music.asHoldMusic && <Check size={12} strokeWidth={1.5} />}
+                {state.music.asHoldMusic && <Check size={12} />}
               </div>
               <div>
                 <p className="text-[15px] font-black tracking-tight">
@@ -172,7 +172,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
       )}
 
       <div className="flex items-center gap-2 bg-white/50 p-3 rounded-xl border border-black/5">
-        <Check strokeWidth={1.5} size={14} className="text-green-500" />
+        <Check size={14} className="text-green-500" />
         <p className="text-[15px] font-medium text-va-black/60">
           <VoiceglotText translationKey="music.selector.footer_note" defaultText="Inclusief professionele mix door onze technici." />
         </p>

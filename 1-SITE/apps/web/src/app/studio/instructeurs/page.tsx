@@ -29,7 +29,7 @@ export default async function InstructorsPage() {
             href="/studio" 
             className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all mb-4"
           >
-            <ArrowLeft strokeWidth={1.5} size={14} /> 
+            <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="studio.back_to_studio" defaultText="Terug naar Studio" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none">
@@ -76,7 +76,7 @@ export default async function InstructorsPage() {
                     href={`/studio/instructeurs/${instructor.slug || instructor.id}`}
                     className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-primary group/btn"
                   >
-                    <VoiceglotText translationKey="studio.instructor.view_profile" defaultText="BEKIJK PROFIEL" /> <ArrowRight strokeWidth={1.5} size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                    <VoiceglotText translationKey="studio.instructor.view_profile" defaultText="BEKIJK PROFIEL" /> <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                   </Link>
                   <Link 
                     href={`/studio/afspraak`}

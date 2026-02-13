@@ -50,7 +50,7 @@ export default function ScriptsArticlePage() {
             href="/blog" 
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
-            <ArrowLeft size={14} strokeWidth={1.5} /> 
+            <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
           </Link>
           <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 ">
@@ -71,7 +71,7 @@ export default function ScriptsArticlePage() {
               <ContainerInstrument>
                 <ContainerInstrument className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                    <FileText size={20} strokeWidth={1.5} />
+                    <FileText size={20} />
                   </div>
                   <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black ">
                     <VoiceglotText translationKey={`${cat.key}.title`} defaultText={cat.title} />
@@ -85,7 +85,7 @@ export default function ScriptsArticlePage() {
               </ContainerInstrument>
               
               <button className="mt-8 flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/30 hover:text-primary transition-all ">
-                <Copy size={14} strokeWidth={1.5} />
+                <Copy size={14} />
                 <VoiceglotText translationKey="scripts.copy_button" defaultText="Kopieer Tekst" />
               </button>
             </BentoCard>

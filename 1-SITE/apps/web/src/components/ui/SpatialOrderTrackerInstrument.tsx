@@ -70,7 +70,7 @@ export const SpatialOrderTrackerInstrument = ({
                   "bg-white text-va-black/20"
                 )}
               >
-                {isCompleted ? <Check size={20} strokeWidth={1.5} /> : <Icon size={20} strokeWidth={1.5} />}
+                {isCompleted ? <Check size={20} /> : <Icon size={20} />}
               </ContainerInstrument>
 
               {/* Label */}

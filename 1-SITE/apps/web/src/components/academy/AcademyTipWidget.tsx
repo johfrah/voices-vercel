@@ -83,7 +83,7 @@ export const AcademyTipWidget: React.FC<{ userId: number }> = ({ userId }) => {
 
       <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-primary group-hover:gap-4 transition-all">
         <VoiceglotText translationKey="academy.tips.next" defaultText="Volgende tip" />
-        <ArrowRight strokeWidth={1.5} size={12} />
+        <ArrowRight size={12} />
       </div>
     </ContainerInstrument>
   );

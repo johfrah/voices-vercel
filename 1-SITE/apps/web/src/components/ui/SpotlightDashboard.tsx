@@ -193,7 +193,7 @@ export const SpotlightDashboard: React.FC = () => {
             }}
             className="w-14 h-14 rounded-2xl bg-va-off-white flex items-center justify-center text-va-black/40 hover:text-va-black transition-all active:scale-90"
           >
-            <X strokeWidth={1.5} size={28} />
+            <X size={28} />
           </button>
         </div>
 
@@ -227,7 +227,7 @@ export const SpotlightDashboard: React.FC = () => {
                     {item.badge}
                   </span>
                 )}
-                <ArrowRight strokeWidth={1.5} size={16} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                <ArrowRight size={16} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
               </button>
             ))}
           </div>
@@ -258,7 +258,7 @@ export const SpotlightDashboard: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center gap-3 text-primary">
-            <ShieldCheck strokeWidth={1.5} size={14} />
+            <ShieldCheck size={14} />
             {journey.toUpperCase()} MODE
           </div>
         </div>

@@ -98,7 +98,7 @@ async function JohfrahContent() {
                 </ButtonInstrument>
                 <a href="#contact" className="text-[15px] font-black tracking-[0.2em] text-va-black/30 hover:text-primary transition-all duration-500 flex items-center gap-3 group">
                   <VoiceglotText translationKey="portfolio.johfrah.cta.contact" defaultText="Laten we praten" />
-                  <ArrowRight strokeWidth={1.5} size={14} className="group-hover:translate-x-2 transition-transform" />
+                  <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
                 </a>
               </div>
             </div>
@@ -117,7 +117,7 @@ async function JohfrahContent() {
               
               {/* Floating Award Badge - Removed per user request */}
               {/* <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-[20px] shadow-aura flex items-center gap-4 max-w-[200px] animate-float border border-black/[0.03]">
-                <Award className="text-primary shrink-0" size={32} strokeWidth={1.5} />
+                <Award className="text-primary shrink-0" size={32} />
                 <TextInstrument className="text-[15px] font-black leading-tight tracking-wider text-va-black/60">
                   Emmy Award Winnaar
                 </TextInstrument>
@@ -133,7 +133,7 @@ async function JohfrahContent() {
           <HostCardLink span="lg" className="hblue text-white p-12 relative overflow-hidden group cursor-pointer rounded-[20px] shadow-aura-lg min-h-[500px] flex flex-col justify-between border border-white/10">
             <div className="relative z-10 space-y-6">
               <div className="w-14 h-14 rounded-[12px] bg-white/10 backdrop-blur-md flex items-center justify-center">
-                <Award size={28} strokeWidth={1.5} className="text-white/60" />
+                <Award size={28} className="text-white/60" />
               </div>
               <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter leading-none ">
                 <VoiceglotText translationKey="portfolio.johfrah.host.title" defaultText="Host & Reporter" />
@@ -224,7 +224,7 @@ async function JohfrahContent() {
                 >
                   <div>
                     <div className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 group-hover:bg-primary group-hover:text-white transition-all duration-700 shadow-sm mb-6">
-                      <Mic size={20} strokeWidth={1.5} />
+                      <Mic size={20} />
                     </div>
                     <TextInstrument className="font-bold tracking-widest text-[15px] text-va-black/30 group-hover:text-primary transition-colors mb-2">
                       <VoiceglotText translationKey={`portfolio.johfrah.demo.${i}.category`} defaultText={demo.category} />

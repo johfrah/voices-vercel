@@ -42,14 +42,14 @@ export default function AdminDashboard() {
   }, []);
 
   const stats = [
-    { label: <VoiceglotText translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '12', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/account/mailbox' },
+    { label: <VoiceglotText translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '12', icon: <Mail size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/account/mailbox' },
     { label: <VoiceglotText translationKey="admin.stats.approvals" defaultText="Approval Queue" />, value: '5', icon: <Bell size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
     { label: <VoiceglotText translationKey="admin.stats.voices" defaultText="Actieve Stemmen" />, value: '142', icon: <Mic size={20} />, trend: '+12%', color: 'text-va-black/40' },
-    { label: <VoiceglotText translationKey="admin.stats.ai_status" defaultText="AI Sync Status" />, value: 'Live', icon: <Activity strokeWidth={1.5} size={20} />, trend: '100%', color: 'text-green-500' },
+    { label: <VoiceglotText translationKey="admin.stats.ai_status" defaultText="AI Sync Status" />, value: 'Live', icon: <Activity size={20} />, trend: '100%', color: 'text-green-500' },
   ];
 
   const notifications = [
-    { id: 1, type: 'mail', title: 'Nieuwe offerte-aanvraag', user: 'Greenpeace', time: '5 min geleden', icon: <Mail strokeWidth={1.5} size={14} /> },
+    { id: 1, type: 'mail', title: 'Nieuwe offerte-aanvraag', user: 'Greenpeace', time: '5 min geleden', icon: <Mail size={14} /> },
     { id: 2, type: 'approval', title: 'Factuur van Christina Van Geel', user: 'Wacht op goedkeuring', time: '12 min geleden', icon: <Bell size={14} /> },
     { id: 3, type: 'ai', title: 'Nieuwe FAQ suggestie gevonden', user: 'Voicy Intelligence', time: '1 uur geleden', icon: <Brain size={14} /> },
   ];
@@ -60,7 +60,7 @@ export default function AdminDashboard() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-2">
           <ContainerInstrument className="flex items-center gap-2 text-primary">
-            <ShieldCheck strokeWidth={1.5} size={16} />
+            <ShieldCheck size={16} />
             <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em]">
               <VoiceglotText translationKey="admin.badge" defaultText="Voices Cockpit" />
             </TextInstrument>
@@ -105,7 +105,7 @@ export default function AdminDashboard() {
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
-                <Activity strokeWidth={1.5} size={20} />
+                <Activity size={20} />
               </div>
           <div>
             <HeadingInstrument level={2} className="text-2xl font-black tracking-tight">
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
           </div>
         </div>
         <Link href="/account/mailbox" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
-          <VoiceglotText translationKey="admin.feed.full_inbox" defaultText="Volledige Inbox" /> <ArrowRight strokeWidth={1.5} size={12} />
+          <VoiceglotText translationKey="admin.feed.full_inbox" defaultText="Volledige Inbox" /> <ArrowRight size={12} />
         </Link>
       </div>
 
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
                 <span className="text-[15px] font-bold">{n.time}</span>
               </div>
               <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-                <ArrowRight strokeWidth={1.5} size={14} className="text-primary" />
+                <ArrowRight size={14} className="text-primary" />
               </div>
             </div>
           </div>
@@ -222,7 +222,7 @@ export default function AdminDashboard() {
             </TextInstrument>
           </ContainerInstrument>
           <Link href="/admin/settings" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
-            <VoiceglotText translationKey="admin.settings.cta" defaultText="Beheer Instellingen" /> <Sparkles strokeWidth={1.5} size={12} />
+            <VoiceglotText translationKey="admin.settings.cta" defaultText="Beheer Instellingen" /> <Sparkles size={12} />
           </Link>
         </BentoCard>
 
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
         <BentoCard span="lg" className="bg-white border border-black/5 p-12 h-[400px] flex flex-col justify-between group hover:border-primary/20 transition-all">
           <ContainerInstrument className="flex justify-between items-start">
             <ContainerInstrument>
-              <User strokeWidth={1.5}s className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
+              <Users className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
               <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter mb-4">
                 <VoiceglotText translationKey="admin.users.title" defaultText="User DNA" />
               </HeadingInstrument>
@@ -268,7 +268,7 @@ export default function AdminDashboard() {
         {/* 🩹 GOD MODE: SELF-HEALING LOGS */}
         <BentoCard span="sm" className="bg-va-black text-white p-10 h-[400px] flex flex-col justify-between relative overflow-hidden group">
           <ContainerInstrument className="relative z-10">
-            <Zap strokeWidth={1.5} className="text-primary mb-8" size={32} />
+            <Zap className="text-primary mb-8" size={32} />
             <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-6">
               <VoiceglotText translationKey="admin.self_healing.title" defaultText="Self-Healing Logs" />
             </HeadingInstrument>

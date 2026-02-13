@@ -61,7 +61,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
         <BentoCard span="xl" className="h-[500px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
           <ContainerInstrument plain className="relative z-10">
             <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[15px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
-              <Zap size={32} fill="currentColor" strokeWidth={1.5} />
+              <Zap size={32} fill="currentColor" />
             </ContainerInstrument>
             <HeadingInstrument level={3} className="text-5xl font-light tracking-tighter mb-6 leading-none text-primary ">
               <VoiceglotText translationKey="home.showcase.telephony.title" defaultText="Slimme Telefonie" />
@@ -75,7 +75,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
           </ContainerInstrument>
           <ContainerInstrument plain className="relative z-10 flex gap-4">
             <Link href="/ivr" className="va-btn-pro flex items-center gap-3 !bg-primary !text-va-black !rounded-[10px] !font-light !tracking-widest !">
-              <VoiceglotText translationKey="home.showcase.telephony.cta" defaultText="Configureer je keuzemenu" /> <ArrowRight strokeWidth={1.5} size={18} />
+              <VoiceglotText translationKey="home.showcase.telephony.cta" defaultText="Configureer je keuzemenu" /> <ArrowRight size={18} />
             </Link>
           </ContainerInstrument>
           <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
@@ -92,7 +92,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
           </div>
           <ContainerInstrument plain className="relative z-10">
             <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[15px] flex items-center justify-center text-white mb-8 shadow-lg shadow-primary/10">
-              <Mic size={32} strokeWidth={1.5} />
+              <Mic size={32} />
             </ContainerInstrument>
             <HeadingInstrument level={3} className="text-5xl font-light tracking-tighter mb-6 leading-none text-va-black ">
               <VoiceglotText translationKey="home.showcase.casting.title" defaultText="Persoonlijke Casting" />
@@ -103,7 +103,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
           </ContainerInstrument>
           <ContainerInstrument plain className="relative z-10 flex gap-4">
             <Link href="/agency" className="va-btn-pro flex items-center gap-3 !bg-va-dark-soft !rounded-[10px] !font-light !tracking-widest !">
-              <VoiceglotText translationKey="home.showcase.casting.cta" defaultText="Start jouw zoektocht" /> <ArrowRight strokeWidth={1.5} size={18} />
+              <VoiceglotText translationKey="home.showcase.casting.cta" defaultText="Start jouw zoektocht" /> <ArrowRight size={18} />
             </Link>
           </ContainerInstrument>
           <ContainerInstrument plain className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/3 rounded-full blur-[120px] group-hover:bg-primary/6 transition-all duration-1000" />
@@ -113,7 +113,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
       <ContainerInstrument plain className="space-y-8">
         <BentoCard span="sm" className="bg-va-dark-soft text-white p-8 flex flex-col justify-between h-[240px] border-none !rounded-[20px]">
           <ContainerInstrument plain>
-            <Zap className="text-primary mb-4" size={24} fill="currentColor" strokeWidth={1.5} />
+            <Zap className="text-primary mb-4" size={24} fill="currentColor" />
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2 text-primary">
               <VoiceglotText translationKey="home.showcase.speed.title" defaultText="Snelheid" />
             </HeadingInstrument>
@@ -128,7 +128,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
 
         <BentoCard span="sm" className="hred text-white p-8 flex flex-col justify-between h-[240px] border-none !rounded-[20px]">
           <ContainerInstrument plain>
-            <Heart className="mb-4 text-white" size={24} fill="currentColor" strokeWidth={1.5} />
+            <Heart className="mb-4 text-white" size={24} fill="currentColor" />
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2">
               <VoiceglotText translationKey="home.showcase.quality.title" defaultText="Kwaliteit" />
             </HeadingInstrument>

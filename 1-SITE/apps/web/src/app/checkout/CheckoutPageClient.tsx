@@ -55,7 +55,7 @@ export default function CheckoutPageClient() {
               href="/agency" 
               className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors"
             >
-              <ArrowLeft strokeWidth={1.5} size={14} /> 
+              <ArrowLeft size={14} /> 
               <VoiceglotText translationKey="checkout.back_to_agency" defaultText="Verder Casten" />
             </Link>
             <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none text-va-black">
@@ -64,7 +64,7 @@ export default function CheckoutPageClient() {
           </ContainerInstrument>
           <ContainerInstrument className="flex items-center gap-4">
             <ContainerInstrument className="px-4 py-2 bg-primary/5 text-primary rounded-full text-[15px] font-light tracking-widest border border-primary/10 flex items-center gap-2">
-              <ShieldCheck size={12} strokeWidth={1.5} />
+              <ShieldCheck size={12} />
               <VoiceglotText translationKey="checkout.secure" defaultText="Secure Checkout" />
             </ContainerInstrument>
           </ContainerInstrument>
@@ -73,7 +73,7 @@ export default function CheckoutPageClient() {
         <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Form Area */}
           <ContainerInstrument className="lg:col-span-7">
-            <Check strokeWidth={1.5}outForm />
+            <CheckoutForm />
           </ContainerInstrument>
 
           {/* Summary Area */}

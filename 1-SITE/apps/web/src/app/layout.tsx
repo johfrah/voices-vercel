@@ -126,6 +126,11 @@ export default function RootLayout({
       "contactType": "customer service",
       "email": market.email,
       "availableLanguage": ["Dutch", "French", "English"]
+    },
+    "founder": {
+      "@type": "Person",
+      "name": "Johfrah Lefebvre",
+      "sameAs": "https://www.johfrah.be"
     }
   };
 

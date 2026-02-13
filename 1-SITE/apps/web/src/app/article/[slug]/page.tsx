@@ -44,15 +44,15 @@ async function ArticleContent({ slug }: { slug: string }) {
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all "
         >
-          <ArrowLeft size={14} strokeWidth={1.5} /> 
+          <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="article.back_to_overview" defaultText="Terug" />
         </Link>
         <ContainerInstrument className="flex gap-4">
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Heart size={18} strokeWidth={1.5} />
+            <Heart size={18} />
           </ButtonInstrument>
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Share2 size={18} strokeWidth={1.5} />
+            <Share2 size={18} />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -65,7 +65,7 @@ async function ArticleContent({ slug }: { slug: string }) {
               <VoiceglotText translationKey={`journey.${article.meta?.llm_context?.journey?.[0]?.toLowerCase() || 'inspiration'}`} defaultText={article.meta?.llm_context?.journey?.[0] || 'Inspiratie'} />
             </ContainerInstrument>
             <TextInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
-              <Calendar size={12} strokeWidth={1.5} /> {new Date(article.date).toLocaleDateString('nl-BE')}
+              <Calendar size={12} /> {new Date(article.date).toLocaleDateString('nl-BE')}
             </TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-8 leading-[0.9] text-va-black ">

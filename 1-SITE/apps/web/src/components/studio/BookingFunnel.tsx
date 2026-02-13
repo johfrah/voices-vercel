@@ -80,7 +80,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           onClick={() => setShowInterestForm(false)}
           className="text-[15px] font-black tracking-widest text-black/40 hover:text-black transition-colors flex items-center gap-2"
         >
-          <ArrowLeft strokeWidth={1.5} size={12} /> Terug naar overzicht
+          <ArrowLeft size={12} /> Terug naar overzicht
         </button>
         <div className="p-8 bg-va-off-white rounded-3xl border border-black/5">
           <h4 className="text-xl font-black tracking-tighter mb-4">
@@ -193,7 +193,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                   "w-10 h-10 rounded-xl flex flex-col items-center justify-center transition-colors",
                   selectedDateIndex === index ? "bg-white/10" : "bg-black/5"
                 )}>
-                  <Calendar strokeWidth={1.5} size={16} className={selectedDateIndex === index ? "text-primary" : "text-black/40"} />
+                  <Calendar size={16} className={selectedDateIndex === index ? "text-primary" : "text-black/40"} />
                 </div>
                 <div className="text-left">
                   <div className="text-sm font-black tracking-tight">{date.date_raw}</div>
@@ -233,10 +233,10 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           </div>
           <div className="text-right">
             <div className="flex items-center gap-2 text-[15px] font-bold text-green-500 tracking-widest mb-1">
-              <Check strokeWidth={1.5}Circle2 size={12} /> <VoiceglotText translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
+              <CheckCircle2 size={12} /> <VoiceglotText translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
             </div>
             <div className="flex items-center gap-2 text-[15px] font-bold text-green-500 tracking-widest">
-              <Check strokeWidth={1.5}Circle2 size={12} /> <VoiceglotText translationKey="studio.booking.certificate" defaultText="Certificaat" />
+              <CheckCircle2 size={12} /> <VoiceglotText translationKey="studio.booking.certificate" defaultText="Certificaat" />
             </div>
           </div>
         </div>
@@ -256,7 +256,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
             </span>
           ) : (
             <>
-              <VoiceglotText translationKey="studio.booking.cta" defaultText="NU INSCHRIJVEN" /> <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform" />
+              <VoiceglotText translationKey="studio.booking.cta" defaultText="NU INSCHRIJVEN" /> <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
             </>
           )}
         </button>

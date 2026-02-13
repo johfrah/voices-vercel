@@ -62,7 +62,7 @@ export default function JohfrahAboutPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-primary">
-                    <Award size={20} strokeWidth={1.5} />
+                    <Award size={20} />
                     <TextInstrument className="font-light text-[15px] tracking-widest">Erkenning</TextInstrument>
                   </div>
                   <TextInstrument className="text-sm font-light">
@@ -72,7 +72,7 @@ export default function JohfrahAboutPage() {
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-primary">
-                    <Mic size={20} strokeWidth={1.5} />
+                    <Mic size={20} />
                     <TextInstrument className="font-light text-[15px] tracking-widest">Vakmanschap</TextInstrument>
                   </div>
                   <TextInstrument className="text-sm font-light">

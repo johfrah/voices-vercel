@@ -95,7 +95,7 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
         "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500",
         isRecording ? "bg-red-500 animate-pulse scale-110 shadow-lg shadow-red-500/20" : "bg-primary shadow-lg shadow-primary/20"
       )}>
-        <Mic className="text-white" size={32} strokeWidth={1.5} />
+        <Mic className="text-white" size={32} />
       </div>
 
       <div className="space-y-2">
@@ -118,9 +118,9 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
             )}
           >
             {isRecording ? (
-              <><Square size={18} fill="currentColor" strokeWidth={1.5} /> <VoiceglotText translationKey="recorder.stop" defaultText="Stop Opname" /></>
+              <><Square size={18} fill="currentColor" /> <VoiceglotText translationKey="recorder.stop" defaultText="Stop Opname" /></>
             ) : (
-              <><Mic size={18} strokeWidth={1.5} /> <VoiceglotText translationKey="recorder.start" defaultText="Start Opname" /></>
+              <><Mic size={18} /> <VoiceglotText translationKey="recorder.start" defaultText="Start Opname" /></>
             )}
           </button>
         ) : (
@@ -132,7 +132,7 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
                 onClick={() => setAudioUrl(null)}
                 className="va-btn-soft flex-1 py-3 flex items-center justify-center gap-2"
               >
-                <Trash2 size={16} strokeWidth={1.5} /> <VoiceglotText translationKey="recorder.retry" defaultText="Opnieuw" />
+                <Trash2 size={16} /> <VoiceglotText translationKey="recorder.retry" defaultText="Opnieuw" />
               </button>
               
               <button
@@ -141,9 +141,9 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
                 className="va-btn-pro flex-[2] py-3 flex items-center justify-center gap-2"
               >
                 {isUploading ? (
-                  <><Loader2 size={16} className="animate-spin" strokeWidth={1.5} /> <VoiceglotText translationKey="recorder.uploading" defaultText="Bezig..." /></>
+                  <><Loader2 size={16} className="animate-spin" /> <VoiceglotText translationKey="recorder.uploading" defaultText="Bezig..." /></>
                 ) : (
-                  <><CheckCircle2 size={16} strokeWidth={1.5} /> <VoiceglotText translationKey="recorder.send" defaultText="Versturen" /></>
+                  <><CheckCircle2 size={16} /> <VoiceglotText translationKey="recorder.send" defaultText="Versturen" /></>
                 )}
               </button>
             </div>

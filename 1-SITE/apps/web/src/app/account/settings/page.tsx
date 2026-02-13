@@ -15,7 +15,7 @@ export default function SettingsPage() {
           href="/account" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-colors mb-8"
         >
-          <ArrowLeft strokeWidth={1.5} size={12} /> 
+          <ArrowLeft size={12} /> 
           <VoiceglotText translationKey="account.back_to_dashboard" defaultText="Terug naar Dashboard" />
         </Link>
         <ContainerInstrument className="space-y-4">
@@ -74,7 +74,7 @@ export default function SettingsPage() {
         <BentoCard span="sm" className="bg-va-black text-white p-12 flex flex-col justify-between group">
           <ContainerInstrument>
             <ContainerInstrument className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white mb-6">
-              <Lock strokeWidth={1.5} size={24} />
+              <Lock size={24} />
             </ContainerInstrument>
             <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2">
               <VoiceglotText translationKey="account.settings.security_title" defaultText="Beveiliging" />
@@ -84,7 +84,7 @@ export default function SettingsPage() {
             </TextInstrument>
           </ContainerInstrument>
           <ButtonInstrument className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
-            <VoiceglotText translationKey="account.settings.change_password" defaultText="Wachtwoord Wijzigen" /> <ArrowLeft strokeWidth={1.5} size={14} className="rotate-180" />
+            <VoiceglotText translationKey="account.settings.change_password" defaultText="Wachtwoord Wijzigen" /> <ArrowLeft size={14} className="rotate-180" />
           </ButtonInstrument>
         </BentoCard>
       </BentoGrid>

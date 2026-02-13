@@ -26,7 +26,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
       <BentoCard span="lg" className="relative group aspect-video md:aspect-auto bg-black overflow-hidden">
         {workshop.aftermovie_url ? (
           <ContainerInstrument className="absolute inset-0 flex items-center justify-center">
-            <ContainerInstrument className="text-white/20 font-black tracking-tighter text-4xl group-hover:scale-110 transition-transform duration-700">
+            <ContainerInstrument className="text-white/20 font-light tracking-tighter text-4xl group-hover:scale-110 transition-transform duration-700">
               <VoiceglotText translationKey="workshop.aftermovie.label" defaultText="Aftermovie" />
             </ContainerInstrument>
             <ButtonInstrument className="absolute inset-0 flex items-center justify-center group-hover:bg-black/20 transition-all duration-500">
@@ -97,7 +97,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
           </TextInstrument>
         </ContainerInstrument>
         <ButtonInstrument className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all mt-8">
-          <VoiceglotText translationKey="workshop.instructor.action" defaultText="MEER OVER DE WORKSHOPGEVER" /> <ArrowRight strokeWidth={1.5} size={14} />
+          <VoiceglotText translationKey="workshop.instructor.action" defaultText="MEER OVER DE WORKSHOPGEVER" /> <ArrowRight size={14} />
         </ButtonInstrument>
       </BentoCard>
     </BentoGrid>

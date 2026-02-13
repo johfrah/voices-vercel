@@ -224,7 +224,7 @@ export default function BlogPage() {
         {/* Header */}
         <SectionInstrument className="mb-16">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest border border-primary/10 mb-8 ">
-            <BookOpen size={12} fill="currentColor" strokeWidth={1.5} /> 
+            <BookOpen size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="blog.badge" defaultText="Kennis & Inspiratie" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none mb-6 text-va-black ">
@@ -248,11 +248,11 @@ export default function BlogPage() {
                 <Link href={`/article/${article.slug}`} className="flex-1 flex flex-col p-8">
                   <ContainerInstrument className="flex items-center gap-4 mb-6">
                     <div className="px-3 py-1 bg-va-off-white rounded-full text-[15px] font-light tracking-widest text-va-black/40 border border-black/5 flex items-center gap-2 ">
-                      <Icon size={10} className="text-primary" strokeWidth={1.5} />
+                      <Icon size={10} className="text-primary" />
                       {theme}
                     </div>
                     <TextInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
-                      <Calendar size={12} strokeWidth={1.5} /> {new Date(article.createdAt).toLocaleDateString('nl-BE')}
+                      <Calendar size={12} /> {new Date(article.createdAt).toLocaleDateString('nl-BE')}
                     </TextInstrument>
                   </ContainerInstrument>
                   
@@ -265,7 +265,7 @@ export default function BlogPage() {
                   </TextInstrument>
                   
                   <div className="flex items-center gap-2 text-[15px] font-light tracking-widest text-primary group-hover:gap-4 transition-all ">
-                    <VoiceglotText translationKey="common.read_more" defaultText="Lees meer" /> <ArrowRight size={14} strokeWidth={1.5} />
+                    <VoiceglotText translationKey="common.read_more" defaultText="Lees meer" /> <ArrowRight size={14} />
                   </div>
                 </Link>
               </BentoCard>

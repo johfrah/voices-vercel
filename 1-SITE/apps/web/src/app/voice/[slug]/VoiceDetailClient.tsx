@@ -68,6 +68,21 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
             "gender": actor.gender,
             "url": `https://www.voices.be/voice/${actor.slug}`,
             "knowsAbout": actor.languages?.map((l: any) => l.name) || ["Nederlands"],
+            "memberOf": {
+              "@type": "Organization",
+              "name": "Voices",
+              "url": "https://www.voices.be"
+            },
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Voices",
+              "url": "https://www.voices.be"
+            },
+            "sameAs": [
+              actor.website_url,
+              actor.linkedin_url,
+              actor.instagram_url
+            ].filter(Boolean),
             "aggregateRating": actor.voice_score ? {
               "@type": "AggregateRating",
               "ratingValue": actor.voice_score,
@@ -83,7 +98,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
-          <ArrowLeft strokeWidth={1.5} size={14} /> 
+          <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="artist.back_to_artists" defaultText="Terug naar alle stemmen" />
         </Link>
         <ContainerInstrument className="flex gap-4">
@@ -119,7 +134,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
                   <VoiceglotText translationKey="common.craftsman" defaultText="Vakman" />
                 </ContainerInstrument>
                 <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[15px] font-bold tracking-widest">
-                  <Star strokeWidth={1.5} size={10} className="text-primary" fill="currentColor" /> 
+                  <Star size={10} className="text-primary" fill="currentColor" /> 
                   {actor.voice_score}
                 </ContainerInstrument>
               </ContainerInstrument>

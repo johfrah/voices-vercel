@@ -72,7 +72,7 @@ export const WorkshopInterestForm: React.FC = () => {
     return (
       <div className="max-w-xl mx-auto text-center space-y-8 py-20">
         <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
-          <Check strokeWidth={1.5}Circle2 size={40} />
+          <CheckCircle2 size={40} />
         </div>
         <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter">
           <VoiceglotText translationKey="workshop.interest.success.title" defaultText="Bedankt!" />
@@ -97,7 +97,7 @@ export const WorkshopInterestForm: React.FC = () => {
           {/* Workshop Selection */}
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-8">
-              <Star strokeWidth={1.5} className="text-primary fill-primary" size={24} />
+              <Star className="text-primary fill-primary" size={24} />
               <h3 className="text-xl font-black tracking-tight">
                 <VoiceglotText translationKey="workshop.interest.title" defaultText="Voor welke workshop(s) heb je interesse?" />
               </h3>
@@ -125,7 +125,7 @@ export const WorkshopInterestForm: React.FC = () => {
                       ? "bg-primary border-primary"
                       : "border-black/10 group-hover:border-primary/30"
                   )}>
-                    {selectedWorkshops.includes(w.id) && <Check strokeWidth={1.5}Circle2 size={14} className="text-white" />}
+                    {selectedWorkshops.includes(w.id) && <CheckCircle2 size={14} className="text-white" />}
                   </div>
                 </button>
               ))}
@@ -179,7 +179,7 @@ export const WorkshopInterestForm: React.FC = () => {
               disabled={selectedWorkshops.length === 0 || !formData.email}
               className="w-full py-6 rounded-2xl bg-black text-white font-black tracking-widest text-sm hover:bg-primary transition-all shadow-xl flex items-center justify-center gap-3 group"
             >
-              <VoiceglotText translationKey="common.next_step" defaultText="VOLGENDE STAP" /> <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-1 transition-transform" />
+              <VoiceglotText translationKey="common.next_step" defaultText="VOLGENDE STAP" /> <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </form>
@@ -187,7 +187,7 @@ export const WorkshopInterestForm: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-12 animate-in fade-in slide-in-from-right-4 duration-500">
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-8">
-              <Star strokeWidth={1.5} className="text-primary fill-primary" size={24} />
+              <Star className="text-primary fill-primary" size={24} />
               <h3 className="text-xl font-black tracking-tight">
                 <VoiceglotText translationKey="workshop.interest.step2.title" defaultText="Help ons je beter te leren kennen" />
               </h3>
@@ -260,7 +260,7 @@ export const WorkshopInterestForm: React.FC = () => {
               disabled={isLoading}
               className="flex-1 py-6 rounded-2xl bg-black text-white font-black tracking-widest text-sm hover:bg-primary transition-all shadow-xl flex items-center justify-center gap-3 group"
             >
-              {isLoading ? <VoiceglotText translationKey="common.processing" defaultText="VERWERKEN..." /> : <VoiceglotText translationKey="workshop.interest.submit" defaultText="INSCHRIJVING VOLTOOIEN" />} <Send strokeWidth={1.5} size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              {isLoading ? <VoiceglotText translationKey="common.processing" defaultText="VERWERKEN..." /> : <VoiceglotText translationKey="workshop.interest.submit" defaultText="INSCHRIJVING VOLTOOIEN" />} <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </button>
           </div>
         </form>

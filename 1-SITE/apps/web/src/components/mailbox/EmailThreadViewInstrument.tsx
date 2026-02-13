@@ -116,7 +116,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
         
         <ContainerInstrument className="flex items-center gap-4">
           <div className="flex items-center gap-1.5 bg-pink-50 text-pink-600 px-2 py-0.5 rounded-md text-[15px] font-black tracking-widest border border-pink-100">
-            <ShieldCheck strokeWidth={1.5} size={10} />
+            <ShieldCheck size={10} />
             SECURE THREAD
           </div>
           <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-gray-400">
@@ -167,7 +167,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                     {format(new Date(message.date), 'd MMM, HH:mm', { locale: nl })}
                   </TextInstrument>
                   <ButtonInstrument className="p-1 text-gray-300 hover:text-va-black transition-colors">
-                    <X strokeWidth={1.5} size={14} className="rotate-45" />
+                    <X size={14} className="rotate-45" />
                   </ButtonInstrument>
                 </div>
               </div>
@@ -175,7 +175,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
               {/* AI Quick Actions (Spark Style) */}
               <div className="px-6 pb-2 flex gap-2">
                 <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[15px] font-black tracking-widest border border-blue-100/50 hover:bg-blue-100 transition-all">
-                  <Sparkles strokeWidth={1.5} size={12} />
+                  <Sparkles size={12} />
                   Translate to English
                 </ButtonInstrument>
                 <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-lg text-[15px] font-black tracking-widest border border-gray-100 hover:bg-gray-100 transition-all">
@@ -236,7 +236,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
               {/* AI Quick Replies (Spark Style) */}
               <div className="px-6 py-4 bg-gray-50/30 border-t border-gray-50 flex items-center justify-between">
                 <div className="flex gap-2">
-                  <span className="text-[15px] font-black text-blue-600 mr-2 flex items-center gap-1"><Sparkles strokeWidth={1.5} size={10} /> +ai</span>
+                  <span className="text-[15px] font-black text-blue-600 mr-2 flex items-center gap-1"><Sparkles size={10} /> +ai</span>
                   {['Interested', 'Not interested', 'Thanks'].map((reply) => (
                     <ButtonInstrument key={reply} className="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-[15px] font-bold text-gray-600 hover:border-va-black transition-all shadow-sm">
                       {reply}
@@ -268,7 +268,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
             onClick={() => setSpotlightFile(null)}
           >
             <button className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors" onClick={() => setSpotlightFile(null)}>
-              <X strokeWidth={1.5} size={32} />
+              <X size={32} />
             </button>
 
             <motion.div 

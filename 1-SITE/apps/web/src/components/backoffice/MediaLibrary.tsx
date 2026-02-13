@@ -231,7 +231,7 @@ export const MediaLibrary: React.FC = () => {
       <div className="w-full lg:w-64 space-y-6">
         <div className="bg-white rounded-[32px] shadow-aura p-6 space-y-4">
           <div className="flex items-center gap-2 text-va-black font-black tracking-tighter text-sm">
-            <User strokeWidth={1.5} size={16} />
+            <User size={16} />
             Stemacteurs
           </div>
           <div className="space-y-1 max-h-[400px] overflow-y-auto no-scrollbar">
@@ -280,7 +280,7 @@ export const MediaLibrary: React.FC = () => {
 
             {youtubeUrl.startsWith('local:') ? (
               <div className="p-4 bg-green-100 text-green-700 rounded-2xl text-[15px] font-black tracking-widest flex items-center gap-2">
-                <Check strokeWidth={1.5}Square size={14} /> Geconverteerd
+                <CheckSquare size={14} /> Geconverteerd
               </div>
             ) : (
               <a 
@@ -354,7 +354,7 @@ export const MediaLibrary: React.FC = () => {
               flex items-center gap-2 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[15px] cursor-pointer transition-all shadow-pro
               ${isUploading ? 'bg-va-black/10 text-va-black/30' : 'bg-va-black text-white hover:scale-105 active:scale-95'}
             `}>
-              {isUploading ? <Upload className="animate-bounce" size={16} /> : <Plus strokeWidth={1.5} size={16} />}
+              {isUploading ? <Upload className="animate-bounce" size={16} /> : <Plus size={16} />}
               {isUploading ? 'Bezig...' : 'Upload'}
               <input type="file" className="hidden" onChange={handleUpload} disabled={isUploading} />
             </label>
@@ -372,7 +372,7 @@ export const MediaLibrary: React.FC = () => {
                 onClick={() => setSelectedIds([])}
                 className="text-white/40 hover:text-white transition-colors"
               >
-                <X strokeWidth={1.5} size={16} />
+                <X size={16} />
               </button>
             </div>
             
@@ -451,7 +451,7 @@ export const MediaLibrary: React.FC = () => {
                     ${selectedIds.includes(item.id) ? 'bg-primary text-white scale-110' : 'bg-white/80 backdrop-blur-md opacity-0 group-hover:opacity-100'}
                   `}
                 >
-                  {selectedIds.includes(item.id) ? <Check strokeWidth={1.5}Square size={14} /> : <Square size={14} className="text-va-black/20" />}
+                  {selectedIds.includes(item.id) ? <CheckSquare size={14} /> : <Square size={14} className="text-va-black/20" />}
                 </div>
 
                 {/* Preview Area */}
