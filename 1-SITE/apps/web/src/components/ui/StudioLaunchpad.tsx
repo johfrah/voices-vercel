@@ -175,6 +175,7 @@ export const StudioLaunchpad = () => {
                   onChange={(e) => setScript(e.target.value)}
                   placeholder="Plak hier je tekst of sleep een bestand..."
                   className="w-full h-80 bg-va-off-white rounded-[20px] p-6 md:p-8 text-[16px] md:text-lg font-light leading-relaxed border-none focus:ring-2 focus:ring-primary/10 transition-all resize-none"
+                  spellCheck={false}
                 />
 
                 {files.length > 0 && (

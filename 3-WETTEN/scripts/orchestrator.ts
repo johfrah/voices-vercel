@@ -310,7 +310,14 @@ class AgentOrchestrator {
             await this.runFelixBasic();
         }
 
-        // CHRIS (Code & Esthetiek)
+        // MARK (Content & Voiceglot)
+        try {
+            console.log(`${COLORS.blue}[MARK]${COLORS.reset} Repeteert: Voiceglot Cleanup...`);
+            execSync('npx ts-node 3-WETTEN/scripts/voiceglot-fixer.ts 1-SITE/apps/web/src/components/ui', { stdio: 'inherit' });
+        } catch (e) {
+            // Mark mag niet blokkeren, alleen proberen
+            console.log(`${COLORS.yellow}[MARK]${COLORS.reset} Voiceglot operatie deels geslaagd.`);
+        }
         try {
             console.log(`${COLORS.blue}[CHRIS]${COLORS.reset} Repeteert: Audit & Fix (Poging ${retryCount})...`);
             execSync('npx ts-node 3-WETTEN/scripts/watchdog.ts fix 1-SITE/apps/web/src', { stdio: 'inherit' });
