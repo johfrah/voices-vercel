@@ -43,7 +43,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   ` : `
     <tr>
       <td align="center" style="background: ${primaryGradient}; padding: 40px 20px; border-radius: 20px 20px 0 0;">
-        <h1 style="margin: 0; color: #FFFFFF; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -0.02em;">
+        <h1 style="margin: 0; color: #FFFFFF; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -0.02em;">
           ${title}
         </h1>
       </td>
