@@ -50,39 +50,23 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     </tr>
   `;
 
-  // ✍️ Mark's Signature Logic (Personal & Authoritative)
-  let signatureHtml = '';
-  if (showSignature) {
-    if (journey === 'studio') {
-      signatureHtml = `
-        <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #F0F0F0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-          <p style="margin: 0; color: #666; font-size: 14px;">Warme groeten,</p>
-          <p style="margin: 5px 0 0 0; font-weight: 700; color: #1A1A1A; font-size: 16px;">Bernadette & Johfrah</p>
-          <p style="margin: 10px 0 0 0; font-size: 13px;">
-            <a href="https://www.voices.be/studio/" style="color: #FFB300; text-decoration: none; font-weight: 700;">www.voices.be/studio/</a>
-          </p>
-        </div>
-      `;
-    } else {
-      signatureHtml = `
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; border-top: 1px solid #F0F0F0; padding-top: 30px;">
-          <tr>
-            <td width="70" style="vertical-align: middle; padding-right: 20px;">
-              <img src="https://www.voices.be/assets/common/branding/founder/johfrah-avatar-be.png" 
-                   alt="Johfrah" width="70" height="70" style="display: block; border-radius: 50%; border: 2px solid #F0F0F0;" />
-            </td>
-            <td style="vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-              <p style="margin: 0; font-weight: 700; color: ${isDark ? '#FFFFFF' : '#1A1A1A'}; font-size: 16px;">Johfrah Lefebvre</p>
-              <p style="margin: 2px 0 0 0; font-size: 14px; color: ${isDark ? '#999' : '#666'};">Founder & Voice Expert</p>
-              <p style="margin: 8px 0 0 0; font-size: 13px;">
-                <a href="https://www.voices.be" style="color: #5CAED1; text-decoration: none; font-weight: 700;">www.voices.be</a>
-              </p>
-            </td>
-          </tr>
-        </table>
-      `;
-    }
-  }
+  const signatureHtml = showSignature ? `
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; border-top: 1px solid #F0F0F0; padding-top: 30px;">
+      <tr>
+        <td width="100" style="vertical-align: middle; text-align: center;">
+          <a href="https://www.voices.be/?utm_source=E-mail&utm_medium=be-mail" style="text-decoration: none;">
+            <img src="https://www.voices.be/wp-content/uploads/2024/07/johfrah.png" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
+          </a>
+        </td>
+        <td style="vertical-align: middle; padding-left: 31px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">
+          <span style="font-weight: 700; color: ${isDark ? '#FFFFFF' : '#1A1A1A'};">Johfrah Lefebvre</span><br />
+          <a href="mailto:johfrah@voices.be" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">johfrah@voices.be</a><br />
+          <a href="tel:+3227931991" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">+3227931991</a><br />
+          <a href="https://www.voices.be/?utm_source=E-mail&utm_medium=be-mail" style="color: #1155CC; text-decoration: none; font-weight: 500;">www.voices.be</a>
+        </td>
+      </tr>
+    </table>
+  ` : '';
 
   return `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
