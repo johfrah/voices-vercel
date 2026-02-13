@@ -29,7 +29,7 @@ export function VumeMagicLinkTemplate(options: MagicLinkOptions) {
       greeting: name ? `Bonjour ${name},` : 'Bonjour,',
       body: 'Vous n\'êtes qu\'à un clic de votre cockpit. Nous avons tout préparé pour vous.',
       button: 'Se connecter maintenant',
-      footer: 'Ce lien is valable 15 minutes. Vous n\'avez pas demandé cet e-mail ? Vous pouvez l\'ignorer en toute sécurité.'
+      footer: 'Ce lien est valable 15 minutes. Vous n\'avez pas demandé cet e-mail ? Vous pouvez l\'ignorer en toute sécurité.'
     },
     en: {
       title: 'Welcome back to the Theater',
@@ -41,13 +41,19 @@ export function VumeMagicLinkTemplate(options: MagicLinkOptions) {
   }[language as 'nl' | 'fr' | 'en'] || content.nl;
 
   const html = `
-    <h1 style="font-weight: 200; font-size: 28px; margin-bottom: 24px;">${content.title}</h1>
-    <p>${content.greeting}</p>
-    <p>${content.body}</p>
-    <div style="text-align: center; margin-top: 32px;">
-      <a href="${link}" class="button">${content.button}</a>
-    </div>
-    <p style="margin-top: 40px; font-size: 13px; opacity: 0.6;">${content.footer}</p>
+    <h1 style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 200; font-size: 32px; margin: 0 0 30px 0; line-height: 1.2; color: #1A1A1A;">${content.title}</h1>
+    <p style="margin: 0 0 20px 0;">${content.greeting}</p>
+    <p style="margin: 0 0 32px 0;">${content.body}</p>
+    
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+        <td align="center" style="padding: 10px 0 20px 0;">
+          <a href="${link}" style="display: inline-block; padding: 18px 36px; background-color: #FF4F00; color: #FFFFFF; text-decoration: none; border-radius: 14px; font-weight: 500; font-size: 16px;">${content.button}</a>
+        </td>
+      </tr>
+    </table>
+    
+    <p style="margin: 40px 0 0 0; font-size: 13px; opacity: 0.6; line-height: 1.6;">${content.footer}</p>
   `;
 
   return VumeMasterWrapper(html, {
