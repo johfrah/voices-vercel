@@ -20,8 +20,8 @@ export default function AudioReviewTestPage() {
       <div className="max-w-7xl mx-auto pt-32 pb-20 px-6">
         <div className="mb-12">
           <TextInstrument as="span" className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[15px] font-bold tracking-widest mb-4"><VoiceglotText translationKey="auto.page.spotlight_feature_pr.501ec9" defaultText="Spotlight Feature Preview" /></TextInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter text-gray-900 mb-4">
-            Audio Review <TextInstrument as="span" className="text-primary font-light"><VoiceglotText translationKey="auto.page.engine.7bfa30" defaultText="Engine" /></TextInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter text-va-black mb-4">
+            Audio Review <TextInstrument as="span" className="text-primary font-extralight"><VoiceglotText translationKey="auto.page.engine.7bfa30" defaultText="Engine" /></TextInstrument>
           </HeadingInstrument>
           <TextInstrument className="text-xl text-gray-500 max-w-2xl font-light"><VoiceglotText translationKey="auto.page.test_hier_de_interac.dd28cd" defaultText="Test hier de interactieve feedback loop. Pas de muziekbalans aan, 
             bekijk de geanimeerde waveform en simuleer de Dropbox-export." /></TextInstrument>
