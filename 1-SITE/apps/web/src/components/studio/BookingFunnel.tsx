@@ -9,6 +9,14 @@ import { Actor } from '@/types';
 import { AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Calendar, CheckCircle2, Info, Loader2, MapPin, Search } from "lucide-react";
 import React, { useEffect, useState } from 'react';
+import { 
+  ContainerInstrument, 
+  TextInstrument,
+  ButtonInstrument,
+  HeadingInstrument,
+  InputInstrument,
+  LabelInstrument
+} from '@/components/ui/LayoutInstruments';
 
 interface WorkshopDate {
   date_raw: string;
@@ -47,7 +55,6 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   const selectedDateIndex = controlledIndex !== undefined ? controlledIndex : internalIndex;
   const selectedDate = dates[selectedDateIndex] || null;
 
-  // 🕵️ VOICE SEARCH LOGIC
   useEffect(() => {
     const searchVoices = async () => {
       if (searchQuery.length < 3) {
@@ -75,33 +82,36 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
 
   if (showInterestForm) {
     return (
-      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <button 
+      <ContainerInstrument className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <ButtonInstrument 
           onClick={() => setShowInterestForm(false)}
-          className="text-[15px] font-black tracking-widest text-black/40 hover:text-black transition-colors flex items-center gap-2"
+          className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-va-black transition-colors flex items-center gap-2 p-0 bg-transparent uppercase"
         >
-          <ArrowLeft strokeWidth={1.5} size={12} /> Terug naar overzicht
-        </button>
-        <div className="p-8 bg-va-off-white rounded-3xl border border-black/5">
-          <h4 className="text-xl font-black tracking-tighter mb-4">
+          <ArrowLeft strokeWidth={1.5} size={12} /> 
+          <VoiceglotText translationKey="common.back_to_overview" defaultText="Terug naar overzicht" />
+        </ButtonInstrument>
+        <ContainerInstrument className="p-8 bg-va-off-white rounded-[20px] border border-va-black/5">
+          <HeadingInstrument level={4} className="text-xl font-light tracking-tight mb-4">
             <VoiceglotText translationKey="studio.booking.notify_me.title" defaultText="Houd me op de hoogte" />
-          </h4>
-          <p className="text-[15px] text-black/60 mb-8 leading-relaxed">
+          </HeadingInstrument>
+          <TextInstrument className="text-[15px] text-va-black/60 mb-8 leading-relaxed font-light">
             <VoiceglotText 
               translationKey="studio.booking.notify_me.text" 
               defaultText="Er zijn momenteel geen data gepland voor deze workshop. Laat je gegevens achter en we laten je als eerste weten wanneer er nieuwe edities beschikbaar zijn." 
             />
-          </p>
+          </TextInstrument>
           <form className="space-y-4">
-            <input 
+            <InputInstrument 
               type="email" 
               placeholder={t('common.placeholder.email', 'Jouw e-mailadres')} 
-              className="w-full p-4 rounded-xl border border-black/10 text-[15px] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+              className="w-full p-4 !rounded-[10px] border border-va-black/10 text-[15px] outline-none transition-all"
             />
-            <button className="w-full py-4 bg-black text-white rounded-xl font-black tracking-widest text-[15px] hover:bg-primary transition-all"><VoiceglotText translationKey="common.send" defaultText="VERZENDEN" /></button>
+            <ButtonInstrument className="w-full py-4 bg-va-black text-white rounded-[10px] font-medium tracking-widest text-[13px] hover:bg-primary transition-all uppercase">
+              <VoiceglotText translationKey="common.send" defaultText="VERZENDEN" />
+            </ButtonInstrument>
           </form>
-        </div>
-      </div>
+        </ContainerInstrument>
+      </ContainerInstrument>
     );
   }
   const priceExclVatValue = selectedDate ? parseFloat(selectedDate.price) || priceExclVat : priceExclVat;
@@ -109,7 +119,6 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   const handleBooking = () => {
     playClick('premium');
     setIsBooking(true);
-    // In a real implementation, this would trigger the cart logic or redirect
     setTimeout(() => {
       console.log(`Core Booking: ${title} for ${selectedDate?.date_raw}`);
       setIsBooking(false);
@@ -117,59 +126,58 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   };
 
   return (
-    <div className="space-y-8">
-      {/* 🔍 VOICE SEARCH (NEW) */}
-      <div className="space-y-4">
-        <div className="relative group">
-          <input 
+    <ContainerInstrument className="space-y-8">
+      {/* 🔍 VOICE SEARCH */}
+      <ContainerInstrument className="space-y-4">
+        <ContainerInstrument className="relative group">
+          <InputInstrument 
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t('studio.booking.search_voice', "Zoek een stem (bijv. 'johfra')...")}
-            className="w-full bg-va-off-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 text-[15px] font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all group-hover:border-black/10"
+            className="w-full bg-va-off-white border border-va-black/5 rounded-[20px] py-4 pl-12 pr-4 text-[15px] font-light focus:ring-2 focus:ring-primary/20 outline-none transition-all group-hover:border-va-black/10"
           />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} strokeWidth={1.5} />
           {isSearching && (
-            <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 text-primary animate-spin" size={16} />
+            <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 text-primary animate-spin" size={16} strokeWidth={1.5} />
           )}
-        </div>
+        </ContainerInstrument>
 
-        {/* Search Results (VoiceCards) */}
         <AnimatePresence>
           {foundVoices.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
-              <div className="text-[15px] font-black tracking-widest text-black/30 px-2">
+            <ContainerInstrument className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
+              <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 px-2 uppercase">
                 <VoiceglotText translationKey="studio.booking.found_voices" defaultText="Gevonden Stemmen" />
-              </div>
+              </TextInstrument>
               {foundVoices.map((voice) => (
-                <div key={voice.id} className="scale-90 origin-top-left -mb-10 last:mb-0">
+                <ContainerInstrument key={voice.id} className="scale-90 origin-top-left -mb-10 last:mb-0">
                   <VoiceCard voice={voice} onSelect={() => {
                     playClick('pro');
-                    // Optioneel: actie bij selectie van een stem in de funnel
                     window.location.href = `/checkout?usage=telefonie&voice=${voice.id}`;
                   }} />
-                </div>
+                </ContainerInstrument>
               ))}
-              <div className="pt-4 border-t border-black/5" />
-            </div>
+              <ContainerInstrument className="pt-4 border-t border-va-black/5" />
+            </ContainerInstrument>
           )}
         </AnimatePresence>
-      </div>
+      </ContainerInstrument>
 
       {/* DATE SELECTOR */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h4 className="text-[15px] font-black tracking-widest text-black/40">
+      <ContainerInstrument className="space-y-4">
+        <ContainerInstrument className="flex items-center justify-between">
+          <HeadingInstrument level={4} className="text-[13px] font-light tracking-widest text-va-black/40 uppercase">
             <VoiceglotText translationKey="studio.booking.available_dates" defaultText="Beschikbare Data" />
-          </h4>
-          <span className="text-[15px] font-bold text-primary tracking-widest flex items-center gap-1">
-            <Info size={12} /> <VoiceglotText translationKey="studio.booking.limited_spots" defaultText="Slechts enkele plaatsen" />
-          </span>
-        </div>
+          </HeadingInstrument>
+          <TextInstrument className="text-[13px] font-light text-primary tracking-widest flex items-center gap-1 uppercase">
+            <Info size={12} strokeWidth={1.5} /> 
+            <VoiceglotText translationKey="studio.booking.limited_spots" defaultText="Slechts enkele plaatsen" />
+          </TextInstrument>
+        </ContainerInstrument>
         
-        <div className="grid gap-3">
+        <ContainerInstrument className="grid gap-3">
           {dates.length > 0 ? dates.map((date, index) => (
-            <button
+            <ButtonInstrument
               key={index}
               onClick={() => {
                 playClick('light');
@@ -180,89 +188,92 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                 }
               }}
               className={cn(
-                "w-full p-5 rounded-2xl border transition-all duration-500 flex items-center justify-between group",
+                "w-full p-5 rounded-[20px] border transition-all duration-500 flex items-center justify-between group",
                 selectedDateIndex === index 
-                  ? "bg-black border-black text-white shadow-xl scale-[1.02]" 
-                  : "bg-va-off-white border-black/5 text-black/60 hover:border-black/20 hover:bg-white"
+                  ? "bg-va-black border-va-black text-white shadow-aura scale-[1.02]" 
+                  : "bg-va-off-white border-va-black/5 text-va-black/60 hover:border-va-black/20 hover:bg-white"
               )}
             >
-              <div className="flex items-center gap-4">
-                <div className={cn(
-                  "w-10 h-10 rounded-xl flex flex-col items-center justify-center transition-colors",
-                  selectedDateIndex === index ? "bg-white/10" : "bg-black/5"
+              <ContainerInstrument className="flex items-center gap-4">
+                <ContainerInstrument className={cn(
+                  "w-10 h-10 rounded-[10px] flex flex-col items-center justify-center transition-colors",
+                  selectedDateIndex === index ? "bg-white/10" : "bg-va-black/5"
                 )}>
-                  <Calendar strokeWidth={1.5} size={16} className={selectedDateIndex === index ? "text-primary" : "text-black/40"} />
-                </div>
-                <div className="text-left">
-                  <div className="text-[15px] font-black tracking-tight">{date.date_raw}</div>
-                  <div className="text-[15px] font-bold opacity-40 tracking-widest flex items-center gap-2 mt-0.5">
-                    <MapPin size={10} /> {date.location}
-                  </div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-[15px] font-black tracking-tighter">€{parseFloat(date.price || String(priceExclVatValue))}</div>
-              </div>
-            </button>
+                  <Calendar strokeWidth={1.5} size={16} className={selectedDateIndex === index ? "text-primary" : "text-va-black/40"} />
+                </ContainerInstrument>
+                <ContainerInstrument className="text-left">
+                  <TextInstrument className="text-[15px] font-medium tracking-tight">{date.date_raw}</TextInstrument>
+                  <TextInstrument className="text-[12px] font-light opacity-40 tracking-widest flex items-center gap-2 mt-0.5 uppercase">
+                    <MapPin size={10} strokeWidth={1.5} /> {date.location}
+                  </TextInstrument>
+                </ContainerInstrument>
+              </ContainerInstrument>
+              <ContainerInstrument className="text-right">
+                <TextInstrument className="text-[15px] font-medium tracking-tighter">€{parseFloat(date.price || String(priceExclVatValue))}</TextInstrument>
+              </ContainerInstrument>
+            </ButtonInstrument>
           )) : (
-            <div className="p-8 rounded-2xl bg-va-off-white border border-dashed border-black/10 text-center">
-              <p className="text-[15px] font-black tracking-widest text-black/30">
+            <ContainerInstrument className="p-8 rounded-[20px] bg-va-off-white border border-dashed border-va-black/10 text-center">
+              <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 uppercase">
                 <VoiceglotText translationKey="studio.booking.no_dates" defaultText="Geen data gepland" />
-              </p>
-              <button 
+              </TextInstrument>
+              <ButtonInstrument 
                 onClick={() => setShowInterestForm(true)}
-                className="text-[15px] font-black tracking-widest text-primary mt-2 hover:underline"
+                className="text-[13px] font-light tracking-widest text-primary mt-2 hover:underline p-0 bg-transparent uppercase"
               >
                 <VoiceglotText translationKey="studio.booking.notify_me.cta" defaultText="Houd me op de hoogte" />
-              </button>
-            </div>
+              </ButtonInstrument>
+            </ContainerInstrument>
           )}
-        </div>
-      </div>
+        </ContainerInstrument>
+      </ContainerInstrument>
 
       {/* SUMMARY & ACTION */}
-      <div className="pt-8 border-t border-black/5 space-y-6">
-        <div className="flex justify-between items-end">
-          <div>
-            <div className="text-[15px] font-black tracking-widest text-black/30 mb-1">
+      <ContainerInstrument className="pt-8 border-t border-va-black/5 space-y-6">
+        <ContainerInstrument className="flex justify-between items-end">
+          <ContainerInstrument>
+            <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 mb-1 uppercase">
               <VoiceglotText translationKey="studio.booking.total_investment" defaultText="Totaal Investering" />
-            </div>
-            <div className="text-4xl font-black tracking-tighter">€{priceExclVatValue}</div>
-          </div>
-          <div className="text-right">
-            <div className="flex items-center gap-2 text-[15px] font-bold text-green-500 tracking-widest mb-1">
-              <CheckCircle2 strokeWidth={1.5} size={12} /> <VoiceglotText translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
-            </div>
-            <div className="flex items-center gap-2 text-[15px] font-bold text-green-500 tracking-widest">
-              <CheckCircle2 strokeWidth={1.5} size={12} /> <VoiceglotText translationKey="studio.booking.certificate" defaultText="Certificaat" />
-            </div>
-          </div>
-        </div>
+            </TextInstrument>
+            <TextInstrument className="text-4xl font-light tracking-tighter">€{priceExclVatValue}</TextInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument className="text-right">
+            <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light text-emerald-500 tracking-widest mb-1 uppercase">
+              <CheckCircle2 strokeWidth={1.5} size={12} /> 
+              <VoiceglotText translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
+            </ContainerInstrument>
+            <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light text-emerald-500 tracking-widest uppercase">
+              <CheckCircle2 strokeWidth={1.5} size={12} /> 
+              <VoiceglotText translationKey="studio.booking.certificate" defaultText="Certificaat" />
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
 
-        <button 
+        <ButtonInstrument 
           onClick={handleBooking}
           disabled={isBooking || dates.length === 0}
           className={cn(
-            "w-full py-6 rounded-2xl font-black uppercase tracking-widest text-[15px] transition-all duration-500 shadow-xl flex items-center justify-center gap-3 group relative overflow-hidden",
-            isBooking ? "bg-black/80 cursor-wait" : "bg-black text-white hover:bg-primary active:scale-95"
+            "w-full py-6 rounded-[10px] font-medium uppercase tracking-widest text-[13px] transition-all duration-500 shadow-aura flex items-center justify-center gap-3 group relative overflow-hidden",
+            isBooking ? "bg-va-black/80 cursor-wait" : "bg-va-black text-white hover:bg-primary active:scale-95"
           )}
         >
           {isBooking ? (
-            <span className="flex items-center gap-2">
-              <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+            <ContainerInstrument className="flex items-center gap-2">
+              <ContainerInstrument className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></ContainerInstrument>
               <VoiceglotText translationKey="common.processing" defaultText="VERWERKEN..." />
-            </span>
+            </ContainerInstrument>
           ) : (
             <>
-              <VoiceglotText translationKey="studio.booking.cta" defaultText="NU INSCHRIJVEN" /> <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform" />
+              <VoiceglotText translationKey="studio.booking.cta" defaultText="NU INSCHRIJVEN" /> 
+              <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform" />
             </>
           )}
-        </button>
+        </ButtonInstrument>
         
-        <p className="text-[15px] text-center text-black/30 font-medium tracking-widest">
+        <TextInstrument className="text-[12px] text-center text-va-black/30 font-light tracking-widest uppercase">
           <VoiceglotText translationKey="studio.booking.security_info" defaultText="Veilig betalen via Mollie • Directe bevestiging" />
-        </p>
-      </div>
-    </div>
+        </TextInstrument>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 };

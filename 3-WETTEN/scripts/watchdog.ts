@@ -7,10 +7,10 @@
  * "Als het niet ademt, is het dood. Als het niet snel is, bestaat het niet."
  */
 
-import fs from 'fs';
-import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 
 // Laad env vars voor self-healing checks
 dotenv.config({ path: '1-SITE/apps/web/.env.local' });
@@ -95,6 +95,12 @@ class ChrisWatchdog {
       pattern: /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind)(?![^>]*strokeWidth={1\.5})[^>]*>/g,
       message: 'Lucide icons MOETEN strokeWidth={1.5} hebben voor de Ademing-feel.',
       severity: 'CRITICAL'
+    },
+    {
+      name: 'Modern Stack Discipline',
+      pattern: /<div|<span|<p|<a\s+href=|className="[^"]*"(?=\s*style=)|document\.getElement|document\.querySelector/g,
+      message: 'Gebruik Layout Instruments (Container, Text, Section) ipv kale HTML tags. Geen inline styles of DOM manipulatie.',
+      severity: 'WARNING'
     }
   ];
 

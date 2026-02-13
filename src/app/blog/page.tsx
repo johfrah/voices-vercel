@@ -9,7 +9,7 @@ import {
     TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { ArrowRight, BookOpen, Calendar, FileText, Globe, Home, Lightbulb, Loader2, Mic2, Music, Play, Quote, Radio, Recycle, ShoppingBag, Tag, Ticket, Users, Zap } from 'lucide-react';
+import { ArrowRight, BookOpen, Calendar, FileText, Globe, GraduationCap, Home, Lightbulb, Loader2, Mic2, Music, Play, Quote, Radio, Recycle, ShoppingBag, Tag, Ticket, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
@@ -155,6 +155,15 @@ export default function BlogPage() {
       slug: 'jokershop',
       title: 'Jokershop: Fun & Kwaliteit',
       excerpt: 'Waarom ook een feestwinkel kiest voor een professionele uitstraling aan de telefoon.',
+      theme: 'Stories',
+      createdAt: new Date().toISOString(),
+      icon: ShoppingBag
+    },
+    {
+      id: 'jokershop-interview',
+      slug: 'jokershop-be-investeert-in-een-warm-onthaal',
+      title: 'Jokershop | Investering in een warm onthaal',
+      excerpt: 'Roel van Jokershop vertelt waarom een professionele telefooncentrale cruciaal is voor hun groei.',
       theme: 'Stories',
       createdAt: new Date().toISOString(),
       icon: ShoppingBag

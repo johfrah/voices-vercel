@@ -4,7 +4,9 @@ import {
     ButtonInstrument,
     HeadingInstrument,
     InputInstrument,
-    LabelInstrument
+    LabelInstrument,
+    ContainerInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +17,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { AcademyUpsellSection } from './AcademyUpsellSection';
 import { EmailPreviewModal } from './EmailPreviewModal';
+import { cn } from '@/lib/utils';
 
 export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const { playClick } = useSonicDNA();
@@ -76,14 +79,13 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             playClick('pro');
             const updates: any = { 
               company: data.companyName,
-              country: formData.vat_number.substring(0, 2) // Auto-detect country from VAT
+              country: formData.vat_number.substring(0, 2)
             };
             if (data.address) {
               const addressParts = data.address.split('\n');
               if (addressParts.length > 0) {
                 updates.address_street = addressParts[0].trim();
               }
-              // Try to extract city and zip if possible (simple heuristic)
               if (addressParts.length > 1) {
                 const cityParts = addressParts[1].trim().split(' ');
                 if (cityParts.length >= 2) {
@@ -162,42 +164,50 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   };
 
   return (
-    <div className="space-y-8">
+    <ContainerInstrument className="space-y-8">
       {/* Admin Quote Toggle */}
       {isAdmin && (
-        <div className="p-6 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center justify-between group animate-fade-in">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
-              <FileText size={24} />
-            </div>
-            <div>
-              <h4 className="text-[15px] font-light tracking-tight">
+        <ContainerInstrument className="p-6 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center justify-between group animate-fade-in">
+          <ContainerInstrument className="flex items-center gap-4">
+            <ContainerInstrument className="w-12 h-12 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+              <FileText size={24} strokeWidth={1.5} />
+            </ContainerInstrument>
+            <ContainerInstrument>
+              <HeadingInstrument level={4} className="text-[15px] font-light tracking-tight">
                 <VoiceglotText translationKey="checkout.admin.quote_mode" defaultText="Admin Offerte Modus" />
-              </h4>
-              <p className="text-[15px] font-light text-va-black/40 tracking-widest">
+              </HeadingInstrument>
+              <TextInstrument className="text-[15px] font-light text-va-black/40 tracking-widest">
                 <VoiceglotText translationKey="checkout.admin.quote_desc" defaultText="Verstuur een offerte i.p.v. directe betaling" />
-              </p>
-            </div>
-          </div>
-          <button 
+              </TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+          <ButtonInstrument 
             onClick={() => handleChange('isQuote', !formData.isQuote)}
-            className={`w-14 h-8 rounded-full relative transition-all duration-500 ${formData.isQuote ? 'bg-primary' : 'bg-va-black/10'}`}
+            className={cn(
+              "w-14 h-8 rounded-full relative transition-all duration-500",
+              formData.isQuote ? 'bg-primary' : 'bg-va-black/10'
+            )}
           >
-            <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all duration-500 ${formData.isQuote ? 'left-7 shadow-lg' : 'left-1'}`} />
-          </button>
-        </div>
+            <ContainerInstrument className={cn(
+              "absolute top-1 w-6 h-6 bg-white rounded-full transition-all duration-500",
+              formData.isQuote ? 'left-7 shadow-lg' : 'left-1'
+            )} />
+          </ButtonInstrument>
+        </ContainerInstrument>
       )}
 
-      <div className="bg-white p-8 rounded-[20px] border border-black/[0.03] shadow-aura space-y-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
+      <ContainerInstrument className="bg-white p-8 rounded-[20px] border border-va-black/5 shadow-aura space-y-6">
+        <ContainerInstrument className="flex items-center gap-3 mb-2">
+          <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
             <CheckCircle2 strokeWidth={1.5} size={20} />
-          </div>
-          <HeadingInstrument level={3} className="text-xl font-light tracking-tight"><VoiceglotText translationKey="checkout.details.title" defaultText="Jouw Gegevens" /></HeadingInstrument>
-        </div>
+          </ContainerInstrument>
+          <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
+            <VoiceglotText translationKey="checkout.details.title" defaultText="Jouw Gegevens" />
+          </HeadingInstrument>
+        </ContainerInstrument>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-1">
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ContainerInstrument className="space-y-1">
             <LabelInstrument>
               <VoiceglotText translationKey="checkout.form.first_name" defaultText="Voornaam *" />
             </LabelInstrument>
@@ -207,8 +217,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('first_name', e.target.value)}
             />
-          </div>
-          <div className="space-y-1">
+          </ContainerInstrument>
+          <ContainerInstrument className="space-y-1">
             <LabelInstrument>
               <VoiceglotText translationKey="checkout.form.last_name" defaultText="Achternaam *" />
             </LabelInstrument>
@@ -218,11 +228,11 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('last_name', e.target.value)}
             />
-          </div>
-        </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-1">
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ContainerInstrument className="space-y-1">
             <LabelInstrument>
               <VoiceglotText translationKey="checkout.form.email" defaultText="E-mailadres *" />
             </LabelInstrument>
@@ -233,8 +243,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('email', e.target.value)}
             />
-          </div>
-          <div className="space-y-1">
+          </ContainerInstrument>
+          <ContainerInstrument className="space-y-1">
             <LabelInstrument>
               <VoiceglotText translationKey="checkout.form.phone" defaultText="Telefoonnummer" />
             </LabelInstrument>
@@ -244,42 +254,42 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('phone', e.target.value)}
             />
-          </div>
-        </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
         
-        <div className="space-y-1">
+        <ContainerInstrument className="space-y-1">
           <LabelInstrument>
             <VoiceglotText translationKey="checkout.form.vat" defaultText="BTW-nummer" />
           </LabelInstrument>
-          <div className="relative">
+          <ContainerInstrument className="relative">
             <InputInstrument
               value={formData.vat_number || ''}
               placeholder="Bijv. BE0662426460"
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('vat_number', e.target.value.toUpperCase())}
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              {vatStatus.validating ? <Loader2 className="animate-spin text-primary" size={18} /> : 
+            <ContainerInstrument className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {vatStatus.validating ? <Loader2 className="animate-spin text-primary" size={18} strokeWidth={1.5} /> : 
                vatStatus.valid ? (
-                 <div className="flex items-center gap-2 text-green-600 animate-fade-in">
-                   <span className="text-[15px] font-light tracking-widest">
+                 <ContainerInstrument className="flex items-center gap-2 text-green-600 animate-fade-in">
+                   <TextInstrument className="text-[13px] font-light tracking-widest uppercase">
                      <VoiceglotText translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" />
-                   </span>
+                   </TextInstrument>
                    <CheckCircle2 strokeWidth={1.5} size={18} />
-                 </div>
+                 </ContainerInstrument>
                ) : vatStatus.valid === false ? (
-                 <div className="flex items-center gap-2 text-red-500 animate-shake">
-                   <span className="text-[15px] font-light tracking-widest">
+                 <ContainerInstrument className="flex items-center gap-2 text-red-500 animate-shake">
+                   <TextInstrument className="text-[13px] font-light tracking-widest uppercase">
                      <VoiceglotText translationKey="checkout.form.vat_invalid" defaultText="Ongeldig" />
-                   </span>
-                   <AlertCircle size={18} />
-                 </div>
+                   </TextInstrument>
+                   <AlertCircle size={18} strokeWidth={1.5} />
+                 </ContainerInstrument>
                ) : null}
-            </div>
-          </div>
-        </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
 
-        <div className="space-y-1">
+        <ContainerInstrument className="space-y-1">
           <LabelInstrument>
             <VoiceglotText translationKey="checkout.form.company" defaultText="Bedrijfsnaam" />
           </LabelInstrument>
@@ -289,9 +299,9 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             className="w-full !rounded-[10px]"
             onChange={(e) => handleChange('company', e.target.value)}
           />
-        </div>
+        </ContainerInstrument>
 
-        <div className="space-y-1">
+        <ContainerInstrument className="space-y-1">
           <LabelInstrument>
             <VoiceglotText translationKey="checkout.form.address" defaultText="Straat en huisnummer" />
           </LabelInstrument>
@@ -301,10 +311,10 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             className="w-full !rounded-[10px]"
             onChange={(e) => handleChange('address_street', e.target.value)}
           />
-        </div>
+        </ContainerInstrument>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-1">
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ContainerInstrument className="space-y-1">
             <LabelInstrument>
               <VoiceglotText translationKey="checkout.form.zip" defaultText="Postcode *" />
             </LabelInstrument>
@@ -314,8 +324,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('postal_code', e.target.value)}
             />
-          </div>
-          <div className="space-y-1">
+          </ContainerInstrument>
+          <ContainerInstrument className="space-y-1">
             <LabelInstrument>
               <VoiceglotText translationKey="checkout.form.city" defaultText="Stad *" />
             </LabelInstrument>
@@ -325,117 +335,122 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('city', e.target.value)}
             />
-          </div>
-        </div>
-      </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
 
       {!formData.isQuote ? (
-        <>
-          <div className="bg-white p-8 rounded-[20px] border border-black/[0.03] shadow-aura space-y-6">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-                <Sparkles strokeWidth={1.5} size={20} />
-              </div>
-              <HeadingInstrument level={3} className="text-xl font-light tracking-tight"><VoiceglotText translationKey="checkout.payment.title" defaultText="Betaalmethode" /></HeadingInstrument>
-            </div>
+        <ContainerInstrument className="bg-white p-8 rounded-[20px] border border-va-black/5 shadow-aura space-y-6">
+          <ContainerInstrument className="flex items-center gap-3 mb-2">
+            <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
+              <Sparkles strokeWidth={1.5} size={20} />
+            </ContainerInstrument>
+            <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
+              <VoiceglotText translationKey="checkout.payment.title" defaultText="Betaalmethode" />
+            </HeadingInstrument>
+          </ContainerInstrument>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {gateways.map((gateway) => (
-                <button
-                  key={gateway.id}
-                  type="button"
-                  onClick={() => handleChange('gateway', gateway.id)}
-                  className={`p-6 rounded-[15px] border text-left transition-all flex items-center gap-4 ${
-                    formData.gateway === gateway.id 
-                      ? "bg-va-black text-white border-va-black shadow-aura-lg" 
-                      : "bg-va-off-white text-va-black/40 border-transparent hover:border-black/10"
-                  }`}
-                >
-                  <span className="text-2xl">{gateway.icon}</span>
-                  <span className="font-light tracking-tight">{gateway.name}</span>
-                </button>
-              ))}
-            </div>
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {gateways.map((gateway) => (
+              <ButtonInstrument
+                key={gateway.id}
+                type="button"
+                onClick={() => handleChange('gateway', gateway.id)}
+                className={cn(
+                  "p-6 rounded-[15px] border text-left transition-all flex items-center gap-4",
+                  formData.gateway === gateway.id 
+                    ? "bg-va-black text-white border-va-black shadow-aura-lg" 
+                    : "bg-va-off-white text-va-black/40 border-transparent hover:border-va-black/10"
+                )}
+              >
+                <TextInstrument className="text-2xl">{gateway.icon}</TextInstrument>
+                <TextInstrument className="font-light tracking-tight">{gateway.name}</TextInstrument>
+              </ButtonInstrument>
+            ))}
+          </ContainerInstrument>
 
-            {formData.gateway === 'mollie' && (
-              <div className="pt-6 border-t border-black/5">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {paymentMethods.map((method) => (
-                    <button
-                      key={method.id}
-                      type="button"
-                      onClick={() => setSelectedMethod(method.id)}
-                      className={`flex flex-col items-center gap-3 p-4 rounded-[15px] border-2 transition-all ${
-                        selectedMethod === method.id ? 'border-primary bg-primary/5' : 'border-black/5 hover:border-black/10'
-                      }`}
-                    >
-                      <Image 
-                        src={method.image.size2x} 
-                        alt={method.description} 
-                        width={64} 
-                        height={32} 
-                        className="h-8 object-contain" 
-                      />
-                      <span className="font-light tracking-widest text-[15px] text-va-black/60 ">
-                        <VoiceglotText translationKey={`checkout.method.${method.id}`} defaultText={method.description} />
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </>
+          {formData.gateway === 'mollie' && (
+            <ContainerInstrument className="pt-6 border-t border-va-black/5">
+              <ContainerInstrument className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {paymentMethods.map((method) => (
+                  <ButtonInstrument
+                    key={method.id}
+                    type="button"
+                    onClick={() => setSelectedMethod(method.id)}
+                    className={cn(
+                      "flex flex-col items-center gap-3 p-4 rounded-[15px] border-2 transition-all",
+                      selectedMethod === method.id ? 'border-primary bg-primary/5' : 'border-va-black/5 hover:border-va-black/10'
+                    )}
+                  >
+                    <Image 
+                      src={method.image.size2x} 
+                      alt={method.description} 
+                      width={64} 
+                      height={32} 
+                      className="h-8 object-contain" 
+                    />
+                    <TextInstrument className="font-light tracking-widest text-[12px] text-va-black/60 uppercase">
+                      <VoiceglotText translationKey={`checkout.method.${method.id}`} defaultText={method.description} />
+                    </TextInstrument>
+                  </ButtonInstrument>
+                ))}
+              </ContainerInstrument>
+            </ContainerInstrument>
+          )}
+        </ContainerInstrument>
       ) : (
-        <div className="p-8 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center gap-6 animate-fade-in">
-          <div className="w-14 h-14 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm">
+        <ContainerInstrument className="p-8 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center gap-6 animate-fade-in">
+          <ContainerInstrument className="w-14 h-14 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm">
             <Sparkles strokeWidth={1.5} size={28} />
-          </div>
-          <div>
-            <h4 className="text-lg font-light tracking-tight">
+          </ContainerInstrument>
+          <ContainerInstrument>
+            <HeadingInstrument level={4} className="text-lg font-light tracking-tight">
               <VoiceglotText translationKey="checkout.ready_to_send.title" defaultText="Klaar voor verzending" />
-            </h4>
-            <p className="text-[15px] text-va-black/40 font-light leading-relaxed">
+            </HeadingInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
               <VoiceglotText 
                 translationKey="checkout.ready_to_send.desc" 
                 defaultText={`Je staat op het punt een officiële offerte te sturen naar ${formData.email}. In de volgende stap kun je de begeleidende e-mail personaliseren.`} 
               />
-            </p>
-          </div>
-        </div>
+            </TextInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
       )}
 
       {state.journey === 'academy' && (
-        <div className="pt-4 pb-4">
-          <label className="flex items-start gap-3 cursor-pointer group">
-            <div className="pt-1">
+        <ContainerInstrument className="pt-4 pb-4">
+          <LabelInstrument className="flex items-start gap-3 cursor-pointer group">
+            <ContainerInstrument className="pt-1">
               <input 
                 type="checkbox" 
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                className="w-5 h-5 rounded border-2 border-black/10 text-primary focus:ring-primary/20 transition-all"
+                className="w-5 h-5 rounded border-2 border-va-black/10 text-primary focus:ring-primary/20 transition-all"
               />
-            </div>
-            <span className="text-[15px] text-va-black/40 font-light leading-relaxed group-hover:text-va-black transition-colors">
+            </ContainerInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed group-hover:text-va-black transition-colors">
               <VoiceglotText 
                 translationKey="checkout.academy.terms" 
                 defaultText="Ik ga akkoord met de algemene voorwaarden en begrijp dat mijn herroepingsrecht vervalt zodra ik toegang krijg tot de digitale leeromgeving." 
               />
-            </span>
-          </label>
-        </div>
+            </TextInstrument>
+          </LabelInstrument>
+        </ContainerInstrument>
       )}
 
       <AcademyUpsellSection />
 
-      <div className="pt-4">
+      <ContainerInstrument className="pt-4">
         <ButtonInstrument 
           onClick={() => formData.isQuote ? setIsPreviewOpen(true) : handleSubmit()}
           disabled={isSubmitting || (state.journey === 'academy' && !agreedToTerms)}
-          className={`w-full va-btn-pro !py-8 text-lg !rounded-[10px] !bg-va-black !text-white flex items-center justify-center gap-3 group ${(isSubmitting || (state.journey === 'academy' && !agreedToTerms)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={cn(
+            "w-full va-btn-pro !py-8 text-lg !rounded-[10px] !bg-va-black !text-white flex items-center justify-center gap-3 group",
+            (isSubmitting || (state.journey === 'academy' && !agreedToTerms)) ? 'opacity-50 cursor-not-allowed' : ''
+          )}
         >
           {isSubmitting ? (
-            <><Loader2 className="animate-spin" size={24} /> <VoiceglotText translationKey="common.processing" defaultText="Verwerken..." /></>
+            <><Loader2 className="animate-spin" size={24} strokeWidth={1.5} /> <VoiceglotText translationKey="common.processing" defaultText="Verwerken..." /></>
           ) : formData.isQuote ? (
             <><VoiceglotText translationKey="checkout.cta.quote" defaultText="Preview Offerte E-mail" /> <Send strokeWidth={1.5} size={20} /></>
           ) : (
@@ -445,10 +460,10 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             </>
           )}
         </ButtonInstrument>
-        <p className="text-center text-[15px] font-light tracking-widest text-va-black/20 mt-6">
-          Door af te ronden ga je akkoord met onze algemene voorwaarden.
-        </p>
-      </div>
+        <TextInstrument className="text-center text-[13px] font-light tracking-widest text-va-black/20 mt-6 uppercase">
+          <VoiceglotText translationKey="checkout.terms_agreement" defaultText="Door af te ronden ga je akkoord met onze algemene voorwaarden." />
+        </TextInstrument>
+      </ContainerInstrument>
 
       <EmailPreviewModal 
         isOpen={isPreviewOpen}
@@ -458,6 +473,6 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         totalAmount={String(state.pricing?.total || '0')}
         items={state.items || []}
       />
-    </div>
+    </ContainerInstrument>
   );
 };

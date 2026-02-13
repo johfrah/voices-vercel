@@ -9,14 +9,14 @@ import {
 import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { Quote, ArrowLeft, Users } from "lucide-react";
+import { Quote, ArrowLeft, Users, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { VideoPlayer } from "@/components/ui/VideoPlayer";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'ACLVB: Een menselijke stem voor de vakbond | Voices.be Stories',
-  description: 'Ontdek hoe ACLVB toegankelijkheid en nabijheid creëert via een warme, professionele stem.',
+  title: 'ACLVB: Van 140 stemmen naar één warm onthaal | Voices.be Stories',
+  description: 'Ontdek hoe de liberale vakbond tienduizenden bellers een menselijk onthaal geeft door uniformiteit en professionaliteit.',
   openGraph: {
     title: 'ACLVB | Voices.be Stories',
     description: 'Hoe audio bijdraagt aan de menselijke maat bij vakbond ACLVB.',
@@ -52,39 +52,39 @@ export default function AclvbStoryPage() {
         <ContainerInstrument className="mb-12">
           <Link 
             href="/blog" 
-            className="inline-flex items-center gap-2 text-[15px] font-black uppercase tracking-widest text-va-black/40 hover:text-primary transition-all mb-8"
+            className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 uppercase"
           >
-            <ArrowLeft size={14} /> 
+            <ArrowLeft size={14} strokeWidth={1.5} /> 
             <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
           </Link>
-          <TextInstrument className="text-[15px] font-black uppercase tracking-[0.2em] text-primary mb-4">
+          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 uppercase">
             <VoiceglotText translationKey="article.theme.stories" defaultText="Stories" />
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-black uppercase tracking-tighter leading-none mb-6">
-            <VoiceglotText translationKey="story.aclvb.title" defaultText="ACLVB: Een menselijke stem voor de vakbond" />
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6 text-va-black uppercase">
+            <VoiceglotText translationKey="story.aclvb.title" defaultText="ACLVB | De menselijke vakbond" />
           </HeadingInstrument>
         </ContainerInstrument>
 
         <BentoGrid columns={3}>
           <BentoCard 
             span="xl" 
-            className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-12 flex flex-col justify-between"
+            className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-12 flex flex-col justify-between !rounded-[20px]"
           >
             <ContainerInstrument className="space-y-8">
-              <Users size={40} className="text-primary" />
-              <HeadingInstrument level={2} className="text-4xl font-black uppercase tracking-tight leading-none">
-                <VoiceglotText translationKey="story.aclvb.subtitle" defaultText="Toegankelijkheid en nabijheid via audio." />
+              <Users size={40} className="text-primary" strokeWidth={1.5} />
+              <HeadingInstrument level={2} className="text-4xl font-light tracking-tight leading-none text-va-black uppercase">
+                <VoiceglotText translationKey="story.aclvb.subtitle" defaultText="Bij ons ben je geen nummer." />
               </HeadingInstrument>
-              <TextInstrument className="text-va-black/60 font-medium text-lg leading-relaxed">
+              <TextInstrument className="text-va-black/60 font-light text-lg leading-relaxed">
                 <VoiceglotText 
                   translationKey="story.aclvb.text" 
-                  defaultText="Voor een vakbond als ACLVB is bereikbaarheid essentieel. Een warme, professionele stem aan de telefoon zorgt ervoor dat leden zich meteen gehoord en welkom voelen, nog voor ze een medewerker spreken." 
+                  defaultText="Voor een vakbond als ACLVB is bereikbaarheid essentieel. Door 140 verschillende, rommelige begroetingen te vervangen door één warme, professionele stem, voelen tienduizenden leden zich meteen gehoord en welkom." 
                 />
               </TextInstrument>
             </ContainerInstrument>
           </BentoCard>
 
-          <BentoCard span="sm" className="bg-va-black text-white p-6 flex flex-col justify-center overflow-hidden">
+          <BentoCard span="sm" className="bg-va-black text-white p-6 flex flex-col justify-center overflow-hidden !rounded-[20px]">
             <VideoPlayer 
               src="/assets/content/blog/videos/review-aclvb.mp4" 
               aspectRatio="portrait"
@@ -95,6 +95,35 @@ export default function AclvbStoryPage() {
                 { src: '/assets/content/blog/videos/review-aclvb-en.vtt', label: 'English', srcLang: 'en' }
               ]}
             />
+          </BentoCard>
+
+          <BentoCard span="full" className="bg-primary/5 border-primary/10 p-12 !rounded-[20px]">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <MessageSquare size={32} className="text-primary" strokeWidth={1.5} />
+                <HeadingInstrument level={3} className="text-3xl font-light tracking-tight text-va-black uppercase">
+                  <VoiceglotText translationKey="story.aclvb.challenge_title" defaultText="De uitdaging: 140 verschillende stemmen" />
+                </HeadingInstrument>
+                <TextInstrument className="text-va-black/60 font-light leading-relaxed">
+                  <VoiceglotText 
+                    translationKey="story.aclvb.challenge_text" 
+                    defaultText="In het verleden had elk kantoor een eigen onthaal. Dat zorgde voor een gebrek aan uniformiteit en een onprofessionele indruk. Door te kiezen voor Voices.be werd de weg naar de juiste contactpersoon eindelijk helder en menselijk." 
+                  />
+                </TextInstrument>
+              </div>
+              <div className="bg-white p-8 rounded-[20px] shadow-aura">
+                <Quote size={24} className="text-primary/20 mb-4" />
+                <TextInstrument className="text-xl font-light italic text-va-black leading-tight">
+                  <VoiceglotText 
+                    translationKey="story.aclvb.quote" 
+                    defaultText="De gebruiksvriendelijke en vlotte aanpak van Voices.be was zeer overtuigend. Onze leden worden nu beter geholpen in een warme omgeving." 
+                  />
+                </TextInstrument>
+                <TextInstrument className="mt-6 text-[12px] font-light tracking-widest text-va-black/40 uppercase">
+                  — Tom Van Droogenbroeck, ACLVB
+                </TextInstrument>
+              </div>
+            </div>
           </BentoCard>
         </BentoGrid>
       </SectionInstrument>

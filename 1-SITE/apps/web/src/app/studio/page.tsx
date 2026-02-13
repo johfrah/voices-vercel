@@ -85,14 +85,14 @@ export default async function StudioPage() {
             {/* 🎯 DE GIDS BENTO */}
             <BentoCard span="lg" className="bg-blue-600 p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[500px] rounded-[20px]">
               <div className="relative z-10">
-                <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-8">
+                <div className="w-12 h-12 rounded-[10px] bg-white/20 backdrop-blur-md flex items-center justify-center mb-8">
                   <Star strokeWidth={1.5} size={24} fill="currentColor" />
                 </div>
                 <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none mb-8 "><VoiceglotText translationKey="studio.bento.guide.title" defaultText="Welke workshop past bij jou?" /><TextInstrument className="text-white/70 font-light max-w-sm text-[15px] leading-relaxed"><VoiceglotText translationKey="studio.bento.guide.text" defaultText="Geen blabla. Focus op de actie. Ontdek welk traject het beste bij jouw doelen aansluit." /></TextInstrument></HeadingInstrument>
               </div>
               <div className="relative z-10">
                 <Link href="/studio/quiz">
-                  <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group"><VoiceglotText translationKey="studio.bento.guide.cta" defaultText="DOE DE QUIZ" /><ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform" /></ButtonInstrument>
+                  <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group !rounded-[10px] font-light tracking-widest uppercase"><VoiceglotText translationKey="studio.bento.guide.cta" defaultText="DOE DE QUIZ" /><ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform" /></ButtonInstrument>
                 </Link>
               </div>
               <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
@@ -109,7 +109,7 @@ export default async function StudioPage() {
                   </TextInstrument>
                 </HeadingInstrument>
               </ContainerInstrument>
-              <ButtonInstrument as={Link} href="/studio/afspraak" className="w-full py-6 rounded-2xl bg-white/5 border border-white/10 text-white font-light tracking-widest text-[15px] hover:bg-primary hover:border-primary transition-all duration-500 flex items-center justify-center">
+              <ButtonInstrument as={Link} href="/studio/afspraak" className="w-full py-6 rounded-[10px] bg-white/5 border border-white/10 text-white font-light tracking-widest text-[15px] hover:bg-primary hover:border-primary transition-all duration-500 flex items-center justify-center uppercase">
                 <VoiceglotText translationKey="studio.bento.appointment.cta" defaultText="AGENDA BEKIJKEN" />
               </ButtonInstrument>
             </BentoCard>
@@ -160,7 +160,7 @@ export default async function StudioPage() {
                     >
                       {/* 🎬 VIDEO PREVIEW / AFTERMOVIE */}
                       {workshop.media && (
-                        <div className="relative aspect-video w-full bg-slate-900 overflow-hidden">
+                        <div className="relative aspect-video w-full bg-va-black overflow-hidden">
                           <video 
                             src={`/assets/${workshop.media.filePath}`}
                             className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700"
@@ -220,7 +220,7 @@ export default async function StudioPage() {
               <div className="max-w-4xl mb-20">
                 <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-black/30 mb-8"><VoiceglotText translationKey="studio.instructors.label" defaultText="Jouw workshopgevers" /></HeadingInstrument>
                 <HeadingInstrument level={2} className="text-6xl font-light tracking-tighter leading-none mb-8"><VoiceglotText translationKey="studio.instructors.title_part1" defaultText="Leer professioneler spreken met " /><br /><span className="text-primary"><VoiceglotText translationKey="studio.instructors.title_part2" defaultText="Bernadette en Johfrah." /></span></HeadingInstrument>
-                <TextInstrument className="text-xl text-black/40 font-medium leading-relaxed"><VoiceglotText translationKey="studio.instructors.text" defaultText="Maak kennis met je instructeurs. Wij staan klaar om je te coachen en je spreekvaardigheden naar een hoger niveau te tillen." /></TextInstrument>
+                <TextInstrument className="text-xl text-black/40 font-light leading-relaxed"><VoiceglotText translationKey="studio.instructors.text" defaultText="Maak kennis met je instructeurs. Wij staan klaar om je te coachen en je spreekvaardigheden naar een hoger niveau te tillen." /></TextInstrument>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 {teachers.map((t: any) => (
@@ -234,13 +234,13 @@ export default async function StudioPage() {
                         className="object-cover group-hover:scale-105 transition-transform duration-1000"
                       />
                       <div className="absolute bottom-8 left-8 right-8">
-                        <p className="text-white/60 text-[15px] font-black tracking-widest mb-2">
+                        <p className="text-white/60 text-[15px] font-light tracking-widest mb-2 uppercase">
                           <VoiceglotText translationKey={`studio.instructor.${t.id}.tagline`} defaultText={t.tagline || 'Workshopgever'} />
                         </p>
                         <HeadingInstrument level={4} className="text-3xl font-light text-white tracking-tighter leading-none"><VoiceglotText translationKey={`studio.instructor.${t.id}.name`} defaultText={t.name} /></HeadingInstrument>
                       </div>
                     </div>
-                    <TextInstrument className="text-black/40 text-[15px] font-medium leading-relaxed px-4"><VoiceglotText translationKey={`studio.instructor.${t.id}.bio`} defaultText={t.bio || ''} /></TextInstrument>
+                    <TextInstrument className="text-black/40 text-[15px] font-light leading-relaxed px-4"><VoiceglotText translationKey={`studio.instructor.${t.id}.bio`} defaultText={t.bio || ''} /></TextInstrument>
                   </div>
                 ))}
               </div>

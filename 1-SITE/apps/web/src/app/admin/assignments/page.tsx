@@ -95,9 +95,9 @@ export default async function ActorAssignmentCockpit() {
 
         <ContainerInstrument className="grid grid-cols-1 gap-4">
           {assignments.map((item) => (
-            <ContainerInstrument key={item.id} className="bg-white rounded-[40px] p-6 border border-black/[0.03] shadow-sm flex items-center justify-between group hover:shadow-md transition-all duration-300">
+            <ContainerInstrument key={item.id} className="bg-white rounded-[20px] p-6 border border-black/[0.03] shadow-sm flex items-center justify-between group hover:shadow-md transition-all duration-300">
               <ContainerInstrument className="flex items-center gap-6 flex-1">
-                <ContainerInstrument className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-va-primary/10 group-hover:text-va-primary transition-colors">
+                <ContainerInstrument className="w-12 h-12 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 group-hover:bg-va-primary/10 group-hover:text-va-primary transition-colors">
                   <Mic size={20} />
                 </ContainerInstrument>
                 
@@ -114,11 +114,11 @@ export default async function ActorAssignmentCockpit() {
 
                 <ContainerInstrument className="flex items-center gap-4 px-6 border-l border-black/5">
                   <ContainerInstrument className="flex flex-col items-center">
-                    <Mail strokeWidth={1.5} size={14} className={clsx(item.emailStatus ? "text-green-500" : "text-slate-300")} />
+                    <Mail strokeWidth={1.5} size={14} className={clsx(item.emailStatus ? "text-green-500" : "text-va-black/20")} />
                     <TextInstrument className="text-[15px] font-light mt-1"><VoiceglotText translationKey="common.sent" defaultText="Sent" /></TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="flex flex-col items-center">
-                    <Eye size={14} className={clsx(item.emailStatus === 'opened' ? "text-blue-500" : "text-slate-300")} />
+                    <Eye size={14} className={clsx(item.emailStatus === 'opened' ? "text-blue-500" : "text-va-black/20")} />
                     <TextInstrument className="text-[15px] font-light mt-1"><VoiceglotText translationKey="common.read" defaultText="Read" /></TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -140,14 +140,14 @@ export default async function ActorAssignmentCockpit() {
 
                 <ContainerInstrument className="flex items-center gap-3 px-6 border-l border-black/5">
                   <ContainerInstrument className={clsx(
-                    "px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2",
+                    "px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2 uppercase",
                     item.deliveryStatus === 'approved' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
                   )}>
                     {item.deliveryStatus === 'approved' ? <CheckCircle2 strokeWidth={1.5} size={12} /> : <Clock size={12} />}
                     <VoiceglotText translationKey={`common.status.${item.deliveryStatus}`} defaultText={item.deliveryStatus || ''} />
                   </ContainerInstrument>
                   {item.isOverdue && (
-                    <ContainerInstrument className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2">
+                    <ContainerInstrument className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2 uppercase">
                       <AlertCircle size={12} /> <VoiceglotText translationKey="common.overdue" defaultText="Overdue" />
                     </ContainerInstrument>
                   )}
@@ -155,8 +155,8 @@ export default async function ActorAssignmentCockpit() {
 
                 <ContainerInstrument className="flex items-center gap-3 px-6 border-l border-black/5">
                   <ContainerInstrument className={clsx(
-                    "px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2",
-                    item.hasInvoice ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-400"
+                    "px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2 uppercase",
+                    item.hasInvoice ? "bg-blue-100 text-blue-700" : "bg-va-off-white text-va-black/40"
                   )}>
                     <FileText size={12} />
                     {item.hasInvoice ? <VoiceglotText translationKey="common.invoice_ok" defaultText="Factuur OK" /> : <VoiceglotText translationKey="common.no_invoice" defaultText="Geen Factuur" />}
@@ -165,7 +165,7 @@ export default async function ActorAssignmentCockpit() {
               </ContainerInstrument>
 
               <ContainerInstrument className="flex items-center gap-2">
-                <ButtonInstrument as={Link} href={`/backoffice/orders/${item.displayOrderId}`} className="p-2 hover:bg-slate-100 rounded-[20px] transition-colors text-slate-400 hover:text-black">
+                <ButtonInstrument as={Link} href={`/backoffice/orders/${item.displayOrderId}`} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/20 hover:text-va-black">
                   <ExternalLink size={18} />
                 </ButtonInstrument>
                 {item.deliveryStatus === 'approved' && item.hasInvoice && (

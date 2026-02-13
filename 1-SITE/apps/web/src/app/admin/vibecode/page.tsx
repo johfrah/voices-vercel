@@ -408,7 +408,7 @@ export async function onBeforeCheckout(context) {
             <VoiceglotText translationKey="admin.vibecode.protocol.desc" defaultText="Vibecode overschrijft de standaard logica van de Freedom Machine. Wijzigingen zijn direct merkbaar voor alle gebruikers in de Shadow Layer. Gebruik met uiterste precisie." />
           </TextInstrument>
         </ContainerInstrument>
-      </SectionInstrument>
+      </ContainerInstrument>
     </PageWrapperInstrument>
   );
 }

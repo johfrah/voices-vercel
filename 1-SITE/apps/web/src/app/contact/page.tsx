@@ -11,6 +11,7 @@ import {
     SectionInstrument,
     TextInstrument
 } from '@/components/ui/LayoutInstruments';
+import { LiquidBackground } from '@/components/ui/LiquidBackground';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { AlertCircle, CheckCircle2, Loader2, Mail, MapPin, MessageSquare, Phone, Send, Sparkles } from 'lucide-react';
@@ -74,12 +75,13 @@ export default function ContactPage() {
   };
 
   return (
-    <PageWrapperInstrument className="pt-32 pb-40 bg-va-off-white min-h-screen">
-      <ContainerInstrument>
+    <PageWrapperInstrument className="pt-32 pb-40 bg-va-off-white min-h-screen relative overflow-hidden">
+      <LiquidBackground />
+      <ContainerInstrument className="relative z-10">
         
         {/* Header */}
         <SectionInstrument className="mb-16 text-center">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10 mb-8">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest border border-black/5 mb-8 uppercase">
             <Sparkles strokeWidth={1.5} size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="contact.badge" defaultText="Altijd Bereikbaar" />
           </ContainerInstrument>
@@ -187,7 +189,7 @@ export default function ContactPage() {
                       value={formData.message}
                       onChange={(e) => setFormData((prev) => ({ ...prev, message: e.target.value }))}
                       placeholder="Hoe kunnen we je helpen?"
-                      className="bg-va-off-white border-none rounded-2xl px-6 py-4 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20 w-full min-h-[150px] resize-none"
+                      className="bg-va-off-white border-none rounded-[10px] px-6 py-4 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20 w-full min-h-[150px] resize-none"
                     />
                   </div>
                   <ButtonInstrument type="submit" disabled={isSubmitting} className="va-btn-pro w-full flex items-center justify-center gap-3">
@@ -200,9 +202,9 @@ export default function ContactPage() {
           </BentoCard>
 
           {/* 🤖 VOICY SIDEKICK */}
-          <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between relative overflow-hidden group">
+          <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between relative overflow-hidden group rounded-[20px]">
             <ContainerInstrument className="relative z-10">
-              <ContainerInstrument className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
+              <ContainerInstrument className="w-12 h-12 bg-primary rounded-[10px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
                 <MessageSquare strokeWidth={1.5} size={24} />
               </ContainerInstrument>
               <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter mb-4 leading-tight">
@@ -226,31 +228,31 @@ export default function ContactPage() {
 
           {/* 📍 INFO CARDS */}
           <ContainerInstrument className="col-span-full grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-            <ContainerInstrument className="bg-white/50 backdrop-blur-md p-8 rounded-[32px] border border-black/5 flex items-center gap-6">
-              <ContainerInstrument className="w-12 h-12 bg-va-black rounded-2xl flex items-center justify-center text-white shrink-0">
+            <ContainerInstrument className="bg-white/50 backdrop-blur-md p-8 rounded-[20px] border border-black/5 flex items-center gap-6">
+              <ContainerInstrument className="w-12 h-12 bg-va-black rounded-[10px] flex items-center justify-center text-white shrink-0">
                 <Phone strokeWidth={1.5} size={20} />
               </ContainerInstrument>
               <ContainerInstrument>
-                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light"><VoiceglotText translationKey="contact.info.phone_label" defaultText="Bel ons" /></TextInstrument>
-                <TextInstrument className="text-lg font-black">+32 (0)2 793 19 91</TextInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light uppercase"><VoiceglotText translationKey="contact.info.phone_label" defaultText="Bel ons" /></TextInstrument>
+                <TextInstrument className="text-lg font-light">+32 (0)2 793 19 91</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <ContainerInstrument className="bg-white/50 backdrop-blur-md p-8 rounded-[32px] border border-black/5 flex items-center gap-6">
-              <ContainerInstrument className="w-12 h-12 bg-va-black rounded-2xl flex items-center justify-center text-white shrink-0">
+            <ContainerInstrument className="bg-white/50 backdrop-blur-md p-8 rounded-[20px] border border-black/5 flex items-center gap-6">
+              <ContainerInstrument className="w-12 h-12 bg-va-black rounded-[10px] flex items-center justify-center text-white shrink-0">
                 <Mail strokeWidth={1.5} size={20} />
               </ContainerInstrument>
               <ContainerInstrument>
-                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light"><VoiceglotText translationKey="contact.info.email_label" defaultText="E-mail ons" /></TextInstrument>
-                <TextInstrument className="text-lg font-black"><VoiceglotText translationKey="auto.page.hello_voices_be.b689c1" defaultText="hello@voices.be" /></TextInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light uppercase"><VoiceglotText translationKey="contact.info.email_label" defaultText="E-mail ons" /></TextInstrument>
+                <TextInstrument className="text-lg font-light"><VoiceglotText translationKey="auto.page.hello_voices_be.b689c1" defaultText="hello@voices.be" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <ContainerInstrument className="bg-white/50 backdrop-blur-md p-8 rounded-[32px] border border-black/5 flex items-center gap-6">
-              <ContainerInstrument className="w-12 h-12 bg-va-black rounded-2xl flex items-center justify-center text-white shrink-0">
+            <ContainerInstrument className="bg-white/50 backdrop-blur-md p-8 rounded-[20px] border border-black/5 flex items-center gap-6">
+              <ContainerInstrument className="w-12 h-12 bg-va-black rounded-[10px] flex items-center justify-center text-white shrink-0">
                 <MapPin size={20} />
               </ContainerInstrument>
               <ContainerInstrument>
-                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light"><VoiceglotText translationKey="contact.info.address_label" defaultText="Bezoek ons" /></TextInstrument>
-                <TextInstrument className="text-lg font-black"><VoiceglotText translationKey="contact.info.address_value" defaultText="Gent, België" /></TextInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light uppercase"><VoiceglotText translationKey="contact.info.address_label" defaultText="Bezoek ons" /></TextInstrument>
+                <TextInstrument className="text-lg font-light"><VoiceglotText translationKey="contact.info.address_value" defaultText="Gent, België" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

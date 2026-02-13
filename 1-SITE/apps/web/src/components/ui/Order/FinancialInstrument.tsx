@@ -4,6 +4,10 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { DollarSign } from 'lucide-react';
 import React from 'react';
 import { BentoCard } from '../BentoGrid';
+import { 
+  ContainerInstrument, 
+  TextInstrument 
+} from '@/components/ui/LayoutInstruments';
 
 interface FinancialInstrumentProps {
   total: string | number;
@@ -19,29 +23,29 @@ export const FinancialInstrument: React.FC<FinancialInstrumentProps> = ({
   return (
     <BentoCard 
       title={<VoiceglotText translationKey="order.financial.title" defaultText="Profit Engine" />}
-      icon={<DollarSign className="w-5 h-5" />}
-      className="col-span-2 bg-slate-900 text-white"
+      icon={<DollarSign className="w-5 h-5" strokeWidth={1.5} />}
+      className="col-span-2 bg-va-black text-white"
     >
-      <div className="grid grid-cols-3 gap-4 mt-4">
-        <div>
-          <div className="text-slate-400 text-[15px] font-bold tracking-widest ">
+      <ContainerInstrument className="grid grid-cols-3 gap-4 mt-4">
+        <ContainerInstrument>
+          <TextInstrument className="text-white/40 text-[13px] font-light tracking-widest uppercase">
             <VoiceglotText translationKey="order.financial.revenue" defaultText="Omzet" />
-          </div>
-          <div className="text-2xl font-bold">€{total}</div>
-        </div>
-        <div>
-          <div className="text-slate-400 text-[15px] font-bold tracking-widest text-red-400">
+          </TextInstrument>
+          <TextInstrument className="text-2xl font-light">€{total}</TextInstrument>
+        </ContainerInstrument>
+        <ContainerInstrument>
+          <TextInstrument className="text-white/40 text-[13px] font-light tracking-widest uppercase">
             <VoiceglotText translationKey="order.financial.cost" defaultText="Inkoop (COG)" />
-          </div>
-          <div className="text-2xl font-bold text-red-400">€{totalCost}</div>
-        </div>
-        <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-          <div className="text-slate-400 text-[15px] font-bold tracking-widest text-emerald-400">
+          </TextInstrument>
+          <TextInstrument className="text-2xl font-light text-red-400">€{totalCost}</TextInstrument>
+        </ContainerInstrument>
+        <ContainerInstrument className="p-3 bg-white/5 rounded-[10px] border border-white/10">
+          <TextInstrument className="text-white/40 text-[13px] font-light tracking-widest uppercase">
             <VoiceglotText translationKey="order.financial.margin" defaultText="Marge" />
-          </div>
-          <div className="text-2xl font-bold text-emerald-400">€{totalProfit}</div>
-        </div>
-      </div>
+          </TextInstrument>
+          <TextInstrument className="text-2xl font-light text-primary">€{totalProfit}</TextInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
     </BentoCard>
   );
 };

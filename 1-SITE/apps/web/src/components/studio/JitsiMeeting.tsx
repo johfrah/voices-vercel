@@ -1,6 +1,9 @@
 'use client';
 
-import { ContainerInstrument } from '@/components/ui/LayoutInstruments';
+import { 
+  ContainerInstrument,
+  TextInstrument 
+} from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
@@ -109,16 +112,16 @@ export const JitsiMeeting: React.FC<JitsiMeetingProps> = ({ roomName, userName }
   }, [roomName, userName, router, api]);
 
   return (
-    <ContainerInstrument id="voices-meeting-container" className="relative h-[80vh] w-full bg-va-off-white rounded-3xl overflow-hidden shadow-aura border border-black/5">
+    <ContainerInstrument id="voices-meeting-container" className="relative h-[80vh] w-full bg-va-off-white rounded-[20px] overflow-hidden shadow-aura border border-va-black/5">
       <div ref={jitsiContainerRef} className="h-full w-full" />
       
       {loading && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-10">
-          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
-          <p className="text-[15px] font-black tracking-widest text-va-black/60">
+        <ContainerInstrument className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-10">
+          <ContainerInstrument className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
+          <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/60 uppercase">
             <VoiceglotText translationKey="studio.meeting.preparing" defaultText="Meeting room voorbereiden..." />
-          </p>
-        </div>
+          </TextInstrument>
+        </ContainerInstrument>
       )}
     </ContainerInstrument>
   );

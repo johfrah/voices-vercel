@@ -2,15 +2,14 @@ import React from 'react';
 import { 
   PageWrapperInstrument, 
   SectionInstrument, 
-  ContainerInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  ButtonInstrument
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument 
 } from "@/components/ui/LayoutInstruments";
 import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { Quote, ArrowLeft, Lightbulb } from "lucide-react";
+import { Quote, ArrowLeft, Lightbulb, Zap, Clock } from "lucide-react";
 import Link from "next/link";
 import { VideoPlayer } from "@/components/ui/VideoPlayer";
 import { Metadata } from 'next';
@@ -79,7 +78,7 @@ export default function SlvBelgiumArticlePage() {
               <TextInstrument className="text-va-black/60 font-light text-lg leading-relaxed">
                 <VoiceglotText 
                   translationKey="story.slv.text" 
-                  defaultText="SLV Belgium koos voor een consistente audio-branding over al hun afdelingen heen. Dit zorgde niet alleen voor meer rust bij de klant, maar ook voor een professionelere uitstraling." 
+                  defaultText="SLV Belgium koos voor een consistente audio-branding over al hun afdelingen heen. Dit zorgde niet alleen voor meer rust bij de klant, maar ook voor een professionelere uitstraling die matcht met hun hoogwaardige verlichtingsoplossingen." 
                 />
               </TextInstrument>
             </ContainerInstrument>
@@ -96,6 +95,54 @@ export default function SlvBelgiumArticlePage() {
                 { src: '/assets/content/blog/videos/review-slv-en.vtt', label: 'English', srcLang: 'en' }
               ]}
             />
+          </BentoCard>
+
+          <BentoCard span="full" className="bg-white/40 backdrop-blur-sm p-12 !rounded-[20px] border border-white/20">
+            <div className="grid md:grid-cols-2 gap-12">
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 text-primary">
+                  <Clock size={24} strokeWidth={1.5} />
+                  <HeadingInstrument level={3} className="text-xl font-light tracking-widest uppercase">
+                    <VoiceglotText translationKey="story.slv.challenge_label" defaultText="De Uitdaging" />
+                  </HeadingInstrument>
+                </div>
+                <TextInstrument className="text-va-black/60 font-light leading-relaxed">
+                  <VoiceglotText 
+                    translationKey="story.slv.challenge_text" 
+                    defaultText="Voorheen spraken medewerkers zelf de berichten in, vaak onder tijdsdruk en met storend achtergrondgeluid (zoals kletterende regen). Dit matchte simpelweg niet met het gewenste B2B-imago van SLV." 
+                  />
+                </TextInstrument>
+              </div>
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 text-primary">
+                  <Zap size={24} strokeWidth={1.5} />
+                  <HeadingInstrument level={3} className="text-xl font-light tracking-widest uppercase">
+                    <VoiceglotText translationKey="story.slv.result_label" defaultText="Het Resultaat" />
+                  </HeadingInstrument>
+                </div>
+                <TextInstrument className="text-va-black/60 font-light leading-relaxed">
+                  <VoiceglotText 
+                    translationKey="story.slv.result_text" 
+                    defaultText="Klanten worden nu positief verrast door warme radiostemmen en professionele muziek. Het proces is efficiënt, de uitstraling is top-notch, en SLV kan razendsnel schakelen bij wijzigingen." 
+                  />
+                </TextInstrument>
+              </div>
+            </div>
+          </BentoCard>
+
+          <BentoCard span="full" className="bg-va-black text-white p-12 !rounded-[20px] flex flex-col md:flex-row items-center gap-8">
+            <Quote size={48} className="text-primary/40 shrink-0" strokeWidth={1.5} />
+            <div className="space-y-4">
+              <TextInstrument className="text-2xl font-light italic leading-tight">
+                <VoiceglotText 
+                  translationKey="story.slv.quote" 
+                  defaultText="Zonder Voices.be was onze business een stuk minder professioneel. Het boost zonder twijfel je bedrijfsimago en bespaart ons heel wat tijd." 
+                />
+              </TextInstrument>
+              <TextInstrument className="text-[12px] font-light tracking-[0.2em] text-white/40 uppercase">
+                — Jan Joostens, SLV Belgium
+              </TextInstrument>
+            </div>
           </BentoCard>
         </BentoGrid>
       </SectionInstrument>

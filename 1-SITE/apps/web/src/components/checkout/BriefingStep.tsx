@@ -5,6 +5,14 @@ import { useSonicDNA } from '@/lib/sonic-dna';
 import { Info } from 'lucide-react';
 import React from 'react';
 import { TelephonySmartSuggestions } from './TelephonySmartSuggestions';
+import { 
+  ContainerInstrument, 
+  TextInstrument,
+  ButtonInstrument,
+  LabelInstrument
+} from '@/components/ui/LayoutInstruments';
+import { VoiceglotText } from '../ui/VoiceglotText';
+import { cn } from '@/lib/utils';
 
 export const BriefingStep: React.FC = () => {
   const { state, updateBriefing, updatePronunciation, updateUsage, setStep } = useCheckout();
@@ -20,76 +28,96 @@ export const BriefingStep: React.FC = () => {
   };
 
   return (
-    <div className={`grid grid-cols-1 ${state.usage === 'telefonie' ? 'lg:grid-cols-3' : ''} gap-10`}>
-      <div className={`${state.usage === 'telefonie' ? 'lg:col-span-2' : ''} space-y-10`}>
-        <div className="space-y-6">
-          <label className="block text-[15px] font-black tracking-widest text-va-black/30">
-            1. Wat is het script?
-          </label>
+    <ContainerInstrument className={cn(
+      "grid grid-cols-1 gap-10",
+      state.usage === 'telefonie' ? 'lg:grid-cols-3' : ''
+    )}>
+      <ContainerInstrument className={cn(
+        "space-y-10",
+        state.usage === 'telefonie' ? 'lg:col-span-2' : ''
+      )}>
+        <ContainerInstrument className="space-y-6">
+          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 uppercase">
+            <VoiceglotText translationKey="checkout.briefing.step1" defaultText="1. Wat is het script?" />
+          </LabelInstrument>
           <textarea
             value={state.briefing}
             onChange={(e) => updateBriefing(e.target.value)}
             placeholder="Plak hier je tekst..."
-            className="w-full h-64 bg-va-off-white border-none rounded-[32px] p-8 text-lg font-medium focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+            className="w-full h-64 bg-va-off-white border-none rounded-[20px] p-8 text-lg font-light focus:ring-2 focus:ring-primary/20 transition-all resize-none"
           />
-          <div className="flex items-center gap-2 text-[15px] font-bold tracking-widest text-va-black/20">
-            <Info size={14} />
+          <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light tracking-widest text-va-black/20 uppercase">
+            <Info size={14} strokeWidth={1.5} />
             {state.usage === 'telefonie' ? (
-              <span>{state.briefing.trim().split(/\n+/).filter(Boolean).length} prompts gedetecteerd</span>
+              <TextInstrument>
+                <VoiceglotText 
+                  translationKey="checkout.briefing.prompts_detected" 
+                  defaultText={`${state.briefing.trim().split(/\n+/).filter(Boolean).length} prompts gedetecteerd`} 
+                />
+              </TextInstrument>
             ) : (
-              <span>{state.briefing.trim().split(/\s+/).filter(Boolean).length} woorden gedetecteerd</span>
+              <TextInstrument>
+                <VoiceglotText 
+                  translationKey="checkout.briefing.words_detected" 
+                  defaultText={`${state.briefing.trim().split(/\s+/).filter(Boolean).length} woorden gedetecteerd`} 
+                />
+              </TextInstrument>
             )}
-          </div>
-        </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
 
-        <div className="space-y-6">
-          <label className="block text-[15px] font-black tracking-widest text-va-black/30">
-            2. Uitspraak instructies (optioneel)
-          </label>
+        <ContainerInstrument className="space-y-6">
+          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 uppercase">
+            <VoiceglotText translationKey="checkout.briefing.step2" defaultText="2. Uitspraak instructies (optioneel)" />
+          </LabelInstrument>
           <input
             type="text"
             value={state.pronunciation}
             onChange={(e) => updatePronunciation(e.target.value)}
             placeholder="Bijv. namen, technische termen, tone-of-voice..."
-            className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-8 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
+            className="w-full bg-va-off-white border-none rounded-[10px] py-5 px-8 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all"
           />
-        </div>
+        </ContainerInstrument>
 
-        <div className="space-y-6">
-          <label className="block text-[15px] font-black tracking-widest text-va-black/30">
-            3. Hoe wordt de opname gebruikt?
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <ContainerInstrument className="space-y-6">
+          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 uppercase">
+            <VoiceglotText translationKey="checkout.briefing.step3" defaultText="3. Hoe wordt de opname gebruikt?" />
+          </LabelInstrument>
+          <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { id: 'telefonie', label: 'Telefoon / IVR' },
-              { id: 'unpaid', label: 'Video (Non-Paid)' },
-              { id: 'paid', label: 'Advertentie (Paid)' },
+              { id: 'telefonie', label: 'Telefoon / IVR', key: 'usage.telephony' },
+              { id: 'unpaid', label: 'Video (Non-Paid)', key: 'usage.unpaid' },
+              { id: 'paid', label: 'Advertentie (Paid)', key: 'usage.paid' },
             ].map((type) => (
-              <button
+              <ButtonInstrument
                 key={type.id}
                 onClick={() => updateUsage(type.id as any)}
-                className={`py-5 px-6 rounded-[24px] border-2 font-black uppercase tracking-widest text-[15px] transition-all ${
+                className={cn(
+                  "py-5 px-6 rounded-[10px] border-2 font-light uppercase tracking-widest text-[12px] transition-all",
                   state.usage === type.id 
                     ? 'border-primary bg-primary/5 text-primary' 
-                    : 'border-black/5 hover:border-black/10 text-va-black/40'
-                }`}
+                    : 'border-va-black/5 hover:border-va-black/10 text-va-black/40'
+                )}
               >
-                {type.label}
-              </button>
+                <VoiceglotText translationKey={type.key} defaultText={type.label} />
+              </ButtonInstrument>
             ))}
-          </div>
-        </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
 
-        <button onClick={handleNext} className="va-btn-pro w-full py-6">
-          Volgende: Stem Kiezen
-        </button>
-      </div>
+        <ButtonInstrument 
+          onClick={handleNext} 
+          className="va-btn-pro w-full py-6 !rounded-[10px]"
+        >
+          <VoiceglotText translationKey="checkout.briefing.next" defaultText="Volgende: Stem Kiezen" />
+        </ButtonInstrument>
+      </ContainerInstrument>
 
       {state.usage === 'telefonie' && (
-        <div className="lg:col-span-1">
+        <ContainerInstrument className="lg:col-span-1">
           <TelephonySmartSuggestions />
-        </div>
+        </ContainerInstrument>
       )}
-    </div>
+    </ContainerInstrument>
   );
 };

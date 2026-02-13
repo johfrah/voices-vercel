@@ -62,20 +62,31 @@ async function processFile(filePath: string) {
 
     const key = generateKey(filePath, cleanText);
 
-    // 1. Insert into DB
-    const { error } = await supabase.from('translations').upsert({
-      translation_key: key,
-      lang: 'nl',
-      original_text: cleanText,
-      translated_text: cleanText,
-      context: `Auto-extracted from ${path.basename(filePath)}`,
-      status: 'active',
-      is_manually_edited: false
-    }, { onConflict: 'translation_key' });
+    // 1. Check if exists
+    const { data: existing } = await supabase
+      .from('translations')
+      .select('id')
+      .eq('translation_key', key)
+      .single();
 
-    if (error) {
-      console.error(`   ❌ DB Error for "${cleanText}":`, error.message);
-      continue;
+    if (!existing) {
+      // Insert new
+      const { error } = await supabase.from('translations').insert({
+        translation_key: key,
+        lang: 'nl',
+        original_text: cleanText,
+        translated_text: cleanText,
+        context: `Auto-extracted from ${path.basename(filePath)}`,
+        status: 'active',
+        is_manually_edited: false
+      });
+
+      if (error) {
+        console.error(`   ❌ DB Error for "${cleanText}":`, error.message);
+        continue;
+      }
+    } else {
+        console.log(`   ℹ️  Key exists in DB: ${key}`);
     }
 
     // 2. Replace in content

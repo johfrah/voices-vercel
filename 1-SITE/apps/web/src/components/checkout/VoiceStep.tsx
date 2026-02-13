@@ -7,6 +7,14 @@ import { Actor } from '@/types';
 import { CheckCircle2, Loader2, Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { VoiceCard } from '../ui/VoiceCard';
+import { 
+  ContainerInstrument, 
+  TextInstrument,
+  ButtonInstrument,
+  InputInstrument
+} from '@/components/ui/LayoutInstruments';
+import { VoiceglotText } from '../ui/VoiceglotText';
+import { cn } from '@/lib/utils';
 
 export const VoiceStep: React.FC = () => {
   const { state, selectActor, setStep } = useCheckout();
@@ -19,22 +27,17 @@ export const VoiceStep: React.FC = () => {
   useEffect(() => {
     const loadActors = async () => {
       try {
-        // We halen de data op via de publieke API route in plaats van de directe bridge
         const res = await fetch('/api/agency/actors?language=vlaams');
         if (res.ok) {
           const { results } = await res.json();
           setActors(results);
 
-          // 🎯 PRE-SELECT MANDATE: Als er een voice ID in de URL staat, selecteer deze direct.
           const urlParams = new URLSearchParams(window.location.search);
           const voiceId = urlParams.get('voice');
           if (voiceId) {
             const preSelected = results.find((a: Actor) => a.id.toString() === voiceId);
             if (preSelected) {
               selectActor(preSelected);
-              // Als we al een stem hebben gekozen via de agency pagina, 
-              // kunnen we eventueel direct door naar de volgende stap.
-              // Maar we laten de gebruiker hier landen voor bevestiging.
             }
           }
         }
@@ -45,7 +48,7 @@ export const VoiceStep: React.FC = () => {
       }
     };
     loadActors();
-  }, [selectActor]); // Added selectActor to dependencies
+  }, [selectActor]);
 
   const handleNext = () => {
     if (!state.selectedActor) {
@@ -61,26 +64,26 @@ export const VoiceStep: React.FC = () => {
   );
 
   return (
-    <div className="space-y-10">
-      <div className="relative">
-        <input
+    <ContainerInstrument className="space-y-10">
+      <ContainerInstrument className="relative">
+        <InputInstrument
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Zoek op naam..."
-          className="w-full bg-va-off-white border-none rounded-[24px] py-5 pl-14 pr-8 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
+          className="w-full bg-va-off-white border-none rounded-[20px] py-5 pl-14 pr-8 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
         />
-        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={20} />
-      </div>
+        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={20} strokeWidth={1.5} />
+      </ContainerInstrument>
 
       {loading ? (
-        <div className="py-20 flex items-center justify-center">
-          <Loader2 className="animate-spin text-primary" size={40} />
-        </div>
+        <ContainerInstrument className="py-20 flex items-center justify-center">
+          <Loader2 className="animate-spin text-primary" size={40} strokeWidth={1.5} />
+        </ContainerInstrument>
       ) : (
-        <div className="grid grid-cols-1 gap-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+        <ContainerInstrument className="grid grid-cols-1 gap-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
           {filteredActors.map((actor) => (
-            <div 
+            <ContainerInstrument 
               key={actor.id}
               onClick={() => {
                 playClick('light');
@@ -89,31 +92,38 @@ export const VoiceStep: React.FC = () => {
                   playDemo(actor.demos[0]);
                 }
               }}
-              className={`relative rounded-[44px] border-4 transition-all cursor-pointer ${
+              className={cn(
+                "relative rounded-[20px] border-2 transition-all cursor-pointer",
                 state.selectedActor?.id === actor.id 
-                  ? 'border-primary shadow-xl scale-[0.98]' 
-                  : 'border-transparent hover:border-black/5'
-              }`}
+                  ? 'border-primary shadow-aura scale-[0.98]' 
+                  : 'border-transparent hover:border-va-black/5'
+              )}
             >
                <VoiceCard voice={actor} />
               {state.selectedActor?.id === actor.id && (
-                <div className="absolute top-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg z-20 animate-in zoom-in duration-300">
+                <ContainerInstrument className="absolute top-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg z-20 animate-in zoom-in duration-300">
                   <CheckCircle2 strokeWidth={1.5} size={20} />
-                </div>
+                </ContainerInstrument>
               )}
-            </div>
+            </ContainerInstrument>
           ))}
-        </div>
+        </ContainerInstrument>
       )}
 
-      <div className="flex gap-4">
-        <button onClick={() => setStep('briefing')} className="flex-1 py-6 rounded-[24px] bg-black/5 font-black tracking-widest text-[15px] hover:bg-black/10 transition-all">
-          Terug
-        </button>
-        <button onClick={handleNext} className="flex-[2] va-btn-pro py-6">
-          Volgende: Gegevens
-        </button>
-      </div>
-    </div>
+      <ContainerInstrument className="flex gap-4">
+        <ButtonInstrument 
+          onClick={() => setStep('briefing')} 
+          className="flex-1 py-6 rounded-[10px] bg-va-black/5 text-va-black font-medium tracking-widest text-[15px] hover:bg-va-black/10 transition-all"
+        >
+          <VoiceglotText translationKey="common.back" defaultText="Terug" />
+        </ButtonInstrument>
+        <ButtonInstrument 
+          onClick={handleNext} 
+          className="flex-[2] va-btn-pro py-6 !rounded-[10px]"
+        >
+          <VoiceglotText translationKey="checkout.voice.next" defaultText="Volgende: Gegevens" />
+        </ButtonInstrument>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 };

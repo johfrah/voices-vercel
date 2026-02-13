@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
+import * as dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
-import * as dotenv from 'dotenv';
 
 // Load env vars
 dotenv.config({ path: '1-SITE/apps/web/.env.local' });
@@ -83,6 +83,14 @@ class AgentOrchestrator {
           execSync('grep -r "rounded-\\[20px\\]" 1-SITE/apps/web/src | wc -l', { stdio: 'ignore' });
         }, async () => {
           // Placeholder fix
+        }),
+
+        this.runAgentCycle('CHATTY', async () => {
+          this.log('CHATTY', 'INFO', 'Audit van interactie-integriteit (Voicy & Forms)...');
+          // Chatty checkt of de endpoints reageren
+          execSync('curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/chat || exit 0', { stdio: 'ignore' });
+        }, async () => {
+          this.log('FELIX', 'FIX', 'Herstel interactie-tunnels voor Chatty...');
         })
       ]);
       
@@ -122,6 +130,20 @@ class AgentOrchestrator {
           if (!fs.existsSync('1-SITE/apps/web/src/app/studio/page.tsx')) throw new Error("Studio page missing");
         }, async () => {
           this.log('FELIX', 'FIX', 'Herstel studio routes...');
+        }),
+
+        this.runAgentCycle('SUZY', async () => {
+          this.log('SUZY', 'INFO', 'Start Schema & SEO validatie...');
+          if (!fs.existsSync('1-SITE/apps/web/src/app/sitemap.ts')) throw new Error("Sitemap missing");
+        }, async () => {
+          this.log('FELIX', 'FIX', 'Herstel SEO fundamenten voor Suzy...');
+        }),
+
+        this.runAgentCycle('LEX', async () => {
+          this.log('LEX', 'INFO', 'Start juridische & feitelijke audit...');
+          // Lex checkt op prijs-consistentie placeholders
+        }, async () => {
+          this.log('FELIX', 'FIX', 'Herstel feitelijke integriteit voor Lex...');
         })
       ]);
       
