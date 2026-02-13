@@ -25,6 +25,8 @@ interface StudioExperienceOptions {
   videoThumbnail?: string;
   videoUrl?: string;
   aftermovieText?: string;
+  optOutToken?: string;
+  email?: string;
 }
 
 export function VumeStudioTemplate(options: StudioExperienceOptions) {
@@ -45,8 +47,14 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     schedule = '09u45: Aankomst\n10u00: Kennismaking\n10u15: Workshop deel 1\n13u30: Lunch\n14u15: Workshop deel 2\n17u00: Einde',
     videoThumbnail = 'https://voices-vercel.vercel.app/assets/common/branding/email/headers/default-header.jpg',
     videoUrl = 'https://www.voices.be/studio/',
-    aftermovieText = 'Ontdek hoe deelnemers hun stem leren inzetten om teksten echt te laten leven.'
+    aftermovieText = 'Ontdek hoe deelnemers hun stem leren inzetten om teksten echt te laten leven.',
+    optOutToken,
+    email
   } = options;
+
+  const optOutUrl = (optOutToken && email) 
+    ? `https://${host}/api/marketing/opt-out?email=${encodeURIComponent(email)}&token=${optOutToken}`
+    : undefined;
 
   const content = {
     nl: {
@@ -159,6 +167,6 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     host,
     showSignature: false, // We gebruiken de specifieke Studio-signature hierboven
     headerImage: headerImage || 'https://voices-vercel.vercel.app/assets/common/branding/email/headers/default-header.jpg',
-    showSignature: false, // We gebruiken de specifieke Studio-signature hierboven
+    optOutUrl
   });
 }

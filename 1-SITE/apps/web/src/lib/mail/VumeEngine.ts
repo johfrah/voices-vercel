@@ -43,7 +43,9 @@ export class VumeEngine {
           location: context.location,
           headerImage: context.headerImage, // Pass specific workshop header
           host: host,
-          language: context.language || 'nl'
+          language: context.language || 'nl',
+          optOutToken: context.optOutToken,
+          email: to
         });
         break;
 

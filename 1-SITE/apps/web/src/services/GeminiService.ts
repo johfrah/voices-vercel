@@ -29,6 +29,22 @@ export class GeminiService {
   }
 
   /**
+   * Genereert platte tekst via Gemini. Gebruikt door heal-routes, chat en Telegram-Bob.
+   */
+  async generateText(prompt: string): Promise<string> {
+    const model = this.getModel();
+    const result = await model.generateContent(prompt);
+    return result.response.text();
+  }
+
+  /**
+   * Static shortcut voor generateText (compat met heal-routes).
+   */
+  static async generateText(prompt: string): Promise<string> {
+    return GeminiService.getInstance().generateText(prompt);
+  }
+
+  /**
    * Analyseert een mail en geeft gestructureerde AI data terug.
    */
   async analyzeMail(subject: string, body: string) {

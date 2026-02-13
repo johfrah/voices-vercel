@@ -46,7 +46,8 @@ export async function POST(request: Request) {
           typeof request.headers.get('referer') === 'string'
             ? request.headers.get('referer')
             : null,
-        status: 'pending'
+        status: 'pending',
+        optOutToken: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
       })
       .returning();
 

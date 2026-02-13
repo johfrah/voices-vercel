@@ -36,7 +36,8 @@ export async function sendTestMails(recipient: string) {
         time: '14:00',
         location: 'Voices Studio, Gent',
         headerImage: 'https://voices-vercel.vercel.app/assets/common/branding/email/headers/default-header.jpg',
-        language: 'nl'
+        language: 'nl',
+        optOutToken: 'test-token-123'
       },
       host: 'voices.be'
     });

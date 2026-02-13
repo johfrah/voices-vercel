@@ -15,10 +15,11 @@ interface WrapperOptions {
   host?: string;
   showSignature?: boolean;
   headerImage?: string;
+  optOutUrl?: string;
 }
 
 export function VumeMasterWrapper(content: string, options: WrapperOptions) {
-  const { title, previewText, journey = 'agency', host = 'voices.be', showSignature = true, headerImage } = options;
+  const { title, previewText, journey = 'agency', host = 'voices.be', showSignature = true, headerImage, optOutUrl } = options;
   const market = MarketManager.getCurrentMarket(host);
   
   // 🎨 Laya's Refined Gradients (Voices 2.0 - Liquid DNA)
@@ -77,6 +78,17 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     </table>
   ` : '';
 
+  const footerHtml = `
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; text-align: center; color: #999999; font-family: 'Raleway', sans-serif; font-size: 12px; line-height: 1.5;">
+      <tr>
+        <td style="padding-bottom: 20px;">
+          &copy; 2026 ${market.company_name} &bull; Voices.be<br />
+          ${optOutUrl ? `<a href="${optOutUrl}" style="color: #999999; text-decoration: underline;">Uitschrijven</a> voor marketing-mails` : ''}
+        </td>
+      </tr>
+    </table>
+  `;
+
   return `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" lang="nl">
@@ -111,6 +123,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
                   </table>
                 </td>
               </tr>
+              ${footerHtml}
             </table>
           </td>
         </tr>
