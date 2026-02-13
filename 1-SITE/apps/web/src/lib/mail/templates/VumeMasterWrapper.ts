@@ -86,7 +86,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
               <!-- LOGO ABOVE CARD -->
               <tr>
                 <td align="center" style="padding-bottom: 40px;">
-                  <img src="https://www.voices.be/assets/common/branding/email/logos/email-logo.png" alt="Voices.be" width="140" style="display: block; border: 0;" />
+                  <img src="https://www.voices.be/wp-content/uploads/2023/05/Voices-Logo-Black.png" alt="Voices.be" width="140" style="display: block; border: 0;" />
                 </td>
               </tr>
               
@@ -104,15 +104,6 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
                       </td>
                     </tr>
                   </table>
-                </td>
-              </tr>
-              
-              <!-- FOOTER & BRANDING -->
-              <tr>
-                <td align="center" style="padding: 40px; border-top: 1px solid #F0F0F0; background-color: #FFFFFF;">
-                  <div style="font-size: 11px; color: #CCCCCC; text-transform: uppercase; letter-spacing: 0.1em;">
-                    Voices.be &bull; Jules Delhaizestraat 42/2, 1080 Brussel &bull; +32 (0)2 793 19 91
-                  </div>
                 </td>
               </tr>
             </table>
