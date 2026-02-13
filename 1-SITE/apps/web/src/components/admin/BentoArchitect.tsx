@@ -195,7 +195,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-3 text-primary">
-                        <Sparkles strokeWidth={1.5} size={16} />
+                        <Sparkles size={16} />
                         <span className="text-[15px] font-black tracking-widest">Predictive Layout</span>
                       </div>
                       <div className="text-xl font-black text-primary">{suggestion.score}%</div>

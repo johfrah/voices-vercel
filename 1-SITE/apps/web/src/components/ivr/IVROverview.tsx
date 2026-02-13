@@ -42,7 +42,7 @@ export const IVROverview: React.FC = () => {
       <div className="flex items-center justify-between mb-12">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white shadow-xl">
-            <Phone strokeWidth={1.5} size={28} />
+            <Phone size={28} />
           </div>
           <div>
             <h2 className="text-3xl font-black tracking-tighter ">
@@ -115,7 +115,7 @@ export const IVROverview: React.FC = () => {
           onClick={addStep}
           className="w-full py-4 border-2 border-dashed border-black/10 rounded-2xl flex items-center justify-center gap-2 text-black/30 hover:text-black hover:border-black/20 transition-all font-black text-[15px] tracking-widest"
         >
-          <Plus strokeWidth={1.5} size={16} /> <VoiceglotText translationKey="ivr.configurator.add_step" defaultText="STAP TOEVOEGEN" />
+          <Plus size={16} /> <VoiceglotText translationKey="ivr.configurator.add_step" defaultText="STAP TOEVOEGEN" />
         </button>
       </div>
 

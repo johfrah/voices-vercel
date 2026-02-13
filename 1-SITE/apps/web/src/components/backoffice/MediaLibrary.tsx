@@ -231,7 +231,7 @@ export const MediaLibrary: React.FC = () => {
       <div className="w-full lg:w-64 space-y-6">
         <div className="bg-white rounded-[32px] shadow-aura p-6 space-y-4">
           <div className="flex items-center gap-2 text-va-black font-black tracking-tighter text-sm">
-            <User strokeWidth={1.5} size={16} />
+            <User size={16} />
             Stemacteurs
           </div>
           <div className="space-y-1 max-h-[400px] overflow-y-auto no-scrollbar">
@@ -354,7 +354,7 @@ export const MediaLibrary: React.FC = () => {
               flex items-center gap-2 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[15px] cursor-pointer transition-all shadow-pro
               ${isUploading ? 'bg-va-black/10 text-va-black/30' : 'bg-va-black text-white hover:scale-105 active:scale-95'}
             `}>
-              {isUploading ? <Upload className="animate-bounce" size={16} /> : <Plus strokeWidth={1.5} size={16} />}
+              {isUploading ? <Upload className="animate-bounce" size={16} /> : <Plus size={16} />}
               {isUploading ? 'Bezig...' : 'Upload'}
               <input type="file" className="hidden" onChange={handleUpload} disabled={isUploading} />
             </label>
@@ -372,7 +372,7 @@ export const MediaLibrary: React.FC = () => {
                 onClick={() => setSelectedIds([])}
                 className="text-white/40 hover:text-white transition-colors"
               >
-                <X strokeWidth={1.5} size={16} />
+                <X size={16} />
               </button>
             </div>
             

@@ -45,7 +45,7 @@ export const StudioAcademyBento = () => {
       {/* 🎓 Academy Quick-Link */}
       <BentoCard span="sm" className="bg-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
-          <BookOpen strokeWidth={1.5} className="text-primary mb-4" size={24} />
+          <BookOpen className="text-primary mb-4" size={24} />
           <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black">
             <VoiceglotText translationKey="academy.title" defaultText="Voices Academy" />
           </HeadingInstrument>
@@ -58,7 +58,7 @@ export const StudioAcademyBento = () => {
       {/* 📅 Kalender */}
       <BentoCard span="sm" className="bg-va-dark-soft text-white p-8 flex flex-col justify-between h-[280px] border-none">
         <ContainerInstrument plain>
-          <Calendar strokeWidth={1.5} className="text-primary mb-4" size={24} />
+          <Calendar className="text-primary mb-4" size={24} />
           <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-primary">
             <VoiceglotText translationKey="studio.calendar.title" defaultText="Volgende Sessies" />
           </HeadingInstrument>

@@ -68,7 +68,7 @@ export default function LiveVisitorCockpit() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-2">
           <ContainerInstrument className="flex items-center gap-2 text-primary">
-            <Activity strokeWidth={1.5} size={16} />
+            <Activity size={16} />
             <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em]">
               <VoiceglotText translationKey="admin.visitors.badge" defaultText="Live Intelligence" />
             </TextInstrument>
@@ -124,7 +124,7 @@ export default function LiveVisitorCockpit() {
                 <tr>
                   <td colSpan={6} className="p-20 text-center">
                     <div className="flex flex-col items-center gap-4">
-                      <Activity strokeWidth={1.5} className="text-primary animate-spin" size={40} />
+                      <Activity className="text-primary animate-spin" size={40} />
                       <span className="text-[15px] font-bold tracking-widest text-va-black/20">Laden van Mat Radar...</span>
                     </div>
                   </td>
@@ -168,13 +168,13 @@ export default function LiveVisitorCockpit() {
                       </td>
                       <td className="p-6">
                         <div className="flex items-center gap-2 text-[15px] font-bold bg-va-black/5 px-3 py-1.5 rounded-lg w-fit max-w-[200px] truncate">
-                          <Monitor strokeWidth={1.5} size={12} className="text-va-black/20" />
+                          <Monitor size={12} className="text-va-black/20" />
                           <span>{v.currentPage || '/'}</span>
                         </div>
                       </td>
                       <td className="p-6">
                         <div className="flex items-center gap-2 text-[15px] font-bold">
-                          <Globe strokeWidth={1.5} size={12} className="text-va-black/20" />
+                          <Globe size={12} className="text-va-black/20" />
                           <span>{v.market}</span>
                         </div>
                       </td>
@@ -213,7 +213,7 @@ export default function LiveVisitorCockpit() {
             Meest geklikte elementen in de laatste 24 uur. Focus op de &apos;Tarieven&apos; knop bij Agency.
           </TextInstrument>
           <Link href="#" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2">
-            Bekijk Heatmap <ArrowRight strokeWidth={1.5} size={12} />
+            Bekijk Heatmap <ArrowRight size={12} />
           </Link>
         </ContainerInstrument>
 
@@ -226,7 +226,7 @@ export default function LiveVisitorCockpit() {
             80% van de huidige bezoekers zijn &apos;Decision Makers&apos; binnen de Agency journey.
           </TextInstrument>
           <Link href="/admin/users" className="text-[15px] font-black tracking-widest text-va-black/40 flex items-center gap-2">
-            User DNA Dashboard <ArrowRight strokeWidth={1.5} size={12} />
+            User DNA Dashboard <ArrowRight size={12} />
           </Link>
         </ContainerInstrument>
 
@@ -239,7 +239,7 @@ export default function LiveVisitorCockpit() {
             Hoge bounce-rate op de &apos;Over Ons&apos; pagina. AI stelt voor om de CTA te verduidelijken.
           </TextInstrument>
           <Link href="#" className="text-[15px] font-black tracking-widest text-va-black/40 flex items-center gap-2">
-            Analyseer Flow <ArrowRight strokeWidth={1.5} size={12} />
+            Analyseer Flow <ArrowRight size={12} />
           </Link>
         </ContainerInstrument>
       </div>

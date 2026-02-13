@@ -31,7 +31,7 @@ export default function PartnerDashboardClient() {
   if (isLoading) return <LoadingScreenInstrument />;
 
   const stats = [
-    { label: 'Actieve Projecten', value: '12', icon: <Briefcase strokeWidth={1.5} size={20} />, trend: '+2' },
+    { label: 'Actieve Projecten', value: '12', icon: <Briefcase size={20} />, trend: '+2' },
     { label: 'Totaal Bereik', value: '45.2k', icon: <Users size={20} />, trend: '+12%' },
     { label: 'Conversie', value: '3.8%', icon: <TrendingUp size={20} />, trend: '+0.4%' },
     { label: 'Inkomsten (30d)', value: '€ 2.450', icon: <BarChart3 size={20} />, trend: '+15%' },
@@ -44,12 +44,12 @@ export default function PartnerDashboardClient() {
           href="/account" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-colors mb-8"
         >
-          <ArrowLeft strokeWidth={1.5} size={12} /> 
+          <ArrowLeft size={12} /> 
           <VoiceglotText translationKey="account.back_to_dashboard" defaultText="Terug naar Dashboard" />
         </Link>
         <ContainerInstrument className="space-y-4">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10">
-            <Zap strokeWidth={1.5} size={12} fill="currentColor" /> 
+            <Zap size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="account.partner.badge" defaultText="Partner" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter">
@@ -88,7 +88,7 @@ export default function PartnerDashboardClient() {
         {/* Campaign Manager */}
         <BentoCard span="lg" className="bg-va-black text-white p-12 h-[400px] flex flex-col justify-between relative overflow-hidden group">
           <ContainerInstrument className="relative z-10">
-            <Briefcase strokeWidth={1.5} className="text-primary mb-8" size={40} />
+            <Briefcase className="text-primary mb-8" size={40} />
             <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter mb-4">
               <VoiceglotText translationKey="account.partner.campaigns.title" defaultText="Campagne Beheer" />
             </HeadingInstrument>
@@ -100,7 +100,7 @@ export default function PartnerDashboardClient() {
             </TextInstrument>
           </ContainerInstrument>
           <ButtonInstrument className="relative z-10 va-btn-pro !bg-primary w-fit flex items-center gap-2">
-            <VoiceglotText translationKey="account.partner.campaigns.cta" defaultText="Nieuwe Campagne" /> <Plus strokeWidth={1.5} size={16} />
+            <VoiceglotText translationKey="account.partner.campaigns.cta" defaultText="Nieuwe Campagne" /> <Plus size={16} />
           </ButtonInstrument>
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-[80px] group-hover:bg-primary/20 transition-all duration-1000" />
         </BentoCard>
@@ -120,7 +120,7 @@ export default function PartnerDashboardClient() {
             </TextInstrument>
           </ContainerInstrument>
           <ButtonInstrument className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
-            <VoiceglotText translationKey="account.partner.links.cta" defaultText="Links Genereren" /> <ArrowRight strokeWidth={1.5} size={12} />
+            <VoiceglotText translationKey="account.partner.links.cta" defaultText="Links Genereren" /> <ArrowRight size={12} />
           </ButtonInstrument>
         </BentoCard>
       </BentoGrid>

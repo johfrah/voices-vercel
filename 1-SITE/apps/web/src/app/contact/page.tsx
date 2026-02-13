@@ -57,7 +57,7 @@ export default function ContactPage() {
         {/* Header */}
         <SectionInstrument className="mb-16 text-center">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10 mb-8">
-            <Sparkles strokeWidth={1.5} size={12} fill="currentColor" /> 
+            <Sparkles size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="contact.badge" defaultText="Altijd Bereikbaar" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-none mb-6">
@@ -128,7 +128,7 @@ export default function ContactPage() {
                     <textarea required placeholder="Hoe kunnen we je helpen?" className="bg-va-off-white border-none rounded-2xl px-6 py-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20 w-full min-h-[150px] resize-none" />
                   </div>
                   <ButtonInstrument type="submit" disabled={isSubmitting} className="va-btn-pro w-full flex items-center justify-center gap-3">
-                    {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Send strokeWidth={1.5} size={18} />}
+                    {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
                     <VoiceglotText translationKey="contact.form.submit" defaultText="Bericht Verzenden" />
                   </ButtonInstrument>
                 </form>
@@ -140,7 +140,7 @@ export default function ContactPage() {
           <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between relative overflow-hidden group">
             <ContainerInstrument className="relative z-10">
               <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
-                <MessageSquare strokeWidth={1.5} size={24} />
+                <MessageSquare size={24} />
               </div>
               <HeadingInstrument level={2} className="text-3xl font-black tracking-tighter mb-4 leading-tight">
                 <VoiceglotText translationKey="contact.voicy.title" defaultText="Direct antwoord nodig?" />
@@ -156,7 +156,7 @@ export default function ContactPage() {
               onClick={openVoicy}
               className="relative z-10 va-btn-pro !bg-primary !text-va-black w-full"
             >
-              <VoiceglotText translationKey="contact.voicy.cta" defaultText="Start Chat" /> <Sparkles strokeWidth={1.5} size={14} />
+              <VoiceglotText translationKey="contact.voicy.cta" defaultText="Start Chat" /> <Sparkles size={14} />
             </ButtonInstrument>
             <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[80px]" />
           </BentoCard>
@@ -165,7 +165,7 @@ export default function ContactPage() {
           <div className="col-span-full grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
             <div className="bg-white/50 backdrop-blur-md p-8 rounded-[32px] border border-black/5 flex items-center gap-6">
               <div className="w-12 h-12 bg-va-black rounded-2xl flex items-center justify-center text-white shrink-0">
-                <Phone strokeWidth={1.5} size={20} />
+                <Phone size={20} />
               </div>
               <div>
                 <TextInstrument className="va-text-[15px] text-va-black/30 mb-1 font-light">
@@ -176,7 +176,7 @@ export default function ContactPage() {
             </div>
             <div className="bg-white/50 backdrop-blur-md p-8 rounded-[32px] border border-black/5 flex items-center gap-6">
               <div className="w-12 h-12 bg-va-black rounded-2xl flex items-center justify-center text-white shrink-0">
-                <Mail strokeWidth={1.5} size={20} />
+                <Mail size={20} />
               </div>
               <div>
                 <TextInstrument className="va-text-[15px] text-va-black/30 mb-1 font-light">

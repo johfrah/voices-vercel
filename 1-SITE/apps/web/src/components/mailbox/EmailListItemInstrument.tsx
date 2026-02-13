@@ -81,7 +81,7 @@ export const EmailListItemInstrument = ({
         className="absolute inset-0 flex items-center justify-between px-6 pointer-events-none"
       >
         <motion.div style={{ opacity: useTransform(x, [0, 50], [0, 1]) }}>
-          <Check strokeWidth={1.5} className="text-white" size={20} />
+          <Check className="text-white" size={20} />
         </motion.div>
         <motion.div style={{ opacity: useTransform(x, [0, -50], [0, 1]) }}>
           <Archive className="text-white" size={20} />

@@ -125,7 +125,7 @@ export default function AdminSettingsPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -144,7 +144,7 @@ export default function AdminSettingsPage() {
               : 'bg-va-black text-white hover:bg-va-black/80'
           }`}
         >
-          {isEditMode ? <Shield strokeWidth={1.5} size={14} /> : <Settings size={14} />}
+          {isEditMode ? <Shield size={14} /> : <Settings size={14} />}
           {isEditMode ? 'Beheer Modus Actief' : 'Systeem Beheer'}
         </ButtonInstrument>
       </SectionInstrument>

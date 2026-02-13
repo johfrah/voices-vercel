@@ -13,7 +13,7 @@ export const AcademyUpsellSection: React.FC = () => {
   return (
     <div className="space-y-6 mt-12 pt-12 border-t border-black/5">
       <div className="flex items-center gap-2 mb-4">
-        <Sparkles strokeWidth={1.5} className="text-primary" size={18} />
+        <Sparkles className="text-primary" size={18} />
         <h3 className="text-sm font-black tracking-widest text-va-black/40">
           <VoiceglotText translationKey="checkout.upsell.title" defaultText="Maak je traject compleet" />
         </h3>
@@ -55,7 +55,7 @@ export const AcademyUpsellSection: React.FC = () => {
             <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
               state.upsells.workshop_home ? 'bg-primary border-primary text-white' : 'border-black/10'
             }`}>
-              {state.upsells.workshop_home && <Check strokeWidth={1.5} size={14} />}
+              {state.upsells.workshop_home && <Check size={14} />}
             </div>
           </div>
           {/* Decorative background */}

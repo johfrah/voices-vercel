@@ -31,7 +31,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
         href="/admin/studio" 
         className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
       >
-        <ArrowLeft strokeWidth={1.5} size={14} className="group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
         TERUG NAAR STUDIO BEHEER
       </Link>
 
@@ -126,7 +126,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
 
           {/* SMART MAIL (Step 3) */}
           <BentoCard span="sm" className="bg-va-off-white p-10 border border-black/5">
-            <Mail strokeWidth={1.5} className="text-primary mb-6" size={24} />
+            <Mail className="text-primary mb-6" size={24} />
             <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest text-black/30 mb-6">
               Communicatie
             </HeadingInstrument>

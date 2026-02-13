@@ -17,7 +17,8 @@ export async function middleware(request: NextRequest) {
   const aiBots = [
     'gptbot', 'chatgpt-user', 'google-extended', 'ccbot', 'anthropicai', 
     'claude-web', 'omgili', 'facebookbot', 'diffbot', 'bytespider', 
-    'imagesiftbot', 'perplexitybot', 'youbot'
+    'imagesiftbot', 'perplexitybot', 'youbot', 'claudebot', 'cohere-ai',
+    'proximic', 'meta-externalagent', 'amazonbot', 'duckduckbot', 'mojeekbot'
   ]
   
   if (aiBots.some(bot => userAgent.toLowerCase().includes(bot))) {

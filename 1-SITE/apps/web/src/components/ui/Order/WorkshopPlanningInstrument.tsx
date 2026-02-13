@@ -22,7 +22,7 @@ export const WorkshopPlanningInstrument: React.FC<WorkshopPlanningInstrumentProp
     <>
       <BentoCard 
         title={<VoiceglotText translationKey="order.workshop.planning_title" defaultText="Planning & Deelnemers" />}
-        icon={<Calendar strokeWidth={1.5} className="w-5 h-5" />}
+        icon={<Calendar className="w-5 h-5" />}
         className="col-span-3"
       >
         <div className="mt-4 flex gap-6">
@@ -37,7 +37,7 @@ export const WorkshopPlanningInstrument: React.FC<WorkshopPlanningInstrumentProp
               {time || '00:00'}
             </div>
             <button className="mt-4 flex items-center gap-2 text-sm font-bold text-purple-700 hover:underline">
-              <Calendar strokeWidth={1.5} className="w-4 h-4" /> <VoiceglotText translationKey="order.workshop.reschedule" defaultText="Reschedule" />
+              <Calendar className="w-4 h-4" /> <VoiceglotText translationKey="order.workshop.reschedule" defaultText="Reschedule" />
             </button>
           </div>
           <div className="flex-1 space-y-3">

@@ -68,7 +68,7 @@ export default async function InstructorDashboardPage() {
         </ContainerInstrument>
         
         <ButtonInstrument className="va-btn-pro">
-          <Plus strokeWidth={1.5} size={16} /> <VoiceglotText translationKey="studio.beheer.cta.new_workshop" defaultText="NIEUWE WORKSHOP PLANNEN" />
+          <Plus size={16} /> <VoiceglotText translationKey="studio.beheer.cta.new_workshop" defaultText="NIEUWE WORKSHOP PLANNEN" />
         </ButtonInstrument>
       </ContainerInstrument>
 
@@ -76,7 +76,7 @@ export default async function InstructorDashboardPage() {
         {/* STATS CARDS */}
         <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>
-            <Calendar strokeWidth={1.5} className="text-primary mb-6" size={24} />
+            <Calendar className="text-primary mb-6" size={24} />
             <TextInstrument className="va-text-[15px] text-black/30 font-light">
               <VoiceglotText translationKey="studio.beheer.stats.planned" defaultText="Geplande Edities" />
             </TextInstrument>
@@ -196,7 +196,7 @@ export default async function InstructorDashboardPage() {
           </ContainerInstrument>
           
           <ButtonInstrument className="va-btn-pro !bg-transparent !text-primary !px-0 !justify-start hover:!bg-transparent hover:underline">
-            <VoiceglotText translationKey="studio.beheer.tips.cta" defaultText="MEER TIPS BEKIJKEN" /> <ArrowRight strokeWidth={1.5} size={14} />
+            <VoiceglotText translationKey="studio.beheer.tips.cta" defaultText="MEER TIPS BEKIJKEN" /> <ArrowRight size={14} />
           </ButtonInstrument>
         </BentoCard>
       </BentoGrid>

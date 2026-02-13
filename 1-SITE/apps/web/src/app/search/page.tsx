@@ -84,7 +84,7 @@ export default function SearchPage() {
                         <TextInstrument className="text-sm font-black tracking-tight">{voice.firstName} {voice.lastName}</TextInstrument>
                         <TextInstrument className="text-[15px] font-bold text-primary tracking-widest">{voice.nativeLang} Native</TextInstrument>
                       </div>
-                      <ArrowRight strokeWidth={1.5} size={16} className="text-va-black/10 group-hover:text-primary transition-colors" />
+                      <ArrowRight size={16} className="text-va-black/10 group-hover:text-primary transition-colors" />
                     </Link>
                   ))}
                 </div>
@@ -96,7 +96,7 @@ export default function SearchPage() {
             {/* Articles Results */}
             <section className="space-y-8">
               <HeadingInstrument level={2} className="text-[15px] font-black tracking-[0.2em] text-va-black/20 flex items-center gap-3">
-                <BookOpen strokeWidth={1.5} size={14} /> Artikelen & Nieuws
+                <BookOpen size={14} /> Artikelen & Nieuws
               </HeadingInstrument>
               {results.articles?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -56,7 +56,7 @@ export default function AdminSecurityPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -76,7 +76,7 @@ export default function AdminSecurityPage() {
               </TextInstrument>
             </div>
             <div className={`p-4 rounded-2xl ${isMfaActive ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-              {isMfaActive ? <ShieldCheck strokeWidth={1.5} size={32} /> : <ShieldAlert size={32} />}
+              {isMfaActive ? <ShieldCheck size={32} /> : <ShieldAlert size={32} />}
             </div>
           </div>
 
@@ -108,7 +108,7 @@ export default function AdminSecurityPage() {
         {/* Escalation Policy */}
         <BentoCard span="sm" className="bg-va-black text-white p-10 space-y-8 flex flex-col justify-between">
           <div className="space-y-4">
-            <Lock strokeWidth={1.5} className="text-primary" size={40} />
+            <Lock className="text-primary" size={40} />
             <HeadingInstrument level={3} className="text-2xl font-black tracking-tighter leading-tight">
               Admin<br />Escalation
             </HeadingInstrument>
@@ -149,7 +149,7 @@ export default function AdminSecurityPage() {
           {[
             { action: 'Admin Login', time: 'Zojuist', status: 'Success', icon: <CheckCircle2 strokeWidth={1.5} className="text-green-500" size={12} /> },
             { action: 'Mailbox Sync', time: '10 min geleden', status: 'Success', icon: <CheckCircle2 strokeWidth={1.5} className="text-green-500" size={12} /> },
-            { action: 'Database Access', time: '1 uur geleden', status: 'MFA Verified', icon: <ShieldCheck strokeWidth={1.5} className="text-primary" size={12} /> },
+            { action: 'Database Access', time: '1 uur geleden', status: 'MFA Verified', icon: <ShieldCheck className="text-primary" size={12} /> },
           ].map((log, i) => (
             <div key={i} className="flex items-center justify-between p-4 bg-va-off-white/50 rounded-2xl border border-transparent hover:border-black/5 transition-all">
               <div className="flex items-center gap-4">
@@ -168,7 +168,7 @@ export default function AdminSecurityPage() {
       {/* Warning */}
       <ContainerInstrument className="p-8 bg-va-black text-white rounded-[32px] flex items-center gap-6">
         <div className="w-16 h-16 bg-primary text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
-          <Zap strokeWidth={1.5} size={32} />
+          <Zap size={32} />
         </div>
         <div className="space-y-1">
           <HeadingInstrument level={4} className="text-primary font-black tracking-tight">SECURITY MANDATE</HeadingInstrument>

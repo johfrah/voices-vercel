@@ -52,13 +52,13 @@ export default function VoiceCommand() {
                 onClick={confirmCommand}
                 className="flex-1 bg-va-black text-white py-2 rounded-lg text-[15px] font-bold tracking-widest hover:bg-primary transition-colors flex items-center justify-center gap-2"
               >
-                <Check strokeWidth={1.5} size={12} /> Confirm
+                <Check size={12} /> Confirm
               </button>
               <button 
                 onClick={() => setDraft(null)}
                 className="px-4 py-2 bg-va-black/5 text-va-black rounded-lg hover:bg-va-black/10 transition-colors"
               >
-                <X strokeWidth={1.5} size={12} />
+                <X size={12} />
               </button>
             </div>
           </motion.div>

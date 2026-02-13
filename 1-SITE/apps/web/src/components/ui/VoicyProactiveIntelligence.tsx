@@ -84,7 +84,7 @@ export const VoicyProactiveIntelligence = () => {
                   onClick={() => setIsVisible(false)}
                   className="text-white/20 hover:text-white transition-colors"
                 >
-                  <X strokeWidth={1.5} size={16} />
+                  <X size={16} />
                 </button>
               </div>
 
@@ -103,7 +103,7 @@ export const VoicyProactiveIntelligence = () => {
                     className="bg-white text-va-black px-4 py-2 rounded-xl text-[15px] font-black tracking-widest hover:bg-primary hover:text-white transition-all flex items-center gap-2 shadow-lg"
                   >
                     {tip.cta.label}
-                    <ArrowRight strokeWidth={1.5} size={12} />
+                    <ArrowRight size={12} />
                   </ButtonInstrument>
                 )}
                 <ButtonInstrument 

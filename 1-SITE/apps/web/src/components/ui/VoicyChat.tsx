@@ -351,7 +351,7 @@ export const VoicyChat: React.FC = () => {
           isOpen ? 'bg-va-black text-white rotate-90' : 'bg-white text-va-black'
         }`}
       >
-        {isOpen ? <X strokeWidth={1.5} size={28} /> : (
+        {isOpen ? <X size={28} /> : (
           <div className="relative w-full h-full rounded-full overflow-hidden bg-transparent">
             <Image 
               src={VOICES_CONFIG.assets.placeholders.voicy} 
@@ -441,7 +441,7 @@ export const VoicyChat: React.FC = () => {
                 onClick={() => { setChatMode('agent'); playClick('pro'); }}
                 className={`px-6 py-1.5 rounded-full text-[15px] font-medium uppercase tracking-widest transition-all flex items-center gap-2 ${chatMode === 'agent' ? 'bg-primary text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
               >
-                {chatMode === 'agent' && <Zap strokeWidth={1.5} size={10} className="animate-pulse" />}
+                {chatMode === 'agent' && <Zap size={10} className="animate-pulse" />}
                 Agent
               </button>
             </div>
@@ -568,7 +568,7 @@ export const VoicyChat: React.FC = () => {
                       type="submit"
                       className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-va-black text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
                     >
-                      <Send strokeWidth={1.5} size={18} />
+                      <Send size={18} />
                     </ButtonInstrument>
                   </FormInstrument>
                 </ContainerInstrument>
@@ -637,7 +637,7 @@ export const VoicyChat: React.FC = () => {
                     className="h-full flex flex-col items-center justify-center text-center space-y-4"
                   >
                     <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                      <Check strokeWidth={1.5} size={32} />
+                      <Check size={32} />
                     </div>
                     <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
                       <VoiceglotText translationKey="chat.mail.sent.title" defaultText="Bericht verzonden!" />
@@ -660,7 +660,7 @@ export const VoicyChat: React.FC = () => {
                   >
                     <div className="flex flex-col items-center text-center space-y-2">
                       <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                        <Mail strokeWidth={1.5} size={24} />
+                        <Mail size={24} />
                       </div>
                       <HeadingInstrument level={4} className="text-lg font-light tracking-tighter">
                         <VoiceglotText translationKey="chat.mail.title" defaultText="Stuur ons een bericht" />
@@ -702,7 +702,7 @@ export const VoicyChat: React.FC = () => {
                         className="w-full py-4 bg-va-black text-white rounded-2xl text-[15px] font-medium tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
                       >
                         {isSendingMail ? <VoiceglotText translationKey="chat.mail.sending" defaultText="Verzenden..." /> : <VoiceglotText translationKey="chat.mail.submit" defaultText="Bericht Versturen" />}
-                        {!isSendingMail && <Send strokeWidth={1.5} size={14} />}
+                        {!isSendingMail && <Send size={14} />}
                       </ButtonInstrument>
                     </FormInstrument>
 
@@ -720,7 +720,7 @@ export const VoicyChat: React.FC = () => {
           {activeTab === 'phone' && (
             <ContainerInstrument plain className="flex-1 p-8 flex flex-col items-center justify-center text-center space-y-6">
               <ContainerInstrument plain className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <Phone strokeWidth={1.5} size={32} />
+                <Phone size={32} />
               </ContainerInstrument>
               <ContainerInstrument plain className="space-y-2">
                 <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
@@ -756,7 +756,7 @@ export const VoicyChat: React.FC = () => {
                     <TextInstrument as="span">
                       <VoiceglotText translationKey={faq.key} defaultText={faq.q} />
                     </TextInstrument>
-                    <Send strokeWidth={1.5} size={14} className="opacity-0 group-hover:opacity-40 transition-opacity" />
+                    <Send size={14} className="opacity-0 group-hover:opacity-40 transition-opacity" />
                   </ButtonInstrument>
               ))}
             </ContainerInstrument>
@@ -780,7 +780,7 @@ export const VoicyChat: React.FC = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isEditMode ? 'bg-white/20' : 'bg-va-black/5'}`}>
-                      {isEditMode ? <Unlock strokeWidth={1.5} size={20} /> : <Lock strokeWidth={1.5} size={20} />}
+                      {isEditMode ? <Unlock size={20} /> : <Lock size={20} />}
                     </div>
                     <div className="text-left">
                       <TextInstrument className="text-sm font-medium tracking-tight">
@@ -802,7 +802,7 @@ export const VoicyChat: React.FC = () => {
                     href="/admin/dashboard"
                     className="p-4 rounded-2xl bg-va-off-white hover:bg-black/5 transition-all text-left space-y-1"
                   >
-                    <Activity strokeWidth={1.5} size={16} className="text-va-black/40" />
+                    <Activity size={16} className="text-va-black/40" />
                     <TextInstrument className="text-[15px] font-medium tracking-widest block">
                       <VoiceglotText translationKey="nav.dashboard" defaultText="Dashboard" />
                     </TextInstrument>
@@ -812,7 +812,7 @@ export const VoicyChat: React.FC = () => {
                     href="/account/mailbox"
                     className="p-4 rounded-2xl bg-va-off-white hover:bg-black/5 transition-all text-left space-y-1"
                   >
-                    <Mail strokeWidth={1.5} size={16} className="text-va-black/40" />
+                    <Mail size={16} className="text-va-black/40" />
                     <TextInstrument className="text-[15px] font-medium tracking-widest block">
                       <VoiceglotText translationKey="nav.mailbox" defaultText="Mailbox" />
                     </TextInstrument>

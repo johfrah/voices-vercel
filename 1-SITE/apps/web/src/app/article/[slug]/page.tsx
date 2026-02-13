@@ -44,7 +44,7 @@ async function ArticleContent({ slug }: { slug: string }) {
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all "
         >
-          <ArrowLeft strokeWidth={1.5} size={14} /> 
+          <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="article.back_to_overview" defaultText="Terug" />
         </Link>
         <ContainerInstrument className="flex gap-4">
@@ -65,7 +65,7 @@ async function ArticleContent({ slug }: { slug: string }) {
               <VoiceglotText translationKey={`journey.${article.meta?.llm_context?.journey?.[0]?.toLowerCase() || 'inspiration'}`} defaultText={article.meta?.llm_context?.journey?.[0] || 'Inspiratie'} />
             </ContainerInstrument>
             <TextInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
-              <Calendar strokeWidth={1.5} size={12} /> {new Date(article.date).toLocaleDateString('nl-BE')}
+              <Calendar size={12} /> {new Date(article.date).toLocaleDateString('nl-BE')}
             </TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-8 leading-[0.9] text-va-black ">

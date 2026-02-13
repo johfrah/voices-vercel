@@ -1069,3 +1069,75 @@ export const systemEvents = pgTable('system_events', {
   details: jsonb('details'),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+// 🎙️ STUDIO SESSIONS & SCRIPTS
+export const studioSessionStatusEnum = pgEnum('studio_session_status', ['active', 'archived', 'completed']);
+export const studioFeedbackTypeEnum = pgEnum('studio_feedback_type', ['text', 'audio', 'waveform_marker']);
+
+export const studioSessions = pgTable('studio_sessions', {
+  id: serial('id').primaryKey(),
+  orderId: integer('order_id').references(() => orders.id),
+  orderItemId: integer('order_item_id').references(() => orderItems.id),
+  conversationId: integer('conversation_id').references(() => chatConversations.id),
+  status: studioSessionStatusEnum('status').default('active'),
+  settings: jsonb('settings').default({}),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const studioScripts = pgTable('studio_scripts', {
+  id: serial('id').primaryKey(),
+  sessionId: integer('session_id').references(() => studioSessions.id).notNull(),
+  version: integer('version').default(1).notNull(),
+  content: text('content').notNull(),
+  notes: text('notes'),
+  isCurrent: boolean('is_current').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const studioFeedback = pgTable('studio_feedback', {
+  id: serial('id').primaryKey(),
+  sessionId: integer('session_id').references(() => studioSessions.id).notNull(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  type: studioFeedbackTypeEnum('type').default('text').notNull(),
+  content: text('content').notNull(),
+  audioPath: text('audio_path'),
+  waveformTimestamp: decimal('waveform_timestamp', { precision: 10, scale: 3 }),
+  isResolved: boolean('is_resolved').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const studioSessionsRelations = relations(studioSessions, ({ one, many }) => ({
+  order: one(orders, {
+    fields: [studioSessions.orderId],
+    references: [orders.id],
+  }),
+  orderItem: one(orderItems, {
+    fields: [studioSessions.orderItemId],
+    references: [orderItems.id],
+  }),
+  conversation: one(chatConversations, {
+    fields: [studioSessions.conversationId],
+    references: [chatConversations.id],
+  }),
+  scripts: many(studioScripts),
+  feedback: many(studioFeedback),
+}));
+
+export const studioScriptsRelations = relations(studioScripts, ({ one }) => ({
+  session: one(studioSessions, {
+    fields: [studioScripts.sessionId],
+    references: [studioSessions.id],
+  }),
+}));
+
+export const studioFeedbackRelations = relations(studioFeedback, ({ one }) => ({
+  session: one(studioSessions, {
+    fields: [studioFeedback.sessionId],
+    references: [studioSessions.id],
+  }),
+  user: one(users, {
+    fields: [studioFeedback.userId],
+    references: [users.id],
+  }),
+}));

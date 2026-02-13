@@ -165,7 +165,7 @@ export function LoginPageClient() {
       <ContainerInstrument className="w-full max-w-xl relative z-10">
         <ContainerInstrument className="text-center mb-12 space-y-4">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-black tracking-widest shadow-sm border border-gray-100/50">
-            <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText translationKey="auth.login.secure_access" defaultText="Toegang" />
+            <ShieldCheck size={12} className="text-primary" /> <VoiceglotText translationKey="auth.login.secure_access" defaultText="Toegang" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
             <VoiceglotText translationKey="auth.login.title_prefix" defaultText="Toegang tot" /> <TextInstrument as="span" className="text-primary font-light">Voices</TextInstrument>
@@ -195,7 +195,7 @@ export function LoginPageClient() {
 
             <ContainerInstrument className="space-y-6">
               <ContainerInstrument className="relative group">
-                <Mail strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={20} />
+                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={20} />
                 <InputInstrument 
                   type="email"
                   name="email"
@@ -210,7 +210,7 @@ export function LoginPageClient() {
 
               {showPassword ? (
                 <ContainerInstrument className="relative group animate-in fade-in slide-in-from-top-2">
-                  <Lock strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={20} />
+                  <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={20} />
                   <InputInstrument 
                     type="password"
                     name="password"
@@ -254,7 +254,7 @@ export function LoginPageClient() {
                 <>
                   <div className="flex items-center gap-3">
                     <VoiceglotText translationKey="auth.login.submit" defaultText={password ? "Inloggen" : "Stuur Magische Link"} /> 
-                    <ArrowRight strokeWidth={1.5} size={20} className="group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                   {!password && (
                     <span className="text-[15px] opacity-50 font-normal normal-case tracking-normal">
@@ -272,7 +272,7 @@ export function LoginPageClient() {
 
         <ContainerInstrument className="mt-12 text-center">
           <ContainerInstrument className="flex items-center justify-center gap-2 text-primary">
-            <Star strokeWidth={1.5} size={12} fill="currentColor" />
+            <Star size={12} fill="currentColor" />
             <TextInstrument as="span" className="text-[15px] font-black tracking-widest">
               <VoiceglotText translationKey="auth.login.footer" defaultText="Voices" />
             </TextInstrument>

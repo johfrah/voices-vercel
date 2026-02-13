@@ -58,7 +58,7 @@ export default function AdminUsersPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -133,7 +133,7 @@ export default function AdminUsersPage() {
                   <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
                     user.role === 'admin' ? 'bg-va-black text-white' : 'bg-va-off-white text-va-black/40'
                   }`}>
-                    {user.role === 'admin' ? <Shield strokeWidth={1.5} size={10} /> : <Users size={10} />}
+                    {user.role === 'admin' ? <Shield size={10} /> : <Users size={10} />}
                     {user.role}
                   </div>
                 </td>
@@ -154,7 +154,7 @@ export default function AdminUsersPage() {
                       <Edit3 size={14} />
                     </button>
                     <button className="p-2 hover:bg-va-off-white rounded-lg transition-colors text-va-black/40 hover:text-primary">
-                      <Mail strokeWidth={1.5} size={14} />
+                      <Mail size={14} />
                     </button>
                     <button className="p-2 hover:bg-va-off-white rounded-lg transition-colors text-va-black/40 hover:text-primary">
                       <MoreHorizontal size={14} />

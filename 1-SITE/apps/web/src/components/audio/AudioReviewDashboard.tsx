@@ -163,7 +163,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
         <div className="bg-gray-900 p-6 rounded-[24px] text-white flex items-center justify-between group cursor-pointer hover:bg-black transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-              <MessageSquare strokeWidth={1.5} size={18} />
+              <MessageSquare size={18} />
             </div>
             <div>
               <span className="block text-[15px] font-bold opacity-60 tracking-widest">

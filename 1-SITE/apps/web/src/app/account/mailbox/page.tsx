@@ -406,7 +406,7 @@ export default function MailboxPage() {
           <ContainerInstrument className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-4 flex-shrink-0">
             <ContainerInstrument className="space-y-4">
               <ButtonInstrument onClick={() => router.push('/account')} className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors">
-                <ArrowLeft strokeWidth={1.5} size={14} />
+                <ArrowLeft size={14} />
                 <VoiceglotText translationKey="common.back" defaultText="Terug" />
               </ButtonInstrument>
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
@@ -441,7 +441,7 @@ export default function MailboxPage() {
                 <VoiceglotText translationKey="mailbox.ai_sync" defaultText={isSyncing ? "Syncing..." : "Start AI Brain Sync"} />
               </ButtonInstrument>
               <ButtonInstrument onClick={handleCompose} className="bg-white text-va-black border border-black/5 px-6 py-3 rounded-[10px] text-[15px] font-light tracking-widest flex items-center gap-2 transition-all">
-                <Plus strokeWidth={1.5} size={14} />
+                <Plus size={14} />
                 <VoiceglotText translationKey="mailbox.compose" defaultText="Nieuw bericht" />
               </ButtonInstrument>
               <ButtonInstrument 
@@ -515,7 +515,7 @@ export default function MailboxPage() {
                   <ContainerInstrument className="space-y-1.5">
                     {[
                       { name: 'Trends & SWOT', id: 'insights', icon: <TrendingUp size={16} /> },
-                      { name: 'FAQ Proposals', id: 'faq', icon: <MessageSquare strokeWidth={1.5} size={16} /> },
+                      { name: 'FAQ Proposals', id: 'faq', icon: <MessageSquare size={16} /> },
                       { name: 'Kansen', id: 'leads', icon: <AlertCircle size={16} /> },
                     ].map((tag) => (
                       <ButtonInstrument key={tag.id} onClick={() => { if (tag.id === 'insights' || tag.id === 'faq') { setActiveTab(tag.id as MailboxTab); setSelectedThread(null); } }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all ${activeTab === tag.id ? 'bg-white shadow-sm ring-1 ring-black/5 font-bold text-va-black' : 'text-gray-500 hover:text-va-black hover:bg-gray-50'}`}>
@@ -807,7 +807,7 @@ export default function MailboxPage() {
                       <ContainerInstrument className="w-80 flex-shrink-0 border-l border-gray-100 bg-white overflow-y-auto h-full hidden xl:block custom-scrollbar">
                         <div className="p-6">
                               <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-6 flex items-center gap-2">
-                            <ShieldCheck strokeWidth={1.5} size={12} className="text-va-black" />
+                            <ShieldCheck size={12} className="text-va-black" />
                             <VoiceglotText translationKey="mailbox.customer_dna" defaultText="Customer DNA" />
                           </HeadingInstrument>
                           {customerDna ? (
@@ -965,7 +965,7 @@ export default function MailboxPage() {
                               </ContainerInstrument>
                             )}
                             <ContainerInstrument>
-                              <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-3 flex items-center gap-2"><Lock strokeWidth={1.5} size={10} /><VoiceglotText translationKey="mailbox.dna.vault_title" defaultText="The Vault (Kluis)" /></HeadingInstrument>
+                              <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-3 flex items-center gap-2"><Lock size={10} /><VoiceglotText translationKey="mailbox.dna.vault_title" defaultText="The Vault (Kluis)" /></HeadingInstrument>
                               <ContainerInstrument className="space-y-2">
                                 {customerDna.vault.length > 0 ? customerDna.vault.slice(0, 5).map((file: any) => (
                                   <ContainerInstrument key={file.id} className="flex items-center gap-3 p-2 hover:bg-va-off-white rounded-[10px] transition-colors cursor-pointer group border border-transparent hover:border-black/[0.03]" onClick={() => setSpotlightFile(file)}>
@@ -1016,7 +1016,7 @@ export default function MailboxPage() {
             onClick={() => setSpotlightFile(null)}
           >
             <button className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors" onClick={() => setSpotlightFile(null)}>
-              <X strokeWidth={1.5} size={32} />
+              <X size={32} />
             </button>
 
             <motion.div 
@@ -1108,7 +1108,7 @@ export default function MailboxPage() {
                   <HeadingInstrument level={2} className="text-2xl font-light text-va-black">{selectedInsight.label || selectedInsight.text || "Detail Analyse"}</HeadingInstrument>
                 </div>
                 <ButtonInstrument onClick={() => setSelectedInsight(null)} className="p-2 hover:bg-va-off-white rounded-full transition-colors">
-                  <ArrowLeft strokeWidth={1.5} className="rotate-90" />
+                  <ArrowLeft className="rotate-90" />
                 </ButtonInstrument>
               </div>
 
@@ -1116,7 +1116,7 @@ export default function MailboxPage() {
                 {/* 🚀 ACTIONABLE RECOMMENDATIONS */}
                 <div className="space-y-6">
                   <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
-                    <Zap strokeWidth={1.5} size={14} />
+                    <Zap size={14} />
                     Vooruitdenkende Acties
                   </HeadingInstrument>
                   <div className="space-y-3">
@@ -1134,7 +1134,7 @@ export default function MailboxPage() {
                 {/* 📧 SOURCE EVIDENCE */}
                 <div className="space-y-6">
                   <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
-                    <Mail strokeWidth={1.5} size={14} />
+                    <Mail size={14} />
                     Bewijslast (E-mails)
                   </HeadingInstrument>
                   <div className="space-y-3">

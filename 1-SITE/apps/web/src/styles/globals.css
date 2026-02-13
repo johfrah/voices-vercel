@@ -520,7 +520,7 @@ body {
 }
 
 .va-account-logout-btn {
-  @apply flex items-center gap-3 px-8 py-4 bg-va-black text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all shadow-xl uppercase va-bezier;
+  @apply flex items-center gap-3 px-8 py-4 bg-va-black text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all shadow-xl uppercase ease-va-bezier;
 }
 
 .va-text-primary {

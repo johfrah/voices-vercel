@@ -116,7 +116,7 @@ export default async function ActorAssignmentCockpit() {
 
                 <div className="flex items-center gap-4 px-6 border-l border-black/5">
                   <div className="flex flex-col items-center">
-                    <Mail strokeWidth={1.5} size={14} className={clsx(item.emailStatus ? "text-green-500" : "text-slate-300")} />
+                    <Mail size={14} className={clsx(item.emailStatus ? "text-green-500" : "text-slate-300")} />
                     <TextInstrument className="text-[15px] font-black mt-1">
                       <VoiceglotText translationKey="common.sent" defaultText="Sent" />
                     </TextInstrument>
@@ -131,7 +131,7 @@ export default async function ActorAssignmentCockpit() {
 
                 <div className="flex flex-col gap-1 px-6 border-l border-black/5 min-w-[140px]">
                   <div className="flex items-center gap-2">
-                    <Send strokeWidth={1.5} size={10} className="text-black/20" />
+                    <Send size={10} className="text-black/20" />
                     <TextInstrument className="text-[15px] font-bold text-black/40 tracking-tight">
                       {item.sentAtFormatted}
                     </TextInstrument>

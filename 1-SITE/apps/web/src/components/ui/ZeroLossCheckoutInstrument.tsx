@@ -82,7 +82,7 @@ export const ZeroLossCheckoutInstrument = ({
                   <ContainerInstrument className="space-y-2">
                     <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4">Voornaam</TextInstrument>
                     <ContainerInstrument className="relative">
-                      <User strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
+                      <User className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                       <InputInstrument 
                         value={formData.firstName}
                         onChange={(e) => handleInputChange('firstName', e.target.value)}
@@ -105,7 +105,7 @@ export const ZeroLossCheckoutInstrument = ({
                 <ContainerInstrument className="space-y-2">
                   <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4">E-mailadres</TextInstrument>
                   <ContainerInstrument className="relative">
-                    <Mail strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
+                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                     <InputInstrument 
                       type="email"
                       value={formData.email}
@@ -121,7 +121,7 @@ export const ZeroLossCheckoutInstrument = ({
                   disabled={!formData.email || !formData.firstName}
                   className="w-full py-6 rounded-[24px] bg-va-black text-white text-[15px] font-medium tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2 group disabled:opacity-20"
                 >
-                  Volgende stap <ArrowRight strokeWidth={1.5} size={16} className="group-hover:translate-x-1 transition-transform" />
+                  Volgende stap <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </ButtonInstrument>
               </ContainerInstrument>
             )}
@@ -131,7 +131,7 @@ export const ZeroLossCheckoutInstrument = ({
                 <ContainerInstrument className="space-y-2">
                   <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4">Bedrijfsnaam (Optioneel)</TextInstrument>
                   <ContainerInstrument className="relative">
-                    <Briefcase strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
+                    <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                     <InputInstrument 
                       value={formData.company}
                       onChange={(e) => handleInputChange('company', e.target.value)}
@@ -144,7 +144,7 @@ export const ZeroLossCheckoutInstrument = ({
                 <ContainerInstrument className="space-y-2">
                   <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4">BTW-Nummer (Optioneel)</TextInstrument>
                   <ContainerInstrument className="relative">
-                    <ShieldCheck strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
+                    <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                     <InputInstrument 
                       value={formData.vatNumber}
                       onChange={(e) => handleInputChange('vatNumber', e.target.value)}
@@ -168,7 +168,7 @@ export const ZeroLossCheckoutInstrument = ({
                     type="submit"
                     className="flex-[2] py-6 rounded-[24px] bg-primary text-white text-[15px] font-medium tracking-widest hover:bg-va-black transition-all flex items-center justify-center gap-2 group"
                   >
-                    Betaling afronden <ArrowRight strokeWidth={1.5} size={16} className="group-hover:translate-x-1 transition-transform" />
+                    Betaling afronden <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                   </ButtonInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>

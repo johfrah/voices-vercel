@@ -1,8 +1,8 @@
 # 🎼 Bob's Podium Licht (Live Status)
 
-**Huidige Fase**: ABORTED
-**Bericht**: Gestopt door fout: Concert Halted by CHRIS (Felix Failed)
-**Laatste Update**: 12:11:01 PM
+**Huidige Fase**: SECTION_1
+**Bericht**: Chris, Moby & Laya spelen samen...
+**Laatste Update**: 12:15:31 PM
 
 ---
 *Dit bestand wordt live bijgewerkt door Bob de Dirigent.*

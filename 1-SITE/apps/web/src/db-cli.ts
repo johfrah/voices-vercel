@@ -1,4 +1,4 @@
-import { contentArticles, contentBlocks } from '../../../packages/database/schema';
+import { contentArticles, contentBlocks } from '../../packages/database/schema';
 import { eq } from "drizzle-orm";
 import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
 

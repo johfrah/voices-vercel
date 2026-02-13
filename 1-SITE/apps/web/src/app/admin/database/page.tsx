@@ -50,7 +50,7 @@ export default function AdminDatabasePage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -109,7 +109,7 @@ export default function AdminDatabasePage() {
 
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
           <div className="flex items-center gap-3 text-va-black/40">
-            <Zap strokeWidth={1.5} size={20} />
+            <Zap size={20} />
             <TextInstrument className="text-[15px] font-black tracking-widest">Queries/sec</TextInstrument>
           </div>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-primary">142</HeadingInstrument>

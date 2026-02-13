@@ -123,7 +123,7 @@ function AfspraakContent() {
     return (
       <ContainerInstrument className="max-w-xl w-full bg-white p-12 md:p-16 rounded-[40px] shadow-aura text-center space-y-8 border border-black/5">
         <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-8">
-          <Calendar strokeWidth={1.5} size={40} />
+          <Calendar size={40} />
         </div>
         
         <div className="space-y-4">

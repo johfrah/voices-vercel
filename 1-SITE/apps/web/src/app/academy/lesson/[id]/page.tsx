@@ -188,7 +188,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
             href="/academy" 
             className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
           >
-            <ArrowLeft strokeWidth={1.5} size={14} /> 
+            <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="academy.back_to_overview" defaultText="Terug naar overzicht" />
           </Link>
           
@@ -202,7 +202,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         <BentoGrid>
           <BentoCard span="xl" className="hred p-16 text-white text-center space-y-8">
             <ContainerInstrument className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8">
-              {isLockedByDrip ? <Info size={48} className="text-white" /> : <ShieldCheck strokeWidth={1.5} size={48} className="text-white" />}
+              {isLockedByDrip ? <Info size={48} className="text-white" /> : <ShieldCheck size={48} className="text-white" />}
             </ContainerInstrument>
             <HeadingInstrument level={2} className="text-5xl font-black tracking-tighter leading-none">
               <VoiceglotText 
@@ -389,7 +389,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           href="/academy" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
-          <ArrowLeft strokeWidth={1.5} size={14} /> 
+          <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="academy.back_to_overview" defaultText="Terug naar overzicht" />
         </Link>
         

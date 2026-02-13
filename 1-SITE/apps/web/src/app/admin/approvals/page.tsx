@@ -73,7 +73,7 @@ export default function AdminApprovalsPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -123,7 +123,7 @@ export default function AdminApprovalsPage() {
                     )}
                     {item.isBrandSensitive && (
                       <div className="flex items-center gap-2 p-2 bg-primary/5 border border-primary/10 rounded-lg">
-                        <Sparkles strokeWidth={1.5} size={12} className="text-primary" />
+                        <Sparkles size={12} className="text-primary" />
                         <span className="text-[15px] font-black text-primary tracking-widest">Fame-Alarm (Topmerk)</span>
                       </div>
                     )}
@@ -136,13 +136,13 @@ export default function AdminApprovalsPage() {
                   onClick={() => handleAction(item.id, 'approve')}
                   className="flex-1 py-3 bg-green-500 text-white rounded-xl text-[15px] font-black tracking-widest hover:bg-green-600 transition-all flex items-center justify-center gap-2"
                 >
-                  <Check strokeWidth={1.5} size={14} /> Goedkeuren
+                  <Check size={14} /> Goedkeuren
                 </ButtonInstrument>
                 <ButtonInstrument 
                   onClick={() => handleAction(item.id, 'reject')}
                   className="w-12 py-3 bg-va-off-white text-va-black/20 rounded-xl hover:text-red-500 transition-all flex items-center justify-center"
                 >
-                  <X strokeWidth={1.5} size={14} />
+                  <X size={14} />
                 </ButtonInstrument>
               </div>
             </BentoCard>
@@ -151,7 +151,7 @@ export default function AdminApprovalsPage() {
       ) : (
         <ContainerInstrument className="bg-white border border-black/5 p-20 rounded-[40px] text-center space-y-4">
           <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
-            <Check strokeWidth={1.5} size={40} />
+            <Check size={40} />
           </div>
           <HeadingInstrument level={2} className="text-2xl font-black tracking-tight">Alles Clean</HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-medium">Er zijn momenteel geen acties die op goedkeuring wachten.</TextInstrument>
