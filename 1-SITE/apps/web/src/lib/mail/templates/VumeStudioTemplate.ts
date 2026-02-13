@@ -14,10 +14,11 @@ interface StudioExperienceOptions {
   location?: string;
   host?: string;
   language?: string;
+  headerImage?: string;
 }
 
 export function VumeStudioTemplate(options: StudioExperienceOptions) {
-  const { name, workshopName, date, time, location = 'Voices Studio, Gent', host = 'voices.be', language = 'nl' } = options;
+  const { name, workshopName, date, time, location = 'Voices Studio, Gent', host = 'voices.be', language = 'nl', headerImage } = options;
 
   const content = {
     nl: {
@@ -63,6 +64,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     title: content.title,
     previewText: content.title,
     journey: 'studio',
-    host
+    host,
+    headerImage: headerImage || 'https://www.voices.be/assets/common/branding/email/headers/default-header.jpg'
   });
 }

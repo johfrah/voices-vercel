@@ -14,10 +14,11 @@ interface WrapperOptions {
   market?: string;
   host?: string;
   showSignature?: boolean;
+  headerImage?: string;
 }
 
 export function VumeMasterWrapper(content: string, options: WrapperOptions) {
-  const { title, previewText, journey = 'agency', host = 'voices.be', showSignature = true } = options;
+  const { title, previewText, journey = 'agency', host = 'voices.be', showSignature = true, headerImage } = options;
   const market = MarketManager.getCurrentMarket(host);
   
   // 🎨 Laya's Refined Gradients (Based on Legacy, but smoother)
@@ -31,6 +32,23 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
 
   const primaryGradient = gradients[journey] || gradients.agency;
   const isDark = journey === 'artist';
+
+  // 🖼️ Header Logic: Specific image or dynamic banner
+  const headerHtml = headerImage ? `
+    <tr>
+      <td align="center" style="padding: 0; overflow: hidden; border-radius: 20px 20px 0 0;">
+        <img src="${headerImage}" alt="${title}" width="600" style="display: block; width: 100%; max-width: 600px; height: auto; border: 0;" />
+      </td>
+    </tr>
+  ` : `
+    <tr>
+      <td align="center" style="background: ${primaryGradient}; padding: 40px 20px; border-radius: 20px 20px 0 0;">
+        <h1 style="margin: 0; color: #FFFFFF; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 900; font-size: 24px; text-transform: uppercase; letter-spacing: 0.1em;">
+          ${title}
+        </h1>
+      </td>
+    </tr>
+  `;
 
   // ✍️ Mark's Signature Logic (Personal & Authoritative)
   let signatureHtml = '';
@@ -88,14 +106,8 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
                 </td>
               </tr>
               
-              <!-- DYNAMIC BANNER -->
-              <tr>
-                <td align="center" style="background: ${primaryGradient}; padding: 40px 20px;">
-                  <h1 style="margin: 0; color: #FFFFFF; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 900; font-size: 24px; text-transform: uppercase; letter-spacing: 0.1em;">
-                    ${title}
-                  </h1>
-                </td>
-              </tr>
+              <!-- DYNAMIC HEADER (IMAGE OR BANNER) -->
+              ${headerHtml}
 
               <!-- CONTENT -->
               <tr>

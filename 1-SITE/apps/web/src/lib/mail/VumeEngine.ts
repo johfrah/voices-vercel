@@ -41,6 +41,7 @@ export class VumeEngine {
           date: context.date,
           time: context.time,
           location: context.location,
+          headerImage: context.headerImage, // Pass specific workshop header
           host: host,
           language: context.language || 'nl'
         });
