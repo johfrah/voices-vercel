@@ -363,6 +363,9 @@ class ChrisWatchdog {
       content = content.replace(/<\/span>/g, '<\/TextInstrument>');
     }
 
+    content = content.replace(/ (md:(size|width|height|className|strokeWidth))=\{([^}]*)\}/g, '');
+    content = content.replace(/ (md:(size|width|height|className|strokeWidth))=([^\s>]*)/g, '');
+
     if (content !== originalContent) {
       fs.writeFileSync(filePath, content);
     }

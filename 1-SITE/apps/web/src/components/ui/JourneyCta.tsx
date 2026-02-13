@@ -76,7 +76,7 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
     <ContainerInstrument className={cn("rounded-[20px] md:rounded-[32px] p-6 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 my-8 md:my-12 relative overflow-hidden shadow-aura-lg", config.color)}>
       <ContainerInstrument className="relative z-10 space-y-3 md:space-y-4 text-center md:text-left">
         <ContainerInstrument className="w-10 h-10 md:w-12 md:h-12 rounded-[10px] bg-white/10 flex items-center justify-center mx-auto md:mx-0">
-          <Icon strokeWidth={1.5} size={20} md:size={24} />
+          <Icon strokeWidth={1.5} size={20} />
         </ContainerInstrument>
         <HeadingInstrument level={3} className="text-2xl md:text-3xl font-light tracking-tighter leading-none ">
           <VoiceglotText translationKey={config.key} defaultText={config.title} />
@@ -91,7 +91,7 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
         href={config.href}
         className="relative z-10 px-8 md:px-10 py-4 md:py-5 bg-white text-va-black rounded-[10px] font-light tracking-widest text-[15px] md:text-[15px] hover:scale-105 transition-all flex items-center justify-center gap-2 md:gap-3 shadow-xl "
       >
-        <VoiceglotText translationKey={config.ctaKey} defaultText={config.cta} /> <ArrowRight strokeWidth={1.5} size={14} md:size={16} />
+        <VoiceglotText translationKey={config.ctaKey} defaultText={config.cta} /> <ArrowRight strokeWidth={1.5} size={14} />
       </ButtonInstrument>
 
       {/* Decorative background elements */}

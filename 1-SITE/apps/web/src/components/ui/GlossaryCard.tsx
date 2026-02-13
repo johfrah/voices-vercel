@@ -35,7 +35,7 @@ export const GlossaryCard: React.FC<GlossaryCardProps> = ({ term }) => {
   return (
     <ContainerInstrument className="bg-white rounded-3xl p-5 md:p-6 border border-black/5 shadow-sm my-4 md:my-6 flex items-start gap-3 md:gap-4 group hover:border-primary/20 transition-all">
       <ContainerInstrument className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-va-black/5 flex items-center justify-center text-va-black/40 group-hover:bg-primary/10 group-hover:text-primary transition-colors shrink-0">
-        <BookOpen strokeWidth={1.5} size={16} md:size={18} />
+        <BookOpen strokeWidth={1.5} size={16} />
       </ContainerInstrument>
       <ContainerInstrument>
         <HeadingInstrument level={4} className="text-[15px] md:text-[15px] font-light tracking-widest mb-1 ">

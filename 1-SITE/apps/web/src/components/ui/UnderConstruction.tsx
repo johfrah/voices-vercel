@@ -98,7 +98,7 @@ export default function UnderConstruction() {
               onClick={() => playClick('pro')}
               className="va-btn-pro inline-flex items-center gap-3 md:gap-4 !px-8 md:!px-12 !py-6 md:!py-8 text-base md:text-lg group"
             >
-              <Mail strokeWidth={1.5} size={20} md:size={24} className="group-hover:rotate-12 transition-transform" />
+              <Mail strokeWidth={1.5} size={20} className="group-hover:rotate-12 transition-transform" />
               {market.email}
             </ButtonInstrument>
           </ContainerInstrument>

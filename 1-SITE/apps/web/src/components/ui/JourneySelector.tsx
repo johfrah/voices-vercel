@@ -49,7 +49,7 @@ export function JourneySelector() {
                   : "hover:bg-va-off-white text-va-black/40 hover:text-va-black bg-transparent"
               )}
             >
-              <Icon size={16} md:size={18} strokeWidth={1.5} className={cn("transition-transform duration-500", isActive && "scale-110")} />
+              <Icon size={16} strokeWidth={1.5} className={cn("transition-transform duration-500", isActive && "scale-110")} />
               <TextInstrument as="span" className="text-[15px] md:text-[15px] font-black tracking-widest ">
                 <VoiceglotText  translationKey={j.key} defaultText={j.label} />
               </TextInstrument>

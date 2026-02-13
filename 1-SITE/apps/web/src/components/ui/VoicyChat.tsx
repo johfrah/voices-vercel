@@ -336,8 +336,8 @@ export const VoicyChat: React.FC = () => {
                     <Image  
                       src={chip.src} 
                       alt={chip.label} 
-                      width={18} md:width={20} 
-                      height={18} md:height={20} 
+                      width={18} 
+                      height={18} 
                       className="w-full h-full group-hover:invert group-hover:brightness-0 transition-all"
                       style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
                     />
@@ -346,7 +346,7 @@ export const VoicyChat: React.FC = () => {
                   <ContainerInstrument plain className="w-4 h-4 md:w-5 md:h-5 flex items-center justify-center">
                     {(() => {
                       const Icon = (chip as any).icon;
-                      return Icon ? <Icon strokeWidth={1.5} size={14} md:size={16} className="text-primary group-hover:text-white transition-colors" /> : null;
+                      return Icon ? <Icon strokeWidth={1.5} size={14} className="text-primary group-hover:text-white transition-colors" /> : null;
                     })()}
                   </ContainerInstrument>
                 )}
@@ -366,7 +366,7 @@ export const VoicyChat: React.FC = () => {
           isOpen ? 'bg-va-black text-white rotate-90' : 'bg-transparent text-va-black'
         }`}
       >
-        {isOpen ? <X strokeWidth={1.5} size={24} md:size={28} /> : (
+        {isOpen ? <X strokeWidth={1.5} size={24} /> : (
           <ContainerInstrument plain className="relative w-full h-full rounded-full overflow-hidden">
             <Image  
               src={VOICES_CONFIG.assets.placeholders.voicy} 
@@ -404,7 +404,7 @@ export const VoicyChat: React.FC = () => {
               onClick={() => setIsFullMode(!isFullMode)}
               className="p-1.5 md:p-2 hover:bg-white/10 rounded-full transition-colors text-white/60 hover:text-white"
             >
-              {isFullMode ? <Minimize2 strokeWidth={1.5} size={16} md:size={18} /> : <Maximize2 strokeWidth={1.5} size={16} md:size={18} />}
+              {isFullMode ? <Minimize2 strokeWidth={1.5} size={16} /> : <Maximize2 strokeWidth={1.5} size={16} />}
             </ButtonInstrument>
           </ContainerInstrument>
 
@@ -430,7 +430,7 @@ export const VoicyChat: React.FC = () => {
                 activeTab === tab.id ? 'bg-primary/5 text-primary' : 'text-va-black/30 hover:bg-black/5'
               }`}
             >
-              <tab.icon size={16} md:size={18} />
+              <tab.icon size={16} />
               <TextInstrument as="span" className="text-[15px] md:text-[15px] font-light tracking-widest "><VoiceglotText  translationKey={tab.translationKey} defaultText={tab.label} /></TextInstrument>
             </ButtonInstrument>
           ))}
@@ -577,7 +577,7 @@ export const VoicyChat: React.FC = () => {
                       type="submit"
                       className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-va-black text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all p-0"
                     >
-                      <Send strokeWidth={1.5} size={16} md:size={18} />
+                      <Send strokeWidth={1.5} size={16} />
                     </ButtonInstrument>
                   </FormInstrument>
                 </ContainerInstrument>
@@ -642,7 +642,7 @@ export const VoicyChat: React.FC = () => {
                     className="h-full flex flex-col items-center justify-center text-center space-y-4"
                   >
                     <ContainerInstrument plain className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                      <Check strokeWidth={1.5} size={24} md:size={32} />
+                      <Check strokeWidth={1.5} size={24} />
                     </ContainerInstrument>
                     <HeadingInstrument level={4} className="text-lg md:text-xl font-light tracking-tighter ">
                       <VoiceglotText  translationKey="chat.mail.sent.title" defaultText="Bericht verzonden!" />
@@ -665,7 +665,7 @@ export const VoicyChat: React.FC = () => {
                   >
                     <ContainerInstrument plain className="flex flex-col items-center text-center space-y-2">
                       <ContainerInstrument plain className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                        <Mail strokeWidth={1.5} size={20} md:size={24} />
+                        <Mail strokeWidth={1.5} size={20} />
                       </ContainerInstrument>
                       <HeadingInstrument level={4} className="text-base md:text-lg font-light tracking-tighter ">
                         <VoiceglotText  translationKey="chat.mail.title" defaultText="Stuur ons een bericht" />
@@ -724,7 +724,7 @@ export const VoicyChat: React.FC = () => {
           {activeTab === 'phone' && (
             <ContainerInstrument plain className="flex-1 p-6 md:p-8 flex flex-col items-center justify-center text-center space-y-4 md:space-y-6">
               <ContainerInstrument plain className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <Phone strokeWidth={1.5} size={24} md:size={32} />
+                <Phone strokeWidth={1.5} size={24} />
               </ContainerInstrument>
               <ContainerInstrument plain className="space-y-2">
                 <HeadingInstrument level={4} className="text-lg md:text-xl font-light tracking-tighter ">
@@ -756,7 +756,7 @@ export const VoicyChat: React.FC = () => {
                       className="w-full text-left p-3 md:p-4 rounded-xl md:rounded-2xl bg-va-off-white hover:bg-primary/5 hover:text-primary transition-all text-[15px] md:text-[15px] font-light flex justify-between items-center group"
                     >
                     <TextInstrument as="span"><VoiceglotText  translationKey={faq.key} defaultText={faq.q} /></TextInstrument>
-                    <Send strokeWidth={1.5} size={12} md:size={14} className="opacity-0 group-hover:opacity-40 transition-opacity" />
+                    <Send strokeWidth={1.5} size={12} className="opacity-0 group-hover:opacity-40 transition-opacity" />
                   </ButtonInstrument>
               ))}
             </ContainerInstrument>
@@ -781,8 +781,8 @@ export const VoicyChat: React.FC = () => {
                       <Image  
                         src="/assets/common/branding/icons/MENU.svg" 
                         alt="Edit Mode" 
-                        width={18} md:width={20} 
-                        height={18} md:height={20} 
+                        width={18} 
+                        height={18} 
                         className={isEditMode ? 'brightness-0 invert' : ''}
                         style={!isEditMode ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' } : {}}
                       />
@@ -809,8 +809,8 @@ export const VoicyChat: React.FC = () => {
                       <Image  
                         src="/assets/common/branding/icons/INFO.svg" 
                         alt="Dashboard" 
-                        width={14} md:width={16} 
-                        height={14} md:height={16} 
+                        width={14} 
+                        height={14} 
                         className="opacity-40"
                         style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
                       />
@@ -826,8 +826,8 @@ export const VoicyChat: React.FC = () => {
                       <Image  
                         src="/assets/common/branding/icons/ACCOUNT.svg" 
                         alt="Mailbox" 
-                        width={14} md:width={16} 
-                        height={14} md:height={16} 
+                        width={14} 
+                        height={14} 
                         className="opacity-40"
                         style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
                       />

@@ -26,7 +26,7 @@ export const GuaranteesBento = () => {
         </ContainerInstrument>
         <ContainerInstrument plain className="relative z-10">
           <ContainerInstrument plain className="w-12 h-12 md:w-16 md:h-16 bg-primary rounded-[20px] md:rounded-[24px] flex items-center justify-center text-va-black mb-6 md:mb-8 shadow-lg shadow-primary/20">
-            <ShieldCheck strokeWidth={1.5} size={24} md:size={32} fill="currentColor" />
+            <ShieldCheck strokeWidth={1.5} size={24} fill="currentColor" />
           </ContainerInstrument>
           <HeadingInstrument level={3} className="text-3xl md:text-5xl font-light tracking-tighter mb-4 md:mb-6 leading-none text-primary"><VoiceglotText  translationKey="guarantees.satisfaction.title" defaultText="100% Tevredenheid" /><TextInstrument className="text-white/40 font-medium max-w-md text-base md:text-lg block mt-4"><VoiceglotText  
               translationKey="guarantees.satisfaction.description" 

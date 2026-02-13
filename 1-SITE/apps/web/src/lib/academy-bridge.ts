@@ -54,7 +54,7 @@ export class AcademyDataBridge {
   /**
    * Haalt de volledige Academy dashboard configuratie op (100% Native)
    */
-  static async getDashboardData(userId: number): Promise<AcademyDashboardData   & { _nuclear: boolean }> {
+  static async getDashboardData(userId: number): Promise<AcademyDashboardData    & { _nuclear: boolean }> {
     try {
       // 1. Haal alle lessen op
       const allLessons = await db.select().from(lessons).orderBy(asc(lessons.displayOrder));

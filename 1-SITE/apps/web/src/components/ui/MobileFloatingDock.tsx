@@ -80,8 +80,8 @@ export function MobileFloatingDock() {
                 <Image  
                   src="/assets/common/branding/icons/SEARCH.svg" 
                   alt="Search" 
-                  width={16} md:width={18} 
-                  height={16} md:height={18} 
+                  width={16} 
+                  height={16} 
                   className="opacity-40 brightness-0 invert"
                 />
               </ContainerInstrument>
@@ -115,8 +115,8 @@ export function MobileFloatingDock() {
                 <Image  
                   src={item.src} 
                   alt={item.label} 
-                  width={20} md:width={24} 
-                  height={20} md:height={24} 
+                  width={20} 
+                  height={20} 
                   className="brightness-0 invert"
                 />
               </ContainerInstrument>

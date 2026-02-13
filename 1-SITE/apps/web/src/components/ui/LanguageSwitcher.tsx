@@ -128,16 +128,16 @@ export const LanguageSwitcher: React.FC = () => {
                       <Image  
                         src="/assets/common/branding/icons/INFO.svg" 
                         alt="Active" 
-                        width={12} md:width={14} 
-                        height={12} md:height={14} 
+                        width={12} 
+                        height={12} 
                         className="brightness-0 invert"
                       />
                     ) : (
                       <Image  
                         src="/assets/common/branding/icons/FORWARD.svg" 
                         alt="Forward" 
-                        width={10} md:width={12} 
-                        height={10} md:height={12} 
+                        width={10} 
+                        height={10} 
                         className="opacity-0 group-hover:opacity-40 transition-opacity"
                         style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
                       />

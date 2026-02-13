@@ -102,7 +102,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
                 />
               ) : (
                 <ContainerInstrument className="w-full h-full bg-primary flex items-center justify-center text-white animate-pulse">
-                  <Volume2 strokeWidth={1.5} size={20} md:size={24} />
+                  <Volume2 strokeWidth={1.5} size={20} />
                 </ContainerInstrument>
               )}
               {/* Live Indicator Overlay */}
@@ -142,7 +142,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               }}
               className="text-white/30 hover:text-white transition-all active:scale-90 p-0 bg-transparent"
             >
-              <SkipBack strokeWidth={1.5} size={20} md:size={24} fill="currentColor" />
+              <SkipBack strokeWidth={1.5} size={20} fill="currentColor" />
             </ButtonInstrument>
             <ButtonInstrument 
               onClick={() => {
@@ -151,7 +151,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               }}
               className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-105 active:scale-90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] p-0"
             >
-              {isPlaying ? <Pause strokeWidth={1.5} size={24} md:size={32} fill="currentColor" /> : <Play strokeWidth={1.5} size={24} md:size={32} fill="currentColor" className="ml-1" />}
+              {isPlaying ? <Pause strokeWidth={1.5} size={24} fill="currentColor" /> : <Play strokeWidth={1.5} size={24} fill="currentColor" className="ml-1" />}
             </ButtonInstrument>
             <ButtonInstrument 
               onClick={() => {
@@ -160,7 +160,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               }}
               className="text-white/30 hover:text-white transition-all active:scale-90 p-0 bg-transparent"
             >
-              <SkipForward strokeWidth={1.5} size={20} md:size={24} fill="currentColor" />
+              <SkipForward strokeWidth={1.5} size={20} fill="currentColor" />
             </ButtonInstrument>
           </ContainerInstrument>
 
@@ -177,7 +177,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               }}
               className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all p-0"
             >
-              <X strokeWidth={1.5} size={18} md:size={20} />
+              <X strokeWidth={1.5} size={18} />
             </ButtonInstrument>
           </ContainerInstrument>
           
@@ -186,7 +186,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
             onClick={onClose}
             className="md:hidden absolute -top-2 -right-2 w-7 h-7 md:w-8 md:h-8 rounded-full bg-va-black border border-white/10 flex items-center justify-center text-white/40 shadow-xl p-0"
           >
-            <X strokeWidth={1.5} size={12} md:size={14} />
+            <X strokeWidth={1.5} size={12} />
           </ButtonInstrument>
         </ContainerInstrument>
 

@@ -176,7 +176,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 />
               ) : (
                 <ContainerInstrument className="w-full h-full bg-va-off-white flex items-center justify-center">
-                  <Mic strokeWidth={1.5} size={24} md:size={32} className="text-va-black/20" />
+                  <Mic strokeWidth={1.5} size={24} className="text-va-black/20" />
                 </ContainerInstrument>
               )}
               
@@ -194,7 +194,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 }}
               >
                 <ContainerInstrument className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white text-va-black flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform duration-500">
-                  {activeDemo?.actor_name === voice.display_name ? <Volume2 strokeWidth={1.5} size={20} md:size={24} className="animate-pulse" /> : <Play strokeWidth={1.5} size={20} md:size={24} fill="currentColor" className="ml-1" />}
+                  {activeDemo?.actor_name === voice.display_name ? <Volume2 strokeWidth={1.5} size={20} className="animate-pulse" /> : <Play strokeWidth={1.5} size={20} fill="currentColor" className="ml-1" />}
                 </ContainerInstrument>
               </ContainerInstrument>
 
@@ -208,7 +208,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                     : "bg-black/40 text-white/90 hover:bg-black/60 opacity-0 group-hover:opacity-100"
                 )}
               >
-                {isSelected ? <Check size={12} md:size={14} strokeWidth={1.5} /> : <Plus size={12} md:size={14} strokeWidth={1.5} />}
+                {isSelected ? <Check size={12} strokeWidth={1.5} /> : <Plus size={12} strokeWidth={1.5} />}
               </ButtonInstrument>
             </ContainerInstrument>
 
@@ -237,7 +237,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 <TextInstrument className="text-xl md:text-2xl font-light tracking-tighter text-va-black">€{displayPrice}</TextInstrument>
                 {voice.voice_score > 90 && (
                   <ContainerInstrument className="flex items-center gap-1 px-1.5 py-0.5 bg-yellow-400/10 text-yellow-600 rounded-full">
-                    <Star strokeWidth={1.5} size={8} md:size={10} fill="currentColor" />
+                    <Star strokeWidth={1.5} size={8} fill="currentColor" />
                     <TextInstrument className="text-[15px] md:text-[15px] font-bold tracking-widest ">TOP</TextInstrument>
                   </ContainerInstrument>
                 )}

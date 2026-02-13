@@ -4,18 +4,6 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-
-interface FAQ {
-  id: number;
-  questionNl: string;
-  answerNl: string;
-}
-
-interface JourneyFaqProps {
-  journey: string;
-  limit?: number;
-}
-
 import { 
   ButtonInstrument, 
   ContainerInstrument, 
@@ -23,7 +11,6 @@ import {
   SectionInstrument, 
   TextInstrument 
 } from './LayoutInstruments';
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 interface FAQ {
   id: number;
@@ -44,8 +31,6 @@ export const JourneyFaq: React.FC<JourneyFaqProps> = ({ journey, limit = 3 }) =>
   useEffect(() => {
     const fetchFaqs = async () => {
       try {
-        // In a real app, this would be an API call to /api/faq?journey=...
-        // For now, we simulate the fetch with the data we just inserted
         const response = await fetch(`/api/faq?journey=${journey}&limit=${limit}`);
         if (response.ok) {
           const data = await response.json();

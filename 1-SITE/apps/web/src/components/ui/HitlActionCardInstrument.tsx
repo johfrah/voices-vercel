@@ -47,7 +47,7 @@ export const HitlActionCardInstrument = ({
           <HeadingInstrument level={4} className="text-[15px] md:text-[15px] font-medium tracking-widest text-white/40 "><VoiceglotText  translationKey="hitl.suggestion" defaultText="Voicy Suggestie" /></HeadingInstrument>
         </ContainerInstrument>
         <ButtonInstrument onClick={onDismiss} className="text-white/20 hover:text-white transition-colors p-0 bg-transparent">
-          <X strokeWidth={1.5} size={12} md:size={14} />
+          <X strokeWidth={1.5} size={12} />
         </ButtonInstrument>
       </ContainerInstrument>
 

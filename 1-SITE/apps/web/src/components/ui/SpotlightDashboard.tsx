@@ -182,7 +182,7 @@ export const SpotlightDashboard: React.FC = () => {
         {/* Search Header */}
         <ContainerInstrument className="p-6 md:p-10 border-b border-black/5 flex items-center gap-4 md:gap-8">
           <ContainerInstrument className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary">
-            <Search strokeWidth={1.5} size={24} md:size={32} />
+            <Search strokeWidth={1.5} size={24} />
           </ContainerInstrument>
           <input 
             autoFocus
@@ -199,7 +199,7 @@ export const SpotlightDashboard: React.FC = () => {
             }}
             className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-va-off-white flex items-center justify-center text-va-black/40 hover:text-va-black transition-all active:scale-90 p-0"
           >
-            <X strokeWidth={1.5} size={20} md:size={28} />
+            <X strokeWidth={1.5} size={20} />
           </ButtonInstrument>
         </ContainerInstrument>
 
@@ -218,7 +218,7 @@ export const SpotlightDashboard: React.FC = () => {
                 className="flex items-center gap-4 md:gap-5 p-4 md:p-6 rounded-[24px] md:rounded-[32px] bg-va-off-white border border-black/5 hover:border-primary/30 hover:bg-white hover:shadow-[0_20px_40px_rgba(0,0,0,0.05)] transition-all group text-left relative overflow-hidden"
               >
                 <ContainerInstrument className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white flex items-center justify-center ${item.color} shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500 shrink-0`}>
-                  <item.icon size={20} md:size={24} />
+                  <item.icon size={20} />
                 </ContainerInstrument>
                 <ContainerInstrument className="flex-1 min-w-0">
                   <HeadingInstrument level={4} className="font-light tracking-tight text-[15px] md:text-[15px] text-va-black/80 truncate">
@@ -233,7 +233,7 @@ export const SpotlightDashboard: React.FC = () => {
                     {item.badge}
                   </TextInstrument>
                 )}
-                <ArrowRight strokeWidth={1.5} size={14} md:size={16} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                <ArrowRight strokeWidth={1.5} size={14} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
               </ButtonInstrument>
             ))}
           </ContainerInstrument>
@@ -241,7 +241,7 @@ export const SpotlightDashboard: React.FC = () => {
           {filteredItems.length === 0 && (
             <ContainerInstrument className="py-24 md:py-32 text-center space-y-4 md:space-y-6">
               <ContainerInstrument className="w-20 h-20 md:w-24 md:h-24 bg-va-off-white rounded-full flex items-center justify-center mx-auto animate-pulse">
-                <Brain strokeWidth={1.5} size={40} md:size={48} className="text-va-black/10" />
+                <Brain strokeWidth={1.5} size={40} className="text-va-black/10" />
               </ContainerInstrument>
               <ContainerInstrument className="space-y-2">
                 <HeadingInstrument level={3} className="text-xl md:text-2xl font-light tracking-tighter">

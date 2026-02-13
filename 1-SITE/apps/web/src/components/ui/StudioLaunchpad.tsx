@@ -341,7 +341,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
               <ContainerInstrument className="bg-va-black text-white rounded-[24px] md:rounded-[30px] p-6 md:p-8 shadow-aura-lg sticky top-24 md:top-32">
                 <ContainerInstrument className="flex items-center gap-3 mb-4 md:mb-6">
                   <ContainerInstrument className="bg-primary/20 p-2 rounded-full">
-                    <LucideMic strokeWidth={1.5} size={18} md:size={20} className="text-primary" />
+                    <LucideMic strokeWidth={1.5} size={18} className="text-primary" />
                   </ContainerInstrument>
                   <HeadingInstrument level={3} className="text-lg md:text-xl font-light"><VoiceglotText  translationKey="auto.studiolaunchpad.uitspraak___vibe.4b4fd6" defaultText="Uitspraak & Vibe" /></HeadingInstrument>
                 </ContainerInstrument>
@@ -361,7 +361,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                     "p-4 md:p-6 rounded-full",
                     isRecording ? "bg-primary" : "bg-white/10"
                   )}>
-                    <LucideMic size={24} md:size={32} strokeWidth={1.5} />
+                    <LucideMic size={24} strokeWidth={1.5} />
                   </ContainerInstrument>
                   <TextInstrument className="text-[15px] md:text-[15px] font-light tracking-widest ">
                     {isRecording ? "Stop opname" : "Spreek het in"}
@@ -373,7 +373,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                   onClick={() => window.location.href = '/casting/session/'}
                 >
                   <TextInstrument as="span"><VoiceglotText  translationKey="auto.studiolaunchpad.vraag_proefopname_aa.8c2d12" defaultText="Vraag proefopname aan" /></TextInstrument>
-                  <LucideCheckCircle size={20} md:size={24} strokeWidth={1.5} />
+                  <LucideCheckCircle size={20} strokeWidth={1.5} />
                 </ButtonInstrument>
 
                 <TextInstrument className="text-center text-white/20 text-[15px] md:text-[15px] mt-4 md:mt-6 leading-relaxed tracking-widest font-light "><VoiceglotText  translationKey="auto.studiolaunchpad.je_gegevens_worden_a.e7a216" defaultText="Je gegevens worden anoniem behandeld." /></TextInstrument>

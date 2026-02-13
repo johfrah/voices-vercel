@@ -51,7 +51,7 @@ export default function LiteFrontpage() {
         <BentoCard span="xl" className="h-auto md:h-[400px] flex flex-col justify-between group overflow-hidden relative p-8 md:p-12 bg-va-black text-white !rounded-[20px]">
           <ContainerInstrument className="relative z-10">
             <ContainerInstrument className="w-12 h-12 md:w-16 md:h-16 bg-primary rounded-[15px] md:rounded-[20px] flex items-center justify-center text-white mb-6 md:mb-8 shadow-lg shadow-primary/20">
-              <Mic size={24} md:size={32} strokeWidth={1.5} />
+              <Mic size={24} strokeWidth={1.5} />
             </ContainerInstrument>
             <HeadingInstrument level={3} className="text-3xl md:text-5xl font-light tracking-tighter mb-4 md:mb-6 leading-none text-primary ">
               <VoiceglotText  translationKey="lite.feature1.title" defaultText="Voices Platform" />

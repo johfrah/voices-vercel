@@ -59,7 +59,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
   if (loading) {
     return (
       <ContainerInstrument className="bg-va-off-white rounded-[24px] md:rounded-[32px] p-6 md:p-8 border border-black/5 flex items-center justify-center min-h-[150px] md:min-h-[200px]">
-        <Loader2 strokeWidth={1.5} className="animate-spin text-primary" size={24} md:size={32} />
+        <Loader2 strokeWidth={1.5} className="animate-spin text-primary" size={24} />
       </ContainerInstrument>
     );
   }
@@ -69,7 +69,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
       <ContainerInstrument className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0">
         <ContainerInstrument className="flex items-center gap-3">
           <ContainerInstrument className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-            <Music strokeWidth={1.5} size={18} md:size={20} />
+            <Music strokeWidth={1.5} size={18} />
           </ContainerInstrument>
           <ContainerInstrument>
             <HeadingInstrument level={4} className="text-[15px] md:text-[15px] font-light tracking-tight ">
@@ -106,12 +106,12 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
                 "w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all p-0",
                 state.music.trackId === track.id ? "bg-primary text-white" : "bg-va-black/5 text-va-black/20 group-hover:bg-va-black group-hover:text-white"
               )} onClick={(e: any) => { e.stopPropagation(); togglePlay(track); }}>
-                {playingId === track.id ? <Pause strokeWidth={1.5} size={12} md:size={14} fill="currentColor" /> : <Play strokeWidth={1.5} size={12} md:size={14} fill="currentColor" className="ml-0.5" />}
+                {playingId === track.id ? <Pause strokeWidth={1.5} size={12} fill="currentColor" /> : <Play strokeWidth={1.5} size={12} fill="currentColor" className="ml-0.5" />}
               </ButtonInstrument>
             </ButtonInstrument>
             {state.music.trackId === track.id && (
               <ContainerInstrument className="absolute -top-1.5 -right-1.5 md:-top-2 md:-right-2 w-4 h-4 md:w-5 md:h-5 bg-primary text-white rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
-                <Check strokeWidth={1.5} size={10} md:size={12} />
+                <Check strokeWidth={1.5} size={10} />
               </ContainerInstrument>
             )}
           </ContainerInstrument>
@@ -136,7 +136,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
               )}
             >
               <ContainerInstrument className={cn("w-4 h-4 md:w-5 md:h-5 rounded-md border-2 flex items-center justify-center shrink-0", state.music.asBackground ? "bg-primary border-primary text-white" : "border-black/10")}>
-                {state.music.asBackground && <Check strokeWidth={1.5} size={10} md:size={12} />}
+                {state.music.asBackground && <Check strokeWidth={1.5} size={10} />}
               </ContainerInstrument>
               <ContainerInstrument>
                 <TextInstrument className="text-[15px] md:text-[15px] font-black tracking-tight ">
@@ -156,7 +156,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
               )}
             >
               <ContainerInstrument className={cn("w-4 h-4 md:w-5 md:h-5 rounded-md border-2 flex items-center justify-center shrink-0", state.music.asHoldMusic ? "bg-primary border-primary text-white" : "border-black/10")}>
-                {state.music.asHoldMusic && <Check strokeWidth={1.5} size={10} md:size={12} />}
+                {state.music.asHoldMusic && <Check strokeWidth={1.5} size={10} />}
               </ContainerInstrument>
               <ContainerInstrument>
                 <TextInstrument className="text-[15px] md:text-[15px] font-black tracking-tight ">

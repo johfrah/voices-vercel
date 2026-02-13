@@ -75,7 +75,7 @@ export const VoicyProactiveIntelligence = () => {
               <ContainerInstrument className="flex justify-between items-start mb-4">
                 <ContainerInstrument className="flex items-center gap-2">
                   <ContainerInstrument className="w-7 h-7 md:w-8 md:h-8 bg-primary rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                    <Brain strokeWidth={1.5} size={16} md:size={18} className="text-va-black" />
+                    <Brain strokeWidth={1.5} size={16} className="text-va-black" />
                   </ContainerInstrument>
                   <TextInstrument as="span" className="text-[15px] md:text-[15px] font-black tracking-[0.2em] text-primary ">
                     <VoiceglotText  translationKey="auto.voicyproactiveintelligence.voicy_intelligence.7a49dd" defaultText="Voicy Intelligence" />
