@@ -297,20 +297,14 @@ export default function GlobalNav() {
         ) : market.market_code === 'YOUSSEF' ? (
           <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap"><VoiceglotText  translationKey="auto.globalnav.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" /></TextInstrument>
         ) : isStudioJourney ? (
-          <ContainerInstrument className="flex items-center gap-3">
-            <VoiceglotImage  
-              src={market.logo_url} 
-              alt={market.name} 
-              width={120} 
-              height={48}
-              priority={true}
-              className="h-8 md:h-10 w-auto transition-transform duration-500 group-hover:scale-105"
-            />
-            <ContainerInstrument className="h-6 w-px bg-va-black/10 mx-1" />
-            <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-va-black uppercase">
-              <VoiceglotText translationKey="nav.studio_label" defaultText="Studio" />
-            </TextInstrument>
-          </ContainerInstrument>
+          <VoiceglotImage  
+            src="/assets/studio/common/logo/Voices Studio Logo.webp" 
+            alt="Voices Studio" 
+            width={240} 
+            height={80}
+            priority={true}
+            className="h-12 md:h-14 w-auto transition-transform duration-500 group-hover:scale-105"
+          />
         ) : (
           <VoiceglotImage  
             src={market.logo_url} 

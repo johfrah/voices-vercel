@@ -1,6 +1,6 @@
 import { WorkshopGrid } from "@/components/studio/WorkshopGrid";
+import { WorkshopCarousel } from "@/components/studio/WorkshopCarousel";
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
-import { HitlActionCardInstrument } from '@/components/ui/HitlActionCardInstrument';
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -19,6 +19,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { WorkshopCalendar } from "@/components/studio/WorkshopCalendar";
 import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
+import { VideoPlayer } from "@/components/academy/VideoPlayer";
+import { Star, Mic, BookOpen, MessageSquare } from 'lucide-react';
 
 /**
  * STUDIO
@@ -28,11 +30,11 @@ import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "Voices Studio | Workshops voor Professionele Sprekers",
-  description: "Directe begeleiding in het stemmenambacht. Leer stemacteren van de experts in onze fysieke studio in Gent.",
+  title: "Voices Studio - Plezante voice-over workshops in België",
+  description: "Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden. Leer van de experts in onze fysieke studio in Gent.",
   openGraph: {
-    title: "Voices Studio | Workshops voor Professionele Sprekers",
-    description: "Directe begeleiding in het stemmenambacht. Leer stemacteren van de experts in onze fysieke studio in Gent.",
+    title: "Voices Studio - Plezante voice-over workshops in België",
+    description: "Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden.",
     type: "website",
   },
   alternates: {
@@ -42,202 +44,303 @@ export const metadata: Metadata = {
 
 export default async function StudioPage() {
   // 🎙️ Fetch Workshops
-  const activeWorkshops = await db.query.workshops.findMany({
-    limit: 6,
-    orderBy: [desc(workshops.date)],
-    with: {
-      media: true
-    }
-  }) || [];
-
-  // 🎓 Fetch Instructors
-  const teachers = await db.query.instructors.findMany({ 
-    limit: 4,
-    with: {
-      photo: true
-    }
-  }) || [];
+  let activeWorkshops: any[] = [];
+  try {
+    activeWorkshops = await db.query.workshops.findMany({
+      limit: 10,
+      orderBy: [desc(workshops.date)],
+      with: {
+        media: true
+      }
+    }) || [];
+  } catch (error) {
+    console.warn('⚠️ Drizzle failed on StudioPage, falling back to empty list:', error);
+    activeWorkshops = [];
+  }
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white">
       <LiquidBackground strokeWidth={1.5} />
       
-      {/* LIQUID DNA HEADER */}
-      <SectionInstrument className="relative pt-40 pb-24 overflow-hidden">
-        <ContainerInstrument>
-          <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-md rounded-[20px] mb-12 shadow-sm border border-black/[0.03]">
-            <TextInstrument className="w-2 h-2 rounded-full bg-primary animate-pulse font-light" />
-            <TextInstrument className="text-[15px] font-light tracking-widest text-black/60">
-              <VoiceglotText  translationKey="studio.hero.badge" defaultText="Voices Studio • Jouw verhaal komt binnen" />
-            </TextInstrument>
+      {/* 🚀 HERO SECTION WITH PROMOVIDEO */}
+      <SectionInstrument className="relative pt-48 pb-32 overflow-hidden">
+        <ContainerInstrument className="max-w-7xl">
+          <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
+            {/* LINKS: PROMOVIDEO */}
+            <ContainerInstrument className="lg:col-span-7 relative group">
+              <ContainerInstrument className="relative aspect-video rounded-[32px] overflow-hidden shadow-aura-lg border border-black/5 bg-va-black">
+                <VideoPlayer 
+                  url="/assets/studio/workshops/videos/workshop_beginners_aftermovie.mp4" 
+                  poster="/assets/studio/hero-poster.jpg"
+                />
+              </ContainerInstrument>
+              <ContainerInstrument className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] -z-10 animate-pulse" />
+            </ContainerInstrument>
+
+            {/* RECHTS: TITEL & INTRO */}
+            <ContainerInstrument className="lg:col-span-5 space-y-10">
+              <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-md rounded-[20px] shadow-sm border border-black/[0.03]">
+                <TextInstrument className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <TextInstrument className="text-[13px] font-light tracking-[0.2em] text-black/60">
+                  <VoiceglotText translationKey="studio.hero.badge" defaultText="Voices Studio" />
+                </TextInstrument>
+              </ContainerInstrument>
+              
+              <HeadingInstrument level={1} className="text-6xl md:text-7xl lg:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
+                <VoiceglotText translationKey="studio.hero.title" defaultText="Workshops voor professionele sprekers." />
+              </HeadingInstrument>
+              
+              <TextInstrument className="text-xl md:text-2xl text-black/40 font-light leading-relaxed tracking-tight max-w-md">
+                <VoiceglotText  
+                  translationKey="studio.hero.subtitle" 
+                  defaultText="Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden." 
+                />
+              </TextInstrument>
+
+              <ContainerInstrument className="pt-4 flex items-center gap-8">
+                <Link href="#workshops">
+                  <ButtonInstrument className="va-btn-pro !bg-va-black !text-white px-10 py-5 !rounded-[10px] font-light tracking-widest hover:bg-primary transition-all duration-500">
+                    <VoiceglotText translationKey="studio.hero.cta" defaultText="Bekijk aanbod" />
+                  </ButtonInstrument>
+                </Link>
+                <Link href="/studio/quiz" className="text-[15px] font-light tracking-widest text-black/30 hover:text-primary transition-colors flex items-center gap-3 group">
+                  <VoiceglotText translationKey="studio.hero.secondary" defaultText="Doe de quiz" />
+                  <Image src="/assets/common/branding/icons/FORWARD.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.3 }} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </ContainerInstrument>
+            </ContainerInstrument>
           </ContainerInstrument>
-          
-          <HeadingInstrument level={1} className="text-[12vw] md:text-[8vw] font-light tracking-tighter leading-[0.8] mb-12 "><VoiceglotText  translationKey="studio.hero.title_part1" defaultText="Workshops for " /><br /><TextInstrument className="text-primary font-light"><VoiceglotText  translationKey="studio.hero.title_part2" defaultText="professionele sprekers." /></TextInstrument></HeadingInstrument>
-          
-          <TextInstrument className="text-2xl md:text-3xl text-black/40 font-light leading-tight tracking-tight max-w-3xl"><VoiceglotText  
-              translationKey="studio.hero.subtitle" 
-              defaultText="Voices Studio is de fysieke plek voor directe begeleiding. Samen in de studio staan. Direct horen wat werkt. Leren van de experts in het vak." 
-            /></TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
-      <SectionInstrument className="pb-40">
-        <ContainerInstrument>
-          <BentoGrid strokeWidth={1.5} columns={3}>
-            {/* 🎯 DE GIDS BENTO */}
-            <BentoCard span="lg" className="bg-blue-600 p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[500px] rounded-[20px]">
-              <ContainerInstrument className="relative z-10">
-                <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-white/20 backdrop-blur-md flex items-center justify-center mb-8">
-                  <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" />
-                </ContainerInstrument>
-                <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none mb-8 "><VoiceglotText  translationKey="studio.bento.guide.title" defaultText="Welke workshop past bij jou?" /><TextInstrument className="text-white/70 font-light max-w-sm text-[15px] leading-relaxed"><VoiceglotText  translationKey="studio.bento.guide.text" defaultText="Geen blabla. Focus op de actie. Ontdek welk traject het beste bij jouw doelen aansluit." /></TextInstrument></HeadingInstrument>
-              </ContainerInstrument>
-              <ContainerInstrument className="relative z-10">
-                <Link  href="/studio/quiz">
-                  <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group !rounded-[10px] font-light tracking-widest "><VoiceglotText  translationKey="studio.bento.guide.cta" defaultText="Doe de quiz" /><Image  src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="group-hover:translate-x-2 transition-transform" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /></ButtonInstrument>
-                </Link>
-              </ContainerInstrument>
-              <ContainerInstrument className="absolute -right-20 -bottom-20 w-96 h-96 bg-white/10 rounded-[20px] blur-3xl" />
-            </BentoCard>
+      {/* 🎙️ WORKSHOP UITLEG & CAROUSEL */}
+      <SectionInstrument id="workshops" className="py-40 bg-va-off-white/50 border-y border-black/[0.03]">
+        <ContainerInstrument className="max-w-7xl">
+          <ContainerInstrument className="max-w-3xl mb-24 space-y-8">
+            <HeadingInstrument level={2} className="text-5xl md:text-6xl font-light tracking-tighter leading-none text-va-black">
+              <VoiceglotText translationKey="studio.workshops.title" defaultText="Leer professioneler spreken met Bernadette en Johfrah" />
+            </HeadingInstrument>
+            <TextInstrument className="text-xl md:text-2xl text-black/40 font-light leading-relaxed">
+              <VoiceglotText translationKey="studio.workshops.intro" defaultText="Wij leren je in onze maandelijkse basisworkshops 'Perfect spreken in 1 dag' en 'Voice-overs voor beginners' hoe je spreekt met helderheid, warmte en impact. Daarnaast organiseren we af en toe unieke workshops met gastdocenten." />
+            </TextInstrument>
+          </ContainerInstrument>
 
-            {/* 💬 AFSPRAAK BENTO */}
-            <BentoCard span="sm" className="bg-va-black text-white p-12 flex flex-col justify-between rounded-[20px] shadow-aura-lg">
-              <ContainerInstrument>
-                <Image  src="/assets/common/branding/icons/INFO.svg" width={48} height={48} alt="" className="text-primary mb-8 brightness-0 invert opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-                <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 leading-none">
-                  <VoiceglotText  translationKey="studio.bento.appointment.title" defaultText="Samen aan de slag" />
-                  <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed">
-                    <VoiceglotText  translationKey="studio.bento.appointment.text" defaultText="Twijfel je over je potentieel? Plan een gesprek in met Johfrah in de studio." />
-                  </TextInstrument>
-                </HeadingInstrument>
-              </ContainerInstrument>
-              <ButtonInstrument as={Link} href="/studio/afspraak" className="w-full py-6 rounded-[10px] bg-white/5 border border-white/10 text-white font-light tracking-widest text-[15px] hover:bg-primary hover:border-primary transition-all duration-500 flex items-center justify-center ">
-                <VoiceglotText  translationKey="studio.bento.appointment.cta" defaultText="Agenda bekijken" />
-              </ButtonInstrument>
-            </BentoCard>
+          {/* WORKSHOP CAROUSEL */}
+          <WorkshopCarousel workshops={activeWorkshops} />
+        </ContainerInstrument>
+      </SectionInstrument>
 
-            {/* 🎓 ACADEMY BRIDGE HITL */}
-            <BentoCard span="sm" className="bg-white p-12 flex flex-col justify-between rounded-[20px] shadow-aura border border-black/5">
-              <ContainerInstrument>
-                <Image  src="/assets/common/branding/icons/INFO.svg" width={48} height={48} alt="" className="text-primary mb-8" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-                <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 leading-none">
-                  <VoiceglotText  translationKey="studio.bento.academy_bridge.title" defaultText="Academy talent" />
-                  <TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-8">
-                    <VoiceglotText  translationKey="studio.bento.academy_bridge.text" defaultText="Er zijn 3 studenten die bijna klaar zijn met hun online traject. Nodig ze uit voor een fysieke sessie." />
-                  </TextInstrument>
-                </HeadingInstrument>
-                
-                <ContainerInstrument className="space-y-4">
-                  <HitlActionCardInstrument 
-                    title="Uitnodiging: Julie V."
-                    description="Heeft module 4 voltooid met een score van 9.2. Ideaal voor de 'Stem & Presentatie' workshop."
-                    type="bridge"
-                    onApprove={() => console.log('✅ Bridge uitnodiging verstuurd naar Julie')}
-                    onDismiss={() => console.log('❌ Bridge suggestie genegeerd')}
-                  />
-                </ContainerInstrument>
+      {/* 🧩 DRIE PIJLERS SECTIE */}
+      <SectionInstrument className="py-40 bg-white">
+        <ContainerInstrument className="max-w-7xl">
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {/* 1. UITSPRAAK */}
+            <ContainerInstrument className="p-12 rounded-[32px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
+              <ContainerInstrument className="w-16 h-16 rounded-[15px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+                <MessageSquare strokeWidth={1.5} className="text-primary" size={32} />
               </ContainerInstrument>
-              <ButtonInstrument as={Link} href="/studio/participants" className="text-[15px] font-light tracking-widest text-va-black/20 hover:text-primary transition-colors text-center mt-6">
-                <VoiceglotText  translationKey="studio.bento.academy_bridge.cta" defaultText="Bekijk alle talenten" />
-              </ButtonInstrument>
-            </BentoCard>
-
-            {/* 🎙️ WORKSHOP GRID */}
-            <ContainerInstrument className="md:col-span-2 space-y-12 pt-12">
-              <ContainerInstrument className="flex justify-between items-end px-4">
-                <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-black/30"><VoiceglotText  translationKey="studio.grid_label" defaultText="Aan de slag in de studio" /></HeadingInstrument>
-                <Link  href="/studio/kalender" className="text-[15px] font-light tracking-widest text-primary hover:underline flex items-center gap-2"><VoiceglotText  translationKey="studio.calendar_link" defaultText="Volledige kalender" /><Image  src="/assets/common/branding/icons/FORWARD.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /></Link>
-              </ContainerInstrument>
-              {activeWorkshops.length === 0 ? (
-                <ContainerInstrument className="p-12 text-center rounded-[20px] border-2 border-dashed border-black/5 bg-va-off-white/30">
-                  <TextInstrument className="text-black/40 font-light tracking-tighter"><VoiceglotText  translationKey="studio.no_workshops" defaultText="Momenteel geen geplande sessies." /></TextInstrument>
-                  <TextInstrument className="text-[15px] text-black/20 font-light mt-2 tracking-widest italic"><VoiceglotText  translationKey="studio.no_workshops_subtitle" defaultText="Nieuwe data volgen binnenkort." /></TextInstrument>
-                </ContainerInstrument>
-              ) : (
-                <WorkshopGrid workshops={activeWorkshops} />
-              )}
+              <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 text-va-black">
+                <VoiceglotText translationKey="studio.pillars.uitspraak.title" defaultText="1. Uitspraak" />
+              </HeadingInstrument>
+              <TextInstrument className="text-lg text-black/50 font-light leading-relaxed">
+                <VoiceglotText translationKey="studio.pillars.uitspraak.text" defaultText="Leer alles over correct stemgebruik, perfecte uitspraak en intonatie, 3 essentiële vaardigheden voor elke professionele spreker." />
+              </TextInstrument>
             </ContainerInstrument>
 
-            {/* 📅 KALENDER BENTO (Berny's Agenda-meesterschap) */}
-            <BentoCard span="lg" className="bg-white/40 backdrop-blur-sm p-0 rounded-[20px] shadow-aura border border-black/[0.02] overflow-hidden">
+            {/* 2. VOICE-OVER */}
+            <ContainerInstrument className="p-12 rounded-[32px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
+              <ContainerInstrument className="w-16 h-16 rounded-[15px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+                <Mic strokeWidth={1.5} className="text-primary" size={32} />
+              </ContainerInstrument>
+              <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 text-va-black">
+                <VoiceglotText translationKey="studio.pillars.voiceover.title" defaultText="2. Voice-over" />
+              </HeadingInstrument>
+              <TextInstrument className="text-lg text-black/50 font-light leading-relaxed">
+                <VoiceglotText translationKey="studio.pillars.voiceover.text" defaultText="Spreek je voice-overs in? Maak meer impact in diverse spreekstijlen: van audioboeken en documentaires tot audiodescriptie en tekenfilms." />
+              </TextInstrument>
+            </ContainerInstrument>
+
+            {/* 3. STORYTELLING */}
+            <ContainerInstrument className="p-12 rounded-[32px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
+              <ContainerInstrument className="w-16 h-16 rounded-[15px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+                <BookOpen strokeWidth={1.5} className="text-primary" size={32} />
+              </ContainerInstrument>
+              <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 text-va-black">
+                <VoiceglotText translationKey="studio.pillars.storytelling.title" defaultText="3. Storytelling" />
+              </HeadingInstrument>
+              <TextInstrument className="text-lg text-black/50 font-light leading-relaxed">
+                <VoiceglotText translationKey="studio.pillars.storytelling.text" defaultText="Ga aan de slag als podcastmaker, radio- of tv-presentator? Onze professionele coaches tillen jouw skills naar een hoger niveau." />
+              </TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      {/* 🎓 ONTMOET JE INSTRUCTEURS (Kennismaking) */}
+      <SectionInstrument className="py-48 bg-va-off-white/30 relative overflow-hidden">
+        <ContainerInstrument className="max-w-7xl relative z-10">
+          <ContainerInstrument className="text-center max-w-3xl mx-auto mb-32 space-y-6">
+            <TextInstrument className="text-[15px] font-light tracking-[0.3em] text-primary/60">
+              <VoiceglotText translationKey="studio.instructors.label" defaultText="Wij staan klaar om je te coachen" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-6xl md:text-7xl font-light tracking-tighter leading-none text-va-black">
+              <VoiceglotText translationKey="studio.instructors.title" defaultText="Ontmoet je instructeurs." />
+            </HeadingInstrument>
+            <TextInstrument className="text-xl text-black/40 font-light leading-relaxed">
+              <VoiceglotText translationKey="studio.instructors.intro" defaultText="Bernadette Timmermans en Johfrah Lefebvre bieden workshops aan voor iedereen die zijn spreekvaardigheden naar een hoger niveau wil tillen." />
+            </TextInstrument>
+          </ContainerInstrument>
+
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-32">
+            {/* BERNADETTE */}
+            <ContainerInstrument className="group space-y-12">
+              <ContainerInstrument className="relative aspect-[4/5] rounded-[32px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
+                <Image  
+                  src="/assets/common/coaches/bernadette.jpg" 
+                  alt="Bernadette Timmermans"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                />
+                <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                <ContainerInstrument className="absolute bottom-10 left-10">
+                  <TextInstrument className="text-white/60 text-[15px] font-light tracking-widest mb-2">
+                    <VoiceglotText translationKey="studio.instructor.bernadette.tagline" defaultText="VRT Stemcoach & Auteur" />
+                  </TextInstrument>
+                  <HeadingInstrument level={3} className="text-4xl font-light text-white tracking-tighter">Bernadette Timmermans</HeadingInstrument>
+                </ContainerInstrument>
+              </ContainerInstrument>
+              <ContainerInstrument className="space-y-6 px-4">
+                <TextInstrument className="text-xl text-black/50 font-light leading-relaxed">
+                  <VoiceglotText 
+                    translationKey="studio.instructor.bernadette.bio" 
+                    defaultText="Bernadette is een gerenommeerde stemcoach met een uitgebreide academische en professionele achtergrond. Ze heeft een bachelor en master in logopedie en audiologie en behaalde een doctoraat in de medische wetenschappen met een scriptie over het effect van stemtraining bij professionele stemgebruikers." 
+                  />
+                </TextInstrument>
+                <TextInstrument className="text-base text-black/40 font-light leading-relaxed">
+                  <VoiceglotText 
+                    translationKey="studio.instructor.bernadette.bio_extra" 
+                    defaultText="Bernadette geeft sinds 1984 les aan studenten radio aan het RITCS en is docent stem in BATAC Radio. Ze heeft talloze workshops gegeven en werkt als adviseur voor mediahuizen zoals VRT, DPG Belgie en Nederland en ATV. Bernadette is ook auteur van meerdere boeken over stemgebruik, waaronder de bekende uitspraak- en intonatiegids 'Klink Klaar'." 
+                  />
+                </TextInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+
+            {/* JOHFRAH */}
+            <ContainerInstrument className="group space-y-12 md:mt-24">
+              <ContainerInstrument className="relative aspect-[4/5] rounded-[32px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
+                <Image  
+                  src="/assets/common/founder/johfrah-avatar-be.png" 
+                  alt="Johfrah Lefebvre"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                />
+                <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                <ContainerInstrument className="absolute bottom-10 left-10">
+                  <TextInstrument className="text-white/60 text-[15px] font-light tracking-widest mb-2">
+                    <VoiceglotText translationKey="studio.instructor.johfrah.tagline" defaultText="Founder & Stemacteur" />
+                  </TextInstrument>
+                  <HeadingInstrument level={3} className="text-4xl font-light text-white tracking-tighter">Johfrah Lefebvre</HeadingInstrument>
+                </ContainerInstrument>
+              </ContainerInstrument>
+              <ContainerInstrument className="space-y-6 px-4">
+                <TextInstrument className="text-xl text-black/50 font-light leading-relaxed">
+                  <VoiceglotText 
+                    translationKey="studio.instructor.johfrah.bio" 
+                    defaultText="Johfrah is een bedreven Vlaamse voice-over met meer dan tien jaar ervaring in het inspreken van teksten voor webvideo's en commercials. Je kunt zijn stem herkennen van TV-spots voor Trivago, Stepstone of Pick UP! en zelfs als de stem achter de hulplijnen van Tesla en Samsung." 
+                  />
+                </TextInstrument>
+                <TextInstrument className="text-base text-black/40 font-light leading-relaxed">
+                  <VoiceglotText 
+                    translationKey="studio.instructor.johfrah.bio_extra" 
+                    defaultText="Naast zijn werk als voice-over is Johfrah ook een bekroond regisseur en cameraman, en oprichter van het internationale voice-over agency Voices.be. Hij heeft een YouTube-kanaal waar hij tips geeft aan beginnende voice-overs." 
+                  />
+                </TextInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      {/* 📅 KALENDER BENTO */}
+      <SectionInstrument className="py-40 bg-white">
+        <ContainerInstrument className="max-w-6xl">
+          <BentoGrid strokeWidth={1.5} columns={3}>
+            <BentoCard span="lg" className="bg-va-off-white rounded-[20px] shadow-aura border border-black/[0.02] overflow-hidden">
               <ContainerInstrument className="p-12">
                 <ContainerInstrument className="flex items-center gap-4 mb-8">
                   <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-primary/10 flex items-center justify-center">
                     <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
                   </ContainerInstrument>
                   <ContainerInstrument>
-                    <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter leading-none">
-                      <VoiceglotText translationKey="studio.calendar_section.title" defaultText="Wanneer kom je naar de studio?" />
+                    <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter leading-none text-va-black">
+                      <VoiceglotText translationKey="studio.calendar_section.title" defaultText="Kalender" />
                     </HeadingInstrument>
                     <TextInstrument className="text-[15px] font-light tracking-widest text-black/30 mt-2">
-                      <VoiceglotText translationKey="studio.calendar_section.subtitle" defaultText="Bekijk de beschikbare data" />
+                      <VoiceglotText translationKey="studio.calendar_section.subtitle" defaultText="Volgende workshops" />
                     </TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
                 <TextInstrument className="text-[15px] text-black/40 font-light leading-relaxed mb-12 max-w-md">
-                  <VoiceglotText translationKey="studio.calendar_section.intro" defaultText="Bekijk de kalender en kies een datum die jou uitkomt. Elke workshop heeft een beperkt aantal plekken. Reserveer direct je plek en ga samen met de workshopgever aan de slag in de studio." />
+                  <VoiceglotText translationKey="studio.calendar_section.intro" defaultText="Hier zie je een handig overzicht van onze volgende workshops." />
                 </TextInstrument>
                 <WorkshopCalendar workshops={activeWorkshops} />
               </ContainerInstrument>
             </BentoCard>
 
-            {/* 🌟 REVIEWS BENTO (Social Proof & Autoriteit) */}
-            <BentoCard span="full" className="bg-white p-16 rounded-[20px] shadow-aura border border-black/[0.02]">
-              <ContainerInstrument className="max-w-4xl mb-20">
-                <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-black/30 mb-8">
-                  <VoiceglotText translationKey="studio.reviews.label" defaultText="Social Proof" />
+            {/* 🎯 DE GIDS BENTO (Quiz) */}
+            <BentoCard span="sm" className="bg-blue-600 p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[500px] rounded-[20px]">
+              <ContainerInstrument className="relative z-10">
+                <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-white/20 backdrop-blur-md flex items-center justify-center mb-8">
+                  <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" />
+                </ContainerInstrument>
+                <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none mb-8 ">
+                  <VoiceglotText translationKey="studio.bento.guide.title" defaultText="Welke workshop past bij jou?" />
+                  <TextInstrument className="text-white/70 font-light max-w-sm text-[15px] leading-relaxed block mt-4">
+                    <VoiceglotText translationKey="studio.bento.guide.text" defaultText="Dankzij deze interactieve video-quiz kom je te weten welke workshop op dit moment het best bij je past." />
+                  </TextInstrument>
                 </HeadingInstrument>
-                <HeadingInstrument level={2} className="text-6xl font-light tracking-tighter leading-none mb-8">
-                  <VoiceglotText translationKey="studio.reviews_section.title" defaultText="Wat zeggen deelnemers over de workshops?" />
-                </HeadingInstrument>
-                <TextInstrument className="text-xl text-black/40 font-light leading-relaxed">
-                  <VoiceglotText translationKey="studio.reviews_section.intro" defaultText="Deelnemers delen hun ervaringen na een dag in de studio. Lees wat anderen zeggen over de workshops en de begeleiding van onze workshopgevers." />
-                </TextInstrument>
               </ContainerInstrument>
-              
-              <ReviewsInstrument 
-                reviews={activeWorkshops.flatMap(w => w.reviews || []).slice(0, 3)}
-                title=""
-                subtitle=""
-                translationKeyPrefix="studio.general.reviews"
-              />
-            </BentoCard>
-
-            {/* 🎓 INSTRUCTEURS FOCUS */}
-            <BentoCard span="full" className="bg-white p-16 rounded-[20px] shadow-aura">
-              <ContainerInstrument className="max-w-4xl mb-20">
-                <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-black/30 mb-8"><VoiceglotText  translationKey="studio.instructors.label" defaultText="Jouw workshopgevers" /></HeadingInstrument>
-                <HeadingInstrument level={2} className="text-6xl font-light tracking-tighter leading-none mb-8"><VoiceglotText  translationKey="studio.instructors.title_part1" defaultText="Leer professioneler spreken met " /><br /><TextInstrument className="text-primary font-light"><VoiceglotText  translationKey="studio.instructors.title_part2" defaultText="Bernadette en Johfrah." /></TextInstrument></HeadingInstrument>
-                <TextInstrument className="text-xl text-black/40 font-light leading-relaxed"><VoiceglotText  translationKey="studio.instructors.text" defaultText="Maak kennis met je instructeurs. Wij staan klaar om je te coachen en je spreekvaardigheden naar een hoger niveau te tillen." /></TextInstrument>
+              <ContainerInstrument className="relative z-10">
+                <Link  href="/studio/quiz">
+                  <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group !rounded-[10px] font-light tracking-widest ">
+                    <VoiceglotText translationKey="studio.bento.guide.cta" defaultText="Doe de quiz" />
+                    <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="group-hover:translate-x-2 transition-transform" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                  </ButtonInstrument>
+                </Link>
               </ContainerInstrument>
-              <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                {teachers.map((t: any) => (
-                  <ContainerInstrument key={t.id} className="group space-y-6">
-                    <ContainerInstrument className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
-                      <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-                      <Image  
-                        src={t.photo ? `/assets/${t.photo.filePath}` : "/assets/common/founder/johfrah-avatar-be.png"} 
-                        alt={t.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                      />
-                      <ContainerInstrument className="absolute bottom-8 left-8 right-8">
-                        <TextInstrument className="text-white/60 text-[15px] font-light tracking-widest mb-2 ">
-                          <VoiceglotText  translationKey={`studio.instructor.${t.id}.tagline`} defaultText={t.tagline || 'Workshopgever'} />
-                        </TextInstrument>
-                        <HeadingInstrument level={4} className="text-3xl font-light text-white tracking-tighter leading-none"><VoiceglotText  translationKey={`studio.instructor.${t.id}.name`} defaultText={t.name} /></HeadingInstrument>
-                      </ContainerInstrument>
-                    </ContainerInstrument>
-                    <TextInstrument className="text-black/40 text-[15px] font-light leading-relaxed px-4"><VoiceglotText  translationKey={`studio.instructor.${t.id}.bio`} defaultText={t.bio || ''} /></TextInstrument>
-                  </ContainerInstrument>
-                ))}
-              </ContainerInstrument>
+              <ContainerInstrument className="absolute -right-20 -bottom-20 w-96 h-96 bg-white/10 rounded-[20px] blur-3xl" />
             </BentoCard>
           </BentoGrid>
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🕸️ SUZY'S SCHEMA INJECTION: Studio LocalBusiness & Knowledge Graph */}
+      {/* 🌟 REVIEWS BENTO */}
+      <SectionInstrument className="py-48 bg-va-off-white border-t border-black/[0.03]">
+        <ContainerInstrument className="max-w-6xl">
+          <BentoCard span="full" className="bg-white rounded-[20px] border border-black/[0.02] p-16 shadow-aura">
+            <ContainerInstrument className="max-w-4xl mb-20">
+              <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-black/30 mb-8">
+                <VoiceglotText translationKey="studio.reviews.label" defaultText="Ervaringen van onze deelnemers" />
+              </HeadingInstrument>
+              <HeadingInstrument level={2} className="text-6xl font-light tracking-tighter leading-none mb-8 text-va-black">
+                <VoiceglotText translationKey="studio.reviews_section.title" defaultText="De mix tussen theorie en praktijk." />
+              </HeadingInstrument>
+              <TextInstrument className="text-xl text-black/40 font-light leading-relaxed">
+                <VoiceglotText translationKey="studio.reviews_section.intro" defaultText="De lesgevers, de mix tussen theorie en praktijk, persoonlijke feedback en veel tijd voor oefeningen krijgen extra waardering." />
+              </TextInstrument>
+            </ContainerInstrument>
+            
+            <ReviewsInstrument 
+              reviews={activeWorkshops.flatMap(w => w.reviews || []).slice(0, 3)}
+              title=""
+              subtitle=""
+              translationKeyPrefix="studio.general.reviews"
+            />
+          </BentoCard>
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      {/* 🕸️ SUZY'S SCHEMA INJECTION */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -248,7 +351,6 @@ export default async function StudioPage() {
             "name": "Voices Studio",
             "description": "De fysieke plek voor directe begeleiding in het stemmenambacht.",
             "url": "https://www.voices.be/studio",
-            "telephone": "+32 474 24 24 24", // Placeholder, idealiter uit market config
             "address": {
               "@type": "PostalAddress",
               "streetAddress": "Sint-Salvatorstraat 18",
@@ -256,35 +358,10 @@ export default async function StudioPage() {
               "postalCode": "9000",
               "addressCountry": "BE"
             },
-            "geo": {
-              "@type": "GeoCoordinates",
-              "latitude": 51.0667,
-              "longitude": 3.7333
-            },
-            "openingHoursSpecification": [
-              {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                "opens": "09:00",
-                "closes": "18:00"
-              }
-            ],
             "parentOrganization": {
               "@type": "Organization",
               "name": "Voices",
               "url": "https://www.voices.be"
-            },
-            "hasOfferCatalog": {
-              "@type": "OfferCatalog",
-              "name": "Stemworkshops",
-              "itemListElement": activeWorkshops.map((w: any) => ({
-                "@type": "Offer",
-                "itemOffered": {
-                  "@type": "Course",
-                  "name": w.title,
-                  "description": w.description
-                }
-              }))
             }
           })
         }}
