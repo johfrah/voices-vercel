@@ -72,47 +72,47 @@ export default function NotFound() {
         {healingStatus === 'ghost-generated' && ghostContent ? (
           <ContainerInstrument className="text-left bg-white p-12 rounded-[40px] shadow-aura border border-black/5 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <ContainerInstrument className="flex items-center gap-2 mb-8 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest w-fit">
-              <Sparkles strokeWidth={1.5} size={12} /><VoiceglotText translationKey="auto.not_found.voicy_ghost_content_.432daf" defaultText="Voicy Ghost Content (Live Generated)" />
+              <Sparkles strokeWidth={1.5} size={12} /><VoiceglotText strokeWidth={1.5} translationKey="auto.not_found.voicy_ghost_content_.432daf" defaultText="Voicy Ghost Content (Live Generated)" / />
             </ContainerInstrument>
             <ContainerInstrument className="prose prose-va max-w-none">
               <div dangerouslySetInnerHTML={{ __html: ghostContent.replace(/\n/g, '<br/>') }} />
             </ContainerInstrument>
-            <Link strokeWidth={1.5} href="/agency" className="va-btn-pro mt-12 inline-block"><VoiceglotText translationKey="auto.not_found.bekijk_onze_stemmen.a6c827" defaultText="Bekijk onze stemmen" /></Link>
+            <Link strokeWidth={1.5} href="/agency" className="va-btn-pro mt-12 inline-block"><VoiceglotText strokeWidth={1.5} translationKey="auto.not_found.bekijk_onze_stemmen.a6c827" defaultText="Bekijk onze stemmen" / /></Link>
           </ContainerInstrument>
         ) : (
           <>
             <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10">
-              <Search strokeWidth={1.5} size={12} / /> <VoiceglotText translationKey="404.badge" defaultText="Error 404" />
+              <Search strokeWidth={1.5} size={12} / /> <VoiceglotText strokeWidth={1.5} translationKey="404.badge" defaultText="Error 404" / />
             </ContainerInstrument>
             
-            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-none"><VoiceglotText translationKey="404.title" defaultText="Spoorloos." /><TextInstrument className="text-va-black/40 font-medium text-lg max-w-md mx-auto leading-relaxed"><VoiceglotText 
+            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-none"><VoiceglotText strokeWidth={1.5} translationKey="404.title" defaultText="Spoorloos." / /><TextInstrument className="text-va-black/40 font-medium text-lg max-w-md mx-auto leading-relaxed"><VoiceglotText strokeWidth={1.5} 
                 translationKey="404.subtitle" 
                 defaultText="De pagina die je zoekt is verplaatst of bestaat niet meer. Geen zorgen, onze gidsen zijn al op zoek." 
-              /></TextInstrument></HeadingInstrument>
+              / /></TextInstrument></HeadingInstrument>
 
             {healingStatus === 'voicy-offered' && (
               <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-bold tracking-widest animate-pulse">
-                <Heart strokeWidth={1.5} size={12} / /> <VoiceglotText translationKey="404.voicy_help" defaultText="Voicy helpt je verder →" />
+                <Heart strokeWidth={1.5} size={12} / /> <VoiceglotText strokeWidth={1.5} translationKey="404.voicy_help" defaultText="Voicy helpt je verder →" / />
               </ContainerInstrument>
             )}
 
             {healingStatus === 'searching' && (
               <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-va-black/5 rounded-full text-va-black/40 text-[15px] font-bold tracking-widest">
-                <Loader2 size={12} className="animate-spin" /><VoiceglotText translationKey="auto.not_found.voicy_zoekt_naar_een.0fce72" defaultText="Voicy zoekt naar een oplossing..." />
+                <Loader2 strokeWidth={1.5} size={12} className="animate-spin" / /><VoiceglotText strokeWidth={1.5} translationKey="auto.not_found.voicy_zoekt_naar_een.0fce72" defaultText="Voicy zoekt naar een oplossing..." / />
               </ContainerInstrument>
             )}
 
             <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
               <Link strokeWidth={1.5} href="/" className="va-btn-pro w-full sm:w-auto">
-                <Home size={18} />
-                <VoiceglotText translationKey="404.cta.home" defaultText="Naar de hoofdpagina" />
+                <Home strokeWidth={1.5} size={18} / />
+                <VoiceglotText strokeWidth={1.5} translationKey="404.cta.home" defaultText="Naar de hoofdpagina" / />
               </Link>
               <button 
                 onClick={() => window.history.back()}
                 className="va-btn-secondary w-full sm:w-auto"
               >
                 <ArrowLeft strokeWidth={1.5} size={16} />
-                <VoiceglotText translationKey="404.cta.back" defaultText="Ga terug" />
+                <VoiceglotText strokeWidth={1.5} translationKey="404.cta.back" defaultText="Ga terug" / />
               </button>
             </ContainerInstrument>
           </>

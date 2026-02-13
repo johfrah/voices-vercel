@@ -43,9 +43,9 @@ export function JourneySelector() {
                   : "hover:bg-va-off-white text-va-black/40 hover:text-va-black"
               )}
             >
-              <Icon size={18} strokeWidth={isActive ? 2.5 : 1.5} className={cn("transition-transform duration-500", isActive && "scale-110")} />
+              <Icon size={18} strokeWidth={1.5} className={cn("transition-transform duration-500", isActive && "scale-110")} />
               <span className="text-[15px] font-black tracking-widest">
-                <VoiceglotText translationKey={j.key} defaultText={j.label} />
+                <VoiceglotText strokeWidth={1.5} translationKey={j.key} defaultText={j.label} / />
               </span>
               {isActive && (
                 <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-1" />

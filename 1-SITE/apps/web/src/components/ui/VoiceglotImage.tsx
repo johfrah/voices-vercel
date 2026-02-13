@@ -77,7 +77,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
 
   return (
     <div className={cn("relative group/image-edit", isEditMode && "cursor-pointer")}>
-      <Image strokeWidth={1.5} 
+      <Image  
         src={currentSrc} 
         alt={alt}
         className={cn(
@@ -96,9 +96,9 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
           >
             <div className="bg-va-black text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-xl scale-90 group-hover/image-edit:scale-100 transition-transform">
               {isUploading ? (
-                <Loader2 size={14} className="animate-spin text-primary" />
+                <Loader2 strokeWidth={1.5} size={14} className="animate-spin text-primary" / />
               ) : (
-                <Upload size={14} className="text-primary" />
+                <Upload strokeWidth={1.5} size={14} className="text-primary" / />
               )}
               <span className="text-[15px] font-black tracking-widest">
                 {isUploading ? 'Uploaden...' : 'Vervang afbeelding'}
@@ -115,7 +115,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
           />
 
           <div className="absolute -top-6 right-0 opacity-0 group-hover/image-edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[15px] font-black tracking-widest pointer-events-none z-50 shadow-lg">
-            <ImageIcon size={8} className="text-primary" />
+            <ImageIcon   size={8} className="text-primary" / / />
             Media: {category}
           </div>
         </>

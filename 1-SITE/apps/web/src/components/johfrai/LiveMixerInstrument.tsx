@@ -139,7 +139,7 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
             </div>
             <div>
               <h4 className="font-black text-[15px] tracking-tight">
-                {title || <VoiceglotText translationKey="common.untitled_file" defaultText="Naamloos bestand" />}
+                {title || <VoiceglotText strokeWidth={1.5} translationKey="common.untitled_file" defaultText="Naamloos bestand" / />}
               </h4>
               <p className="text-[15px] font-bold text-va-black/30 tracking-widest">
                 {formatTime(currentTime)} / {formatTime(duration)}
@@ -181,14 +181,14 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-primary" />
               <span className="text-[15px] font-black tracking-widest text-va-black/40">
-                <VoiceglotText translationKey="audio.review.voice" defaultText="Stem" />
+                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.voice" defaultText="Stem" / />
               </span>
             </div>
             {musicUrl && (
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-va-black/10" />
                 <span className="text-[15px] font-black tracking-widest text-va-black/40">
-                  <VoiceglotText translationKey="audio.review.music" defaultText="Muziek" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="audio.review.music" defaultText="Muziek" / />
                 </span>
               </div>
             )}
@@ -205,7 +205,7 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
               <div className="flex-1 space-y-1">
                 <div className="flex justify-between items-center">
                   <span className="text-[15px] font-black tracking-widest text-va-black/40">
-                    <VoiceglotText translationKey="audio.review.mix_volume" defaultText="Mix Volume" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="audio.review.mix_volume" defaultText="Mix Volume" / />
                   </span>
                   <span className="text-[15px] font-black text-primary">{Math.round(musicVolume * 100)}%</span>
                 </div>
@@ -222,9 +222,9 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
             </div>
             
             <div className="flex items-center gap-2 text-va-black/20">
-              <Sliders size={14} />
+              <Sliders strokeWidth={1.5} size={14} / />
               <span className="text-[15px] font-black tracking-widest">
-                <VoiceglotText translationKey="audio.review.live_mix" defaultText="Live Mix" />
+                <VoiceglotText strokeWidth={1.5} translationKey="audio.review.live_mix" defaultText="Live Mix" / />
               </span>
             </div>
           </div>

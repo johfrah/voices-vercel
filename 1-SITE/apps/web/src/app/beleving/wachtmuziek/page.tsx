@@ -21,18 +21,18 @@ import Link from "next/link";
 export default function MusicExperiencePage() {
   return (
     <PageWrapperInstrument className="relative min-h-screen pt-32 pb-20 overflow-hidden">
-      <LiquidBackground />
+      <LiquidBackground strokeWidth={1.5} / />
       
       <SectionInstrument className="max-w-6xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-16">
-          <TextInstrument className="text-[15px] font-black tracking-[0.2em] text-primary mb-4"><VoiceglotText translationKey="music.category" defaultText="Beleving" /></TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6"><VoiceglotText translationKey="music.title" defaultText="Wachtmuziek die werkt" /><TextInstrument className="text-xl text-va-black/40 font-medium max-w-2xl"><VoiceglotText 
+          <TextInstrument className="text-[15px] font-black tracking-[0.2em] text-primary mb-4"><VoiceglotText strokeWidth={1.5} translationKey="music.category" defaultText="Beleving" / /></TextInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6"><VoiceglotText strokeWidth={1.5} translationKey="music.title" defaultText="Wachtmuziek die werkt" / /><TextInstrument className="text-xl text-va-black/40 font-medium max-w-2xl"><VoiceglotText strokeWidth={1.5} 
               translationKey="music.intro" 
               defaultText="Muziek is de hartslag van je wachtrij. Kies de juiste sfeer en verlaag de ervaren wachttijd." 
-            /></TextInstrument></HeadingInstrument>
+            / /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
 
-        <BentoGrid columns={3}>
+        <BentoGrid strokeWidth={1.5} columns={3}>
           <BentoCard 
             span="full" 
             className="hmagic text-white p-16 flex flex-col md:flex-row items-center gap-12"
@@ -41,10 +41,10 @@ export default function MusicExperiencePage() {
               <Music strokeWidth={1.5} size={48} className="text-white" / />
             </ContainerInstrument>
             <ContainerInstrument className="space-y-6">
-              <HeadingInstrument level={2} className="text-4xl font-black tracking-tight"><VoiceglotText translationKey="music.psychology.title" defaultText="De psychologie van het wachten" /><TextInstrument className="text-white/80 text-lg leading-relaxed font-light"><VoiceglotText 
+              <HeadingInstrument level={2} className="text-4xl font-black tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey="music.psychology.title" defaultText="De psychologie van het wachten" / /><TextInstrument className="text-white/80 text-lg leading-relaxed font-light"><VoiceglotText strokeWidth={1.5} 
                   translationKey="music.psychology.text" 
                   defaultText="Wachtmuziek is meer dan vulling. Het is een kans om je merkidentiteit te versterken en de beller in de juiste stemming te brengen. Goede muziek verlaagt de irritatie en verhoogt de retentie." 
-                /></TextInstrument></HeadingInstrument>
+                / /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>
           </BentoCard>
 
@@ -53,10 +53,10 @@ export default function MusicExperiencePage() {
             className="bg-white shadow-aura p-12"
           >
             <Zap strokeWidth={1.5} size={32} className="text-primary mb-6" />
-            <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText translationKey="music.quality.title" defaultText="Geoptimaliseerd" /><TextInstrument className="text-va-black/60 leading-relaxed font-light"><VoiceglotText 
+            <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText strokeWidth={1.5} translationKey="music.quality.title" defaultText="Geoptimaliseerd" / /><TextInstrument className="text-va-black/60 leading-relaxed font-light"><VoiceglotText strokeWidth={1.5} 
                 translationKey="music.quality.text" 
                 defaultText="Al onze muziek is technisch geoptimaliseerd voor telefonie (300Hz - 3400Hz). Geen vervorming, maar kristalhelder geluid." 
-              /></TextInstrument></HeadingInstrument>
+              / /></TextInstrument></HeadingInstrument>
           </BentoCard>
 
           <BentoCard 
@@ -64,10 +64,10 @@ export default function MusicExperiencePage() {
             className="bg-va-black text-white p-12"
           >
             <ShieldCheck strokeWidth={1.5} size={32} className="text-primary mb-6" />
-            <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText translationKey="music.rights.title" defaultText="Rechtenvrij" /><TextInstrument className="text-white/60 leading-relaxed font-light"><VoiceglotText 
+            <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText strokeWidth={1.5} translationKey="music.rights.title" defaultText="Rechtenvrij" / /><TextInstrument className="text-white/60 leading-relaxed font-light"><VoiceglotText strokeWidth={1.5} 
                 translationKey="music.rights.text" 
                 defaultText="Geen gedoe met Sabam of auteursrechten. Onze volledige bibliotheek is 100% rechtenvrij voor gebruik in jouw telefooncentrale." 
-              /></TextInstrument></HeadingInstrument>
+              / /></TextInstrument></HeadingInstrument>
           </BentoCard>
 
           <BentoCard 
@@ -75,9 +75,9 @@ export default function MusicExperiencePage() {
             className="bg-va-off-white p-12 flex flex-col justify-between"
           >
             <ContainerInstrument>
-              <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText translationKey="music.cta.title" defaultText="Kies je sfeer" /><TextInstrument className="text-va-black/40 mb-8 font-light"><VoiceglotText translationKey="music.cta.text" defaultText="Van rustgevende piano tot energieke beats." /></TextInstrument></HeadingInstrument>
+              <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText strokeWidth={1.5} translationKey="music.cta.title" defaultText="Kies je sfeer" / /><TextInstrument className="text-va-black/40 mb-8 font-light"><VoiceglotText strokeWidth={1.5} translationKey="music.cta.text" defaultText="Van rustgevende piano tot energieke beats." / /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>
-            <Link strokeWidth={1.5} href="/agency" className="va-btn-pro w-full text-center"><VoiceglotText translationKey="music.cta.button" defaultText="Beluister de Bibliotheek" /></Link>
+            <Link strokeWidth={1.5} href="/agency" className="va-btn-pro w-full text-center"><VoiceglotText strokeWidth={1.5} translationKey="music.cta.button" defaultText="Beluister de Bibliotheek" / /></Link>
           </BentoCard>
         </BentoGrid>
       </SectionInstrument>

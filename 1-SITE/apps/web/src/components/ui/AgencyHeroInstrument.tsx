@@ -39,30 +39,30 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
           {/* Badge */}
           <div className="va-badge-container">
             <div className="va-badge">
-              <Image strokeWidth={1.5} 
+              <Image  
                 src="/assets/common/branding/icons/INFO.svg" 
                 alt="Info" 
                 width={12} 
                 height={12} 
                 style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
               / /> 
-              <VoiceglotText 
+              <VoiceglotText strokeWidth={1.5} 
                 translationKey="agency.hero.badge" 
                 defaultText={market === 'BE' ? 'De beste Vlaamse en internationale stemmen' : 'De beste Nederlandse en internationale stemmen'} 
-              />
+              / />
             </div>
           </div>
 
           {/* Title */}
           <h1 className="va-hero-title font-light">
             {title ? (
-              <VoiceglotText translationKey="agency.hero.custom_title" defaultText={title} />
+              <VoiceglotText strokeWidth={1.5} translationKey="agency.hero.custom_title" defaultText={title} / />
             ) : (
               <>
-                <VoiceglotText translationKey="agency.hero.title.line1" defaultText="Vind jouw" />
+                <VoiceglotText strokeWidth={1.5} translationKey="agency.hero.title.line1" defaultText="Vind jouw" / />
                 <br />
                 <span className="va-hmagic-text">
-                  <VoiceglotText translationKey="agency.hero.title.line2" defaultText="Stemacteur." />
+                  <VoiceglotText strokeWidth={1.5} translationKey="agency.hero.title.line2" defaultText="Stemacteur." / />
                 </span>
               </>
             )}
@@ -71,18 +71,18 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
           {/* Description */}
           <p className="va-hero-description">
             {subtitle ? (
-              <VoiceglotText translationKey={`agency.hero.subtitle.${market.toLowerCase()}`} defaultText={subtitle} />
+              <VoiceglotText strokeWidth={1.5} translationKey={`agency.hero.subtitle.${market.toLowerCase()}`} defaultText={subtitle} / />
             ) : (
-              <VoiceglotText 
+              <VoiceglotText strokeWidth={1.5} 
                 translationKey="agency.hero.description" 
                 defaultText="Luister naar de beste stemmen voor jouw project. Van verteller tot commercial. Wij vinden de juiste toon voor elk merk." 
-              />
+              / />
             )}
           </p>
         </div>
 
         {/* Filter Bar Integration */}
-        {filters.languages.length > 0 && <FilterBar filters={filters} params={{ ...searchParams, market }} />}
+        {filters.languages.length > 0 && <FilterBar strokeWidth={1.5} filters={filters} params={{ ...searchParams, market }} / />}
       </div>
     </header>
   );

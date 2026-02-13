@@ -13,11 +13,11 @@ import { VoiceglotText } from "./VoiceglotText";
  */
 export const GuaranteesBento = () => {
   return (
-    <BentoGrid className="mb-32">
+    <BentoGrid strokeWidth={1.5} className="mb-32">
       {/* 🛡️ MAIN CARD: 100% Tevredenheid */}
       <BentoCard span="xl" className="h-[400px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
         <ContainerInstrument className="absolute inset-0 z-0">
-          <Image strokeWidth={1.5} 
+          <Image  
             src="/assets/service-photo.jpg" 
             alt="Service" 
             fill 
@@ -28,10 +28,10 @@ export const GuaranteesBento = () => {
           <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
             <ShieldCheck strokeWidth={1.5} size={32} fill="currentColor" />
           </ContainerInstrument>
-          <HeadingInstrument level={3} className="text-5xl font-black tracking-tighter mb-6 leading-none text-primary"><VoiceglotText translationKey="guarantees.satisfaction.title" defaultText="100% Tevredenheid" /><TextInstrument className="text-white/40 font-medium max-w-md text-lg"><VoiceglotText 
+          <HeadingInstrument level={3} className="text-5xl font-black tracking-tighter mb-6 leading-none text-primary"><VoiceglotText strokeWidth={1.5} translationKey="guarantees.satisfaction.title" defaultText="100% Tevredenheid" / /><TextInstrument className="text-white/40 font-medium max-w-md text-lg"><VoiceglotText strokeWidth={1.5} 
               translationKey="guarantees.satisfaction.description" 
               defaultText="Is de toon niet helemaal wat je zocht? Vraag met één klik een gratis retake aan. Let op: voor tekstwijzigingen achteraf rekenen we een klein supplement." 
-            /></TextInstrument></HeadingInstrument>
+            / /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
       </BentoCard>
@@ -40,7 +40,7 @@ export const GuaranteesBento = () => {
       <BentoCard span="sm" className="bg-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
           <Globe strokeWidth={1.5} className="text-primary mb-4" size={24} />
-          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black"><VoiceglotText translationKey="guarantees.native.title" defaultText="Native Speakers" /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="guarantees.native.description" defaultText="Al onze stemmen wonen en werken in hun eigen land voor de juiste culturele nuance." /></TextInstrument></HeadingInstrument>
+          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black"><VoiceglotText strokeWidth={1.5} translationKey="guarantees.native.title" defaultText="Native Speakers" / /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText strokeWidth={1.5} translationKey="guarantees.native.description" defaultText="Al onze stemmen wonen en werken in hun eigen land voor de juiste culturele nuance." / /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
       </BentoCard>
 
@@ -48,15 +48,15 @@ export const GuaranteesBento = () => {
       <BentoCard span="sm" className="bg-va-dark-soft text-white p-8 flex flex-col justify-between h-[280px] border-none">
         <ContainerInstrument plain>
           <Zap strokeWidth={1.5} className="text-primary mb-4" size={24} fill="currentColor" />
-          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-primary"><VoiceglotText translationKey="guarantees.speed.title" defaultText="Razendsnel" /><TextInstrument className="text-white/60 text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="guarantees.speed.description" defaultText="Vaak al binnen 24 uur geleverd. Jouw project wacht niet, wij ook niet." /></TextInstrument></HeadingInstrument>
+          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-primary"><VoiceglotText strokeWidth={1.5} translationKey="guarantees.speed.title" defaultText="Razendsnel" / /><TextInstrument className="text-white/60 text-[15px] font-medium leading-relaxed"><VoiceglotText strokeWidth={1.5} translationKey="guarantees.speed.description" defaultText="Vaak al binnen 24 uur geleverd. Jouw project wacht niet, wij ook niet." / /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
       </BentoCard>
 
       {/* 💰 Transparante Pricing */}
       <BentoCard span="sm" className="bg-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
-          <DollarSign className="text-primary mb-4" size={24} />
-          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black"><VoiceglotText translationKey="guarantees.pricing.title" defaultText="Eerlijke Prijs" /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="guarantees.pricing.description" defaultText="Geen verborgen kosten of abonnementen. Je betaalt alleen voor wat je nodig hebt." /></TextInstrument></HeadingInstrument>
+          <DollarSign strokeWidth={1.5} className="text-primary mb-4" size={24} / />
+          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black"><VoiceglotText strokeWidth={1.5} translationKey="guarantees.pricing.title" defaultText="Eerlijke Prijs" / /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText strokeWidth={1.5} translationKey="guarantees.pricing.description" defaultText="Geen verborgen kosten of abonnementen. Je betaalt alleen voor wat je nodig hebt." / /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
       </BentoCard>
 
@@ -64,7 +64,7 @@ export const GuaranteesBento = () => {
       <BentoCard span="sm" className="bg-va-off-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
           <Archive strokeWidth={1.5} className="text-va-black/20 mb-4" size={24} / />
-          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black"><VoiceglotText translationKey="guarantees.archive.title" defaultText="Veilig Archief" /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="guarantees.archive.description" defaultText="Al je scripts en opnames veilig bewaard in je persoonlijke kluis. Altijd bereikbaar." /></TextInstrument></HeadingInstrument>
+          <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black"><VoiceglotText strokeWidth={1.5} translationKey="guarantees.archive.title" defaultText="Veilig Archief" / /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText strokeWidth={1.5} translationKey="guarantees.archive.description" defaultText="Al je scripts en opnames veilig bewaard in je persoonlijke kluis. Altijd bereikbaar." / /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
       </BentoCard>
     </BentoGrid>

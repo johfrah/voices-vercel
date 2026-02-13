@@ -14,7 +14,7 @@ export default function BedanktMeetingPage() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white flex items-center justify-center px-6">
       <ContainerInstrument className="max-w-xl w-full bg-white p-12 md:p-16 rounded-[40px] shadow-aura text-center space-y-8 border border-black/5">
         <ContainerInstrument className="relative w-48 h-12 mx-auto mb-8">
-          <Image strokeWidth={1.5} 
+          <Image  
             src="/assets/studio/vstudio-logo.webp" 
             alt="Voices Studio" 
             fill
@@ -24,14 +24,14 @@ export default function BedanktMeetingPage() {
         </ContainerInstrument>
         
         <ContainerInstrument className="space-y-4">
-          <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter"><VoiceglotText translationKey="studio.meeting.thanks.title" defaultText="Bedankt voor het gesprek!" /><TextInstrument className="text-va-black/50 font-medium text-lg leading-relaxed"><VoiceglotText 
+          <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter"><VoiceglotText strokeWidth={1.5} translationKey="studio.meeting.thanks.title" defaultText="Bedankt voor het gesprek!" / /><TextInstrument className="text-va-black/50 font-medium text-lg leading-relaxed"><VoiceglotText strokeWidth={1.5} 
               translationKey="studio.meeting.thanks.subtitle" 
               defaultText="Het was fijn om kennis te maken. We hebben de belangrijkste punten genoteerd en komen zo snel mogelijk bij je terug." 
-            /></TextInstrument></HeadingInstrument>
+            / /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
 
         <ContainerInstrument className="pt-8">
-          <Link strokeWidth={1.5} href="/studio" className="va-btn-pro inline-block"><VoiceglotText translationKey="studio.meeting.thanks.cta" defaultText="Terug naar de Studio" /></Link>
+          <Link strokeWidth={1.5} href="/studio" className="va-btn-pro inline-block"><VoiceglotText strokeWidth={1.5} translationKey="studio.meeting.thanks.cta" defaultText="Terug naar de Studio" / /></Link>
         </ContainerInstrument>
       </ContainerInstrument>
     </PageWrapperInstrument>

@@ -43,10 +43,10 @@ export const AcademyTipWidget: React.FC<{ userId: number }> = ({ userId }) => {
 
   const getIcon = () => {
     switch (tip.category) {
-      case 'morning': return <Coffee size={20} />;
-      case 'commute': return <Car size={20} />;
-      case 'practice': return <Target size={20} />;
-      default: return <Lightbulb size={20} />;
+      case 'morning': return <Coffee strokeWidth={1.5} size={20} / />;
+      case 'commute': return <Car strokeWidth={1.5} size={20} / />;
+      case 'practice': return <Target strokeWidth={1.5} size={20} / />;
+      default: return <Lightbulb strokeWidth={1.5} size={20} / />;
     }
   };
 
@@ -67,16 +67,16 @@ export const AcademyTipWidget: React.FC<{ userId: number }> = ({ userId }) => {
             {getIcon()}
           </ContainerInstrument>
           <ContainerInstrument>
-            <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey={`academy.tips.cat.${tip.category}`} defaultText={getCategoryLabel()} /></TextInstrument>
-            <HeadingInstrument level={4} className="text-xl font-black tracking-tighter leading-none"><VoiceglotText translationKey={`academy.tips.title.${tip.id}`} defaultText={tip.title} /></HeadingInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText strokeWidth={1.5} translationKey={`academy.tips.cat.${tip.category}`} defaultText={getCategoryLabel()} / /></TextInstrument>
+            <HeadingInstrument level={4} className="text-xl font-black tracking-tighter leading-none"><VoiceglotText strokeWidth={1.5} translationKey={`academy.tips.title.${tip.id}`} defaultText={tip.title} / /></HeadingInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
 
-      <TextInstrument className="text-[15px] text-va-black/60 font-medium leading-relaxed mb-6"><VoiceglotText translationKey={`academy.tips.content.${tip.id}`} defaultText={tip.content} /></TextInstrument>
+      <TextInstrument className="text-[15px] text-va-black/60 font-medium leading-relaxed mb-6"><VoiceglotText strokeWidth={1.5} translationKey={`academy.tips.content.${tip.id}`} defaultText={tip.content} / /></TextInstrument>
 
       <ContainerInstrument className="flex items-center gap-2 text-[15px] font-black tracking-widest text-primary group-hover:gap-4 transition-all">
-        <VoiceglotText translationKey="academy.tips.next" defaultText="Volgende tip" />
+        <VoiceglotText strokeWidth={1.5} translationKey="academy.tips.next" defaultText="Volgende tip" / />
         <ArrowRight strokeWidth={1.5} size={12} />
       </ContainerInstrument>
     </ContainerInstrument>

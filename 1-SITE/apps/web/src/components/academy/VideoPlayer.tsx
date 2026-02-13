@@ -108,9 +108,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, su
             </div>
 
             <div className="flex items-center gap-6 text-white/40">
-              <button className="hover:text-white transition-colors"><RotateCcw size={20} /></button>
+              <button className="hover:text-white transition-colors"><RotateCcw strokeWidth={1.5} size={20} / /></button>
               <button className="hover:text-white transition-colors"><Settings strokeWidth={1.5} size={20} / /></button>
-              <button className="hover:text-white transition-colors"><Maximize size={20} /></button>
+              <button className="hover:text-white transition-colors"><Maximize strokeWidth={1.5} size={20} / /></button>
             </div>
           </div>
         </div>

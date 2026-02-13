@@ -42,7 +42,7 @@ export const VoicyProactiveIntelligence = () => {
         type: 'opportunity',
         title: 'Nieuwe Markt-kans gedetecteerd',
         description: 'Ik zie een piek in aanvragen voor "AI-stemmen met emotie". Misschien moeten we de Studio-pagina hierop aanpassen?',
-        icon: <TrendingUp size={16} />,
+        icon: <TrendingUp strokeWidth={1.5} size={16} / />,
         cta: {
           label: 'Bekijk Trend',
           onClick: () => window.location.href = '/admin/mailbox?tab=insights'
@@ -75,10 +75,10 @@ export const VoicyProactiveIntelligence = () => {
               <ContainerInstrument className="flex justify-between items-start mb-4">
                 <ContainerInstrument className="flex items-center gap-2">
                   <ContainerInstrument className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                    <Brain size={18} className="text-va-black" />
+                    <Brain strokeWidth={1.5} size={18} className="text-va-black" / />
                   </ContainerInstrument>
                   <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em] text-primary">
-                    <VoiceglotText translationKey="auto.voicyproactiveintelligence.voicy_intelligence.7a49dd" defaultText="Voicy Intelligence" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="auto.voicyproactiveintelligence.voicy_intelligence.7a49dd" defaultText="Voicy Intelligence" / />
                   </TextInstrument>
                 </ContainerInstrument>
                 <button 
@@ -111,7 +111,7 @@ export const VoicyProactiveIntelligence = () => {
                   onClick={() => setIsVisible(false)}
                   className="text-[15px] font-black tracking-widest text-white/40 hover:text-white transition-colors"
                 >
-                  <VoiceglotText translationKey="auto.voicyproactiveintelligence.later____.0d5296" defaultText="Later" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="auto.voicyproactiveintelligence.later____.0d5296" defaultText="Later" / />
                 </ButtonInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

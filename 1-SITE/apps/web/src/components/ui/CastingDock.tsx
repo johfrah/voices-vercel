@@ -48,7 +48,7 @@ export const CastingDock = () => {
                   >
                     <ContainerInstrument className="relative w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-va-black bg-va-off-white overflow-hidden">
                       {actor.photoUrl ? (
-                        <Image strokeWidth={1.5} src={actor.photoUrl} alt={actor.firstName} fill className="object-cover" / />
+                        <Image  src={actor.photoUrl} alt={actor.firstName} fill className="object-cover" / />
                       ) : (
                         <ContainerInstrument className="w-full h-full flex items-center justify-center text-va-black font-light text-[15px] md:text-base">
                           {actor.firstName[0]}
@@ -62,7 +62,7 @@ export const CastingDock = () => {
                 <TextInstrument className="text-white font-light leading-none text-[15px] md:text-base truncate">
                   {selectedActors.length} {selectedActors.length === 1 ? 'stem' : 'stemmen'}
                 </TextInstrument>
-                <TextInstrument className="text-white/40 text-[15px] md:text-[15px] mt-1 truncate font-light"><VoiceglotText translationKey="auto.castingdock.klaar_voor_jouw_demo.c40c51" defaultText="Klaar voor jouw demo" /></TextInstrument>
+                <TextInstrument className="text-white/40 text-[15px] md:text-[15px] mt-1 truncate font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.castingdock.klaar_voor_jouw_demo.c40c51" defaultText="Klaar voor jouw demo" / /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
 
@@ -70,14 +70,14 @@ export const CastingDock = () => {
               onClick={startCasting}
               className="bg-primary hover:bg-primary/90 text-white px-4 md:px-6 py-3 rounded-[18px] flex items-center gap-2 whitespace-nowrap shrink-0 h-12 md:h-auto"
             >
-              <Image strokeWidth={1.5} 
+              <Image  
                 src="/assets/common/branding/icons/MIC.svg" 
                 alt="Mic" 
                 width={18} 
                 height={18} 
                 className="brightness-0 invert"
               / />
-              <TextInstrument className="text-[15px] md:text-base font-light tracking-wider"><VoiceglotText translationKey="auto.castingdock.gratis_proefopname.5a39e6" defaultText="Gratis proefopname" /></TextInstrument>
+              <TextInstrument className="text-[15px] md:text-base font-light tracking-wider"><VoiceglotText strokeWidth={1.5} translationKey="auto.castingdock.gratis_proefopname.5a39e6" defaultText="Gratis proefopname" / /></TextInstrument>
               <LucideChevronRight strokeWidth={1.5} size={16} className="md:w-[18px] md:h-[18px]" />
             </ButtonInstrument>
           </ContainerInstrument>

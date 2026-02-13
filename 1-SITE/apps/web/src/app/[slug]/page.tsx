@@ -96,7 +96,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
               <ContainerInstrument className="lg:col-span-5 relative">
                 <ContainerInstrument className="aspect-[4/5] bg-va-black rounded-[80px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000 flex items-center justify-center group">
                   <ContainerInstrument className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                  <TextInstrument className="text-primary/10 font-light text-9xl rotate-12 tracking-tighter"><VoiceglotText translationKey="auto.page.voices.92ff10" defaultText="VOICES" /></TextInstrument>
+                  <TextInstrument className="text-primary/10 font-light text-9xl rotate-12 tracking-tighter"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.voices.92ff10" defaultText="VOICES" / /></TextInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-[100px] animate-pulse" />
               </ContainerInstrument>
@@ -151,7 +151,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                     >
                       {videoUrl && (
                         <ContainerInstrument className="w-full bg-va-black relative">
-                          <VideoPlayer 
+                          <VideoPlayer strokeWidth={1.5} 
                             url={videoUrl} 
                             title={itemTitle}
                             subtitles={subtitleUrl ? [{
@@ -159,7 +159,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                               lang: currentLang,
                               label: currentLang.toUpperCase()
                             }] : []}
-                          />
+                          / />
                         </ContainerInstrument>
                       )}
                       
@@ -193,7 +193,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
             <section key={block.id} className="py-32 relative min-h-[80vh] flex items-center animate-in fade-in duration-1000 fill-mode-both">
               <ContainerInstrument className="absolute inset-0 bg-va-black rounded-[20px] overflow-hidden shadow-aura-lg grayscale-[0.5] hover:grayscale-0 transition-all duration-1000 group/lifestyle">
                 <ContainerInstrument className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60" />
-                <TextInstrument className="absolute inset-0 flex items-center justify-center text-white/5 font-black text-[20vw] rotate-12 tracking-tighter pointer-events-none "><VoiceglotText translationKey="auto.page.voices.92ff10" defaultText="VOICES" /></TextInstrument>
+                <TextInstrument className="absolute inset-0 flex items-center justify-center text-white/5 font-black text-[20vw] rotate-12 tracking-tighter pointer-events-none "><VoiceglotText strokeWidth={1.5} translationKey="auto.page.voices.92ff10" defaultText="VOICES" / /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="relative z-10 max-w-xl ml-12 lg:ml-24 p-16 bg-white/90 backdrop-blur-xl rounded-[20px] shadow-aura-lg border border-white/20">
                 {title && <HeadingInstrument level={2} className="text-5xl font-light mb-8 tracking-tight text-va-black leading-none">{title}</HeadingInstrument>}
@@ -233,7 +233,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
         case 'calculator':
           return (
             <section key={block.id} className="py-24 animate-in fade-in duration-1000 fill-mode-both">
-              <PricingCalculator />
+              <PricingCalculator strokeWidth={1.5} / />
             </section>
           );
 
@@ -276,7 +276,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
 
     return (
       <PageWrapperInstrument className="bg-va-off-white">
-        <LiquidBackground />
+        <LiquidBackground strokeWidth={1.5} / />
         
         <ContainerInstrument className="py-48 relative z-10">
           {/* 🚀 GLOBAL HERO MANDATE */}
@@ -284,7 +284,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
               <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-12 block">
                 {journey}
               </TextInstrument>
-              <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black"><VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} /></HeadingInstrument>
+              <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black"><VoiceglotText strokeWidth={1.5} translationKey={`page.${page.slug}.title`} defaultText={page.title} / /></HeadingInstrument>
               <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
             </header>
 
@@ -329,12 +329,12 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
             <footer className="mt-80 text-center">
               <ContainerInstrument className="bg-va-black text-white p-32 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
                 <ContainerInstrument className="relative z-10">
-                  <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block"><VoiceglotText translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
-                  <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9]"><VoiceglotText translationKey="cta.ready_title" defaultText="wil je onze stemmen beluisteren?" /></HeadingInstrument>
+                  <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block"><VoiceglotText strokeWidth={1.5} translationKey="cta.next_step" defaultText="volgende stap" / /></TextInstrument>
+                  <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9]"><VoiceglotText strokeWidth={1.5} translationKey="cta.ready_title" defaultText="wil je onze stemmen beluisteren?" / /></HeadingInstrument>
                   <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-10">
-                    <Link strokeWidth={1.5} href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-tight hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white"><VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" /></Link>
+                    <Link strokeWidth={1.5} href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-tight hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white"><VoiceglotText strokeWidth={1.5} translationKey="cta.find_voice" defaultText="vind jouw stem" / /></Link>
                     <Link strokeWidth={1.5} href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-tight flex items-center gap-4 group transition-all duration-700">
-                      <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" />
+                      <VoiceglotText strokeWidth={1.5} translationKey="cta.ask_question" defaultText="stel een vraag" / />
                       <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
                     </Link>
                   </ContainerInstrument>
@@ -346,6 +346,6 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
         </PageWrapperInstrument>
       );
   } catch (error: any) {
-    return <ContainerInstrument className="p-32 text-center font-light text-va-black/10 text-2xl italic tracking-widest"><VoiceglotText translationKey="auto.page.voices_is_calibratin.332891" defaultText="Voices is calibrating..." /></ContainerInstrument>;
+    return <ContainerInstrument className="p-32 text-center font-light text-va-black/10 text-2xl italic tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.voices_is_calibratin.332891" defaultText="Voices is calibrating..." / /></ContainerInstrument>;
   }
 }

@@ -45,32 +45,32 @@ export default function StudioDashboardPage() {
           <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full mb-8 shadow-sm border border-black/[0.03]">
             <ContainerInstrument as="span" className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-black/60">
-              <VoiceglotText translationKey="studio.dashboard.badge" defaultText="Jouw Studio Cockpit" />
+              <VoiceglotText strokeWidth={1.5} translationKey="studio.dashboard.badge" defaultText="Jouw Studio Cockpit" / />
             </TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-4">
-            <VoiceglotText translationKey="studio.dashboard.welcome" defaultText="Welkom terug," /> 
+            <VoiceglotText strokeWidth={1.5} translationKey="studio.dashboard.welcome" defaultText="Welkom terug," / /> 
             <TextInstrument as="span" className="text-primary font-light">
-              <VoiceglotText translationKey="user.current.first_name" defaultText="Peter" noTranslate={true} />.
+              <VoiceglotText strokeWidth={1.5} translationKey="user.current.first_name" defaultText="Peter" noTranslate={true} / />.
             </TextInstrument>
           </HeadingInstrument>
           <TextInstrument className="text-black/40 font-medium text-lg max-w-xl">
-            <VoiceglotText 
+            <VoiceglotText strokeWidth={1.5} 
               translationKey="studio.dashboard.subtitle" 
               defaultText="Hier vind je al je opnames, geplande sessies en je persoonlijke groeipad in de studio." 
-            />
+            / />
           </TextInstrument>
         </SectionInstrument>
 
-        <BentoGrid columns={3}>
+        <BentoGrid strokeWidth={1.5} columns={3}>
           {/* 🎙️ LAATSTE OPNAME BENTO */}
           <BentoCard span="lg" className="hblue p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[400px]">
             <ContainerInstrument>
               <Mic strokeWidth={1.5} className="text-white/20 mb-8" size={48} / />
               <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter mb-4">
-                <VoiceglotText translationKey="studio.dashboard.latest_audio" defaultText="Jouw Laatste Opnames" />
+                <VoiceglotText strokeWidth={1.5} translationKey="studio.dashboard.latest_audio" defaultText="Jouw Laatste Opnames" / />
                 <TextInstrument className="text-white/60 font-medium max-w-sm">
-                  <VoiceglotText translationKey="studio.dashboard.audio_desc" defaultText="Download je ruwe opnames en de gemonteerde versies van je laatste sessie." />
+                  <VoiceglotText strokeWidth={1.5} translationKey="studio.dashboard.audio_desc" defaultText="Download je ruwe opnames en de gemonteerde versies van je laatste sessie." / />
                 </TextInstrument>
               </HeadingInstrument>
             </ContainerInstrument>
@@ -104,7 +104,7 @@ export default function StudioDashboardPage() {
             <ContainerInstrument>
               <Calendar strokeWidth={1.5} className="text-primary mb-8" size={32} />
               <HeadingInstrument level={3} className="text-2xl font-black tracking-tighter mb-6">
-                <VoiceglotText translationKey="studio.dashboard.upcoming" defaultText="Gepland" />
+                <VoiceglotText strokeWidth={1.5} translationKey="studio.dashboard.upcoming" defaultText="Gepland" / />
               </HeadingInstrument>
               
               <ContainerInstrument className="space-y-6">
@@ -127,7 +127,7 @@ export default function StudioDashboardPage() {
             </ContainerInstrument>
 
             <ButtonInstrument as={Link} href="/studio" className="flex items-center gap-2 text-primary font-black tracking-widest text-[15px] mt-8 hover:gap-4 transition-all">
-              <VoiceglotText translationKey="studio.dashboard.view_all" defaultText="Bekijk alle sessies" />
+              <VoiceglotText strokeWidth={1.5} translationKey="studio.dashboard.view_all" defaultText="Bekijk alle sessies" / />
               <ArrowRight strokeWidth={1.5} size={14} />
             </ButtonInstrument>
           </BentoCard>
@@ -136,13 +136,13 @@ export default function StudioDashboardPage() {
           <BentoCard span="full" className="bg-va-black text-white p-12 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
             <ContainerInstrument className="relative z-10 flex items-center gap-8">
               <ContainerInstrument className="w-20 h-20 bg-primary rounded-3xl flex items-center justify-center text-va-black shadow-lg shadow-primary/20">
-                <Award size={40} />
+                <Award strokeWidth={1.5} size={40} / />
               </ContainerInstrument>
               <ContainerInstrument>
                 <HeadingInstrument level={2} className="text-3xl font-black tracking-tight">
-                  <VoiceglotText translationKey="studio.dashboard.progress_title" defaultText="Jouw Groeipad" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="studio.dashboard.progress_title" defaultText="Jouw Groeipad" / />
                   <TextInstrument className="text-white/40 font-medium max-w-xl">
-                    <VoiceglotText translationKey="studio.dashboard.progress_desc" defaultText="Je bent goed op weg om een gecertificeerde Voices-stem te worden. Nog 2 sessies te gaan voor je volgende badge." />
+                    <VoiceglotText strokeWidth={1.5} translationKey="studio.dashboard.progress_desc" defaultText="Je bent goed op weg om een gecertificeerde Voices-stem te worden. Nog 2 sessies te gaan voor je volgende badge." / />
                   </TextInstrument>
                 </HeadingInstrument>
               </ContainerInstrument>

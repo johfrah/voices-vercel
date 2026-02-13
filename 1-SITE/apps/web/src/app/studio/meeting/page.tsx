@@ -23,17 +23,17 @@ export default function MeetingPage({
       <SectionInstrument className="max-w-6xl mx-auto space-y-12">
         <ContainerInstrument className="text-center space-y-4">
           <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
-            <VoiceglotText translationKey="studio.meeting.title" defaultText="Studio Meeting" />
+            <VoiceglotText strokeWidth={1.5} translationKey="studio.meeting.title" defaultText="Studio Meeting" / />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-medium text-lg">
-            <VoiceglotText 
+            <VoiceglotText strokeWidth={1.5} 
               translationKey="studio.meeting.subtitle" 
               defaultText="Welkom in de virtuele studio. Johfrah laat je zo dadelijk binnen." 
-            />
+            / />
           </TextInstrument>
         </ContainerInstrument>
 
-        <JitsiMeeting roomName={roomName} userName={userName} />
+        <JitsiMeeting strokeWidth={1.5} roomName={roomName} userName={userName} / />
       </SectionInstrument>
     </PageWrapperInstrument>
   );

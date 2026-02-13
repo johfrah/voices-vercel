@@ -55,7 +55,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
         <ContainerInstrument className="p-8">
           <ContainerInstrument className="flex justify-between items-start mb-6">
             <ContainerInstrument className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center">
-              <Rocket size={24} />
+              <Rocket strokeWidth={1.5} size={24} / />
             </ContainerInstrument>
             <ButtonInstrument onClick={onClose} className="p-2 hover:bg-gray-50 rounded-xl transition-colors">
               <X strokeWidth={1.5} size={20} className="text-gray-400" />
@@ -109,7 +109,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
                 >
                   {isPromoting ? 'Bezig...' : (
                     <>
-                      <Rocket size={16} />
+                      <Rocket strokeWidth={1.5} size={16} / />
                       Nu Promoveren
                     </>
                   )}

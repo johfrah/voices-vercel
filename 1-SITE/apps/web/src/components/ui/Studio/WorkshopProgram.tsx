@@ -15,7 +15,7 @@ export const WorkshopProgram: React.FC<WorkshopProgramProps> = ({ dagindeling, i
   return (
     <BentoCard span="lg" className="bg-va-off-white p-12">
       <h3 className="text-3xl font-black tracking-tight mb-10">
-        <VoiceglotText translationKey="workshop.program.title" defaultText="Programma van de dag" />
+        <VoiceglotText strokeWidth={1.5} translationKey="workshop.program.title" defaultText="Programma van de dag" / />
       </h3>
       <div className="grid md:grid-cols-2 gap-12">
         <div className="prose prose-sm prose-black max-w-none text-black/60 font-medium leading-relaxed">
@@ -27,10 +27,10 @@ export const WorkshopProgram: React.FC<WorkshopProgramProps> = ({ dagindeling, i
                 <li key={i} className="flex gap-4">
                   <CheckCircle2 strokeWidth={1.5} className="text-primary shrink-0" size={20} />
                   <span>
-                    <VoiceglotText 
+                    <VoiceglotText strokeWidth={1.5} 
                       translationKey={`workshop.program.step${i}`} 
                       defaultText={`Programma stap ${i}...`} 
-                    />
+                    / />
                   </span>
                 </li>
               ))}
@@ -38,7 +38,7 @@ export const WorkshopProgram: React.FC<WorkshopProgramProps> = ({ dagindeling, i
           )}
         </div>
         <div className="relative rounded-[32px] overflow-hidden aspect-square md:aspect-auto">
-          <Image strokeWidth={1.5} 
+          <Image  
             src={image || "/assets/studio/programma.jpg"} 
             alt="Programma"
             fill

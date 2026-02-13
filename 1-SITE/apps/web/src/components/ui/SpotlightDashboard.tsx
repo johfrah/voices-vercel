@@ -216,10 +216,10 @@ export const SpotlightDashboard: React.FC = () => {
                 </div>
                 <div className="flex-1">
                   <h4 className="font-black tracking-tight text-[15px] text-va-black/80">
-                    <VoiceglotText translationKey={`admin.menu.${item.title.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.title} />
+                    <VoiceglotText strokeWidth={1.5} translationKey={`admin.menu.${item.title.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.title} / />
                   </h4>
                   <p className="text-[15px] font-bold text-va-black/20 tracking-[0.2em] mt-1.5">
-                    <VoiceglotText translationKey={`admin.group.${item.group.toLowerCase()}`} defaultText={item.group} />
+                    <VoiceglotText strokeWidth={1.5} translationKey={`admin.group.${item.group.toLowerCase()}`} defaultText={item.group} / />
                   </p>
                 </div>
                 {item.badge && (
@@ -235,14 +235,14 @@ export const SpotlightDashboard: React.FC = () => {
           {filteredItems.length === 0 && (
             <div className="py-32 text-center space-y-6">
               <div className="w-24 h-24 bg-va-off-white rounded-full flex items-center justify-center mx-auto animate-pulse">
-                <Brain size={48} className="text-va-black/10" />
+                <Brain strokeWidth={1.5} size={48} className="text-va-black/10" / />
               </div>
               <div className="space-y-2">
                 <h3 className="text-2xl font-black tracking-tighter">
-                  <VoiceglotText translationKey="admin.spotlight.no_results" defaultText={`Geen resultaten voor "${search}"`} />
+                  <VoiceglotText strokeWidth={1.5} translationKey="admin.spotlight.no_results" defaultText={`Geen resultaten voor "${search}"`} / />
                 </h3>
                 <p className="text-va-black/40 text-[15px] font-medium">
-                  <VoiceglotText translationKey="admin.spotlight.ask_voicy" defaultText="Vraag Voicy om deze module voor je te bouwen of te vinden." />
+                  <VoiceglotText strokeWidth={1.5} translationKey="admin.spotlight.ask_voicy" defaultText="Vraag Voicy om deze module voor je te bouwen of te vinden." / />
                 </p>
               </div>
             </div>
@@ -253,8 +253,8 @@ export const SpotlightDashboard: React.FC = () => {
         <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center text-[15px] font-black tracking-widest text-va-black/30">
           <div className="flex gap-8">
             <span className="flex items-center gap-2 text-va-black/60">
-              <MousePointer2 size={12} className="text-primary" /> 
-              <VoiceglotText translationKey={`admin.instruction.${journey}`} defaultText={currentInstruction} />
+              <MousePointer2 strokeWidth={1.5} size={12} className="text-primary" / /> 
+              <VoiceglotText strokeWidth={1.5} translationKey={`admin.instruction.${journey}`} defaultText={currentInstruction} / />
             </span>
           </div>
           <div className="flex items-center gap-3 text-primary">

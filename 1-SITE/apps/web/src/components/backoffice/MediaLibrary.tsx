@@ -243,7 +243,7 @@ export const MediaLibrary: React.FC = () => {
   };
 
   const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) return <ImageIcon className="text-blue-500" strokeWidth={1.5} />;
+    if (type.startsWith('image/')) return <ImageIcon  className="text-blue-500"  / />;
     if (type.startsWith('audio/')) return <Music className="text-purple-500" strokeWidth={1.5} />;
     if (type.startsWith('video/')) return <Play className="text-red-500" strokeWidth={1.5} />;
     return <FileText className="text-va-black/40" strokeWidth={1.5} />;
@@ -256,7 +256,7 @@ export const MediaLibrary: React.FC = () => {
         <ContainerInstrument className="bg-white rounded-[20px] shadow-aura p-6 space-y-4 border border-va-black/5">
           <ContainerInstrument className="flex items-center gap-2 text-va-black font-light tracking-widest text-[15px] ">
             <User strokeWidth={1.5} size={16} />
-            <VoiceglotText translationKey="common.voice_actors" defaultText="Stemacteurs" />
+            <VoiceglotText strokeWidth={1.5} translationKey="common.voice_actors" defaultText="Stemacteurs" / />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-1 max-h-[400px] overflow-y-auto no-scrollbar">
             <ButtonInstrument
@@ -266,7 +266,7 @@ export const MediaLibrary: React.FC = () => {
                 selectedActorId === null ? 'bg-va-black text-white' : 'hover:bg-va-off-white text-va-black/40'
               )}
             >
-              <VoiceglotText translationKey="media.all_media" defaultText="Alle Media" />
+              <VoiceglotText strokeWidth={1.5} translationKey="media.all_media" defaultText="Alle Media" / />
             </ButtonInstrument>
             {actors.map(actor => (
               <ButtonInstrument
@@ -307,7 +307,7 @@ export const MediaLibrary: React.FC = () => {
             {youtubeUrl.startsWith('local:') ? (
               <ContainerInstrument className="p-4 bg-emerald-500/10 text-emerald-600 rounded-[10px] text-[15px] font-light tracking-widest flex items-center gap-2">
                 <CheckSquare size={14} strokeWidth={1.5} /> 
-                <VoiceglotText translationKey="media.converted" defaultText="Geconverteerd" />
+                <VoiceglotText strokeWidth={1.5} translationKey="media.converted" defaultText="Geconverteerd" / />
               </ContainerInstrument>
             ) : (
               <a 
@@ -326,7 +326,7 @@ export const MediaLibrary: React.FC = () => {
             
             {!youtubeUrl.startsWith('local:') && (
               <TextInstrument className="text-[15px] text-red-600/60 font-light leading-relaxed">
-                <VoiceglotText translationKey="media.youtube_hint" defaultText="Klik op de refresh knop om deze video direct in onze eigen player af te spelen." />
+                <VoiceglotText strokeWidth={1.5} translationKey="media.youtube_hint" defaultText="Klik op de refresh knop om deze video direct in onze eigen player af te spelen." / />
               </TextInstrument>
             )}
           </ContainerInstrument>
@@ -340,16 +340,16 @@ export const MediaLibrary: React.FC = () => {
           <ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-3 mb-2">
               <ContainerInstrument className="w-10 h-10 bg-va-black text-white rounded-[10px] flex items-center justify-center shadow-aura">
-                <ImageIcon size={20} strokeWidth={1.5} />
+                <ImageIcon  size={20}  / />
               </ContainerInstrument>
               <HeadingInstrument level={2} className="text-3xl font-light tracking-tight">
-                {selectedActorId ? `${actors.find(a => a.id === selectedActorId)?.firstName}'s Portfolio` : <VoiceglotText translationKey="media.engine_title" defaultText="Media Engine" />}
+                {selectedActorId ? `${actors.find(a => a.id === selectedActorId)?.firstName}'s Portfolio` : <VoiceglotText strokeWidth={1.5} translationKey="media.engine_title" defaultText="Media Engine" / />}
               </HeadingInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-va-black/40 font-light max-w-md text-[15px]">
               {selectedActorId 
-                ? <VoiceglotText translationKey="media.actor_portfolio_desc" defaultText="Alle media gekoppeld aan deze stemacteur." />
-                : <VoiceglotText translationKey="media.engine_desc" defaultText="Centraal beheer van alle assets van Voices. Geoptimaliseerd voor snelheid en integriteit." />}
+                ? <VoiceglotText strokeWidth={1.5} translationKey="media.actor_portfolio_desc" defaultText="Alle media gekoppeld aan deze stemacteur." / />
+                : <VoiceglotText strokeWidth={1.5} translationKey="media.engine_desc" defaultText="Centraal beheer van alle assets van Voices. Geoptimaliseerd voor snelheid en integriteit." / />}
             </TextInstrument>
           </ContainerInstrument>
 
@@ -382,7 +382,7 @@ export const MediaLibrary: React.FC = () => {
               isUploading ? "bg-va-black/10 text-va-black/30" : "bg-va-black text-white hover:scale-105 active:scale-95"
             )}>
               {isUploading ? <Upload className="animate-bounce" size={16} strokeWidth={1.5} /> : <Plus strokeWidth={1.5} size={16} />}
-              <VoiceglotText translationKey={isUploading ? "common.processing" : "common.upload"} defaultText={isUploading ? "Bezig..." : "Upload"} />
+              <VoiceglotText strokeWidth={1.5} translationKey={isUploading ? "common.processing" : "common.upload"} defaultText={isUploading ? "Bezig..." : "Upload"} / />
               <input type="file" className="hidden" onChange={handleUpload} disabled={isUploading} />
             </label>
           </ContainerInstrument>
@@ -393,7 +393,7 @@ export const MediaLibrary: React.FC = () => {
           <ContainerInstrument className="bg-va-black text-white p-4 rounded-[20px] shadow-aura flex items-center justify-between animate-in slide-in-from-top duration-500">
             <ContainerInstrument className="flex items-center gap-4 ml-4">
               <TextInstrument className="text-[15px] font-light tracking-widest ">
-                {selectedIds.length} <VoiceglotText translationKey="common.selected" defaultText="geselecteerd" />
+                {selectedIds.length} <VoiceglotText strokeWidth={1.5} translationKey="common.selected" defaultText="geselecteerd" / />
               </TextInstrument>
               <ButtonInstrument 
                 onClick={() => setSelectedIds([])}
@@ -405,13 +405,13 @@ export const MediaLibrary: React.FC = () => {
             
             <ContainerInstrument className="flex items-center gap-2">
               <ButtonInstrument onClick={() => handleBulkVisibility(true)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-[10px] transition-all text-[15px] font-light tracking-widest bg-transparent text-white border border-white/10">
-                <Eye size={14} strokeWidth={1.5} /> <VoiceglotText translationKey="common.public" defaultText="Publiek" />
+                <Eye size={14} strokeWidth={1.5} /> <VoiceglotText strokeWidth={1.5} translationKey="common.public" defaultText="Publiek" / />
               </ButtonInstrument>
               <ButtonInstrument onClick={() => handleBulkVisibility(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-[10px] transition-all text-[15px] font-light tracking-widest bg-transparent text-white border border-white/10">
-                <EyeOff size={14} strokeWidth={1.5} /> <VoiceglotText translationKey="common.private" defaultText="Privé" />
+                <EyeOff size={14} strokeWidth={1.5} /> <VoiceglotText strokeWidth={1.5} translationKey="common.private" defaultText="Privé" / />
               </ButtonInstrument>
               <ButtonInstrument onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-[10px] transition-all text-[15px] font-light tracking-widest text-white">
-                <Trash2 size={14} strokeWidth={1.5} /> <VoiceglotText translationKey="common.delete" defaultText="Verwijderen" />
+                <Trash2 size={14} strokeWidth={1.5} /> <VoiceglotText strokeWidth={1.5} translationKey="common.delete" defaultText="Verwijderen" / />
               </ButtonInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -430,7 +430,7 @@ export const MediaLibrary: React.FC = () => {
                     filterJourney === j ? 'bg-primary text-white shadow-aura' : 'bg-white text-va-black/40 hover:bg-va-off-white shadow-sm border border-va-black/5'
                   )}
                 >
-                  {j === 'all' ? <VoiceglotText translationKey="common.all" defaultText="Alles" /> : j}
+                  {j === 'all' ? <VoiceglotText strokeWidth={1.5} translationKey="common.all" defaultText="Alles" / /> : j}
                 </ButtonInstrument>
               ))}
             </ContainerInstrument>
@@ -442,7 +442,7 @@ export const MediaLibrary: React.FC = () => {
                 filterStatus === 'orphans' ? 'bg-orange-500 text-white shadow-aura' : 'bg-white text-va-black/40 hover:bg-va-off-white shadow-sm border border-va-black/5'
               )}
             >
-              <AlertCircle size={14} strokeWidth={1.5} /> <VoiceglotText translationKey="media.orphans" defaultText="Wees-media" />
+              <AlertCircle size={14} strokeWidth={1.5} /> <VoiceglotText strokeWidth={1.5} translationKey="media.orphans" defaultText="Wees-media" / />
             </ButtonInstrument>
           </ContainerInstrument>
         )}
@@ -456,13 +456,13 @@ export const MediaLibrary: React.FC = () => {
           ) : media.length === 0 ? (
             <ContainerInstrument className="col-span-full py-32 text-center bg-white rounded-[20px] shadow-aura border-2 border-dashed border-va-black/5">
               <ContainerInstrument className="w-24 h-24 bg-va-off-white rounded-full flex items-center justify-center mx-auto mb-6">
-                <ImageIcon className="text-va-black/10" size={40} strokeWidth={1.5} />
+                <ImageIcon  className="text-va-black/10" size={40}  / />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
-                <VoiceglotText translationKey="media.none_found" defaultText="Geen media gevonden" />
+                <VoiceglotText strokeWidth={1.5} translationKey="media.none_found" defaultText="Geen media gevonden" / />
               </HeadingInstrument>
               <TextInstrument className="text-va-black/40 font-light mt-2">
-                <VoiceglotText translationKey="media.none_found_desc" defaultText="Pas je filters aan of upload een nieuw bestand." />
+                <VoiceglotText strokeWidth={1.5} translationKey="media.none_found_desc" defaultText="Pas je filters aan of upload een nieuw bestand." / />
               </TextInstrument>
             </ContainerInstrument>
           ) : (
@@ -488,7 +488,7 @@ export const MediaLibrary: React.FC = () => {
                 {/* Preview Area */}
                 <ContainerInstrument className="aspect-square bg-va-off-white flex items-center justify-center relative overflow-hidden">
                   {item.fileType.startsWith('image/') ? (
-                    <Image strokeWidth={1.5} 
+                    <Image  
                       src={`https://www.voices.be/assets/${item.filePath}`} 
                       alt={item.fileName}
                       width={400}

@@ -52,7 +52,7 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
     <div className={cn("rounded-[20px] p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 my-12 relative overflow-hidden shadow-aura-lg", config.color)}>
       <div className="relative z-10 space-y-4 text-center md:text-left">
         <div className="w-12 h-12 rounded-[10px] bg-white/10 flex items-center justify-center mx-auto md:mx-0">
-          <Icon size={24} />
+          <Icon strokeWidth={1.5} size={24} / />
         </div>
         <h3 className="text-3xl font-light tracking-tighter leading-none">{config.title}</h3>
         <p className="text-white/70 text-[15px] font-light max-w-md">{config.text}</p>

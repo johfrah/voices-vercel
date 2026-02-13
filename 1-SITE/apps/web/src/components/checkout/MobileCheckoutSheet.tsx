@@ -129,7 +129,7 @@ export const MobileCheckoutSheet: React.FC = () => {
           {!isOpen && (
             <div className="flex justify-between items-center w-full px-8">
               <span className="text-[15px] font-black tracking-widest text-va-black/40">
-                <VoiceglotText translationKey="checkout.mobile.order_title" defaultText="Jouw Bestelling" />
+                <VoiceglotText strokeWidth={1.5} translationKey="checkout.mobile.order_title" defaultText="Jouw Bestelling" / />
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-xl font-black text-primary">€{total.toFixed(2)}</span>
@@ -144,18 +144,18 @@ export const MobileCheckoutSheet: React.FC = () => {
           {step === 'summary' && (
             <div className="space-y-6">
               <h2 className="text-3xl font-black tracking-tighter">
-                <VoiceglotText translationKey="checkout.mobile.summary_title" defaultText="Check je order" />
+                <VoiceglotText strokeWidth={1.5} translationKey="checkout.mobile.summary_title" defaultText="Check je order" / />
               </h2>
               
               <div className="grid grid-cols-2 gap-4">
                 <BentoCard className="bg-white p-6 border border-black/5">
                   <p className="text-[15px] font-black tracking-widest text-va-black/30 mb-2">
-                    <VoiceglotText translationKey="common.voice" defaultText="Stem" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="common.voice" defaultText="Stem" / />
                   </p>
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-gray-100 overflow-hidden relative">
                       {state.selectedActor?.photo_url && (
-                        <Image strokeWidth={1.5} 
+                        <Image  
                           src={state.selectedActor.photo_url} 
                           alt="" 
                           fill
@@ -172,7 +172,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                   className="bg-white p-6 border border-black/5 cursor-pointer hover:border-primary/30 transition-all"
                 >
                   <p className="text-[15px] font-black tracking-widest text-va-black/30 mb-2">
-                    <VoiceglotText translationKey="common.briefing" defaultText="Briefing" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="common.briefing" defaultText="Briefing" / />
                   </p>
                   <div className="flex items-center gap-2 text-primary">
                     <Mic strokeWidth={1.5} size={16} / />
@@ -187,10 +187,10 @@ export const MobileCheckoutSheet: React.FC = () => {
                   <CreditCard size={80} />
                 </div>
                 <p className="text-[15px] font-black tracking-widest text-white/30 mb-2">
-                  <VoiceglotText translationKey="common.total_amount" defaultText="Totaalbedrag" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="common.total_amount" defaultText="Totaalbedrag" / />
                 </p>
                 
-                <AnimatedPrice value={total} label="Incl. BTW" />
+                <AnimatedPrice strokeWidth={1.5} value={total} label="Incl. BTW" / />
 
                 <div className="mt-4 pt-4 border-t border-white/5 flex justify-between text-[15px] font-bold text-white/40 tracking-widest">
                   <span>Excl. BTW</span>
@@ -210,13 +210,13 @@ export const MobileCheckoutSheet: React.FC = () => {
                   onClick={handlePayment}
                   className="w-full h-16 bg-black text-white rounded-2xl flex items-center justify-center gap-2 font-bold text-lg hover:scale-[0.98] transition-all"
                 >
-                  <Apple fill="currentColor" size={24} /> Pay
+                  <Apple strokeWidth={1.5} fill="currentColor" size={24} / /> Pay
                 </button>
                 <button 
                   onClick={() => setStep('payment')}
                   className="w-full h-16 bg-white border-2 border-black/5 rounded-2xl flex items-center justify-center gap-2 font-bold text-[15px] tracking-widest hover:bg-gray-50 transition-all"
                 >
-                  <VoiceglotText translationKey="checkout.mobile.other_payment" defaultText="Andere betaalmethode" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="checkout.mobile.other_payment" defaultText="Andere betaalmethode" / />
                 </button>
               </div>
             </div>
@@ -233,7 +233,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                   <ChevronUp strokeWidth={1.5} className="-rotate-90" size={20} / />
                 </button>
                 <h2 className="text-3xl font-black tracking-tighter">
-                  <VoiceglotText translationKey="checkout.mobile.voice_briefing_title" defaultText="Spreek je briefing in" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="checkout.mobile.voice_briefing_title" defaultText="Spreek je briefing in" / />
                 </h2>
               </div>
 
@@ -272,14 +272,14 @@ export const MobileCheckoutSheet: React.FC = () => {
               {transcription && (
                 <BentoCard className="bg-white p-6 border-2 border-primary/20">
                   <p className="text-[15px] font-black tracking-widest text-primary mb-2">
-                    <VoiceglotText translationKey="checkout.mobile.registered_briefing" defaultText="Geregistreerde Briefing" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="checkout.mobile.registered_briefing" defaultText="Geregistreerde Briefing" / />
                   </p>
                   <p className="text-[15px] font-medium leading-relaxed italic">&quot;{transcription}&quot;</p>
                   <button 
                     onClick={() => setStep('summary')}
                     className="mt-6 w-full py-4 bg-va-black text-white rounded-xl text-[15px] font-black tracking-widest flex items-center justify-center gap-2"
                   >
-                    <VoiceglotText translationKey="checkout.mobile.confirm_briefing" defaultText="Bevestig Briefing" /> <ArrowRight strokeWidth={1.5} size={14} />
+                    <VoiceglotText strokeWidth={1.5} translationKey="checkout.mobile.confirm_briefing" defaultText="Bevestig Briefing" / /> <ArrowRight strokeWidth={1.5} size={14} />
                   </button>
                 </BentoCard>
               )}
@@ -296,13 +296,13 @@ export const MobileCheckoutSheet: React.FC = () => {
                 <CheckCircle2 strokeWidth={1.5} size={48} />
               </div>
               <h2 className="text-4xl font-black tracking-tighter">
-                <VoiceglotText translationKey="checkout.mobile.success_title" defaultText="Bestelling Gelukt!" />
+                <VoiceglotText strokeWidth={1.5} translationKey="checkout.mobile.success_title" defaultText="Bestelling Gelukt!" / />
               </h2>
               <p className="text-va-black/50 font-medium">
-                <VoiceglotText translationKey="checkout.mobile.success_desc" defaultText="Je ontvangt direct een pushbericht zodra de opname start." />
+                <VoiceglotText strokeWidth={1.5} translationKey="checkout.mobile.success_desc" defaultText="Je ontvangt direct een pushbericht zodra de opname start." / />
               </p>
               <BentoCard className="bg-primary text-va-black p-6 font-black tracking-widest text-[15px] cursor-pointer hover:scale-105 transition-all">
-                <VoiceglotText translationKey="checkout.mobile.view_cockpit" defaultText="Bekijk Status in Cockpit" />
+                <VoiceglotText strokeWidth={1.5} translationKey="checkout.mobile.view_cockpit" defaultText="Bekijk Status in Cockpit" / />
               </BentoCard>
             </motion.div>
           )}

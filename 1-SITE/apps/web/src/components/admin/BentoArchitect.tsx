@@ -101,11 +101,11 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
   };
 
   const widgets: BuilderWidget[] = [
-    { type: 'text', label: 'Tekst Blok', icon: <Type size={18} />, description: 'Voiceglot-ready tekst' },
+    { type: 'text', label: 'Tekst Blok', icon: <Type strokeWidth={1.5} size={18} / />, description: 'Voiceglot-ready tekst' },
     { type: 'actor-feed', label: 'Actor Feed', icon: <Users strokeWidth={1.5} size={18} / />, description: 'Live stemmen lijst' },
     { type: 'video', label: 'Video Focus', icon: <Video strokeWidth={1.5} size={18} / />, description: 'Bento video speler' },
     { type: 'audio', label: 'Audio Demo', icon: <Music strokeWidth={1.5} size={18} / />, description: 'Sonic DNA player' },
-    { type: 'cta', label: 'Call to Action', icon: <MousePointer2 size={18} />, description: 'Conversie knop' },
+    { type: 'cta', label: 'Call to Action', icon: <MousePointer2 strokeWidth={1.5} size={18} / />, description: 'Conversie knop' },
     { type: 'grid', label: 'Bento Grid', icon: <Layout strokeWidth={1.5} size={18} / />, description: 'Nieuwe sectie' },
   ];
 
@@ -159,7 +159,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
                 <h3 className="text-[15px] font-light tracking-widest text-white/40 Raleway">Componenten</h3>
                 <div className="grid grid-cols-1 gap-3">
                   {widgets.map((widget) => (
-                    <DraggableWidget key={widget.type} widget={widget} />
+                    <DraggableWidget strokeWidth={1.5} key={widget.type} widget={widget} / />
                   ))}
                 </div>
               </div>

@@ -37,7 +37,7 @@ export default async function AgencyPage() {
 
   return (
     <PageWrapperInstrument>
-      <LiquidBackground />
+      <LiquidBackground strokeWidth={1.5} / />
       <AgencyHeroInstrument 
         title={market === 'FR' ? "Voix-off Françaises" : market === 'DE' ? "Deutsche Synchronsprecher" : "Vlaamse Voice-overs"} 
         subtitle={market === 'FR' ? "Découvrez les meilleures voix pour vos projets." : market === 'DE' ? "Entdecken Sie die besten Stimmen für Ihre Projekte." : "Ontdek de beste stemmen van België voor uw commercials, documentaires en bedrijfsfilms."}
@@ -47,8 +47,8 @@ export default async function AgencyPage() {
       />
       <SectionInstrument>
         <ContainerInstrument>
-          <Suspense fallback={<LoadingScreenInstrument />}>
-            <VoiceGrid actors={mappedActors as any} />
+          <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
+            <VoiceGrid strokeWidth={1.5} actors={mappedActors as any} / />
           </Suspense>
         </ContainerInstrument>
       </SectionInstrument>

@@ -84,7 +84,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
       <div className="space-y-4">
         <h3 className="text-[15px] font-black tracking-widest text-va-black/40 flex items-center gap-2">
           <Briefcase strokeWidth={1.5} size={14} /> 
-          <VoiceglotText translationKey="johfrai.explorer.sectors" defaultText="Kies je sector" />
+          <VoiceglotText strokeWidth={1.5} translationKey="johfrai.explorer.sectors" defaultText="Kies je sector" / />
         </h3>
         <div className="flex flex-wrap gap-3">
           {SECTORS.map((sector) => (
@@ -111,7 +111,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
       <div className="space-y-4">
         <h3 className="text-[15px] font-black tracking-widest text-va-black/40 flex items-center gap-2">
           <Sparkles strokeWidth={1.5} size={14} /> 
-          <VoiceglotText translationKey="johfrai.explorer.vibes" defaultText="Kies de vibe" />
+          <VoiceglotText strokeWidth={1.5} translationKey="johfrai.explorer.vibes" defaultText="Kies de vibe" / />
         </h3>
         <div className="flex flex-wrap gap-2">
           {VIBES.map((vibe) => (
@@ -135,22 +135,22 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-[15px] font-black tracking-widest text-va-black/40">
-            <VoiceglotText translationKey="johfrai.explorer.results" defaultText="Gevonden voorbeelden" />
+            <VoiceglotText strokeWidth={1.5} translationKey="johfrai.explorer.results" defaultText="Gevonden voorbeelden" / />
           </h3>
           <span className="text-[15px] font-bold text-va-black/20 bg-va-black/5 px-2 py-1 rounded-md">
             {demos.length} {demos.length === 1 
-              ? <VoiceglotText translationKey="johfrai.explorer.result" defaultText="resultaat" /> 
-              : <VoiceglotText translationKey="johfrai.explorer.results_count" defaultText="resultaten" />}
+              ? <VoiceglotText strokeWidth={1.5} translationKey="johfrai.explorer.result" defaultText="resultaat" / /> 
+              : <VoiceglotText strokeWidth={1.5} translationKey="johfrai.explorer.results_count" defaultText="resultaten" / />}
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence strokeWidth={1.5} mode="popLayout">
             {isLoading ? (
               <div className="col-span-full py-12 flex flex-col items-center justify-center text-va-black/20 space-y-4">
                 <div className="w-8 h-8 border-4 border-va-black/10 border-t-primary rounded-full animate-spin" />
                 <p className="text-[15px] font-bold tracking-widest">
-                  <VoiceglotText translationKey="johfrai.explorer.loading" defaultText="Demos laden..." />
+                  <VoiceglotText strokeWidth={1.5} translationKey="johfrai.explorer.loading" defaultText="Demos laden..." / />
                 </p>
               </div>
             ) : demos.length > 0 ? (
@@ -196,10 +196,10 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
                 <Sparkles strokeWidth={1.5} size={32} />
                 <div className="text-center">
                   <p className="text-[15px] font-black tracking-widest">
-                    <VoiceglotText translationKey="johfrai.explorer.no_match" defaultText="Geen specifieke match gevonden" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="johfrai.explorer.no_match" defaultText="Geen specifieke match gevonden" / />
                   </p>
                   <p className="text-[15px] font-medium mt-1">
-                    <VoiceglotText translationKey="johfrai.explorer.try_other" defaultText="Probeer een andere sector of vibe." />
+                    <VoiceglotText strokeWidth={1.5} translationKey="johfrai.explorer.try_other" defaultText="Probeer een andere sector of vibe." / />
                   </p>
                 </div>
               </div>

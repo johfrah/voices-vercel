@@ -18,7 +18,7 @@ import Link from "next/link";
 export default function SkyggeArticlePage() {
   return (
     <PageWrapperInstrument className="relative min-h-screen pt-32 pb-20 overflow-hidden">
-      <LiquidBackground />
+      <LiquidBackground strokeWidth={1.5} / />
       
       <SectionInstrument className="max-w-5xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-12">
@@ -27,25 +27,25 @@ export default function SkyggeArticlePage() {
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
             <ArrowLeft strokeWidth={1.5} size={14} /> 
-            <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
+            <VoiceglotText strokeWidth={1.5} translationKey="article.back" defaultText="Terug naar de etalage" / />
           </Link>
-          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 "><VoiceglotText translationKey="article.theme.stories" defaultText="Stories" /></TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6 text-va-black "><VoiceglotText translationKey="story.skygge.title" defaultText="SKYGGE | Professionalisering via audio" /></HeadingInstrument>
+          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 "><VoiceglotText strokeWidth={1.5} translationKey="article.theme.stories" defaultText="Stories" / /></TextInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6 text-va-black "><VoiceglotText strokeWidth={1.5} translationKey="story.skygge.title" defaultText="SKYGGE | Professionalisering via audio" / /></HeadingInstrument>
         </ContainerInstrument>
 
-        <BentoGrid columns={2}>
+        <BentoGrid strokeWidth={1.5} columns={2}>
           <BentoCard 
             span="full" 
             className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-16 !rounded-[20px]"
           >
             <Quote strokeWidth={1.5} size={48} className="text-primary/20 mb-8" />
-            <HeadingInstrument level={2} className="text-4xl font-light italic leading-tight mb-8 text-va-black"><VoiceglotText 
+            <HeadingInstrument level={2} className="text-4xl font-light italic leading-tight mb-8 text-va-black"><VoiceglotText strokeWidth={1.5} 
                 translationKey="story.skygge.quote1" 
                 defaultText="Dat was een no-brainer. Je kunt privé van zakelijk scheiden en je 100% focussen op de klant. Geen telefoontjes meer om tien uur 's avonds." 
-              /><TextInstrument className="text-va-black/40 font-light text-lg leading-relaxed"><VoiceglotText 
+              / /><TextInstrument className="text-va-black/40 font-light text-lg leading-relaxed"><VoiceglotText strokeWidth={1.5} 
                 translationKey="story.skygge.text" 
                 defaultText="An Casters van SKYGGE koos voor een professionele telefooncentrale om de groei van haar bedrijf te ondersteunen. Ontdek hoe audio bijdraagt aan hun merkbeleving." 
-              /></TextInstrument></HeadingInstrument>
+              / /></TextInstrument></HeadingInstrument>
           </BentoCard>
         </BentoGrid>
       </SectionInstrument>

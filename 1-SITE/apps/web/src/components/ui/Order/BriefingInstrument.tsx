@@ -23,11 +23,11 @@ export const BriefingInstrument: React.FC<BriefingInstrumentProps> = ({ script }
     >
       <ContainerInstrument className="mt-4 p-4 bg-va-off-white rounded-[20px] text-[15px] italic text-va-black/60 border border-dashed border-va-black/10">
         <TextInstrument>
-          &quot;{script || <VoiceglotText translationKey="order.briefing.empty" defaultText="Geen script gevonden..." />}&quot;
+          &quot;{script || <VoiceglotText strokeWidth={1.5} translationKey="order.briefing.empty" defaultText="Geen script gevonden..." / />}&quot;
         </TextInstrument>
       </ContainerInstrument>
       <ButtonInstrument className="w-full mt-4 py-3 bg-va-black text-white rounded-[10px] font-medium text-[15px] hover:bg-va-black/90 transition-colors">
-        <VoiceglotText translationKey="order.briefing.action" defaultText="Open Full Script" />
+        <VoiceglotText strokeWidth={1.5} translationKey="order.briefing.action" defaultText="Open Full Script" / />
       </ButtonInstrument>
     </BentoCard>
   );

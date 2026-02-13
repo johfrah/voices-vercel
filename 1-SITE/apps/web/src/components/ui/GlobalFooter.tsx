@@ -153,12 +153,12 @@ export default function GlobalFooter() {
         {/* Dynamic Journey Elements */}
         {!isSpecial && (
           <ContainerInstrument className="mb-24">
-            <JourneyCta journey={state.current_journey} />
+            <JourneyCta strokeWidth={1.5} journey={state.current_journey} / />
             <ContainerInstrument className="mt-12">
               <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 mb-8 ">
-                <VoiceglotText translationKey="footer.journey_faq" defaultText="Veelgestelde vragen voor deze journey" />
+                <VoiceglotText strokeWidth={1.5} translationKey="footer.journey_faq" defaultText="Veelgestelde vragen voor deze journey" / />
               </HeadingInstrument>
-              <JourneyFaq journey={state.current_journey} limit={4} />
+              <JourneyFaq strokeWidth={1.5} journey={state.current_journey} limit={4} / />
             </ContainerInstrument>
           </ContainerInstrument>
         )}
@@ -169,10 +169,10 @@ export default function GlobalFooter() {
             <ButtonInstrument as={Link} href="/" onClick={() => playClick('light')} className="flex items-center gap-3 group">
               {isArtist ? (
                 <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black">
-                  <VoiceglotText translationKey="auto.globalfooter.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="auto.globalfooter.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" / />
                 </TextInstrument>
               ) : (
-                <Image strokeWidth={1.5} 
+                <Image  
                   src={market.logo_url} 
                   alt={market.name} 
                   width={142} 
@@ -183,10 +183,10 @@ export default function GlobalFooter() {
             </ButtonInstrument>
             <TextInstrument className="text-va-black/40 text-lg font-light leading-relaxed max-w-sm">
               {isPortfolio 
-                ? <VoiceglotText translationKey="footer.portfolio.tagline" defaultText="De stem achter het verhaal. Warme, natuurlijke voice-over & host." />
+                ? <VoiceglotText strokeWidth={1.5} translationKey="footer.portfolio.tagline" defaultText="De stem achter het verhaal. Warme, natuurlijke voice-over & host." / />
                 : isArtist
-                ? <VoiceglotText translationKey="footer.artist.tagline" defaultText="Independent singer releasing music on his own terms. Supported by Voices Artists." />
-                : <VoiceglotText translationKey="footer.tagline" defaultText="Een warm en vertrouwd geluid. De perfecte stem voor elk project." />
+                ? <VoiceglotText strokeWidth={1.5} translationKey="footer.artist.tagline" defaultText="Independent singer releasing music on his own terms. Supported by Voices Artists." / />
+                : <VoiceglotText strokeWidth={1.5} translationKey="footer.tagline" defaultText="Een warm en vertrouwd geluid. De perfecte stem voor elk project." / />
               }
             </TextInstrument>
             <ContainerInstrument className="flex gap-4">
@@ -206,7 +206,7 @@ export default function GlobalFooter() {
           {footerSections.map((section, i) => (
             <ContainerInstrument key={i} className="space-y-8">
               <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 ">
-                <VoiceglotText translationKey={`footer.section.${i}.title`} defaultText={section.title} />
+                <VoiceglotText strokeWidth={1.5} translationKey={`footer.section.${i}.title`} defaultText={section.title} / />
               </HeadingInstrument>
               <ContainerInstrument as="ul" className="space-y-4">
                 {section.links.map((link, j) => (
@@ -217,7 +217,7 @@ export default function GlobalFooter() {
                       onClick={() => playClick('light')}
                       className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors duration-300"
                     >
-                      <VoiceglotText translationKey={`footer.link.${i}.${j}`} defaultText={link.name} />
+                      <VoiceglotText strokeWidth={1.5} translationKey={`footer.link.${i}.${j}`} defaultText={link.name} / />
                     </ButtonInstrument>
                   </ContainerInstrument>
                 ))}
@@ -233,7 +233,7 @@ export default function GlobalFooter() {
               <TextInstrument as="span">
                 Powered by 
                 <ButtonInstrument as="a" href="https://voices.be" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
-                  <VoiceglotText translationKey="auto.globalfooter.voices_be.46435e" defaultText="Voices.be" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="auto.globalfooter.voices_be.46435e" defaultText="Voices.be" / />
                 </ButtonInstrument>
               </TextInstrument>
             )}
@@ -243,7 +243,7 @@ export default function GlobalFooter() {
             <ContainerInstrument className="flex items-center gap-3 px-4 py-2 bg-va-black/5 rounded-full border border-black/5">
               <TextInstrument as="span" className="w-2 h-2 rounded-full bg-green-500 animate-pulse font-light" />
               <TextInstrument as="span" className="text-[15px] font-light tracking-widest text-va-black/40 ">
-                <VoiceglotText translationKey="footer.status.online" defaultText="Wij staan voor u klaar" />
+                <VoiceglotText strokeWidth={1.5} translationKey="footer.status.online" defaultText="Wij staan voor u klaar" / />
               </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

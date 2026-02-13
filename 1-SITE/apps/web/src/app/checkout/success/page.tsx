@@ -4,8 +4,8 @@ import { LoadingScreenInstrument } from '@/components/ui/LayoutInstruments';
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={<LoadingScreenInstrument />}>
-      <SuccessPageClient />
+    <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
+      <SuccessPageClient strokeWidth={1.5} / />
     </Suspense>
   );
 }

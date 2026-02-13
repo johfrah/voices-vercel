@@ -39,14 +39,14 @@ export const SectorSelector: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between px-4">
         <h4 className="text-[15px] font-black tracking-[0.2em] text-va-black/30 Raleway">
-          <VoiceglotText translationKey="auto.sectorselector.personaliseer_voor_u.6fc989" defaultText="Personaliseer voor uw sector" />
+          <VoiceglotText strokeWidth={1.5} translationKey="auto.sectorselector.personaliseer_voor_u.6fc989" defaultText="Personaliseer voor uw sector" / />
         </h4>
         {state.current_sector && (
           <button 
             onClick={() => updateSector(null)}
             className="text-[15px] font-black tracking-widest text-primary hover:opacity-70 transition-opacity"
           >
-            <VoiceglotText translationKey="auto.sectorselector.wis_filter____.76f73a" defaultText="Wis filter" />
+            <VoiceglotText strokeWidth={1.5} translationKey="auto.sectorselector.wis_filter____.76f73a" defaultText="Wis filter" / />
           </button>
         )}
       </div>
@@ -72,7 +72,7 @@ export const SectorSelector: React.FC = () => {
                 w-12 h-12 rounded-2xl flex items-center justify-center transition-colors
                 ${isActive ? 'bg-primary text-white' : 'bg-va-off-white text-va-black/40'}
               `}>
-                <Icon size={24} />
+                <Icon strokeWidth={1.5} size={24} / />
               </div>
               <span className="text-[15px] font-black tracking-widest text-center leading-tight">
                 {sector.label}

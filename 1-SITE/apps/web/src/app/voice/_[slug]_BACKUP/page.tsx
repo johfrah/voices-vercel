@@ -13,8 +13,8 @@ export const dynamic = 'force-dynamic';
 export default async function VoiceDetailPage({ params }: { params: { slug: string } }) {
   return (
     <PageWrapperInstrument>
-      <Suspense fallback={<LoadingScreenInstrument />}>
-        <VoiceDetailContent params={params} />
+      <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
+        <VoiceDetailContent strokeWidth={1.5} params={params} / />
       </Suspense>
     </PageWrapperInstrument>
   );
@@ -27,7 +27,7 @@ async function VoiceDetailContent({ params }: { params: { slug: string } }) {
   try {
     const actor = await getActor(params.slug, lang);
     if (!actor) return notFound();
-    return <VoiceDetailClient actor={actor} />;
+    return <VoiceDetailClient strokeWidth={1.5} actor={actor} / />;
   } catch (e) {
     console.error("VoiceDetail error:", e);
     return notFound();

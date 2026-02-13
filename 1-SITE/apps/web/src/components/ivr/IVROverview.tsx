@@ -46,15 +46,15 @@ export const IVROverview: React.FC = () => {
           </div>
           <div>
             <h2 className="text-3xl font-light tracking-tighter ">
-              <VoiceglotText translationKey="ivr.configurator.title" defaultText="IVR Configurator" />
+              <VoiceglotText strokeWidth={1.5} translationKey="ivr.configurator.title" defaultText="IVR Configurator" / />
             </h2>
             <p className="text-[15px] font-light tracking-widest text-black/30">
-              <VoiceglotText translationKey="ivr.configurator.subtitle" defaultText="Telephony OS 2026 • Active" />
+              <VoiceglotText strokeWidth={1.5} translationKey="ivr.configurator.subtitle" defaultText="Telephony OS 2026 • Active" / />
             </p>
           </div>
         </div>
         <button className="va-btn-pro flex items-center gap-2" data-voices-sonic-dna="click-premium">
-          <Save strokeWidth={1.5} size={16} / /> <VoiceglotText translationKey="common.save" defaultText="OPSLAAN" />
+          <Save strokeWidth={1.5} size={16} / /> <VoiceglotText strokeWidth={1.5} translationKey="common.save" defaultText="OPSLAAN" / />
         </button>
       </div>
 
@@ -115,7 +115,7 @@ export const IVROverview: React.FC = () => {
           onClick={addStep}
           className="w-full py-4 border-2 border-dashed border-black/10 rounded-2xl flex items-center justify-center gap-2 text-black/30 hover:text-black hover:border-black/20 transition-all font-light text-[15px] tracking-widest"
         >
-          <Plus strokeWidth={1.5} size={16} /> <VoiceglotText translationKey="ivr.configurator.add_step" defaultText="STAP TOEVOEGEN" />
+          <Plus strokeWidth={1.5} size={16} /> <VoiceglotText strokeWidth={1.5} translationKey="ivr.configurator.add_step" defaultText="STAP TOEVOEGEN" / />
         </button>
       </div>
 
@@ -125,21 +125,21 @@ export const IVROverview: React.FC = () => {
           <div className="flex items-center gap-3 mb-4 text-black/40">
             <Music strokeWidth={1.5} size={18} / />
             <span className="text-[15px] font-light tracking-widest">
-              <VoiceglotText translationKey="ivr.configurator.hold_music" defaultText="Wachtmuziek" />
+              <VoiceglotText strokeWidth={1.5} translationKey="ivr.configurator.hold_music" defaultText="Wachtmuziek" / />
             </span>
           </div>
           <p className="font-light text-[15px] mb-4 italic">&quot;Corporate Minimalist V1&quot;</p>
-          <button className="text-[15px] font-light underline tracking-widest"><VoiceglotText translationKey="ivr.configurator.change_music" defaultText="Wijzig muziek" /></button>
+          <button className="text-[15px] font-light underline tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="ivr.configurator.change_music" defaultText="Wijzig muziek" / /></button>
         </div>
         <div className="bg-va-off-white rounded-[32px] p-6 border-none shadow-none">
           <div className="flex items-center gap-3 mb-4 text-black/40">
             <Mic2 strokeWidth={1.5} size={18} />
             <span className="text-[15px] font-light tracking-widest">
-              <VoiceglotText translationKey="ivr.configurator.voice_actor" defaultText="Stemacteur" />
+              <VoiceglotText strokeWidth={1.5} translationKey="ivr.configurator.voice_actor" defaultText="Stemacteur" / />
             </span>
           </div>
           <p className="font-bold text-[15px] mb-4 italic">&quot;Sarah (Vlaams, Zakelijk)&quot;</p>
-          <button className="text-[15px] font-light underline tracking-widest"><VoiceglotText translationKey="ivr.configurator.change_voice" defaultText="Wijzig stem" /></button>
+          <button className="text-[15px] font-light underline tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="ivr.configurator.change_voice" defaultText="Wijzig stem" / /></button>
         </div>
       </div>
     </div>

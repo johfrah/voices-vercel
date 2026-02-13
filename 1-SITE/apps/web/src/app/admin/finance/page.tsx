@@ -26,7 +26,7 @@ export default async function FinanceDashboard() {
           <h1 className="text-3xl font-light text-va-black mb-2">Finance Dashboard</h1>
           <p className="text-va-gray-500">Yuki & Ponto Reconciliatie Centrum</p>
         </div>
-        <SyncButton />
+        <SyncButton strokeWidth={1.5} / />
       </div>
 
       {/* KPI Cards */}

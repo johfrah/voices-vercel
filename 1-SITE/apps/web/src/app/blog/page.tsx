@@ -212,7 +212,7 @@ export default function BlogPage() {
 
   if (loading) return (
     <ContainerInstrument className="min-h-screen flex items-center justify-center">
-      <Loader2 className="animate-spin text-primary" size={40} />
+      <Loader2 strokeWidth={1.5} className="animate-spin text-primary" size={40} / />
     </ContainerInstrument>
   );
 
@@ -224,15 +224,15 @@ export default function BlogPage() {
         <SectionInstrument className="mb-16">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest border border-primary/10 mb-8 ">
             <BookOpen strokeWidth={1.5} size={12} fill="currentColor" /> 
-            <VoiceglotText translationKey="blog.badge" defaultText="Kennis & Inspiratie" />
+            <VoiceglotText strokeWidth={1.5} translationKey="blog.badge" defaultText="Kennis & Inspiratie" / />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none mb-6 text-va-black "><VoiceglotText translationKey="blog.title" defaultText="De Etalage." /><TextInstrument className="text-va-black/40 font-light text-xl max-w-2xl leading-relaxed"><VoiceglotText 
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none mb-6 text-va-black "><VoiceglotText strokeWidth={1.5} translationKey="blog.title" defaultText="De Etalage." / /><TextInstrument className="text-va-black/40 font-light text-xl max-w-2xl leading-relaxed"><VoiceglotText strokeWidth={1.5} 
               translationKey="blog.subtitle" 
               defaultText="Ontdek onze verhalen, laat je inspireren door scripts of duik in de psychologie van audio." 
-            /></TextInstrument></HeadingInstrument>
+            / /></TextInstrument></HeadingInstrument>
         </SectionInstrument>
 
-        <BentoGrid columns={3}>
+        <BentoGrid strokeWidth={1.5} columns={3}>
           {articles.map((article, i) => {
             const Icon = article.icon || Tag;
             const theme = article.theme || article.iapContext?.theme || 'Nieuws';
@@ -242,7 +242,7 @@ export default function BlogPage() {
                 <Link strokeWidth={1.5} href={`/article/${article.slug}`} className="flex-1 flex flex-col p-8">
                   <ContainerInstrument className="flex items-center gap-4 mb-6">
                     <ContainerInstrument className="px-3 py-1 bg-va-off-white rounded-full text-[15px] font-light tracking-widest text-va-black/40 border border-black/5 flex items-center gap-2 ">
-                      <Icon size={10} className="text-primary" />
+                      <Icon strokeWidth={1.5} size={10} className="text-primary" / />
                       {theme}
                     </ContainerInstrument>
                     <TextInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
@@ -259,7 +259,7 @@ export default function BlogPage() {
                   </TextInstrument>
                   
                   <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-primary group-hover:gap-4 transition-all ">
-                    <VoiceglotText translationKey="common.read_more" defaultText="Lees meer" /> <ArrowRight strokeWidth={1.5} size={14} />
+                    <VoiceglotText strokeWidth={1.5} translationKey="common.read_more" defaultText="Lees meer" / /> <ArrowRight strokeWidth={1.5} size={14} />
                   </ContainerInstrument>
                 </Link>
               </BentoCard>

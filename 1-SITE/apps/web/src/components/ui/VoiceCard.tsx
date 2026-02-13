@@ -168,12 +168,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
           <ContainerInstrument className="flex items-start gap-5 mb-8">
             <ContainerInstrument className="relative w-24 h-24 md:w-28 md:h-28 rounded-[32px] overflow-hidden shadow-2xl group-hover:scale-105 transition-transform duration-700 shrink-0">
               {voice.photo_url ? (
-                <VoiceglotImage 
+                <VoiceglotImage strokeWidth={1.5} 
                   src={voice.photo_url} 
                   alt={voice.display_name} 
                   fill
                   className="object-cover" 
-                />
+                / />
               ) : (
                 <ContainerInstrument className="w-full h-full bg-va-off-white flex items-center justify-center">
                   <Mic strokeWidth={1.5} size={32} className="text-va-black/20" / />
@@ -215,16 +215,16 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
             <ContainerInstrument className="flex-1 min-w-0">
               <ContainerInstrument className="flex flex-col gap-1 mb-3">
                 <HeadingInstrument level={3} className="text-2xl md:text-3xl font-light tracking-tighter text-va-black truncate">
-                  <VoiceglotText 
+                  <VoiceglotText strokeWidth={1.5} 
                     translationKey={`actor.${voice.id}.name`} 
                     defaultText={voice.display_name} 
                     noTranslate={true} 
-                  />
+                  / />
                 </HeadingInstrument>
                 
                 <ContainerInstrument className="flex items-center gap-2">
                   <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] ">
-                    <VoiceglotText translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} defaultText={voice.native_lang || ''} />
+                    <VoiceglotText strokeWidth={1.5} translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} defaultText={voice.native_lang || ''} / />
                   </TextInstrument>
                   <ContainerInstrument className="w-1 h-1 rounded-full bg-va-black/10" />
                   <TextInstrument className="text-[15px] font-light text-primary tracking-widest ">
@@ -272,16 +272,16 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                   )}
                 >
                   <ContainerInstrument className="w-3 h-3 relative">
-                    <VoiceglotImage 
+                    <VoiceglotImage strokeWidth={1.5} 
                       src={cat.src} 
                       alt={cat.label} 
                       fill 
                       className={cn("transition-all duration-300", isActive ? "brightness-0" : "opacity-60")}
                       style={!isActive ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' } : {}}
-                    />
+                    / />
                   </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-light tracking-widest">
-                    <VoiceglotText translationKey={cat.key} defaultText={cat.label} />
+                    <VoiceglotText strokeWidth={1.5} translationKey={cat.key} defaultText={cat.label} / />
                   </TextInstrument>
                 </ButtonInstrument>
               );
@@ -292,15 +292,15 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
           {sectorDemo ? (
             <ContainerInstrument className="mb-6 p-5 bg-primary/5 rounded-3xl border border-primary/10 animate-in fade-in zoom-in-95 duration-700">
               <ContainerInstrument className="flex items-center gap-2 mb-2 text-primary">
-                <VoiceglotImage 
+                <VoiceglotImage strokeWidth={1.5} 
                   src="/assets/common/branding/icons/INFO.svg" 
                   alt="Info" 
                   width={12} 
                   height={12} 
                   style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                />
+                / />
                 <TextInstrument className="text-[15px] font-light tracking-[0.2em]">
-                  <VoiceglotText translationKey="common.for_your_sector" defaultText="Voor uw sector" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="common.for_your_sector" defaultText="Voor uw sector" / />
                 </TextInstrument>
               </ContainerInstrument>
               <TextInstrument className="text-[15px] font-light text-va-black/60 italic leading-relaxed">
@@ -311,11 +311,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
             <ContainerInstrument className="mb-8">
               {(voice as any).bio ? (
                 <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed italic mb-4 line-clamp-2">
-                  &quot;<VoiceglotText translationKey={`actor.${voice.id}.bio`} defaultText={(voice as any).bio} />&quot;
+                  &quot;<VoiceglotText strokeWidth={1.5} translationKey={`actor.${voice.id}.bio`} defaultText={(voice as any).bio} / />&quot;
                 </TextInstrument>
               ) : (
                 <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed italic mb-4">
-                  &quot;<VoiceglotText translationKey="common.fallback_bio" defaultText="Professionele voice-over for al uw projecten. Van commercials tot luisterboeken." />&quot;
+                  &quot;<VoiceglotText strokeWidth={1.5} translationKey="common.fallback_bio" defaultText="Professionele voice-over for al uw projecten. Van commercials tot luisterboeken." / />&quot;
                 </TextInstrument>
               )}
               {voice.ai_tags && (
@@ -326,7 +326,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                     const label = isAi ? tagStr.replace('ai:', '') : tagStr;
                     return (
                       <TextInstrument as="span" key={i} className="inline-flex items-center gap-1.5 px-3 py-1 bg-va-off-white rounded-full text-[15px] font-light tracking-widest text-va-black/40 border border-black/5">
-                        <VoiceglotText translationKey={`common.tag.${label.toLowerCase()}`} defaultText={label} />
+                        <VoiceglotText strokeWidth={1.5} translationKey={`common.tag.${label.toLowerCase()}`} defaultText={label} / />
                         {isAi && <TextInstrument as="span" className="text-[15px] bg-primary/10 text-primary px-1 rounded-sm font-light">AI</TextInstrument>}
                       </TextInstrument>
                     );
@@ -341,15 +341,15 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
         <ContainerInstrument className="pt-6 border-t border-black/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-1.5 text-[15px] font-light text-va-black/30 tracking-widest mb-1">
-              <VoiceglotImage 
+              <VoiceglotImage strokeWidth={1.5} 
                 src="/assets/common/branding/icons/INFO.svg" 
                 alt="Delivery" 
                 width={10} 
                 height={10} 
                 style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              />
+              / />
               <ContainerInstrument as="span">
-                <VoiceglotText translationKey="common.ready" defaultText="Klaar" />: {deliveryInfo.formattedShort}
+                <VoiceglotText strokeWidth={1.5} translationKey="common.ready" defaultText="Klaar" / />: {deliveryInfo.formattedShort}
               </ContainerInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-2xl font-light tracking-tighter text-va-black">€{displayPrice}</TextInstrument>
@@ -364,14 +364,14 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
             }}
             className="w-full sm:w-auto bg-va-dark text-white px-6 py-4 rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-xl shadow-black/5 flex items-center justify-center gap-2 "
           >
-            <VoiceglotText translationKey="common.order_fast" defaultText="Snel Bestellen" />
-            <VoiceglotImage 
+            <VoiceglotText strokeWidth={1.5} translationKey="common.order_fast" defaultText="Snel Bestellen" / />
+            <VoiceglotImage strokeWidth={1.5} 
               src="/assets/common/branding/icons/FORWARD.svg" 
               alt="Order" 
               width={14} 
               height={14} 
               className="brightness-0 invert"
-            />
+            / />
           </ButtonInstrument>
         </ContainerInstrument>
       </ContainerInstrument>

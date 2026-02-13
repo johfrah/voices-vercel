@@ -302,7 +302,7 @@ export default function PhotoMatcherPage() {
 
   if (loading) return (
     <ContainerInstrument className="p-10 text-center">
-      <TextInstrument><VoiceglotText translationKey="admin.photo_matcher.loading" defaultText="laden van foto's..." /></TextInstrument>
+      <TextInstrument><VoiceglotText strokeWidth={1.5} translationKey="admin.photo_matcher.loading" defaultText="laden van foto's..." / /></TextInstrument>
     </ContainerInstrument>
   );
 
@@ -312,9 +312,9 @@ export default function PhotoMatcherPage() {
         <ContainerInstrument className="max-w-5xl mx-auto">
           <ContainerInstrument className="py-20 text-center">
             <TextInstrument as="span" className="text-6xl block mb-4 font-light">🎉</TextInstrument>
-            <HeadingInstrument level={2} className="text-2xl font-light text-gray-900"><VoiceglotText translationKey="admin.photo_matcher.done_title" defaultText="alles is verwerkt!" /><TextInstrument className="text-gray-500 font-light"><VoiceglotText translationKey="admin.photo_matcher.done_text" defaultText="lekker gewerkt, de database is weer een stukje schoner." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={2} className="text-2xl font-light text-gray-900"><VoiceglotText strokeWidth={1.5} translationKey="admin.photo_matcher.done_title" defaultText="alles is verwerkt!" / /><TextInstrument className="text-gray-500 font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.photo_matcher.done_text" defaultText="lekker gewerkt, de database is weer een stukje schoner." / /></TextInstrument></HeadingInstrument>
             {slopItems.length > 0 && (
-              <ButtonInstrument onClick={bulkCleanup} className="mt-8 px-6 py-2 bg-orange-500 text-white rounded-full text-[15px] font-light"><VoiceglotText translationKey="admin.photo_matcher.cleanup_slop" defaultText={`🧹 ruim nog ${slopItems.length} thumbnails op`} /></ButtonInstrument>
+              <ButtonInstrument onClick={bulkCleanup} className="mt-8 px-6 py-2 bg-orange-500 text-white rounded-full text-[15px] font-light"><VoiceglotText strokeWidth={1.5} translationKey="admin.photo_matcher.cleanup_slop" defaultText={`🧹 ruim nog ${slopItems.length} thumbnails op`} / /></ButtonInstrument>
             )}
             <ButtonInstrument onClick={() => window.location.reload()} className="mt-4 px-6 py-2 bg-va-black text-white rounded-full text-[15px] font-light block mx-auto">
               refresh lijst
@@ -332,7 +332,7 @@ export default function PhotoMatcherPage() {
         <ContainerInstrument className="mb-8 bg-va-black text-white rounded-[32px] p-6 shadow-aura flex items-center justify-between">
           <ContainerInstrument className="flex gap-10">
             <ContainerInstrument>
-              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText translationKey="auto.page.nuclear_progress.caae6d" defaultText="Nuclear Progress" /></TextInstrument>
+              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.nuclear_progress.caae6d" defaultText="Nuclear Progress" / /></TextInstrument>
               <ContainerInstrument className="flex items-center gap-3">
                 <ContainerInstrument className="w-32 h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <ContainerInstrument className="h-full bg-va-primary transition-all duration-500" style={{ width: `${progressPercentage}%` }} />
@@ -341,11 +341,11 @@ export default function PhotoMatcherPage() {
               </ContainerInstrument>
             </ContainerInstrument>
             <ContainerInstrument>
-              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText translationKey="auto.page.space_saved.abd335" defaultText="Space Saved" /></TextInstrument>
+              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.space_saved.abd335" defaultText="Space Saved" / /></TextInstrument>
               <TextInstrument className="text-[15px] font-light text-va-primary">{savedGB} GB</TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument>
-              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText translationKey="auto.page.shortcuts.29e9d8" defaultText="Shortcuts" /></TextInstrument>
+              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.shortcuts.29e9d8" defaultText="Shortcuts" / /></TextInstrument>
               <TextInstrument className="text-[15px] font-light text-white/60">
                 <TextInstrument className="text-white bg-white/10 px-1.5 py-0.5 rounded mr-1 font-light">A</TextInstrument> Archive 
                 <TextInstrument className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3 font-light">M</TextInstrument> Match 
@@ -365,9 +365,9 @@ export default function PhotoMatcherPage() {
 
         <ContainerInstrument className="mb-12 flex justify-between items-end border-b border-black/[0.03] pb-8">
           <ContainerInstrument>
-            <HeadingInstrument level={1} className="text-4xl font-light tracking-tight text-black mb-2"><VoiceglotText translationKey="admin.photo_matcher.title" defaultText="photo matcher" /></HeadingInstrument>
+            <HeadingInstrument level={1} className="text-4xl font-light tracking-tight text-black mb-2"><VoiceglotText strokeWidth={1.5} translationKey="admin.photo_matcher.title" defaultText="photo matcher" / /></HeadingInstrument>
             <TextInstrument className="text-gray-400 tracking-widest text-[15px] font-light">
-              {totalItems} <VoiceglotText translationKey="admin.photo_matcher.to_process" defaultText={showAutoMatched ? "automatisch gematchte foto's (ter controle)" : "foto's te verwerken"} />
+              {totalItems} <VoiceglotText strokeWidth={1.5} translationKey="admin.photo_matcher.to_process" defaultText={showAutoMatched ? "automatisch gematchte foto's (ter controle)" : "foto's te verwerken"} / />
               {totalPages > 1 && ` • pagina ${currentPage} van ${totalPages}`}
             </TextInstrument>
           </ContainerInstrument>
@@ -384,7 +384,7 @@ export default function PhotoMatcherPage() {
              <ButtonInstrument 
                 onClick={bulkCleanup}
                 className="px-6 py-2 bg-va-off-white border border-orange-200 text-orange-600 hover:bg-orange-50 transition-all rounded-full text-[15px] font-light"
-              ><VoiceglotText translationKey="auto.page.___bulk_cleanup.6d4c5c" defaultText="🧹 bulk cleanup" /></ButtonInstrument>
+              ><VoiceglotText strokeWidth={1.5} translationKey="auto.page.___bulk_cleanup.6d4c5c" defaultText="🧹 bulk cleanup" / /></ButtonInstrument>
              <ButtonInstrument 
                 onClick={() => { setShowAutoMatched(!showAutoMatched); setCurrentPage(1); }}
                 className={`px-6 py-2 rounded-full text-[15px] font-light transition-all ${
@@ -446,7 +446,7 @@ export default function PhotoMatcherPage() {
                       >
                         {/* Foto Preview */}
                         <ContainerInstrument className="w-56 h-56 flex-shrink-0 relative rounded-[32px] overflow-hidden bg-va-off-white border border-black/[0.03]">
-                          <Image strokeWidth={1.5} 
+                          <Image  
                             src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(item.path || item.filePath)}`}
                             alt={item.fileName}
                             fill
@@ -484,7 +484,7 @@ export default function PhotoMatcherPage() {
                             <ContainerInstrument className="p-6 bg-va-off-white rounded-[24px] border border-black/[0.02]">
                               {item.analysis ? (
                                 item.analysis.loading ? (
-                                  <TextInstrument className="text-[15px] text-va-primary/40 animate-pulse font-light italic"><VoiceglotText translationKey="auto.page.vision_analyseert___.062171" defaultText="vision analyseert..." /></TextInstrument>
+                                  <TextInstrument className="text-[15px] text-va-primary/40 animate-pulse font-light italic"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.vision_analyseert___.062171" defaultText="vision analyseert..." / /></TextInstrument>
                                 ) : (
                                   <ContainerInstrument className="space-y-3">
                                     <TextInstrument className="text-[15px] text-va-black/60 leading-relaxed font-light">
@@ -543,7 +543,7 @@ export default function PhotoMatcherPage() {
                                 </ButtonInstrument>
                               ))
                             ) : !showAutoMatched && (
-                              <TextInstrument className="text-[15px] text-gray-300 italic font-light"><VoiceglotText translationKey="auto.page.geen_automatische_ma.4df367" defaultText="geen automatische match gevonden" /></TextInstrument>
+                              <TextInstrument className="text-[15px] text-gray-300 italic font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.geen_automatische_ma.4df367" defaultText="geen automatische match gevonden" / /></TextInstrument>
                             )}
                           </ContainerInstrument>
 

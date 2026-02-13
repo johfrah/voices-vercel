@@ -170,14 +170,14 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         <ContainerInstrument className="p-6 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center justify-between group animate-fade-in">
           <ContainerInstrument className="flex items-center gap-4">
             <ContainerInstrument className="w-12 h-12 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
-              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+              <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
             </ContainerInstrument>
             <ContainerInstrument>
               <HeadingInstrument level={4} className="text-[15px] font-light tracking-tight">
-                <VoiceglotText translationKey="checkout.admin.quote_mode" defaultText="Admin offerte modus" />
+                <VoiceglotText strokeWidth={1.5} translationKey="checkout.admin.quote_mode" defaultText="Admin offerte modus" / />
               </HeadingInstrument>
               <TextInstrument className="text-[15px] font-light text-va-black/40 tracking-widest">
-                <VoiceglotText translationKey="checkout.admin.quote_desc" defaultText="Verstuur een offerte i.p.v. directe betaling" />
+                <VoiceglotText strokeWidth={1.5} translationKey="checkout.admin.quote_desc" defaultText="Verstuur een offerte i.p.v. directe betaling" / />
               </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -199,17 +199,17 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       <ContainerInstrument className="bg-white p-8 rounded-[20px] border border-va-black/5 shadow-aura space-y-6">
         <ContainerInstrument className="flex items-center gap-3 mb-2">
           <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+            <Image  src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
           </ContainerInstrument>
           <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
-            <VoiceglotText translationKey="checkout.details.title" defaultText="Jouw gegevens" />
+            <VoiceglotText strokeWidth={1.5} translationKey="checkout.details.title" defaultText="Jouw gegevens" / />
           </HeadingInstrument>
         </ContainerInstrument>
 
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ContainerInstrument className="space-y-1">
             <LabelInstrument>
-              <VoiceglotText translationKey="checkout.form.first_name" defaultText="Voornaam *" />
+              <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.first_name" defaultText="Voornaam *" / />
             </LabelInstrument>
             <InputInstrument
               value={formData.first_name || ''}
@@ -220,7 +220,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           </ContainerInstrument>
           <ContainerInstrument className="space-y-1">
             <LabelInstrument>
-              <VoiceglotText translationKey="checkout.form.last_name" defaultText="Achternaam *" />
+              <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.last_name" defaultText="Achternaam *" / />
             </LabelInstrument>
             <InputInstrument
               value={formData.last_name || ''}
@@ -234,7 +234,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ContainerInstrument className="space-y-1">
             <LabelInstrument>
-              <VoiceglotText translationKey="checkout.form.email" defaultText="E-mailadres *" />
+              <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.email" defaultText="E-mailadres *" / />
             </LabelInstrument>
             <InputInstrument
               type="email"
@@ -246,7 +246,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           </ContainerInstrument>
           <ContainerInstrument className="space-y-1">
             <LabelInstrument>
-              <VoiceglotText translationKey="checkout.form.phone" defaultText="Telefoonnummer" />
+              <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.phone" defaultText="Telefoonnummer" / />
             </LabelInstrument>
             <InputInstrument
               value={formData.phone || ''}
@@ -259,7 +259,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         
         <ContainerInstrument className="space-y-1">
           <LabelInstrument>
-            <VoiceglotText translationKey="checkout.form.vat" defaultText="BTW-nummer" />
+            <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.vat" defaultText="BTW-nummer" / />
           </LabelInstrument>
           <ContainerInstrument className="relative">
             <InputInstrument
@@ -273,16 +273,16 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                vatStatus.valid ? (
                  <ContainerInstrument className="flex items-center gap-2 text-green-600 animate-fade-in">
                    <TextInstrument className="text-[15px] font-light tracking-widest ">
-                     <VoiceglotText translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" />
+                     <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" / />
                    </TextInstrument>
                    <CheckCircle2 strokeWidth={1.5} size={18} />
                  </ContainerInstrument>
                ) : vatStatus.valid === false ? (
                  <ContainerInstrument className="flex items-center gap-2 text-red-500 animate-shake">
                    <TextInstrument className="text-[15px] font-light tracking-widest ">
-                     <VoiceglotText translationKey="checkout.form.vat_invalid" defaultText="Ongeldig" />
+                     <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.vat_invalid" defaultText="Ongeldig" / />
                    </TextInstrument>
-                   <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+                   <Image  src="/assets/common/branding/icons/INFO.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
                  </ContainerInstrument>
                ) : null}
             </ContainerInstrument>
@@ -291,7 +291,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
 
         <ContainerInstrument className="space-y-1">
           <LabelInstrument>
-            <VoiceglotText translationKey="checkout.form.company" defaultText="Bedrijfsnaam" />
+            <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.company" defaultText="Bedrijfsnaam" / />
           </LabelInstrument>
           <InputInstrument
             value={formData.company || ''}
@@ -303,7 +303,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
 
         <ContainerInstrument className="space-y-1">
           <LabelInstrument>
-            <VoiceglotText translationKey="checkout.form.address" defaultText="Straat en huisnummer" />
+            <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.address" defaultText="Straat en huisnummer" / />
           </LabelInstrument>
           <InputInstrument
             value={formData.address_street || ''}
@@ -316,7 +316,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ContainerInstrument className="space-y-1">
             <LabelInstrument>
-              <VoiceglotText translationKey="checkout.form.zip" defaultText="Postcode *" />
+              <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.zip" defaultText="Postcode *" / />
             </LabelInstrument>
             <InputInstrument
               value={formData.postal_code || ''}
@@ -327,7 +327,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           </ContainerInstrument>
           <ContainerInstrument className="space-y-1">
             <LabelInstrument>
-              <VoiceglotText translationKey="checkout.form.city" defaultText="Stad *" />
+              <VoiceglotText strokeWidth={1.5} translationKey="checkout.form.city" defaultText="Stad *" / />
             </LabelInstrument>
             <InputInstrument
               value={formData.city || ''}
@@ -343,10 +343,10 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         <ContainerInstrument className="bg-white p-8 rounded-[20px] border border-va-black/5 shadow-aura space-y-6">
           <ContainerInstrument className="flex items-center gap-3 mb-2">
             <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-              <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+              <Image  src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
             </ContainerInstrument>
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
-              <VoiceglotText translationKey="checkout.payment.title" defaultText="Betaalmethode" />
+              <VoiceglotText strokeWidth={1.5} translationKey="checkout.payment.title" defaultText="Betaalmethode" / />
             </HeadingInstrument>
           </ContainerInstrument>
 
@@ -382,7 +382,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                       selectedMethod === method.id ? 'border-primary bg-primary/5' : 'border-va-black/5 hover:border-va-black/10'
                     )}
                   >
-                    <Image strokeWidth={1.5} 
+                    <Image  
                       src={method.image.size2x} 
                       alt={method.description} 
                       width={64} 
@@ -390,7 +390,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                       className="h-8 object-contain" 
                     / />
                     <TextInstrument className="font-light tracking-widest text-[15px] text-va-black/60 ">
-                      <VoiceglotText translationKey={`checkout.method.${method.id}`} defaultText={method.description} />
+                      <VoiceglotText strokeWidth={1.5} translationKey={`checkout.method.${method.id}`} defaultText={method.description} / />
                     </TextInstrument>
                   </ButtonInstrument>
                 ))}
@@ -401,17 +401,17 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       ) : (
         <ContainerInstrument className="p-8 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center gap-6 animate-fade-in">
           <ContainerInstrument className="w-14 h-14 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm">
-            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={28} height={28} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+            <Image  src="/assets/common/branding/icons/INFO.svg" width={28} height={28} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
           </ContainerInstrument>
           <ContainerInstrument>
             <HeadingInstrument level={4} className="text-lg font-light tracking-tight">
-              <VoiceglotText translationKey="checkout.ready_to_send.title" defaultText="Klaar voor verzending" />
+              <VoiceglotText strokeWidth={1.5} translationKey="checkout.ready_to_send.title" defaultText="Klaar voor verzending" / />
             </HeadingInstrument>
             <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
-              <VoiceglotText 
+              <VoiceglotText strokeWidth={1.5} 
                 translationKey="checkout.ready_to_send.desc" 
                 defaultText={`Je staat op het punt een officiële offerte te sturen naar ${formData.email}. In de volgende stap kun je de begeleidende e-mail personaliseren.`} 
-              />
+              / />
             </TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
@@ -429,16 +429,16 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               />
             </ContainerInstrument>
             <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed group-hover:text-va-black transition-colors">
-              <VoiceglotText 
+              <VoiceglotText strokeWidth={1.5} 
                 translationKey="checkout.academy.terms" 
                 defaultText="Ik ga akkoord met de algemene voorwaarden en begrijp dat mijn herroepingsrecht vervalt zodra ik toegang krijg tot de digitale leeromgeving." 
-              />
+              / />
             </TextInstrument>
           </LabelInstrument>
         </ContainerInstrument>
       )}
 
-      <AcademyUpsellSection />
+      <AcademyUpsellSection strokeWidth={1.5} / />
 
       <ContainerInstrument className="pt-4">
         <ButtonInstrument 
@@ -450,22 +450,22 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           )}
         >
           {isSubmitting ? (
-            <><Loader2 className="animate-spin" size={24} strokeWidth={1.5} /> <VoiceglotText translationKey="common.processing" defaultText="Verwerken..." /></>
+            <><Loader2 className="animate-spin" size={24} strokeWidth={1.5} /> <VoiceglotText strokeWidth={1.5} translationKey="common.processing" defaultText="Verwerken..." / /></>
           ) : formData.isQuote ? (
-            <><VoiceglotText translationKey="checkout.cta.quote" defaultText="Preview offerte e-mail" /> <Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert" / /></>
+            <><VoiceglotText strokeWidth={1.5} translationKey="checkout.cta.quote" defaultText="Preview offerte e-mail" / /> <Image  src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert" / /></>
           ) : (
             <>
-              <VoiceglotText translationKey="checkout.cta.pay" defaultText={`Nu betalen via ${selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1)}`} />
-              <Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert group-hover:translate-x-1 transition-transform" / />
+              <VoiceglotText strokeWidth={1.5} translationKey="checkout.cta.pay" defaultText={`Nu betalen via ${selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1)}`} / />
+              <Image  src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert group-hover:translate-x-1 transition-transform" / />
             </>
           )}
         </ButtonInstrument>
         <TextInstrument className="text-center text-[15px] font-light tracking-widest text-va-black/20 mt-6 ">
-          <VoiceglotText translationKey="checkout.terms_agreement" defaultText="Door af te ronden ga je akkoord met onze algemene voorwaarden." />
+          <VoiceglotText strokeWidth={1.5} translationKey="checkout.terms_agreement" defaultText="Door af te ronden ga je akkoord met onze algemene voorwaarden." / />
         </TextInstrument>
       </ContainerInstrument>
 
-      <EmailPreviewModal 
+      <EmailPreviewModal strokeWidth={1.5} 
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
         onSend={(msg) => handleSubmit(msg)}

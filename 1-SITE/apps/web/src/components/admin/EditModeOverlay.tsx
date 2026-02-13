@@ -46,7 +46,7 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
   if (!isEditMode) return <>{children}</>;
 
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+    <DndContext strokeWidth={1.5} sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="va-edit-overlay-container">
         <AnimatePresence>
           {isEditMode && (
@@ -65,10 +65,10 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
                 />
                 <div className="va-status-text">
                   <span className="va-status-label">
-                    <VoiceglotText translationKey="admin.toolbar.mode" defaultText="Beheer-modus" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="admin.toolbar.mode" defaultText="Beheer-modus" / />
                   </span>
                   <span className="va-status-sublabel">
-                    <VoiceglotText translationKey="admin.toolbar.status" defaultText="Systeem Actief" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="admin.toolbar.status" defaultText="Systeem Actief" / />
                   </span>
                 </div>
               </div>
@@ -80,7 +80,7 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
                   className="va-admin-btn-action"
                 >
                   <Plus strokeWidth={1.5} size={14} className="va-btn-icon-rotate" />
-                  <VoiceglotText translationKey="admin.toolbar.add_section" defaultText="Sectie" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="admin.toolbar.add_section" defaultText="Sectie" / />
                 </button>
                 
                 <button 
@@ -89,7 +89,7 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
                   className="va-admin-btn-action"
                 >
                   <Sparkles strokeWidth={1.5} size={14} className="va-btn-icon-scale" />
-                  <VoiceglotText translationKey="admin.toolbar.predictive" defaultText="Predictive" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="admin.toolbar.predictive" defaultText="Predictive" / />
                 </button>
 
                 <button 
@@ -101,11 +101,11 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
                   className="va-admin-btn-action"
                 >
                   <Layout strokeWidth={1.5} size={14} className="va-btn-icon-scale" / />
-                  <VoiceglotText translationKey="admin.toolbar.architect" defaultText="Architect" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="admin.toolbar.architect" defaultText="Architect" / />
                 </button>
               </div>
 
-              <BentoArchitect isOpen={isArchitectOpen} onClose={() => setIsArchitectOpen(false)} />
+              <BentoArchitect strokeWidth={1.5} isOpen={isArchitectOpen} onClose={() => setIsArchitectOpen(false)} />
 
               <div className="va-admin-toolbar-controls">
                 <button 
@@ -124,7 +124,7 @@ export const EditModeOverlay: React.FC<{ children: React.ReactNode }> = ({ child
                   className="va-admin-btn-save"
                 >
                   <Save strokeWidth={1.5} size={14} / />
-                  <VoiceglotText translationKey="admin.toolbar.save" defaultText="Opslaan" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="admin.toolbar.save" defaultText="Opslaan" / />
                 </button>
               </div>
             </motion.div>

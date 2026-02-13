@@ -74,20 +74,20 @@ export const DnDOrchestrator: React.FC<DnDOrchestratorProps> = ({
   };
 
   return (
-    <DndContext 
+    <DndContext strokeWidth={1.5} 
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext 
+      <SortableContext strokeWidth={1.5} 
         items={items.map(i => i.id)} 
         strategy={rectSortingStrategy}
       >
         {children}
       </SortableContext>
       
-      <DragOverlay dropAnimation={{
+      <DragOverlay strokeWidth={1.5} dropAnimation={{
         sideEffects: defaultDropAnimationSideEffects({
           styles: {
             active: {

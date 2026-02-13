@@ -23,17 +23,17 @@ export default async function KalenderPage() {
       <SectionInstrument className="max-w-4xl mx-auto space-y-12">
         <ContainerInstrument className="text-center space-y-4">
           <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
-            <VoiceglotText translationKey="studio.kalender.title" defaultText="Workshop Kalender" />
+            <VoiceglotText strokeWidth={1.5} translationKey="studio.kalender.title" defaultText="Workshop Kalender" / />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-light text-[15px]">
-            <VoiceglotText 
+            <VoiceglotText strokeWidth={1.5} 
               translationKey="studio.kalender.subtitle" 
               defaultText="Bekijk alle geplande sessies en reserveer direct je plek in de studio." 
-            />
+            / />
           </TextInstrument>
         </ContainerInstrument>
 
-        <WorkshopCalendar workshops={upcomingWorkshops} />
+        <WorkshopCalendar strokeWidth={1.5} workshops={upcomingWorkshops} / />
       </SectionInstrument>
     </PageWrapperInstrument>
   );

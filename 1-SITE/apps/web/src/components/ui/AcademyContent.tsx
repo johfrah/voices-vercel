@@ -96,7 +96,7 @@ export const AcademyContent: React.FC<AcademyContentProps> = ({
                 subParts.forEach((subPart, i) => {
                   if (subPart.toLowerCase() === term.toLowerCase()) {
                     newTextParts.push(
-                      <GlossaryTooltip key={`${term}-${index}-${i}`} term={term} definition={definition}>
+                      <GlossaryTooltip strokeWidth={1.5} key={`${term}-${index}-${i}`} term={term} definition={definition}>
                         {subPart}
                       </GlossaryTooltip>
                     );

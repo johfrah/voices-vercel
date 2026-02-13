@@ -114,7 +114,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   };
 
   return (
-    <Component 
+    <Component strokeWidth={1.5} 
       className={cn(
         "relative group/edit inline-block transition-all duration-300",
         isEditMode && !noTranslate && "cursor-text hover:bg-primary/5 px-1 -mx-1 rounded-md min-w-[20px]",

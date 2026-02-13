@@ -25,7 +25,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
   const [isOptimizing, setIsOptimizing] = useState(false);
 
   const stats = [
-    { label: 'CVR (Klant-focus)', value: '4.2%', change: '+0.8%', icon: <TrendingUp size={14} /> },
+    { label: 'CVR (Klant-focus)', value: '4.2%', change: '+0.8%', icon: <TrendingUp strokeWidth={1.5} size={14} / /> },
     { label: 'Sync Status', value: '100%', change: 'Stabiel', icon: <ShieldCheck strokeWidth={1.5} size={14} /> },
     { label: 'AI Nauwkeurigheid', value: '92%', change: '+5%', icon: <Zap strokeWidth={1.5} size={14} /> },
     { label: 'Actieve Sessies', value: '12', change: 'Live', icon: <Activity strokeWidth={1.5} size={14} /> },
@@ -55,7 +55,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                  <BarChart3 size={18} className="text-white" />
+                  <BarChart3 strokeWidth={1.5} size={18} className="text-white" / />
                 </div>
                 <h2 className="text-[15px] font-light tracking-[0.2em] text-white Raleway">Spotlight Cockpit</h2>
               </div>
@@ -122,7 +122,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                     >
                       {isOptimizing ? (
                         <>
-                          <RefreshCcw size={14} className="animate-spin" />
+                          <RefreshCcw strokeWidth={1.5} size={14} className="animate-spin" / />
                           Bezig...
                         </>
                       ) : (

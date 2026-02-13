@@ -164,22 +164,22 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
           <ArrowLeft strokeWidth={1.5} size={14} /> 
-          <VoiceglotText translationKey="artist.back_to_artists" defaultText="Terug naar alle stemmen" />
+          <VoiceglotText strokeWidth={1.5} translationKey="artist.back_to_artists" defaultText="Terug naar alle stemmen" / />
         </Link>
         <ContainerInstrument className="flex gap-4">
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Image strokeWidth={1.5} src="/assets/common/branding/icons/FAVORITES.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+            <Image  src="/assets/common/branding/icons/FAVORITES.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
           </ButtonInstrument>
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Image strokeWidth={1.5} src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+            <Image  src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
-      <BentoGrid className="mb-20">
+      <BentoGrid strokeWidth={1.5} className="mb-20">
         <BentoCard span="sm" className="!p-0 overflow-hidden bg-white shadow-aura">
           <ContainerInstrument className="aspect-[4/5] relative">
-            <Image strokeWidth={1.5} 
+            <Image  
               src={actor.photo_url || '/assets/common/placeholders/placeholder-voice.jpg'} 
               alt={actor.display_name} 
               fill
@@ -188,18 +188,18 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
             <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent" />
             <ContainerInstrument className="absolute bottom-8 left-8 right-8">
               <HeadingInstrument level={1} className="text-3xl font-light text-white tracking-tighter mb-2">
-                <VoiceglotText 
+                <VoiceglotText strokeWidth={1.5} 
                   translationKey={`actor.${actor.id}.name`} 
                   defaultText={actor.display_name} 
                   noTranslate={true} 
-                />
+                / />
               </HeadingInstrument>
               <ContainerInstrument className="flex items-center gap-2">
                 <ContainerInstrument className="px-3 py-1 bg-primary rounded-full text-[15px] font-light text-white tracking-widest">
-                  <VoiceglotText translationKey="common.craftsman" defaultText="Vakman" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="common.craftsman" defaultText="Vakman" / />
                 </ContainerInstrument>
                 <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[15px] font-light tracking-widest">
-                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" className="brightness-0 invert" / /> 
+                  <Image  src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" className="brightness-0 invert" / /> 
                   {actor.voice_score}
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -210,7 +210,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
         <BentoCard span="xl" className="bg-va-off-white/50 backdrop-blur-md border-white/20 shadow-aura p-12">
           <ContainerInstrument className="flex justify-between items-center mb-12">
             <HeadingInstrument level={2} className="text-3xl font-light tracking-tight">
-              <VoiceglotText translationKey="common.portfolio" defaultText="Portfolio" /> & <TextInstrument as="span" className="text-primary font-light"><VoiceglotText translationKey="common.demos" defaultText="Demos" /></TextInstrument>
+              <VoiceglotText strokeWidth={1.5} translationKey="common.portfolio" defaultText="Portfolio" / /> & <TextInstrument as="span" className="text-primary font-light"><VoiceglotText strokeWidth={1.5} translationKey="common.demos" defaultText="Demos" / /></TextInstrument>
             </HeadingInstrument>
           </ContainerInstrument>
 
@@ -222,16 +222,16 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
               >
                 <ContainerInstrument className="flex items-center gap-4">
                   <ContainerInstrument className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                    <Image strokeWidth={1.5} src="/assets/common/branding/icons/PLAY.svg" width={20} height={20} alt="" className="group-hover:brightness-0 group-hover:invert ml-1" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+                    <Image  src="/assets/common/branding/icons/PLAY.svg" width={20} height={20} alt="" className="group-hover:brightness-0 group-hover:invert ml-1" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
                   </ContainerInstrument>
                   <ContainerInstrument>
                     <HeadingInstrument level={4} className="font-light tracking-tight text-[15px]">
-                      <VoiceglotText translationKey={`actor.${actor.id}.demo.${i}.title`} defaultText={demo.title} />
+                      <VoiceglotText strokeWidth={1.5} translationKey={`actor.${actor.id}.demo.${i}.title`} defaultText={demo.title} / />
                     </HeadingInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
                 <TextInstrument className="text-[15px] font-light text-va-black/20 tracking-widest">
-                  <VoiceglotText translationKey={`common.category.${demo.category?.toLowerCase()}`} defaultText={demo.category} />
+                  <VoiceglotText strokeWidth={1.5} translationKey={`common.category.${demo.category?.toLowerCase()}`} defaultText={demo.category} / />
                 </TextInstrument>
               </ContainerInstrument>
             ))}
@@ -243,17 +243,17 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
       {(hasCustomVideo || hasCustomReels) && (
         <SectionInstrument className="mb-20">
           <HeadingInstrument level={2} className="text-4xl font-light tracking-tight mb-12">
-            {hasCustomVideo ? <VoiceglotText translationKey="common.in_action" defaultText="In Actie" /> : <VoiceglotText translationKey="common.brand_reels" defaultText="Brand Reels" />}
+            {hasCustomVideo ? <VoiceglotText strokeWidth={1.5} translationKey="common.in_action" defaultText="In Actie" / /> : <VoiceglotText strokeWidth={1.5} translationKey="common.brand_reels" defaultText="Brand Reels" / />}
           </HeadingInstrument>
-          <BentoGrid columns={3}>
+          <BentoGrid strokeWidth={1.5} columns={3}>
             {hasCustomVideo && (
               <BentoCard span="full" className="aspect-video bg-black rounded-[20px] overflow-hidden relative group">
                 <ContainerInstrument className="absolute inset-0 flex items-center justify-center bg-va-black/40">
-                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={48} height={48} alt="" className="opacity-20 brightness-0 invert" / />
+                  <Image  src="/assets/common/branding/icons/INFO.svg" width={48} height={48} alt="" className="opacity-20 brightness-0 invert" / />
                 </ContainerInstrument>
                 <ContainerInstrument className="absolute bottom-8 left-8">
                   <p className="text-white font-light tracking-widest text-[15px]">
-                    <VoiceglotText translationKey={`actor.${actor.id}.custom_video_label`} defaultText={`${actor.first_name} voor Hornbach`} />
+                    <VoiceglotText strokeWidth={1.5} translationKey={`actor.${actor.id}.custom_video_label`} defaultText={`${actor.first_name} voor Hornbach`} / />
                   </p>
                 </ContainerInstrument>
               </BentoCard>
@@ -261,17 +261,17 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
             {hasCustomReels && (
               <>
                 <BentoCard span="sm" className="bg-white p-8 border border-black/5 shadow-sm rounded-[20px]">
-                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="mb-4" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
-                  <p className="font-light tracking-tight text-[15px]"><VoiceglotText translationKey="auto.voicedetailclient.tesla_navigation.b45eba" defaultText="Tesla Navigation" /></p>
+                  <Image  src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="mb-4" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+                  <p className="font-light tracking-tight text-[15px]"><VoiceglotText strokeWidth={1.5} translationKey="auto.voicedetailclient.tesla_navigation.b45eba" defaultText="Tesla Navigation" / /></p>
                   <p className="text-[15px] text-va-black/40 mt-2 font-light">
-                    <VoiceglotText translationKey="common.tesla_desc" defaultText="De stem van autoriteit en rust." />
+                    <VoiceglotText strokeWidth={1.5} translationKey="common.tesla_desc" defaultText="De stem van autoriteit en rust." / />
                   </p>
                 </BentoCard>
                 <BentoCard span="sm" className="bg-white p-8 border border-black/5 shadow-sm rounded-[20px]">
-                  <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="mb-4" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
-                  <p className="font-light tracking-tight text-[15px]"><VoiceglotText translationKey="auto.voicedetailclient.samsung_global.8d9a4b" defaultText="Samsung Global" /></p>
+                  <Image  src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="mb-4" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} / />
+                  <p className="font-light tracking-tight text-[15px]"><VoiceglotText strokeWidth={1.5} translationKey="auto.voicedetailclient.samsung_global.8d9a4b" defaultText="Samsung Global" / /></p>
                   <p className="text-[15px] text-va-black/40 mt-2 font-light">
-                    <VoiceglotText translationKey="common.samsung_desc" defaultText="Technologische perfectie." />
+                    <VoiceglotText strokeWidth={1.5} translationKey="common.samsung_desc" defaultText="Technologische perfectie." / />
                   </p>
                 </BentoCard>
               </>
@@ -285,20 +285,20 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
         <ContainerInstrument className="bg-white rounded-[20px] shadow-aura border border-black/5 p-8 md:p-12">
           <ContainerInstrument className="mb-12">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tight">
-              <VoiceglotText translationKey="common.order_direct" defaultText="Direct Bestellen" />
+              <VoiceglotText strokeWidth={1.5} translationKey="common.order_direct" defaultText="Direct Bestellen" / />
             </HeadingInstrument>
             <p className="text-va-black/40 font-light mt-2">
-              <VoiceglotText 
+              <VoiceglotText strokeWidth={1.5} 
                 translationKey="common.order_direct_desc" 
                 defaultText={`Voer je script in of bereken je prijs voor ${actor.display_name}.`} 
-              />
+              / />
             </p>
           </ContainerInstrument>
           
           <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <ContainerInstrument className="space-y-8">
               <ContainerInstrument className="space-y-4">
-                <label className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText translationKey="common.your_script" defaultText="1. Jouw Script" /></label>
+                <label className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText strokeWidth={1.5} translationKey="common.your_script" defaultText="1. Jouw Script" / /></label>
                 <textarea 
                   value={localBriefing}
                   onChange={(e) => handleBriefingChange(e.target.value)}
@@ -308,14 +308,14 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
               </ContainerInstrument>
               <ContainerInstrument className="p-6 bg-primary/5 rounded-[20px] border border-primary/10">
                 <TextInstrument className="text-[15px] font-light text-primary flex items-center gap-2">
-                  <Mic strokeWidth={1.5} size={12} /> <VoiceglotText translationKey="common.script_tip" defaultText="Tip: Gebruik (Titel) voor meerdere bestanden." />
+                  <Mic strokeWidth={1.5} size={12} /> <VoiceglotText strokeWidth={1.5} translationKey="common.script_tip" defaultText="Tip: Gebruik (Titel) voor meerdere bestanden." / />
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             
             <ContainerInstrument>
-              <LabelInstrument className="text-[15px] font-light tracking-widest text-va-black/30 block mb-4"><VoiceglotText translationKey="common.config_price" defaultText="2. Configuratie & Prijs" /></LabelInstrument>
-              <PricingCalculator mode="human" actor={actor} />
+              <LabelInstrument className="text-[15px] font-light tracking-widest text-va-black/30 block mb-4"><VoiceglotText strokeWidth={1.5} translationKey="common.config_price" defaultText="2. Configuratie & Prijs" / /></LabelInstrument>
+              <PricingCalculator strokeWidth={1.5} mode="human" actor={actor} / />
             </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

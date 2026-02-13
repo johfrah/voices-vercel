@@ -27,9 +27,9 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
         <ContainerInstrument className="absolute inset-0 hmagic animate-slow-pulse" />
       </ContainerInstrument>
 
-      <WorkshopHero title={workshop.title} journey="studio" />
+      <WorkshopHero strokeWidth={1.5} title={workshop.title} journey="studio" / />
 
-      <WorkshopContent workshop={workshop} />
+      <WorkshopContent strokeWidth={1.5} workshop={workshop} / />
 
       {/* 🌟 REVIEWS SPECIFIEK VOOR DEZE WORKSHOP */}
       {workshop.reviews && workshop.reviews.length > 0 && (

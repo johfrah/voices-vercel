@@ -232,29 +232,44 @@ class ChrisWatchdog {
 
     // Fix Atomic Icon Mandate (Lucide icons strokeWidth)
     // 🛡️ CHRIS-PROTOCOL: Regex verfijnd om geen TypeScript generics (bv. useState<User>) te slopen.
-    const iconPattern = /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind|Users|Heart|Play|Layout|Settings|Database|Mailbox|Search|Layers|Eye|FileText|Download|Trash2|Edit|PlusCircle|CheckCircle|AlertCircle|Info|Clock|MapPin|ExternalLink|Menu|ChevronRight|ChevronLeft|ChevronUp|Filter|Grid|List|Maximize2|Minimize2|Volume2|VolumeX|Moon|Sun|Camera|Video|Mic|Music|Wifi|WifiOff|Cloud|CloudRain|CloudLightning|CloudSnow|Sunrise|Sunset|Umbrella|Thermometer|Droplets|Gauge|Minus|ArrowUp|ArrowDown|ArrowUpRight|ArrowUpLeft|ArrowDownRight|ArrowDownLeft|ChevronsRight|ChevronsLeft|ChevronsUp|ChevronsDown|MoreHorizontal|MoreVertical|Share|Share2|Link|Link2|Unlink|Unlink2|Scissors|Copy|Clipboard|Save|HardDrive|Cpu|Smartphone|Tablet|Laptop|Tv|Speaker|Headphones|Globe2|Map|Compass|Navigation|Navigation2|Flag|Terminal|Code|Code2|Command|Image|Image2|Film|Film2|Pause|Square|Circle|Triangle|Hexagon|Pentagon|Octagon|ShieldAlert|ShieldX|Key|UserPlus|UserMinus|UserCheck|UserX|Archive|Inbox|Folder|FolderPlus|FolderMinus|FolderOpen|File|FilePlus|FileMinus|FileSearch|FileCheck|FileX|FileCode|FileAudio|FileVideo|FileImage|FileArchive|FileDigit|FileBox|FileSpreadsheet|FilePieChart|FileBarChart|FileLineChart|FileSignature|FileQuestion|FileWarning|FileLock|FileUnlock|FileEdit|FileUp|FileDown|FileHeart|FileStar|FileZap|FileShield|FileShieldCheck|FileShieldAlert|FileShieldX|FileUser|FileUserPlus|FileUserMinus|FileUserCheck|FileUserX|FileUsers|FileMail|FileMailbox|FileSend|FileInbox|FileFolder|FileFolderPlus|FileFolderMinus|FileFolderOpen)(?=\s|\/>)(?![^>]*strokeWidth=\{1\.5\})(?![^>]*Provider)([^>]*)>/g;
+    const iconPattern = /<([A-Z][a-zA-Z0-9]+)(?=\s|\/>)(?![^>]*strokeWidth=\{1\.5\})(?![^>]*Provider)([^>]*)>/g;
     content = content.replace(iconPattern, (match, p1, p2) => {
+        // p1 is de icon naam (bv. Zap, Star, etc.)
         // p2 is de capture group voor de rest van de tag
+        const iconName = p1;
         const attributes = p2 || '';
+        
+        // Alleen Lucide-achtige iconen (PascalCase, meestal 3+ letters)
+        if (iconName.length < 3) return match;
         
         // Extra check: negeer als het eruit ziet als een type (bv. <User | null>)
         if (attributes.includes('|') || attributes.includes('[') || attributes.trim() === '') {
             if (!attributes.includes('=') && !match.includes('/>')) return match; 
         }
         
+        // Check of het een bekend Lucide icoon is (simpele check: begint met hoofdletter, geen Provider)
+        // We kunnen hier een lijst toevoegen of het generiek houden voor alle Capitalized tags die geen Provider zijn
+        if (iconName.endsWith('Provider') || iconName.endsWith('Instrument') || iconName.endsWith('Card') || iconName.endsWith('Skeleton') || iconName === 'Link' || iconName === 'Image' || iconName === 'NextImage' || iconName === 'VoiceglotText' || iconName === 'VoiceglotHtml' || iconName === 'VoiceglotImage') {
+            return match;
+        }
+
         if (match.includes('strokeWidth=')) {
             // Replace existing strokeWidth
-            console.log(`   ✅ [FIX] ${path.basename(filePath)}: Updated strokeWidth for ${p1}`);
+            console.log(`   ✅ [FIX] ${path.basename(filePath)}: Updated strokeWidth for ${iconName}`);
             return match.replace(/strokeWidth=\{[^}]*\}/, 'strokeWidth={1.5}');
         } else {
             // Add strokeWidth
-            console.log(`   ✅ [FIX] ${path.basename(filePath)}: Added strokeWidth={1.5} to ${p1}`);
+            console.log(`   ✅ [FIX] ${path.basename(filePath)}: Added strokeWidth={1.5} to ${iconName}`);
             if (match.endsWith('/>')) {
-                return `<${p1} strokeWidth={1.5}${attributes}>`.replace(/>$/, ' />');
+                return `<${iconName} strokeWidth={1.5}${attributes}>`.replace(/>$/, ' />');
             }
-            return `<${p1} strokeWidth={1.5}${attributes}>`;
+            return `<${iconName} strokeWidth={1.5}${attributes}>`;
         }
     });
+
+    // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix Image strokeWidth (vaak foutief gedetecteerd)
+    content = content.replace(/<Image([^>]*)strokeWidth=\{1\.5\}([^>]*)>/g, '<Image$1$2>');
+    content = content.replace(/<NextImage([^>]*)strokeWidth=\{1\.5\}([^>]*)>/g, '<NextImage$1$2>');
 
     // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix Leesbaarheid (text-sm -> text-[15px])
     content = content.replace(/text-(xs|sm|\[(1[0-4]|[0-9])px\])/g, (match, p1, p2) => {

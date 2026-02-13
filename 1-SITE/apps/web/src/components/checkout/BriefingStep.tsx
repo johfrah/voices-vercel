@@ -38,7 +38,7 @@ export const BriefingStep: React.FC = () => {
       )}>
         <ContainerInstrument className="space-y-6">
           <LabelInstrument className="block text-[15px] font-light tracking-widest text-va-black/30 ">
-            <VoiceglotText translationKey="checkout.briefing.step1" defaultText="1. Wat is het script?" />
+            <VoiceglotText strokeWidth={1.5} translationKey="checkout.briefing.step1" defaultText="1. Wat is het script?" / />
           </LabelInstrument>
           <textarea
             value={state.briefing}
@@ -47,20 +47,20 @@ export const BriefingStep: React.FC = () => {
             className="w-full h-64 bg-va-off-white border-none rounded-[20px] p-8 text-lg font-light focus:ring-2 focus:ring-primary/20 transition-all resize-none"
           />
           <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/20 ">
-            <Image strokeWidth={1.5} src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} / />
+            <Image  src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} / />
             {state.usage === 'telefonie' ? (
               <TextInstrument>
-                <VoiceglotText 
+                <VoiceglotText strokeWidth={1.5} 
                   translationKey="checkout.briefing.prompts_detected" 
                   defaultText={`${state.briefing.trim().split(/\n+/).filter(Boolean).length} prompts gedetecteerd`} 
-                />
+                / />
               </TextInstrument>
             ) : (
               <TextInstrument>
-                <VoiceglotText 
+                <VoiceglotText strokeWidth={1.5} 
                   translationKey="checkout.briefing.words_detected" 
                   defaultText={`${state.briefing.trim().split(/\s+/).filter(Boolean).length} woorden gedetecteerd`} 
-                />
+                / />
               </TextInstrument>
             )}
           </ContainerInstrument>
@@ -68,7 +68,7 @@ export const BriefingStep: React.FC = () => {
 
         <ContainerInstrument className="space-y-6">
           <LabelInstrument className="block text-[15px] font-light tracking-widest text-va-black/30 ">
-            <VoiceglotText translationKey="checkout.briefing.step2" defaultText="2. Uitspraak instructies (optioneel)" />
+            <VoiceglotText strokeWidth={1.5} translationKey="checkout.briefing.step2" defaultText="2. Uitspraak instructies (optioneel)" / />
           </LabelInstrument>
           <input
             type="text"
@@ -81,7 +81,7 @@ export const BriefingStep: React.FC = () => {
 
         <ContainerInstrument className="space-y-6">
           <LabelInstrument className="block text-[15px] font-light tracking-widest text-va-black/30 ">
-            <VoiceglotText translationKey="checkout.briefing.step3" defaultText="3. Hoe wordt de opname gebruikt?" />
+            <VoiceglotText strokeWidth={1.5} translationKey="checkout.briefing.step3" defaultText="3. Hoe wordt de opname gebruikt?" / />
           </LabelInstrument>
           <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
@@ -99,7 +99,7 @@ export const BriefingStep: React.FC = () => {
                     : 'border-va-black/5 hover:border-va-black/10 text-va-black/40'
                 )}
               >
-                <VoiceglotText translationKey={type.key} defaultText={type.label} />
+                <VoiceglotText strokeWidth={1.5} translationKey={type.key} defaultText={type.label} / />
               </ButtonInstrument>
             ))}
           </ContainerInstrument>
@@ -109,13 +109,13 @@ export const BriefingStep: React.FC = () => {
           onClick={handleNext} 
           className="va-btn-pro w-full py-6 !rounded-[10px]"
         >
-          <VoiceglotText translationKey="checkout.briefing.next" defaultText="Volgende: Stem Kiezen" />
+          <VoiceglotText strokeWidth={1.5} translationKey="checkout.briefing.next" defaultText="Volgende: Stem Kiezen" / />
         </ButtonInstrument>
       </ContainerInstrument>
 
       {state.usage === 'telefonie' && (
         <ContainerInstrument className="lg:col-span-1">
-          <TelephonySmartSuggestions />
+          <TelephonySmartSuggestions strokeWidth={1.5} / />
         </ContainerInstrument>
       )}
     </ContainerInstrument>

@@ -44,7 +44,7 @@ export default async function AgencyDynamicPage({
 
   return (
     <PageWrapperInstrument>
-      <LiquidBackground />
+      <LiquidBackground strokeWidth={1.5} / />
       <AgencyHeroInstrument 
         title={filters.language ? `${filters.language.toUpperCase()} Stemmen` : undefined} 
         subtitle="Vind de perfecte stem voor uw project."
@@ -53,8 +53,8 @@ export default async function AgencyDynamicPage({
       />
       <SectionInstrument>
         <ContainerInstrument>
-          <Suspense fallback={<LoadingScreenInstrument />}>
-            <VoiceGrid actors={mappedActors as any} />
+          <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
+            <VoiceGrid strokeWidth={1.5} actors={mappedActors as any} / />
           </Suspense>
         </ContainerInstrument>
       </SectionInstrument>

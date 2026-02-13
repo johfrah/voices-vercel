@@ -43,7 +43,7 @@ export const HitlActionCardInstrument = ({
       <ContainerInstrument className="flex justify-between items-start mb-3 relative z-10">
           <ContainerInstrument className="flex items-center gap-2">
           {getIcon()}
-          <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-white/40"><VoiceglotText translationKey="hitl.suggestion" defaultText="Voicy Suggestie" /></HeadingInstrument>
+          <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-white/40"><VoiceglotText strokeWidth={1.5} translationKey="hitl.suggestion" defaultText="Voicy Suggestie" / /></HeadingInstrument>
         </ContainerInstrument>
         <ButtonInstrument onClick={onDismiss} className="text-white/20 hover:text-white transition-colors">
           <X strokeWidth={1.5} size={12} />
@@ -61,7 +61,7 @@ export const HitlActionCardInstrument = ({
         <ButtonInstrument 
           onClick={onApprove}
           className="w-full py-2 bg-white text-va-black rounded-xl text-[15px] font-medium tracking-widest flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all"
-        ><VoiceglotText translationKey="common.approve" defaultText="Goedkeuren & Versturen" /><ArrowRight strokeWidth={1.5} size={12} /></ButtonInstrument>
+        ><VoiceglotText strokeWidth={1.5} translationKey="common.approve" defaultText="Goedkeuren & Versturen" / /><ArrowRight strokeWidth={1.5} size={12} /></ButtonInstrument>
       </ContainerInstrument>
     </ContainerInstrument>
   );

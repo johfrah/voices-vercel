@@ -40,7 +40,7 @@ export default function UnderConstruction() {
             className="text-[15px] font-black tracking-widest bg-va-black text-white px-6 py-3 rounded-full hover:bg-primary transition-all shadow-lg"
             onClick={() => playClick('pro')}
           >
-            <VoiceglotText translationKey="admin.dashboard.link" defaultText="Admin Dashboard" />
+            <VoiceglotText strokeWidth={1.5} translationKey="admin.dashboard.link" defaultText="Admin Dashboard" / />
           </Link>
         </div>
       )}
@@ -57,7 +57,7 @@ export default function UnderConstruction() {
           onMouseEnter={() => playSwell()}
           onClick={() => playClick('soft')}
         >
-          <Image strokeWidth={1.5} 
+          <Image  
             src={market.logo_url} 
             alt={market.name} 
             width={240}
@@ -69,17 +69,17 @@ export default function UnderConstruction() {
         {/* BENTO STATUS BOX */}
         <div className="w-full bg-white/80 backdrop-blur-xl border border-black/5 p-12 rounded-[32px] shadow-aura space-y-8 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10">
-            <Construction size={12} className="animate-pulse" /> <VoiceglotText translationKey="construction.badge" defaultText="Voices in Aanbouw" />
+            <Construction strokeWidth={1.5} size={12} className="animate-pulse" / /> <VoiceglotText strokeWidth={1.5} translationKey="construction.badge" defaultText="Voices in Aanbouw" / />
           </div>
           
           <h1 className="text-4xl md:text-5xl font-medium leading-tight tracking-tight text-va-black/80">
-            <VoiceglotText translationKey="construction.title.part1" defaultText="Binnenkort een nieuwe" /> <br/>
-            <span className="text-va-black"><VoiceglotText translationKey="construction.title.part2" defaultText="ervaring voor stemmen." /></span>
+            <VoiceglotText strokeWidth={1.5} translationKey="construction.title.part1" defaultText="Binnenkort een nieuwe" / /> <br/>
+            <span className="text-va-black"><VoiceglotText strokeWidth={1.5} translationKey="construction.title.part2" defaultText="ervaring voor stemmen." / /></span>
           </h1>
 
           <p className="text-lg text-va-black/40 font-normal leading-relaxed max-w-md mx-auto">
-            <VoiceglotText translationKey="construction.subtitle" defaultText="We werken momenteel aan ons platform." /> <br/>
-            <VoiceglotText translationKey="construction.cta_text" defaultText="Heb je nu een stem nodig?" />
+            <VoiceglotText strokeWidth={1.5} translationKey="construction.subtitle" defaultText="We werken momenteel aan ons platform." / /> <br/>
+            <VoiceglotText strokeWidth={1.5} translationKey="construction.cta_text" defaultText="Heb je nu een stem nodig?" / />
           </p>
 
           <div className="pt-4">

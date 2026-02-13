@@ -34,7 +34,7 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
               <div className="va-artist-back-icon">
                 <ArrowLeft strokeWidth={1.5} size={18} />
               </div>
-              <span className="va-artist-back-text"><VoiceglotText translationKey="auto.artistheroinstrument.agency.75ec3e" defaultText="Agency" /></span>
+              <span className="va-artist-back-text"><VoiceglotText strokeWidth={1.5} translationKey="auto.artistheroinstrument.agency.75ec3e" defaultText="Agency" / /></span>
             </Link>
             
             <div className="va-artist-nav-links">
@@ -48,7 +48,7 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
           </div>
 
           <div className="va-artist-nav-right">
-            <button className="va-btn-pro"><VoiceglotText translationKey="artist.hero.cta_book" defaultText="Direct Boeken" /></button>
+            <button className="va-btn-pro"><VoiceglotText strokeWidth={1.5} translationKey="artist.hero.cta_book" defaultText="Direct Boeken" / /></button>
           </div>
         </div>
       </nav>
@@ -58,7 +58,7 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
           <div className="va-artist-hero-content">
             <div className="va-artist-badge">
               <span className="va-artist-badge-dot"></span> 
-              <VoiceglotText translationKey="artist.hero.badge" defaultText="Official Voice Portfolio" />
+              <VoiceglotText strokeWidth={1.5} translationKey="artist.hero.badge" defaultText="Official Voice Portfolio" / />
             </div>
             <h1 className="va-artist-title font-light">
               {name.split(' ')[0]} <br />
@@ -70,17 +70,17 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
             
             <div className="va-artist-hero-actions">
               <a href="#demos" className="va-btn-pro">
-                <VoiceglotText translationKey="artist.hero.cta_demos" defaultText="Beluister Demo's" />
+                <VoiceglotText strokeWidth={1.5} translationKey="artist.hero.cta_demos" defaultText="Beluister Demo's" / />
               </a>
               <a href="#tarieven" className="va-artist-btn-secondary">
-                <VoiceglotText translationKey="artist.hero.cta_rates" defaultText="Bekijk Tarieven" />
+                <VoiceglotText strokeWidth={1.5} translationKey="artist.hero.cta_rates" defaultText="Bekijk Tarieven" / />
               </a>
             </div>
           </div>
           
           <div className="va-artist-hero-visual">
             <div className="va-artist-image-wrapper">
-              <Image strokeWidth={1.5} 
+              <Image  
                 src={image} 
                 alt={name} 
                 fill

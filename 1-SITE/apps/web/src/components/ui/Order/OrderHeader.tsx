@@ -23,7 +23,7 @@ export const OrderHeader: React.FC<OrderHeaderProps> = ({ id, date, journey, sta
     <ContainerInstrument className="flex justify-between items-center">
       <ContainerInstrument>
         <HeadingInstrument level={1} className="text-4xl font-light tracking-tight text-va-black">
-          <VoiceglotText translationKey="order.header.title" defaultText="Order #" />{id}
+          <VoiceglotText strokeWidth={1.5} translationKey="order.header.title" defaultText="Order #" / />{id}
         </HeadingInstrument>
         <TextInstrument className="text-va-black/40 mt-1 font-light">
           {date}
@@ -34,10 +34,10 @@ export const OrderHeader: React.FC<OrderHeaderProps> = ({ id, date, journey, sta
           "px-4 py-1.5 rounded-full text-[15px] font-light uppercase tracking-widest",
           isStudio ? "bg-primary/10 text-primary" : "bg-va-black/5 text-va-black/60"
         )}>
-          <VoiceglotText translationKey={`journey.${journey}`} defaultText={journey} />
+          <VoiceglotText strokeWidth={1.5} translationKey={`journey.${journey}`} defaultText={journey} / />
         </ContainerInstrument>
         <ContainerInstrument className="px-4 py-1.5 rounded-full bg-va-black text-white text-[15px] font-light tracking-widest">
-          <VoiceglotText translationKey={`order.status.${status}`} defaultText={status} />
+          <VoiceglotText strokeWidth={1.5} translationKey={`order.status.${status}`} defaultText={status} / />
         </ContainerInstrument>
       </ContainerInstrument>
     </ContainerInstrument>

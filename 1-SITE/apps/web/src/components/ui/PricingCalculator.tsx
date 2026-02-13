@@ -160,7 +160,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
         <ContainerInstrument className="flex-1 p-8 lg:p-12 space-y-10">
           <ContainerInstrument>
             <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-6">
-              <VoiceglotText translationKey="pricing.step1.title" defaultText="1. Kies je projecttype" />
+              <VoiceglotText strokeWidth={1.5} translationKey="pricing.step1.title" defaultText="1. Kies je projecttype" / />
             </HeadingInstrument>
             <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {usageTypes.map((type) => (
@@ -175,7 +175,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                 >
                   <type.icon size={24} />
                   <TextInstrument className="font-medium text-[15px]">
-                    <VoiceglotText translationKey={type.translationKey} defaultText={type.label} />
+                    <VoiceglotText strokeWidth={1.5} translationKey={type.translationKey} defaultText={type.label} / />
                   </TextInstrument>
                 </ButtonInstrument>
               ))}
@@ -185,38 +185,38 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
           <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <ContainerInstrument>
               <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-6">
-                <VoiceglotText translationKey="pricing.step2.language" defaultText="2. Taal van de productie" />
+                <VoiceglotText strokeWidth={1.5} translationKey="pricing.step2.language" defaultText="2. Taal van de productie" / />
               </HeadingInstrument>
               <SelectInstrument 
                 className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
               >
-                <OptionInstrument value="nl-BE"><VoiceglotText translationKey="auto.pricingcalculator.vlaams__nl_be_.c0d770" defaultText="Vlaams (NL-BE)" /></OptionInstrument>
-                <OptionInstrument value="nl-NL"><VoiceglotText translationKey="auto.pricingcalculator.nederlands__nl_nl_.6f41f1" defaultText="Nederlands (NL-NL)" /></OptionInstrument>
-                <OptionInstrument value="fr-BE"><VoiceglotText translationKey="auto.pricingcalculator.frans__fr_be_.875106" defaultText="Frans (FR-BE)" /></OptionInstrument>
-                <OptionInstrument value="fr-FR"><VoiceglotText translationKey="auto.pricingcalculator.frans__fr_fr_.659afe" defaultText="Frans (FR-FR)" /></OptionInstrument>
-                <OptionInstrument value="en-GB"><VoiceglotText translationKey="auto.pricingcalculator.engels__uk_.c91091" defaultText="Engels (UK)" /></OptionInstrument>
-                <OptionInstrument value="en-US"><VoiceglotText translationKey="auto.pricingcalculator.engels__us_.12e181" defaultText="Engels (US)" /></OptionInstrument>
-                <OptionInstrument value="de-DE"><VoiceglotText translationKey="auto.pricingcalculator.duits__de_.328280" defaultText="Duits (DE)" /></OptionInstrument>
+                <OptionInstrument value="nl-BE"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.vlaams__nl_be_.c0d770" defaultText="Vlaams (NL-BE)" / /></OptionInstrument>
+                <OptionInstrument value="nl-NL"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.nederlands__nl_nl_.6f41f1" defaultText="Nederlands (NL-NL)" / /></OptionInstrument>
+                <OptionInstrument value="fr-BE"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.frans__fr_be_.875106" defaultText="Frans (FR-BE)" / /></OptionInstrument>
+                <OptionInstrument value="fr-FR"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.frans__fr_fr_.659afe" defaultText="Frans (FR-FR)" / /></OptionInstrument>
+                <OptionInstrument value="en-GB"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.engels__uk_.c91091" defaultText="Engels (UK)" / /></OptionInstrument>
+                <OptionInstrument value="en-US"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.engels__us_.12e181" defaultText="Engels (US)" / /></OptionInstrument>
+                <OptionInstrument value="de-DE"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.duits__de_.328280" defaultText="Duits (DE)" / /></OptionInstrument>
               </SelectInstrument>
             </ContainerInstrument>
 
             {state.usage === 'paid' && (
               <ContainerInstrument className="animate-in fade-in slide-in-from-top-4 duration-700">
                 <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-6">
-                  <VoiceglotText translationKey="pricing.step2.country" defaultText="3. Land van uitzending" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="pricing.step2.country" defaultText="3. Land van uitzending" / />
                 </HeadingInstrument>
                 <SelectInstrument 
                   className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                 >
-                  <OptionInstrument value="BE"><VoiceglotText translationKey="common.country.be" defaultText="België" /></OptionInstrument>
-                  <OptionInstrument value="NL"><VoiceglotText translationKey="common.country.nl" defaultText="Nederland" /></OptionInstrument>
-                  <OptionInstrument value="FR"><VoiceglotText translationKey="common.country.fr" defaultText="Frankrijk" /></OptionInstrument>
-                  <OptionInstrument value="EU"><VoiceglotText translationKey="common.country.eu" defaultText="Europa" /></OptionInstrument>
-                  <OptionInstrument value="GLOBAL"><VoiceglotText translationKey="common.country.global" defaultText="Wereldwijd" /></OptionInstrument>
+                  <OptionInstrument value="BE"><VoiceglotText strokeWidth={1.5} translationKey="common.country.be" defaultText="België" / /></OptionInstrument>
+                  <OptionInstrument value="NL"><VoiceglotText strokeWidth={1.5} translationKey="common.country.nl" defaultText="Nederland" / /></OptionInstrument>
+                  <OptionInstrument value="FR"><VoiceglotText strokeWidth={1.5} translationKey="common.country.fr" defaultText="Frankrijk" / /></OptionInstrument>
+                  <OptionInstrument value="EU"><VoiceglotText strokeWidth={1.5} translationKey="common.country.eu" defaultText="Europa" / /></OptionInstrument>
+                  <OptionInstrument value="GLOBAL"><VoiceglotText strokeWidth={1.5} translationKey="common.country.global" defaultText="Wereldwijd" / /></OptionInstrument>
                 </SelectInstrument>
               </ContainerInstrument>
             )}
@@ -226,7 +226,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
             <ContainerInstrument className="space-y-10 animate-in fade-in slide-in-from-top-4 duration-700">
               <ContainerInstrument className="space-y-6">
                 <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30">
-                  <VoiceglotText translationKey="pricing.media_buyout" defaultText="4. Media & Buyout" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="pricing.media_buyout" defaultText="4. Media & Buyout" / />
                 </HeadingInstrument>
                 <ContainerInstrument className="flex flex-wrap gap-2">
                   {['online', 'radio', 'tv', 'podcast'].map((m) => (
@@ -243,7 +243,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                         media.includes(m as any) ? 'bg-primary border-primary text-white' : 'bg-white border-black/5 text-va-black/40'
                       }`}
                     >
-                      <VoiceglotText translationKey={`common.media.${m}`} defaultText={m} />
+                      <VoiceglotText strokeWidth={1.5} translationKey={`common.media.${m}`} defaultText={m} / />
                     </ButtonInstrument>
                   ))}
                 </ContainerInstrument>
@@ -251,7 +251,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                 <ContainerInstrument className="grid grid-cols-2 gap-8">
                   <ContainerInstrument className="space-y-4">
                     <TextInstrument className="text-[15px] font-medium text-va-black/30 tracking-widest">
-                      <VoiceglotText translationKey="pricing.spots_count" defaultText="Aantal Spots" />
+                      <VoiceglotText strokeWidth={1.5} translationKey="pricing.spots_count" defaultText="Aantal Spots" / />
                     </TextInstrument>
                     <ContainerInstrument className="flex items-center gap-4">
                       <InputInstrument 
@@ -264,7 +264,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   </ContainerInstrument>
                   <ContainerInstrument className="space-y-4">
                     <TextInstrument className="text-[15px] font-medium text-va-black/30 tracking-widest">
-                      <VoiceglotText translationKey="pricing.duration_years" defaultText="Looptijd (Jaar)" />
+                      <VoiceglotText strokeWidth={1.5} translationKey="pricing.duration_years" defaultText="Looptijd (Jaar)" / />
                     </TextInstrument>
                     <ContainerInstrument className="flex items-center gap-4">
                       <InputInstrument 
@@ -281,7 +281,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
               {/* 🎙️ Sherlock: Universele VoiceCards in Pricing voor directe vergelijking */}
               <ContainerInstrument className="pt-10 border-t border-black/5">
                 <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-8">
-                  <VoiceglotText translationKey="pricing.matching_voices" defaultText="Direct vergelijken & boeken" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="pricing.matching_voices" defaultText="Direct vergelijken & boeken" / />
                 </HeadingInstrument>
                 <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredActors.map((a) => (
@@ -301,7 +301,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
             <ContainerInstrument>
             <ContainerInstrument className="flex justify-between items-center mb-6">
                 <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30">
-                  4. <VoiceglotText translationKey="pricing.step3.words" defaultText="Aantal woorden" />
+                  4. <VoiceglotText strokeWidth={1.5} translationKey="pricing.step3.words" defaultText="Aantal woorden" / />
                 </HeadingInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex items-center gap-4 mb-4">
@@ -321,16 +321,16 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     className="w-24 bg-va-off-white border-2 border-primary/20 rounded-xl py-3 px-4 text-[15px] font-medium text-primary text-center focus:border-primary focus:ring-0 outline-none transition-all"
                   />
                   <TextInstrument className="absolute -top-2 -right-2 bg-primary text-white text-[15px] font-medium px-1.5 py-0.5 rounded-md shadow-lg">
-                    <VoiceglotText translationKey="common.fill_in" defaultText="Vul in" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="common.fill_in" defaultText="Vul in" / />
                   </TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex justify-between items-center">
                 <TextInstrument className="text-[15px] font-medium text-va-black/20">
-                  1 <VoiceglotText translationKey="pricing.unit.word" defaultText="woord" />
+                  1 <VoiceglotText strokeWidth={1.5} translationKey="pricing.unit.word" defaultText="woord" / />
                 </TextInstrument>
                 <TextInstrument className="text-xl font-light tracking-tighter text-primary">
-                  {words} <VoiceglotText translationKey="pricing.unit.words" defaultText="woorden" />
+                  {words} <VoiceglotText strokeWidth={1.5} translationKey="pricing.unit.words" defaultText="woorden" / />
                 </TextInstrument>
                 <ContainerInstrument className="flex flex-col items-end">
                   <TextInstrument className="text-[15px] font-medium text-va-black/20">
@@ -345,7 +345,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
               {/* 🎙️ Sherlock: Universele VoiceCards in Pricing voor directe vergelijking */}
               <ContainerInstrument className="pt-10 border-t border-black/5">
                 <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-8">
-                  <VoiceglotText translationKey="pricing.matching_voices" defaultText="Direct vergelijken & boeken" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="pricing.matching_voices" defaultText="Direct vergelijken & boeken" / />
                 </HeadingInstrument>
                 <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredActors.map((a) => (
@@ -375,10 +375,10 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   </ContainerInstrument>
                   <ContainerInstrument>
                     <HeadingInstrument level={3} className="text-[15px] font-medium tracking-tight">
-                      <VoiceglotText translationKey="pricing.music.title" defaultText="Wachtmuziek toevoegen" />
+                      <VoiceglotText strokeWidth={1.5} translationKey="pricing.music.title" defaultText="Wachtmuziek toevoegen" / />
                     </HeadingInstrument>
                     <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                      <VoiceglotText translationKey="pricing.music.subtitle" defaultText="Kies een track uit onze rechtenvrije bibliotheek." />
+                      <VoiceglotText strokeWidth={1.5} translationKey="pricing.music.subtitle" defaultText="Kies een track uit onze rechtenvrije bibliotheek." / />
                     </TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -399,8 +399,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     {state.music.asBackground && <Check strokeWidth={1.5} size={12} />}
                   </ContainerInstrument>
                   <ContainerInstrument>
-                    <TextInstrument className="text-[15px] font-medium tracking-tight"><VoiceglotText translationKey="auto.pricingcalculator.achtergrondmuziek.bb0154" defaultText="Achtergrondmuziek" /></TextInstrument>
-                    <TextInstrument className="text-[15px] font-light text-va-black/40"><VoiceglotText translationKey="auto.pricingcalculator.gemixt_onder_de_stem.5c81ba" defaultText="Gemixt onder de stem." /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-medium tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.achtergrondmuziek.bb0154" defaultText="Achtergrondmuziek" / /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-light text-va-black/40"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.gemixt_onder_de_stem.5c81ba" defaultText="Gemixt onder de stem." / /></TextInstrument>
                   </ContainerInstrument>
                 </ButtonInstrument>
 
@@ -415,8 +415,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     {state.music.asHoldMusic && <Check strokeWidth={1.5} size={12} />}
                   </ContainerInstrument>
                   <ContainerInstrument>
-                    <TextInstrument className="text-[15px] font-medium tracking-tight"><VoiceglotText translationKey="auto.pricingcalculator.wachtmuziek.57fcdd" defaultText="Wachtmuziek" /></TextInstrument>
-                    <TextInstrument className="text-[15px] font-light text-va-black/40"><VoiceglotText translationKey="auto.pricingcalculator.als_apart_audiobesta.ce73d8" defaultText="Als apart audiobestand." /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-medium tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.wachtmuziek.57fcdd" defaultText="Wachtmuziek" / /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-light text-va-black/40"><VoiceglotText strokeWidth={1.5} translationKey="auto.pricingcalculator.als_apart_audiobesta.ce73d8" defaultText="Als apart audiobestand." / /></TextInstrument>
                   </ContainerInstrument>
                 </ButtonInstrument>
               </ContainerInstrument>
@@ -434,10 +434,10 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
               </TextInstrument>
               <ContainerInstrument className="space-y-1">
                 <TextInstrument className="text-[15px] font-medium text-white/20">
-                  <VoiceglotText translationKey="common.excl_vat" defaultText="Exclusief BTW" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="common.excl_vat" defaultText="Exclusief BTW" / />
                 </TextInstrument>
                 <TextInstrument className="text-[15px] font-medium text-white/40 tracking-widest">
-                  <VoiceglotText translationKey="pricing.inclusive_label" defaultText="(Inclusief)" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="pricing.inclusive_label" defaultText="(Inclusief)" / />
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -447,24 +447,24 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                 onClick={handleBookNow}
                 className="va-btn-pro w-full !bg-primary flex items-center justify-center gap-2 group"
               >
-                <VoiceglotText translationKey="pricing.cta" defaultText="Kies je stem" />
+                <VoiceglotText strokeWidth={1.5} translationKey="pricing.cta" defaultText="Kies je stem" / />
                 <ChevronRight strokeWidth={1.5} size={18} className="group-hover:translate-x-1 transition-transform" / />
               </ButtonInstrument>
               <ContainerInstrument className="space-y-2 opacity-0">
                 <TextInstrument className="text-[15px] font-medium text-primary animate-pulse">
-                  <VoiceglotText translationKey="pricing.final_price" defaultText="Finale prijs voor deze opdracht" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="pricing.final_price" defaultText="Finale prijs voor deze opdracht" / />
                 </TextInstrument>
                 <TextInstrument className="text-[15px] font-light text-white/40 leading-relaxed">
                   {mode === 'ai' ? (
-                    <VoiceglotText 
+                    <VoiceglotText strokeWidth={1.5} 
                       translationKey="pricing.disclaimer.ai" 
                       defaultText="Inclusief alle formaten (8kHz & 48kHz). Gratis proevertje is altijd 8kHz." 
-                    />
+                    / />
                   ) : (
-                    <VoiceglotText 
+                    <VoiceglotText strokeWidth={1.5} 
                       translationKey="pricing.disclaimer" 
                       defaultText="Inclusief studiosessie, nabewerking en retakes op tone-of-voice. Geen verrassingen." 
-                    />
+                    / />
                   )}
                 </TextInstrument>
               </ContainerInstrument>

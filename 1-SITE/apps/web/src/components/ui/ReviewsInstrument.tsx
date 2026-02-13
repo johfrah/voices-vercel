@@ -61,10 +61,10 @@ export const ReviewsInstrument: React.FC<{
       />
       <ContainerInstrument className="mb-16 flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter text-primary"><VoiceglotText translationKey={`${translationKeyPrefix}.title`} defaultText={title || "Ervaringen"} /><TextInstrument className="text-xl text-black/40 font-medium leading-relaxed max-w-2xl"><VoiceglotText translationKey={`${translationKeyPrefix}.subtitle`} defaultText={subtitle || "Waarom klanten kiezen voor de stemmen van Voices."} /></TextInstrument></HeadingInstrument>
+          <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter text-primary"><VoiceglotText strokeWidth={1.5} translationKey={`${translationKeyPrefix}.title`} defaultText={title || "Ervaringen"} / /><TextInstrument className="text-xl text-black/40 font-medium leading-relaxed max-w-2xl"><VoiceglotText strokeWidth={1.5} translationKey={`${translationKeyPrefix}.subtitle`} defaultText={subtitle || "Waarom klanten kiezen voor de stemmen van Voices."} / /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="flex gap-2">
-          <ContainerInstrument className="px-6 py-3 bg-va-off-white rounded-full text-[15px] font-medium tracking-widest border border-black/5"><VoiceglotText translationKey={`${translationKeyPrefix}.score`} defaultText="4.9 / 5 Gemiddelde Score" /></ContainerInstrument>
+          <ContainerInstrument className="px-6 py-3 bg-va-off-white rounded-full text-[15px] font-medium tracking-widest border border-black/5"><VoiceglotText strokeWidth={1.5} translationKey={`${translationKeyPrefix}.score`} defaultText="4.9 / 5 Gemiddelde Score" / /></ContainerInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
 
@@ -78,7 +78,7 @@ export const ReviewsInstrument: React.FC<{
                 ))}
               </ContainerInstrument>
               <TextInstrument className="text-[15px] font-medium leading-relaxed text-va-black/70 italic">
-                &quot;<VoiceglotText translationKey={`${translationKeyPrefix}.review.${i}.text`} defaultText={review.text} />&quot;
+                &quot;<VoiceglotText strokeWidth={1.5} translationKey={`${translationKeyPrefix}.review.${i}.text`} defaultText={review.text} / />&quot;
               </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="mt-8 pt-6 border-t border-black/5 flex items-center gap-4">
@@ -86,7 +86,7 @@ export const ReviewsInstrument: React.FC<{
                 {review.name.charAt(0)}
               </ContainerInstrument>
               <ContainerInstrument>
-                <HeadingInstrument level={5} className="text-[15px] font-medium tracking-widest"><VoiceglotText translationKey={`${translationKeyPrefix}.reviewer.${i}`} defaultText={review.name} noTranslate={true} /></HeadingInstrument>
+                <HeadingInstrument level={5} className="text-[15px] font-medium tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey={`${translationKeyPrefix}.reviewer.${i}`} defaultText={review.name} noTranslate={true} / /></HeadingInstrument>
                 <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.1em] mt-0.5">{review.date}</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

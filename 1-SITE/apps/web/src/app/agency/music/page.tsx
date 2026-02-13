@@ -68,12 +68,12 @@ export default function MusicLibraryPage() {
         <ContainerInstrument className="max-w-7xl mx-auto px-6 text-center space-y-6">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest">
             <Music strokeWidth={1.5} size={12} fill="currentColor" / /> 
-            <VoiceglotText translationKey="music.badge" defaultText="Muziekbibliotheek" />
+            <VoiceglotText strokeWidth={1.5} translationKey="music.badge" defaultText="Muziekbibliotheek" / />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-7xl md:text-9xl font-black leading-[0.85] tracking-tighter">
             MUSIC<TextInstrument className="text-primary font-light">.</TextInstrument>
           </HeadingInstrument>
-          <TextInstrument className="text-xl md:text-2xl font-medium text-va-black/60 leading-tight max-w-2xl mx-auto"><VoiceglotText translationKey="music.hero.subtitle" defaultText="De perfecte soundtrack voor uw voice-over. Rechtenvrije muziek, klaar voor gebruik." /></TextInstrument>
+          <TextInstrument className="text-xl md:text-2xl font-medium text-va-black/60 leading-tight max-w-2xl mx-auto"><VoiceglotText strokeWidth={1.5} translationKey="music.hero.subtitle" defaultText="De perfecte soundtrack voor uw voice-over. Rechtenvrije muziek, klaar voor gebruik." / /></TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
@@ -81,7 +81,7 @@ export default function MusicLibraryPage() {
         <ContainerInstrument className="max-w-6xl mx-auto">
           {loading ? (
             <ContainerInstrument className="flex justify-center py-20">
-              <Loader2 className="animate-spin text-primary" size={48} />
+              <Loader2 strokeWidth={1.5} className="animate-spin text-primary" size={48} / />
             </ContainerInstrument>
           ) : (
             <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -117,7 +117,7 @@ export default function MusicLibraryPage() {
                             playingId === track.id ? "bg-va-black text-white" : "bg-va-off-white text-va-black hover:bg-va-black hover:text-white"
                           )}
                         >
-                          {playingId === track.id ? <><Pause strokeWidth={1.5} size={14} fill="currentColor" / /><VoiceglotText translationKey="auto.page.pauze.899994" defaultText="Pauze" /></> : <><Play strokeWidth={1.5} size={14} fill="currentColor" / /><VoiceglotText translationKey="auto.page.beluister.59da41" defaultText="Beluister" /></>}
+                          {playingId === track.id ? <><Pause strokeWidth={1.5} size={14} fill="currentColor" / /><VoiceglotText strokeWidth={1.5} translationKey="auto.page.pauze.899994" defaultText="Pauze" / /></> : <><Play strokeWidth={1.5} size={14} fill="currentColor" / /><VoiceglotText strokeWidth={1.5} translationKey="auto.page.beluister.59da41" defaultText="Beluister" / /></>}
                         </ButtonInstrument>
                         <ButtonInstrument 
                           onClick={() => setSelectedTrackId(track.id)}
@@ -140,7 +140,7 @@ export default function MusicLibraryPage() {
                   <ContainerInstrument className="bg-va-black text-white rounded-[40px] p-8 shadow-2xl border-b-8 border-primary overflow-hidden relative">
                     <ContainerInstrument className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-3xl" />
                     
-                    <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-6 relative z-10"><VoiceglotText translationKey="auto.page.jouw_selectie.eb01b0" defaultText="Jouw Selectie" /></HeadingInstrument>
+                    <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-6 relative z-10"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.jouw_selectie.eb01b0" defaultText="Jouw Selectie" / /></HeadingInstrument>
                     
                     {selectedTrackId ? (
                       <ContainerInstrument className="space-y-8 relative z-10">
@@ -149,14 +149,14 @@ export default function MusicLibraryPage() {
                             <Music strokeWidth={1.5} size={24} / />
                           </ContainerInstrument>
                           <ContainerInstrument>
-                            <TextInstrument className="text-[15px] font-black tracking-widest text-white/40"><VoiceglotText translationKey="auto.page.gekozen_track.e38acd" defaultText="Gekozen track" /></TextInstrument>
+                            <TextInstrument className="text-[15px] font-black tracking-widest text-white/40"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.gekozen_track.e38acd" defaultText="Gekozen track" / /></TextInstrument>
                             <TextInstrument className="text-lg font-black ">{tracks.find(t => t.id === selectedTrackId)?.title}</TextInstrument>
                           </ContainerInstrument>
                         </ContainerInstrument>
 
                         <ContainerInstrument className="space-y-4">
                           <TextInstrument className="text-[15px] font-black tracking-widest text-white/40 flex items-center gap-2">
-                            <Info strokeWidth={1.5} size={14} className="text-primary" / /><VoiceglotText translationKey="auto.page.hoe_wil_je_dit_gebru.57f6f5" defaultText="Hoe wil je dit gebruiken?" /></TextInstrument>
+                            <Info strokeWidth={1.5} size={14} className="text-primary" / /><VoiceglotText strokeWidth={1.5} translationKey="auto.page.hoe_wil_je_dit_gebru.57f6f5" defaultText="Hoe wil je dit gebruiken?" / /></TextInstrument>
                           
                           <ContainerInstrument className="grid grid-cols-1 gap-3">
                             <button 
@@ -170,8 +170,8 @@ export default function MusicLibraryPage() {
                                 {options.asBackground && <Check strokeWidth={1.5} size={12} />}
                               </ContainerInstrument>
                               <div>
-                                <p className="text-[15px] font-black tracking-tight"><VoiceglotText translationKey="auto.page.achtergrondmuziek.bb0154" defaultText="Achtergrondmuziek" /></p>
-                                <p className="text-[15px] font-medium text-white/40"><VoiceglotText translationKey="auto.page.gemixt_onder_de_stem.5c81ba" defaultText="Gemixt onder de stem." /></p>
+                                <p className="text-[15px] font-black tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.achtergrondmuziek.bb0154" defaultText="Achtergrondmuziek" / /></p>
+                                <p className="text-[15px] font-medium text-white/40"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.gemixt_onder_de_stem.5c81ba" defaultText="Gemixt onder de stem." / /></p>
                               </ContainerInstrument>
                             </button>
 
@@ -186,8 +186,8 @@ export default function MusicLibraryPage() {
                                 {options.asHoldMusic && <Check strokeWidth={1.5} size={12} />}
                               </ContainerInstrument>
                               <div>
-                                <p className="text-[15px] font-black tracking-tight"><VoiceglotText translationKey="auto.page.wachtmuziek.57fcdd" defaultText="Wachtmuziek" /></p>
-                                <p className="text-[15px] font-medium text-white/40"><VoiceglotText translationKey="auto.page.als_apart_bestand_.63bd38" defaultText="Als apart bestand." /></p>
+                                <p className="text-[15px] font-black tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.wachtmuziek.57fcdd" defaultText="Wachtmuziek" / /></p>
+                                <p className="text-[15px] font-medium text-white/40"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.als_apart_bestand_.63bd38" defaultText="Als apart bestand." / /></p>
                               </ContainerInstrument>
                             </button>
                           </ContainerInstrument>
@@ -208,16 +208,16 @@ export default function MusicLibraryPage() {
                         <ContainerInstrument className="w-16 h-16 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center mx-auto">
                           <Music strokeWidth={1.5} size={24} / />
                         </ContainerInstrument>
-                        <p className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.kies_een_track_om_te.2115aa" defaultText="Kies een track om te configureren" /></p>
+                        <p className="text-[15px] font-black tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.kies_een_track_om_te.2115aa" defaultText="Kies een track om te configureren" / /></p>
                       </ContainerInstrument>
                     )}
                   </ContainerInstrument>
                   
                   <ContainerInstrument className="p-6 bg-white rounded-[32px] border border-black/5">
                     <p className="text-[15px] font-medium text-va-black/60 leading-relaxed">
-                      <TextInstrument className="font-black text-va-black block mb-1 tracking-widest"><VoiceglotText translationKey="auto.page.inbegrepen_bij_elke_.b8ac49" defaultText="Inbegrepen bij elke licentie:" /></TextInstrument>
+                      <TextInstrument className="font-black text-va-black block mb-1 tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.inbegrepen_bij_elke_.b8ac49" defaultText="Inbegrepen bij elke licentie:" / /></TextInstrument>
                       • Onbeperkt gebruik (rechtenvrij)<br />
-                      • Professionele mix door technicus<br /><VoiceglotText translationKey="auto.page.__hd_wav___8khz_tele.c13eb4" defaultText="• HD WAV & 8kHz Telefoon formaat" /></p>
+                      • Professionele mix door technicus<br /><VoiceglotText strokeWidth={1.5} translationKey="auto.page.__hd_wav___8khz_tele.c13eb4" defaultText="• HD WAV & 8kHz Telefoon formaat" / /></p>
                   </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>

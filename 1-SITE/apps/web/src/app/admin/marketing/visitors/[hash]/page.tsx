@@ -102,13 +102,13 @@ export default function VisitorPlayerPage() {
       <SectionInstrument className="flex justify-between items-center">
         <ContainerInstrument className="space-y-2">
           <Link strokeWidth={1.5} href="/admin/marketing/visitors" className="flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[15px] font-black tracking-widest mb-4">
-            <ArrowLeft strokeWidth={1.5} size={12} /><VoiceglotText translationKey="auto.page.terug_naar_cockpit.87606e" defaultText="Terug naar cockpit" /></Link>
+            <ArrowLeft strokeWidth={1.5} size={12} /><VoiceglotText strokeWidth={1.5} translationKey="auto.page.terug_naar_cockpit.87606e" defaultText="Terug naar cockpit" / /></Link>
           <ContainerInstrument className="flex items-center gap-3">
             <ContainerInstrument className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
               <Activity strokeWidth={1.5} size={20} />
             </ContainerInstrument>
             <ContainerInstrument>
-              <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter "><VoiceglotText translationKey="auto.page.sessie_replay.064195" defaultText="Sessie Replay" /></HeadingInstrument>
+              <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter "><VoiceglotText strokeWidth={1.5} translationKey="auto.page.sessie_replay.064195" defaultText="Sessie Replay" / /></HeadingInstrument>
               <TextInstrument className="text-[15px] text-va-black/40 font-medium">
                 Visitor Hash: <TextInstrument className="text-va-black font-bold">{hash}</TextInstrument>
               </TextInstrument>
@@ -120,12 +120,12 @@ export default function VisitorPlayerPage() {
           <ContainerInstrument className="flex gap-4">
             <ContainerInstrument className="flex gap-6 bg-white border border-black/5 p-6 rounded-[24px] shadow-sm">
               <ContainerInstrument className="flex flex-col">
-                <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.starttijd.b80649" defaultText="Starttijd" /></TextInstrument>
+                <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.starttijd.b80649" defaultText="Starttijd" / /></TextInstrument>
                 <TextInstrument className="text-[15px] font-bold">{new Date(session.createdAt).toLocaleString()}</TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="w-px h-full bg-black/5" />
               <ContainerInstrument className="flex flex-col">
-                <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.pagina.265753" defaultText="Pagina" /></TextInstrument>
+                <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.pagina.265753" defaultText="Pagina" / /></TextInstrument>
                 <TextInstrument className="text-[15px] font-bold max-w-[200px] truncate">{session.url?.replace('https://www.voices.be', '') || '/'}</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -136,7 +136,7 @@ export default function VisitorPlayerPage() {
                   {session.user.firstName?.[0]}{session.user.lastName?.[0]}
                 </ContainerInstrument>
                 <ContainerInstrument>
-                  <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.bekijk_dna.9a6c88" defaultText="Bekijk DNA" /></TextInstrument>
+                  <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.bekijk_dna.9a6c88" defaultText="Bekijk DNA" / /></TextInstrument>
                   <TextInstrument className="text-[15px] font-bold text-white/60 group-hover:text-white">{session.user.firstName} {session.user.lastName}</TextInstrument>
                 </ContainerInstrument>
               </Link>
@@ -152,12 +152,12 @@ export default function VisitorPlayerPage() {
             {loading ? (
               <ContainerInstrument className="flex flex-col items-center gap-4">
                 <Activity strokeWidth={1.5} className="text-primary animate-spin" size={48} />
-                <TextInstrument className="text-white/40 text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.reconstrueren_van_se.55b81b" defaultText="Reconstrueren van sessie..." /></TextInstrument>
+                <TextInstrument className="text-white/40 text-[15px] font-black tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.reconstrueren_van_se.55b81b" defaultText="Reconstrueren van sessie..." / /></TextInstrument>
               </ContainerInstrument>
             ) : error ? (
               <ContainerInstrument className="bg-red-500/10 border border-red-500/20 p-8 rounded-3xl text-center max-w-md">
                 <TextInstrument className="text-red-500 font-bold mb-4">{error}</TextInstrument>
-                <Link strokeWidth={1.5} href="/admin/marketing/visitors" className="va-btn-pro !bg-white !text-va-black"><VoiceglotText translationKey="auto.page.terug_naar_cockpit.dada9f" defaultText="Terug naar Cockpit" /></Link>
+                <Link strokeWidth={1.5} href="/admin/marketing/visitors" className="va-btn-pro !bg-white !text-va-black"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.terug_naar_cockpit.dada9f" defaultText="Terug naar Cockpit" / /></Link>
               </ContainerInstrument>
             ) : (
               <ContainerInstrument ref={playerContainerRef} className="w-full h-full" />
@@ -168,14 +168,14 @@ export default function VisitorPlayerPage() {
           {!loading && !error && (
             <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <ContainerInstrument className="bg-white border border-black/5 p-8 rounded-[32px] shadow-sm">
-                <MousePointer2 className="text-primary mb-4" size={24} />
-                <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2"><VoiceglotText translationKey="auto.page.interactie_score.ddc459" defaultText="Interactie Score" /><TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.deze_bezoeker_vertoo.018e30" defaultText="Deze bezoeker vertoonde een hoge mate van interesse in de prijs-calculator. 
-                  Gemiddelde dwell-time op de calculator: 45 seconden." /></TextInstrument></HeadingInstrument>
+                <MousePointer2 strokeWidth={1.5} className="text-primary mb-4" size={24} / />
+                <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.interactie_score.ddc459" defaultText="Interactie Score" / /><TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.deze_bezoeker_vertoo.018e30" defaultText="Deze bezoeker vertoonde een hoge mate van interesse in de prijs-calculator. 
+                  Gemiddelde dwell-time op de calculator: 45 seconden." / /></TextInstrument></HeadingInstrument>
               </ContainerInstrument>
 
               <ContainerInstrument className="bg-white border border-black/5 p-8 rounded-[32px] shadow-sm">
                 <Monitor strokeWidth={1.5} className="text-va-black/20 mb-4" size={24} />
-                <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2"><VoiceglotText translationKey="auto.page.device_info.db271f" defaultText="Device Info" /></HeadingInstrument>
+                <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.device_info.db271f" defaultText="Device Info" / /></HeadingInstrument>
                 <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light">
                   Browser: {session?.userAgent?.split(') ')[1] || 'Chrome/120.0.0'} <br />
                   OS: {session?.userAgent?.match(/\(([^)]+)\)/)?.[1] || 'Unknown'}
@@ -184,7 +184,7 @@ export default function VisitorPlayerPage() {
 
               <ContainerInstrument className="bg-va-black text-white p-8 rounded-[32px] shadow-sm">
                 <Clock strokeWidth={1.5} className="text-primary mb-4" size={24} / />
-                <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2 text-white"><VoiceglotText translationKey="auto.page.retentie_policy.4c86b2" defaultText="Retentie Policy" /><TextInstrument className="text-white/40 text-[15px] leading-relaxed font-light"><VoiceglotText translationKey="auto.page.deze_opname_wordt_co.8fd284" defaultText="Deze opname wordt conform het Zero-Mandaat 14 dagen bewaard. Daarna worden de ruwe events automatisch gewist." /></TextInstrument></HeadingInstrument>
+                <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2 text-white"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.retentie_policy.4c86b2" defaultText="Retentie Policy" / /><TextInstrument className="text-white/40 text-[15px] leading-relaxed font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.deze_opname_wordt_co.8fd284" defaultText="Deze opname wordt conform het Zero-Mandaat 14 dagen bewaard. Daarna worden de ruwe events automatisch gewist." / /></TextInstrument></HeadingInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           )}
@@ -194,7 +194,7 @@ export default function VisitorPlayerPage() {
         <ContainerInstrument className="space-y-6">
           <ContainerInstrument className="bg-white border border-black/5 rounded-[32px] p-6 shadow-sm h-fit">
             <HeadingInstrument level={2} className="text-[15px] font-black tracking-widest text-va-black/40 mb-6 flex items-center gap-2">
-              <Play strokeWidth={1.5} size={12} fill="currentColor" / /><VoiceglotText translationKey="auto.page.intelligence_playlis.05eaf7" defaultText="Intelligence Playlist" /></HeadingInstrument>
+              <Play strokeWidth={1.5} size={12} fill="currentColor" / /><VoiceglotText strokeWidth={1.5} translationKey="auto.page.intelligence_playlis.05eaf7" defaultText="Intelligence Playlist" / /></HeadingInstrument>
             
             <ContainerInstrument className="space-y-3 max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
               {recentSessions.map((s) => (
@@ -230,8 +230,8 @@ export default function VisitorPlayerPage() {
           {/* AI Insights Card */}
           <ContainerInstrument className="bg-va-black text-white p-8 rounded-[32px] shadow-lg relative overflow-hidden">
             <Sparkles strokeWidth={1.5} className="text-primary mb-4" size={24} />
-            <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2"><VoiceglotText translationKey="auto.page.ai_analyse.a49774" defaultText="AI Analyse" /><TextInstrument className="text-[15px] text-white/40 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.voicy_merkt_op_dat_d.2aca6b" defaultText="Voicy merkt op dat deze bezoeker twijfelt tussen de &apos;Pro&apos; en &apos;Studio&apos; plannen. 
-              Overweeg een persoonlijke kortingscode te sturen." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.ai_analyse.a49774" defaultText="AI Analyse" / /><TextInstrument className="text-[15px] text-white/40 leading-relaxed font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.voicy_merkt_op_dat_d.2aca6b" defaultText="Voicy merkt op dat deze bezoeker twijfelt tussen de &apos;Pro&apos; en &apos;Studio&apos; plannen. 
+              Overweeg een persoonlijke kortingscode te sturen." / /></TextInstrument></HeadingInstrument>
             <ContainerInstrument className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
           </ContainerInstrument>
         </ContainerInstrument>

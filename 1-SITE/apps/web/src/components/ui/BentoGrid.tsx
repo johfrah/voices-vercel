@@ -37,7 +37,7 @@ export function BentoGrid({ children, className, columns = 3, id }: BentoGridPro
     )}>
       {isEditMode && (
         <ContainerInstrument className="edit-mode-handle">
-          <GripVertical size={10} />
+          <GripVertical strokeWidth={1.5} size={10} / />
           Bento Grid {id && `(${id})`}
         </ContainerInstrument>
       )}
@@ -141,7 +141,7 @@ export function BentoCard({
             onMouseEnter={() => playSwell()}
             className="bg-va-black text-white p-2.5 rounded-xl hover:bg-primary transition-all shadow-xl active:scale-90 cursor-grab active:cursor-grabbing"
           >
-            <GripVertical size={12} />
+            <GripVertical strokeWidth={1.5} size={12} / />
           </ContainerInstrument>
           <ButtonInstrument 
             onMouseEnter={() => playSwell()}
@@ -170,7 +170,7 @@ export function BentoCard({
         <ContainerInstrument className="absolute inset-0 bg-primary/5 pointer-events-none border-2 border-primary/20 rounded-[32px]" />
       )}
       {isEditMode && (
-        <ContainerInstrument className="absolute bottom-4 left-8 z-20 bg-va-black/80 backdrop-blur-md text-[15px] font-black text-white px-2 py-1 rounded-md tracking-widest opacity-0 group-hover/card:opacity-100 transition-opacity"><VoiceglotText translationKey="auto.bentogrid.cvr__4_2____beheer__.aa342c" defaultText="CVR: 4.2% • Beheer: Kwaliteit" /></ContainerInstrument>
+        <ContainerInstrument className="absolute bottom-4 left-8 z-20 bg-va-black/80 backdrop-blur-md text-[15px] font-black text-white px-2 py-1 rounded-md tracking-widest opacity-0 group-hover/card:opacity-100 transition-opacity"><VoiceglotText strokeWidth={1.5} translationKey="auto.bentogrid.cvr__4_2____beheer__.aa342c" defaultText="CVR: 4.2% • Beheer: Kwaliteit" / /></ContainerInstrument>
       )}
       {(title || icon) && (
         <ContainerInstrument className="px-8 pt-8 flex items-center gap-3">

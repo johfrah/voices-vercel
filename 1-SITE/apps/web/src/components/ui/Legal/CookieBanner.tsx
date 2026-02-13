@@ -58,15 +58,15 @@ export const CookieBanner: React.FC = () => {
             <ContainerInstrument plain className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
 
             <ContainerInstrument plain className="relative z-10 space-y-4">
-              <TextInstrument className="text-white/60 text-[15px] font-light"><VoiceglotText 
+              <TextInstrument className="text-white/60 text-[15px] font-light"><VoiceglotText strokeWidth={1.5} 
                   translationKey="legal.cookie.text" 
                   defaultText="Wij gebruiken cookies om jouw ervaring te personaliseren." 
-                />{' '}
+                / />{' '}
                 <Link strokeWidth={1.5} 
                   href="/cookies/" 
                   className="text-white/80 underline underline-offset-2 hover:text-white transition-colors"
                 >
-                  <VoiceglotText translationKey="legal.cookie.policy" defaultText="Cookiebeleid" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="legal.cookie.policy" defaultText="Cookiebeleid" / />
                 </Link>
               </TextInstrument>
 
@@ -75,13 +75,13 @@ export const CookieBanner: React.FC = () => {
                   onClick={() => handleAccept('all')}
                   className="bg-primary text-va-black px-5 py-2.5 rounded-[20px] text-[15px] font-light tracking-tight hover:scale-105 transition-all"
                 >
-                  <VoiceglotText translationKey="legal.cookie.accept" defaultText="Accepteer" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="legal.cookie.accept" defaultText="Accepteer" / />
                 </ButtonInstrument>
                 <ButtonInstrument 
                   onClick={() => handleAccept('essential')}
                   className="text-[15px] font-light tracking-tight text-white/20 hover:text-white transition-colors"
                 >
-                  <VoiceglotText translationKey="legal.cookie.essential" defaultText="Noodzakelijk" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="legal.cookie.essential" defaultText="Noodzakelijk" / />
                 </ButtonInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

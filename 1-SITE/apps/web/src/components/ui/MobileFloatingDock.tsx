@@ -70,7 +70,7 @@ export function MobileFloatingDock() {
                 className="w-full bg-va-black/95 backdrop-blur-2xl text-white border border-white/10 rounded-[24px] py-4 pl-12 pr-4 shadow-2xl focus:ring-2 focus:ring-primary/50 outline-none transition-all"
               />
               <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <Image strokeWidth={1.5} 
+                <Image  
                   src="/assets/common/branding/icons/SEARCH.svg" 
                   alt="Search" 
                   width={18} 
@@ -105,7 +105,7 @@ export function MobileFloatingDock() {
               </AnimatePresence>
               
               <div className={`relative z-10 transition-all duration-300 ${isActive ? 'scale-110 text-white' : 'opacity-40 group-hover:opacity-70 text-white'}`}>
-                <Image strokeWidth={1.5} 
+                <Image  
                   src={item.src} 
                   alt={item.label} 
                   width={24} 
@@ -115,7 +115,7 @@ export function MobileFloatingDock() {
               </div>
               
               <span className="sr-only">
-                <VoiceglotText translationKey={item.key} defaultText={item.label} />
+                <VoiceglotText strokeWidth={1.5} translationKey={item.key} defaultText={item.label} / />
               </span>
             </div>
           );

@@ -30,7 +30,7 @@ export default async function AgencyDynamicPage({ params }: { params: { slug?: s
 
   return (
     <PageWrapperInstrument>
-      <LiquidBackground />
+      <LiquidBackground strokeWidth={1.5} / />
       <AgencyHeroInstrument 
         title={slug ? `${slug.toUpperCase()} Stemmen` : "Vlaamse Voice-overs"} 
         subtitle="Vind de perfecte stem voor uw project."
@@ -38,8 +38,8 @@ export default async function AgencyDynamicPage({ params }: { params: { slug?: s
       />
       <SectionInstrument>
         <ContainerInstrument>
-          <Suspense fallback={<LoadingScreenInstrument />}>
-            <VoiceGrid actors={mappedActors as any} />
+          <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
+            <VoiceGrid strokeWidth={1.5} actors={mappedActors as any} / />
           </Suspense>
         </ContainerInstrument>
       </SectionInstrument>

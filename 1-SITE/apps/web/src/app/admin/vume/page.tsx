@@ -43,7 +43,7 @@ const TEMPLATES = [
     id: 'invoice-reply',
     name: 'Invoice Reply',
     journey: 'agency',
-    icon: <ShoppingCart size={20} />,
+    icon: <ShoppingCart strokeWidth={1.5} size={20} / />,
     description: 'Bevestiging van ontvangst factuur.',
     previewSubject: 'Factuur goed ontvangen',
     context: { userName: 'Johfrah', invoiceNumber: 'INV-2026-001', amount: 1250.50 }

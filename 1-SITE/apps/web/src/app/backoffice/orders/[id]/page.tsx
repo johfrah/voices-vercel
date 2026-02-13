@@ -64,7 +64,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white">
       <SectionInstrument className="max-w-7xl mx-auto px-6 py-12">
-        <OrderIntelligence order={transformedOrder as any} />
+        <OrderIntelligence strokeWidth={1.5} order={transformedOrder as any} / />
       </SectionInstrument>
     </PageWrapperInstrument>
   );

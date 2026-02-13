@@ -28,16 +28,16 @@ export default function IVRPage() {
         <ContainerInstrument className="mb-16 space-y-4">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/20">
             <Phone strokeWidth={1.5} size={12} fill="currentColor" /> 
-            <VoiceglotText translationKey="ivr.badge" defaultText="Telefonie" />
+            <VoiceglotText strokeWidth={1.5} translationKey="ivr.badge" defaultText="Telefonie" / />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85]">
-            <VoiceglotText translationKey="ivr.title_part1" defaultText="Stemmen voor " />
+            <VoiceglotText strokeWidth={1.5} translationKey="ivr.title_part1" defaultText="Stemmen voor " / />
             <TextInstrument as="span" className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80 font-light">
-              <VoiceglotText translationKey="ivr.title_part2" defaultText="IVR Systemen." />
+              <VoiceglotText strokeWidth={1.5} translationKey="ivr.title_part2" defaultText="IVR Systemen." / />
             </TextInstrument>
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-medium max-w-2xl text-lg">
-            <VoiceglotText translationKey="ivr.subtitle" defaultText="Configureer uw zakelijke telefonie met professionele stemmen en op maat gemaakte keuzemenu's." />
+            <VoiceglotText strokeWidth={1.5} translationKey="ivr.subtitle" defaultText="Configureer uw zakelijke telefonie met professionele stemmen en op maat gemaakte keuzemenu's." / />
           </TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -50,14 +50,14 @@ export default function IVRPage() {
                 <Settings strokeWidth={1.5} size={28} / />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-black tracking-tight mb-4">
-                <VoiceglotText translationKey="ivr.configurator.title" defaultText="IVR Configurator" />
+                <VoiceglotText strokeWidth={1.5} translationKey="ivr.configurator.title" defaultText="IVR Configurator" / />
                 <TextInstrument className="text-white/40 font-medium max-w-xs">
-                  <VoiceglotText translationKey="ivr.configurator.text" defaultText="Bouw uw eigen keuzemenu in enkele minuten met onze visuele editor." />
+                  <VoiceglotText strokeWidth={1.5} translationKey="ivr.configurator.text" defaultText="Bouw uw eigen keuzemenu in enkele minuten met onze visuele editor." / />
                 </TextInstrument>
               </HeadingInstrument>
             </ContainerInstrument>
             <ButtonInstrument as={Link} href="/johfrai" className="flex items-center gap-2 text-primary font-black tracking-widest text-[15px] mt-8 group-hover:gap-4 transition-all">
-              <VoiceglotText translationKey="ivr.configurator.cta" defaultText="Start Configuratie" />
+              <VoiceglotText strokeWidth={1.5} translationKey="ivr.configurator.cta" defaultText="Start Configuratie" / />
               <ArrowRight strokeWidth={1.5} size={14} />
             </ButtonInstrument>
           </BentoCard>
@@ -68,14 +68,14 @@ export default function IVRPage() {
                 <Mic strokeWidth={1.5} size={28} / />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-black tracking-tight mb-4">
-                <VoiceglotText translationKey="ivr.voices.title" defaultText="Stemkeuze" />
+                <VoiceglotText strokeWidth={1.5} translationKey="ivr.voices.title" defaultText="Stemkeuze" / />
                 <TextInstrument className="text-va-black/40 font-medium max-w-xs">
-                  <VoiceglotText translationKey="ivr.voices.text" defaultText="Kies uit honderden warme, zakelijke en betrouwbare stemmen." />
+                  <VoiceglotText strokeWidth={1.5} translationKey="ivr.voices.text" defaultText="Kies uit honderden warme, zakelijke en betrouwbare stemmen." / />
                 </TextInstrument>
               </HeadingInstrument>
             </ContainerInstrument>
             <ButtonInstrument as={Link} href="/agency" className="flex items-center gap-2 text-primary font-black tracking-widest text-[15px] mt-8 group-hover:gap-4 transition-all">
-              <VoiceglotText translationKey="ivr.voices.cta" defaultText="Bekijk Stemmen" />
+              <VoiceglotText strokeWidth={1.5} translationKey="ivr.voices.cta" defaultText="Bekijk Stemmen" / />
               <ArrowRight strokeWidth={1.5} size={14} />
             </ButtonInstrument>
           </BentoCard>
@@ -87,15 +87,15 @@ export default function IVRPage() {
               </ContainerInstrument>
               <ContainerInstrument>
                 <HeadingInstrument level={3} className="text-3xl font-black tracking-tight">
-                  <VoiceglotText translationKey="ivr.music.title" defaultText="Wachtmuziek & Sound Design" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="ivr.music.title" defaultText="Wachtmuziek & Sound Design" / />
                   <TextInstrument className="text-white/60 font-medium max-w-xl">
-                    <VoiceglotText translationKey="ivr.music.text" defaultText="Maak de ervaring compleet met professionele wachtmuziek en geluidseffecten die passen bij uw merk." />
+                    <VoiceglotText strokeWidth={1.5} translationKey="ivr.music.text" defaultText="Maak de ervaring compleet met professionele wachtmuziek en geluidseffecten die passen bij uw merk." / />
                   </TextInstrument>
                 </HeadingInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             <ButtonInstrument className="va-btn-pro !bg-white !text-va-black px-10 py-5">
-              <VoiceglotText translationKey="ivr.music.cta" defaultText="Ontdek Sound Design" />
+              <VoiceglotText strokeWidth={1.5} translationKey="ivr.music.cta" defaultText="Ontdek Sound Design" / />
             </ButtonInstrument>
           </BentoCard>
         </BentoGrid>

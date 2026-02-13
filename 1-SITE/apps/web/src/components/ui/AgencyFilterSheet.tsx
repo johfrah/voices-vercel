@@ -69,14 +69,14 @@ export const AgencyFilterSheet: React.FC<{
               <ContainerInstrument className="space-y-10">
                 <ContainerInstrument as="header" className="flex justify-between items-end">
                   <ContainerInstrument>
-                    <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-va-black Raleway"><VoiceglotText translationKey="auto.agencyfiltersheet.filters.f3f43e" defaultText="Filters" /></HeadingInstrument>
-                    <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.agencyfiltersheet.vind_de_perfecte_ste.1bb911" defaultText="Vind de perfecte stem" /></TextInstrument>
+                    <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-va-black Raleway"><VoiceglotText strokeWidth={1.5} translationKey="auto.agencyfiltersheet.filters.f3f43e" defaultText="Filters" / /></HeadingInstrument>
+                    <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText strokeWidth={1.5} translationKey="auto.agencyfiltersheet.vind_de_perfecte_ste.1bb911" defaultText="Vind de perfecte stem" / /></TextInstrument>
                   </ContainerInstrument>
                   <ButtonInstrument 
                     onClick={() => { onUpdate({ language: undefined, gender: undefined, style: undefined, search: undefined }); }}
                     className="text-[15px] font-light tracking-widest text-primary"
                   >
-                    <VoiceglotText translationKey="auto.agencyfiltersheet.wis_alles.07cfca" defaultText="Wis alles" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="auto.agencyfiltersheet.wis_alles.07cfca" defaultText="Wis alles" / />
                   </ButtonInstrument>
                 </ContainerInstrument>
 
@@ -88,7 +88,7 @@ export const AgencyFilterSheet: React.FC<{
                   </ContainerInstrument>
                   <ContainerInstrument className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {sortedLanguages.map(lang => (
-                      <FilterChip 
+                      <FilterChip strokeWidth={1.5} 
                         key={lang} 
                         label={lang} 
                         selected={activeParams.language === lang} 
@@ -102,11 +102,11 @@ export const AgencyFilterSheet: React.FC<{
                 <SectionInstrument className="space-y-4">
                   <ContainerInstrument className="flex items-center gap-2 text-va-black/40">
                     <Users size={14} strokeWidth={1.5} />
-                    <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway"><VoiceglotText translationKey="auto.agencyfiltersheet.geslacht.aa3dc2" defaultText="Geslacht" /></HeadingInstrument>
+                    <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway"><VoiceglotText strokeWidth={1.5} translationKey="auto.agencyfiltersheet.geslacht.aa3dc2" defaultText="Geslacht" / /></HeadingInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="grid grid-cols-2 gap-3">
                     {filters.genders.map(gender => (
-                      <FilterChip 
+                      <FilterChip strokeWidth={1.5} 
                         key={gender} 
                         label={gender} 
                         selected={activeParams.gender === gender} 
@@ -120,11 +120,11 @@ export const AgencyFilterSheet: React.FC<{
                 <SectionInstrument className="space-y-4">
                   <ContainerInstrument className="flex items-center gap-2 text-va-black/40">
                     <Mic2 strokeWidth={1.5} size={14} />
-                    <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway"><VoiceglotText translationKey="auto.agencyfiltersheet.stijl.d0a34c" defaultText="Stijl" /></HeadingInstrument>
+                    <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway"><VoiceglotText strokeWidth={1.5} translationKey="auto.agencyfiltersheet.stijl.d0a34c" defaultText="Stijl" / /></HeadingInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="grid grid-cols-2 gap-3">
                     {filters.styles.map(style => (
-                      <FilterChip 
+                      <FilterChip strokeWidth={1.5} 
                         key={style} 
                         label={style} 
                         selected={activeParams.style?.toLowerCase() === style.toLowerCase()} 
@@ -142,7 +142,7 @@ export const AgencyFilterSheet: React.FC<{
                 onClick={() => { onClose(); }}
                 className="w-full py-6 bg-va-black text-white rounded-[24px] font-black tracking-widest text-[15px] shadow-aura active:scale-95 transition-all"
               >
-                <VoiceglotText translationKey="auto.agencyfiltersheet.toon_resultaten.bf117d" defaultText="Toon Resultaten" />
+                <VoiceglotText strokeWidth={1.5} translationKey="auto.agencyfiltersheet.toon_resultaten.bf117d" defaultText="Toon Resultaten" / />
               </ButtonInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

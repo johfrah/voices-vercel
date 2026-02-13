@@ -333,7 +333,7 @@ export const VoicyChat: React.FC = () => {
               >
                 {chip.src ? (
                   <ContainerInstrument plain className="w-5 h-5 flex items-center justify-center">
-                    <Image strokeWidth={1.5} 
+                    <Image  
                       src={chip.src} 
                       alt={chip.label} 
                       width={20} 
@@ -346,7 +346,7 @@ export const VoicyChat: React.FC = () => {
                   <ContainerInstrument plain className="w-5 h-5 flex items-center justify-center">
                     {(() => {
                       const Icon = (chip as any).icon;
-                      return Icon ? <Icon size={16} className="text-primary group-hover:text-white transition-colors" /> : null;
+                      return Icon ? <Icon strokeWidth={1.5} size={16} className="text-primary group-hover:text-white transition-colors" / /> : null;
                     })()}
                   </ContainerInstrument>
                 )}
@@ -368,7 +368,7 @@ export const VoicyChat: React.FC = () => {
       >
         {isOpen ? <X strokeWidth={1.5} size={28} /> : (
           <ContainerInstrument plain className="relative w-full h-full rounded-full overflow-hidden">
-            <Image strokeWidth={1.5} 
+            <Image  
               src={VOICES_CONFIG.assets.placeholders.voicy} 
               alt="Voicy" 
               fill
@@ -392,10 +392,10 @@ export const VoicyChat: React.FC = () => {
         {/* Header */}
         <ContainerInstrument plain className="p-8 bg-va-black text-white flex justify-between items-center relative overflow-hidden">
           <ContainerInstrument plain className="relative z-10">
-            <HeadingInstrument level={3} className="text-xl font-light tracking-tighter"><VoiceglotText translationKey="chat.title" defaultText="Voicy" /></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-xl font-light tracking-tighter"><VoiceglotText strokeWidth={1.5} translationKey="chat.title" defaultText="Voicy" / /></HeadingInstrument>
             <ContainerInstrument plain className="flex items-center gap-2 mt-1">
               <TextInstrument as="span" className="w-2 h-2 rounded-full bg-green-500 animate-pulse font-light" />
-              <TextInstrument as="span" className="text-[15px] font-light tracking-widest opacity-60"><VoiceglotText translationKey="chat.status.online" defaultText="Online & Klaar" /></TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light tracking-widest opacity-60"><VoiceglotText strokeWidth={1.5} translationKey="chat.status.online" defaultText="Online & Klaar" / /></TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
           
@@ -431,7 +431,7 @@ export const VoicyChat: React.FC = () => {
               }`}
             >
               <tab.icon size={18} />
-              <TextInstrument as="span" className="text-[15px] font-light tracking-widest"><VoiceglotText translationKey={tab.translationKey} defaultText={tab.label} /></TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey={tab.translationKey} defaultText={tab.label} / /></TextInstrument>
             </ButtonInstrument>
           ))}
         </ContainerInstrument>
@@ -444,14 +444,14 @@ export const VoicyChat: React.FC = () => {
                 onClick={() => { setChatMode('ask'); playClick('light'); }}
                 className={`px-8 py-2.5 rounded-full text-[15px] font-light tracking-widest transition-all ${chatMode === 'ask' ? 'bg-va-black text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
               >
-                <VoiceglotText translationKey="chat.mode.ask" defaultText="Ask" />
+                <VoiceglotText strokeWidth={1.5} translationKey="chat.mode.ask" defaultText="Ask" / />
               </ButtonInstrument>
               <ButtonInstrument 
                 onClick={() => { setChatMode('agent'); playClick('pro'); }}
                 className={`px-8 py-2.5 rounded-full text-[15px] font-light tracking-widest transition-all flex items-center gap-2 ${chatMode === 'agent' ? 'bg-primary text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
               >
                 {chatMode === 'agent' && <Zap strokeWidth={1.5} size={10} className="animate-pulse" />}
-                <VoiceglotText translationKey="chat.mode.agent" defaultText="Agent" />
+                <VoiceglotText strokeWidth={1.5} translationKey="chat.mode.agent" defaultText="Agent" / />
               </ButtonInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -532,7 +532,7 @@ export const VoicyChat: React.FC = () => {
                               }}
                               className="px-4 py-2 bg-white text-primary rounded-full text-[15px] font-light tracking-widest hover:scale-105 transition-all shadow-sm"
                             >
-                              <VoiceglotText translationKey={`chat.action.${action.label.toLowerCase().replace(/\s+/g, '_')}`} defaultText={action.label} />
+                              <VoiceglotText strokeWidth={1.5} translationKey={`chat.action.${action.label.toLowerCase().replace(/\s+/g, '_')}`} defaultText={action.label} / />
                             </ButtonInstrument>
                           ))}
                         </ContainerInstrument>
@@ -586,18 +586,18 @@ export const VoicyChat: React.FC = () => {
               {isFullMode && (
                 <ContainerInstrument plain className="w-96 bg-va-off-white p-8 overflow-y-auto custom-scrollbar space-y-8">
                   <ContainerInstrument plain>
-                    <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/30 mb-6"><VoiceglotText translationKey="auto.voicychat.project_details.ba5160" defaultText="Project Details" /></HeadingInstrument>
+                    <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/30 mb-6"><VoiceglotText strokeWidth={1.5} translationKey="auto.voicychat.project_details.ba5160" defaultText="Project Details" / /></HeadingInstrument>
                     <ContainerInstrument plain className="bg-white rounded-3xl p-6 shadow-sm space-y-4">
                       <ContainerInstrument plain className="flex justify-between items-center">
-                        <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText translationKey="common.type" defaultText="Type" /></TextInstrument>
+                        <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText strokeWidth={1.5} translationKey="common.type" defaultText="Type" / /></TextInstrument>
                         <TextInstrument className="text-[15px] font-light ">{state.usage}</TextInstrument>
                       </ContainerInstrument>
                       <ContainerInstrument plain className="flex justify-between items-center">
-                        <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText translationKey="auto.voicychat.woorden.721081" defaultText="Woorden" /></TextInstrument>
+                        <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText strokeWidth={1.5} translationKey="auto.voicychat.woorden.721081" defaultText="Woorden" / /></TextInstrument>
                         <TextInstrument className="text-[15px] font-light">{state.briefing.split(/\s+/).filter(Boolean).length}</TextInstrument>
                       </ContainerInstrument>
                       <ContainerInstrument plain className="pt-4 border-t border-black/5 flex justify-between items-center">
-                        <TextInstrument className="text-[15px] font-light tracking-widest text-primary"><VoiceglotText translationKey="auto.voicychat.totaal.e28895" defaultText="Totaal" /></TextInstrument>
+                        <TextInstrument className="text-[15px] font-light tracking-widest text-primary"><VoiceglotText strokeWidth={1.5} translationKey="auto.voicychat.totaal.e28895" defaultText="Totaal" / /></TextInstrument>
                         <TextInstrument className="text-lg font-light text-primary">€ {state.pricing.total.toFixed(2)}</TextInstrument>
                       </ContainerInstrument>
                     </ContainerInstrument>
@@ -605,7 +605,7 @@ export const VoicyChat: React.FC = () => {
 
                   {state.selectedActor && (
                     <ContainerInstrument plain>
-                      <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/30 mb-6"><VoiceglotText translationKey="auto.voicychat.geselecteerde_stem.4b43a4" defaultText="Geselecteerde Stem" /></HeadingInstrument>
+                      <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/30 mb-6"><VoiceglotText strokeWidth={1.5} translationKey="auto.voicychat.geselecteerde_stem.4b43a4" defaultText="Geselecteerde Stem" / /></HeadingInstrument>
                       <ContainerInstrument plain className="bg-white rounded-3xl p-6 shadow-sm flex items-center gap-4">
                         <ContainerInstrument plain className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-light text-primary">
                           {state.selectedActor.first_name[0]}
@@ -634,7 +634,7 @@ export const VoicyChat: React.FC = () => {
 
           {activeTab === 'mail' && (
             <ContainerInstrument plain className="flex-1 p-4 md:p-6 overflow-y-auto custom-scrollbar">
-              <AnimatePresence mode="wait">
+              <AnimatePresence strokeWidth={1.5} mode="wait">
                 {mailSent ? (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }} 
@@ -645,16 +645,16 @@ export const VoicyChat: React.FC = () => {
                       <Check strokeWidth={1.5} size={32} />
                     </ContainerInstrument>
                     <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
-                      <VoiceglotText translationKey="chat.mail.sent.title" defaultText="Bericht verzonden!" />
+                      <VoiceglotText strokeWidth={1.5} translationKey="chat.mail.sent.title" defaultText="Bericht verzonden!" / />
                       <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                        <VoiceglotText translationKey="chat.mail.sent.text" defaultText="Bedankt! We hebben je bericht ontvangen en reageren zo snel mogelijk." />
+                        <VoiceglotText strokeWidth={1.5} translationKey="chat.mail.sent.text" defaultText="Bedankt! We hebben je bericht ontvangen en reageren zo snel mogelijk." / />
                       </TextInstrument>
                     </HeadingInstrument>
                     <ButtonInstrument 
                       onClick={() => setMailSent(false)}
                       className="va-btn-pro px-8 py-3 text-[15px]"
                     >
-                      <VoiceglotText translationKey="chat.mail.sent.cta" defaultText="Nog een bericht sturen" />
+                      <VoiceglotText strokeWidth={1.5} translationKey="chat.mail.sent.cta" defaultText="Nog een bericht sturen" / />
                     </ButtonInstrument>
                   </motion.div>
                 ) : (
@@ -668,16 +668,16 @@ export const VoicyChat: React.FC = () => {
                         <Mail strokeWidth={1.5} size={24} />
                       </ContainerInstrument>
                       <HeadingInstrument level={4} className="text-lg font-light tracking-tighter">
-                        <VoiceglotText translationKey="chat.mail.title" defaultText="Stuur ons een bericht" />
+                        <VoiceglotText strokeWidth={1.5} translationKey="chat.mail.title" defaultText="Stuur ons een bericht" / />
                         <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                          <VoiceglotText translationKey="chat.mail.subtitle" defaultText="We reageren meestal binnen het uur." />
+                          <VoiceglotText strokeWidth={1.5} translationKey="chat.mail.subtitle" defaultText="We reageren meestal binnen het uur." / />
                         </TextInstrument>
                       </HeadingInstrument>
                     </ContainerInstrument>
 
                     <FormInstrument onSubmit={handleMailSubmit} className="space-y-4">
                       <ContainerInstrument plain className="space-y-1">
-                        <LabelInstrument><VoiceglotText translationKey="chat.mail.label.email" defaultText="Jouw E-mail" /></LabelInstrument>
+                        <LabelInstrument><VoiceglotText strokeWidth={1.5} translationKey="chat.mail.label.email" defaultText="Jouw E-mail" / /></LabelInstrument>
                         <InputInstrument 
                           type="email" 
                           required
@@ -688,7 +688,7 @@ export const VoicyChat: React.FC = () => {
                         />
                       </ContainerInstrument>
                       <ContainerInstrument plain className="space-y-1">
-                        <LabelInstrument><VoiceglotText translationKey="chat.mail.label.message" defaultText="Jouw Bericht" /></LabelInstrument>
+                        <LabelInstrument><VoiceglotText strokeWidth={1.5} translationKey="chat.mail.label.message" defaultText="Jouw Bericht" / /></LabelInstrument>
                         <textarea 
                           required
                           value={mailForm.message}
@@ -702,16 +702,16 @@ export const VoicyChat: React.FC = () => {
                         disabled={isSendingMail}
                         className="w-full py-4 bg-va-black text-white rounded-2xl text-[15px] font-medium tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
                       >
-                        {isSendingMail ? <VoiceglotText translationKey="chat.mail.sending" defaultText="Verzenden..." /> : <VoiceglotText translationKey="chat.mail.submit" defaultText="Bericht Versturen" />}
+                        {isSendingMail ? <VoiceglotText strokeWidth={1.5} translationKey="chat.mail.sending" defaultText="Verzenden..." / /> : <VoiceglotText strokeWidth={1.5} translationKey="chat.mail.submit" defaultText="Bericht Versturen" / />}
                         {!isSendingMail && <Send strokeWidth={1.5} size={14} />}
                       </ButtonInstrument>
                     </FormInstrument>
 
               <ContainerInstrument plain className="pt-4 border-t border-black/5 text-center">
                 <TextInstrument className="text-[15px] font-light text-va-black/20 tracking-widest">
-                  <VoiceglotText translationKey="chat.mail.direct" defaultText="Direct contact?" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="chat.mail.direct" defaultText="Direct contact?" / />
                   <ButtonInstrument as="a" href="mailto:johfrah@voices.be" className="text-primary hover:underline ml-2">
-                    <VoiceglotText translationKey="auto.voicychat.johfrah_voices_be.1bbc86" defaultText="johfrah@voices.be" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="auto.voicychat.johfrah_voices_be.1bbc86" defaultText="johfrah@voices.be" / />
                   </ButtonInstrument>
                 </TextInstrument>
               </ContainerInstrument>
@@ -728,9 +728,9 @@ export const VoicyChat: React.FC = () => {
               </ContainerInstrument>
               <ContainerInstrument plain className="space-y-2">
                 <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
-                  <VoiceglotText translationKey="chat.phone.title" defaultText="Bel de studio" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="chat.phone.title" defaultText="Bel de studio" / />
                   <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                    <VoiceglotText translationKey="chat.phone.subtitle" defaultText="Direct contact met onze regisseurs." />
+                    <VoiceglotText strokeWidth={1.5} translationKey="chat.phone.subtitle" defaultText="Direct contact met onze regisseurs." / />
                   </TextInstrument>
                 </HeadingInstrument>
               </ContainerInstrument>
@@ -740,7 +740,7 @@ export const VoicyChat: React.FC = () => {
 
           {activeTab === 'faq' && (
             <ContainerInstrument plain className="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar">
-              <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-va-black/30 mb-4"><VoiceglotText translationKey="chat.faq.title" defaultText="Veelgestelde vragen" /></HeadingInstrument>
+              <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-va-black/30 mb-4"><VoiceglotText strokeWidth={1.5} translationKey="chat.faq.title" defaultText="Veelgestelde vragen" / /></HeadingInstrument>
               {[
                 { q: "Wat zijn de tarieven?", key: "chat.faq.q1" },
                 { q: "Hoe snel wordt er geleverd?", key: "chat.faq.q2" },
@@ -755,7 +755,7 @@ export const VoicyChat: React.FC = () => {
                       }}
                       className="w-full text-left p-4 rounded-2xl bg-va-off-white hover:bg-primary/5 hover:text-primary transition-all text-[15px] font-light flex justify-between items-center group"
                     >
-                    <TextInstrument as="span"><VoiceglotText translationKey={faq.key} defaultText={faq.q} /></TextInstrument>
+                    <TextInstrument as="span"><VoiceglotText strokeWidth={1.5} translationKey={faq.key} defaultText={faq.q} / /></TextInstrument>
                     <Send strokeWidth={1.5} size={14} className="opacity-0 group-hover:opacity-40 transition-opacity" />
                   </ButtonInstrument>
               ))}
@@ -764,7 +764,7 @@ export const VoicyChat: React.FC = () => {
 
           {activeTab === 'admin' && isAdmin && (
             <ContainerInstrument plain className="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar">
-              <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-va-black/30 mb-4"><VoiceglotText translationKey="chat.admin.title" defaultText="Admin Control Panel" /></HeadingInstrument>
+              <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-va-black/30 mb-4"><VoiceglotText strokeWidth={1.5} translationKey="chat.admin.title" defaultText="Admin Control Panel" / /></HeadingInstrument>
               
               <ContainerInstrument plain className="space-y-4">
                 <ButtonInstrument
@@ -778,7 +778,7 @@ export const VoicyChat: React.FC = () => {
                 >
                   <ContainerInstrument plain className="flex items-center gap-4">
                     <ContainerInstrument plain className={`w-10 h-10 rounded-full flex items-center justify-center ${isEditMode ? 'bg-white/20' : 'bg-va-black/5'}`}>
-                      <Image strokeWidth={1.5} 
+                      <Image  
                         src="/assets/common/branding/icons/MENU.svg" 
                         alt="Edit Mode" 
                         width={20} 
@@ -788,9 +788,9 @@ export const VoicyChat: React.FC = () => {
                       / />
                     </ContainerInstrument>
                     <ContainerInstrument plain className="text-left">
-                      <TextInstrument className="text-[15px] font-light tracking-tight"><VoiceglotText translationKey="admin.edit_mode.title" defaultText="Edit Mode" /></TextInstrument>
+                      <TextInstrument className="text-[15px] font-light tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey="admin.edit_mode.title" defaultText="Edit Mode" / /></TextInstrument>
                       <TextInstrument className={`text-[15px] font-light opacity-60 ${isEditMode ? 'text-white' : 'text-va-black'}`}>
-                        {isEditMode ? <VoiceglotText translationKey="common.enabled" defaultText="Ingeschakeld" /> : <VoiceglotText translationKey="common.disabled" defaultText="Uitgeschakeld" />}
+                        {isEditMode ? <VoiceglotText strokeWidth={1.5} translationKey="common.enabled" defaultText="Ingeschakeld" / /> : <VoiceglotText strokeWidth={1.5} translationKey="common.disabled" defaultText="Uitgeschakeld" / />}
                       </TextInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>
@@ -806,7 +806,7 @@ export const VoicyChat: React.FC = () => {
                     className="p-4 rounded-2xl bg-va-off-white hover:bg-black/5 transition-all text-left space-y-1"
                   >
                     <ContainerInstrument plain className="w-4 h-4 mb-1">
-                      <Image strokeWidth={1.5} 
+                      <Image  
                         src="/assets/common/branding/icons/INFO.svg" 
                         alt="Dashboard" 
                         width={16} 
@@ -815,7 +815,7 @@ export const VoicyChat: React.FC = () => {
                         style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
                       / />
                     </ContainerInstrument>
-                    <TextInstrument className="text-[15px] font-light tracking-widest block"><VoiceglotText translationKey="nav.dashboard" defaultText="Dashboard" /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-light tracking-widest block"><VoiceglotText strokeWidth={1.5} translationKey="nav.dashboard" defaultText="Dashboard" / /></TextInstrument>
                   </ButtonInstrument>
                   <ButtonInstrument
                     as="a"
@@ -823,7 +823,7 @@ export const VoicyChat: React.FC = () => {
                     className="p-4 rounded-2xl bg-va-off-white hover:bg-black/5 transition-all text-left space-y-1"
                   >
                     <ContainerInstrument plain className="w-4 h-4 mb-1">
-                      <Image strokeWidth={1.5} 
+                      <Image  
                         src="/assets/common/branding/icons/ACCOUNT.svg" 
                         alt="Mailbox" 
                         width={16} 
@@ -832,19 +832,19 @@ export const VoicyChat: React.FC = () => {
                         style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
                       / />
                     </ContainerInstrument>
-                    <TextInstrument className="text-[15px] font-light tracking-widest block"><VoiceglotText translationKey="nav.mailbox" defaultText="Mailbox" /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-light tracking-widest block"><VoiceglotText strokeWidth={1.5} translationKey="nav.mailbox" defaultText="Mailbox" / /></TextInstrument>
                   </ButtonInstrument>
                 </ContainerInstrument>
 
                 {customer360 && (
                   <ContainerInstrument plain className="p-4 bg-va-black text-white rounded-[24px] space-y-3">
-                    <HeadingInstrument level={5} className="text-[15px] font-light tracking-widest opacity-40"><VoiceglotText translationKey="account.dna.title" defaultText="Klant DNA" /></HeadingInstrument>
+                    <HeadingInstrument level={5} className="text-[15px] font-light tracking-widest opacity-40"><VoiceglotText strokeWidth={1.5} translationKey="account.dna.title" defaultText="Klant DNA" / /></HeadingInstrument>
                     <ContainerInstrument plain className="flex items-center gap-3">
                       <ContainerInstrument plain className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center font-light">{customer360.firstName?.[0]}</ContainerInstrument>
                       <ContainerInstrument plain>
-                        <TextInstrument className="text-[15px] font-light"><VoiceglotText translationKey={`user.${customer360.id}.name`} defaultText={`${customer360.firstName} ${customer360.lastName}`} noTranslate={true} /></TextInstrument>
+                        <TextInstrument className="text-[15px] font-light"><VoiceglotText strokeWidth={1.5} translationKey={`user.${customer360.id}.name`} defaultText={`${customer360.firstName} ${customer360.lastName}`} noTranslate={true} / /></TextInstrument>
                         <TextInstrument className="text-[15px] font-light opacity-40">
-                          {customer360.intelligence?.leadVibe} <VoiceglotText translationKey="common.vibe" defaultText="Vibe" />
+                          {customer360.intelligence?.leadVibe} <VoiceglotText strokeWidth={1.5} translationKey="common.vibe" defaultText="Vibe" / />
                         </TextInstrument>
                       </ContainerInstrument>
                     </ContainerInstrument>

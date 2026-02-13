@@ -56,14 +56,14 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
 
   return (
     <>
-      <LiquidBackground />
-      <SpotlightDashboard />
+      <LiquidBackground strokeWidth={1.5} / />
+      <SpotlightDashboard strokeWidth={1.5} / />
       <HeroInstrument />
       
       <SectionInstrument className="!pt-0 -mt-12 relative z-30">
         <ContainerInstrument className="max-w-5xl mx-auto px-6">
-          <JourneySelector />
-          <FilterBar filters={filters} params={{}} />
+          <JourneySelector strokeWidth={1.5} / />
+          <FilterBar strokeWidth={1.5} filters={filters} params={{}} / />
         </ContainerInstrument>
       </SectionInstrument>
 
@@ -71,8 +71,8 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
       
       <SectionInstrument>
         <ContainerInstrument>
-          <Suspense fallback={<LoadingScreenInstrument />}>
-            <VoiceGrid actors={actors} featured={true} />
+          <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
+            <VoiceGrid strokeWidth={1.5} actors={actors} featured={true} / />
           </Suspense>
         </ContainerInstrument>
       </SectionInstrument>
@@ -160,8 +160,8 @@ export default function Home() {
   }
   
   return (
-    <Suspense fallback={<LoadingScreenInstrument text="Voices..." />}>
-      <HomeContent actors={data.actors} reviews={data.reviews} />
+    <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument text="Voices..." / />}>
+      <HomeContent strokeWidth={1.5} actors={data.actors} reviews={data.reviews} / />
     </Suspense>
   );
 }

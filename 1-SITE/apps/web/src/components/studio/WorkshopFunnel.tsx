@@ -85,22 +85,22 @@ export const WorkshopFunnel: React.FC<{ data: any }> = ({ data }) => {
         <div className="flex justify-between items-start">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp size={16} className="text-primary" />
+              <TrendingUp strokeWidth={1.5} size={16} className="text-primary" / />
               <h4 className="text-[15px] font-black tracking-widest text-primary">
-                <VoiceglotText translationKey="studio.funnel.insights.title" defaultText="Performance Insights" />
+                <VoiceglotText strokeWidth={1.5} translationKey="studio.funnel.insights.title" defaultText="Performance Insights" / />
               </h4>
             </div>
             <div className="text-6xl font-black tracking-tighter text-va-black group-hover:text-primary transition-colors duration-500">68.4%</div>
             <div className="text-[15px] font-black tracking-widest text-va-black/30 mt-2">
-              <VoiceglotText translationKey="studio.funnel.insights.avg_conversion" defaultText="Gemiddelde Conversie" />
+              <VoiceglotText strokeWidth={1.5} translationKey="studio.funnel.insights.avg_conversion" defaultText="Gemiddelde Conversie" / />
             </div>
           </div>
           <div className="text-right">
             <p className="text-[15px] font-medium text-va-black/50 max-w-[220px] leading-relaxed">
-              <VoiceglotText 
+              <VoiceglotText strokeWidth={1.5} 
                 translationKey="studio.funnel.insights.text" 
                 defaultText="Uw workshops presteren 12% beter dan het marktgemiddelde. De persona 'Ambitieuze Spreker' converteert het hoogst." 
-              />
+              / />
             </p>
           </div>
         </div>

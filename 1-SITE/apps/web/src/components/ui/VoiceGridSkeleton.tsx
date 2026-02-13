@@ -74,7 +74,7 @@ export const VoiceGridSkeleton = ({ count = 6, featured = false }: { count?: num
       )}>
         {Array.from({ length: count }).map((_, i) => (
           <div key={i} className={cn(featured && "w-[85vw] md:w-auto")}>
-            <VoiceCardSkeleton />
+            <VoiceCardSkeleton strokeWidth={1.5} / />
           </div>
         ))}
       </div>

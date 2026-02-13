@@ -63,7 +63,7 @@ export default function AdminApprovalsPage() {
 
   if (loading) return (
     <ContainerInstrument className="min-h-screen flex items-center justify-center">
-      <Loader2 className="animate-spin text-primary" size={40} />
+      <Loader2 strokeWidth={1.5} className="animate-spin text-primary" size={40} / />
     </ContainerInstrument>
   );
 
@@ -74,21 +74,21 @@ export default function AdminApprovalsPage() {
         <ContainerInstrument className="space-y-4">
           <Link strokeWidth={1.5} href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
+            <VoiceglotText strokeWidth={1.5} translationKey="admin.back_to_cockpit" defaultText="Terug" / />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter "><VoiceglotText translationKey="admin.approvals.title" defaultText="Approval Queue" /></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter "><VoiceglotText strokeWidth={1.5} translationKey="admin.approvals.title" defaultText="Approval Queue" / /></HeadingInstrument>
         </ContainerInstrument>
         
         <ContainerInstrument className="flex items-center gap-3 px-6 py-3 bg-va-black text-white rounded-2xl shadow-lg">
-          <Bell size={16} className={pending.length > 0 ? 'animate-bounce text-primary' : 'opacity-20'} />
+          <Bell strokeWidth={1.5} size={16} className={pending.length > 0 ? 'animate-bounce text-primary' : 'opacity-20'} />
           <TextInstrument className="text-[15px] font-black tracking-widest">
-            {pending.length} <VoiceglotText translationKey="admin.approvals.pending_count" defaultText="Wachtende Acties" />
+            {pending.length} <VoiceglotText strokeWidth={1.5} translationKey="admin.approvals.pending_count" defaultText="Wachtende Acties" / />
           </TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
       {pending.length > 0 ? (
-        <BentoGrid columns={3}>
+        <BentoGrid strokeWidth={1.5} columns={3}>
           {pending.map((item) => (
             <BentoCard key={item.id} span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between group hover:shadow-aura transition-all">
               <ContainerInstrument className="space-y-6">
@@ -116,13 +116,13 @@ export default function AdminApprovalsPage() {
                     {item.isValueSensitive && (
                       <ContainerInstrument className="flex items-center gap-2 p-2 bg-red-500/5 border border-red-500/10 rounded-[20px]">
                         <ShieldAlert strokeWidth={1.5} size={12} className="text-red-500" / />
-                        <TextInstrument className="text-[15px] font-black text-red-500 tracking-widest"><VoiceglotText translationKey="auto.page.waarde_alarm__kortin.381129" defaultText="Waarde-Alarm (Korting)" /></TextInstrument>
+                        <TextInstrument className="text-[15px] font-black text-red-500 tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.waarde_alarm__kortin.381129" defaultText="Waarde-Alarm (Korting)" / /></TextInstrument>
                       </ContainerInstrument>
                     )}
                     {item.isBrandSensitive && (
                       <ContainerInstrument className="flex items-center gap-2 p-2 bg-primary/5 border border-primary/10 rounded-[20px]">
                         <Sparkles strokeWidth={1.5} size={12} className="text-primary" />
-                        <TextInstrument className="text-[15px] font-black text-primary tracking-widest"><VoiceglotText translationKey="auto.page.fame_alarm__topmerk_.dc7782" defaultText="Fame-Alarm (Topmerk)" /></TextInstrument>
+                        <TextInstrument className="text-[15px] font-black text-primary tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.fame_alarm__topmerk_.dc7782" defaultText="Fame-Alarm (Topmerk)" / /></TextInstrument>
                       </ContainerInstrument>
                     )}
                   </ContainerInstrument>
@@ -134,7 +134,7 @@ export default function AdminApprovalsPage() {
                   onClick={() => handleAction(item.id, 'approve')}
                   className="flex-1 py-3 bg-green-500 text-white rounded-xl text-[15px] font-black tracking-widest hover:bg-green-600 transition-all flex items-center justify-center gap-2"
                 >
-                  <Check strokeWidth={1.5} size={14} /><VoiceglotText translationKey="auto.page.goedkeuren.f6b131" defaultText="Goedkeuren" />
+                  <Check strokeWidth={1.5} size={14} /><VoiceglotText strokeWidth={1.5} translationKey="auto.page.goedkeuren.f6b131" defaultText="Goedkeuren" / />
                 </ButtonInstrument>
                 <ButtonInstrument 
                   onClick={() => handleAction(item.id, 'reject')}
@@ -151,7 +151,7 @@ export default function AdminApprovalsPage() {
           <ContainerInstrument className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
             <Check strokeWidth={1.5} size={40} />
           </ContainerInstrument>
-          <HeadingInstrument level={2} className="text-2xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.alles_clean.817d14" defaultText="Alles Clean" /><TextInstrument className="text-va-black/40 font-medium"><VoiceglotText translationKey="auto.page.er_zijn_momenteel_ge.56e606" defaultText="Er zijn momenteel geen acties die op goedkeuring wachten." /></TextInstrument></HeadingInstrument>
+          <HeadingInstrument level={2} className="text-2xl font-black tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.alles_clean.817d14" defaultText="Alles Clean" / /><TextInstrument className="text-va-black/40 font-medium"><VoiceglotText strokeWidth={1.5} translationKey="auto.page.er_zijn_momenteel_ge.56e606" defaultText="Er zijn momenteel geen acties die op goedkeuring wachten." / /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
       )}
     </PageWrapperInstrument>

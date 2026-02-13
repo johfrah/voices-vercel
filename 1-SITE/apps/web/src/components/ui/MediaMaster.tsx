@@ -95,11 +95,11 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           <ContainerInstrument className="flex items-center gap-4 min-w-0 w-full md:w-auto flex-1">
             <ContainerInstrument className="relative w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden shrink-0 shadow-2xl border border-white/10 group/photo">
               {demo.actor_photo ? (
-                <VoiceglotImage 
+                <VoiceglotImage strokeWidth={1.5} 
                   src={demo.actor_photo} 
                   alt={demo.actor_name} 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover/photo:scale-110" 
-                />
+                / />
               ) : (
                 <ContainerInstrument className="w-full h-full bg-primary flex items-center justify-center text-white animate-pulse">
                   <Volume2 strokeWidth={1.5} size={24} / />
@@ -120,7 +120,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
                   </TextInstrument>
                   <ContainerInstrument className="w-1 h-1 rounded-full bg-primary/40 shrink-0" />
                   <TextInstrument className="text-primary text-[15px] font-light tracking-widest shrink-0">
-                    <VoiceglotText translationKey="media.live_preview" defaultText="Live" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="media.live_preview" defaultText="Live" / />
                   </TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -142,7 +142,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               }}
               className="text-white/30 hover:text-white transition-all active:scale-90"
             >
-              <SkipBack size={24} fill="currentColor" />
+              <SkipBack strokeWidth={1.5} size={24} fill="currentColor" / />
             </ButtonInstrument>
             <ButtonInstrument 
               onClick={() => {
@@ -160,7 +160,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               }}
               className="text-white/30 hover:text-white transition-all active:scale-90"
             >
-              <SkipForward size={24} fill="currentColor" />
+              <SkipForward strokeWidth={1.5} size={24} fill="currentColor" / />
             </ButtonInstrument>
           </ContainerInstrument>
 

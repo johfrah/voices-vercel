@@ -83,7 +83,7 @@ export const LanguageSwitcher: React.FC = () => {
         }}
         className="relative p-2 rounded-xl transition-all duration-500 cursor-pointer group flex items-center justify-center min-w-[40px] h-[40px] hover:bg-va-black/5"
       >
-        <Image strokeWidth={1.5} 
+        <Image  
           src="/assets/common/branding/icons/LANGUAGEa.svg" 
           alt="Language" 
           width={22}
@@ -126,7 +126,7 @@ export const LanguageSwitcher: React.FC = () => {
                       </div>
                     </div>
                     {isActive ? (
-                      <Image strokeWidth={1.5} 
+                      <Image  
                         src="/assets/common/branding/icons/INFO.svg" 
                         alt="Active" 
                         width={14} 
@@ -134,7 +134,7 @@ export const LanguageSwitcher: React.FC = () => {
                         className="brightness-0 invert"
                       / />
                     ) : (
-                      <Image strokeWidth={1.5} 
+                      <Image  
                         src="/assets/common/branding/icons/FORWARD.svg" 
                         alt="Forward" 
                         width={12} 

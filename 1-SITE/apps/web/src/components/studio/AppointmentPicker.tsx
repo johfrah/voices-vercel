@@ -62,7 +62,7 @@ export const AppointmentPicker: React.FC<{ onSelect: (slot: TimeSlot) => void }>
 
       {/* Time Selection */}
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-        <AnimatePresence mode="wait">
+        <AnimatePresence strokeWidth={1.5} mode="wait">
           {loading ? (
             <div className="col-span-full py-12 text-center animate-pulse text-black/20 font-black tracking-widest">
               Zoeken naar gaatjes...

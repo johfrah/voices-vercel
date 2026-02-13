@@ -68,9 +68,9 @@ export const ZeroLossCheckoutInstrument = ({
             </ContainerInstrument>
             <HeadingInstrument level={3} className="text-3xl font-light tracking-tight">
               {step === 1 ? (
-                <VoiceglotText translationKey="checkout.step1.title" defaultText="Wie ben je?" />
+                <VoiceglotText strokeWidth={1.5} translationKey="checkout.step1.title" defaultText="Wie ben je?" / />
               ) : (
-                <VoiceglotText translationKey="checkout.step2.title" defaultText="Bedrijfsgegevens" />
+                <VoiceglotText strokeWidth={1.5} translationKey="checkout.step2.title" defaultText="Bedrijfsgegevens" / />
               )}
             </HeadingInstrument>
           </ContainerInstrument>
@@ -80,7 +80,7 @@ export const ZeroLossCheckoutInstrument = ({
               <ContainerInstrument className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <ContainerInstrument className="space-y-2">
-                    <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText translationKey="auto.zerolosscheckoutinstrument.voornaam.75a044" defaultText="Voornaam" /></TextInstrument>
+                    <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText strokeWidth={1.5} translationKey="auto.zerolosscheckoutinstrument.voornaam.75a044" defaultText="Voornaam" / /></TextInstrument>
                     <ContainerInstrument className="relative">
                       <User strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                       <InputInstrument 
@@ -92,7 +92,7 @@ export const ZeroLossCheckoutInstrument = ({
                     </ContainerInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="space-y-2">
-                    <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText translationKey="auto.zerolosscheckoutinstrument.familienaam.b88d3a" defaultText="Familienaam" /></TextInstrument>
+                    <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText strokeWidth={1.5} translationKey="auto.zerolosscheckoutinstrument.familienaam.b88d3a" defaultText="Familienaam" / /></TextInstrument>
                     <InputInstrument 
                       value={formData.lastName}
                       onChange={(e) => { handleInputChange('lastName', e.target.value); }}
@@ -103,7 +103,7 @@ export const ZeroLossCheckoutInstrument = ({
                 </ContainerInstrument>
 
                 <ContainerInstrument className="space-y-2">
-                  <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText translationKey="auto.zerolosscheckoutinstrument.e_mailadres.e1486d" defaultText="E-mailadres" /></TextInstrument>
+                  <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText strokeWidth={1.5} translationKey="auto.zerolosscheckoutinstrument.e_mailadres.e1486d" defaultText="E-mailadres" / /></TextInstrument>
                   <ContainerInstrument className="relative">
                     <Mail strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                     <InputInstrument 
@@ -129,7 +129,7 @@ export const ZeroLossCheckoutInstrument = ({
             {step === 2 && (
               <ContainerInstrument className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <ContainerInstrument className="space-y-2">
-                  <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText translationKey="auto.zerolosscheckoutinstrument.bedrijfsnaam__option.c7b4ee" defaultText="Bedrijfsnaam (Optioneel)" /></TextInstrument>
+                  <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText strokeWidth={1.5} translationKey="auto.zerolosscheckoutinstrument.bedrijfsnaam__option.c7b4ee" defaultText="Bedrijfsnaam (Optioneel)" / /></TextInstrument>
                   <ContainerInstrument className="relative">
                     <Briefcase strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                     <InputInstrument 
@@ -142,7 +142,7 @@ export const ZeroLossCheckoutInstrument = ({
                 </ContainerInstrument>
 
                 <ContainerInstrument className="space-y-2">
-                  <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText translationKey="auto.zerolosscheckoutinstrument.btw_nummer__optionee.249341" defaultText="BTW-Nummer (Optioneel)" /></TextInstrument>
+                  <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText strokeWidth={1.5} translationKey="auto.zerolosscheckoutinstrument.btw_nummer__optionee.249341" defaultText="BTW-Nummer (Optioneel)" / /></TextInstrument>
                   <ContainerInstrument className="relative">
                     <ShieldCheck strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                     <InputInstrument 
@@ -152,7 +152,7 @@ export const ZeroLossCheckoutInstrument = ({
                       placeholder="BE 0123.456.789" 
                     />
                   </ContainerInstrument>
-                  <TextInstrument className="text-[15px] font-medium text-va-black/20 ml-4 tracking-widest"><VoiceglotText translationKey="auto.zerolosscheckoutinstrument.we_valideren_dit_dir.fd2fff" defaultText="We valideren dit direct voor een factuur zonder BTW (indien van toepassing)." /></TextInstrument>
+                  <TextInstrument className="text-[15px] font-medium text-va-black/20 ml-4 tracking-widest"><VoiceglotText strokeWidth={1.5} translationKey="auto.zerolosscheckoutinstrument.we_valideren_dit_dir.fd2fff" defaultText="We valideren dit direct voor een factuur zonder BTW (indien van toepassing)." / /></TextInstrument>
                 </ContainerInstrument>
 
                 <ContainerInstrument className="flex gap-4">
@@ -160,7 +160,7 @@ export const ZeroLossCheckoutInstrument = ({
                     onClick={() => { setStep(1); }}
                     className="flex-1 py-6 rounded-[24px] bg-va-off-white text-va-black/40 text-[15px] font-light tracking-widest hover:bg-va-black hover:text-white transition-all"
                   >
-                    <VoiceglotText translationKey="auto.zerolosscheckoutinstrument.terug____.211082" defaultText="Terug" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="auto.zerolosscheckoutinstrument.terug____.211082" defaultText="Terug" / />
                   </ButtonInstrument>
                   <ButtonInstrument 
                     type="submit"
@@ -178,7 +178,7 @@ export const ZeroLossCheckoutInstrument = ({
       {/* Right: Summary Card */}
       <ContainerInstrument className="space-y-6 md:space-y-8 sticky top-32">
         <BentoCard span="sm" className="bg-va-black text-white p-6 md:p-10 shadow-aura-lg">
-          <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-white/20 mb-6 md:mb-8"><VoiceglotText translationKey="auto.zerolosscheckoutinstrument.jouw_investering.810725" defaultText="Jouw Investering" /></HeadingInstrument>
+          <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-white/20 mb-6 md:mb-8"><VoiceglotText strokeWidth={1.5} translationKey="auto.zerolosscheckoutinstrument.jouw_investering.810725" defaultText="Jouw Investering" / /></HeadingInstrument>
           
           <ContainerInstrument className="space-y-6">
             <ContainerInstrument className="pb-6 border-b border-white/5">
@@ -207,7 +207,7 @@ export const ZeroLossCheckoutInstrument = ({
             </ContainerInstrument>
 
             <ContainerInstrument className="pt-6 border-t border-white/10 flex justify-between items-end">
-              <TextInstrument as="span" className="text-[15px] font-light tracking-widest text-white/20"><VoiceglotText translationKey="auto.zerolosscheckoutinstrument.totaal.e28895" defaultText="Totaal" /></TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light tracking-widest text-white/20"><VoiceglotText strokeWidth={1.5} translationKey="auto.zerolosscheckoutinstrument.totaal.e28895" defaultText="Totaal" / /></TextInstrument>
               <TextInstrument as="span" className="text-4xl font-light tracking-tighter text-primary">
                 € {totalAmount.toFixed(2)}
               </TextInstrument>

@@ -41,18 +41,18 @@ export default function ScriptsPage() {
 
   return (
     <PageWrapperInstrument className="relative min-h-screen pt-32 pb-20 overflow-hidden">
-      <LiquidBackground />
+      <LiquidBackground strokeWidth={1.5} / />
       
       <SectionInstrument className="max-w-6xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-16">
-          <TextInstrument className="text-[15px] font-black tracking-[0.2em] text-primary mb-4"><VoiceglotText translationKey="scripts.category" defaultText="Inspiratie" /></TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6"><VoiceglotText translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" /><TextInstrument className="text-xl text-va-black/40 font-medium max-w-2xl"><VoiceglotText 
+          <TextInstrument className="text-[15px] font-black tracking-[0.2em] text-primary mb-4"><VoiceglotText strokeWidth={1.5} translationKey="scripts.category" defaultText="Inspiratie" / /></TextInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6"><VoiceglotText strokeWidth={1.5} translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" / /><TextInstrument className="text-xl text-va-black/40 font-medium max-w-2xl"><VoiceglotText strokeWidth={1.5} 
               translationKey="scripts.intro" 
               defaultText="Geen inspiratie? Gebruik onze beproefde teksten als basis voor jouw eigen boodschap. Kopieer, plak en pas aan." 
-            /></TextInstrument></HeadingInstrument>
+            / /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
 
-        <BentoGrid columns={2}>
+        <BentoGrid strokeWidth={1.5} columns={2}>
           {categories.map((cat, i) => (
             <BentoCard 
               key={i}
@@ -64,18 +64,18 @@ export default function ScriptsPage() {
                   <ContainerInstrument className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                     <FileText strokeWidth={1.5} size={20} / />
                   </ContainerInstrument>
-                  <HeadingInstrument level={3} className="text-xl font-black tracking-tight"><VoiceglotText translationKey={`${cat.key}.title`} defaultText={cat.title} /></HeadingInstrument>
+                  <HeadingInstrument level={3} className="text-xl font-black tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey={`${cat.key}.title`} defaultText={cat.title} / /></HeadingInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="p-6 bg-va-off-white rounded-2xl border border-black/5 relative group">
                   <TextInstrument className="text-[15px] font-medium leading-relaxed text-va-black/70 italic">
-                    &quot;<VoiceglotText translationKey={`${cat.key}.content`} defaultText={cat.content} />&quot;
+                    &quot;<VoiceglotText strokeWidth={1.5} translationKey={`${cat.key}.content`} defaultText={cat.content} / />&quot;
                   </TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
               
               <button className="mt-8 flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/30 hover:text-primary transition-all">
                 <Copy strokeWidth={1.5} size={14} / />
-                <VoiceglotText translationKey="scripts.copy_button" defaultText="Kopieer Tekst" />
+                <VoiceglotText strokeWidth={1.5} translationKey="scripts.copy_button" defaultText="Kopieer Tekst" / />
               </button>
             </BentoCard>
           ))}

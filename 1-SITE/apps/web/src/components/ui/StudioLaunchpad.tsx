@@ -131,21 +131,21 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                   href="/search" 
                   className="inline-flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[15px] font-light group"
                 >
-                  <LucideArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                  <TextInstrument as="span"><VoiceglotText translationKey="auto.studiolaunchpad.meer_stemmen_toevoeg.27de65" defaultText="Meer stemmen toevoegen" /></TextInstrument>
+                  <LucideArrowLeft strokeWidth={1.5} size={16} className="group-hover:-translate-x-1 transition-transform" / />
+                  <TextInstrument as="span"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.meer_stemmen_toevoeg.27de65" defaultText="Meer stemmen toevoegen" / /></TextInstrument>
                 </Link>
                 <HeadingInstrument level={1} className="text-4xl md:text-5xl font-light tracking-tight">
-                  <VoiceglotText translationKey="auto.studiolaunchpad.jouw_proefopname.e1fa5b" defaultText="Jouw proefopname" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.jouw_proefopname.e1fa5b" defaultText="Jouw proefopname" / />
                 </HeadingInstrument>
                 <ContainerInstrument className="flex items-center gap-2 text-va-black/40 bg-va-black/5 px-4 py-2 rounded-full w-fit">
-                  <Image strokeWidth={1.5} 
+                  <Image  
                     src="/assets/common/branding/icons/INFO.svg" 
                     alt="Info" 
                     width={14} 
                     height={14} 
                     style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
                   / />
-                  <TextInstrument className="text-[15px] font-light tracking-tight"><VoiceglotText translationKey="auto.studiolaunchpad.commercials___video.38a0aa" defaultText="Commercials & video" /></TextInstrument>
+                  <TextInstrument className="text-[15px] font-light tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.commercials___video.38a0aa" defaultText="Commercials & video" / /></TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
               {selectedActors.length > 0 && (
@@ -153,8 +153,8 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                   onClick={clearSelectedActors}
                   className="text-va-black/20 hover:text-red-500 transition-colors text-[15px] font-light flex items-center gap-2"
                 >
-                  <LucideTrash2 size={16} />
-                  <TextInstrument as="span"><VoiceglotText translationKey="auto.studiolaunchpad.selectie_wissen.8a5df3" defaultText="Selectie wissen" /></TextInstrument>
+                  <LucideTrash2 strokeWidth={1.5} size={16} / />
+                  <TextInstrument as="span"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.selectie_wissen.8a5df3" defaultText="Selectie wissen" / /></TextInstrument>
                 </button>
               )}
             </ContainerInstrument>
@@ -162,7 +162,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
             {/* Horizontal Selection Strip OR Quick Selection Grid */}
             {selectedActors.length > 0 ? (
               <ContainerInstrument className="flex gap-4 overflow-x-auto no-scrollbar py-2">
-                <AnimatePresence mode="popLayout">
+                <AnimatePresence strokeWidth={1.5} mode="popLayout">
                   {selectedActors.map((actor) => (
                     <motion.div
                       key={actor.id}
@@ -174,7 +174,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                     >
                       <ContainerInstrument className="relative w-12 h-12 rounded-[15px] overflow-hidden bg-va-off-white">
                         {actor.photoUrl ? (
-                          <Image strokeWidth={1.5} src={actor.photoUrl} alt={actor.firstName} fill className="object-cover" / />
+                          <Image  src={actor.photoUrl} alt={actor.firstName} fill className="object-cover" / />
                         ) : (
                           <ContainerInstrument className="w-full h-full flex items-center justify-center font-light text-va-black/20 text-lg">
                             {actor.firstName[0]}
@@ -188,7 +188,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                         onClick={() => removeActor(actor)}
                         className="absolute -top-2 -right-2 w-6 h-6 bg-va-off-white text-va-black/20 hover:bg-red-50 hover:text-red-500 rounded-full flex items-center justify-center shadow-sm border border-va-black/5 opacity-0 group-hover:opacity-100 transition-all"
                       >
-                        <LucideX size={12} />
+                        <LucideX strokeWidth={1.5} size={12} / />
                       </button>
                     </motion.div>
                   ))}
@@ -199,7 +199,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                 <ContainerInstrument className="p-8 bg-white/50 backdrop-blur-sm rounded-[30px] border border-va-black/5">
                   <ContainerInstrument className="flex items-center gap-3 mb-8">
                     <ContainerInstrument className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                      <Image strokeWidth={1.5} 
+                      <Image  
                         src="/assets/common/branding/icons/MIC.svg" 
                         alt="Mic" 
                         width={20} 
@@ -207,18 +207,32 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                         style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
                       / />
                     </ContainerInstrument>
-                    <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40 "><VoiceglotText translationKey="auto.studiolaunchpad.selecteer_stemmen_vo.7278c6" defaultText="Selecteer stemmen voor jouw briefing" /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40 "><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.selecteer_stemmen_vo.7278c6" defaultText="Selecteer stemmen voor jouw briefing" / /></TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {initialActors.slice(0, 6).map((actor) => (
-                      <VoiceCard key={actor.id} voice={actor} />
-                    ))}
+                    {initialActors
+                      .sort((a, b) => (matchResults[b.id] || 0) - (matchResults[a.id] || 0))
+                      .slice(0, 6)
+                      .map((actor) => (
+                        <ContainerInstrument key={actor.id} className="relative">
+                          <VoiceCard voice={actor} />
+                          {matchResults[actor.id] > 80 && (
+                            <motion.div 
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className="absolute -top-2 -left-2 bg-primary text-white text-[15px] font-bold px-2 py-1 rounded-full shadow-lg z-30 tracking-widest "
+                            >
+                              Match
+                            </motion.div>
+                          )}
+                        </ContainerInstrument>
+                      ))}
                   </ContainerInstrument>
                   <ContainerInstrument className="mt-8 text-center">
                     <Link strokeWidth={1.5} 
                       href="/search" 
                       className="text-[15px] font-light text-primary hover:underline tracking-widest "
-                    ><VoiceglotText translationKey="auto.studiolaunchpad.bekijk_alle_stemmen.517883" defaultText="Bekijk alle stemmen" /></Link>
+                    ><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.bekijk_alle_stemmen.517883" defaultText="Bekijk alle stemmen" / /></Link>
                   </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -231,14 +245,14 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
             <ContainerInstrument className="lg:col-span-8 space-y-8">
               <ContainerInstrument className="bg-white rounded-[30px] p-6 md:p-10 shadow-aura border border-va-off-white">
                 <ContainerInstrument className="flex items-center justify-between mb-6">
-                  <LabelInstrument className="text-va-black font-light text-lg ml-0"><VoiceglotText translationKey="auto.studiolaunchpad.het_script.5ccfdb" defaultText="Het Script" /></LabelInstrument>
+                  <LabelInstrument className="text-va-black font-light text-lg ml-0"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.het_script.5ccfdb" defaultText="Het Script" / /></LabelInstrument>
                   <button 
                     onClick={() => fileInputRef.current?.click()}
                     className="flex items-center gap-2 text-primary text-[15px] font-light hover:opacity-80 transition-opacity tracking-widest"
                   >
                     <LucideUpload size={16} strokeWidth={1.5} />
-                    <TextInstrument className="hidden sm:inline font-light"><VoiceglotText translationKey="auto.studiolaunchpad.zet_om_naar_tekst.11d18c" defaultText="Zet om naar tekst" /></TextInstrument>
-                    <TextInstrument className="sm:hidden font-light"><VoiceglotText translationKey="auto.studiolaunchpad.upload.914124" defaultText="Upload" /></TextInstrument>
+                    <TextInstrument className="hidden sm:inline font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.zet_om_naar_tekst.11d18c" defaultText="Zet om naar tekst" / /></TextInstrument>
+                    <TextInstrument className="sm:hidden font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.upload.914124" defaultText="Upload" / /></TextInstrument>
                   </button>
                   <input 
                     type="file" 
@@ -251,7 +265,12 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
 
                 <textarea
                   value={script}
-                  onChange={(e) => setScript(e.target.value)}
+                  onChange={(e) => {
+                    setScript(e.target.value);
+                    // Sherlock: Debounced analyse van het script voor onzichtbare matching
+                    const timer = setTimeout(() => handleScriptAnalysis(e.target.value), 2000);
+                    return () => clearTimeout(timer);
+                  }}
                   placeholder="Plak hier je tekst of sleep een bestand..."
                   className="w-full h-80 bg-va-off-white rounded-[20px] p-6 md:p-8 text-[16px] md:text-lg font-light leading-relaxed border-none focus:ring-2 focus:ring-primary/10 transition-all resize-none"
                   spellCheck={false}
@@ -262,11 +281,11 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                     {files.map((file, i) => (
                       <ContainerInstrument key={i} className="flex items-center justify-between bg-va-off-white/50 rounded-[12px] px-4 py-3">
                         <ContainerInstrument className="flex items-center gap-3">
-                          <LucideFileText size={18} className="text-va-black/40" />
+                          <LucideFileText strokeWidth={1.5} size={18} className="text-va-black/40" / />
                           <TextInstrument className="text-[15px] font-medium text-va-black/70">{file.name}</TextInstrument>
                         </ContainerInstrument>
                         <button onClick={() => removeFile(i)} className="text-va-black/20 hover:text-red-500 transition-colors">
-                          <Image strokeWidth={1.5} 
+                          <Image  
                             src="/assets/common/branding/icons/TRASH.svg" 
                             alt="Verwijder" 
                             width={18} 
@@ -281,13 +300,13 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
               </ContainerInstrument>
 
               <ContainerInstrument className="bg-white rounded-[30px] p-6 md:p-10 shadow-aura border border-va-off-white">
-                <LabelInstrument className="text-va-black font-light text-lg ml-0 mb-8"><VoiceglotText translationKey="auto.studiolaunchpad.referentie___vibe.067244" defaultText="Referentie & Vibe" /></LabelInstrument>
+                <LabelInstrument className="text-va-black font-light text-lg ml-0 mb-8"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.referentie___vibe.067244" defaultText="Referentie & Vibe" / /></LabelInstrument>
                 <ContainerInstrument className="space-y-8">
                   <ContainerInstrument className="space-y-3">
-                    <LabelInstrument className="text-[15px] font-light tracking-widest ml-0 opacity-40"><VoiceglotText translationKey="auto.studiolaunchpad.youtube_of_vimeo_lin.1c2443" defaultText="YouTube of Vimeo link (optioneel)" /></LabelInstrument>
+                    <LabelInstrument className="text-[15px] font-light tracking-widest ml-0 opacity-40"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.youtube_of_vimeo_lin.1c2443" defaultText="YouTube of Vimeo link (optioneel)" / /></LabelInstrument>
                     <ContainerInstrument className="relative">
                       <ContainerInstrument className="absolute left-5 top-1/2 -translate-y-1/2">
-                        <Image strokeWidth={1.5} 
+                        <Image  
                           src="/assets/common/branding/icons/FORWARD.svg" 
                           alt="Link" 
                           width={20} 
@@ -322,12 +341,12 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
               <ContainerInstrument className="bg-va-black text-white rounded-[30px] p-8 shadow-aura-lg sticky top-32">
                 <ContainerInstrument className="flex items-center gap-3 mb-6">
                   <ContainerInstrument className="bg-primary/20 p-2 rounded-full">
-                    <LucideMic size={20} className="text-primary" />
+                    <LucideMic strokeWidth={1.5} size={20} className="text-primary" / />
                   </ContainerInstrument>
-                  <HeadingInstrument level={3} className="text-xl font-light"><VoiceglotText translationKey="auto.studiolaunchpad.uitspraak___vibe.4b4fd6" defaultText="Uitspraak & Vibe" /></HeadingInstrument>
+                  <HeadingInstrument level={3} className="text-xl font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.uitspraak___vibe.4b4fd6" defaultText="Uitspraak & Vibe" / /></HeadingInstrument>
                 </ContainerInstrument>
                 
-                <TextInstrument className="text-white/60 text-[15px] mb-8 leading-relaxed font-light"><VoiceglotText translationKey="auto.studiolaunchpad.moeilijke_namen_of_e.d0f63b" defaultText="Moeilijke namen of een specifieke toon? Spreek het even in voor de stemacteur." /></TextInstrument>
+                <TextInstrument className="text-white/60 text-[15px] mb-8 leading-relaxed font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.moeilijke_namen_of_e.d0f63b" defaultText="Moeilijke namen of een specifieke toon? Spreek het even in voor de stemacteur." / /></TextInstrument>
 
                 <button 
                   onClick={toggleRecording}
@@ -353,11 +372,11 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                   className="w-full bg-primary hover:bg-primary/90 text-white py-6 rounded-[20px] text-lg font-light flex items-center justify-center gap-3 shadow-lg shadow-primary/20 active:scale-95 transition-all tracking-widest"
                   onClick={() => window.location.href = '/casting/session/'}
                 >
-                  <TextInstrument as="span"><VoiceglotText translationKey="auto.studiolaunchpad.vraag_proefopname_aa.8c2d12" defaultText="Vraag proefopname aan" /></TextInstrument>
+                  <TextInstrument as="span"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.vraag_proefopname_aa.8c2d12" defaultText="Vraag proefopname aan" / /></TextInstrument>
                   <LucideCheckCircle size={24} strokeWidth={1.5} />
                 </ButtonInstrument>
 
-                <TextInstrument className="text-center text-white/20 text-[15px] mt-6 leading-relaxed tracking-widest font-light"><VoiceglotText translationKey="auto.studiolaunchpad.je_gegevens_worden_a.e7a216" defaultText="Je gegevens worden anoniem behandeld." /></TextInstrument>
+                <TextInstrument className="text-center text-white/20 text-[15px] mt-6 leading-relaxed tracking-widest font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.studiolaunchpad.je_gegevens_worden_a.e7a216" defaultText="Je gegevens worden anoniem behandeld." / /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

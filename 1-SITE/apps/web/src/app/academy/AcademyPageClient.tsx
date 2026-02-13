@@ -24,23 +24,23 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
       <SectionInstrument className="mb-16">
         <ContainerInstrument className="space-y-4">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/20">
-            <GraduationCap size={12} fill="currentColor" /> 
-            <VoiceglotText translationKey="academy.client.badge" defaultText="Voices Academy" />
+            <GraduationCap strokeWidth={1.5} size={12} fill="currentColor" / /> 
+            <VoiceglotText strokeWidth={1.5} translationKey="academy.client.badge" defaultText="Voices Academy" / />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
-            <VoiceglotText translationKey="academy.client.title_part1" defaultText="Master your " />
+            <VoiceglotText strokeWidth={1.5} translationKey="academy.client.title_part1" defaultText="Master your " / />
             <TextInstrument as="span" className="text-primary font-light">
-              <VoiceglotText translationKey="academy.client.title_part2" defaultText="Instrument" />
+              <VoiceglotText strokeWidth={1.5} translationKey="academy.client.title_part2" defaultText="Instrument" / />
             </TextInstrument>
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-medium max-w-2xl text-lg"><VoiceglotText 
+          <TextInstrument className="text-va-black/40 font-medium max-w-2xl text-lg"><VoiceglotText strokeWidth={1.5} 
               translationKey="academy.client.subtitle" 
               defaultText="Leer de kunst van het inspreken van de beste experts in de sector. Van stemtechniek tot home-studio setup." 
-            /></TextInstrument>
+            / /></TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
-      <BentoGrid columns={3}>
+      <BentoGrid strokeWidth={1.5} columns={3}>
         {courses.map((course) => (
           <BentoCard key={course.id} span="md" className="bg-white shadow-aura group hover:border-primary/20 transition-all border border-black/5">
             <ContainerInstrument className="p-8 h-full flex flex-col justify-between">
@@ -69,7 +69,7 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
                   href={`/academy/lesson/${course.id}`}
                   className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 group-hover:gap-3 transition-all"
                 >
-                  <VoiceglotText translationKey="academy.client.start_lesson" defaultText="Start Les" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="academy.client.start_lesson" defaultText="Start Les" / />
                   <ArrowRight strokeWidth={1.5} size={14} />
                 </Link>
               </ContainerInstrument>
@@ -80,18 +80,18 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
         {/* Achievement Card */}
         <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between group">
           <ContainerInstrument>
-            <Trophy className="text-primary mb-8" size={40} />
+            <Trophy strokeWidth={1.5} className="text-primary mb-8" size={40} / />
             <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
-              <VoiceglotText translationKey="academy.client.achievements.title" defaultText="Certificering" />
+              <VoiceglotText strokeWidth={1.5} translationKey="academy.client.achievements.title" defaultText="Certificering" / />
               <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">
-                <VoiceglotText 
+                <VoiceglotText strokeWidth={1.5} 
                   translationKey="academy.client.achievements.text" 
                   defaultText="Ontvang een officieel Voices certificaat na het succesvol afronden van een masterclass." 
-                />
+                / />
               </TextInstrument>
             </HeadingInstrument>
           </ContainerInstrument>
-          <TextInstrument className="text-[15px] font-black tracking-widest text-primary/60"><VoiceglotText translationKey="academy.client.achievements.footer" defaultText="Voices" /></TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-primary/60"><VoiceglotText strokeWidth={1.5} translationKey="academy.client.achievements.footer" defaultText="Voices" / /></TextInstrument>
         </BentoCard>
       </BentoGrid>
     </PageWrapperInstrument>

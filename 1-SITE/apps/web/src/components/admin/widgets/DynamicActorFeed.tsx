@@ -91,7 +91,7 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
           className="flex items-center gap-4 p-4 bg-white/50 backdrop-blur-sm border border-black/5 rounded-2xl hover:bg-white hover:shadow-aura transition-all group cursor-pointer"
         >
           <div className="w-12 h-12 rounded-xl bg-va-off-white overflow-hidden relative shadow-inner">
-            <Image strokeWidth={1.5} 
+            <Image  
               src={actor.photoUrl} 
               alt={actor.firstName} 
               fill

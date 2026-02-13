@@ -1,4 +1,5 @@
 import { VatService } from '@/lib/compliance/vat-service';
+import { LexCheck } from '@/lib/compliance/lex-check';
 import { db } from '@db';
 import { orders, users } from '@db/schema';
 import { eq } from 'drizzle-orm';
@@ -73,6 +74,13 @@ export async function POST(request: Request) {
     }
 
     const amount = pricingResult.subtotal; // Always use verified subtotal
+
+    // ⚖️ LEX: AUDIT & NOTIFY (Non-blocking)
+    await LexCheck.auditOrder({
+      ...body,
+      pricingResult,
+      isVatExempt
+    });
 
     return await db.transaction(async (tx) => {
       let userId = metadata?.userId;

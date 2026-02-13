@@ -80,7 +80,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
         <SectionInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-32 items-start">
           <ContainerInstrument className="lg:col-span-5">
             <ContainerInstrument className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg group">
-              <Image strokeWidth={1.5} 
+              <Image  
                 src={artistData.photo_url || '/placeholder-artist.jpg'} 
                 alt={artistData.display_name} 
                 fill
@@ -115,7 +115,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
                 "px-3 py-1 rounded-full text-[15px] font-light tracking-widest uppercase border",
                 isYoussef ? 'bg-primary/20 text-primary border-primary/20' : 'bg-primary/10 text-primary border border-primary/10'
               )}>
-                <VoiceglotText translationKey="artist.badge.featured" defaultText="Voices Artist" />
+                <VoiceglotText strokeWidth={1.5} translationKey="artist.badge.featured" defaultText="Voices Artist" / />
               </TextInstrument>
             </ContainerInstrument>
 
@@ -140,10 +140,10 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
                 <ContainerInstrument className="flex justify-between items-end mb-4">
                   <ContainerInstrument>
                     <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-1 text-white">
-                      <VoiceglotText translationKey="auto.artistdetailclient.support_my_next_rele.16456d" defaultText="Support my next release" />
+                      <VoiceglotText strokeWidth={1.5} translationKey="auto.artistdetailclient.support_my_next_rele.16456d" defaultText="Support my next release" / />
                     </HeadingInstrument>
                     <TextInstrument className="text-[15px] text-white/40 font-light">
-                      <VoiceglotText translationKey="auto.artistdetailclient.help_me_reach_the_go.245a00" defaultText="Help me reach the goal for my new studio session." />
+                      <VoiceglotText strokeWidth={1.5} translationKey="auto.artistdetailclient.help_me_reach_the_go.245a00" defaultText="Help me reach the goal for my new studio session." / />
                     </TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="text-right">
@@ -163,7 +163,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
                 >
                   <Heart strokeWidth={1.5} size={18} className="group-hover:scale-110 transition-transform" />
                   <TextInstrument className="font-light tracking-widest text-[15px] ">
-                    <VoiceglotText translationKey="auto.artistdetailclient.support_youssef.c901c7" defaultText="Support Youssef" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="auto.artistdetailclient.support_youssef.c901c7" defaultText="Support Youssef" / />
                   </TextInstrument>
                 </ButtonInstrument>
               </ContainerInstrument>
@@ -176,7 +176,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
               )}>
                 <Play strokeWidth={1.5} size={18} className="group-hover:text-primary transition-colors" />
                 <TextInstrument className={cn(isYoussef ? 'font-light tracking-widest text-[15px] uppercase' : 'font-light')}>
-                  <VoiceglotText translationKey="artist.listen_all" defaultText="Listen to Demos" />
+                  <VoiceglotText strokeWidth={1.5} translationKey="artist.listen_all" defaultText="Listen to Demos" / />
                 </TextInstrument>
               </ButtonInstrument>
             </ContainerInstrument>
@@ -187,11 +187,11 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
         {isYoussef && (
           <SectionInstrument className="mb-32">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-12 text-center text-white">
-              Live <TextInstrument className="text-primary italic inline font-light"><VoiceglotText translationKey="auto.artistdetailclient.performances.9a63ec" defaultText="Performances" /></TextInstrument>
+              Live <TextInstrument className="text-primary italic inline font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.artistdetailclient.performances.9a63ec" defaultText="Performances" / /></TextInstrument>
             </HeadingInstrument>
             <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <ContainerInstrument className="relative aspect-video rounded-[20px] overflow-hidden shadow-aura group cursor-pointer bg-va-black border border-white/5">
-                <Image strokeWidth={1.5} 
+                <Image  
                   src="https://www.voices.be/wp-content/uploads/portfolio/276051/hero.jpg" 
                   alt="Live performance" 
                   fill 
@@ -204,15 +204,15 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
                 </ContainerInstrument>
                 <ContainerInstrument className="absolute bottom-6 left-6 right-6">
                   <TextInstrument className="text-white/40 text-[15px] font-light tracking-widest ">
-                    <VoiceglotText translationKey="auto.artistdetailclient.the_voice_france.ba498e" defaultText="The Voice France" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="auto.artistdetailclient.the_voice_france.ba498e" defaultText="The Voice France" / />
                   </TextInstrument>
                   <HeadingInstrument level={4} className="text-white text-xl font-light tracking-tight">
-                    <VoiceglotText translationKey="auto.artistdetailclient.fix_you__coldplay_co.94bb46" defaultText="Fix You (Coldplay Cover)" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="auto.artistdetailclient.fix_you__coldplay_co.94bb46" defaultText="Fix You (Coldplay Cover)" / />
                   </HeadingInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="relative aspect-video rounded-[20px] overflow-hidden shadow-aura group cursor-pointer bg-va-black border border-white/5">
-                <Image strokeWidth={1.5} 
+                <Image  
                   src="https://www.voices.be/wp-content/uploads/portfolio/276051/hero.jpg" 
                   alt="Live performance" 
                   fill 
@@ -225,10 +225,10 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
                 </ContainerInstrument>
                 <ContainerInstrument className="absolute bottom-6 left-6 right-6">
                   <TextInstrument className="text-white/40 text-[15px] font-light tracking-widest ">
-                    <VoiceglotText translationKey="auto.artistdetailclient.brussels_street_sess.8cb980" defaultText="Brussels Street Session" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="auto.artistdetailclient.brussels_street_sess.8cb980" defaultText="Brussels Street Session" / />
                   </TextInstrument>
                   <HeadingInstrument level={4} className="text-white text-xl font-light tracking-tight">
-                    <VoiceglotText translationKey="auto.artistdetailclient.my_funny_valentine.4c78df" defaultText="My Funny Valentine" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="auto.artistdetailclient.my_funny_valentine.4c78df" defaultText="My Funny Valentine" / />
                   </HeadingInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -236,11 +236,11 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
           </SectionInstrument>
         )}
 
-        <BentoGrid className="mb-32">
+        <BentoGrid strokeWidth={1.5} className="mb-32">
           <BentoCard span="full" className={cn(isYoussef ? 'bg-white/5 border border-white/5 text-white' : 'bg-white shadow-aura border border-va-black/5', "p-12 !rounded-[20px]")}>
             <ContainerInstrument className="flex justify-between items-center mb-12">
               <HeadingInstrument level={2} className={`text-3xl tracking-tight font-light`}>
-                Latest <TextInstrument className="text-primary italic inline font-light"><VoiceglotText translationKey="auto.artistdetailclient.releases.d50ae4" defaultText="Releases" /></TextInstrument>
+                Latest <TextInstrument className="text-primary italic inline font-light"><VoiceglotText strokeWidth={1.5} translationKey="auto.artistdetailclient.releases.d50ae4" defaultText="Releases" / /></TextInstrument>
               </HeadingInstrument>
             </ContainerInstrument>
 
@@ -277,7 +277,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
         </BentoGrid>
       </ContainerInstrument>
 
-      <DonationModal 
+      <DonationModal strokeWidth={1.5} 
         artistId={artistData.id}
         artistName={artistData.display_name}
         isOpen={isDonationOpen}

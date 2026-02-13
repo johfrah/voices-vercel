@@ -59,14 +59,14 @@ export const OrderIntelligence: React.FC<OrderIntelligenceProps> = ({ order }) =
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      <OrderHeader 
+      <OrderHeader strokeWidth={1.5} 
         id={order.display_order_id}
         date={formattedDate}
         journey={order.journey}
         status={order.status}
-      />
+      / />
 
-      <BentoGrid columns={4}>
+      <BentoGrid strokeWidth={1.5} columns={4}>
         <CustomerInstrument 
           firstName={order.user.first_name}
           lastName={order.user.last_name}

@@ -41,7 +41,7 @@ export default function ScriptsArticlePage() {
 
   return (
     <PageWrapperInstrument className="relative min-h-screen pt-32 pb-20 overflow-hidden">
-      <LiquidBackground />
+      <LiquidBackground strokeWidth={1.5} / />
       
       <SectionInstrument className="max-w-6xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-12">
@@ -50,13 +50,13 @@ export default function ScriptsArticlePage() {
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
             <ArrowLeft strokeWidth={1.5} size={14} /> 
-            <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
+            <VoiceglotText strokeWidth={1.5} translationKey="article.back" defaultText="Terug naar de etalage" / />
           </Link>
-          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 "><VoiceglotText translationKey="article.theme.inspiration" defaultText="Inspiratie" /></TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6 text-va-black "><VoiceglotText translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" /></HeadingInstrument>
+          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 "><VoiceglotText strokeWidth={1.5} translationKey="article.theme.inspiration" defaultText="Inspiratie" / /></TextInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6 text-va-black "><VoiceglotText strokeWidth={1.5} translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" / /></HeadingInstrument>
         </ContainerInstrument>
 
-        <BentoGrid columns={2}>
+        <BentoGrid strokeWidth={1.5} columns={2}>
           {categories.map((cat, i) => (
             <BentoCard 
               key={i}
@@ -68,18 +68,18 @@ export default function ScriptsArticlePage() {
                   <ContainerInstrument className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                     <FileText strokeWidth={1.5} size={20} / />
                   </ContainerInstrument>
-                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black "><VoiceglotText translationKey={`${cat.key}.title`} defaultText={cat.title} /></HeadingInstrument>
+                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black "><VoiceglotText strokeWidth={1.5} translationKey={`${cat.key}.title`} defaultText={cat.title} / /></HeadingInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="p-6 bg-va-off-white rounded-[15px] border border-black/5 relative group">
                   <TextInstrument className="text-[15px] font-light leading-relaxed text-va-black/70 italic">
-                    &quot;<VoiceglotText translationKey={`${cat.key}.content`} defaultText={cat.content} />&quot;
+                    &quot;<VoiceglotText strokeWidth={1.5} translationKey={`${cat.key}.content`} defaultText={cat.content} / />&quot;
                   </TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
               
               <button className="mt-8 flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/30 hover:text-primary transition-all ">
                 <Copy strokeWidth={1.5} size={14} / />
-                <VoiceglotText translationKey="scripts.copy_button" defaultText="Kopieer Tekst" />
+                <VoiceglotText strokeWidth={1.5} translationKey="scripts.copy_button" defaultText="Kopieer Tekst" / />
               </button>
             </BentoCard>
           ))}

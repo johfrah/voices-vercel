@@ -131,20 +131,20 @@ export const PageRenderer: React.FC<PageRendererProps> = ({ slug, initialLayout 
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       <SectionInstrument className="mb-20 space-y-6">
-        <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter"><VoiceglotText 
+        <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter"><VoiceglotText strokeWidth={1.5} 
             translationKey={`page.${slug}.title`} 
             defaultText={layout.title || 'Nieuwe Pagina'} 
-          /></HeadingInstrument>
+          / /></HeadingInstrument>
       </SectionInstrument>
 
       {layout.layoutJson?.sections?.map((section: any, sIdx: number) => (
-        <DnDOrchestrator 
+        <DnDOrchestrator strokeWidth={1.5} 
           key={section.id || sIdx}
           items={section.cards || []}
           onReorder={(newCards) => handleReorderCards(sIdx, newCards)}
           onAdd={() => {}}
         >
-          <BentoGrid columns={section.columns || 3} className="mb-12" id={section.id}>
+          <BentoGrid strokeWidth={1.5} columns={section.columns || 3} className="mb-12" id={section.id}>
             {section.cards?.map((card: any, cIdx: number) => (
               <BentoCard 
                 key={card.id || cIdx} 
@@ -155,12 +155,12 @@ export const PageRenderer: React.FC<PageRendererProps> = ({ slug, initialLayout 
               >
                 <ContainerInstrument className="p-8">
                   {card.type === 'text' && (
-                    <VoiceglotText 
+                    <VoiceglotText strokeWidth={1.5} 
                       translationKey={`page.${slug}.section.${sIdx}.card.${cIdx}.text`} 
                       defaultText={card.content || 'Voeg tekst toe...'} 
                       as="p"
                       className="text-lg opacity-60"
-                    />
+                    / />
                   )}
                   {/* Meer types zoals video, cta, etc. kunnen hier worden toegevoegd */}
                 </ContainerInstrument>

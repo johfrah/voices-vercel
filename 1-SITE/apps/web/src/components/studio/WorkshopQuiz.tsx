@@ -120,7 +120,7 @@ export const WorkshopQuiz: React.FC = () => {
 
       {/* Glass Overlay Content */}
       <div className="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
-        <AnimatePresence mode="wait">
+        <AnimatePresence strokeWidth={1.5} mode="wait">
           <motion.div
             key={currentStep.id}
             initial={{ opacity: 0, y: 20 }}

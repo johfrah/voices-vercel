@@ -67,7 +67,7 @@ export const BlueprintExplorer: React.FC<{ journey: string }> = ({ journey }) =>
             <h3 className="text-2xl font-black tracking-tight">{selected.title}</h3>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-1.5 text-[15px] font-black tracking-widest text-va-black/30">
-                <Target size={12} className="text-primary" /> {selected.goal}
+                <Target strokeWidth={1.5} size={12} className="text-primary" / /> {selected.goal}
               </div>
               <div className="flex items-center gap-1.5 text-[15px] font-black tracking-widest text-va-black/30">
                 <Clock strokeWidth={1.5} size={12} className="text-primary" / /> {selected.timing}
@@ -83,16 +83,16 @@ export const BlueprintExplorer: React.FC<{ journey: string }> = ({ journey }) =>
         <div className="space-y-6">
           <div className="bg-primary/5 p-6 rounded-[32px] border border-primary/10 space-y-4">
             <div className="flex items-center gap-2 text-primary">
-              <Lightbulb size={18} />
-              <h4 className="text-[15px] font-black tracking-widest text-primary"><VoiceglotText translationKey="auto.blueprintexplorer.schrijftip.22d502" defaultText="Schrijftip" /></h4>
+              <Lightbulb strokeWidth={1.5} size={18} / />
+              <h4 className="text-[15px] font-black tracking-widest text-primary"><VoiceglotText strokeWidth={1.5} translationKey="auto.blueprintexplorer.schrijftip.22d502" defaultText="Schrijftip" / /></h4>
             </div>
-            <p className="text-[15px] font-medium text-va-black/60 leading-relaxed italic"><VoiceglotText translationKey="auto.blueprintexplorer._quot_voor_dit_genre.27e7d0" defaultText="&quot;Voor dit genre is het essentieel om de emotie te doseren. Een echte stemacteur begrijpt de nuance tussen informeren en overtuigen.&quot;" /></p>
+            <p className="text-[15px] font-medium text-va-black/60 leading-relaxed italic"><VoiceglotText strokeWidth={1.5} translationKey="auto.blueprintexplorer._quot_voor_dit_genre.27e7d0" defaultText="&quot;Voor dit genre is het essentieel om de emotie te doseren. Een echte stemacteur begrijpt de nuance tussen informeren en overtuigen.&quot;" / /></p>
           </div>
 
           <div className="p-6 bg-va-black rounded-[32px] text-white space-y-4">
-            <p className="text-[15px] font-black tracking-[0.2em] text-white/40"><VoiceglotText translationKey="auto.blueprintexplorer.klaar_om_te_laten_in.d9c374" defaultText="Klaar om te laten inspreken?" /></p>
+            <p className="text-[15px] font-black tracking-[0.2em] text-white/40"><VoiceglotText strokeWidth={1.5} translationKey="auto.blueprintexplorer.klaar_om_te_laten_in.d9c374" defaultText="Klaar om te laten inspreken?" / /></p>
             <h4 className="text-lg font-black tracking-tight leading-none">Kies je stem</h4>
-            <p className="text-[15px] text-white/60 leading-relaxed"><VoiceglotText translationKey="auto.blueprintexplorer.onze_top_selectie_va.5b06ac" defaultText="Onze top-selectie van stemacteurs staat klaar om jouw unieke script tot leven te brengen." /></p>
+            <p className="text-[15px] text-white/60 leading-relaxed"><VoiceglotText strokeWidth={1.5} translationKey="auto.blueprintexplorer.onze_top_selectie_va.5b06ac" defaultText="Onze top-selectie van stemacteurs staat klaar om jouw unieke script tot leven te brengen." / /></p>
             <button className="w-full py-4 bg-primary text-white rounded-2xl text-[15px] font-black tracking-widest hover:scale-105 transition-all flex items-center justify-center gap-2">
               Bekijk alle stemmen <ArrowRight strokeWidth={1.5} size={14} />
             </button>

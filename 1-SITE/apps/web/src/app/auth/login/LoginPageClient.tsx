@@ -144,23 +144,23 @@ export function LoginPageClient() {
       <ContainerInstrument className="w-full max-w-xl relative z-10">
         <ContainerInstrument className="text-center mb-12 space-y-4">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest shadow-sm border border-gray-100/50 ">
-            <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText translationKey="auth.login.secure_access" defaultText="Toegang" />
+            <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText strokeWidth={1.5} translationKey="auth.login.secure_access" defaultText="Toegang" / />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
-            <VoiceglotText translationKey="auth.login.title_prefix" defaultText="Toegang tot" />
+            <VoiceglotText strokeWidth={1.5} translationKey="auth.login.title_prefix" defaultText="Toegang tot" / />
             <TextInstrument as="span" className="text-primary font-extralight">
-              <VoiceglotText translationKey="auto.loginpageclient.voices.d342f8" defaultText="Voices" />
+              <VoiceglotText strokeWidth={1.5} translationKey="auto.loginpageclient.voices.d342f8" defaultText="Voices" / />
             </TextInstrument>
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-light max-w-sm mx-auto">
-            <VoiceglotText translationKey="auth.login.subtitle" defaultText="Vul je e-mailadres in. Je ontvangt direct een magische link in je inbox om veilig in te loggen." />
+            <VoiceglotText strokeWidth={1.5} translationKey="auth.login.subtitle" defaultText="Vul je e-mailadres in. Je ontvangt direct een magische link in je inbox om veilig in te loggen." / />
           </TextInstrument>
         </ContainerInstrument>
 
         <BentoCard span="full" className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-12">
           {supabaseUnavailable && (
             <ContainerInstrument className="mb-6 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-800 text-[15px] font-light tracking-widest rounded-r-xl">
-              <VoiceglotText translationKey="auto.loginpageclient.de_inlogservice_is_t.ea33a3" defaultText="De inlogservice is tijdelijk niet beschikbaar. Probeer het later opnieuw." />
+              <VoiceglotText strokeWidth={1.5} translationKey="auto.loginpageclient.de_inlogservice_is_t.ea33a3" defaultText="De inlogservice is tijdelijk niet beschikbaar. Probeer het later opnieuw." / />
             </ContainerInstrument>
           )}
           <FormInstrument onSubmit={handleSubmit} className="space-y-8">
@@ -210,7 +210,7 @@ export function LoginPageClient() {
                     }}
                     className="absolute right-6 top-1/2 -translate-y-1/2 text-[15px] font-light tracking-widest text-primary hover:opacity-70 transition-opacity "
                   >
-                    <VoiceglotText translationKey="auto.loginpageclient.gebruik_magic_link.e10a3c" defaultText="Gebruik Magic Link" />
+                    <VoiceglotText strokeWidth={1.5} translationKey="auto.loginpageclient.gebruik_magic_link.e10a3c" defaultText="Gebruik Magic Link" / />
                   </ButtonInstrument>
                 </ContainerInstrument>
               ) : (
@@ -230,16 +230,16 @@ export function LoginPageClient() {
                 className="va-btn-pro w-full flex flex-col items-center justify-center gap-1 group !py-6"
               >
                 {isLoading ? (
-                  <Loader2 className="animate-spin" size={20} />
+                  <Loader2 strokeWidth={1.5} className="animate-spin" size={20} / />
                 ) : (
                   <>
                     <ContainerInstrument className="flex items-center gap-3">
-                      <VoiceglotText translationKey="auth.login.submit" defaultText={password ? "Inloggen" : "Stuur Magische Link"} /> 
+                      <VoiceglotText strokeWidth={1.5} translationKey="auth.login.submit" defaultText={password ? "Inloggen" : "Stuur Magische Link"} / /> 
                       <ArrowRight strokeWidth={1.5} size={20} className="group-hover:translate-x-1 transition-transform" />
                     </ContainerInstrument>
                     {!password && (
                       <TextInstrument as="span" className="text-[15px] opacity-50 font-normal normal-case tracking-normal">
-                        <VoiceglotText translationKey="auto.loginpageclient.je_ontvangt_een_eenm.b03532" defaultText="Je ontvangt een eenmalige inloglink per e-mail" />
+                        <VoiceglotText strokeWidth={1.5} translationKey="auto.loginpageclient.je_ontvangt_een_eenm.b03532" defaultText="Je ontvangt een eenmalige inloglink per e-mail" / />
                       </TextInstrument>
                     )}
                   </>
@@ -253,7 +253,7 @@ export function LoginPageClient() {
           <ContainerInstrument className="flex items-center justify-center gap-2 text-primary">
             <Star strokeWidth={1.5} size={12} fill="currentColor" />
             <TextInstrument as="span" className="text-[15px] font-light tracking-widest ">
-              <VoiceglotText translationKey="auth.login.footer" defaultText="Voices" />
+              <VoiceglotText strokeWidth={1.5} translationKey="auth.login.footer" defaultText="Voices" / />
             </TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

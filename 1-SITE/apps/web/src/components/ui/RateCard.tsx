@@ -68,7 +68,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
       )}
       
       <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-500", config.color)}>
-        <Icon size={24} />
+        <Icon strokeWidth={1.5} size={24} / />
       </div>
 
       <h3 className="text-lg font-black tracking-tight mb-1">{config.title}</h3>

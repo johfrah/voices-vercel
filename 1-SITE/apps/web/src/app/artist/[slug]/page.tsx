@@ -12,8 +12,8 @@ export const dynamic = 'force-dynamic';
 
 export default function ArtistDetailPage({ params }: { params: { slug: string } }) {
   return (
-    <Suspense fallback={<LoadingScreenInstrument />}>
-      <ArtistDetailContent params={params} />
+    <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
+      <ArtistDetailContent strokeWidth={1.5} params={params} / />
     </Suspense>
   );
 }
@@ -44,10 +44,10 @@ async function ArtistDetailContent({ params }: { params: { slug: string } }) {
   if (!artistData) {
     return (
       <PageWrapperInstrument className="flex items-center justify-center min-h-screen">
-        <HeadingInstrument level={1}><VoiceglotText translationKey="artist.not_found" defaultText="Artist not found" /></HeadingInstrument>
+        <HeadingInstrument level={1}><VoiceglotText strokeWidth={1.5} translationKey="artist.not_found" defaultText="Artist not found" / /></HeadingInstrument>
       </PageWrapperInstrument>
     );
   }
 
-  return <ArtistDetailClient artistData={artistData} isYoussef={isYoussef} params={params} />;
+  return <ArtistDetailClient strokeWidth={1.5} artistData={artistData} isYoussef={isYoussef} params={params} / />;
 }

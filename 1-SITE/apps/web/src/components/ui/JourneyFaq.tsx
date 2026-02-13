@@ -49,7 +49,7 @@ export const JourneyFaq: React.FC<JourneyFaqProps> = ({ journey, limit = 3 }) =>
         <div className="w-8 h-8 rounded-full bg-va-black text-white flex items-center justify-center">
           <HelpCircle strokeWidth={1.5} size={16} />
         </div>
-        <h3 className="text-[15px] font-light tracking-widest text-va-black "><VoiceglotText translationKey="auto.journeyfaq.veelgestelde_vragen.95b893" defaultText="Veelgestelde vragen" /></h3>
+        <h3 className="text-[15px] font-light tracking-widest text-va-black "><VoiceglotText strokeWidth={1.5} translationKey="auto.journeyfaq.veelgestelde_vragen.95b893" defaultText="Veelgestelde vragen" / /></h3>
       </div>
 
       <div className="space-y-3">

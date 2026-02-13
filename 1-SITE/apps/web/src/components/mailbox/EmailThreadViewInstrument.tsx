@@ -138,7 +138,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
               <ContainerInstrument className="px-6 py-5 flex items-start justify-between">
                   <ContainerInstrument className="flex items-center gap-4">
                     <ContainerInstrument className="w-10 h-10 rounded-full bg-va-black text-white flex items-center justify-center text-[15px] font-light relative overflow-hidden shrink-0">
-                      <Image strokeWidth={1.5} 
+                      <Image  
                         src={gravatarUrl} 
                         alt="" 
                         fill
@@ -179,7 +179,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                   Translate to English
                 </ButtonInstrument>
                 <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-[20px] text-[15px] font-light tracking-widest border border-gray-100 hover:bg-gray-100 transition-all">
-                  <Languages size={12} />
+                  <Languages strokeWidth={1.5} size={12} / />
                 </ButtonInstrument>
               </ContainerInstrument>
 
@@ -194,7 +194,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                 <ContainerInstrument className="px-6 pb-6 mt-4 border-t border-gray-50 pt-6">
                   <ContainerInstrument className="flex items-center justify-between mb-4">
                     <ContainerInstrument className="flex items-center gap-2 text-gray-400">
-                      <Paperclip size={14} />
+                      <Paperclip strokeWidth={1.5} size={14} / />
                       <TextInstrument className="text-[15px] font-light tracking-widest">{message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}</TextInstrument>
                     </ContainerInstrument>
                     <ButtonInstrument className="text-[15px] font-light text-blue-600 hover:underline tracking-widest">
@@ -213,7 +213,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                       >
                         <ContainerInstrument className={`aspect-square rounded-2xl border flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden ${focusedAttachmentId === att.id ? 'bg-gray-50 border-va-black/20 shadow-md' : 'bg-white border-gray-100 shadow-sm'}`}>
                           <ContainerInstrument className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
-                            {isPdf(att.filename) ? <FileText strokeWidth={1.5} size={24} / /> : isAudio(att.filename) ? <Mic strokeWidth={1.5} size={24} / /> : isVideo(att.filename) ? <Play strokeWidth={1.5} size={24} / /> : <ImageIcon size={24} />}
+                            {isPdf(att.filename) ? <FileText strokeWidth={1.5} size={24} / /> : isAudio(att.filename) ? <Mic strokeWidth={1.5} size={24} / /> : isVideo(att.filename) ? <Play strokeWidth={1.5} size={24} / /> : <ImageIcon   size={24} / / />}
                           </ContainerInstrument>
                           <ContainerInstrument className="text-center px-2">
                             <p className="text-[15px] font-light text-gray-900 truncate w-full max-w-[100px]">{att.filename}</p>
@@ -245,10 +245,10 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                 </ContainerInstrument>
                 <ContainerInstrument className="flex gap-4">
                   <ButtonInstrument onClick={() => onReply(message)} className="text-gray-300 hover:text-va-black transition-colors">
-                    <Reply size={18} />
+                    <Reply strokeWidth={1.5} size={18} / />
                   </ButtonInstrument>
                   <ButtonInstrument className="text-gray-300 hover:text-va-black transition-colors">
-                    <Forward size={18} />
+                    <Forward strokeWidth={1.5} size={18} / />
                   </ButtonInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -303,7 +303,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                   />
                 ) : isImage(spotlightFile.filename) ? (
                   <ContainerInstrument className="relative w-full h-full">
-                    <Image strokeWidth={1.5} 
+                    <Image  
                       src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 
                       alt={spotlightFile.filename}
                       fill
@@ -341,7 +341,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
 
       <audio ref={audioRef} className="hidden" onEnded={() => setPlayingId(null)} />
       {promotingFile && (
-        <PromotionModal 
+        <PromotionModal strokeWidth={1.5} 
           file={promotingFile}
           actorId={actorId}
           onClose={() => setPromotingFile(null)}

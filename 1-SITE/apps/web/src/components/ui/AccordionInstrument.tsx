@@ -28,7 +28,7 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
               {item.title}
             </HeadingInstrument>
             <ContainerInstrument className={`p-2 rounded-full bg-va-black/5 transition-all duration-500 flex items-center justify-center ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
-              <Image strokeWidth={1.5} 
+              <Image  
                 src="/assets/common/branding/icons/DOWN.svg" 
                 alt="Toggle" 
                 width={18} 

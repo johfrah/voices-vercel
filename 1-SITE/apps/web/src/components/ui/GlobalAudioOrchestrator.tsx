@@ -15,9 +15,9 @@ export function GlobalAudioOrchestrator() {
   if (!activeDemo) return null;
 
   return (
-    <MediaMaster 
+    <MediaMaster strokeWidth={1.5} 
       demo={activeDemo} 
       onClose={stopDemo} 
-    />
+    / />
   );
 }

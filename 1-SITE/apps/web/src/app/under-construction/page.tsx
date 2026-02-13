@@ -3,7 +3,7 @@ import UnderConstruction from '@/components/ui/UnderConstruction';
 export default function UnderConstructionPage() {
   return (
     <>
-      <UnderConstruction />
+      <UnderConstruction strokeWidth={1.5} / />
     </>
   );
 }

@@ -140,7 +140,7 @@ export class StudioDataBridge {
    * Haalt de volledige dashboard configuratie op (100% Native)
    * 🛡️ VOICES OS: WordPress-vrij
    */
-  static async getDashboardData(tab: string = 'funnel'): Promise<StudioDashboardData & { _nuclear: boolean }> {
+  static async getDashboardData(tab: string = 'funnel'): Promise<StudioDashboardData strokeWidth={1.5} & { _nuclear: boolean }> {
     try {
       // 1. Haal workshops op uit de database
       const dbWorkshops = await db.select().from(workshops).orderBy(desc(workshops.date)).limit(20);

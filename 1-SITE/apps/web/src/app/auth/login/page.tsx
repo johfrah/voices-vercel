@@ -7,8 +7,8 @@ import { PageWrapperInstrument, LoadingScreenInstrument } from '@/components/ui/
 export default function LoginPage() {
   return (
     <PageWrapperInstrument>
-      <Suspense fallback={<LoadingScreenInstrument />}>
-        <LoginPageClient />
+      <Suspense strokeWidth={1.5} fallback={<LoadingScreenInstrument / />}>
+        <LoginPageClient strokeWidth={1.5} / />
       </Suspense>
     </PageWrapperInstrument>
   );

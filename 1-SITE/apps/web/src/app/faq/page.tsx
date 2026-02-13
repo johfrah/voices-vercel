@@ -59,7 +59,7 @@ export default function FAQPage() {
 
   return (
     <PageWrapperInstrument className="pt-32 pb-40 bg-va-off-white min-h-screen relative overflow-hidden">
-      <LiquidBackground />
+      <LiquidBackground strokeWidth={1.5} / />
       
       <SectionInstrument className="max-w-7xl mx-auto px-6 relative z-10">
         
@@ -67,21 +67,21 @@ export default function FAQPage() {
         <ContainerInstrument className="text-center mb-20 space-y-6">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest shadow-sm border border-black/5 ">
             <Search strokeWidth={1.5} size={12} className="text-primary" /> 
-            <VoiceglotText translationKey="faq.badge" defaultText="Kennisbank" />
+            <VoiceglotText strokeWidth={1.5} translationKey="faq.badge" defaultText="Kennisbank" / />
           </ContainerInstrument>
           
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none">
-            <VoiceglotText translationKey="faq.title_part1" defaultText="Veelgestelde " />
+            <VoiceglotText strokeWidth={1.5} translationKey="faq.title_part1" defaultText="Veelgestelde " / />
             <TextInstrument as="span" className="text-primary font-extralight">
-              <VoiceglotText translationKey="faq.title_part2" defaultText="Vragen" />
+              <VoiceglotText strokeWidth={1.5} translationKey="faq.title_part2" defaultText="Vragen" / />
             </TextInstrument>
           </HeadingInstrument>
           
           <ContainerInstrument className="max-w-2xl mx-auto">
-            <TextInstrument className="text-va-black/40 font-light text-lg leading-relaxed"><VoiceglotText 
+            <TextInstrument className="text-va-black/40 font-light text-lg leading-relaxed"><VoiceglotText strokeWidth={1.5} 
                 translationKey="faq.subtitle" 
                 defaultText="Alles wat je moet weten over het boeken van een stem, de levering en de rechten. Helder en transparant." 
-              /></TextInstrument>
+              / /></TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
 
@@ -96,12 +96,12 @@ export default function FAQPage() {
                 }}
                 className="w-full px-10 py-8 flex items-center justify-between text-left hover:bg-va-off-white transition-colors"
               >
-                <HeadingInstrument level={3} className="text-xl font-light tracking-tight"><VoiceglotText translationKey={`${faq.key}.q`} defaultText={faq.q} /></HeadingInstrument>
+                <HeadingInstrument level={3} className="text-xl font-light tracking-tight"><VoiceglotText strokeWidth={1.5} translationKey={`${faq.key}.q`} defaultText={faq.q} / /></HeadingInstrument>
                 {openIndex === i ? <ChevronUp strokeWidth={1.5} className="text-primary" / /> : <ChevronDown strokeWidth={1.5} className="text-va-black/20" />}
               </ButtonInstrument>
               {openIndex === i && (
                 <ContainerInstrument className="px-10 pb-10 animate-in slide-in-from-top-4 duration-300">
-                  <TextInstrument className="text-va-black/60 text-lg leading-relaxed font-light"><VoiceglotText translationKey={`${faq.key}.a`} defaultText={faq.a} /></TextInstrument>
+                  <TextInstrument className="text-va-black/60 text-lg leading-relaxed font-light"><VoiceglotText strokeWidth={1.5} translationKey={`${faq.key}.a`} defaultText={faq.a} / /></TextInstrument>
                 </ContainerInstrument>
               )}
             </ContainerInstrument>
@@ -112,12 +112,12 @@ export default function FAQPage() {
         <ContainerInstrument className="mt-20 bg-va-black text-white rounded-[60px] p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-12 group shadow-aura-lg">
           <ContainerInstrument className="relative z-10 space-y-4 max-w-xl text-center md:text-left">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter leading-tight">
-              <VoiceglotText translationKey="faq.voicy.title" defaultText="Niet gevonden wat je zocht?" />
+              <VoiceglotText strokeWidth={1.5} translationKey="faq.voicy.title" defaultText="Niet gevonden wat je zocht?" / />
               <TextInstrument className="text-white/40 text-lg font-light block mt-2">
-                <VoiceglotText 
+                <VoiceglotText strokeWidth={1.5} 
                   translationKey="faq.voicy.text" 
                   defaultText="Voicy, onze AI-assistent, kent alle details van ons platform en kan je direct antwoord geven." 
-                />
+                / />
               </TextInstrument>
             </HeadingInstrument>
           </ContainerInstrument>
@@ -125,7 +125,7 @@ export default function FAQPage() {
             onClick={openVoicy}
             className="relative z-10 !bg-primary !text-va-black !px-12 !py-6 !text-lg !rounded-[10px] flex items-center gap-2 font-light tracking-widest hover:scale-105 transition-transform shadow-xl"
           >
-            <VoiceglotText translationKey="faq.voicy.cta" defaultText="Vraag het aan Voicy" />
+            <VoiceglotText strokeWidth={1.5} translationKey="faq.voicy.cta" defaultText="Vraag het aan Voicy" / />
             <Sparkles strokeWidth={1.5} size={20} />
           </ButtonInstrument>
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />

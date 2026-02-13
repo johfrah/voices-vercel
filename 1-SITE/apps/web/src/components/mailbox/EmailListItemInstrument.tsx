@@ -101,10 +101,10 @@ export const EmailListItemInstrument = ({
         <ContainerInstrument className="flex items-center gap-4">
           <ContainerInstrument className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-[15px] font-light relative shadow-sm overflow-hidden ${isSemanticResult ? 'bg-va-black text-white' : 'bg-gray-100 text-gray-500'}`}>
             {avatarUrl ? (
-              <Image strokeWidth={1.5} src={avatarUrl} alt="Avatar" width={40} height={40} className="w-full h-full object-cover" / />
+              <Image  src={avatarUrl} alt="Avatar" width={40} height={40} className="w-full h-full object-cover" / />
             ) : gravatarUrl ? (
               <ContainerInstrument className="relative w-full h-full">
-                <Image strokeWidth={1.5} 
+                <Image  
                   src={gravatarUrl} 
                   alt="" 
                   fill
@@ -116,7 +116,7 @@ export const EmailListItemInstrument = ({
                 </ContainerInstrument>
               </ContainerInstrument>
             ) : isSemanticResult ? (
-              <Brain size={16} />
+              <Brain strokeWidth={1.5} size={16} / />
             ) : (
               initial
             )}
@@ -164,7 +164,7 @@ export const EmailListItemInstrument = ({
                 {subject}
               </TextInstrument>
               {hasAttachments && (
-                <Paperclip size={12} className="text-gray-400 flex-shrink-0" />
+                <Paperclip strokeWidth={1.5} size={12} className="text-gray-400 flex-shrink-0" / />
               )}
             </ContainerInstrument>
             <TextInstrument as="p" className="text-[15px] text-gray-500 truncate mt-0.5 font-light">
