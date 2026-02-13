@@ -24,6 +24,39 @@ export class KnowledgeService {
   }
 
   /**
+   * Haalt de volledige kennis-briefing op voor Voicy (alle domeinen).
+   */
+  async getFullVoicyBriefing(): Promise<string> {
+    try {
+      const voicyFiles = [
+        '4-Voicy-Intelligence/VOICY-ACADEMY.md',
+        '4-Voicy-Intelligence/VOICY-ADEMING.md',
+        '4-Voicy-Intelligence/VOICY-AGENCY-COMMERCIAL.md',
+        '4-Voicy-Intelligence/VOICY-AGENCY-TELEPHONY.md',
+        '4-Voicy-Intelligence/VOICY-AGENCY-VIDEO.md',
+        '4-Voicy-Intelligence/VOICY-STUDIO.md',
+        '4-Voicy-Intelligence/VOICY-MATURITY-RULES.md'
+      ];
+
+      let briefing = "--- FULL VOICY KNOWLEDGE BASE ---\n";
+
+      for (const file of voicyFiles) {
+        try {
+          const content = await fs.readFile(path.join(this.bijbelPath, file), 'utf-8');
+          briefing += `\n[Domein: ${file.split('/').pop()?.replace('.md', '')}]\n${content}\n`;
+        } catch (e) {
+          console.warn(`Could not read Voicy knowledge file: ${file}`);
+        }
+      }
+
+      return briefing;
+    } catch (error) {
+      console.error('Knowledge Service Error:', error);
+      return "No full briefing available.";
+    }
+  }
+
+  /**
    * Haalt de kern-regels op uit de belangrijkste Bijbels.
    */
   async getCoreBriefing(): Promise<string> {
