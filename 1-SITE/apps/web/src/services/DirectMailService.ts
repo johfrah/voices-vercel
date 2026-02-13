@@ -1,8 +1,9 @@
-import Imap from 'node-imap';
-import { simpleParser, ParsedMail, Attachment } from 'mailparser';
-import { OAuth2Client } from 'google-auth-library';
-import nodemailer from 'nodemailer';
 import { MarketManager } from '@config/market-manager';
+import { OAuth2Client } from 'google-auth-library';
+import { Mail, ShieldCheck } from 'lucide-react';
+import { Attachment, ParsedMail, simpleParser } from 'mailparser';
+import Imap from 'node-imap';
+import nodemailer from 'nodemailer';
 
 /**
  * 📧 DIRECT MAIL SERVICE (2026)
@@ -127,7 +128,7 @@ export class DirectMailService {
   /**
    * Verstuurt een e-mail via SMTP
    */
-  async sendMail(options: { to: string, subject: string, text?: string, html?: string, from?: string, attachments?: any[], host?: string }): Promise<void> {
+  async sendMail(options: { to: string, subject: string, text?: string, html?: string, from?: string, replyTo?: string, attachments?: any[], host?: string }): Promise<void> {
     const market = MarketManager.getCurrentMarket(options.host);
     const from = options.from || market.email;
     
@@ -163,6 +164,7 @@ export class DirectMailService {
       subject: options.subject,
       text: options.text,
       html: options.html,
+      replyTo: options.replyTo,
       attachments: options.attachments
     });
 
@@ -201,6 +203,8 @@ export class DirectMailService {
   }
 
   async fetchInbox(limit: number = 20, folder: string = 'INBOX', user?: string, pass?: string, host?: string): Promise<MailHeader[]> {
+    // 🛡️ CHRIS-PROTOCOL: Lucide sanity check
+    const _icons = { Mail, ShieldCheck }; 
     console.log(`📬 DirectMailService: Fetching folder ${folder} for ${user || this.config.user}...`);
     const config = await this.getImapConfig(user, pass, host);
     

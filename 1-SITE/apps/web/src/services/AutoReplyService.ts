@@ -52,25 +52,25 @@ export class AutoReplyService {
     console.log(`🚀 Instant HTML autoreply verzenden naar ${to} voor markt ${market.market_code}...`);
 
     try {
-      const html = InvoiceReceivedTemplate({
-        userName: firstName || 'Partner',
-        invoiceNumber: invoiceNumber,
-        amount: amount,
-        companyName: market.company_name,
-        market: market.market_code, 
-        journey: 'agency'
-      });
-
-      await DirectMailService.getInstance().sendMail({
+      const { VumeEngine } = await import('@/lib/mail/VumeEngine');
+      
+      await VumeEngine.send({
         to,
         from: `"${senderName}" <${accountId}>`,
         subject: `Re: ${subject}`,
-        html: html
+        template: 'invoice-reply',
+        context: {
+          userName: firstName,
+          invoiceNumber: invoiceNumber,
+          amount: amount,
+          language: language
+        },
+        host: host
       });
 
-      console.log(`✅ HTML Template autoreply verzonden naar ${to}`);
+      console.log(`✅ VUME HTML Template autoreply verzonden naar ${to}`);
     } catch (error) {
-      console.error('❌ HTML Template AutoReply Error:', error);
+      console.error('❌ VUME HTML Template AutoReply Error:', error);
     }
   }
 

@@ -33,29 +33,19 @@ export async function POST(request: Request) {
 
     const magicLink = data.properties.action_link;
 
-    // 3. Verstuur de mail via onze EIGEN Email Service (Server-to-Server)
-    const emailServiceUrl = process.env.EMAIL_SERVICE_URL || 'https://voices-vercel.vercel.app';
+    // 3. Verstuur de mail via onze EIGEN VUME Engine (Voices Unified Mail Engine)
+    const { VumeEngine } = await import('@/lib/mail/VumeEngine');
     
-    // We gebruiken de interne mailbox route om de mail te versturen
-    // We voegen de SYSTEM_SECRET toe om de auth te bypassen voor deze systeemactie
-    const emailRes = await fetch(`${emailServiceUrl}/api/mailbox/send`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'x-system-secret': process.env.SYSTEM_SECRET || ''
+    await VumeEngine.send({
+      to: email,
+      subject: 'Inloggen op Voices.be',
+      template: 'magic-link',
+      context: {
+        link: magicLink,
+        language: 'nl' // Kan later dynamisch uit user profiel komen
       },
-      body: JSON.stringify({
-        to: email,
-        subject: 'Inloggen op Voices.be',
-        body: `Klik op de volgende link om in te loggen: ${magicLink}`
-      }),
+      host: request.headers.get('host') || 'voices.be'
     });
-
-    const emailData = await emailRes.json();
-    if (!emailRes.ok) {
-      console.error('📧 EMAIL SERVICE FAILURE:', emailData);
-      throw new Error(emailData.error || 'Email service error');
-    }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
