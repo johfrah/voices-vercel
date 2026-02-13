@@ -34,6 +34,8 @@ Elke cel in deze matrix verwijst naar een specifieke instructie in de `VOICY-*.m
 | **Artist** | Muzikant | Awareness | `Nieuwe release` | Musical Confidant |
 | **Portfolio** | Stemacteur | Awareness | `Direct boeken` | Premium Professional |
 | **Partner** | Reseller | Operation | `Whitelabel portaal` | Business Partner |
+| **Workshop** | Lead | Operation | `Workshop Beheer` | Berny (Studio Captain) |
+| **Studio** | Media Pro | Consideration | `Agenda bekijken` | Berny (Lead Orchestrator) |
 | **Backoffice** | Founder | Operation | `Winst-meter` | Accurate Analist |
 
 ---

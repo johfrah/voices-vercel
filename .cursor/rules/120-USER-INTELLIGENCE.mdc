@@ -26,7 +26,8 @@ Elke interactie wordt gedefinieerd door vier dimensies, opgeslagen in de Unified
 
 ### D. Intent (Predictive Router)
 - **Personas**: `agency_buyer`, `voice_talent`, `academy_student`, `partner`.
-- **Intents**: `order_voice`, `learn_skill`, `manage_portfolio`, `stream_meditation`.
+- **Agents**: `bob` (Architect), `anna` (Orchestrator), `moby` (Mobile), `laya` (Aesthetic), `mark` (Content), `berny` (Studio Captain).
+- **Intents**: `order_voice`, `learn_skill`, `manage_portfolio`, `stream_meditation`, `guard_workshop`.
 
 ---
 

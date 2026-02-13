@@ -17,7 +17,8 @@
     "watchdog": "ts-node 3-WETTEN/scripts/core/maintenance/watchdog.ts",
     "subtitles": "npx ts-node 3-WETTEN/scripts/subtitle-agent/transcribe-videos.ts",
     "chris": "npx ts-node 3-WETTEN/scripts/chris.ts",
-    "run-agent": "npx ts-node 3-WETTEN/scripts/orchestrator.ts"
+    "run-agent": "npx ts-node 3-WETTEN/scripts/orchestrator.ts",
+    "bob:live": "npx ts-node 3-WETTEN/scripts/orchestrator.ts live"
   },
   "keywords": [],
   "author": "",
@@ -26,9 +27,10 @@
   "devDependencies": {
     "@types/dotenv": "^6.1.1",
     "@types/node": "^25.2.1",
+    "@types/nodemailer": "^7.0.9",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.3",
-    "prettier": "^3.6.2",
+    "nodemailer": "^8.0.1",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"

@@ -146,7 +146,7 @@ body {
 }
 
 .va-badge {
-  @apply inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-[10px] font-black tracking-widest shadow-sm border border-black/5;
+  @apply inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-[10px] font-light tracking-widest shadow-sm border border-black/5 uppercase;
 }
 
 .va-icon-primary {
@@ -154,7 +154,7 @@ body {
 }
 
 .va-hero-title {
-  @apply text-7xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-4 relative z-20;
+  @apply text-7xl md:text-8xl font-light tracking-tighter leading-[0.85] mb-4 relative z-20;
 }
 
 .va-hmagic-text {
@@ -792,12 +792,12 @@ body {
 }
 
 .va-hero-btn-secondary {
-  @apply px-10 py-6 rounded-va-lg font-black tracking-widest text-[11px] border-2 border-black/5 hover:border-primary transition-all bg-white shadow-sm;
+  @apply px-10 py-6 rounded-va-lg font-light tracking-widest text-[11px] border-2 border-black/5 hover:border-primary transition-all bg-white shadow-sm uppercase;
 }
 
 /* ⚡ VA BUTTON SYSTEM */
 .va-btn-pro {
-  @apply bg-va-dark text-white font-black tracking-widest text-[10px] transition-all transform active:scale-95 flex items-center justify-center gap-2;
+  @apply bg-va-dark text-white font-light tracking-widest text-[10px] transition-all transform active:scale-95 flex items-center justify-center gap-2 uppercase;
   border-radius: theme('borderRadius.va-xl');
   padding: theme('spacing.va-btn-lg-y') theme('spacing.va-btn-lg-x');
   transition-timing-function: var(--va-bezier);
@@ -808,7 +808,7 @@ body {
 }
 
 .va-btn-secondary {
-  @apply bg-white text-va-black font-black tracking-widest text-[10px] transition-all transform active:scale-95 border-2 border-black/5 flex items-center justify-center gap-2;
+  @apply bg-white text-va-black font-light tracking-widest text-[10px] transition-all transform active:scale-95 border-2 border-black/5 flex items-center justify-center gap-2 uppercase;
   border-radius: theme('borderRadius.va-xl');
   padding: theme('spacing.va-btn-lg-y') theme('spacing.va-btn-lg-x');
   transition-timing-function: var(--va-bezier);

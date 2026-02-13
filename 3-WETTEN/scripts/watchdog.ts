@@ -156,23 +156,44 @@ class ChrisWatchdog {
     });
   }
 
+  async fixDir(dir: string) {
+    const files = fs.readdirSync(dir);
+    files.forEach(async file => {
+      const fullPath = path.join(dir, file);
+      const stats = fs.statSync(fullPath);
+      if (stats.isDirectory()) {
+        if (!fullPath.includes('node_modules') && !fullPath.includes('.next') && !fullPath.includes('.git')) {
+          this.fixDir(fullPath);
+        }
+      } else if (/\.(tsx|ts|js|jsx)$/.test(file)) {
+        await this.fix(fullPath);
+      }
+    });
+  }
+
   async fix(filePath: string) {
-    console.log(`🔧 CHRIS FIX: Herstellen van ${filePath}...`);
+    // console.log(`🔧 CHRIS FIX: Herstellen van ${filePath}...`); // Te veel log noise
     let content = fs.readFileSync(filePath, 'utf-8');
+    let originalContent = content;
 
     // Fix Uppercase Slop
     content = content.replace(/className="([^"]*)\buppercase\b([^"]*)"/g, (match, p1, p2) => {
-      console.log(`   ✅ Verwijderd: 'uppercase' uit className`);
+      console.log(`   ✅ [FIX] ${path.basename(filePath)}: Verwijderd 'uppercase'`);
       return `className="${p1}${p2}"`.replace(/\s\s+/g, ' ');
     });
 
     // Fix Raleway Mandate (simpele injectie van font-light als het een kop is zonder gewicht)
+    // Wees voorzichtig met deze regex om false positives te voorkomen
     content = content.replace(/<(h[1-6]|TextInstrument)([^>]*className="[^"]*)(?<!font-(light|extralight|thin|medium))([^"]*")/g, (match, p1, p2, p3, p4) => {
-      console.log(`   ✅ Toegevoegd: 'font-light' aan ${p1}`);
+      // Check of er al een font-weight class is (dubbele check voor veiligheid)
+      if (p2.includes('font-') || p4.includes('font-')) return match;
+      console.log(`   ✅ [FIX] ${path.basename(filePath)}: Toegevoegd 'font-light' aan ${p1}`);
       return `<${p1}${p2} font-light${p4}`;
     });
 
-    fs.writeFileSync(filePath, content);
+    if (content !== originalContent) {
+      fs.writeFileSync(filePath, content);
+    }
   }
 }
 
@@ -182,11 +203,11 @@ const target = process.argv[3] || '1-SITE/apps/web/src';
 const watchdog = new ChrisWatchdog();
 
 if (mode === 'fix') {
-  // Voor nu alleen fixen op een specifiek bestand voor veiligheid
+  console.log(`🔧 CHRIS FIX PROTOCOL: Start herstel op ${target}...`);
   if (fs.statSync(target).isFile()) {
     watchdog.fix(target).catch(console.error);
   } else {
-    console.log('🔴 Geef een specifiek bestand op voor --fix.');
+    watchdog.fixDir(target).catch(console.error);
   }
 } else if (mode === 'health') {
   watchdog.checkDatabaseHealth().then(ok => {

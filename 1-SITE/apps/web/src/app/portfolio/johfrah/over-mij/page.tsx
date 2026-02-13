@@ -22,7 +22,7 @@ export default function JohfrahAboutPage() {
       <SectionInstrument>
         <ContainerInstrument className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mb-24">
-            <div className="relative aspect-[3/4] rounded-[40px] overflow-hidden shadow-2xl sticky top-32">
+            <div className="relative aspect-[3/4] rounded-[20px] overflow-hidden shadow-aura sticky top-32">
               <Image 
                 src="/assets/common/branding/johfrah/johfrah-about.jpg" 
                 alt="Johfrah Lefebvre"
@@ -33,21 +33,21 @@ export default function JohfrahAboutPage() {
 
             <div className="space-y-12">
               <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[10px] font-light uppercase tracking-widest">
                   <Heart size={12} fill="currentColor" /> 
                   <VoiceglotText translationKey="portfolio.johfrah.about.badge" defaultText="Mijn Verhaal" />
                 </div>
                 
-                <HeadingInstrument level={1} className="text-6xl font-black leading-[0.9] tracking-tighter">
+                <HeadingInstrument level={1} className="text-6xl font-light leading-[0.9] tracking-tighter">
                   Verhalen vertellen <br /> zit in mijn bloed.
                 </HeadingInstrument>
                 
-                <TextInstrument className="text-xl text-va-black/70 leading-relaxed">
+                <TextInstrument className="text-xl text-va-black/70 leading-relaxed font-light">
                   Of het nu door een lens is of voor een microfoon: ik zoek altijd naar de emotie die mensen echt raakt.
                 </TextInstrument>
               </div>
 
-              <div className="prose prose-va max-w-none text-va-black/60 space-y-6">
+              <div className="prose prose-va max-w-none text-va-black/60 space-y-6 font-light">
                 <p>
                   Mijn weg begon achter de schermen. Als regisseur leerde ik hoe je een verhaal bouwt en de juiste toon zet. Die blik neem ik nu mee naar de studio.
                 </p>
@@ -62,27 +62,27 @@ export default function JohfrahAboutPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-primary">
-                    <Award size={20} />
-                    <TextInstrument className="font-black uppercase text-xs tracking-widest">Erkenning</TextInstrument>
+                    <Award size={20} strokeWidth={1.5} />
+                    <TextInstrument className="font-light uppercase text-xs tracking-widest">Erkenning</TextInstrument>
                   </div>
-                  <TextInstrument className="text-sm font-medium">
+                  <TextInstrument className="text-sm font-light">
                     Jarenlange ervaring als regisseur. Ik weet hoe je een verhaal vertelt dat blijft hangen.
                   </TextInstrument>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-primary">
-                    <Mic size={20} />
-                    <TextInstrument className="font-black uppercase text-xs tracking-widest">Vakmanschap</TextInstrument>
+                    <Mic size={20} strokeWidth={1.5} />
+                    <TextInstrument className="font-light uppercase text-xs tracking-widest">Vakmanschap</TextInstrument>
                   </div>
-                  <TextInstrument className="text-sm font-medium">
+                  <TextInstrument className="text-sm font-light">
                     Duizenden producties voor nationale en internationale merken. Van intieme meditaties tot knallende commercials.
                   </TextInstrument>
                 </div>
               </div>
 
               <div className="pt-12">
-                <ButtonInstrument as="a" href="/contact" className="va-btn-pro">
+                <ButtonInstrument as="a" href="/contact" className="va-btn-pro !rounded-[10px] !font-light !tracking-widest !uppercase">
                   Laten we samenwerken
                 </ButtonInstrument>
               </div>
