@@ -35,7 +35,7 @@ export async function sendTestMails(recipient: string) {
         date: '25 februari 2026',
         time: '14:00',
         location: 'Voices Studio, Gent',
-        headerImage: 'https://www.voices.be/assets/studio/workshops/masterclass-stemacteren-header.jpg', // Voorbeeld van specifieke header
+        headerImage: 'https://voices-vercel.vercel.app/assets/common/branding/email/headers/default-header.jpg',
         language: 'nl'
       },
       host: 'voices.be'

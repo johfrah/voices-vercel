@@ -114,7 +114,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
       {/* 2. Smart Mix Control (Bento Small) */}
       <div className="bg-white p-8 rounded-[24px] shadow-sm border border-gray-50 flex flex-col gap-6">
         <div>
-          <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <h3 className="text-[15px] font-bold text-gray-900 mb-4 flex items-center gap-2">
             <Music size={16} className="text-primary" /> Smart Mix
           </h3>
           
@@ -153,7 +153,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
           </div>
         </div>
 
-        <button className="mt-auto w-full py-4 bg-primary text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+        <button className="mt-auto w-full py-4 bg-primary text-white rounded-2xl font-bold text-[15px] flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
           <CheckCircle2 strokeWidth={1.5} size={18} /> <VoiceglotText translationKey="common.approve" defaultText="Goedkeuren" />
         </button>
       </div>
@@ -163,13 +163,13 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
         <div className="bg-gray-900 p-6 rounded-[24px] text-white flex items-center justify-between group cursor-pointer hover:bg-black transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-              <MessageSquare size={18} />
+              <MessageSquare strokeWidth={1.5} size={18} />
             </div>
             <div>
               <span className="block text-[15px] font-bold opacity-60 tracking-widest">
                 <VoiceglotText translationKey="common.feedback" defaultText="Feedback" />
               </span>
-              <span className="text-sm font-medium">
+              <span className="text-[15px] font-medium">
                 <VoiceglotText translationKey="audio.review.leave_comment" defaultText="Laat een opmerking achter" />
               </span>
             </div>
@@ -185,7 +185,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
               <span className="block text-[15px] font-bold text-gray-400 tracking-widest">
                 <VoiceglotText translationKey="common.revision" defaultText="Revisie" />
               </span>
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-[15px] font-medium text-gray-700">
                 <VoiceglotText translationKey="audio.review.request_retake" defaultText="Vraag een retake aan" />
               </span>
             </div>
@@ -201,7 +201,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
               <span className="block text-[15px] font-bold text-gray-400 tracking-widest">
                 <VoiceglotText translationKey="common.export" defaultText="Export" />
               </span>
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-[15px] font-medium text-gray-700">
                 <VoiceglotText translationKey="audio.review.download_all" defaultText="Download alle formaten" />
               </span>
             </div>

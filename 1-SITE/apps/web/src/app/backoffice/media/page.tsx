@@ -26,18 +26,11 @@ export default function MediaPage() {
           <ContainerInstrument className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto">
             <ShieldAlert className="text-red-500" size={32} />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-2xl font-black tracking-tighter">
-            <VoiceglotText translationKey="admin.access_denied.title" defaultText="Toegang Geweigerd" />
-          </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-medium leading-relaxed">
-            <VoiceglotText 
+          <HeadingInstrument level={1} className="text-2xl font-black tracking-tighter"><VoiceglotText translationKey="admin.access_denied.title" defaultText="Toegang Geweigerd" /><TextInstrument className="text-va-black/40 font-medium leading-relaxed"><VoiceglotText 
               translationKey="admin.access_denied.text" 
               defaultText="Deze sectie is uitsluitend toegankelijk voor beheer." 
-            />
-          </TextInstrument>
-          <ButtonInstrument as="a" href="/" className="va-btn-pro inline-block">
-            <VoiceglotText translationKey="common.back_to_home" defaultText="Terug" />
-          </ButtonInstrument>
+            /></TextInstrument></HeadingInstrument>
+          <ButtonInstrument as="a" href="/" className="va-btn-pro inline-block"><VoiceglotText translationKey="common.back_to_home" defaultText="Terug" /></ButtonInstrument>
         </SectionInstrument>
       </PageWrapperInstrument>
     );

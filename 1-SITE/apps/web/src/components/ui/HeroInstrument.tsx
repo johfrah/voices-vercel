@@ -23,7 +23,7 @@ export const HeroInstrument: React.FC = () => {
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="relative z-10">
           <div className="va-hero-badge inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest border border-primary/10 mb-8">
-            <Sparkles size={12} fill="currentColor" /> <VoiceglotText translationKey="home.hero.badge" defaultText="De beste stemmen van de Benelux" />
+            <Sparkles strokeWidth={1.5} size={12} fill="currentColor" /> <VoiceglotText translationKey="home.hero.badge" defaultText="De beste stemmen van de Benelux" />
           </div>
           <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black mb-8">
             <VoiceglotText translationKey="home.hero.title_part1" defaultText="Vind de " />
@@ -37,9 +37,7 @@ export const HeroInstrument: React.FC = () => {
             <VoiceglotText translationKey="home.hero.subtitle" defaultText="Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap." />
           </p>
           <div className="flex items-center gap-4">
-            <Link href={ctaHref} className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px]">
-              <VoiceglotText translationKey="home.hero.cta_primary" defaultText={isPortfolio ? "Bekijk mijn stemmen" : "Vind jouw stem"} />
-            </Link>
+            <Link href={ctaHref} className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px]"><VoiceglotText translationKey="home.hero.cta_primary" defaultText={isPortfolio ? "Bekijk mijn stemmen" : "Vind jouw stem"} /></Link>
           </div>
         </div>
 

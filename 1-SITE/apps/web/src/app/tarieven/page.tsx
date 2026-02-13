@@ -16,12 +16,8 @@ export default function TarievenPage() {
       
       <ContainerInstrument className="py-48 relative z-10">
         <header className="mb-32 max-w-5xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
-          <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-8 block ">
-            <VoiceglotText translationKey="pricing.pretitle" defaultText="Transparante prijzen" />
-          </TextInstrument>
-          <HeadingInstrument level={1} className="text-[8vw] lg:text-[120px] font-light tracking-tighter mb-12 leading-[0.85] text-va-black">
-            <VoiceglotText translationKey="pricing.title" defaultText="Tarieven" />
-          </HeadingInstrument>
+          <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-8 block "><VoiceglotText translationKey="pricing.pretitle" defaultText="Transparante prijzen" /></TextInstrument>
+          <HeadingInstrument level={1} className="text-[8vw] lg:text-[120px] font-light tracking-tighter mb-12 leading-[0.85] text-va-black"><VoiceglotText translationKey="pricing.title" defaultText="Tarieven" /></HeadingInstrument>
           <div className="w-32 h-1 bg-black/5 rounded-full" />
         </header>
 

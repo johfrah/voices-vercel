@@ -26,9 +26,9 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
 
   const stats = [
     { label: 'CVR (Klant-focus)', value: '4.2%', change: '+0.8%', icon: <TrendingUp size={14} /> },
-    { label: 'Sync Status', value: '100%', change: 'Stabiel', icon: <ShieldCheck size={14} /> },
-    { label: 'AI Nauwkeurigheid', value: '92%', change: '+5%', icon: <Zap size={14} /> },
-    { label: 'Actieve Sessies', value: '12', change: 'Live', icon: <Activity size={14} /> },
+    { label: 'Sync Status', value: '100%', change: 'Stabiel', icon: <ShieldCheck strokeWidth={1.5} size={14} /> },
+    { label: 'AI Nauwkeurigheid', value: '92%', change: '+5%', icon: <Zap strokeWidth={1.5} size={14} /> },
+    { label: 'Actieve Sessies', value: '12', change: 'Live', icon: <Activity strokeWidth={1.5} size={14} /> },
   ];
 
   const handleOptimize = () => {
@@ -57,7 +57,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                 <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                   <BarChart3 size={18} className="text-white" />
                 </div>
-                <h2 className="text-sm font-black tracking-[0.2em] text-white">Spotlight Cockpit</h2>
+                <h2 className="text-[15px] font-light tracking-[0.2em] text-white Raleway">Spotlight Cockpit</h2>
               </div>
               <button 
                 onClick={() => { playClick('soft'); onClose(); }}
@@ -73,7 +73,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                 <button
                   key={tab}
                   onClick={() => { playClick('soft'); setActiveTab(tab); }}
-                  className={`flex-1 py-2 text-[15px] font-black uppercase tracking-widest rounded-lg transition-all ${
+                  className={`flex-1 py-2 text-[15px] font-black uppercase tracking-widest rounded-[20px] transition-all ${
                     activeTab === tab ? 'bg-white/10 text-white shadow-sm' : 'text-white/30 hover:text-white/50'
                   }`}
                 >
@@ -103,11 +103,11 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-[15px] font-black tracking-widest text-white/40">Systeem Status</h3>
+                  <h3 className="text-[15px] font-light tracking-widest text-white/40 Raleway">Systeem Status</h3>
                   <div className="bg-primary/10 border border-primary/20 p-6 rounded-2xl space-y-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 text-primary">
-                        <Sparkles size={16} />
+                        <Sparkles strokeWidth={1.5} size={16} />
                         <span className="text-[15px] font-black tracking-widest">Systeem Optimalisatie</span>
                       </div>
                       <div className="text-[15px] font-black text-white/40 tracking-widest">Gereed</div>
@@ -127,7 +127,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                         </>
                       ) : (
                         <>
-                          <Zap size={14} fill="currentColor" />
+                          <Zap strokeWidth={1.5} size={14} fill="currentColor" />
                           Optimalisaties toepassen
                         </>
                       )}
@@ -139,7 +139,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
 
             {activeTab === 'sync' && (
               <div className="space-y-4">
-                <h3 className="text-[15px] font-black tracking-widest text-white/40">Atomic Sync Logs</h3>
+                <h3 className="text-[15px] font-light tracking-widest text-white/40 Raleway">Atomic Sync Logs</h3>
                 <div className="space-y-2">
                   {[
                     { msg: 'Voiceglot: agency.hero.title bijgewerkt', time: '2m ago', type: 'manual' },

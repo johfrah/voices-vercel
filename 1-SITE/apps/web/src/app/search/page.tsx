@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  InputInstrument 
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { Search, Mic, BookOpen, ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, BookOpen, Loader2, Mic } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 /**
  * 🔍 GLOBAL SEARCH PAGE (NUCLEAR 2026)
@@ -51,68 +51,64 @@ export default function SearchPage() {
         
         {/* Header */}
         <SectionInstrument className="mb-16">
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6">
-            <VoiceglotText translationKey="search.title" defaultText="Zoekresultaten" />
-          </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-medium text-xl">
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6"><VoiceglotText translationKey="search.title" defaultText="Zoekresultaten" /></HeadingInstrument>
+          <TextInstrument className="text-va-black/40 font-light text-xl">
             {query ? (
-              <>Je zocht op: <span className="text-va-black font-black">&quot;{query}&quot;</span></>
+              <ContainerInstrument as="span">Je zocht op: <TextInstrument as="span" className="text-va-black font-light">&quot;{query}&quot;</TextInstrument></ContainerInstrument>
             ) : (
-              "Typ een zoekopdracht om resultaten te zien."
+              <VoiceglotText translationKey="search.no_query" defaultText="Typ een zoekopdracht om resultaten te zien." />
             )}
           </TextInstrument>
         </SectionInstrument>
 
         {loading ? (
-          <div className="py-20 flex flex-col items-center justify-center space-y-4">
+          <ContainerInstrument className="py-20 flex flex-col items-center justify-center space-y-4">
             <Loader2 className="animate-spin text-primary" size={40} />
-            <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/20">Resultaten ophalen...</TextInstrument>
-          </div>
+            <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/20"><VoiceglotText translationKey="auto.page.resultaten_ophalen__.00c214" defaultText="Resultaten ophalen..." /></TextInstrument>
+          </ContainerInstrument>
         ) : query ? (
-          <div className="space-y-16">
+          <ContainerInstrument className="space-y-16">
             {/* Voices Results */}
-            <section className="space-y-8">
-              <HeadingInstrument level={2} className="text-[15px] font-black tracking-[0.2em] text-va-black/20 flex items-center gap-3">
-                <Mic size={14} /> Stemacteurs
-              </HeadingInstrument>
+            <SectionInstrument className="space-y-8">
+              <HeadingInstrument level={2} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 flex items-center gap-3">
+                <Mic size={14} /><VoiceglotText translationKey="auto.page.stemacteurs.72986a" defaultText="Stemacteurs" /></HeadingInstrument>
               {results.voices?.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {results.voices.map((voice: any) => (
-                    <Link key={voice.id} href={`/voice/${voice.slug}`} className="bg-white p-6 rounded-[32px] border border-black/5 shadow-sm hover:shadow-aura transition-all flex items-center gap-4 group">
-                      <div className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center font-black text-va-black/20 ">{voice.firstName[0]}</div>
-                      <div className="flex-1">
-                        <TextInstrument className="text-sm font-black tracking-tight">{voice.firstName} {voice.lastName}</TextInstrument>
-                        <TextInstrument className="text-[15px] font-bold text-primary tracking-widest">{voice.nativeLang} Native</TextInstrument>
-                      </div>
-                      <ArrowRight size={16} className="text-va-black/10 group-hover:text-primary transition-colors" />
-                    </Link>
+                    <ButtonInstrument as={Link} key={voice.id} href={`/voice/${voice.slug}`} className="bg-white p-6 rounded-[32px] border border-black/5 shadow-sm hover:shadow-aura transition-all flex items-center gap-4 group">
+                      <ContainerInstrument className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center font-light text-va-black/20 ">{voice.firstName[0]}</ContainerInstrument>
+                      <ContainerInstrument className="flex-1">
+                        <TextInstrument className="text-[15px] font-light tracking-tight">{voice.firstName} {voice.lastName}</TextInstrument>
+                        <TextInstrument className="text-[15px] font-light text-primary tracking-widest">{voice.nativeLang} Native</TextInstrument>
+                      </ContainerInstrument>
+                      <ArrowRight strokeWidth={1.5} size={16} className="text-va-black/10 group-hover:text-primary transition-colors" />
+                    </ButtonInstrument>
                   ))}
-                </div>
+                </ContainerInstrument>
               ) : (
-                <TextInstrument className="text-sm font-medium text-va-black/30 italic">Geen stemmen gevonden.</TextInstrument>
+                <TextInstrument className="text-[15px] font-light text-va-black/30 italic"><VoiceglotText translationKey="auto.page.geen_stemmen_gevonde.f55930" defaultText="Geen stemmen gevonden." /></TextInstrument>
               )}
-            </section>
+            </SectionInstrument>
 
             {/* Articles Results */}
-            <section className="space-y-8">
-              <HeadingInstrument level={2} className="text-[15px] font-black tracking-[0.2em] text-va-black/20 flex items-center gap-3">
-                <BookOpen size={14} /> Artikelen & Nieuws
-              </HeadingInstrument>
+            <SectionInstrument className="space-y-8">
+              <HeadingInstrument level={2} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 flex items-center gap-3">
+                <BookOpen strokeWidth={1.5} size={14} /><VoiceglotText translationKey="auto.page.artikelen___nieuws.2c2839" defaultText="Artikelen & Nieuws" /></HeadingInstrument>
               {results.articles?.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {results.articles.map((article: any) => (
-                    <Link key={article.id} href={`/article/${article.slug}`} className="bg-white p-8 rounded-[32px] border border-black/5 shadow-sm hover:shadow-aura transition-all group">
-                      <TextInstrument className="text-[15px] font-black text-va-black/20 tracking-widest mb-4">{new Date(article.createdAt).toLocaleDateString('nl-BE')}</TextInstrument>
-                      <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 group-hover:text-primary transition-colors">{article.title}</HeadingInstrument>
-                      <TextInstrument className="text-sm text-va-black/40 line-clamp-2 font-light">{article.excerpt}</TextInstrument>
-                    </Link>
+                    <ButtonInstrument as={Link} key={article.id} href={`/article/${article.slug}`} className="bg-white p-8 rounded-[32px] border border-black/5 shadow-sm hover:shadow-aura transition-all group">
+                      <TextInstrument className="text-[15px] font-light text-va-black/20 tracking-widest mb-4">{new Date(article.createdAt).toLocaleDateString('nl-BE')}</TextInstrument>
+                      <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2 group-hover:text-primary transition-colors">{article.title}</HeadingInstrument>
+                      <TextInstrument className="text-[15px] text-va-black/40 line-clamp-2 font-light">{article.excerpt}</TextInstrument>
+                    </ButtonInstrument>
                   ))}
-                </div>
+                </ContainerInstrument>
               ) : (
-                <TextInstrument className="text-sm font-medium text-va-black/30 italic">Geen artikelen gevonden.</TextInstrument>
+                <TextInstrument className="text-[15px] font-light text-va-black/30 italic"><VoiceglotText translationKey="auto.page.geen_artikelen_gevon.3bda5b" defaultText="Geen artikelen gevonden." /></TextInstrument>
               )}
-            </section>
-          </div>
+            </SectionInstrument>
+          </ContainerInstrument>
         ) : null}
 
       </ContainerInstrument>

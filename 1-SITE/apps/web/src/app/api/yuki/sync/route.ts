@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
 import { db } from '@db';
-import { orders, users } from '@db/schema';
+import { orders } from '@db/schema';
 import { eq } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
 
 /**
  * YUKI AUTOMATION BRIDGE (NUCLEAR LOGIC 2026)
@@ -32,7 +32,8 @@ export async function POST(request: Request) {
     // 2. Prepare Yuki Payload (Simulated for architecture demo)
     // In production, this would use a SOAP/REST client with process.env.YUKI_API_KEY
     const yukiPayload = {
-      InvoiceNumber: `VOICES-${new Date().getFullYear()}-${order.wpOrderId}`,
+      Reference: `Order-${order.wpOrderId}`,
+      Subject: `Order-${order.wpOrderId}`,
       Contact: {
         Name: order.user?.email || 'Gastgebruiker',
         Email: order.user?.email
@@ -43,8 +44,7 @@ export async function POST(request: Request) {
           Amount: order.total,
           VatCode: 'HIGH'
         }
-      ],
-      Reference: `Order ${order.wpOrderId} via Voices OS`
+      ]
     };
 
     console.log('📤 Sending to Yuki:', yukiPayload);

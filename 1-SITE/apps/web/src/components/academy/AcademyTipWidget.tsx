@@ -67,23 +67,17 @@ export const AcademyTipWidget: React.FC<{ userId: number }> = ({ userId }) => {
             {getIcon()}
           </div>
           <div>
-            <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">
-              <VoiceglotText translationKey={`academy.tips.cat.${tip.category}`} defaultText={getCategoryLabel()} />
-            </TextInstrument>
-            <HeadingInstrument level={4} className="text-xl font-black tracking-tighter leading-none">
-              <VoiceglotText translationKey={`academy.tips.title.${tip.id}`} defaultText={tip.title} />
-            </HeadingInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey={`academy.tips.cat.${tip.category}`} defaultText={getCategoryLabel()} /></TextInstrument>
+            <HeadingInstrument level={4} className="text-xl font-black tracking-tighter leading-none"><VoiceglotText translationKey={`academy.tips.title.${tip.id}`} defaultText={tip.title} /></HeadingInstrument>
           </div>
         </div>
       </div>
 
-      <TextInstrument className="text-sm text-va-black/60 font-medium leading-relaxed mb-6">
-        <VoiceglotText translationKey={`academy.tips.content.${tip.id}`} defaultText={tip.content} />
-      </TextInstrument>
+      <TextInstrument className="text-[15px] text-va-black/60 font-medium leading-relaxed mb-6"><VoiceglotText translationKey={`academy.tips.content.${tip.id}`} defaultText={tip.content} /></TextInstrument>
 
       <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-primary group-hover:gap-4 transition-all">
         <VoiceglotText translationKey="academy.tips.next" defaultText="Volgende tip" />
-        <ArrowRight size={12} />
+        <ArrowRight strokeWidth={1.5} size={12} />
       </div>
     </ContainerInstrument>
   );

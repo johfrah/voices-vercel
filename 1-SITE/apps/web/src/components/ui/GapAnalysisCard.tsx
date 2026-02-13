@@ -6,6 +6,7 @@ import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { CheckCircle2, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 interface AssetGap {
   id: string;
@@ -54,19 +55,16 @@ export const GapAnalysisCard: React.FC = () => {
         <div className="space-y-8">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-              <Sparkles size={20} className="text-white" />
+              <Sparkles strokeWidth={1.5} size={20} className="text-white" />
             </div>
-            <h4 className="text-[15px] font-black tracking-[0.2em] text-primary">
-              Portfolio Analyse
-            </h4>
+            <h4 className="text-[15px] font-black tracking-[0.2em] text-primary"><VoiceglotText translationKey="auto.gapanalysiscard.portfolio_analyse.4f3032" defaultText="Portfolio Analyse" /></h4>
           </div>
 
           <div className="space-y-4">
             <h3 className="text-4xl font-black tracking-tighter leading-none">
               Maak de bereikbaarheid van <br />
-              <span className="text-primary">{getPlaceholderValue('company_name')}</span> compleet.
-            </h3>
-            <p className="text-white/40 text-sm font-medium max-w-md">
+              <span className="text-primary">{getPlaceholderValue('company_name')}</span><VoiceglotText translationKey="auto.gapanalysiscard.compleet_.3a9cd5" defaultText="compleet." /></h3>
+            <p className="text-white/40 text-[15px] font-medium max-w-md">
               Op basis van uw sector ({sector}) adviseren wij de volgende ontbrekende berichten:
             </p>
           </div>
@@ -90,9 +88,7 @@ export const GapAnalysisCard: React.FC = () => {
                   <span className="text-[15px] font-black tracking-widest">{req.label}</span>
                 </div>
                 {!hasAsset(req.id) && (
-                  <span className="text-[15px] font-black bg-primary px-2 py-1 rounded-full tracking-tighter">
-                    Aanbevolen
-                  </span>
+                  <span className="text-[15px] font-black bg-primary px-2 py-1 rounded-full tracking-tighter"><VoiceglotText translationKey="auto.gapanalysiscard.aanbevolen.991a0b" defaultText="Aanbevolen" /></span>
                 )}
               </div>
             ))}
@@ -104,10 +100,10 @@ export const GapAnalysisCard: React.FC = () => {
           className="mt-12 flex items-center justify-between w-full p-6 bg-primary rounded-2xl hover:bg-white hover:text-va-black transition-all duration-500 group/btn"
         >
           <div className="text-left">
-            <p className="text-[15px] font-black tracking-widest opacity-60 mb-1">Direct Bestellen</p>
-            <h5 className="text-sm font-black tracking-tight">Configureer ontbrekende assets</h5>
+            <p className="text-[15px] font-black tracking-widest opacity-60 mb-1"><VoiceglotText translationKey="auto.gapanalysiscard.direct_bestellen.fd1bd3" defaultText="Direct Bestellen" /></p>
+            <h5 className="text-[15px] font-black tracking-tight"><VoiceglotText translationKey="auto.gapanalysiscard.configureer_ontbreke.8ef085" defaultText="Configureer ontbrekende assets" /></h5>
           </div>
-          <ArrowRight className="group-hover/btn:translate-x-2 transition-transform" />
+          <ArrowRight strokeWidth={1.5} className="group-hover/btn:translate-x-2 transition-transform" />
         </button>
       </div>
 

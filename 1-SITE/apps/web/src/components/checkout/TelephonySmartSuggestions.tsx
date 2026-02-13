@@ -71,10 +71,10 @@ export const TelephonySmartSuggestions: React.FC = () => {
     <div className="bg-va-off-white/50 rounded-[40px] p-8 border-none shadow-none space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-          <Sparkles size={20} />
+          <Sparkles strokeWidth={1.5} size={20} />
         </div>
         <div>
-          <h3 className="text-sm font-black tracking-widest">
+          <h3 className="text-[15px] font-black tracking-widest">
             <VoiceglotText translationKey="checkout.telephony.suggestions.title" defaultText="Smart Suggestions" />
           </h3>
           <p className="text-[15px] font-bold text-va-black/40 tracking-wider">
@@ -92,7 +92,7 @@ export const TelephonySmartSuggestions: React.FC = () => {
           value={companyName}
           onChange={(e) => handleCompanyChange(e.target.value)}
           placeholder="Bijv. Voices.be"
-          className="w-full bg-white border-none rounded-xl py-4 px-6 text-sm font-bold shadow-sm focus:ring-2 focus:ring-primary/20 transition-all"
+          className="w-full bg-white border-none rounded-xl py-4 px-6 text-[15px] font-bold shadow-sm focus:ring-2 focus:ring-primary/20 transition-all"
         />
       </div>
 
@@ -113,7 +113,7 @@ export const TelephonySmartSuggestions: React.FC = () => {
             </div>
             <div className="ml-4">
               {copiedId === template.id ? (
-                <Check size={16} className="text-green-500 group-hover:text-white" />
+                <Check strokeWidth={1.5} size={16} className="text-green-500 group-hover:text-white" />
               ) : (
                 <Copy size={16} className="opacity-20 group-hover:opacity-100" />
               )}

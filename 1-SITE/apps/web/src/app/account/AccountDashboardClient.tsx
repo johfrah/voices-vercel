@@ -1,33 +1,30 @@
 "use client";
 
+import { AccountHeroInstrument } from '@/components/ui/AccountHeroInstrument';
+import { BentoCard } from '@/components/ui/BentoGrid';
+import {
+    ContainerInstrument,
+    HeadingInstrument,
+    LoadingScreenInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
+} from '@/components/ui/LayoutInstruments';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+    Activity,
+    ArrowRight,
+    Brain,
+    Mail,
+    Settings,
+    ShieldCheck,
+    ShoppingBag,
+    Zap
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { LoginPageClient } from '../auth/login/LoginPageClient';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  LoadingScreenInstrument,
-  HeadingInstrument,
-  TextInstrument
-} from '@/components/ui/LayoutInstruments';
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { 
-  User, 
-  Settings, 
-  ShoppingBag, 
-  Mail, 
-  ShieldCheck, 
-  ArrowRight, 
-  Zap, 
-  Star, 
-  Activity,
-  Brain,
-  TrendingUp
-} from 'lucide-react';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
-import { AccountHeroInstrument } from '@/components/ui/AccountHeroInstrument';
 
 export default function AccountDashboardClient() {
   const { user, isAdmin, isLoading, isAuthenticated, logout } = useAuth();
@@ -71,21 +68,17 @@ export default function AccountDashboardClient() {
             <BentoCard 
               span="sm" 
               className="va-card-dna p-12"
-              onClick={() => router.push('/account/mailbox')}
+              onClick={() => router.push('/admin/mailbox')}
             >
               <ContainerInstrument className="space-y-4">
                 <ContainerInstrument className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-8 bg-blue-500 shadow-lg shadow-blue-500/20">
-                  <Mail size={24} className="text-white" />
+                  <Mail strokeWidth={1.5} size={24} className="text-white" />
                 </ContainerInstrument>
-                <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4">
-                  <VoiceglotText translationKey="account.card.mailbox.title" defaultText="Mailbox" />
-                </HeadingInstrument>
-                <TextInstrument className="text-va-black/40 font-light max-w-xs">
-                  <VoiceglotText translationKey="account.card.mailbox.desc" defaultText="Beheer je beveiligde communicatie." />
-                </TextInstrument>
+                <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4"><VoiceglotText translationKey="account.card.mailbox.title" defaultText="Mailbox" /><TextInstrument className="text-va-black/40 font-light max-w-xs"><VoiceglotText translationKey="account.card.mailbox.desc" defaultText="Beheer je beveiligde communicatie." /></TextInstrument></HeadingInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-blue-500 ">
-                <VoiceglotText translationKey="account.card.mailbox.cta" defaultText="Open Inbox" /> <ArrowRight size={14} />
+                <VoiceglotText translationKey="account.card.mailbox.cta" defaultText="Open Inbox" />
+                <ArrowRight strokeWidth={1.5} size={14} />
               </ContainerInstrument>
             </BentoCard>
           )}
@@ -102,13 +95,14 @@ export default function AccountDashboardClient() {
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4 text-white">
                 <VoiceglotText translationKey="account.card.orders.title" defaultText="Bestellingen" />
+                <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed max-w-xs">
+                  <VoiceglotText translationKey="account.card.orders.desc" defaultText="Bekijk de status van je projecten." />
+                </TextInstrument>
               </HeadingInstrument>
-              <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed max-w-xs">
-                <VoiceglotText translationKey="account.card.orders.desc" defaultText="Bekijk de status van je projecten." />
-              </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-white ">
-              <VoiceglotText translationKey="account.card.orders.cta" defaultText="Bekijk Orders" /> <ArrowRight size={14} />
+              <VoiceglotText translationKey="account.card.orders.cta" defaultText="Bekijk Orders" />
+              <ArrowRight strokeWidth={1.5} size={14} />
             </ContainerInstrument>
           </BentoCard>
 
@@ -124,13 +118,14 @@ export default function AccountDashboardClient() {
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4">
                 <VoiceglotText translationKey="account.card.settings.title" defaultText="Instellingen" />
+                <TextInstrument className="text-va-black/40 font-light max-w-xs">
+                  <VoiceglotText translationKey="account.card.settings.desc" defaultText="Beheer je profiel en voorkeuren." />
+                </TextInstrument>
               </HeadingInstrument>
-              <TextInstrument className="text-va-black/40 font-light max-w-xs">
-                <VoiceglotText translationKey="account.card.settings.desc" defaultText="Beheer je profiel en voorkeuren." />
-              </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-primary ">
-              <VoiceglotText translationKey="account.card.settings.cta" defaultText="Aanpassen" /> <ArrowRight size={14} />
+              <VoiceglotText translationKey="account.card.settings.cta" defaultText="Aanpassen" />
+              <ArrowRight strokeWidth={1.5} size={14} />
             </ContainerInstrument>
           </BentoCard>
 
@@ -142,17 +137,18 @@ export default function AccountDashboardClient() {
           >
             <ContainerInstrument className="space-y-4">
               <ContainerInstrument className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-8 bg-primary shadow-lg shadow-primary/20">
-                <Zap size={24} className="text-white" />
+                <Zap strokeWidth={1.5} size={24} className="text-white" />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4">
                 <VoiceglotText translationKey="account.card.partner.title" defaultText="Partner" />
+                <TextInstrument className="text-va-black/40 font-light max-w-xs">
+                  <VoiceglotText translationKey="account.card.partner.desc" defaultText="Exclusieve tools voor partners." />
+                </TextInstrument>
               </HeadingInstrument>
-              <TextInstrument className="text-va-black/40 font-light max-w-xs">
-                <VoiceglotText translationKey="account.card.partner.desc" defaultText="Exclusieve tools voor partners." />
-              </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-primary ">
-              <VoiceglotText translationKey="account.card.partner.cta" defaultText="Open" /> <ArrowRight size={14} />
+              <VoiceglotText translationKey="account.card.partner.cta" defaultText="Open" />
+              <ArrowRight strokeWidth={1.5} size={14} />
             </ContainerInstrument>
           </BentoCard>
 
@@ -169,9 +165,9 @@ export default function AccountDashboardClient() {
               <ContainerInstrument>
                 <div className="flex justify-between items-start mb-8">
                   <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
-                    <Activity size={24} />
+                    <Activity strokeWidth={1.5} size={24} />
                   </div>
-                  <ContainerInstrument className={`px-3 py-1 rounded-full text-[15px] font-light uppercase tracking-widest ${
+                  <ContainerInstrument className={`px-3 py-1 rounded-full text-[15px] font-light tracking-widest ${
                     customerDNA.intelligence.leadVibe === 'burning' ? 'bg-red-500 text-white' :
                     customerDNA.intelligence.leadVibe === 'hot' ? 'bg-orange-500 text-white' :
                     'bg-va-off-white text-va-black/40'
@@ -179,12 +175,7 @@ export default function AccountDashboardClient() {
                     {customerDNA.intelligence.leadVibe} <VoiceglotText translationKey="common.vibe" defaultText="vibe" />
                   </ContainerInstrument>
                 </div>
-                <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-2">
-                  <VoiceglotText translationKey="account.dna.activity.title" defaultText="Activiteit" />
-                </HeadingInstrument>
-                <TextInstrument className="text-va-black/40 text-[15px] font-light">
-                  <VoiceglotText translationKey="account.dna.activity.text" defaultText={`Je hebt ${customerDNA.stats.orderCount} projecten afgerond.`} />
-                </TextInstrument>
+                <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-2"><VoiceglotText translationKey="account.dna.activity.title" defaultText="Activiteit" /><TextInstrument className="text-va-black/40 text-[15px] font-light"><VoiceglotText translationKey="account.dna.activity.text" defaultText={`Je hebt ${customerDNA.stats.orderCount} projecten afgerond.`} /></TextInstrument></HeadingInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="pt-8 border-t border-black/5 mt-8">
                 <div className="flex justify-between items-center">
@@ -202,9 +193,7 @@ export default function AccountDashboardClient() {
             <BentoCard span="lg" className="bg-va-black text-white p-12 relative overflow-hidden group va-interactive">
               <ContainerInstrument className="relative z-10">
                 <Brain className="text-primary mb-8" size={40} />
-                <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-4">
-                  <VoiceglotText translationKey="account.dna.title" defaultText="Customer DNA" />
-                </HeadingInstrument>
+                <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-4"><VoiceglotText translationKey="account.dna.title" defaultText="Customer DNA" /></HeadingInstrument>
                 <div className="grid grid-cols-2 gap-8 mt-8">
                   <div className="space-y-2">
                     <span className="text-[15px] font-light tracking-widest text-white/20 block ">
@@ -241,24 +230,16 @@ export default function AccountDashboardClient() {
           <ContainerInstrument className="flex flex-col md:flex-row gap-12">
             <ContainerInstrument className="flex-1 space-y-6">
               <ContainerInstrument className="flex items-center gap-3 text-primary">
-                <ShieldCheck className="text-primary" size={32} />
-                <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter">
-                  <VoiceglotText translationKey="account.security.title" defaultText="Beveiliging & Privacy" />
-                </HeadingInstrument>
+                <ShieldCheck strokeWidth={1.5} className="text-primary" size={32} />
+                <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter"><VoiceglotText translationKey="account.security.title" defaultText="Beveiliging & Privacy" /></HeadingInstrument>
               </ContainerInstrument>
-              <TextInstrument className="text-va-black/40 font-light leading-relaxed max-w-md">
-                <VoiceglotText 
+              <TextInstrument className="text-va-black/40 font-light leading-relaxed max-w-md"><VoiceglotText 
                   translationKey="account.security.text" 
                   defaultText="Je data is versleuteld. We delen nooit informatie met derden zonder jouw expliciete toestemming." 
-                />
-              </TextInstrument>
+                /></TextInstrument>
               <ContainerInstrument className="flex gap-4">
-                <ContainerInstrument className="px-4 py-2 bg-white rounded-xl border border-black/5 text-[15px] font-light tracking-widest text-va-black/40 ">
-                  <VoiceglotText translationKey="account.security.badge1" defaultText="Privacy First" />
-                </ContainerInstrument>
-                <ContainerInstrument className="px-4 py-2 bg-white rounded-xl border border-black/5 text-[15px] font-light tracking-widest text-va-black/40 ">
-                  <VoiceglotText translationKey="account.security.badge2" defaultText="Veilig" />
-                </ContainerInstrument>
+                <ContainerInstrument className="px-4 py-2 bg-white rounded-xl border border-black/5 text-[15px] font-light tracking-widest text-va-black/40 "><VoiceglotText translationKey="account.security.badge1" defaultText="Privacy First" /></ContainerInstrument>
+                <ContainerInstrument className="px-4 py-2 bg-white rounded-xl border border-black/5 text-[15px] font-light tracking-widest text-va-black/40 "><VoiceglotText translationKey="account.security.badge2" defaultText="Veilig" /></ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             

@@ -24,21 +24,14 @@ export default function BedanktMeetingPage() {
         </div>
         
         <div className="space-y-4">
-          <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter">
-            <VoiceglotText translationKey="studio.meeting.thanks.title" defaultText="Bedankt voor het gesprek!" />
-          </HeadingInstrument>
-          <TextInstrument className="text-va-black/50 font-medium text-lg leading-relaxed">
-            <VoiceglotText 
+          <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter"><VoiceglotText translationKey="studio.meeting.thanks.title" defaultText="Bedankt voor het gesprek!" /><TextInstrument className="text-va-black/50 font-medium text-lg leading-relaxed"><VoiceglotText 
               translationKey="studio.meeting.thanks.subtitle" 
               defaultText="Het was fijn om kennis te maken. We hebben de belangrijkste punten genoteerd en komen zo snel mogelijk bij je terug." 
-            />
-          </TextInstrument>
+            /></TextInstrument></HeadingInstrument>
         </div>
 
         <div className="pt-8">
-          <Link href="/studio" className="va-btn-pro inline-block">
-            <VoiceglotText translationKey="studio.meeting.thanks.cta" defaultText="Terug naar de Studio" />
-          </Link>
+          <Link href="/studio" className="va-btn-pro inline-block"><VoiceglotText translationKey="studio.meeting.thanks.cta" defaultText="Terug naar de Studio" /></Link>
         </div>
       </ContainerInstrument>
     </PageWrapperInstrument>

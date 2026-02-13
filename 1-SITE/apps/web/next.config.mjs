@@ -2,7 +2,20 @@
 const nextConfig = {
   trailingSlash: true,
   async redirects() {
-    return [];
+    return [
+      { source: '/mailbox', destination: '/admin/mailbox/', permanent: true },
+      { source: '/mailbox/', destination: '/admin/mailbox/', permanent: true },
+      { source: '/account/mailbox', destination: '/admin/mailbox/', permanent: true },
+      { source: '/account/mailbox/', destination: '/admin/mailbox/', permanent: true },
+      { source: '/admin/studio/beheer', destination: '/studio/inschrijvingen/', permanent: true },
+      { source: '/admin/studio/beheer/', destination: '/studio/inschrijvingen/', permanent: true },
+      { source: '/studio/beheer', destination: '/studio/inschrijvingen/', permanent: true },
+      { source: '/studio/beheer/', destination: '/studio/inschrijvingen/', permanent: true },
+      { source: '/launchpad', destination: '/admin/dashboard/', permanent: true },
+      { source: '/launchpad/', destination: '/admin/dashboard/', permanent: true },
+      { source: '/studio/launchpad', destination: '/admin/dashboard/', permanent: true },
+      { source: '/studio/launchpad/', destination: '/admin/dashboard/', permanent: true }
+    ];
   },
   async rewrites() {
     return [

@@ -1,9 +1,10 @@
 import {
-    ContainerInstrument,
-    HeadingInstrument,
-    PageWrapperInstrument,
-    SectionInstrument,
-    TextInstrument
+  ButtonInstrument,
+  ContainerInstrument,
+  HeadingInstrument,
+  PageWrapperInstrument,
+  SectionInstrument,
+  TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { db } from '@db';
@@ -82,104 +83,95 @@ export default async function ActorAssignmentCockpit() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
       <ContainerInstrument className="max-w-7xl mx-auto">
         <SectionInstrument className="mb-12">
-          <ContainerInstrument className="inline-block bg-black text-white text-[15px] font-black px-3 py-1 rounded-full mb-6 tracking-widest ">
-            <VoiceglotText translationKey="admin.assignments.badge" defaultText="Production" />
-          </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter leading-none mb-4">
-            <VoiceglotText translationKey="admin.assignments.title_part1" defaultText="Actor" /> <TextInstrument as="span" className="text-va-primary font-light"><VoiceglotText translationKey="admin.assignments.title_part2" defaultText="Assignments." /></TextInstrument>
+          <ContainerInstrument className="inline-block bg-black text-white text-[15px] font-light px-3 py-1 rounded-full mb-6 tracking-widest "><VoiceglotText translationKey="admin.assignments.badge" defaultText="Production" /></ContainerInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter leading-none mb-4">
+            <VoiceglotText translationKey="admin.assignments.title_part1" defaultText="Actor" />
+            <TextInstrument as="span" className="text-va-primary font-light">
+              <VoiceglotText translationKey="admin.assignments.title_part2" defaultText="Assignments." />
+            </TextInstrument>
           </HeadingInstrument>
-          <TextInstrument className="text-xl text-black/40 font-medium tracking-tight">
-            <VoiceglotText translationKey="admin.assignments.subtitle" defaultText="Beheer uitgaande opdrachten, volg audio-leveringen en valideer facturen." />
-          </TextInstrument>
+          <TextInstrument className="text-xl text-black/40 font-medium tracking-tight"><VoiceglotText translationKey="admin.assignments.subtitle" defaultText="Beheer uitgaande opdrachten, volg audio-leveringen en valideer facturen." /></TextInstrument>
         </SectionInstrument>
 
         <ContainerInstrument className="grid grid-cols-1 gap-4">
           {assignments.map((item) => (
             <ContainerInstrument key={item.id} className="bg-white rounded-[40px] p-6 border border-black/[0.03] shadow-sm flex items-center justify-between group hover:shadow-md transition-all duration-300">
-              <div className="flex items-center gap-6 flex-1">
-                <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-va-primary/10 group-hover:text-va-primary transition-colors">
+              <ContainerInstrument className="flex items-center gap-6 flex-1">
+                <ContainerInstrument className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-va-primary/10 group-hover:text-va-primary transition-colors">
                   <Mic size={20} />
-                </div>
+                </ContainerInstrument>
                 
-                <div className="min-w-[200px]">
-                  <TextInstrument className="text-sm font-black">
-                    <VoiceglotText translationKey={`actor.${item.actorId}.name`} defaultText={item.actorName} noTranslate={true} />
-                  </TextInstrument>
-                  <TextInstrument className="text-[15px] text-black/40 font-bold tracking-wider">
-                    <VoiceglotText translationKey="common.order" defaultText="Order" /> #{item.displayOrderId} • <VoiceglotText translationKey={`user.${item.userId}.name`} defaultText={item.customerName} noTranslate={true} />
+                <ContainerInstrument className="min-w-[200px]">
+                  <TextInstrument className="text-[15px] font-light"><VoiceglotText translationKey={`actor.${item.actorId}.name`} defaultText={item.actorName} noTranslate={true} /></TextInstrument>
+                  <TextInstrument className="text-[15px] text-black/40 font-light tracking-wider">
+                    <VoiceglotText translationKey="common.order" defaultText="Order" />#{item.displayOrderId} • <VoiceglotText translationKey={`user.${item.userId}.name`} defaultText={item.customerName} noTranslate={true} />
                     {item.customerCompany && ` (${item.customerCompany})`}
                   </TextInstrument>
-                  <TextInstrument className="text-[15px] text-va-primary font-black mt-1">
+                  <TextInstrument className="text-[15px] text-va-primary font-light mt-1">
                     <VoiceglotText translationKey="common.budget" defaultText="Budget" />: € {item.budget}
                   </TextInstrument>
-                </div>
+                </ContainerInstrument>
 
-                <div className="flex items-center gap-4 px-6 border-l border-black/5">
-                  <div className="flex flex-col items-center">
-                    <Mail size={14} className={clsx(item.emailStatus ? "text-green-500" : "text-slate-300")} />
-                    <TextInstrument className="text-[15px] font-black mt-1">
-                      <VoiceglotText translationKey="common.sent" defaultText="Sent" />
-                    </TextInstrument>
-                  </div>
-                  <div className="flex flex-col items-center">
+                <ContainerInstrument className="flex items-center gap-4 px-6 border-l border-black/5">
+                  <ContainerInstrument className="flex flex-col items-center">
+                    <Mail strokeWidth={1.5} size={14} className={clsx(item.emailStatus ? "text-green-500" : "text-slate-300")} />
+                    <TextInstrument className="text-[15px] font-light mt-1"><VoiceglotText translationKey="common.sent" defaultText="Sent" /></TextInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="flex flex-col items-center">
                     <Eye size={14} className={clsx(item.emailStatus === 'opened' ? "text-blue-500" : "text-slate-300")} />
-                    <TextInstrument className="text-[15px] font-black mt-1">
-                      <VoiceglotText translationKey="common.read" defaultText="Read" />
-                    </TextInstrument>
-                  </div>
-                </div>
+                    <TextInstrument className="text-[15px] font-light mt-1"><VoiceglotText translationKey="common.read" defaultText="Read" /></TextInstrument>
+                  </ContainerInstrument>
+                </ContainerInstrument>
 
-                <div className="flex flex-col gap-1 px-6 border-l border-black/5 min-w-[140px]">
-                  <div className="flex items-center gap-2">
-                    <Send size={10} className="text-black/20" />
-                    <TextInstrument className="text-[15px] font-bold text-black/40 tracking-tight">
+                <ContainerInstrument className="flex flex-col gap-1 px-6 border-l border-black/5 min-w-[140px]">
+                  <ContainerInstrument className="flex items-center gap-2">
+                    <Send strokeWidth={1.5} size={10} className="text-black/20" />
+                    <TextInstrument className="text-[15px] font-light text-black/40 tracking-tight">
                       {item.sentAtFormatted}
                     </TextInstrument>
-                  </div>
-                  <div className="flex items-center gap-2">
+                  </ContainerInstrument>
+                  <ContainerInstrument className="flex items-center gap-2">
                     <Clock size={10} className={clsx(item.isOverdue ? "text-red-500" : "text-black/20")} />
-                    <TextInstrument className={clsx("text-[15px] font-black uppercase tracking-tight", item.isOverdue ? "text-red-500" : "text-black/60")}>
+                    <TextInstrument className={clsx("text-[15px] font-light tracking-tight", item.isOverdue ? "text-red-500" : "text-black/60")}>
                       {item.expectedAtFormatted}
                     </TextInstrument>
-                  </div>
-                </div>
+                  </ContainerInstrument>
+                </ContainerInstrument>
 
-                <div className="flex items-center gap-3 px-6 border-l border-black/5">
-                  <div className={clsx(
-                    "px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest flex items-center gap-2",
+                <ContainerInstrument className="flex items-center gap-3 px-6 border-l border-black/5">
+                  <ContainerInstrument className={clsx(
+                    "px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2",
                     item.deliveryStatus === 'approved' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
                   )}>
                     {item.deliveryStatus === 'approved' ? <CheckCircle2 strokeWidth={1.5} size={12} /> : <Clock size={12} />}
                     <VoiceglotText translationKey={`common.status.${item.deliveryStatus}`} defaultText={item.deliveryStatus || ''} />
-                  </div>
+                  </ContainerInstrument>
                   {item.isOverdue && (
-                    <div className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[15px] font-black tracking-widest flex items-center gap-2">
+                    <ContainerInstrument className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2">
                       <AlertCircle size={12} /> <VoiceglotText translationKey="common.overdue" defaultText="Overdue" />
-                    </div>
+                    </ContainerInstrument>
                   )}
-                </div>
+                </ContainerInstrument>
 
-                <div className="flex items-center gap-3 px-6 border-l border-black/5">
-                  <div className={clsx(
-                    "px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest flex items-center gap-2",
+                <ContainerInstrument className="flex items-center gap-3 px-6 border-l border-black/5">
+                  <ContainerInstrument className={clsx(
+                    "px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2",
                     item.hasInvoice ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-400"
                   )}>
                     <FileText size={12} />
                     {item.hasInvoice ? <VoiceglotText translationKey="common.invoice_ok" defaultText="Factuur OK" /> : <VoiceglotText translationKey="common.no_invoice" defaultText="Geen Factuur" />}
-                  </div>
-                </div>
-              </div>
+                  </ContainerInstrument>
+                </ContainerInstrument>
+              </ContainerInstrument>
 
-              <div className="flex items-center gap-2">
-                <Link href={`/backoffice/orders/${item.displayOrderId}`} className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-400 hover:text-black">
+              <ContainerInstrument className="flex items-center gap-2">
+                <ButtonInstrument as={Link} href={`/backoffice/orders/${item.displayOrderId}`} className="p-2 hover:bg-slate-100 rounded-[20px] transition-colors text-slate-400 hover:text-black">
                   <ExternalLink size={18} />
-                </Link>
+                </ButtonInstrument>
                 {item.deliveryStatus === 'approved' && item.hasInvoice && (
-                  <button className="va-btn-pro py-2 px-4 text-[15px]">
-                    <VoiceglotText translationKey="admin.cta.pay_ponto" defaultText="PAY WITH PONTO" />
-                  </button>
+                  <ButtonInstrument className="va-btn-pro py-2 px-4 text-[15px]"><VoiceglotText translationKey="admin.cta.pay_ponto" defaultText="PAY WITH PONTO" /></ButtonInstrument>
                 )}
-              </div>
+              </ContainerInstrument>
             </ContainerInstrument>
           ))}
         </ContainerInstrument>

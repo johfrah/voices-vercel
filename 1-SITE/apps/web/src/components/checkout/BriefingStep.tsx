@@ -23,7 +23,7 @@ export const BriefingStep: React.FC = () => {
     <div className={`grid grid-cols-1 ${state.usage === 'telefonie' ? 'lg:grid-cols-3' : ''} gap-10`}>
       <div className={`${state.usage === 'telefonie' ? 'lg:col-span-2' : ''} space-y-10`}>
         <div className="space-y-6">
-          <label className="block text-sm font-black tracking-widest text-va-black/30">
+          <label className="block text-[15px] font-black tracking-widest text-va-black/30">
             1. Wat is het script?
           </label>
           <textarea
@@ -43,7 +43,7 @@ export const BriefingStep: React.FC = () => {
         </div>
 
         <div className="space-y-6">
-          <label className="block text-sm font-black tracking-widest text-va-black/30">
+          <label className="block text-[15px] font-black tracking-widest text-va-black/30">
             2. Uitspraak instructies (optioneel)
           </label>
           <input
@@ -51,12 +51,12 @@ export const BriefingStep: React.FC = () => {
             value={state.pronunciation}
             onChange={(e) => updatePronunciation(e.target.value)}
             placeholder="Bijv. namen, technische termen, tone-of-voice..."
-            className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-8 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all"
+            className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-8 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </div>
 
         <div className="space-y-6">
-          <label className="block text-sm font-black tracking-widest text-va-black/30">
+          <label className="block text-[15px] font-black tracking-widest text-va-black/30">
             3. Hoe wordt de opname gebruikt?
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

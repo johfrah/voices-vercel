@@ -22,11 +22,18 @@ export class GeminiService {
   }
 
   /**
+   * Helper om het model op te halen met de juiste v1beta compatibiliteit
+   */
+  private getModel() {
+    return this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  }
+
+  /**
    * Analyseert een mail en geeft gestructureerde AI data terug.
    */
   async analyzeMail(subject: string, body: string) {
     try {
-      const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = this.getModel();
 
       const prompt = `
         Analyseer de volgende e-mail voor een voice-over bureau (Voices.be).
@@ -72,7 +79,7 @@ export class GeminiService {
    */
   async analyzeImage(imageBuffer: Buffer, mimeType: string, context?: any) {
     try {
-      const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = this.getModel();
 
       const contextPrompt = context ? `
         Aanvullende context over deze afbeelding:
@@ -97,7 +104,10 @@ export class GeminiService {
         {
           "description": "De beschrijving",
           "labels": ["label1", "label2"],
-          "vibe": "warm" | "zakelijk" | "creatief" | "rustig"
+          "vibe": "warm" | "zakelijk" | "creatief" | "rustig",
+          "authenticity": "real" | "stock" | "ai_generated" | "unknown",
+          "confidence": 0-1,
+          "suggested_alt": "Editoriaal verantwoorde alt-tekst (max 125 tekens)"
         }
       `;
 
@@ -119,7 +129,10 @@ export class GeminiService {
       return {
         description: 'Geen beschrijving beschikbaar',
         labels: [],
-        vibe: 'onbekend'
+        vibe: 'onbekend',
+        authenticity: 'unknown',
+        confidence: 0,
+        suggested_alt: ''
       };
     }
   }

@@ -115,7 +115,7 @@ export const JitsiMeeting: React.FC<JitsiMeetingProps> = ({ roomName, userName }
       {loading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-10">
           <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
-          <p className="text-sm font-black tracking-widest text-va-black/60">
+          <p className="text-[15px] font-black tracking-widest text-va-black/60">
             <VoiceglotText translationKey="studio.meeting.preparing" defaultText="Meeting room voorbereiden..." />
           </p>
         </div>

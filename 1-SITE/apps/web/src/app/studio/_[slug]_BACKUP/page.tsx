@@ -1,21 +1,12 @@
+import { WorkshopContent } from "@/components/studio/WorkshopContent";
+import {
+    ContainerInstrument,
+    PageWrapperInstrument
+} from "@/components/ui/LayoutInstruments";
+import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
+import { WorkshopHero } from "@/components/ui/Studio/WorkshopHero";
 import { StudioDataBridge } from "@/lib/studio-bridge";
 import { notFound } from "next/navigation";
-import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  LoadingScreenInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  ButtonInstrument
-} from "@/components/ui/LayoutInstruments";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { Play, ArrowRight } from "lucide-react";
-import Image from "next/image";
-import { WorkshopContent } from "@/components/studio/WorkshopContent";
-import { WorkshopHero } from "@/components/ui/Studio/WorkshopHero";
-import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 
 /**
  * STUDIO DETAIL PAGE
@@ -33,7 +24,7 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">
       {/* 🧪 LIQUID BACKGROUND */}
       <ContainerInstrument className="fixed inset-0 -z-10 opacity-[0.03] pointer-events-none">
-        <ContainerInstrument className="absolute inset-0 hmagic animate-slow-pulse"></ContainerInstrument>
+        <ContainerInstrument className="absolute inset-0 hmagic animate-slow-pulse" />
       </ContainerInstrument>
 
       <WorkshopHero title={workshop.title} journey="studio" />

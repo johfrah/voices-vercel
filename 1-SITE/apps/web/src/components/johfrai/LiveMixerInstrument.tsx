@@ -138,7 +138,7 @@ export const LiveMixerInstrument: React.FC<LiveMixerInstrumentProps> = ({
               <Mic size={18} />
             </div>
             <div>
-              <h4 className="font-black text-sm tracking-tight">
+              <h4 className="font-black text-[15px] tracking-tight">
                 {title || <VoiceglotText translationKey="common.untitled_file" defaultText="Naamloos bestand" />}
               </h4>
               <p className="text-[15px] font-bold text-va-black/30 tracking-widest">

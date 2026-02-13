@@ -6,6 +6,8 @@ import { type NextRequest, NextResponse } from 'next/server'
  * 
  * Verwerkt real-time footprints van bezoekers en slaat deze op in de database.
  */
+// export const runtime = 'edge';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

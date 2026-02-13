@@ -44,9 +44,7 @@ async function ArtistDetailContent({ params }: { params: { slug: string } }) {
   if (!artistData) {
     return (
       <PageWrapperInstrument className="flex items-center justify-center min-h-screen">
-        <HeadingInstrument level={1}>
-          <VoiceglotText translationKey="artist.not_found" defaultText="Artist not found" />
-        </HeadingInstrument>
+        <HeadingInstrument level={1}><VoiceglotText translationKey="artist.not_found" defaultText="Artist not found" /></HeadingInstrument>
       </PageWrapperInstrument>
     );
   }

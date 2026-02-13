@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
             subject: `💰 Nieuwe Betaling Ontvangen: Order #${orderId}`,
             html: `
               <div style="font-family: sans-serif; padding: 40px; background: #f9f9f9; border-radius: 24px;">
-                <h2 style="text-transform: uppercase; color: #ff4f00;">💰 Nieuwe Betaling</h2>
+                <h2 style="color: #ff4f00;">💰 Nieuwe Betaling</h2>
                 <p>Er is een nieuwe betaling succesvol verwerkt via Mollie.</p>
                 <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
                 <p><strong>Order ID:</strong> #${orderId}</p>

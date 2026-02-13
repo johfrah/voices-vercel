@@ -124,10 +124,12 @@ export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumen
     <Tag 
       ref={ref} 
       className={cn(
+        "font-light text-[15px]", // 🛡️ CHRIS MANDATE: Default to light and 15px
         noTranslate && "notranslate",
-        className.includes('va-text-soft') && "text-va-black/40 font-medium",
-        className.includes('va-text-[15px]') && "text-[15px] font-light tracking-widest",
-        className
+        className.includes('va-text-soft') && "text-va-black/40",
+        className,
+        // Force override any slop weight or size classes if they are smaller than 15px or heavier than light
+        "font-light" 
       )} 
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
@@ -163,10 +165,12 @@ export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({
     <Component 
       ref={ref} 
       className={cn(
+        "text-[15px] font-light", // 🛡️ CHRIS MANDATE: Default to 15px and light
         noTranslate && "notranslate",
-        className.includes('va-text-soft') && "text-va-black/40 font-medium",
-        className.includes('va-text-[15px]') && "text-[15px] font-light tracking-widest",
-        className
+        className.includes('va-text-soft') && "text-va-black/40",
+        className,
+        // Force override any slop weight or size classes
+        "font-light"
       )} 
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
@@ -206,7 +210,7 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
       ref={ref}
       type={Component === 'button' ? type : undefined}
       href={Component === 'a' ? href : undefined}
-      className={cn(className, noTranslate && "notranslate", "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] va-bezier")}
+      className={cn(className, noTranslate && "notranslate", "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] font-light ease-va-bezier")}
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
       onClick={(e: any) => {

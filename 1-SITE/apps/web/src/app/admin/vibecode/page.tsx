@@ -145,11 +145,11 @@ export async function onBeforeCheckout(context) {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft size={12} /> 
+            <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
-            Cody <span className="text-primary">Engine</span>
+            Cody <span className="text-primary"><VoiceglotText translationKey="auto.page.engine.7bfa30" defaultText="Engine" /></span>
           </HeadingInstrument>
         </ContainerInstrument>
         
@@ -180,7 +180,7 @@ export async function onBeforeCheckout(context) {
                 onClick={handleStopPreview}
                 className="va-btn-pro !bg-red-500 !text-white flex items-center gap-2 shadow-lg shadow-red-500/20"
               >
-                <X size={16} /> <VoiceglotText translationKey="admin.vibecode.stop_preview" defaultText="Stop Preview" />
+                <X strokeWidth={1.5} size={16} /> <VoiceglotText translationKey="admin.vibecode.stop_preview" defaultText="Stop Preview" />
               </ButtonInstrument>
             ) : (
               <ButtonInstrument 
@@ -203,7 +203,7 @@ export async function onBeforeCheckout(context) {
               disabled={isExecuting || gitStatus !== 'staged'}
               className={`va-btn-pro flex items-center gap-2 transition-all ${gitStatus === 'staged' ? '!bg-primary !text-white shadow-lg shadow-primary/20' : '!bg-va-black !text-white opacity-50'}`}
             >
-              {isExecuting ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} />}
+              {isExecuting ? <Loader2 className="animate-spin" size={16} /> : <Zap strokeWidth={1.5} size={16} />}
               <VoiceglotText translationKey="admin.vibecode.push_live" defaultText="Push to Live" />
             </ButtonInstrument>
           </div>
@@ -227,9 +227,7 @@ export async function onBeforeCheckout(context) {
               {/* Metadata Inputs */}
               <div className="px-10 py-6 bg-white/5 border-b border-white/5 grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[15px] font-black tracking-widest text-white/30 ml-2">
-                    <VoiceglotText translationKey="admin.vibecode.meta_title_label" defaultText="Titel / Slug" />
-                  </label>
+                  <label className="text-[15px] font-black tracking-widest text-white/30 ml-2"><VoiceglotText translationKey="admin.vibecode.meta_title_label" defaultText="Titel / Slug" /></label>
                   <input 
                     type="text" 
                     value={metadata.title}
@@ -239,9 +237,7 @@ export async function onBeforeCheckout(context) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[15px] font-black tracking-widest text-white/30 ml-2">
-                    <VoiceglotText translationKey="admin.vibecode.meta_desc_label" defaultText="Omschrijving" />
-                  </label>
+                  <label className="text-[15px] font-black tracking-widest text-white/30 ml-2"><VoiceglotText translationKey="admin.vibecode.meta_desc_label" defaultText="Omschrijving" /></label>
                   <input 
                     type="text" 
                     value={metadata.description}
@@ -287,7 +283,7 @@ export async function onBeforeCheckout(context) {
               <textarea 
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                className="flex-1 bg-transparent p-10 text-primary/80 font-mono text-sm outline-none resize-none leading-relaxed"
+                className="flex-1 bg-transparent p-10 text-primary/80 font-mono text-[15px] outline-none resize-none leading-relaxed"
                 spellCheck={false}
               />
             </>
@@ -307,15 +303,10 @@ export async function onBeforeCheckout(context) {
           {activeTab === 'assistant' && (
             <div className="p-10 flex flex-col items-center justify-center h-full space-y-8">
               <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center text-primary animate-pulse">
-                <Sparkles size={48} />
+                <Sparkles strokeWidth={1.5} size={48} />
               </div>
               <div className="max-w-md text-center space-y-4">
-                <HeadingInstrument level={3} className="text-white text-2xl font-black ">
-                  <VoiceglotText translationKey="admin.vibecode.assistant.title" defaultText="Cody Assistant" />
-                </HeadingInstrument>
-                <TextInstrument className="text-white/40 font-medium">
-                  <VoiceglotText translationKey="admin.vibecode.assistant.desc" defaultText="Beschrijf in gewoon Nederlands wat je wilt veranderen, en ik schrijf de code voor je." />
-                </TextInstrument>
+                <HeadingInstrument level={3} className="text-white text-2xl font-black "><VoiceglotText translationKey="admin.vibecode.assistant.title" defaultText="Cody Assistant" /><TextInstrument className="text-white/40 font-medium"><VoiceglotText translationKey="admin.vibecode.assistant.desc" defaultText="Beschrijf in gewoon Nederlands wat je wilt veranderen, en ik schrijf de code voor je." /></TextInstrument></HeadingInstrument>
                 <input 
                   type="text" 
                   placeholder="Bijv: 'Maak Voicy wat zakelijker op de checkout pagina'"
@@ -330,12 +321,10 @@ export async function onBeforeCheckout(context) {
         <div className="space-y-8">
           <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 text-primary rounded-lg">
-                <Zap size={20} />
+              <div className="p-2 bg-primary/10 text-primary rounded-[20px]">
+                <Zap strokeWidth={1.5} size={20} />
               </div>
-              <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">
-                <VoiceglotText translationKey="admin.vibecode.vibe_strength" defaultText="Vibe Strength" />
-              </TextInstrument>
+              <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="admin.vibecode.vibe_strength" defaultText="Vibe Strength" /></TextInstrument>
             </div>
             <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">98.4%</HeadingInstrument>
             <div className="w-full bg-va-off-white h-1.5 rounded-full overflow-hidden">
@@ -344,12 +333,12 @@ export async function onBeforeCheckout(context) {
           </BentoCard>
 
           <BentoCard span="sm" className="bg-va-black text-white p-8 space-y-6">
-            <HeadingInstrument level={4} className="text-[15px] font-black tracking-widest opacity-40">Active Personas</HeadingInstrument>
+            <HeadingInstrument level={4} className="text-[15px] font-black tracking-widest opacity-40"><VoiceglotText translationKey="auto.page.active_personas.8cbab4" defaultText="Active Personas" /></HeadingInstrument>
             <div className="space-y-3">
               {['Musical Confidant', 'Nuclear Architect', 'Voice Over Pro'].map(p => (
                 <div key={p} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
                   <TextInstrument className="text-[15px] font-bold tracking-tight">{p}</TextInstrument>
-                  <Sparkles size={12} className="text-primary" />
+                  <Sparkles strokeWidth={1.5} size={12} className="text-primary" />
                 </div>
               ))}
             </div>
@@ -358,11 +347,11 @@ export async function onBeforeCheckout(context) {
           <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
             <div className="flex items-center gap-3">
               <History size={18} className="text-va-black/20" />
-              <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Recent Changes</TextInstrument>
+              <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.recent_changes.42110d" defaultText="Recent Changes" /></TextInstrument>
             </div>
             <div className="space-y-2">
-              <TextInstrument className="text-[15px] font-medium text-va-black/40 italic">&quot;Checkout flow optimized for mobile vibes&quot;</TextInstrument>
-              <TextInstrument className="text-[15px] font-medium text-va-black/40 italic">&quot;Voiceglot healing threshold adjusted&quot;</TextInstrument>
+              <TextInstrument className="text-[15px] font-medium text-va-black/40 italic"><VoiceglotText translationKey="auto.page._quot_checkout_flow_.594e1a" defaultText="&quot;Checkout flow optimized for mobile vibes&quot;" /></TextInstrument>
+              <TextInstrument className="text-[15px] font-medium text-va-black/40 italic"><VoiceglotText translationKey="auto.page._quot_voiceglot_heal.8e1775" defaultText="&quot;Voiceglot healing threshold adjusted&quot;" /></TextInstrument>
             </div>
           </BentoCard>
         </div>
@@ -374,12 +363,7 @@ export async function onBeforeCheckout(context) {
           <ShieldAlert size={32} />
         </div>
         <div className="space-y-1">
-          <HeadingInstrument level={4} className="text-primary font-black tracking-tight">
-            <VoiceglotText translationKey="admin.vibecode.protocol.title" defaultText="VIBECODE PROTOCOL" />
-          </HeadingInstrument>
-          <TextInstrument className="text-[15px] opacity-60 font-medium">
-            <VoiceglotText translationKey="admin.vibecode.protocol.desc" defaultText="Vibecode overschrijft de standaard logica van de Freedom Machine. Wijzigingen zijn direct merkbaar voor alle gebruikers in de Shadow Layer. Gebruik met uiterste precisie." />
-          </TextInstrument>
+          <HeadingInstrument level={4} className="text-primary font-black tracking-tight"><VoiceglotText translationKey="admin.vibecode.protocol.title" defaultText="VIBECODE PROTOCOL" /><TextInstrument className="text-[15px] opacity-60 font-medium"><VoiceglotText translationKey="admin.vibecode.protocol.desc" defaultText="Vibecode overschrijft de standaard logica van de Freedom Machine. Wijzigingen zijn direct merkbaar voor alle gebruikers in de Shadow Layer. Gebruik met uiterste precisie." /></TextInstrument></HeadingInstrument>
         </div>
       </ContainerInstrument>
     </PageWrapperInstrument>

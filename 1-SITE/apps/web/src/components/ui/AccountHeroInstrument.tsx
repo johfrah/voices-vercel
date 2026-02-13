@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { User, LogOut } from 'lucide-react';
+import Image from 'next/image';
+import { LogOut } from 'lucide-react';
 import { VoiceglotText } from './VoiceglotText';
 
 interface AccountHeroInstrumentProps {
@@ -27,7 +28,14 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
     <div className="va-account-hero">
       <div className="va-account-hero-content">
         <div className="va-account-badge">
-          <User size={12} className="va-icon-primary" fill="currentColor" /> 
+          <Image 
+            src="/assets/common/branding/icons/ACCOUNT.svg" 
+            alt="User" 
+            width={12} 
+            height={12} 
+            className="w-3 h-3"
+            style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+          /> 
           <VoiceglotText 
             translationKey="account.hero.welcome" 
             defaultText={`Welkom terug, ${userName}`} 
@@ -47,7 +55,7 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
         </p>
       </div>
       <button onClick={onLogout} className="va-account-logout-btn">
-        <LogOut size={16} /> 
+        <LogOut strokeWidth={1.5} size={16} /> 
         <VoiceglotText translationKey="common.logout" defaultText="Uitloggen" />
       </button>
     </div>

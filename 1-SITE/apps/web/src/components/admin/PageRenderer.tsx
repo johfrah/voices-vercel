@@ -131,12 +131,10 @@ export const PageRenderer: React.FC<PageRendererProps> = ({ slug, initialLayout 
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       <SectionInstrument className="mb-20 space-y-6">
-        <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter">
-          <VoiceglotText 
+        <HeadingInstrument level={1} className="text-6xl md:text-8xl font-black tracking-tighter"><VoiceglotText 
             translationKey={`page.${slug}.title`} 
             defaultText={layout.title || 'Nieuwe Pagina'} 
-          />
-        </HeadingInstrument>
+          /></HeadingInstrument>
       </SectionInstrument>
 
       {layout.layoutJson?.sections?.map((section: any, sIdx: number) => (

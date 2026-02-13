@@ -70,12 +70,15 @@ export async function POST(request: Request) {
       fileType: ext === '.png' ? 'image/png' : 'image/jpeg',
       fileSize: parseInt(execSSH(`stat -c%s "${targetPath}"`)),
       labels: analysis?.labels || [],
+      altText: analysis?.suggested_alt || '',
       metadata: { 
         width, 
         height, 
         ratio: width / height > 1.1 ? 'landscape' : (width / height < 0.9 ? 'portrait' : 'square'),
         vision_description: analysis?.description,
         vision_vibe: analysis?.vibe,
+        vision_authenticity: analysis?.authenticity,
+        vision_confidence: analysis?.confidence,
         original_source: photoPath
       },
       journey: actor ? 'agency' : 'general',

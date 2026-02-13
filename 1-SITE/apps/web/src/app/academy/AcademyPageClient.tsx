@@ -1,23 +1,20 @@
 "use client";
 
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  LoadingScreenInstrument,
-  HeadingInstrument,
-  TextInstrument
+import {
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { 
-  GraduationCap, 
-  Play, 
-  CheckCircle2, 
-  Clock, 
-  ArrowRight,
-  BookOpen,
-  Trophy
+import {
+    ArrowRight,
+    BookOpen,
+    Clock,
+    GraduationCap,
+    Trophy
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -36,12 +33,10 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
               <VoiceglotText translationKey="academy.client.title_part2" defaultText="Instrument" />
             </TextInstrument>
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-medium max-w-2xl text-lg">
-            <VoiceglotText 
+          <TextInstrument className="text-va-black/40 font-medium max-w-2xl text-lg"><VoiceglotText 
               translationKey="academy.client.subtitle" 
               defaultText="Leer de kunst van het inspreken van de beste experts in de sector. Van stemtechniek tot home-studio setup." 
-            />
-          </TextInstrument>
+            /></TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
@@ -52,7 +47,7 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
               <ContainerInstrument>
                 <ContainerInstrument className="flex justify-between items-start mb-8">
                   <ContainerInstrument className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all">
-                    <BookOpen size={24} />
+                    <BookOpen strokeWidth={1.5} size={24} />
                   </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/20">
                     {course.level}
@@ -61,7 +56,7 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
                 <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4 group-hover:text-primary transition-colors">
                   {course.title}
                 </HeadingInstrument>
-                <TextInstrument className="text-va-black/40 text-sm font-medium leading-relaxed line-clamp-3 mb-8">
+                <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed line-clamp-3 mb-8">
                   {course.description}
                 </TextInstrument>
               </ContainerInstrument>
@@ -74,7 +69,8 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
                   href={`/academy/lesson/${course.id}`}
                   className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 group-hover:gap-3 transition-all"
                 >
-                  <VoiceglotText translationKey="academy.client.start_lesson" defaultText="Start Les" /> <ArrowRight size={14} />
+                  <VoiceglotText translationKey="academy.client.start_lesson" defaultText="Start Les" />
+                  <ArrowRight strokeWidth={1.5} size={14} />
                 </Link>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -87,17 +83,15 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
             <Trophy className="text-primary mb-8" size={40} />
             <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
               <VoiceglotText translationKey="academy.client.achievements.title" defaultText="Certificering" />
+              <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">
+                <VoiceglotText 
+                  translationKey="academy.client.achievements.text" 
+                  defaultText="Ontvang een officieel Voices certificaat na het succesvol afronden van een masterclass." 
+                />
+              </TextInstrument>
             </HeadingInstrument>
-            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">
-              <VoiceglotText 
-                translationKey="academy.client.achievements.text" 
-                defaultText="Ontvang een officieel Voices certificaat na het succesvol afronden van een masterclass." 
-              />
-            </TextInstrument>
           </ContainerInstrument>
-          <TextInstrument className="text-[15px] font-black tracking-widest text-primary/60">
-            <VoiceglotText translationKey="academy.client.achievements.footer" defaultText="Voices" />
-          </TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-primary/60"><VoiceglotText translationKey="academy.client.achievements.footer" defaultText="Voices" /></TextInstrument>
         </BentoCard>
       </BentoGrid>
     </PageWrapperInstrument>

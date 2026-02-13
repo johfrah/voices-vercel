@@ -49,15 +49,11 @@ export default function ScriptsArticlePage() {
             href="/nieuws" 
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
-            <ArrowLeft size={14} /> 
+            <ArrowLeft strokeWidth={1.5} size={14} /> 
             <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
           </Link>
-          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 ">
-            <VoiceglotText translationKey="article.theme.inspiration" defaultText="Inspiratie" />
-          </TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6 text-va-black ">
-            <VoiceglotText translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" />
-          </HeadingInstrument>
+          <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 "><VoiceglotText translationKey="article.theme.inspiration" defaultText="Inspiratie" /></TextInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6 text-va-black "><VoiceglotText translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" /></HeadingInstrument>
         </ContainerInstrument>
 
         <BentoGrid columns={2}>
@@ -72,12 +68,10 @@ export default function ScriptsArticlePage() {
                   <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                     <FileText size={20} />
                   </div>
-                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black ">
-                    <VoiceglotText translationKey={`${cat.key}.title`} defaultText={cat.title} />
-                  </HeadingInstrument>
+                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black "><VoiceglotText translationKey={`${cat.key}.title`} defaultText={cat.title} /></HeadingInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="p-6 bg-va-off-white rounded-[15px] border border-black/5 relative group">
-                  <TextInstrument className="text-sm font-light leading-relaxed text-va-black/70 italic">
+                  <TextInstrument className="text-[15px] font-light leading-relaxed text-va-black/70 italic">
                     &quot;<VoiceglotText translationKey={`${cat.key}.content`} defaultText={cat.content} />&quot;
                   </TextInstrument>
                 </ContainerInstrument>

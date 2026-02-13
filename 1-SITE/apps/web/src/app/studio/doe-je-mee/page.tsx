@@ -22,15 +22,10 @@ export default function DoeJeMeePage() {
               <VoiceglotText translationKey="studio.interest.badge" defaultText="Blijf op de hoogte" />
             </span>
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl md:text-7xl font-black tracking-tighter leading-[0.9]">
-            <VoiceglotText translationKey="studio.interest.title" defaultText="Doe je mee?" />
-          </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-medium text-xl max-w-2xl mx-auto">
-            <VoiceglotText 
+          <HeadingInstrument level={1} className="text-6xl md:text-7xl font-black tracking-tighter leading-[0.9]"><VoiceglotText translationKey="studio.interest.title" defaultText="Doe je mee?" /><TextInstrument className="text-va-black/40 font-medium text-xl max-w-2xl mx-auto"><VoiceglotText 
               translationKey="studio.interest.subtitle" 
               defaultText="Vink aan voor welke workshop(s) je interesse hebt. Je ontvangt dan zo snel mogelijk alle nodige informatie." 
-            />
-          </TextInstrument>
+            /></TextInstrument></HeadingInstrument>
         </SectionInstrument>
 
         {/* FORM */}

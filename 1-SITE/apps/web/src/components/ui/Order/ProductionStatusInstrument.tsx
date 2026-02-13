@@ -43,12 +43,12 @@ export const ProductionStatusInstrument: React.FC<ProductionStatusInstrumentProp
                 <div className="text-[15px] text-slate-400 font-bold tracking-tighter">
                   <VoiceglotText translationKey="order.item.deadline" defaultText="Deadline" />
                 </div>
-                <div className="font-medium text-sm flex items-center gap-1">
+                <div className="font-medium text-[15px] flex items-center gap-1">
                   <Clock className="w-3 h-3" /> 24h
                 </div>
               </div>
               <div className={clsx(
-                "px-3 py-1 rounded-lg text-[15px] font-bold uppercase",
+                "px-3 py-1 rounded-[20px] text-[15px] font-bold uppercase",
                 item.delivery_status === 'approved' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
               )}>
                 <VoiceglotText translationKey={`order.delivery_status.${item.delivery_status}`} defaultText={item.delivery_status} />

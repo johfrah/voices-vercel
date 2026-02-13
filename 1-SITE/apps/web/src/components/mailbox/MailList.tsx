@@ -1,20 +1,15 @@
-"use client";
-
-import { ContainerInstrument, ButtonInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { Mail as MailIcon, Paperclip, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ButtonInstrument, ContainerInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
+import React from 'react';
 
-export interface MailItem {
+interface MailItem {
   id: number;
-  uid: number;
-  subject: string;
   from: string;
-  date: string;
+  subject: string;
   preview: string;
-  hasAttachments: boolean;
+  date: string;
   isUnread: boolean;
-  isStarred: boolean;
+  hasAttachment?: boolean;
 }
 
 interface MailListProps {
@@ -50,7 +45,7 @@ export const MailList = ({ mails, selectedMailId, onSelect }: MailListProps) => 
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <TextInstrument as="span" className="text-[15px] text-va-black/40 whitespace-nowrap flex-shrink-0 font-light">
+            <TextInstrument as="span" className="text-[15px] text-va-black/30 font-medium whitespace-nowrap">
               {mail.date}
             </TextInstrument>
           </ContainerInstrument>
@@ -61,15 +56,9 @@ export const MailList = ({ mails, selectedMailId, onSelect }: MailListProps) => 
           )}>
             {mail.subject}
           </TextInstrument>
-
-          <TextInstrument as="p" className="text-[15px] text-va-black/50 line-clamp-2 leading-relaxed font-light">
+          <TextInstrument className="text-[15px] text-va-black/40 line-clamp-2 leading-relaxed font-light">
             {mail.preview}
           </TextInstrument>
-
-          <ContainerInstrument className="absolute right-4 bottom-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            {mail.hasAttachments && <Paperclip size={12} className="text-va-black/40" />}
-            {mail.isStarred && <Star size={12} className="text-yellow-400 fill-yellow-400" />}
-          </ContainerInstrument>
         </ButtonInstrument>
       ))}
     </ContainerInstrument>

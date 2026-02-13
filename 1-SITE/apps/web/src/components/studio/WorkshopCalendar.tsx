@@ -89,10 +89,10 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
                 <span className="text-[15px] font-black text-va-black/30 group-hover:text-primary transition-all">
                   <VoiceglotText translationKey="common.month.feb.short" defaultText="FEB" />
                 </span>
-                <span className="text-sm font-black text-va-black group-hover:text-primary transition-all">12</span>
+                <span className="text-[15px] font-black text-va-black group-hover:text-primary transition-all">12</span>
               </div>
               <div>
-                <h5 className="text-sm font-black tracking-tight">
+                <h5 className="text-[15px] font-black tracking-tight">
                   <VoiceglotText translationKey={`workshop.${workshop.id}.title`} defaultText={workshop.title} noTranslate={true} />
                 </h5>
                 <div className="flex items-center gap-3 mt-1">

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AgencyDataBridge } from '@/lib/agency-bridge';
 
+// export const runtime = 'edge';
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const params: Record<string, string> = {};

@@ -1,15 +1,14 @@
-import React from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument,
-  HeadingInstrument,
-  TextInstrument
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import {
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
-import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { FileText, Copy } from "lucide-react";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { Copy, FileText } from "lucide-react";
 
 /**
  * SCRIPTS: TELEFOON TEKSTEN (PHYSICAL PAGE)
@@ -46,18 +45,11 @@ export default function ScriptsPage() {
       
       <SectionInstrument className="max-w-6xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-16">
-          <TextInstrument className="text-[15px] font-black tracking-[0.2em] text-primary mb-4">
-            <VoiceglotText translationKey="scripts.category" defaultText="Inspiratie" />
-          </TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6">
-            <VoiceglotText translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" />
-          </HeadingInstrument>
-          <TextInstrument className="text-xl text-va-black/40 font-medium max-w-2xl">
-            <VoiceglotText 
+          <TextInstrument className="text-[15px] font-black tracking-[0.2em] text-primary mb-4"><VoiceglotText translationKey="scripts.category" defaultText="Inspiratie" /></TextInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6"><VoiceglotText translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" /><TextInstrument className="text-xl text-va-black/40 font-medium max-w-2xl"><VoiceglotText 
               translationKey="scripts.intro" 
               defaultText="Geen inspiratie? Gebruik onze beproefde teksten als basis voor jouw eigen boodschap. Kopieer, plak en pas aan." 
-            />
-          </TextInstrument>
+            /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
 
         <BentoGrid columns={2}>
@@ -72,12 +64,10 @@ export default function ScriptsPage() {
                   <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                     <FileText size={20} />
                   </div>
-                  <HeadingInstrument level={3} className="text-xl font-black tracking-tight">
-                    <VoiceglotText translationKey={`${cat.key}.title`} defaultText={cat.title} />
-                  </HeadingInstrument>
+                  <HeadingInstrument level={3} className="text-xl font-black tracking-tight"><VoiceglotText translationKey={`${cat.key}.title`} defaultText={cat.title} /></HeadingInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="p-6 bg-va-off-white rounded-2xl border border-black/5 relative group">
-                  <TextInstrument className="text-sm font-medium leading-relaxed text-va-black/70 italic">
+                  <TextInstrument className="text-[15px] font-medium leading-relaxed text-va-black/70 italic">
                     &quot;<VoiceglotText translationKey={`${cat.key}.content`} defaultText={cat.content} />&quot;
                   </TextInstrument>
                 </ContainerInstrument>

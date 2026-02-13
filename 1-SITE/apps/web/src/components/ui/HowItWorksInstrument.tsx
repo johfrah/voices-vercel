@@ -1,8 +1,8 @@
 "use client";
 
 import React from 'react';
-import { VoiceglotText } from "./VoiceglotText";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
+import { VoiceglotText } from "./VoiceglotText";
 
 /**
  * HOW IT WORKS INSTRUMENT
@@ -41,18 +41,10 @@ export const HowItWorksInstrument: React.FC<{ steps: any[] }> = ({ steps }) => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ContainerInstrument className="mb-16 space-y-4">
-        <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter">
-          <VoiceglotText translationKey="home.steps.title_part1" defaultText="In 4 stappen naar de " />
-          <TextInstrument as="span" className="hmagic-text font-light italic">
-            <VoiceglotText translationKey="home.steps.title_highlight" defaultText="beste" />
-          </TextInstrument>
-          <VoiceglotText translationKey="home.steps.title_part2" defaultText=" opname" />
-        </HeadingInstrument>
-        <TextInstrument className="text-xl text-black/40 font-medium leading-relaxed max-w-2xl">
-          <VoiceglotText translationKey="home.steps.subtitle" defaultText="Eenvoudig, duidelijk en professioneel." />
-        </TextInstrument>
+        <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter"><VoiceglotText translationKey="home.steps.title_part1" defaultText="In 4 stappen naar de " /><TextInstrument as="span" className="hmagic-text font-light italic"><VoiceglotText translationKey="home.steps.title_highlight" defaultText="beste" /></TextInstrument><VoiceglotText translationKey="home.steps.title_part2" defaultText=" opname" /></HeadingInstrument>
+        <TextInstrument className="text-xl text-black/40 font-medium leading-relaxed max-w-2xl"><VoiceglotText translationKey="home.steps.subtitle" defaultText="Eenvoudig, duidelijk en professioneel." /></TextInstrument>
       </ContainerInstrument>
-      
+
       <ContainerInstrument className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {steps.map((step: any, i: number) => (
           <ContainerInstrument key={i} className="space-y-6 group">
@@ -60,12 +52,7 @@ export const HowItWorksInstrument: React.FC<{ steps: any[] }> = ({ steps }) => {
               {i + 1}
             </ContainerInstrument>
             <ContainerInstrument>
-              <HeadingInstrument level={4} className="text-xl font-medium tracking-tight mb-2">
-                <VoiceglotText translationKey={`home.steps.step${i+1}.title`} defaultText={step.title} />
-              </HeadingInstrument>
-              <TextInstrument className="text-sm text-va-black/50 font-medium leading-relaxed">
-                <VoiceglotText translationKey={`home.steps.step${i+1}.description`} defaultText={step.description} />
-              </TextInstrument>
+              <HeadingInstrument level={4} className="text-xl font-medium tracking-tight mb-2"><VoiceglotText translationKey={`home.steps.step${i+1}.title`} defaultText={step.title} /><TextInstrument className="text-[15px] text-va-black/50 font-medium leading-relaxed"><VoiceglotText translationKey={`home.steps.step${i+1}.description`} defaultText={step.description} /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         ))}

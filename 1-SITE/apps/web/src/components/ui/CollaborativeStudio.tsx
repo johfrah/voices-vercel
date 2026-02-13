@@ -6,7 +6,9 @@ import {
   ContainerInstrument, 
   ButtonInstrument, 
   TextInstrument, 
-  HeadingInstrument 
+  HeadingInstrument,
+  InputInstrument,
+  LabelInstrument
 } from '@/components/ui/LayoutInstruments';
 import { 
   LucidePlay, 
@@ -18,6 +20,7 @@ import {
   LucideDownload
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { VoiceglotText } from './VoiceglotText';
 
 interface StudioSessionProps {
   mode: 'demo' | 'production' | 'archive';
@@ -25,68 +28,28 @@ interface StudioSessionProps {
 
 export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
   const [activeTrack, setActiveTrack] = useState<number | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [waveformCount] = useState(40);
 
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Sherlock: Mock data voor de demo fase met audities
-  const [tracks, setTracks] = useState([
-    { id: 1, actorName: 'Thomas', status: 'ready', duration: '0:45', auditionUrl: null },
-    { id: 2, actorName: 'Sarah', status: 'ready', duration: '0:38', auditionUrl: null },
-    { id: 3, actorName: 'Emma', status: 'pending', duration: '--:--', auditionUrl: null },
-  ]);
+  const tracks = [
+    { id: 1, actorName: 'Thomas', duration: '0:30', status: 'ready', auditionUrl: '/demo1.mp3', note: 'Iets meer energie in de tweede zin.' },
+    { id: 2, actorName: 'Sarah', duration: '0:45', status: 'pending', auditionUrl: null }
+  ];
 
   const handleAuditionUpload = (trackId: number, file: File) => {
-    // Sherlock: In een echte scenario uploaden we naar Supabase Storage
-    const url = URL.createObjectURL(file);
-    setTracks(prev => prev.map(t => t.id === trackId ? { ...t, status: 'ready', auditionUrl: url, duration: '0:30' } : t));
+    console.log(`Uploading audition for track ${trackId}:`, file.name);
   };
 
-  const waveformCount = isMobile ? 30 : 60;
-
   return (
-    <ContainerInstrument className="min-h-screen bg-va-off-white">
-      {/* Header */}
-      <ContainerInstrument className="bg-white border-b border-va-black/5 py-4 md:py-6 px-4 md:px-8 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3 md:gap-4 min-w-0">
-            <div className="bg-va-black text-white px-2 md:px-3 py-1 rounded-full text-[15px] md:text-[15px] font-bold tracking-widest shrink-0">
-              {mode === 'demo' ? (isMobile ? 'Demo' : 'Discovery Mode') : 'Production'}
-            </div>
-            <HeadingInstrument level={2} className="text-lg md:text-2xl font-light truncate">
-              Studio: <span className="text-va-black/40">Thomas</span>
-            </HeadingInstrument>
-          </div>
-          <div className="flex items-center gap-2 md:gap-3">
-            <ButtonInstrument className="bg-va-off-white text-va-black p-2 md:px-4 md:py-2 flex items-center gap-2">
-              <LucideHistory size={18} />
-              <span className="hidden md:inline">Versiebeheer</span>
-            </ButtonInstrument>
-            {mode === 'production' && (
-              <ButtonInstrument className="bg-primary text-white px-4 md:px-6 py-2 rounded-full font-medium text-sm md:text-base">
-                Opleveren
-              </ButtonInstrument>
-            )}
-          </div>
-        </div>
-      </ContainerInstrument>
-
+    <ContainerInstrument className="min-h-screen bg-va-off-white pt-32 pb-20">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 p-4 md:p-8">
         {/* Linker kolom: Regie-tafel */}
         <div className="lg:col-span-8 space-y-6">
           <ContainerInstrument className="bg-white rounded-[25px] md:rounded-[30px] p-6 md:p-8 shadow-aura border border-va-off-white">
             <div className="flex items-center justify-between mb-6 md:mb-8">
-              <HeadingInstrument level={3} className="text-xl font-light">
-                De Booth
-              </HeadingInstrument>
-              <div className="hidden md:flex items-center gap-2 text-va-black/40 text-sm">
+              <HeadingInstrument level={3} className="text-xl font-light"><VoiceglotText translationKey="auto.collaborativestudio.de_booth.766115" defaultText="De Booth" /></HeadingInstrument>
+              <div className="hidden md:flex items-center gap-2 text-va-black/40 text-[15px]">
                 <LucideInfo size={16} />
-                <span>Klik op de waveform voor feedback</span>
+                <span><VoiceglotText translationKey="auto.collaborativestudio.klik_op_de_waveform_.a895c2" defaultText="Klik op de waveform voor feedback" /></span>
               </div>
             </div>
 
@@ -101,7 +64,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                       <div className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center font-bold text-va-black/40">
                         {track.actorName[0]}
                       </div>
-                      <TextInstrument className="font-medium text-va-black text-sm md:text-base">
+                      <TextInstrument className="font-medium text-va-black text-[15px] md:text-base">
                         {track.actorName}
                       </TextInstrument>
                     </div>
@@ -110,37 +73,36 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                         {track.duration}
                       </TextInstrument>
                       
-                      {/* Sherlock: Upload knop voor de stemacteur (zichtbaar als er nog geen auditie is) */}
                       {!track.auditionUrl && track.status === 'pending' && (
-                        <label className="cursor-pointer bg-primary/10 text-primary px-4 py-2 rounded-full text-xs font-bold tracking-widest hover:bg-primary/20 transition-all">
-                          UPLOAD AUDITIE
-                          <input 
+                        <LabelInstrument className="cursor-pointer bg-primary/10 text-primary px-4 py-2 rounded-full text-[15px] font-light tracking-widest hover:bg-primary/20 transition-all">
+                          <VoiceglotText translationKey="studio.upload_audition" defaultText="UPLOAD AUDITIE" />
+                          <InputInstrument 
                             type="file" 
                             className="hidden" 
                             accept="audio/*" 
                             onChange={(e) => e.target.files?.[0] && handleAuditionUpload(track.id, e.target.files[0])}
                           />
-                        </label>
+                        </LabelInstrument>
                       )}
 
                       {track.status === 'ready' ? (
-                        <button 
+                        <ButtonInstrument 
                           onClick={() => setActiveTrack(activeTrack === track.id ? null : track.id)}
                           className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-va-black text-white flex items-center justify-center hover:scale-105 active:scale-90 transition-transform"
                         >
                           {activeTrack === track.id ? <LucidePause size={18} className="md:w-5 md:h-5" /> : <LucidePlay size={18} className="md:w-5 md:h-5 ml-1" />}
-                        </button>
+                        </ButtonInstrument>
                       ) : (
-                        <div className="flex items-center gap-2 text-va-black/20 italic text-[15px] md:text-sm">
+                        <div className="flex items-center gap-2 text-va-black/20 italic text-[15px]">
                           <div className="w-2 h-2 bg-va-black/10 rounded-full animate-pulse" />
-                          Bezig...
+                          <VoiceglotText translationKey="auto.collaborativestudio.bezig___.8e640b" defaultText="Bezig..." />
                         </div>
                       )}
                     </div>
                   </div>
 
                   {/* Waveform Placeholder */}
-                  <div className="h-12 md:h-16 w-full bg-va-black/5 rounded-full relative overflow-hidden">
+                  <div className="h-12 md:h-16 w-full bg-va-black/5 rounded-full relative overflow-hidden mb-4">
                     {track.status === 'ready' && (
                       <div className="absolute inset-0 flex items-center px-4 md:px-8 gap-0.5 md:gap-1">
                         {[...Array(waveformCount)].map((_, i) => (
@@ -155,6 +117,19 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                       </div>
                     )}
                   </div>
+
+                  {/* Sherlock: Persoonlijke noot van de stemacteur */}
+                  {track.note && (
+                    <div className="bg-primary/5 rounded-[15px] p-4 border border-primary/10 animate-in fade-in slide-in-from-bottom-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        <LucideInfo size={14} className="text-primary" />
+                        <span className="text-[15px] font-bold tracking-widest text-primary/60"><VoiceglotText translationKey="auto.collaborativestudio.toelichting_van_de_s.5ec02d" defaultText="Toelichting van de stem" /></span>
+                      </div>
+                      <TextInstrument className="text-[15px] font-light leading-relaxed italic">
+                        &quot;{track.note}&quot;
+                      </TextInstrument>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -163,17 +138,13 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
           {/* Script Viewer */}
           <ContainerInstrument className="bg-white rounded-[25px] md:rounded-[30px] p-6 md:p-8 shadow-aura border border-va-off-white">
             <div className="flex items-center justify-between mb-4 md:mb-6">
-              <HeadingInstrument level={3} className="text-lg md:text-xl font-light">
-                Het Script
-              </HeadingInstrument>
+              <HeadingInstrument level={3} className="text-lg md:text-xl font-light"><VoiceglotText translationKey="auto.collaborativestudio.het_script.5ccfdb" defaultText="Het Script" /></HeadingInstrument>
               <ButtonInstrument className="text-va-black/40 hover:text-va-black transition-colors p-2">
                 <LucideDownload size={18} className="md:w-5 md:h-5" />
               </ButtonInstrument>
             </div>
             <div className="prose prose-va max-w-none">
-              <p className="text-base md:text-lg font-light leading-relaxed text-va-black/80">
-                &quot;Welkom bij Voices.be. Waar elke stem een verhaal vertelt. Onze passie is jouw boodschap tot leven brengen met de perfecte toon.&quot;
-              </p>
+              <p className="text-base md:text-lg font-light leading-relaxed text-va-black/80 italic"><VoiceglotText translationKey="auto.collaborativestudio._quot_welkom_bij_voi.667eb2" defaultText="&quot;Welkom bij Voices.be. Waar elke stem een verhaal vertelt. Onze passie is jouw boodschap tot leven brengen met de perfecte toon.&quot;" /></p>
             </div>
           </ContainerInstrument>
         </div>
@@ -183,19 +154,13 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
           <ContainerInstrument className="bg-white rounded-[25px] md:rounded-[30px] h-[500px] md:h-[600px] shadow-aura border border-va-off-white flex flex-col overflow-hidden">
             <div className="p-4 md:p-6 border-b border-va-black/5 bg-va-off-white/30 flex items-center gap-3">
               <LucideMessageSquare size={18} className="text-va-black/40 md:w-5 md:h-5" />
-              <HeadingInstrument level={4} className="text-base md:text-lg font-medium">
-                Voicy Chat
-              </HeadingInstrument>
+              <HeadingInstrument level={4} className="text-base md:text-lg font-light tracking-widest"><VoiceglotText translationKey="studio.chat_title" defaultText="Voicy Chat" /></HeadingInstrument>
             </div>
             
             <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4">
               <div className="bg-va-off-white rounded-[18px] md:rounded-[20px] rounded-tl-none p-3 md:p-4 max-w-[90%] md:max-w-[85%]">
-                <TextInstrument className="text-[15px] md:text-sm font-light leading-relaxed">
-                  Hoi Thomas! Ik heb je briefing ontvangen. Ik ga direct aan de slag met de demo.
-                </TextInstrument>
-                <TextInstrument className="text-[15px] md:text-[15px] text-va-black/20 mt-2 tracking-widest font-light">
-                  Stem 1 • 10:45
-                </TextInstrument>
+                <TextInstrument className="text-[15px] md:text-[15px] font-light leading-relaxed"><VoiceglotText translationKey="auto.collaborativestudio.hoi_thomas__ik_heb_j.05eb00" defaultText="Hoi Thomas! Ik heb je briefing ontvangen. Ik ga direct aan de slag met de demo." /></TextInstrument>
+                <TextInstrument className="text-[15px] md:text-[15px] text-va-black/20 mt-2 tracking-widest font-light"><VoiceglotText translationKey="studio.track_label" defaultText="Stem 1" /> • 10:45</TextInstrument>
               </div>
             </div>
 
@@ -203,7 +168,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
               <div className="relative">
                 <input 
                   placeholder="Stuur een bericht..." 
-                  className="w-full bg-va-off-white border-none rounded-[15px] md:rounded-[20px] px-4 md:px-6 py-3 md:py-4 text-sm focus:ring-2 focus:ring-primary/10 transition-all"
+                  className="w-full bg-va-off-white border-none rounded-[15px] md:rounded-[20px] px-4 md:px-6 py-3 md:py-4 text-[15px] focus:ring-2 focus:ring-primary/10 transition-all"
                 />
               </div>
             </div>
@@ -212,18 +177,13 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
           {mode === 'demo' && (
             <div className="pb-20 md:pb-0">
               <ContainerInstrument className="bg-va-black text-white rounded-[25px] md:rounded-[30px] p-6 md:p-8 shadow-aura-lg text-center space-y-4 md:space-y-6">
-                <HeadingInstrument level={3} className="text-xl md:text-2xl font-light">
-                  De juiste match?
-                </HeadingInstrument>
-                <TextInstrument className="text-white/60 text-[15px] md:text-sm leading-relaxed font-light">
-                  Zodra je de perfecte stem hebt gevonden, kun je direct de volledige productie starten.
-                </TextInstrument>
+                <HeadingInstrument level={3} className="text-xl md:text-2xl font-light"><VoiceglotText translationKey="auto.collaborativestudio.de_juiste_match_.e578cd" defaultText="De juiste match?" /><TextInstrument className="text-white/60 text-[15px] md:text-[15px] leading-relaxed font-light"><VoiceglotText translationKey="auto.collaborativestudio.zodra_je_de_perfecte.7320f0" defaultText="Zodra je de perfecte stem hebt gevonden, kun je direct de volledige productie starten." /></TextInstrument></HeadingInstrument>
                 <ButtonInstrument 
                   className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-[15px] md:rounded-[20px] font-medium flex items-center justify-center gap-2 active:scale-95"
                   onClick={() => window.location.href = `/checkout?session=${activeTrack}`}
                 >
                   <LucideCheckCircle size={18} className="md:w-5 md:h-5" />
-                  <span>Omzetten naar bestelling</span>
+                  <span>Kies deze stem</span>
                 </ButtonInstrument>
               </ContainerInstrument>
             </div>

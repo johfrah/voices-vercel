@@ -102,7 +102,7 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
         <h3 className="text-xl font-light tracking-tight">
           <VoiceglotText translationKey="recorder.title" defaultText="Audiobriefing" />
         </h3>
-        <p className="text-sm text-va-black/40 max-w-xs mx-auto font-light">
+        <p className="text-[15px] text-va-black/40 max-w-xs mx-auto font-light">
           <VoiceglotText translationKey="recorder.subtitle" defaultText="Spreek je instructies in voor de stemacteur. Duidelijkheid boven alles." />
         </p>
       </div>

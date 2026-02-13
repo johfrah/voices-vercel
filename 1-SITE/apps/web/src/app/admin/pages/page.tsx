@@ -1,29 +1,29 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useEditMode } from '@/contexts/EditModeContext';
-import { 
-  Search, 
-  Plus, 
-  FileText, 
-  ArrowLeft,
-  ChevronRight,
-  Globe,
-  Zap,
-  ArrowRight
-} from 'lucide-react';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument, 
-  InputInstrument 
+import { BentoCard } from '@/components/ui/BentoGrid';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    InputInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useEditMode } from '@/contexts/EditModeContext';
+import {
+    ArrowLeft,
+    ArrowRight,
+    ChevronRight,
+    FileText,
+    Globe,
+    Plus,
+    Search,
+    Zap
+} from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface PageRecord {
   id: number;
@@ -65,7 +65,7 @@ export default function PageArchitectPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft size={12} /> 
+            <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -79,14 +79,14 @@ export default function PageArchitectPage() {
             <InputInstrument 
               type="text" 
               placeholder="Zoek pagina..."
-              className="bg-white border border-black/5 rounded-2xl pl-12 pr-6 py-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all w-80 shadow-sm"
+              className="bg-white border border-black/5 rounded-2xl pl-12 pr-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all w-80 shadow-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </ContainerInstrument>
           
           <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
-            <Plus size={16} /> <VoiceglotText translationKey="admin.architect.new" defaultText="Nieuwe Pagina" />
+            <Plus strokeWidth={1.5} size={16} /> <VoiceglotText translationKey="admin.architect.new" defaultText="Nieuwe Pagina" />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -101,7 +101,7 @@ export default function PageArchitectPage() {
                 </div>
                 <div className="flex gap-2">
                   <span className="px-3 py-1 bg-primary/5 text-primary rounded-full text-[15px] font-black tracking-widest border border-primary/10">
-                    {page.iapContext.journey}
+                    {page.iapContext?.journey || 'common'}
                   </span>
                 </div>
               </div>
@@ -115,7 +115,7 @@ export default function PageArchitectPage() {
 
             <ContainerInstrument className="flex items-center justify-between pt-8 border-t border-black/5">
               <div className="flex items-center gap-2 text-va-black/20">
-                <Globe size={12} />
+                <Globe strokeWidth={1.5} size={12} />
                 <span className="text-[15px] font-bold tracking-widest">
                   <VoiceglotText translationKey="common.status.live" defaultText="Live" />
                 </span>
@@ -129,16 +129,11 @@ export default function PageArchitectPage() {
 
         <BentoCard span="sm" className="bg-va-black text-white p-8 rounded-[40px] relative overflow-hidden flex flex-col justify-between">
           <ContainerInstrument className="relative z-10">
-            <Zap className="text-primary mb-6" size={32} />
-            <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-4">
-              Page Intelligence
-            </HeadingInstrument>
-            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">
-              Voicy analyseert welke pagina&apos;s het beste converteren. Er zijn 2 nieuwe optimalisatie-suggesties voor de Academy.
-            </TextInstrument>
+            <Zap strokeWidth={1.5} className="text-primary mb-6" size={32} />
+            <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-4"><VoiceglotText translationKey="auto.page.page_intelligence.34032c" defaultText="Page Intelligence" /><TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="auto.page.voicy_analyseert_wel.dcb226" defaultText="Voicy analyseert welke pagina&apos;s het beste converteren. Er zijn 2 nieuwe optimalisatie-suggesties voor de Academy." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <ButtonInstrument className="relative z-10 text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
-            Bekijk Suggesties <ArrowRight size={12} />
+            Bekijk Suggesties <ArrowRight strokeWidth={1.5} size={12} />
           </ButtonInstrument>
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[60px]" />
         </BentoCard>

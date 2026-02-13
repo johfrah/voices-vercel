@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
-import Image from "next/image";
-import { Play, ArrowRight } from "lucide-react";
-import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
-import { ContainerInstrument, ButtonInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { BookingFunnel } from "@/components/studio/BookingFunnel";
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { WorkshopProgram } from "@/components/ui/Studio/WorkshopProgram";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { ArrowRight, Play } from "lucide-react";
+import Image from "next/image";
+import React, { useState } from 'react';
 
 interface WorkshopContentProps {
   workshop: any;
@@ -26,9 +26,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
       <BentoCard span="lg" className="relative group aspect-video md:aspect-auto bg-black overflow-hidden">
         {workshop.aftermovie_url ? (
           <ContainerInstrument className="absolute inset-0 flex items-center justify-center">
-            <ContainerInstrument className="text-white/20 font-light tracking-tighter text-4xl group-hover:scale-110 transition-transform duration-700">
-              <VoiceglotText translationKey="workshop.aftermovie.label" defaultText="Aftermovie" />
-            </ContainerInstrument>
+            <ContainerInstrument className="text-white/20 font-light tracking-tighter text-4xl group-hover:scale-110 transition-transform duration-700"><VoiceglotText translationKey="workshop.aftermovie.label" defaultText="Aftermovie" /></ContainerInstrument>
             <ButtonInstrument className="absolute inset-0 flex items-center justify-center group-hover:bg-black/20 transition-all duration-500">
               <ContainerInstrument className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:scale-110 transition-all duration-500">
                 <Play className="text-white fill-white ml-2" size={32} />
@@ -44,7 +42,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
           />
         )}
         <ContainerInstrument className="absolute bottom-8 left-8 right-8">
-          <TextInstrument className="text-white/60 text-sm font-medium max-w-md leading-relaxed">
+          <TextInstrument className="text-white/60 text-[15px] font-medium max-w-md leading-relaxed">
             {workshop.aftermovie_description || (
               <VoiceglotText 
                 translationKey="workshop.aftermovie.default_desc" 
@@ -73,9 +71,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
       {/* INSTRUCTEUR BENTO */}
       <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between">
         <ContainerInstrument>
-          <ContainerInstrument className="text-[15px] font-black tracking-widest text-white/30 mb-8">
-            <VoiceglotText translationKey="workshop.instructor.label" defaultText="Jouw Workshopgever" />
-          </ContainerInstrument>
+          <ContainerInstrument className="text-[15px] font-black tracking-widest text-white/30 mb-8"><VoiceglotText translationKey="workshop.instructor.label" defaultText="Jouw Workshopgever" /></ContainerInstrument>
           <ContainerInstrument className="relative w-32 h-32 rounded-3xl overflow-hidden mb-6 border-2 border-white/10">
             <Image 
               src={workshop.voice_header || "/assets/common/founder/johfrah-avatar-be.png"} 
@@ -84,9 +80,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
               className="object-cover"
             />
           </ContainerInstrument>
-          <HeadingInstrument level={4} className="text-2xl font-black tracking-tight mb-4">
-            <VoiceglotText translationKey={`workshop.${workshop.id}.instructor_name`} defaultText={workshop.instructeur || "Johfrah"} />
-          </HeadingInstrument>
+          <HeadingInstrument level={4} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText translationKey={`workshop.${workshop.id}.instructor_name`} defaultText={workshop.instructeur || "Johfrah"} /></HeadingInstrument>
           <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed line-clamp-4">
             {workshop.about_me || (
               <VoiceglotText 
@@ -96,9 +90,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
             )}
           </TextInstrument>
         </ContainerInstrument>
-        <ButtonInstrument className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all mt-8">
-          <VoiceglotText translationKey="workshop.instructor.action" defaultText="MEER OVER DE WORKSHOPGEVER" /> <ArrowRight size={14} />
-        </ButtonInstrument>
+        <ButtonInstrument className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all mt-8"><VoiceglotText translationKey="workshop.instructor.action" defaultText="MEER OVER DE WORKSHOPGEVER" /><ArrowRight strokeWidth={1.5} size={14} /></ButtonInstrument>
       </BentoCard>
     </BentoGrid>
   );

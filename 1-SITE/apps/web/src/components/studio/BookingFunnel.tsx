@@ -80,7 +80,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           onClick={() => setShowInterestForm(false)}
           className="text-[15px] font-black tracking-widest text-black/40 hover:text-black transition-colors flex items-center gap-2"
         >
-          <ArrowLeft size={12} /> Terug naar overzicht
+          <ArrowLeft strokeWidth={1.5} size={12} /> Terug naar overzicht
         </button>
         <div className="p-8 bg-va-off-white rounded-3xl border border-black/5">
           <h4 className="text-xl font-black tracking-tighter mb-4">
@@ -96,11 +96,9 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
             <input 
               type="email" 
               placeholder={t('common.placeholder.email', 'Jouw e-mailadres')} 
-              className="w-full p-4 rounded-xl border border-black/10 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+              className="w-full p-4 rounded-xl border border-black/10 text-[15px] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
             />
-            <button className="w-full py-4 bg-black text-white rounded-xl font-black tracking-widest text-[15px] hover:bg-primary transition-all">
-              <VoiceglotText translationKey="common.send" defaultText="VERZENDEN" />
-            </button>
+            <button className="w-full py-4 bg-black text-white rounded-xl font-black tracking-widest text-[15px] hover:bg-primary transition-all"><VoiceglotText translationKey="common.send" defaultText="VERZENDEN" /></button>
           </form>
         </div>
       </div>
@@ -193,17 +191,17 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                   "w-10 h-10 rounded-xl flex flex-col items-center justify-center transition-colors",
                   selectedDateIndex === index ? "bg-white/10" : "bg-black/5"
                 )}>
-                  <Calendar size={16} className={selectedDateIndex === index ? "text-primary" : "text-black/40"} />
+                  <Calendar strokeWidth={1.5} size={16} className={selectedDateIndex === index ? "text-primary" : "text-black/40"} />
                 </div>
                 <div className="text-left">
-                  <div className="text-sm font-black tracking-tight">{date.date_raw}</div>
+                  <div className="text-[15px] font-black tracking-tight">{date.date_raw}</div>
                   <div className="text-[15px] font-bold opacity-40 tracking-widest flex items-center gap-2 mt-0.5">
                     <MapPin size={10} /> {date.location}
                   </div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-sm font-black tracking-tighter">€{parseFloat(date.price || String(priceExclVatValue))}</div>
+                <div className="text-[15px] font-black tracking-tighter">€{parseFloat(date.price || String(priceExclVatValue))}</div>
               </div>
             </button>
           )) : (
@@ -245,7 +243,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           onClick={handleBooking}
           disabled={isBooking || dates.length === 0}
           className={cn(
-            "w-full py-6 rounded-2xl font-black uppercase tracking-widest text-sm transition-all duration-500 shadow-xl flex items-center justify-center gap-3 group relative overflow-hidden",
+            "w-full py-6 rounded-2xl font-black uppercase tracking-widest text-[15px] transition-all duration-500 shadow-xl flex items-center justify-center gap-3 group relative overflow-hidden",
             isBooking ? "bg-black/80 cursor-wait" : "bg-black text-white hover:bg-primary active:scale-95"
           )}
         >
@@ -256,7 +254,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
             </span>
           ) : (
             <>
-              <VoiceglotText translationKey="studio.booking.cta" defaultText="NU INSCHRIJVEN" /> <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+              <VoiceglotText translationKey="studio.booking.cta" defaultText="NU INSCHRIJVEN" /> <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform" />
             </>
           )}
         </button>

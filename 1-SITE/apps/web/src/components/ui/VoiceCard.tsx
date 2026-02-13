@@ -1,14 +1,17 @@
 "use client";
 
-import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { calculateDeliveryDate } from '@/lib/delivery-logic';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
-import { Calendar, ChevronRight, Mic, Play, Quote, Star, Monitor, Radio, Globe, Mic2, Phone, Building2, BookOpen, Wind, Plus, Check } from 'lucide-react';
+import { Check, Mic, Plus, Star, Play, Volume2 } from 'lucide-react';
 import Image from 'next/image';
 import React, { useMemo } from 'react';
 import { BentoCard } from './BentoGrid';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
+import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 
 interface VoiceCardProps {
@@ -18,17 +21,17 @@ interface VoiceCardProps {
 
 /**
  * CATEGORY DEFINITIONS (The Big 8)
- * Gebruikt Lucide icons met strokeWidth 1.5 voor de Ademing-feel.
+ * Gebruikt legacy SVG icons voor het echte Voices DNA.
  */
 const CATEGORIES = [
-  { id: 'tv', icon: Monitor, label: 'TV', key: 'category.tv' },
-  { id: 'radio', icon: Radio, label: 'Radio', key: 'category.radio' },
-  { id: 'online', icon: Globe, label: 'Online', key: 'category.online' },
-  { id: 'podcast', icon: Mic2, label: 'Podcast', key: 'category.podcast' },
-  { id: 'telefonie', icon: Phone, label: 'Telefonie', key: 'category.telephony' },
-  { id: 'corporate', icon: Building2, label: 'Corporate', key: 'category.corporate' },
-  { id: 'e-learning', icon: BookOpen, label: 'E-learning', key: 'category.elearning' },
-  { id: 'meditatie', icon: Wind, label: 'Meditatie', key: 'category.meditation' },
+  { id: 'tv', src: '/assets/common/branding/icons/INFO.svg', label: 'TV', key: 'category.tv' },
+  { id: 'radio', src: '/assets/common/branding/icons/INFO.svg', label: 'Radio', key: 'category.radio' },
+  { id: 'online', src: '/assets/common/branding/icons/INFO.svg', label: 'Online', key: 'category.online' },
+  { id: 'podcast', src: '/assets/common/branding/icons/INFO.svg', label: 'Podcast', key: 'category.podcast' },
+  { id: 'telefonie', src: '/assets/common/branding/icons/INFO.svg', label: 'Telefonie', key: 'category.telephony' },
+  { id: 'corporate', src: '/assets/common/branding/icons/INFO.svg', label: 'Corporate', key: 'category.corporate' },
+  { id: 'e-learning', src: '/assets/common/branding/icons/INFO.svg', label: 'E-learning', key: 'category.elearning' },
+  { id: 'meditatie', src: '/assets/common/branding/icons/INFO.svg', label: 'Meditatie', key: 'category.meditation' },
 ];
 
 export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
@@ -46,6 +49,21 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
       firstName: voice.firstName || voice.display_name?.split(' ')[0] || 'Stem',
       photoUrl: voice.photo_url
     });
+  };
+
+  const handleMouseEnter = () => {
+    playSwell();
+    // Sherlock: Hover-to-Hear (Micro-Demo)
+    if (voice.demos && voice.demos.length > 0 && !activeDemo) {
+      const timer = setTimeout(() => {
+        playDemo({
+          ...voice.demos[0],
+          actor_name: voice.display_name,
+          actor_photo: voice.photo_url
+        });
+      }, 800); // Subtiele vertraging om onbedoeld afspelen te voorkomen
+      return () => clearTimeout(timer);
+    }
   };
 
   const deliveryInfo = useMemo(() => {
@@ -85,7 +103,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
   const handleCategoryClick = (e: React.MouseEvent, demo: Demo) => {
     e.stopPropagation();
     playClick('pro');
-    playDemo(demo);
+    playDemo({
+      ...demo,
+      actor_name: voice.display_name,
+      actor_photo: voice.photo_url
+    });
   };
 
   const displayPrice = useMemo(() => {
@@ -131,155 +153,209 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
         playClick('soft');
         onSelect?.(voice);
       }}
-      onMouseEnter={() => playSwell()}
+      onMouseEnter={handleMouseEnter}
     >
-      {/* Liquid Aura (Tone of Voice) */}
-      <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/5 rounded-full blur-[80px] group-hover:bg-primary/10 transition-colors duration-1000"></div>
+      {/* Liquid Aura (Tone of Voice - Sherlock: Liquid Haptics) */}
+      <ContainerInstrument 
+        className={cn(
+          "absolute -top-20 -right-20 w-64 h-64 rounded-full blur-[80px] transition-all duration-1000",
+          activeDemo?.actor_name === voice.display_name ? "bg-primary/20 scale-125" : "bg-primary/5 group-hover:bg-primary/10"
+        )}
+      ></ContainerInstrument>
 
-      <div className="relative z-10 flex flex-col h-full justify-between">
-        <div>
+      <ContainerInstrument className="relative z-10 flex flex-col h-full justify-between">
+        <ContainerInstrument>
           {/* Header: Photo & Identity */}
-          <div className="flex items-center gap-5 mb-8">
-            <div className="relative w-20 h-20 rounded-[28px] overflow-hidden shadow-lg group-hover:scale-105 transition-transform duration-700">
+          <ContainerInstrument className="flex items-start gap-5 mb-8">
+            <ContainerInstrument className="relative w-24 h-24 md:w-28 md:h-28 rounded-[32px] overflow-hidden shadow-2xl group-hover:scale-105 transition-transform duration-700 shrink-0">
               {voice.photo_url ? (
-                <Image 
+                <VoiceglotImage 
                   src={voice.photo_url} 
                   alt={voice.display_name} 
                   fill
                   className="object-cover" 
                 />
               ) : (
-                <div className="w-full h-full bg-va-off-white flex items-center justify-center">
-                  <Mic size={24} className="text-va-black/20" />
-                </div>
+                <ContainerInstrument className="w-full h-full bg-va-off-white flex items-center justify-center">
+                  <Mic size={32} className="text-va-black/20" />
+                </ContainerInstrument>
               )}
+              
+              {/* Play Overlay (Sherlock: Speed-to-Sound) */}
+              <ContainerInstrument 
+                className={cn(
+                  "absolute inset-0 bg-va-black/40 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+                  activeDemo?.actor_name === voice.display_name && "opacity-100 bg-primary/20"
+                )}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (voice.demos && voice.demos.length > 0) {
+                    handleCategoryClick(e, voice.demos[0]);
+                  }
+                }}
+              >
+                <ContainerInstrument className="w-12 h-12 rounded-full bg-white text-va-black flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform duration-500">
+                  {activeDemo?.actor_name === voice.display_name ? <Volume2 size={24} className="animate-pulse" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+                </ContainerInstrument>
+              </ContainerInstrument>
+
               {/* Studio Toggle Overlay */}
-              <button 
+              <ButtonInstrument 
                 onClick={handleStudioToggle}
                 className={cn(
-                  "absolute top-2 right-2 px-3 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5 transition-all duration-300 z-20 border border-white/20",
+                  "absolute top-2 right-2 p-2 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 z-20 border border-white/20",
                   isSelected 
                     ? "bg-primary text-white scale-105 shadow-lg" 
                     : "bg-black/40 text-white/90 hover:bg-black/60 opacity-0 group-hover:opacity-100"
                 )}
               >
-                {isSelected ? (
-                  <>
-                    <Check size={12} />
-                    <span className="text-[15px] font-bold tracking-widest ">In Studio</span>
-                  </>
-                ) : (
-                  <>
-                    <Plus size={12} />
-                    <span className="text-[15px] font-bold tracking-widest text-white/80">Gratis Demo</span>
-                  </>
-                )}
-              </button>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-xl font-light tracking-tighter text-va-black">
+                {isSelected ? <Check size={14} strokeWidth={1.5} /> : <Plus size={14} strokeWidth={1.5} />}
+              </ButtonInstrument>
+            </ContainerInstrument>
+
+            <ContainerInstrument className="flex-1 min-w-0">
+              <ContainerInstrument className="flex flex-col gap-1 mb-3">
+                <HeadingInstrument level={3} className="text-2xl md:text-3xl font-light tracking-tighter text-va-black truncate">
                   <VoiceglotText 
                     translationKey={`actor.${voice.id}.name`} 
                     defaultText={voice.display_name} 
                     noTranslate={true} 
                   />
-                </h3>
-                {voice.voice_score > 90 && (
-                  <div className="flex items-center gap-1 px-2 py-0.5 bg-yellow-400/10 text-yellow-600 rounded-full">
-                    <Star size={10} fill="currentColor" />
-                    <span className="text-[15px] font-medium tracking-widest">
-                      <VoiceglotText translationKey="common.selected" defaultText="Geselecteerd" />
-                    </span>
-                  </div>
-                )}
-              </div>
-              <p className="text-[15px] font-medium text-va-black/30 tracking-[0.2em]">
-                <VoiceglotText translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} defaultText={voice.native_lang || ''} /> | {voice.gender === 'Mannelijke stem' ? <VoiceglotText translationKey="common.gender.male" defaultText="Man" /> : <VoiceglotText translationKey="common.gender.female" defaultText="Vrouw" />}
-              </p>
-            </div>
-          </div>
+                </HeadingInstrument>
+                
+                <ContainerInstrument className="flex items-center gap-2">
+                  <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] ">
+                    <VoiceglotText translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} defaultText={voice.native_lang || ''} />
+                  </TextInstrument>
+                  <ContainerInstrument className="w-1 h-1 rounded-full bg-va-black/10" />
+                  <TextInstrument className="text-[15px] font-light text-primary tracking-widest ">
+                    {deliveryInfo.formattedShort}
+                  </TextInstrument>
+                </ContainerInstrument>
+              </ContainerInstrument>
 
-          {/* Category Selector (The Big 8) */}
-          <div className="flex flex-wrap gap-2 mb-6">
+              <ContainerInstrument className="flex items-center gap-3">
+                <TextInstrument className="text-2xl font-light tracking-tighter text-va-black">€{displayPrice}</TextInstrument>
+                {voice.voice_score > 90 && (
+                  <ContainerInstrument className="flex items-center gap-1 px-2 py-0.5 bg-yellow-400/10 text-yellow-600 rounded-full">
+                    <Star strokeWidth={1.5} size={10} fill="currentColor" />
+                    <TextInstrument className="text-[15px] font-bold tracking-widest ">Top</TextInstrument>
+                  </ContainerInstrument>
+                )}
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+
+          {/* Category Selector (The Big 8 - Sherlock: Smart Category Highlighting) */}
+          <ContainerInstrument className="flex flex-wrap gap-2 mb-6">
             {CATEGORIES.map((cat) => {
               const demo = categorizedDemos[cat.id];
               if (!demo) return null;
               const isActive = activeDemo?.id === demo.id;
-              const Icon = cat.icon;
+              
+              // Sherlock: Highlight op basis van journey context
+              const isContextMatch = 
+                (state.current_journey === 'telephony' && cat.id === 'telefonie') ||
+                (state.current_journey === 'commercial' && (cat.id === 'tv' || cat.id === 'radio' || cat.id === 'online')) ||
+                (state.current_journey === 'video' && (cat.id === 'online' || cat.id === 'corporate'));
 
               return (
-                <button
+                <ButtonInstrument
                   key={cat.id}
                   onClick={(e) => handleCategoryClick(e, demo)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all duration-300 ${
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all duration-300",
                     isActive 
-                      ? 'bg-primary border-primary text-va-black shadow-lg shadow-primary/20 scale-105' 
-                      : 'bg-va-off-white border-black/5 text-va-black/40 hover:border-primary/30 hover:text-primary'
-                  }`}
+                      ? "bg-primary border-primary text-va-black shadow-lg shadow-primary/20 scale-105" 
+                      : isContextMatch
+                        ? "bg-primary/5 border-primary/20 text-primary"
+                        : "bg-va-off-white border-black/5 text-va-black/40 hover:border-primary/30 hover:text-primary"
+                  )}
                 >
-                  <Icon size={12} strokeWidth={isActive ? 2 : 1.5} className={isActive ? 'opacity-100' : 'opacity-60'} />
-                  <span className="text-[15px] font-medium tracking-widest">
+                  <ContainerInstrument className="w-3 h-3 relative">
+                    <VoiceglotImage 
+                      src={cat.src} 
+                      alt={cat.label} 
+                      fill 
+                      className={cn("transition-all duration-300", isActive ? "brightness-0" : "opacity-60")}
+                      style={!isActive ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' } : {}}
+                    />
+                  </ContainerInstrument>
+                  <TextInstrument className="text-[15px] font-light tracking-widest">
                     <VoiceglotText translationKey={cat.key} defaultText={cat.label} />
-                  </span>
-                </button>
+                  </TextInstrument>
+                </ButtonInstrument>
               );
             })}
-          </div>
+          </ContainerInstrument>
 
           {/* Sector Demo (Beheer-modus) */}
           {sectorDemo ? (
-            <div className="mb-6 p-5 bg-primary/5 rounded-3xl border border-primary/10 animate-in fade-in zoom-in-95 duration-700">
-              <div className="flex items-center gap-2 mb-2 text-primary">
-                <Quote size={12} fill="currentColor" />
-                <span className="text-[15px] font-medium tracking-[0.2em]">
+            <ContainerInstrument className="mb-6 p-5 bg-primary/5 rounded-3xl border border-primary/10 animate-in fade-in zoom-in-95 duration-700">
+              <ContainerInstrument className="flex items-center gap-2 mb-2 text-primary">
+                <VoiceglotImage 
+                  src="/assets/common/branding/icons/INFO.svg" 
+                  alt="Info" 
+                  width={12} 
+                  height={12} 
+                  style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+                />
+                <TextInstrument className="text-[15px] font-light tracking-[0.2em]">
                   <VoiceglotText translationKey="common.for_your_sector" defaultText="Voor uw sector" />
-                </span>
-              </div>
-              <p className="text-[15px] font-medium text-va-black/60 italic leading-relaxed">
+                </TextInstrument>
+              </ContainerInstrument>
+              <TextInstrument className="text-[15px] font-light text-va-black/60 italic leading-relaxed">
                 &quot;{sectorDemo}&quot;
-              </p>
-            </div>
+              </TextInstrument>
+            </ContainerInstrument>
           ) : (
-            <div className="mb-8">
+            <ContainerInstrument className="mb-8">
               {(voice as any).bio ? (
-                <p className="text-sm text-va-black/50 font-medium leading-relaxed italic mb-4 line-clamp-2">
+                <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed italic mb-4 line-clamp-2">
                   &quot;<VoiceglotText translationKey={`actor.${voice.id}.bio`} defaultText={(voice as any).bio} />&quot;
-                </p>
+                </TextInstrument>
               ) : (
-                <p className="text-sm text-va-black/50 font-medium leading-relaxed italic mb-4">
-                  &quot;<VoiceglotText translationKey="common.fallback_bio" defaultText="Professionele voice-over voor al uw projecten. Van commercials tot luisterboeken." />&quot;
-                </p>
+                <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed italic mb-4">
+                  &quot;<VoiceglotText translationKey="common.fallback_bio" defaultText="Professionele voice-over for al uw projecten. Van commercials tot luisterboeken." />&quot;
+                </TextInstrument>
               )}
               {voice.ai_tags && (
-                <div className="flex flex-wrap gap-2">
+                <ContainerInstrument className="flex flex-wrap gap-2">
                   {(typeof voice.ai_tags === 'string' ? voice.ai_tags.split(',') : (Array.isArray(voice.ai_tags) ? voice.ai_tags : [])).map((tag: any, i: number) => {
                     const tagStr = String(tag).trim();
                     const isAi = tagStr.startsWith('ai:');
                     const label = isAi ? tagStr.replace('ai:', '') : tagStr;
                     return (
-                      <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1 bg-va-off-white rounded-full text-[15px] font-medium tracking-widest text-va-black/40 border border-black/5">
+                      <TextInstrument as="span" key={i} className="inline-flex items-center gap-1.5 px-3 py-1 bg-va-off-white rounded-full text-[15px] font-light tracking-widest text-va-black/40 border border-black/5">
                         <VoiceglotText translationKey={`common.tag.${label.toLowerCase()}`} defaultText={label} />
-                        {isAi && <span className="text-[15px] bg-primary/10 text-primary px-1 rounded-sm">AI</span>}
-                      </span>
+                        {isAi && <TextInstrument as="span" className="text-[15px] bg-primary/10 text-primary px-1 rounded-sm font-light">AI</TextInstrument>}
+                      </TextInstrument>
                     );
                   })}
-                </div>
+                </ContainerInstrument>
               )}
-            </div>
+            </ContainerInstrument>
           )}
-        </div>
+        </ContainerInstrument>
 
         {/* Footer: Price & Action */}
-        <div className="pt-6 border-t border-black/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-1.5 text-[15px] font-medium text-va-black/30 tracking-widest mb-1">
-              <Calendar size={10} className="text-primary" />
-              <VoiceglotText translationKey="common.ready" defaultText="Klaar" />: {deliveryInfo.formattedShort}
-            </div>
-            <p className="text-2xl font-light tracking-tighter text-va-black">€{displayPrice}</p>
-          </div>
-          <button 
+        <ContainerInstrument className="pt-6 border-t border-black/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <ContainerInstrument>
+            <ContainerInstrument className="flex items-center gap-1.5 text-[15px] font-light text-va-black/30 tracking-widest mb-1">
+              <VoiceglotImage 
+                src="/assets/common/branding/icons/INFO.svg" 
+                alt="Delivery" 
+                width={10} 
+                height={10} 
+                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+              />
+              <ContainerInstrument as="span">
+                <VoiceglotText translationKey="common.ready" defaultText="Klaar" />: {deliveryInfo.formattedShort}
+              </ContainerInstrument>
+            </ContainerInstrument>
+            <TextInstrument className="text-2xl font-light tracking-tighter text-va-black">€{displayPrice}</TextInstrument>
+          </ContainerInstrument>
+          <ButtonInstrument 
             onClick={(e) => {
               e.stopPropagation();
               playClick('success');
@@ -290,10 +366,16 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
             className="w-full sm:w-auto bg-va-dark text-white px-6 py-4 rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-xl shadow-black/5 flex items-center justify-center gap-2 "
           >
             <VoiceglotText translationKey="common.order_fast" defaultText="Snel Bestellen" />
-            <ChevronRight size={14} />
-          </button>
-        </div>
-      </div>
+            <VoiceglotImage 
+              src="/assets/common/branding/icons/FORWARD.svg" 
+              alt="Order" 
+              width={14} 
+              height={14} 
+              className="brightness-0 invert"
+            />
+          </ButtonInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
     </BentoCard>
   );
 };

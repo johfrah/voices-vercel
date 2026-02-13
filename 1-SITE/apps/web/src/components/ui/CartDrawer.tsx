@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, X, ArrowRight, Trash2, Loader2 } from 'lucide-react';
+import Image from 'next/image';
+import { X, Trash2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 interface CartItem {
   key: string;
@@ -47,12 +49,18 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           <div className="px-8 py-8 border-b border-black/5 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-va-black rounded-xl flex items-center justify-center text-white">
-                <ShoppingBag size={20} />
+                <Image 
+                  src="/assets/common/branding/icons/CART.svg" 
+                  alt="Cart" 
+                  width={20} 
+                  height={20} 
+                  className="brightness-0 invert"
+                />
               </div>
-              <h2 className="text-xl font-black tracking-tighter">Jouw <span className="text-primary">Mandje</span></h2>
+              <h2 className="text-xl font-black tracking-tighter">Jouw <span className="text-primary"><VoiceglotText translationKey="auto.cartdrawer.mandje.65a3a2" defaultText="Mandje" /></span></h2>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-va-off-white rounded-full transition-all">
-              <X size={24} className="text-va-black/20" />
+              <X strokeWidth={1.5} size={24} className="text-va-black/20" />
             </button>
           </div>
 
@@ -61,14 +69,14 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             {loading ? (
               <div className="h-full flex flex-col items-center justify-center text-va-black/20 gap-4">
                 <Loader2 className="animate-spin" size={32} />
-                <span className="text-[15px] font-black tracking-widest">Laden...</span>
+                <span className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.cartdrawer.laden___.cb4395" defaultText="Laden..." /></span>
               </div>
             ) : cart.length > 0 ? (
               <div className="space-y-6">
                 {cart.map((item) => (
                   <div key={item.key} className="flex gap-4 p-4 bg-va-off-white rounded-[24px] group border border-transparent hover:border-black/5 transition-all">
                     <div className="flex-1">
-                      <h4 className="text-sm font-black tracking-tight mb-1">{item.title}</h4>
+                      <h4 className="text-[15px] font-black tracking-tight mb-1">{item.title}</h4>
                       <div className="flex justify-between items-center">
                         <span className="text-[15px] font-bold text-va-black/30 tracking-widest">Aantal: {item.quantity}</span>
                         <span className="font-black text-va-black">€{item.price}</span>
@@ -82,8 +90,15 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-va-black/20 gap-4">
-                <ShoppingBag size={48} />
-                <span className="text-[15px] font-black tracking-widest">Je mandje is leeg</span>
+                <Image 
+                  src="/assets/common/branding/icons/CART.svg" 
+                  alt="Empty Cart" 
+                  width={48} 
+                  height={48} 
+                  className="opacity-10"
+                  style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+                />
+                <span className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.cartdrawer.je_mandje_is_leeg.559931" defaultText="Je mandje is leeg" /></span>
               </div>
             )}
           </div>
@@ -93,7 +108,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             <div className="px-8 py-8 bg-va-off-white border-t border-black/5 space-y-6">
               <div className="space-y-3">
                 <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
-                  <span>Subtotaal</span>
+                  <span><VoiceglotText translationKey="auto.cartdrawer.subtotaal.e48026" defaultText="Subtotaal" /></span>
                   <span className="text-va-black">€{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
@@ -101,7 +116,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                   <span className="text-va-black">€{vat.toFixed(2)}</span>
                 </div>
                 <div className="pt-4 border-t border-black/5 flex justify-between items-center">
-                  <span className="text-sm font-black tracking-widest">Totaal</span>
+                  <span className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.cartdrawer.totaal.e28895" defaultText="Totaal" /></span>
                   <span className="text-3xl font-black text-primary tracking-tighter">€{total.toFixed(2)}</span>
                 </div>
               </div>
@@ -111,7 +126,14 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 onClick={onClose}
                 className="va-btn-pro w-full flex items-center justify-center gap-3 group !bg-va-black"
               >
-                Doorgaan naar Kassa <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                Doorgaan naar Kassa 
+                <Image 
+                  src="/assets/common/branding/icons/FORWARD.svg" 
+                  alt="Forward" 
+                  width={18} 
+                  height={18} 
+                  className="brightness-0 invert group-hover:translate-x-1 transition-transform"
+                />
               </Link>
             </div>
           )}

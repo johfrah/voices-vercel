@@ -11,7 +11,7 @@ import { MetadataRoute } from 'next';
  */
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://voices.be';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.voices.be';
   const languages = ['', '/en', '/fr', '/de']; // Ondersteunde talen
 
   // 1. Core Pages (Statisch) - Nuclear Deployment Trigger 2026.1
@@ -34,7 +34,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let allActors: { slug: string }[] = [];
   let allArticles: { slug: string }[] = [];
   const academyLessons = Array.from({ length: 20 }, (_, i) => ({ id: (i + 1).toString() })); // 20 lessen
-  const studioWorkshops = ['stemacteren-basis', 'stemacteren-gevorderd', 'audio-productie']; // Voorbeeld workshops
 
   try {
     allActors = await db.select({ slug: actors.slug }).from(actors).where(eq(actors.status, 'live'));
@@ -88,15 +87,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     });
 
-    // 🎙️ Studio routes
-    studioWorkshops.forEach(slug => {
-      sitemapEntries.push({
-        url: `${baseUrl}${lang}/studio/workshop/${slug}/`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.7,
-      });
-    });
   }
 
   return sitemapEntries;

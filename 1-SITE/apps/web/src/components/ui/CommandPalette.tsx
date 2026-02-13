@@ -1,31 +1,31 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { Command } from 'cmdk';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { Command } from 'cmdk';
+import {
+    Activity,
+    Brain,
+    Camera,
+    Globe,
+    History,
+    Layers,
+    LayoutDashboard,
+    Mail,
+    Mic,
+    Music,
+    Plus,
+    Search,
+    Settings,
+    ShieldCheck,
+    TrendingUp,
+    Users,
+    Zap
+} from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { VoiceglotText } from './VoiceglotText';
-import { 
-  Mail, 
-  LayoutDashboard, 
-  Users, 
-  Mic, 
-  FileText, 
-  Settings, 
-  Search,
-  Plus,
-  Brain,
-  TrendingUp,
-  History,
-  ShieldCheck,
-  LogOut,
-  Layers,
-  Camera,
-  Music,
-  Globe,
-  Zap
-} from 'lucide-react';
 
 /**
  * ⚡ COMMAND PALETTE (GOD MODE 2026)
@@ -59,6 +59,30 @@ export const CommandPalette = () => {
     setOpen(false);
   };
 
+  const runAgent = async (agent: string) => {
+    setOpen(false);
+    const toastId = toast.loading(`Agent ${agent.toUpperCase()} wordt gestart...`);
+    
+    try {
+      const res = await fetch('/api/admin/agents/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent })
+      });
+      
+      const data = await res.json();
+      
+      if (data.success) {
+        toast.success(`Agent ${agent.toUpperCase()} klaar!`, { id: toastId });
+        console.log(data.logs);
+      } else {
+        toast.error(`Agent ${agent.toUpperCase()} faalde: ${data.error}`, { id: toastId });
+      }
+    } catch (e) {
+      toast.error('Kon agent niet starten.', { id: toastId });
+    }
+  };
+
   return (
     <Command.Dialog
       open={open}
@@ -83,6 +107,71 @@ export const CommandPalette = () => {
             <VoiceglotText translationKey="command.palette.empty" defaultText="Geen resultaten gevonden voor deze zoekopdracht." />
           </Command.Empty>
 
+          <Command.Group heading={<VoiceglotText translationKey="command.palette.group.agents" defaultText="Agents (AI)" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400 mt-4">
+            <Item onSelect={() => runCommand(() => router.push('/admin/agents'))}>
+              <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-primary/20 bg-primary/5 flex items-center justify-center">
+                <Brain size={14} className="text-primary" />
+              </div>
+              <span className="font-bold text-primary"><VoiceglotText translationKey="nav.agent_center" defaultText="Open Agent Command Center" /></span>
+              <Shortcut>G C</Shortcut>
+            </Item>
+            <Item onSelect={() => runAgent('bob')}>
+              <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
+                <Image src="/assets/bob-avatar-voicy.png" alt="Bob" width={24} height={24} className="object-cover" />
+              </div>
+              <span><VoiceglotText translationKey="agent.bob" defaultText="Start Bob (Live Concert)" /></span>
+              <Shortcut>B</Shortcut>
+            </Item>
+            <Item onSelect={() => runAgent('mark')}>
+              <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
+                <Image src="/assets/mark-avatar-voicy.png" alt="Mark" width={24} height={24} className="object-cover" />
+              </div>
+              <span><VoiceglotText translationKey="agent.mark" defaultText="Mark: Voiceglot Surgeon" /></span>
+            </Item>
+            <Item onSelect={() => runAgent('chris')}>
+              <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
+                <Image src="/assets/chris-avatar-voicy.png" alt="Chris" width={24} height={24} className="object-cover" />
+              </div>
+              <span><VoiceglotText translationKey="agent.chris" defaultText="Chris: Watchdog Audit" /></span>
+            </Item>
+            <Item onSelect={() => runAgent('anna')}>
+              <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
+                <Image src="/assets/anna-avatar-voicy.png" alt="Anna" width={24} height={24} className="object-cover" />
+              </div>
+              <span><VoiceglotText translationKey="agent.anna" defaultText="Anna: Stability Check" /></span>
+            </Item>
+            <Item onSelect={() => runAgent('laya')}>
+              <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
+                <Image src="/assets/laya-avatar-voicy.png" alt="Laya" width={24} height={24} className="object-cover" />
+              </div>
+              <span><VoiceglotText translationKey="agent.laya" defaultText="Laya: Aesthetic Guard" /></span>
+            </Item>
+            <Item onSelect={() => runAgent('moby')}>
+              <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
+                <Image src="/assets/moby-avatar-voicy.png" alt="Moby" width={24} height={24} className="object-cover" />
+              </div>
+              <span><VoiceglotText translationKey="agent.moby" defaultText="Moby: Mobile-First Regie" /></span>
+            </Item>
+            <Item onSelect={() => runAgent('suzy')}>
+              <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
+                <Image src="/assets/suzy-avatar-voicy.png" alt="Suzy" width={24} height={24} className="object-cover" />
+              </div>
+              <span><VoiceglotText translationKey="agent.suzy" defaultText="Suzy: SEO & LLM Schema" /></span>
+            </Item>
+            <Item onSelect={() => runAgent('felix')}>
+              <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
+                <Image src="/assets/felix-avatar-voicy.png" alt="Felix" width={24} height={24} className="object-cover" />
+              </div>
+              <span><VoiceglotText translationKey="agent.felix" defaultText="Felix: Nood Deep Clean" /></span>
+            </Item>
+            <Item onSelect={() => runAgent('sherlock')}>
+              <div className="w-6 h-6 mr-3 rounded-full overflow-hidden border border-gray-100 group-aria-selected:border-white/20">
+                <Image src="/assets/sherlock-avatar-voicy.png" alt="Sherlock" width={24} height={24} className="object-cover" />
+              </div>
+              <span><VoiceglotText translationKey="agent.sherlock" defaultText="Sherlock: Trend Detective" /></span>
+            </Item>
+          </Command.Group>
+
           <Command.Group heading={<VoiceglotText translationKey="command.palette.group.nav" defaultText="Navigatie" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400">
             <Item onSelect={() => runCommand(() => router.push('/admin/dashboard'))}>
               <LayoutDashboard className="w-4 h-4 mr-3" />
@@ -94,8 +183,8 @@ export const CommandPalette = () => {
               <span><VoiceglotText translationKey="admin.bi.title" defaultText="Het Overzicht (BI)" /></span>
               <Shortcut>G O</Shortcut>
             </Item>
-            <Item onSelect={() => runCommand(() => router.push('/account/mailbox'))}>
-              <Mail className="w-4 h-4 mr-3" />
+            <Item onSelect={() => runCommand(() => router.push('/admin/mailbox'))}>
+              <Mail strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="common.mailbox" defaultText="Mailbox" /></span>
               <Shortcut>G M</Shortcut>
             </Item>
@@ -105,7 +194,7 @@ export const CommandPalette = () => {
               <Shortcut>G A</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/vault'))}>
-              <ShieldCheck className="w-4 h-4 mr-3" />
+              <ShieldCheck strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="common.vault" defaultText="The Vault" /></span>
               <Shortcut>G V</Shortcut>
             </Item>
@@ -128,7 +217,7 @@ export const CommandPalette = () => {
               <Shortcut>G W</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/backoffice/media'))}>
-              <Plus className="w-4 h-4 mr-3" />
+              <Plus strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.media.title" defaultText="Media Manager" /></span>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/photo-matcher'))}>
@@ -136,17 +225,17 @@ export const CommandPalette = () => {
               <span><VoiceglotText translationKey="admin.photo_matcher.title" defaultText="Photo Matcher" /></span>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/voiceglot'))}>
-              <Globe className="w-4 h-4 mr-3" />
+              <Globe strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.voiceglot.title" defaultText="Voiceglot Intelligence" /></span>
               <Shortcut>G L</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/vibecode'))}>
-              <Zap className="w-4 h-4 mr-3" />
+              <Zap strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.vibecode.title" defaultText="Cody Engine" /></span>
               <Shortcut>G B</Shortcut>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/admin/security'))}>
-              <ShieldCheck className="w-4 h-4 mr-3" />
+              <ShieldCheck strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.security.title" defaultText="Security Center" /></span>
               <Shortcut>G S</Shortcut>
             </Item>
@@ -180,7 +269,7 @@ export const CommandPalette = () => {
               toast.success('Nieuw bericht venster geopend');
               // Trigger compose logic via event of state
             })}>
-              <Plus className="w-4 h-4 mr-3" />
+              <Plus strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="mailbox.compose.new" defaultText="Nieuw Bericht opstellen" /></span>
               <Shortcut>C</Shortcut>
             </Item>
@@ -205,11 +294,11 @@ export const CommandPalette = () => {
           </Command.Group>
 
           <Command.Group heading={<VoiceglotText translationKey="command.palette.group.intelligence" defaultText="Intelligence" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400 mt-4">
-            <Item onSelect={() => runCommand(() => router.push('/account/mailbox?tab=insights'))}>
+            <Item onSelect={() => runCommand(() => router.push('/admin/mailbox?tab=insights'))}>
               <TrendingUp className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.insights.title" defaultText="Trends & SWOT Analyse" /></span>
             </Item>
-            <Item onSelect={() => runCommand(() => router.push('/account/mailbox?tab=faq'))}>
+            <Item onSelect={() => runCommand(() => router.push('/admin/mailbox?tab=faq'))}>
               <Brain className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.faq.proposals" defaultText="FAQ Proposals bekijken" /></span>
             </Item>
@@ -225,14 +314,14 @@ export const CommandPalette = () => {
               </span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="px-1 py-0.5 bg-white border border-gray-200 rounded text-[15px] font-bold shadow-sm">ENTER</span>
+              <span className="px-1 py-0.5 bg-white border border-gray-200 rounded text-[15px] font-bold shadow-sm"><VoiceglotText translationKey="auto.commandpalette.enter.331b31" defaultText="ENTER" /></span>
               <span className="text-[15px] text-gray-400 font-medium">
                 <VoiceglotText translationKey="command.palette.hint.select" defaultText="Selecteren" />
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[15px] text-gray-300 font-black tracking-tighter italic">Voices OS v2.6</span>
+            <span className="text-[15px] text-gray-300 font-black tracking-tighter italic"><VoiceglotText translationKey="auto.commandpalette.voices_os_v2_6.9e2ba2" defaultText="Voices OS v2.6" /></span>
           </div>
         </div>
       </div>

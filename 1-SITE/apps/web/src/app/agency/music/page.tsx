@@ -73,9 +73,7 @@ export default function MusicLibraryPage() {
           <HeadingInstrument level={1} className="text-7xl md:text-9xl font-black leading-[0.85] tracking-tighter">
             MUSIC<span className="text-primary">.</span>
           </HeadingInstrument>
-          <TextInstrument className="text-xl md:text-2xl font-medium text-va-black/60 leading-tight max-w-2xl mx-auto">
-            <VoiceglotText translationKey="music.hero.subtitle" defaultText="De perfecte soundtrack voor uw voice-over. Rechtenvrije muziek, klaar voor gebruik." />
-          </TextInstrument>
+          <TextInstrument className="text-xl md:text-2xl font-medium text-va-black/60 leading-tight max-w-2xl mx-auto"><VoiceglotText translationKey="music.hero.subtitle" defaultText="De perfecte soundtrack voor uw voice-over. Rechtenvrije muziek, klaar voor gebruik." /></TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
@@ -119,7 +117,7 @@ export default function MusicLibraryPage() {
                             playingId === track.id ? "bg-va-black text-white" : "bg-va-off-white text-va-black hover:bg-va-black hover:text-white"
                           )}
                         >
-                          {playingId === track.id ? <><Pause size={14} fill="currentColor" /> Pauze</> : <><Play size={14} fill="currentColor" /> Beluister</>}
+                          {playingId === track.id ? <><Pause size={14} fill="currentColor" /><VoiceglotText translationKey="auto.page.pauze.899994" defaultText="Pauze" /></> : <><Play size={14} fill="currentColor" /><VoiceglotText translationKey="auto.page.beluister.59da41" defaultText="Beluister" /></>}
                         </button>
                         <button 
                           onClick={() => setSelectedTrackId(track.id)}
@@ -128,7 +126,7 @@ export default function MusicLibraryPage() {
                             selectedTrackId === track.id ? "bg-primary text-white" : "bg-va-black text-white hover:bg-primary"
                           )}
                         >
-                          {selectedTrackId === track.id ? <Check size={20} /> : <ArrowRight size={20} />}
+                          {selectedTrackId === track.id ? <Check strokeWidth={1.5} size={20} /> : <ArrowRight strokeWidth={1.5} size={20} />}
                         </button>
                       </div>
                     </div>
@@ -142,7 +140,7 @@ export default function MusicLibraryPage() {
                   <div className="bg-va-black text-white rounded-[40px] p-8 shadow-2xl border-b-8 border-primary overflow-hidden relative">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-3xl" />
                     
-                    <h3 className="text-2xl font-black tracking-tight mb-6 relative z-10">Jouw Selectie</h3>
+                    <h3 className="text-2xl font-black tracking-tight mb-6 relative z-10"><VoiceglotText translationKey="auto.page.jouw_selectie.eb01b0" defaultText="Jouw Selectie" /></h3>
                     
                     {selectedTrackId ? (
                       <div className="space-y-8 relative z-10">
@@ -151,16 +149,14 @@ export default function MusicLibraryPage() {
                             <Music size={24} />
                           </div>
                           <div>
-                            <p className="text-[15px] font-black tracking-widest text-white/40">Gekozen track</p>
+                            <p className="text-[15px] font-black tracking-widest text-white/40"><VoiceglotText translationKey="auto.page.gekozen_track.e38acd" defaultText="Gekozen track" /></p>
                             <p className="text-lg font-black ">{tracks.find(t => t.id === selectedTrackId)?.title}</p>
                           </div>
                         </div>
 
                         <div className="space-y-4">
                           <p className="text-[15px] font-black tracking-widest text-white/40 flex items-center gap-2">
-                            <Info size={14} className="text-primary" />
-                            Hoe wil je dit gebruiken?
-                          </p>
+                            <Info size={14} className="text-primary" /><VoiceglotText translationKey="auto.page.hoe_wil_je_dit_gebru.57f6f5" defaultText="Hoe wil je dit gebruiken?" /></p>
                           
                           <div className="grid grid-cols-1 gap-3">
                             <button 
@@ -171,11 +167,11 @@ export default function MusicLibraryPage() {
                               )}
                             >
                               <div className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center", options.asBackground ? "bg-primary border-primary text-white" : "border-white/20")}>
-                                {options.asBackground && <Check size={12} />}
+                                {options.asBackground && <Check strokeWidth={1.5} size={12} />}
                               </div>
                               <div>
-                                <p className="text-[15px] font-black tracking-tight">Achtergrondmuziek</p>
-                                <p className="text-[15px] font-medium text-white/40">Gemixt onder de stem.</p>
+                                <p className="text-[15px] font-black tracking-tight"><VoiceglotText translationKey="auto.page.achtergrondmuziek.bb0154" defaultText="Achtergrondmuziek" /></p>
+                                <p className="text-[15px] font-medium text-white/40"><VoiceglotText translationKey="auto.page.gemixt_onder_de_stem.5c81ba" defaultText="Gemixt onder de stem." /></p>
                               </div>
                             </button>
 
@@ -187,11 +183,11 @@ export default function MusicLibraryPage() {
                               )}
                             >
                               <div className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center", options.asHoldMusic ? "bg-primary border-primary text-white" : "border-white/20")}>
-                                {options.asHoldMusic && <Check size={12} />}
+                                {options.asHoldMusic && <Check strokeWidth={1.5} size={12} />}
                               </div>
                               <div>
-                                <p className="text-[15px] font-black tracking-tight">Wachtmuziek</p>
-                                <p className="text-[15px] font-medium text-white/40">Als apart bestand.</p>
+                                <p className="text-[15px] font-black tracking-tight"><VoiceglotText translationKey="auto.page.wachtmuziek.57fcdd" defaultText="Wachtmuziek" /></p>
+                                <p className="text-[15px] font-medium text-white/40"><VoiceglotText translationKey="auto.page.als_apart_bestand_.63bd38" defaultText="Als apart bestand." /></p>
                               </div>
                             </button>
                           </div>
@@ -204,8 +200,7 @@ export default function MusicLibraryPage() {
                             onClick={() => handleAddToCart(tracks.find(t => t.id === selectedTrackId))}
                             className="px-8 py-4 bg-primary text-white rounded-2xl font-black tracking-widest text-[15px] hover:scale-105 transition-all disabled:opacity-20 disabled:scale-100"
                           >
-                            Voeg toe
-                          </button>
+                            Voeg toe</button>
                         </div>
                       </div>
                     ) : (
@@ -213,18 +208,16 @@ export default function MusicLibraryPage() {
                         <div className="w-16 h-16 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center mx-auto">
                           <Music size={24} />
                         </div>
-                        <p className="text-[15px] font-black tracking-widest">Kies een track om te configureren</p>
+                        <p className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.kies_een_track_om_te.2115aa" defaultText="Kies een track om te configureren" /></p>
                       </div>
                     )}
                   </div>
                   
                   <div className="p-6 bg-white rounded-[32px] border border-black/5">
                     <p className="text-[15px] font-medium text-va-black/60 leading-relaxed">
-                      <span className="font-black text-va-black block mb-1 tracking-widest">Inbegrepen bij elke licentie:</span>
+                      <span className="font-black text-va-black block mb-1 tracking-widest"><VoiceglotText translationKey="auto.page.inbegrepen_bij_elke_.b8ac49" defaultText="Inbegrepen bij elke licentie:" /></span>
                       • Onbeperkt gebruik (rechtenvrij)<br />
-                      • Professionele mix door technicus<br />
-                      • HD WAV & 8kHz Telefoon formaat
-                    </p>
+                      • Professionele mix door technicus<br /><VoiceglotText translationKey="auto.page.__hd_wav___8khz_tele.c13eb4" defaultText="• HD WAV & 8kHz Telefoon formaat" /></p>
                   </div>
                 </div>
               </div>

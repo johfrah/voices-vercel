@@ -3,8 +3,8 @@
 import { Star } from "lucide-react";
 import React from 'react';
 import { BentoCard } from "./BentoGrid";
-import { VoiceglotText } from "./VoiceglotText";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
+import { VoiceglotText } from "./VoiceglotText";
 
 /**
  * REVIEWS INSTRUMENT
@@ -61,17 +61,10 @@ export const ReviewsInstrument: React.FC<{
       />
       <ContainerInstrument className="mb-16 flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter text-primary">
-            <VoiceglotText translationKey={`${translationKeyPrefix}.title`} defaultText={title || "Ervaringen"} />
-          </HeadingInstrument>
-          <TextInstrument className="text-xl text-black/40 font-medium leading-relaxed max-w-2xl">
-            <VoiceglotText translationKey={`${translationKeyPrefix}.subtitle`} defaultText={subtitle || "Waarom klanten kiezen voor de stemmen van Voices."} />
-          </TextInstrument>
+          <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter text-primary"><VoiceglotText translationKey={`${translationKeyPrefix}.title`} defaultText={title || "Ervaringen"} /><TextInstrument className="text-xl text-black/40 font-medium leading-relaxed max-w-2xl"><VoiceglotText translationKey={`${translationKeyPrefix}.subtitle`} defaultText={subtitle || "Waarom klanten kiezen voor de stemmen van Voices."} /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="flex gap-2">
-          <ContainerInstrument className="px-6 py-3 bg-va-off-white rounded-full text-[15px] font-medium tracking-widest border border-black/5">
-            <VoiceglotText translationKey={`${translationKeyPrefix}.score`} defaultText="4.9 / 5 Gemiddelde Score" />
-          </ContainerInstrument>
+          <ContainerInstrument className="px-6 py-3 bg-va-off-white rounded-full text-[15px] font-medium tracking-widest border border-black/5"><VoiceglotText translationKey={`${translationKeyPrefix}.score`} defaultText="4.9 / 5 Gemiddelde Score" /></ContainerInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
 
@@ -81,10 +74,10 @@ export const ReviewsInstrument: React.FC<{
             <ContainerInstrument className="space-y-6">
               <ContainerInstrument className="flex gap-1">
                 {[...Array(review.rating)].map((_, i) => (
-                  <Star key={i} size={14} className="text-primary" fill="currentColor" />
+                  <Star strokeWidth={1.5} key={i} size={14} className="text-primary" fill="currentColor" />
                 ))}
               </ContainerInstrument>
-              <TextInstrument className="text-sm font-medium leading-relaxed text-va-black/70 italic">
+              <TextInstrument className="text-[15px] font-medium leading-relaxed text-va-black/70 italic">
                 &quot;<VoiceglotText translationKey={`${translationKeyPrefix}.review.${i}.text`} defaultText={review.text} />&quot;
               </TextInstrument>
             </ContainerInstrument>
@@ -93,9 +86,7 @@ export const ReviewsInstrument: React.FC<{
                 {review.name.charAt(0)}
               </ContainerInstrument>
               <ContainerInstrument>
-                <HeadingInstrument level={5} className="text-[15px] font-medium tracking-widest">
-                  <VoiceglotText translationKey={`${translationKeyPrefix}.reviewer.${i}`} defaultText={review.name} noTranslate={true} />
-                </HeadingInstrument>
+                <HeadingInstrument level={5} className="text-[15px] font-medium tracking-widest"><VoiceglotText translationKey={`${translationKeyPrefix}.reviewer.${i}`} defaultText={review.name} noTranslate={true} /></HeadingInstrument>
                 <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.1em] mt-0.5">{review.date}</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

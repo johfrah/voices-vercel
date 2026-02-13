@@ -1,21 +1,20 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument,
-  LoadingScreenInstrument
+import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    LoadingScreenInstrument,
+    PageWrapperInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
-import { CheckCircle2, ArrowRight, ShoppingBag, Sparkles } from 'lucide-react';
-import Link from 'next/link';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { ArrowRight, CheckCircle2, ShoppingBag, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 /**
  * 🎊 CHECKOUT SUCCESS PAGE (NUCLEAR)
@@ -58,83 +57,73 @@ export default function SuccessPageClient() {
         </ContainerInstrument>
         
         <ContainerInstrument className="space-y-2">
-          <HeadingInstrument level={1} className="text-6xl md:text-7xl font-black tracking-tighter leading-none text-va-black">
-            <VoiceglotText translationKey="checkout.success.title" defaultText="Gelukt!" />
-          </HeadingInstrument>
-            <TextInstrument className="text-va-black/40 font-medium text-lg">
-            <VoiceglotText 
+          <HeadingInstrument level={1} className="text-6xl md:text-7xl font-black tracking-tighter leading-none text-va-black"><VoiceglotText translationKey="checkout.success.title" defaultText="Gelukt!" /><TextInstrument className="text-va-black/40 font-medium text-lg"><VoiceglotText 
               translationKey="checkout.success.subtitle" 
               defaultText={`Je bestelling #${orderId} is succesvol ontvangen. We sturen je direct een bevestigingsmail met alle details.`} 
-            />
-          </TextInstrument>
+            /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
 
         <ContainerInstrument className="bg-primary/5 p-4 rounded-2xl inline-block">
-          <TextInstrument className="text-[15px] font-black tracking-widest text-primary animate-pulse">
-            <VoiceglotText 
+          <TextInstrument className="text-[15px] font-black tracking-widest text-primary animate-pulse"><VoiceglotText 
               translationKey="checkout.success.delivery.info" 
               defaultText={searchParams.get('delivery') ? `Verwachte levering: ${searchParams.get('delivery')}` : "Verwachte levering: Binnen 48 uur"} 
-            />
-          </TextInstrument>
+            /></TextInstrument>
         </ContainerInstrument>
 
         <BentoGrid columns={2} className="pt-8">
           <BentoCard span="sm" className="bg-white border border-black/5 p-8 rounded-[32px] text-left space-y-4">
-            <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+            <ContainerInstrument className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
               <ShoppingBag size={20} />
-            </div>
+            </ContainerInstrument>
             <HeadingInstrument level={3} className="text-xl font-black tracking-tight">
               <VoiceglotText translationKey="checkout.success.status.title" defaultText="Status" />
+              <TextInstrument className="text-[15px] text-va-black/40 font-medium leading-relaxed">
+                <VoiceglotText 
+                  translationKey="checkout.success.status.text" 
+                  defaultText={searchParams.get('method') === 'banktransfer' 
+                    ? "Je bestelling staat in de wacht tot de factuur is voldaan. Zodra de betaling binnen is, gaan we direct voor je aan de slag."
+                    : "Je ontvangt binnen enkele minuten een bevestiging per e-mail. Je kunt de voortgang ook volgen in je dashboard."
+                  } 
+                />
+              </TextInstrument>
             </HeadingInstrument>
-            <TextInstrument className="text-[15px] text-va-black/40 font-medium leading-relaxed">
-              <VoiceglotText 
-                translationKey="checkout.success.status.text" 
-                defaultText={searchParams.get('method') === 'banktransfer' 
-                  ? "Je bestelling staat in de wacht tot de factuur is voldaan. Zodra de betaling binnen is, gaan we direct voor je aan de slag."
-                  : "Je ontvangt binnen enkele minuten een bevestiging per e-mail. Je kunt de voortgang ook volgen in je dashboard."
-                } 
-              />
-            </TextInstrument>
-            <Link href="/account/orders" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
-              <VoiceglotText translationKey="checkout.success.status.cta" defaultText="Mijn Bestellingen" /> <ArrowRight size={12} />
-            </Link>
+            <ButtonInstrument as={Link} href="/account/orders" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
+              <VoiceglotText translationKey="checkout.success.status.cta" defaultText="Mijn Bestellingen" />
+              <ArrowRight strokeWidth={1.5} size={12} />
+            </ButtonInstrument>
           </BentoCard>
 
           <BentoCard span="sm" className="bg-va-black text-white p-8 rounded-[32px] text-left space-y-4 relative overflow-hidden">
-            <div className="w-10 h-10 bg-primary text-va-black rounded-xl flex items-center justify-center relative z-10">
-              <Sparkles size={20} />
-            </div>
+            <ContainerInstrument className="w-10 h-10 bg-primary text-va-black rounded-xl flex items-center justify-center relative z-10">
+              <Sparkles strokeWidth={1.5} size={20} />
+            </ContainerInstrument>
             <HeadingInstrument level={3} className="text-xl font-black tracking-tight relative z-10">
               <VoiceglotText translationKey="checkout.success.next.title" defaultText="Volgende Stap" />
+              <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed relative z-10">
+                <VoiceglotText 
+                  translationKey="checkout.success.next.text" 
+                  defaultText={secureToken 
+                    ? "Je hebt direct toegang tot je nieuwe project. Klik hieronder om meteen te starten." 
+                    : "Wil je alvast een volgend project voorbereiden of je stem-techniek aanscherpen in de Academy?"
+                  } 
+                />
+              </TextInstrument>
             </HeadingInstrument>
-            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed relative z-10">
-              <VoiceglotText 
-                translationKey="checkout.success.next.text" 
-                defaultText={secureToken 
-                  ? "Je hebt direct toegang tot je nieuwe project. Klik hieronder om meteen te starten." 
-                  : "Wil je alvast een volgend project voorbereiden of je stem-techniek aanscherpen in de Academy?"
-                } 
-              />
-            </TextInstrument>
             <Link 
               href={secureToken ? `/api/auth/magic-login?token=${secureToken}&redirect=/cockpit` : "/academy"} 
               className="va-btn-pro !bg-primary !py-3 w-full text-center relative z-10"
-            >
-              <VoiceglotText 
+            ><VoiceglotText 
                 translationKey="checkout.success.next.cta" 
                 defaultText={secureToken ? "Direct naar Cockpit" : "Naar de Academy"} 
-              />
-            </Link>
+              /></Link>
             <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
           </BentoCard>
         </BentoGrid>
+        </ContainerInstrument>
 
         <ContainerInstrument className="pt-8">
-          <Link href="/" className="text-[15px] font-black tracking-widest text-va-black/20 hover:text-primary transition-colors">
-            <VoiceglotText translationKey="checkout.success.back_home" defaultText="Terug naar de homepagina" />
-          </Link>
+          <Link href="/" className="text-[15px] font-black tracking-widest text-va-black/20 hover:text-primary transition-colors"><VoiceglotText translationKey="checkout.success.back_home" defaultText="Terug naar de homepagina" /></Link>
         </ContainerInstrument>
-      </ContainerInstrument>
     </PageWrapperInstrument>
   );
 }

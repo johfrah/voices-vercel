@@ -32,9 +32,9 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
           <div className="va-artist-nav-left">
             <Link href="/agency" className="va-artist-back-link">
               <div className="va-artist-back-icon">
-                <ArrowLeft size={18} />
+                <ArrowLeft strokeWidth={1.5} size={18} />
               </div>
-              <span className="va-artist-back-text">Agency</span>
+              <span className="va-artist-back-text"><VoiceglotText translationKey="auto.artistheroinstrument.agency.75ec3e" defaultText="Agency" /></span>
             </Link>
             
             <div className="va-artist-nav-links">
@@ -48,9 +48,7 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
           </div>
 
           <div className="va-artist-nav-right">
-            <button className="va-btn-pro">
-              <VoiceglotText translationKey="artist.hero.cta_book" defaultText="Direct Boeken" />
-            </button>
+            <button className="va-btn-pro"><VoiceglotText translationKey="artist.hero.cta_book" defaultText="Direct Boeken" /></button>
           </div>
         </div>
       </nav>

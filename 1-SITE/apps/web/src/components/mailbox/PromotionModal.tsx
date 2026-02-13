@@ -58,21 +58,21 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
               <Rocket size={24} />
             </div>
             <ButtonInstrument onClick={onClose} className="p-2 hover:bg-gray-50 rounded-xl transition-colors">
-              <X size={20} className="text-gray-400" />
+              <X strokeWidth={1.5} size={20} className="text-gray-400" />
             </ButtonInstrument>
           </div>
 
           <HeadingInstrument level={3} className="text-2xl font-black tracking-tight text-gray-900 mb-2">
             Promoot naar Profiel
           </HeadingInstrument>
-          <TextInstrument className="text-gray-500 text-sm mb-8 font-light">
+          <TextInstrument className="text-gray-500 text-[15px] mb-8 font-light">
             Verplaats deze demo van de privé kluis naar het publieke profiel van de stem.
           </TextInstrument>
 
           {isSuccess ? (
             <div className="py-12 text-center space-y-4">
               <div className="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto animate-bounce">
-                <Check size={32} />
+                <Check strokeWidth={1.5} size={32} />
               </div>
               <p className="font-bold text-green-600">Succesvol gepromoveerd!</p>
             </div>
@@ -83,7 +83,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
                 <InputInstrument 
                   value={demoName}
                   onChange={(e) => setDemoName(e.target.value)}
-                  className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-bold"
+                  className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-[15px] font-bold"
                 />
               </div>
 
@@ -92,7 +92,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
                 <select 
                   value={demoType}
                   onChange={(e) => setDemoType(e.target.value)}
-                  className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-bold appearance-none cursor-pointer"
+                  className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-[15px] font-bold appearance-none cursor-pointer"
                 >
                   <option value="demo">Algemene Demo</option>
                   <option value="commercial">Commercial</option>

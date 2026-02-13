@@ -38,6 +38,8 @@ async function checkIsAdmin(email: string | undefined): Promise<boolean> {
   }
 }
 
+// export const runtime = 'edge';
+
 export async function GET(request: NextRequest) {
   const supabase = createClient();
   if (!supabase) {

@@ -4,6 +4,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, SkipBack, SkipForward, X } from 'lucide-react';
 import { Demo } from '@/types';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { 
+  ContainerInstrument, 
+  ButtonInstrument, 
+  TextInstrument, 
+  HeadingInstrument 
+} from './LayoutInstruments';
+import { VoiceglotImage } from './VoiceglotImage';
+import { VoiceglotText } from './VoiceglotText';
 
 interface MediaMasterProps {
   demo: Demo;
@@ -19,7 +27,6 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.src = demo.audio_url;
       audioRef.current.play().catch(() => setIsPlaying(false));
       setIsPlaying(true);
     }
@@ -42,8 +49,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       const total = audioRef.current.duration;
       setProgress((current / total) * 100);
       
-      // Tracking logic: Send event to backend every 5 seconds or at specific milestones
-      if (Math.floor(current) % 5 === 0 && Math.floor(current) !== 0) {
+      if (current > 0 && Math.floor(current) % 10 === 0) {
         // trackPlayback(demo.id, Math.floor(current));
       }
     }
@@ -55,77 +61,81 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     }
   };
 
-  const handleAudioError = () => {
-    setIsPlaying(false);
-    
-    // 🤖 VOICY INTERVENTION: Als audio niet afspeelt, bied hulp aan
-    const event = new CustomEvent('voicy:suggestion', {
-      detail: {
-        title: 'Audio niet gevonden',
-        content: `Oei, ik kan deze audio-demo (${demo.title}) even niet terugvinden in onze kluis. Geen zorgen, Johfrah kan hem je zeker persoonlijk mailen als je hier even je gegevens achterlaat!`,
-        tab: 'mail'
-      }
-    });
-    window.dispatchEvent(event);
-
-    // 🩹 SELF-HEALING: Rapporteer de kapotte audio asset
-    fetch('/api/watchdog/broken-asset', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        path: demo.audio_url, 
-        context: `MediaMaster: ${demo.title}`,
-        host: window.location.host
-      })
-    }).catch(err => console.error('Watchdog reporting failed:', err));
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const formatTime = (time: number) => {
-    const mins = Math.floor(time / 60);
-    const secs = Math.floor(time % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const handleAudioError = () => {
+    console.error("Audio playback error");
+    setIsPlaying(false);
   };
 
   return (
-    <div className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] max-w-3xl animate-slide-in-up">
-      <div className="bg-va-black/95 backdrop-blur-3xl rounded-[40px] p-4 md:p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] border border-white/10 relative overflow-hidden">
+    <ContainerInstrument className="fixed bottom-0 inset-x-0 z-[100] p-4 md:p-8 pointer-events-none">
+      <ContainerInstrument className="max-w-6xl mx-auto bg-va-black/95 backdrop-blur-3xl rounded-[32px] md:rounded-[40px] p-4 md:p-6 shadow-[0_32px_128px_rgba(0,0,0,0.8)] border border-white/10 pointer-events-auto relative overflow-hidden group/master">
         {/* Liquid Progress Background */}
-        <div 
+        <ContainerInstrument 
           className="absolute inset-0 bg-primary/5 transition-all duration-300 ease-out pointer-events-none" 
           style={{ width: `${progress}%` }}
         />
 
         <audio 
           ref={audioRef} 
+          src={demo.audio_url}
           onTimeUpdate={handleTimeUpdate} 
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => setIsPlaying(false)}
           onError={handleAudioError}
         />
         
-        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 relative z-10">
-          {/* Demo Info */}
-          <div className="flex items-center gap-4 min-w-0 w-full md:w-auto flex-1">
-            <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary flex items-center justify-center text-white shrink-0 shadow-lg shadow-primary/20 animate-pulse">
-              <Volume2 size={20} className="md:size-24" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h4 className="text-white font-black tracking-tight text-sm truncate">{demo.title}</h4>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-                <p className="text-primary text-[15px] font-black tracking-widest">Live Preview</p>
-              </div>
-            </div>
+        <ContainerInstrument className="flex flex-col md:flex-row items-center gap-4 md:gap-6 relative z-10">
+          {/* Demo Info (Sherlock: Beautiful Titles & Actor Photo) */}
+          <ContainerInstrument className="flex items-center gap-4 min-w-0 w-full md:w-auto flex-1">
+            <ContainerInstrument className="relative w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden shrink-0 shadow-2xl border border-white/10 group/photo">
+              {demo.actor_photo ? (
+                <VoiceglotImage 
+                  src={demo.actor_photo} 
+                  alt={demo.actor_name} 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover/photo:scale-110" 
+                />
+              ) : (
+                <ContainerInstrument className="w-full h-full bg-primary flex items-center justify-center text-white animate-pulse">
+                  <Volume2 size={24} />
+                </ContainerInstrument>
+              )}
+              {/* Live Indicator Overlay */}
+              <ContainerInstrument className="absolute bottom-1 right-1 w-3 h-3 bg-primary rounded-full border-2 border-va-black animate-pulse" />
+            </ContainerInstrument>
+            
+            <ContainerInstrument className="min-w-0 flex-1">
+              <ContainerInstrument className="flex flex-col">
+                <HeadingInstrument level={4} className="text-white font-light tracking-tighter text-lg md:text-xl truncate leading-tight">
+                  {demo.actor_name || 'Stemacteur'}
+                </HeadingInstrument>
+                <ContainerInstrument className="flex items-center gap-2">
+                  <TextInstrument className="text-white/40 text-[15px] font-light tracking-[0.2em] truncate">
+                    {demo.title}
+                  </TextInstrument>
+                  <ContainerInstrument className="w-1 h-1 rounded-full bg-primary/40 shrink-0" />
+                  <TextInstrument className="text-primary text-[15px] font-light tracking-widest shrink-0">
+                    <VoiceglotText translationKey="media.live_preview" defaultText="Live" />
+                  </TextInstrument>
+                </ContainerInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+            
             {/* Mobile Time Display */}
-            <div className="md:hidden text-right tabular-nums">
-              <div className="text-white font-black text-[15px]">{formatTime(audioRef.current?.currentTime || 0)}</div>
-              <div className="text-white/20 text-[15px] font-bold">{formatTime(duration)}</div>
-            </div>
-          </div>
+            <ContainerInstrument className="md:hidden text-right tabular-nums">
+              <TextInstrument className="text-white font-light text-[15px]">{formatTime(audioRef.current?.currentTime || 0)}</TextInstrument>
+              <TextInstrument className="text-white/20 text-[15px] font-light">{formatTime(duration)}</TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
 
           {/* Controls */}
-          <div className="flex items-center justify-center gap-6 w-full md:w-auto">
-            <button 
+          <ContainerInstrument className="flex items-center justify-center gap-6 w-full md:w-auto">
+            <ButtonInstrument 
               onClick={() => {
                 if (audioRef.current) audioRef.current.currentTime -= 5;
                 playClick('soft');
@@ -133,8 +143,8 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               className="text-white/30 hover:text-white transition-all active:scale-90"
             >
               <SkipBack size={24} fill="currentColor" />
-            </button>
-            <button 
+            </ButtonInstrument>
+            <ButtonInstrument 
               onClick={() => {
                 togglePlay();
                 playClick(isPlaying ? 'soft' : 'pro');
@@ -142,8 +152,8 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               className="w-16 h-16 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-105 active:scale-90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
             >
               {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
-            </button>
-            <button 
+            </ButtonInstrument>
+            <ButtonInstrument 
               onClick={() => {
                 if (audioRef.current) audioRef.current.currentTime += 5;
                 playClick('soft');
@@ -151,37 +161,37 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               className="text-white/30 hover:text-white transition-all active:scale-90"
             >
               <SkipForward size={24} fill="currentColor" />
-            </button>
-          </div>
+            </ButtonInstrument>
+          </ContainerInstrument>
 
           {/* Desktop Time & Close */}
-          <div className="hidden md:flex items-center gap-6">
-            <div className="text-right tabular-nums">
-              <div className="text-white font-black text-[15px]">{formatTime(audioRef.current?.currentTime || 0)}</div>
-              <div className="text-white/20 text-[15px] font-bold">{formatTime(duration)}</div>
-            </div>
-            <button 
+          <ContainerInstrument className="hidden md:flex items-center gap-6">
+            <ContainerInstrument className="text-right tabular-nums">
+              <TextInstrument className="text-white font-light text-[15px]">{formatTime(audioRef.current?.currentTime || 0)}</TextInstrument>
+              <TextInstrument className="text-white/20 text-[15px] font-light">{formatTime(duration)}</TextInstrument>
+            </ContainerInstrument>
+            <ButtonInstrument 
               onClick={() => {
                 playClick('soft');
                 onClose?.();
               }}
               className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"
             >
-              <X size={20} />
-            </button>
-          </div>
+              <X strokeWidth={1.5} size={20} />
+            </ButtonInstrument>
+          </ContainerInstrument>
           
           {/* Mobile Close */}
-          <button 
+          <ButtonInstrument 
             onClick={onClose}
             className="md:hidden absolute -top-2 -right-2 w-8 h-8 rounded-full bg-va-black border border-white/10 flex items-center justify-center text-white/40 shadow-xl"
           >
-            <X size={14} />
-          </button>
-        </div>
+            <X strokeWidth={1.5} size={14} />
+          </ButtonInstrument>
+        </ContainerInstrument>
 
         {/* Progress Bar */}
-        <div 
+        <ContainerInstrument 
           className="mt-4 md:mt-6 h-2 w-full bg-white/5 rounded-full overflow-hidden cursor-pointer group relative"
           onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
@@ -193,13 +203,13 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
             }
           }}
         >
-          <div 
+          <ContainerInstrument 
             className="absolute inset-0 bg-primary transition-all duration-100 ease-linear" 
             style={{ width: `${progress}%` }}
           />
-          <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-        </div>
-      </div>
-    </div>
+          <ContainerInstrument className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+        </ContainerInstrument>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 };

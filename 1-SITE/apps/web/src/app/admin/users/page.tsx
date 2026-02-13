@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument 
+import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { Users, Search, UserPlus, Shield, ArrowLeft, Loader2, Mail, Edit3, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search, Shield, UserPlus, Users } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 /**
  * 👥 ADMIN USERS (NUCLEAR 2026)
@@ -58,12 +58,10 @@ export default function AdminUsersPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft size={12} /> 
+            <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
-            <VoiceglotText translationKey="admin.users.title" defaultText="User DNA" />
-          </HeadingInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter "><VoiceglotText translationKey="admin.users.title" defaultText="User DNA" /></HeadingInstrument>
         </ContainerInstrument>
         
         <ContainerInstrument className="flex gap-4">
@@ -86,19 +84,19 @@ export default function AdminUsersPage() {
       {/* Stats */}
       <BentoGrid columns={4}>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Totaal Gebruikers</TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.totaal_gebruikers.cf0db8" defaultText="Totaal Gebruikers" /></TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">{users.length}</HeadingInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Nieuw (30d)</TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.nieuw__30d_.65173a" defaultText="Nieuw (30d)" /></TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-primary">+{users.filter(u => new Date(u.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}</HeadingInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Admins</TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.admins.3124e6" defaultText="Admins" /></TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-va-black">{users.filter(u => u.role === 'admin').length}</HeadingInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">Actieve Sessies</TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.actieve_sessies.5fbd8f" defaultText="Actieve Sessies" /></TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-green-500">24</HeadingInstrument>
         </BentoCard>
       </BentoGrid>
@@ -108,11 +106,11 @@ export default function AdminUsersPage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-va-off-white/50 border-b border-black/5">
-              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Gebruiker</th>
+              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.gebruiker.460471" defaultText="Gebruiker" /></th>
               <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Rol</th>
-              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Status</th>
-              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Laatst Actief</th>
-              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Acties</th>
+              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.status.ec53a8" defaultText="Status" /></th>
+              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.laatst_actief.81b333" defaultText="Laatst Actief" /></th>
+              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.acties.691fa4" defaultText="Acties" /></th>
             </tr>
           </thead>
           <tbody>
@@ -133,14 +131,14 @@ export default function AdminUsersPage() {
                   <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
                     user.role === 'admin' ? 'bg-va-black text-white' : 'bg-va-off-white text-va-black/40'
                   }`}>
-                    {user.role === 'admin' ? <Shield size={10} /> : <Users size={10} />}
+                    {user.role === 'admin' ? <Shield strokeWidth={1.5} size={10} /> : <Users size={10} />}
                     {user.role}
                   </div>
                 </td>
                 <td className="p-6">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    <TextInstrument className="text-[15px] font-black tracking-widest">Actief</TextInstrument>
+                    <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.actief.63cc56" defaultText="Actief" /></TextInstrument>
                   </div>
                 </td>
                 <td className="p-6">
@@ -150,13 +148,13 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="p-6">
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 hover:bg-va-off-white rounded-lg transition-colors text-va-black/40 hover:text-primary">
+                    <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
                       <Edit3 size={14} />
                     </button>
-                    <button className="p-2 hover:bg-va-off-white rounded-lg transition-colors text-va-black/40 hover:text-primary">
-                      <Mail size={14} />
+                    <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
+                      <Mail strokeWidth={1.5} size={14} />
                     </button>
-                    <button className="p-2 hover:bg-va-off-white rounded-lg transition-colors text-va-black/40 hover:text-primary">
+                    <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
                       <MoreHorizontal size={14} />
                     </button>
                   </div>

@@ -122,7 +122,7 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
             onChange={(e) => setScrollSpeed(parseInt(e.target.value))}
             className="w-24 accent-primary"
           />
-          <span className="text-[15px] font-medium text-white tracking-widest">Tempo</span>
+          <span className="text-[15px] font-medium text-white tracking-widest"><VoiceglotText translationKey="auto.teleprompterrecorderinstrument.tempo.d65dab" defaultText="Tempo" /></span>
         </div>
       </div>
 
@@ -139,9 +139,7 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
           </div>
 
           <div className="space-y-4">
-            <label className="text-[15px] font-medium tracking-widest text-va-black/30">
-              <VoiceglotText translationKey="teleprompter.export_format" defaultText="Export Formaat" />
-            </label>
+            <label className="text-[15px] font-medium tracking-widest text-va-black/30"><VoiceglotText translationKey="teleprompter.export_format" defaultText="Export Formaat" /></label>
             <div className="grid grid-cols-1 gap-2">
               {(['8khz', '16khz', '48khz'] as const).map((format) => (
                 <button
@@ -153,7 +151,7 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
                   )}
                 >
                   <span className="text-[15px] font-medium tracking-widest">{format}</span>
-                  {exportFormat === format && <Check size={14} className="text-primary" />}
+                  {exportFormat === format && <Check strokeWidth={1.5} size={14} className="text-primary" />}
                 </button>
               ))}
             </div>

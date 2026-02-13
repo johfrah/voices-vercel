@@ -106,21 +106,21 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
       {/* Thread Header */}
       <ContainerInstrument className="px-4 py-4 border-b border-gray-100">
         <ContainerInstrument className="flex items-start justify-between mb-2">
-          <HeadingInstrument level={2} className="text-xl font-black tracking-tight text-gray-900 leading-tight">
+          <HeadingInstrument level={2} className="text-xl font-light tracking-tight text-gray-900 leading-tight">
             {thread.subject}
           </HeadingInstrument>
-          <ButtonInstrument onClick={onClose} className="p-1.5 hover:bg-black/5 rounded-lg transition-colors">
-            <TextInstrument as="span" className="text-[15px] font-bold">✕</TextInstrument>
+          <ButtonInstrument onClick={onClose} className="p-1.5 hover:bg-black/5 rounded-[20px] transition-colors">
+            <TextInstrument as="span" className="text-[15px] font-light">✕</TextInstrument>
           </ButtonInstrument>
         </ContainerInstrument>
         
         <ContainerInstrument className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 bg-pink-50 text-pink-600 px-2 py-0.5 rounded-md text-[15px] font-black tracking-widest border border-pink-100">
-            <ShieldCheck size={10} />
-            SECURE THREAD
+          <div className="flex items-center gap-1.5 bg-pink-50 text-pink-600 px-2 py-0.5 rounded-md text-[15px] font-light tracking-widest border border-pink-100">
+            <ShieldCheck strokeWidth={1.5} size={10} />
+            Secure Thread
           </div>
-          <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-gray-400">
-            {thread.messages.length} BERICHTEN
+          <TextInstrument as="span" className="text-[15px] font-light tracking-widest text-gray-400">
+            {thread.messages.length} berichten
           </TextInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
@@ -137,7 +137,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
               {/* Message Header (Spark Style) */}
               <div className="px-6 py-5 flex items-start justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-va-black text-white flex items-center justify-center text-sm font-bold relative overflow-hidden shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-va-black text-white flex items-center justify-center text-[15px] font-light relative overflow-hidden shrink-0">
                     <Image 
                       src={gravatarUrl} 
                       alt="" 
@@ -149,43 +149,43 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <TextInstrument as="span" className="text-sm font-black text-gray-900">
+                      <TextInstrument as="span" className="text-[15px] font-light text-gray-900">
                         {senderName}
                       </TextInstrument>
-                      <TextInstrument as="span" className="text-[15px] text-gray-400 font-medium">
+                      <TextInstrument as="span" className="text-[15px] text-gray-400 font-light">
                         to &apos;Johfrah Lefebvre&apos;
                       </TextInstrument>
                     </div>
-                    <TextInstrument as="p" className="text-[15px] text-gray-400 font-medium">
+                    <TextInstrument as="p" className="text-[15px] text-gray-400 font-light">
                       {message.senderEmail}
                     </TextInstrument>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <TextInstrument as="span" className="text-[15px] font-bold text-gray-400">
+                  <TextInstrument as="span" className="text-[15px] font-light text-gray-400">
                     {format(new Date(message.date), 'd MMM, HH:mm', { locale: nl })}
                   </TextInstrument>
                   <ButtonInstrument className="p-1 text-gray-300 hover:text-va-black transition-colors">
-                    <X size={14} className="rotate-45" />
+                    <X strokeWidth={1.5} size={14} className="rotate-45" />
                   </ButtonInstrument>
                 </div>
               </div>
 
               {/* AI Quick Actions (Spark Style) */}
               <div className="px-6 pb-2 flex gap-2">
-                <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[15px] font-black tracking-widest border border-blue-100/50 hover:bg-blue-100 transition-all">
-                  <Sparkles size={12} />
+                <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-[20px] text-[15px] font-light tracking-widest border border-blue-100/50 hover:bg-blue-100 transition-all">
+                  <Sparkles strokeWidth={1.5} size={12} />
                   Translate to English
                 </ButtonInstrument>
-                <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-lg text-[15px] font-black tracking-widest border border-gray-100 hover:bg-gray-100 transition-all">
+                <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-[20px] text-[15px] font-light tracking-widest border border-gray-100 hover:bg-gray-100 transition-all">
                   <Languages size={12} />
                 </ButtonInstrument>
               </div>
 
               {/* Message Body */}
               <div 
-                className="px-6 py-4 text-[15px] text-gray-800 leading-relaxed prose prose-sm max-w-none"
+                className="px-6 py-4 text-[15px] text-gray-800 leading-relaxed prose prose-sm max-w-none font-light"
                 dangerouslySetInnerHTML={{ __html: message.htmlBody }} 
               />
 
@@ -195,9 +195,9 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2 text-gray-400">
                       <Paperclip size={14} />
-                      <span className="text-[15px] font-bold tracking-widest">{message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}</span>
+                      <span className="text-[15px] font-light tracking-widest">{message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}</span>
                     </div>
-                    <ButtonInstrument className="text-[15px] font-black text-blue-600 hover:underline tracking-widest">
+                    <ButtonInstrument className="text-[15px] font-light text-blue-600 hover:underline tracking-widest">
                       Save all {(message.attachments.reduce((sum, a) => sum + a.size, 0) / 1024).toFixed(0)} KB
                     </ButtonInstrument>
                   </div>
@@ -216,8 +216,8 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                             {isPdf(att.filename) ? <FileText size={24} /> : isAudio(att.filename) ? <Mic size={24} /> : isVideo(att.filename) ? <Play size={24} /> : <ImageIcon size={24} />}
                           </div>
                           <div className="text-center px-2">
-                            <p className="text-[15px] font-black text-gray-900 truncate w-full max-w-[100px]">{att.filename}</p>
-                            <p className="text-[15px] font-bold text-gray-400 ">{(att.size / 1024).toFixed(0)} KB</p>
+                            <p className="text-[15px] font-light text-gray-900 truncate w-full max-w-[100px]">{att.filename}</p>
+                            <p className="text-[15px] font-light text-gray-400 ">{(att.size / 1024).toFixed(0)} KB</p>
                           </div>
                           
                           {/* Hover Actions */}
@@ -236,9 +236,9 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
               {/* AI Quick Replies (Spark Style) */}
               <div className="px-6 py-4 bg-gray-50/30 border-t border-gray-50 flex items-center justify-between">
                 <div className="flex gap-2">
-                  <span className="text-[15px] font-black text-blue-600 mr-2 flex items-center gap-1"><Sparkles size={10} /> +ai</span>
+                  <span className="text-[15px] font-light text-blue-600 mr-2 flex items-center gap-1"><Sparkles strokeWidth={1.5} size={10} /> +ai</span>
                   {['Interested', 'Not interested', 'Thanks'].map((reply) => (
-                    <ButtonInstrument key={reply} className="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-[15px] font-bold text-gray-600 hover:border-va-black transition-all shadow-sm">
+                    <ButtonInstrument key={reply} className="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-[15px] font-light text-gray-600 hover:border-va-black transition-all shadow-sm">
                       {reply}
                     </ButtonInstrument>
                   ))}
@@ -268,7 +268,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
             onClick={() => setSpotlightFile(null)}
           >
             <button className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors" onClick={() => setSpotlightFile(null)}>
-              <X size={32} />
+              <X strokeWidth={1.5} size={32} />
             </button>
 
             <motion.div 
@@ -280,13 +280,13 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
             >
               <div className="w-full flex justify-between items-center text-white/80">
                 <div className="flex flex-col">
-                  <span className="text-2xl font-black">{spotlightFile.filename}</span>
+                  <span className="text-2xl font-light">{spotlightFile.filename}</span>
                   <span className="text-[15px] tracking-widest opacity-50">{spotlightFile.category} • {(spotlightFile.size / 1024 / 1024).toFixed(2)} MB</span>
                 </div>
                 <a 
                   href={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 
                   download={spotlightFile.filename}
-                  className="bg-white text-va-black px-6 py-3 rounded-2xl font-black tracking-widest flex items-center gap-2 hover:bg-primary hover:text-white transition-all"
+                  className="bg-white text-va-black px-6 py-3 rounded-2xl font-light tracking-widest flex items-center gap-2 hover:bg-primary hover:text-white transition-all"
                 >
                   <Download size={18} />
                   Downloaden
@@ -330,7 +330,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                 ) : (
                   <div className="text-center space-y-4">
                     <FileText size={64} className="mx-auto text-white/20" />
-                    <p className="text-white/50 font-bold">Voorvertoning niet beschikbaar voor dit bestandstype.</p>
+                    <p className="text-white/50 font-light">Voorvertoning niet beschikbaar voor dit bestandstype.</p>
                   </div>
                 )}
               </div>

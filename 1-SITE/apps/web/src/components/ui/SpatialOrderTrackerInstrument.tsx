@@ -70,7 +70,7 @@ export const SpatialOrderTrackerInstrument = ({
                   "bg-white text-va-black/20"
                 )}
               >
-                {isCompleted ? <Check size={20} /> : <Icon size={20} />}
+                {isCompleted ? <Check strokeWidth={1.5} size={20} /> : <Icon size={20} />}
               </ContainerInstrument>
 
               {/* Label */}
@@ -80,9 +80,7 @@ export const SpatialOrderTrackerInstrument = ({
                     "text-[15px] font-medium uppercase tracking-widest transition-colors",
                     isActive ? "text-va-black" : "text-va-black/20"
                   )}
-                >
-                  <VoiceglotText translationKey={step.key} defaultText={step.label} />
-                </TextInstrument>
+                ><VoiceglotText translationKey={step.key} defaultText={step.label} /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           );

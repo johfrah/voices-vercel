@@ -1,8 +1,10 @@
+import { VatService } from '@/lib/compliance/vat-service';
 import { db } from '@db';
 import { orders, users } from '@db/schema';
 import { eq } from 'drizzle-orm';
-import { NextResponse } from 'next/server';
 import { sign } from 'jsonwebtoken';
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 /**
  * MOLLIE V3 HEADLESS CHECKOUT (CORE LOGIC 2026)
@@ -15,6 +17,9 @@ import { PricingEngine } from '@/lib/pricing-engine';
 
 export async function POST(request: Request) {
   try {
+    const headersList = headers();
+    const ip = headersList.get('x-forwarded-for') || 'unknown';
+
     const body = await request.json();
     const { 
       pricing, 
@@ -33,16 +38,31 @@ export async function POST(request: Request) {
       usage,
       plan,
       music,
-      country
+      country,
+      gateway,
+      isSubscription
     } = body;
     
+    // 🛡️ KELLY'S VIES CHECK: Server-side validation before granting tax exemption
+    let isVatExempt = false;
+    let viesResult = null;
+
+    if (vat_number && country !== 'BE') {
+      viesResult = await VatService.validateVat(vat_number, country);
+      if (viesResult.valid) {
+        isVatExempt = true;
+      } else {
+        console.warn(`[VAT Integrity] Invalid VAT number for ${country}: ${vat_number}. Forcing 21% VAT.`);
+      }
+    }
+
     const pricingResult = PricingEngine.calculate({
       usage,
       plan,
       words: metadata?.words || 0,
       prompts: metadata?.prompts || 0,
       music,
-      isVatExempt: !!vat_number && country !== 'BE'
+      isVatExempt
     });
 
     // 🛡️ KELLY'S INTEGRITY CHECK: Compare backend calculation with frontend submitted price
@@ -69,6 +89,7 @@ export async function POST(request: Request) {
           addressStreet: address_street,
           addressZip: postal_code,
           addressCity: city,
+          addressCountry: country || 'BE',
           role: 'customer',
           updatedAt: new Date()
         }).onConflictDoUpdate({
@@ -82,6 +103,7 @@ export async function POST(request: Request) {
             addressStreet: address_street,
             addressZip: postal_code,
             addressCity: city,
+            addressCountry: country || 'BE',
             lastActive: new Date()
           }
         }).returning();
@@ -105,6 +127,10 @@ export async function POST(request: Request) {
           isSubscription,
           music: body.music // 🎵 Store music options (trackId, asBackground, asHoldMusic)
         },
+        // 🛡️ KELLY'S INTEGRITY (B2B & Fraud)
+        viesValidatedAt: viesResult?.valid ? new Date() : null,
+        viesCountryCode: viesResult?.countryCode || null,
+        ipAddress: ip,
         createdAt: new Date()
       }).returning();
 
@@ -125,13 +151,13 @@ export async function POST(request: Request) {
                 address: address_street,
                 city: city,
                 zipCode: postal_code,
-                countryCode: metadata?.country || 'BE'
+                countryCode: country || 'BE'
               },
               lines: [{
                 description: `Stemopname: ${usage || 'Project'}`,
                 quantity: 1,
                 price: amount,
-                vatType: 1 // 21%
+                vatType: isVatExempt ? 4 : 1 // 0% if exempt, else 21% (simplified)
               }],
               paymentMethod: 'banktransfer'
             });

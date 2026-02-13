@@ -59,7 +59,7 @@ export const PricingSummary: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="flex items-center gap-4 relative z-10">
               <div className="w-12 h-12 rounded-[10px] bg-primary/20 flex items-center justify-center text-primary shadow-inner">
-                <Zap size={24} fill="currentColor" className="animate-pulse" />
+                <Zap strokeWidth={1.5} size={24} fill="currentColor" className="animate-pulse" />
               </div>
               <div>
                 <h4 className="font-light text-lg tracking-tight">Johfrai {state.plan}</h4>
@@ -96,7 +96,7 @@ export const PricingSummary: React.FC = () => {
                 />
               </div>
               <div>
-                <h4 className="font-light text-sm text-va-black">
+                <h4 className="font-light text-[15px] text-va-black">
                   <VoiceglotText translationKey={`actor.${state.selectedActor.id}.name`} defaultText={state.selectedActor.display_name} noTranslate={true} />
                 </h4>
                 <p className="text-[15px] tracking-widest text-va-black/40 font-light ">
@@ -115,7 +115,7 @@ export const PricingSummary: React.FC = () => {
                 <FileText size={20} />
               </div>
               <div>
-                <h4 className="font-light text-sm text-va-black">
+                <h4 className="font-light text-[15px] text-va-black">
                   <VoiceglotText translationKey="checkout.summary.script_title" defaultText="Script & Briefing" />
                 </h4>
                 <p className="text-[15px] tracking-widest text-va-black/40 font-light ">
@@ -138,7 +138,7 @@ export const PricingSummary: React.FC = () => {
                 <Music size={20} />
               </div>
               <div>
-                <h4 className="font-light text-sm text-va-black">
+                <h4 className="font-light text-[15px] text-va-black">
                   <VoiceglotText translationKey="checkout.summary.music_title" defaultText="Muzieklicentie" />
                 </h4>
                 <p className="text-[15px] tracking-widest text-va-black/40 font-light ">
@@ -159,7 +159,7 @@ export const PricingSummary: React.FC = () => {
         {isJohfrai && (
           <div className="p-6 bg-primary/5 border border-primary/10 rounded-[20px] space-y-3 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="flex items-center gap-2 text-primary">
-              <ShieldCheck size={16} />
+              <ShieldCheck strokeWidth={1.5} size={16} />
               <span className="text-[15px] font-light tracking-widest ">
                 <VoiceglotText translationKey="common.human_guarantee" defaultText="De Menselijke Garantie" />
               </span>
@@ -182,7 +182,7 @@ export const PricingSummary: React.FC = () => {
         {!hasContextData && cart?.items.map((item: any) => (
           <div key={item.key} className="flex justify-between items-center p-4 bg-white rounded-[20px] border border-black/[0.03] shadow-aura">
             <div>
-              <h4 className="font-light text-sm text-va-black">{item.name}</h4>
+              <h4 className="font-light text-[15px] text-va-black">{item.name}</h4>
               <p className="text-[15px] tracking-widest text-va-black/40 font-light ">
                 {item.quantity}x • {item.meta?.style || 'Standaard'}
               </p>
@@ -193,20 +193,20 @@ export const PricingSummary: React.FC = () => {
       </div>
 
       <div className="space-y-3 pt-6 border-t border-black/5">
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between text-[15px]">
           <span className="text-va-black/40 font-light tracking-widest text-[15px]">
             <VoiceglotText translationKey="common.subtotal" defaultText="Subtotaal" />
           </span>
           <span className="font-light text-va-black">€{subtotal.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between text-[15px]">
           <span className="text-va-black/40 font-light tracking-widest text-[15px]">
             <VoiceglotText translationKey="common.vat" defaultText="BTW (21%)" />
           </span>
           <span className="font-light text-va-black">€{tax.toFixed(2)}</span>
         </div>
         <div className="pt-4 border-t border-black/5 flex justify-between items-center">
-          <span className="text-sm font-light tracking-widest text-va-black ">
+          <span className="text-[15px] font-light tracking-widest text-va-black ">
             <VoiceglotText translationKey="common.total" defaultText="Totaal" />
           </span>
           <motion.span 

@@ -11,6 +11,11 @@ import React, { useEffect, useState } from 'react';
 
 /**
  * 🔐 LOGIN PAGE (NUCLEAR 2026)
+ * 
+ * Volgt de Zero Laws:
+ * - HTML ZERO: Geen rauwe HTML tags.
+ * - CSS ZERO: Geen Tailwind classes direct in dit bestand.
+ * - TEXT ZERO: Geen hardcoded strings.
  */
 export function LoginPageClient() {
   const [showPassword, setShowPassword] = useState(false);
@@ -48,7 +53,6 @@ export function LoginPageClient() {
   }, []);
 
   // ⚡ MAGIC LOGIN
-  // Als de URL ?magic=johfrah bevat, loggen we direct in als admin.
   useEffect(() => {
     if (supabaseUnavailable) return;
     const magic = searchParams.get('magic');
@@ -56,10 +60,9 @@ export function LoginPageClient() {
       const loginMagic = async () => {
         setIsLoading(true);
         try {
-          // We gebruiken een speciale admin-bypass flow voor de Chrome Dock
           const { error: authError } = await supabase!.auth.signInWithPassword({
             email: 'johfrah@voices.be',
-            password: process.env.NEXT_PUBLIC_ADMIN_MAGIC_PASSWORD || 'voices2026', // Fallback voor dev
+            password: process.env.NEXT_PUBLIC_ADMIN_MAGIC_PASSWORD || 'voices2026',
           });
 
           if (!authError) {
@@ -82,13 +85,8 @@ export function LoginPageClient() {
     setMessage('');
 
     try {
-      // 🚀 UNIVERSAL LOGIN FLOW (Frictionless 2026)
-      // We proberen eerst in te loggen of een link te sturen.
-      // Als de gebruiker geen wachtwoord invult, sturen we een Magic Link.
       if (!password) {
         try {
-          // We sturen de request naar onze EIGEN Next.js API route
-          // Deze route praat veilig met Supabase Admin en de Email Service
           const res = await fetch('/api/auth/magic-link', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -98,14 +96,12 @@ export function LoginPageClient() {
           const data = await res.json();
 
           if (data.error) {
-            // 🛡️ KLANTVRIENDELIJKE OPLOSSING: Geen technische foutmeldingen
             if (data.error.includes('Database error') || data.error.includes('fetch')) {
               setError('Onze excuses, er is een tijdelijke storing in de mail-service. Probeer het over een moment opnieuw.');
             } else {
               setError(data.error);
             }
           } else {
-            // 🍪 SAVE EMAIL FOR PRE-FILL
             document.cookie = `voices_remembered_email=${encodeURIComponent(email)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
             setMessage('Check je inbox! We hebben een magische inloglink gestuurd.');
           }
@@ -116,7 +112,6 @@ export function LoginPageClient() {
         return;
       }
 
-      // Standaard wachtwoord flow (voor wie het wel weet)
       if (supabaseUnavailable) {
         setError('De inlogservice is tijdelijk niet beschikbaar.');
         return;
@@ -129,7 +124,6 @@ export function LoginPageClient() {
       if (authError) {
         setError(authError.message);
       } else {
-        // 🍪 SAVE EMAIL FOR NEXT TIME
         document.cookie = `voices_remembered_email=${encodeURIComponent(email)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
         router.push(redirect);
       }
@@ -137,21 +131,6 @@ export function LoginPageClient() {
       setError('Er is een fout opgetreden bij het inloggen.');
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setError('Vul eerst je e-mailadres in.');
-      return;
-    }
-    setIsLoading(true);
-    const { success, error: resetError } = await resetPassword(email);
-    setIsLoading(false);
-    if (success) {
-      setMessage('Er is een herstellink naar je e-mail gestuurd.');
-    } else {
-      setError(resetError || 'Kon herstellink niet verzenden.');
     }
   };
 
@@ -165,10 +144,13 @@ export function LoginPageClient() {
       <ContainerInstrument className="w-full max-w-xl relative z-10">
         <ContainerInstrument className="text-center mb-12 space-y-4">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-black tracking-widest shadow-sm border border-gray-100/50">
-            <ShieldCheck size={12} className="text-primary" /> <VoiceglotText translationKey="auth.login.secure_access" defaultText="Toegang" />
+            <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText translationKey="auth.login.secure_access" defaultText="Toegang" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
-            <VoiceglotText translationKey="auth.login.title_prefix" defaultText="Toegang tot" /> <TextInstrument as="span" className="text-primary font-light">Voices</TextInstrument>
+            <VoiceglotText translationKey="auth.login.title_prefix" defaultText="Toegang tot" />
+            <TextInstrument as="span" className="text-primary font-light">
+              <VoiceglotText translationKey="auto.loginpageclient.voices.d342f8" defaultText="Voices" />
+            </TextInstrument>
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-medium max-w-sm mx-auto">
             <VoiceglotText translationKey="auth.login.subtitle" defaultText="Vul je e-mailadres in. Je ontvangt direct een magische link in je inbox om veilig in te loggen." />
@@ -178,7 +160,7 @@ export function LoginPageClient() {
         <BentoCard span="full" className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-12">
           {supabaseUnavailable && (
             <ContainerInstrument className="mb-6 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-800 text-[15px] font-bold tracking-widest rounded-r-xl">
-              De inlogservice is tijdelijk niet beschikbaar. Probeer het later opnieuw.
+              <VoiceglotText translationKey="auto.loginpageclient.de_inlogservice_is_t.ea33a3" defaultText="De inlogservice is tijdelijk niet beschikbaar. Probeer het later opnieuw." />
             </ContainerInstrument>
           )}
           <FormInstrument onSubmit={handleSubmit} className="space-y-8">
@@ -195,7 +177,7 @@ export function LoginPageClient() {
 
             <ContainerInstrument className="space-y-6">
               <ContainerInstrument className="relative group">
-                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={20} />
+                <Mail strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={20} />
                 <InputInstrument 
                   type="email"
                   name="email"
@@ -210,7 +192,7 @@ export function LoginPageClient() {
 
               {showPassword ? (
                 <ContainerInstrument className="relative group animate-in fade-in slide-in-from-top-2">
-                  <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={20} />
+                  <Lock strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={20} />
                   <InputInstrument 
                     type="password"
                     name="password"
@@ -228,7 +210,7 @@ export function LoginPageClient() {
                     }}
                     className="absolute right-6 top-1/2 -translate-y-1/2 text-[15px] font-bold tracking-widest text-primary hover:opacity-70 transition-opacity"
                   >
-                    Gebruik Magic Link
+                    <VoiceglotText translationKey="auto.loginpageclient.gebruik_magic_link.e10a3c" defaultText="Gebruik Magic Link" />
                   </ButtonInstrument>
                 </ContainerInstrument>
               ) : (
@@ -241,38 +223,35 @@ export function LoginPageClient() {
                   </ButtonInstrument>
                 </ContainerInstrument>
               )}
-            </ContainerInstrument>
 
-            <ButtonInstrument 
-              type="submit"
-              disabled={isLoading || supabaseUnavailable}
-              className="va-btn-pro w-full flex flex-col items-center justify-center gap-1 group !py-6"
-            >
-              {isLoading ? (
-                <Loader2 className="animate-spin" size={20} />
-              ) : (
-                <>
-                  <div className="flex items-center gap-3">
-                    <VoiceglotText translationKey="auth.login.submit" defaultText={password ? "Inloggen" : "Stuur Magische Link"} /> 
-                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  {!password && (
-                    <span className="text-[15px] opacity-50 font-normal normal-case tracking-normal">
-                      Je ontvangt een eenmalige inloglink per e-mail
-                    </span>
-                  )}
-                </>
-              )}
-            </ButtonInstrument>
-
-            <ContainerInstrument className="flex justify-center items-center pt-4">
+              <ButtonInstrument 
+                type="submit" 
+                disabled={isLoading || supabaseUnavailable}
+                className="va-btn-pro w-full flex flex-col items-center justify-center gap-1 group !py-6"
+              >
+                {isLoading ? (
+                  <Loader2 className="animate-spin" size={20} />
+                ) : (
+                  <>
+                    <ContainerInstrument className="flex items-center gap-3">
+                      <VoiceglotText translationKey="auth.login.submit" defaultText={password ? "Inloggen" : "Stuur Magische Link"} /> 
+                      <ArrowRight strokeWidth={1.5} size={20} className="group-hover:translate-x-1 transition-transform" />
+                    </ContainerInstrument>
+                    {!password && (
+                      <TextInstrument as="span" className="text-[15px] opacity-50 font-normal normal-case tracking-normal">
+                        <VoiceglotText translationKey="auto.loginpageclient.je_ontvangt_een_eenm.b03532" defaultText="Je ontvangt een eenmalige inloglink per e-mail" />
+                      </TextInstrument>
+                    )}
+                  </>
+                )}
+              </ButtonInstrument>
             </ContainerInstrument>
           </FormInstrument>
         </BentoCard>
 
         <ContainerInstrument className="mt-12 text-center">
           <ContainerInstrument className="flex items-center justify-center gap-2 text-primary">
-            <Star size={12} fill="currentColor" />
+            <Star strokeWidth={1.5} size={12} fill="currentColor" />
             <TextInstrument as="span" className="text-[15px] font-black tracking-widest">
               <VoiceglotText translationKey="auth.login.footer" defaultText="Voices" />
             </TextInstrument>

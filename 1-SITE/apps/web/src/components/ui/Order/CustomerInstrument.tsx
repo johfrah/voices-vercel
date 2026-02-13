@@ -35,7 +35,7 @@ export const CustomerInstrument: React.FC<CustomerInstrumentProps> = ({
           <div className="text-slate-500">{email}</div>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+      <div className="mt-4 grid grid-cols-2 gap-4 text-[15px]">
         <div className="p-3 bg-slate-50 rounded-xl">
           <div className="text-slate-400 text-[15px] font-bold tracking-widest">
             <VoiceglotText translationKey="order.customer.company" defaultText="Bedrijf" />

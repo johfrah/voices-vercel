@@ -1,4 +1,4 @@
-import { contentArticles, contentBlocks } from '../../packages/database/schema';
+import { contentArticles, contentBlocks } from '../../../packages/database/src/schema';
 import { eq } from "drizzle-orm";
 import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
 
@@ -10,6 +10,8 @@ import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
 
 async function injectMarkMobyContent() {
   console.log("🚀 MARK & MOBY: Start injectie 'Zo werkt het', 'Garanties', 'FAQ', 'Scripts', 'Stories' & 'Muziek'...");
+
+  const now = new Date();
 
   // 1. Zo werkt het
   const howSlug = "how-it-works";
@@ -120,10 +122,10 @@ async function injectMarkMobyContent() {
       status: 'publish',
       iapContext: { journey: 'telephony', fase: 'consideration' },
       isManuallyEdited: true,
-      updatedAt: new Date().toISOString() as any
-    } as any).onConflictDoUpdate({
+      updatedAt: now as any
+    }).onConflictDoUpdate({
       target: [contentArticles.slug],
-      set: { title: howTitle, content: howIntro, updatedAt: new Date().toISOString() as any, isManuallyEdited: true } as any
+      set: { title: howTitle, content: howIntro, updatedAt: now as any, isManuallyEdited: true }
     }).returning();
 
     await db.delete(contentBlocks).where(eq(contentBlocks.articleId, howArticle.id));
@@ -146,10 +148,10 @@ async function injectMarkMobyContent() {
       status: 'publish',
       iapContext: { journey: 'telephony', fase: 'consideration' },
       isManuallyEdited: true,
-      updatedAt: new Date().toISOString() as any
-    } as any).onConflictDoUpdate({
+      updatedAt: now as any
+    }).onConflictDoUpdate({
       target: [contentArticles.slug],
-      set: { title: garTitle, content: garIntro, updatedAt: new Date().toISOString() as any, isManuallyEdited: true }
+      set: { title: garTitle, content: garIntro, updatedAt: now as any, isManuallyEdited: true }
     }).returning();
 
     await db.delete(contentBlocks).where(eq(contentBlocks.articleId, garArticle.id));
@@ -172,10 +174,10 @@ async function injectMarkMobyContent() {
       status: 'publish',
       iapContext: { journey: 'telephony', fase: 'consideration' },
       isManuallyEdited: true,
-      updatedAt: new Date().toISOString() as any
-    } as any).onConflictDoUpdate({
+      updatedAt: now as any
+    }).onConflictDoUpdate({
       target: [contentArticles.slug],
-      set: { title: faqTitle, content: faqIntro, updatedAt: new Date().toISOString() as any, isManuallyEdited: true }
+      set: { title: faqTitle, content: faqIntro, updatedAt: now as any, isManuallyEdited: true }
     }).returning();
 
     await db.delete(contentBlocks).where(eq(contentBlocks.articleId, faqArticle.id));
@@ -198,10 +200,10 @@ async function injectMarkMobyContent() {
       status: 'publish',
       iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Inspiratie' },
       isManuallyEdited: true,
-      updatedAt: new Date().toISOString() as any
-    } as any).onConflictDoUpdate({
+      updatedAt: now as any
+    }).onConflictDoUpdate({
       target: [contentArticles.slug],
-      set: { title: scriptTitle, content: scriptIntro, iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Inspiratie' }, updatedAt: new Date().toISOString() as any, isManuallyEdited: true }
+      set: { title: scriptTitle, content: scriptIntro, iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Inspiratie' }, updatedAt: now as any, isManuallyEdited: true }
     }).returning();
 
     await db.delete(contentBlocks).where(eq(contentBlocks.articleId, scriptArticle.id));
@@ -227,10 +229,10 @@ async function injectMarkMobyContent() {
       status: 'publish',
       iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Inspiratie' },
       isManuallyEdited: true,
-      updatedAt: new Date().toISOString() as any
-    } as any).onConflictDoUpdate({
+      updatedAt: now as any
+    }).onConflictDoUpdate({
       target: [contentArticles.slug],
-      set: { title: coolTitle, content: coolIntro, iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Inspiratie' }, updatedAt: new Date().toISOString() as any, isManuallyEdited: true }
+      set: { title: coolTitle, content: coolIntro, iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Inspiratie' }, updatedAt: now as any, isManuallyEdited: true }
     }).returning();
 
     await db.delete(contentBlocks).where(eq(contentBlocks.articleId, coolArticle.id));
@@ -251,10 +253,10 @@ async function injectMarkMobyContent() {
       status: 'publish',
       iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
       isManuallyEdited: true,
-      updatedAt: new Date().toISOString() as any
-    } as any).onConflictDoUpdate({
+      updatedAt: now as any
+    }).onConflictDoUpdate({
       target: [contentArticles.slug],
-      set: { title: storyTitle, content: storyIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: new Date().toISOString() as any, isManuallyEdited: true }
+      set: { title: storyTitle, content: storyIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
     }).returning();
 
     await db.delete(contentBlocks).where(eq(contentBlocks.articleId, storyArticle.id));
@@ -280,10 +282,10 @@ async function injectMarkMobyContent() {
       status: 'publish',
       iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
       isManuallyEdited: true,
-      updatedAt: new Date().toISOString() as any
-    } as any).onConflictDoUpdate({
+      updatedAt: now as any
+    }).onConflictDoUpdate({
       target: [contentArticles.slug],
-      set: { title: creoTitle, content: creoIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: new Date().toISOString() as any, isManuallyEdited: true }
+      set: { title: creoTitle, content: creoIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
     }).returning();
 
     await db.delete(contentBlocks).where(eq(contentBlocks.articleId, creoArticle.id));
@@ -307,10 +309,10 @@ async function injectMarkMobyContent() {
       status: 'publish',
       iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
       isManuallyEdited: true,
-      updatedAt: new Date().toISOString() as any
-    } as any).onConflictDoUpdate({
+      updatedAt: now as any
+    }).onConflictDoUpdate({
       target: [contentArticles.slug],
-      set: { title: jokerTitle, content: jokerIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: new Date().toISOString() as any, isManuallyEdited: true }
+      set: { title: jokerTitle, content: jokerIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
     }).returning();
 
     await db.delete(contentBlocks).where(eq(contentBlocks.articleId, jokerArticle.id));
@@ -331,10 +333,10 @@ async function injectMarkMobyContent() {
       status: 'publish',
       iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Beleving' },
       isManuallyEdited: true,
-      updatedAt: new Date().toISOString() as any
-    } as any).onConflictDoUpdate({
+      updatedAt: now as any
+    }).onConflictDoUpdate({
       target: [contentArticles.slug],
-      set: { title: musicTitle, content: musicIntro, iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Beleving' }, updatedAt: new Date().toISOString() as any, isManuallyEdited: true }
+      set: { title: musicTitle, content: musicIntro, iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Beleving' }, updatedAt: now as any, isManuallyEdited: true }
     }).returning();
 
     await db.delete(contentBlocks).where(eq(contentBlocks.articleId, musicArticle.id));
@@ -347,6 +349,114 @@ async function injectMarkMobyContent() {
         isManuallyEdited: true
       });
     }
+
+    // 7. SLV Belgium Story (Stories)
+    const slvSlug = "slv-belgium";
+    const slvTitle = "SLV Belgium | Rust door professionalisering";
+    const slvIntro = "Hoe een marktleider in verlichting koos voor een uniform visitekaartje aan de telefoon.";
+    console.log(`📝 MARK: Upserting story [${slvSlug}]...`);
+    const [slvArticle] = await db.insert(contentArticles).values({
+      title: slvTitle,
+      slug: slvSlug,
+      content: slvIntro,
+      status: 'publish',
+      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
+      isManuallyEdited: true,
+      updatedAt: now as any
+    }).onConflictDoUpdate({
+      target: [contentArticles.slug],
+      set: { title: slvTitle, content: slvIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
+    }).returning();
+
+    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, slvArticle.id));
+    await db.insert(contentBlocks).values({
+      articleId: slvArticle.id,
+      type: 'story-layout',
+      content: "## De Transformatie\nSLV Belgium koos voor een consistente audio-branding over al hun afdelingen heen. Dit zorgde niet alleen voor meer rust bij de klant, maar ook voor een professionelere uitstraling.",
+      displayOrder: 1,
+      isManuallyEdited: true
+    });
+
+    // 8. NKC Story (Stories)
+    const nkcSlug = "nkc";
+    const nkcTitle = "NKC | Evolutie in audio";
+    const nkcIntro = "Hoe technologische vooruitgang en een warme aanpak samengaan in de klantendienst.";
+    console.log(`📝 MARK: Upserting story [${nkcSlug}]...`);
+    const [nkcArticle] = await db.insert(contentArticles).values({
+      title: nkcTitle,
+      slug: nkcSlug,
+      content: nkcIntro,
+      status: 'publish',
+      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
+      isManuallyEdited: true,
+      updatedAt: now as any
+    }).onConflictDoUpdate({
+      target: [contentArticles.slug],
+      set: { title: nkcTitle, content: nkcIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
+    }).returning();
+
+    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, nkcArticle.id));
+    await db.insert(contentBlocks).values({
+      articleId: nkcArticle.id,
+      type: 'story-layout',
+      content: "## De Doelgroep\nMet 35.000 telefoontjes per jaar is een glashelder keuzemenu onontbeerlijk. Een rustige, professionele stem die perfect matcht met de doelgroep.",
+      displayOrder: 1,
+      isManuallyEdited: true
+    });
+
+    // 9. Ticket Team Story (Stories)
+    const ttSlug = "ticketteam";
+    const ttTitle = "Ticket Team | Strak onthaal";
+    const ttIntro = "Van een rommeltje naar een professioneel visitekaartje aan de telefoon.";
+    console.log(`📝 MARK: Upserting story [${ttSlug}]...`);
+    const [ttArticle] = await db.insert(contentArticles).values({
+      title: ttTitle,
+      slug: ttSlug,
+      content: ttIntro,
+      status: 'publish',
+      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
+      isManuallyEdited: true,
+      updatedAt: now as any
+    }).onConflictDoUpdate({
+      target: [contentArticles.slug],
+      set: { title: ttTitle, content: ttIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
+    }).returning();
+
+    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, ttArticle.id));
+    await db.insert(contentBlocks).values({
+      articleId: ttArticle.id,
+      type: 'story-layout',
+      content: "## De Uniformiteit\nHet 'rommeltje' aan verschillende stemmen en volumes werd achtergelaten voor een duidelijke stem die klanten snel en professioneel verder gidst.",
+      displayOrder: 1,
+      isManuallyEdited: true
+    });
+
+    // 10. Jokershop Interview (Stories)
+    const jokerIntSlug = "jokershop-be-investeert-in-een-warm-onthaal";
+    const jokerIntTitle = "Jokershop | Investering in een warm onthaal";
+    const jokerIntIntro = "Roel van Jokershop vertelt waarom een professionele telefooncentrale cruciaal is voor hun groei.";
+    console.log(`📝 MARK: Upserting story [${jokerIntSlug}]...`);
+    const [jokerIntArticle] = await db.insert(contentArticles).values({
+      title: jokerIntTitle,
+      slug: jokerIntSlug,
+      content: jokerIntIntro,
+      status: 'publish',
+      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
+      isManuallyEdited: true,
+      updatedAt: now as any
+    }).onConflictDoUpdate({
+      target: [contentArticles.slug],
+      set: { title: jokerIntTitle, content: jokerIntIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
+    }).returning();
+
+    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, jokerIntArticle.id));
+    await db.insert(contentBlocks).values({
+      articleId: jokerIntArticle.id,
+      type: 'story-layout',
+      content: "## De Klik\n'Tijdens onze zoektocht kwamen we al snel bij Voices.be uit. De klik was er meteen. Hun manier van communiceren voelt goed en natuurlijk aan.'",
+      displayOrder: 1,
+      isManuallyEdited: true
+    });
 
     console.log("✅ MARK & MOBY: Alles is nu live in de database met de juiste thema-tags.");
   } catch (error) {

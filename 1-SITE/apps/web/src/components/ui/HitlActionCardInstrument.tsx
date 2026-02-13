@@ -1,12 +1,11 @@
-import React from 'react';
-import { 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument 
+import { ArrowRight, X, Zap } from 'lucide-react';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    TextInstrument
 } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
-import { Zap, ArrowRight, X } from 'lucide-react';
 
 /**
  * ⚡ HITL ACTION CARD INSTRUMENT
@@ -29,10 +28,10 @@ export const HitlActionCardInstrument = ({
 }) => {
   const getIcon = () => {
     switch (type) {
-      case 'reorder': return <Zap size={14} className="text-yellow-500" />;
-      case 'offer': return <Zap size={14} className="text-green-500" />;
-      case 'bridge': return <Zap size={14} className="text-blue-500" />;
-      default: return <Zap size={14} className="text-primary" />;
+      case 'reorder': return <Zap strokeWidth={1.5} size={14} className="text-yellow-500" />;
+      case 'offer': return <Zap strokeWidth={1.5} size={14} className="text-green-500" />;
+      case 'bridge': return <Zap strokeWidth={1.5} size={14} className="text-blue-500" />;
+      default: return <Zap strokeWidth={1.5} size={14} className="text-primary" />;
     }
   };
 
@@ -44,12 +43,10 @@ export const HitlActionCardInstrument = ({
       <ContainerInstrument className="flex justify-between items-start mb-3 relative z-10">
           <ContainerInstrument className="flex items-center gap-2">
           {getIcon()}
-          <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-white/40">
-            <VoiceglotText translationKey="hitl.suggestion" defaultText="Voicy Suggestie" />
-          </HeadingInstrument>
+          <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-white/40"><VoiceglotText translationKey="hitl.suggestion" defaultText="Voicy Suggestie" /></HeadingInstrument>
         </ContainerInstrument>
         <ButtonInstrument onClick={onDismiss} className="text-white/20 hover:text-white transition-colors">
-          <X size={12} />
+          <X strokeWidth={1.5} size={12} />
         </ButtonInstrument>
       </ContainerInstrument>
 
@@ -64,10 +61,7 @@ export const HitlActionCardInstrument = ({
         <ButtonInstrument 
           onClick={onApprove}
           className="w-full py-2 bg-white text-va-black rounded-xl text-[15px] font-medium tracking-widest flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all"
-        >
-          <VoiceglotText translationKey="common.approve" defaultText="Goedkeuren & Versturen" />
-          <ArrowRight size={12} />
-        </ButtonInstrument>
+        ><VoiceglotText translationKey="common.approve" defaultText="Goedkeuren & Versturen" /><ArrowRight strokeWidth={1.5} size={12} /></ButtonInstrument>
       </ContainerInstrument>
     </ContainerInstrument>
   );

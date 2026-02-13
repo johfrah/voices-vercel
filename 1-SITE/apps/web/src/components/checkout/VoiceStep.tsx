@@ -68,7 +68,7 @@ export const VoiceStep: React.FC = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Zoek op naam..."
-          className="w-full bg-va-off-white border-none rounded-[24px] py-5 pl-14 pr-8 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all"
+          className="w-full bg-va-off-white border-none rounded-[24px] py-5 pl-14 pr-8 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
         />
         <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={20} />
       </div>

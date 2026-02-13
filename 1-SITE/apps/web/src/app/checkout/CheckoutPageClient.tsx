@@ -31,16 +31,9 @@ export default function CheckoutPageClient() {
             <ShoppingCart size={48} />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-2">
-            <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter">
-              <VoiceglotText translationKey="checkout.empty.title" defaultText="Winkelmand Leeg" />
-            </HeadingInstrument>
-            <TextInstrument className="text-va-black/40 font-medium">
-              <VoiceglotText translationKey="checkout.empty.text" defaultText="Je hebt nog geen stemmen geselecteerd voor je project." />
-            </TextInstrument>
+            <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter"><VoiceglotText translationKey="checkout.empty.title" defaultText="Winkelmand Leeg" /><TextInstrument className="text-va-black/40 font-medium"><VoiceglotText translationKey="checkout.empty.text" defaultText="Je hebt nog geen stemmen geselecteerd voor je project." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <Link href="/agency" className="va-btn-pro inline-block">
-            <VoiceglotText translationKey="checkout.empty.cta" defaultText="Ontdek Stemmen" />
-          </Link>
+          <Link href="/agency" className="va-btn-pro inline-block"><VoiceglotText translationKey="checkout.empty.cta" defaultText="Ontdek Stemmen" /></Link>
         </ContainerInstrument>
       </div>
     );
@@ -55,16 +48,14 @@ export default function CheckoutPageClient() {
               href="/agency" 
               className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors"
             >
-              <ArrowLeft size={14} /> 
+              <ArrowLeft strokeWidth={1.5} size={14} /> 
               <VoiceglotText translationKey="checkout.back_to_agency" defaultText="Verder Casten" />
             </Link>
-            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none text-va-black">
-              <VoiceglotText translationKey="checkout.title" defaultText="Checkout" />
-            </HeadingInstrument>
+            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none text-va-black"><VoiceglotText translationKey="checkout.title" defaultText="Checkout" /></HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="flex items-center gap-4">
             <ContainerInstrument className="px-4 py-2 bg-primary/5 text-primary rounded-full text-[15px] font-light tracking-widest border border-primary/10 flex items-center gap-2">
-              <ShieldCheck size={12} />
+              <ShieldCheck strokeWidth={1.5} size={12} />
               <VoiceglotText translationKey="checkout.secure" defaultText="Secure Checkout" />
             </ContainerInstrument>
           </ContainerInstrument>

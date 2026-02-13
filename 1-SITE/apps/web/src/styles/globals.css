@@ -451,7 +451,7 @@ body {
 }
 
 .va-artist-remote-text {
-  @apply text-sm font-medium text-white/60;
+  @apply text-[15px] font-medium text-white/60;
 }
 
 .va-artist-studio-award {
@@ -483,7 +483,7 @@ body {
 }
 
 .va-artist-footer-logo {
-  @apply w-8 h-8 rounded-lg bg-va-dark text-white flex items-center justify-center font-black text-[15px];
+  @apply w-8 h-8 rounded-[20px] bg-va-dark text-white flex items-center justify-center font-black text-[15px];
 }
 
 .va-artist-footer-copy {
@@ -635,7 +635,7 @@ body {
 }
 
 .va-account-security-desc {
-  @apply text-va-black/50 text-sm font-medium leading-relaxed;
+  @apply text-va-black/50 text-[15px] font-medium leading-relaxed;
 }
 
 .va-account-security-badges {

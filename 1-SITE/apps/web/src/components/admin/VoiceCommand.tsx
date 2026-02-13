@@ -1,8 +1,8 @@
 "use client";
 
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check, Mic, Play, X } from 'lucide-react';
 import { useState } from 'react';
-import { Mic, Play, Check, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 /**
  * 🎙️ VOICE-TO-UI COMMAND (Shadow Mode)
@@ -46,19 +46,19 @@ export default function VoiceCommand() {
             className="mb-4 p-6 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-primary/20 w-80"
           >
             <p className="text-[15px] font-black tracking-widest text-primary mb-2">Voicy Shadow Command</p>
-            <p className="text-sm text-va-black mb-4 italic">&quot;{draft}&quot;</p>
+            <p className="text-[15px] text-va-black mb-4 italic">&quot;{draft}&quot;</p>
             <div className="flex gap-2">
               <button 
                 onClick={confirmCommand}
-                className="flex-1 bg-va-black text-white py-2 rounded-lg text-[15px] font-bold tracking-widest hover:bg-primary transition-colors flex items-center justify-center gap-2"
+                className="flex-1 bg-va-black text-white py-2 rounded-[20px] text-[15px] font-bold tracking-widest hover:bg-primary transition-colors flex items-center justify-center gap-2"
               >
-                <Check size={12} /> Confirm
+                <Check strokeWidth={1.5} size={12} /> Confirm
               </button>
               <button 
                 onClick={() => setDraft(null)}
-                className="px-4 py-2 bg-va-black/5 text-va-black rounded-lg hover:bg-va-black/10 transition-colors"
+                className="px-4 py-2 bg-va-black/5 text-va-black rounded-[20px] hover:bg-va-black/10 transition-colors"
               >
-                <X size={12} />
+                <X strokeWidth={1.5} size={12} />
               </button>
             </div>
           </motion.div>

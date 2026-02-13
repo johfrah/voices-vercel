@@ -55,14 +55,14 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
           <Icon size={24} />
         </div>
         <h3 className="text-3xl font-black tracking-tighter leading-none">{config.title}</h3>
-        <p className="text-white/70 text-sm font-medium max-w-md">{config.text}</p>
+        <p className="text-white/70 text-[15px] font-medium max-w-md">{config.text}</p>
       </div>
       
       <Link 
         href={config.href}
         className="relative z-10 px-10 py-5 bg-white text-va-black rounded-full font-black tracking-widest text-[15px] hover:scale-105 transition-all flex items-center gap-3 shadow-xl"
       >
-        {config.cta} <ArrowRight size={16} />
+        {config.cta} <ArrowRight strokeWidth={1.5} size={16} />
       </Link>
 
       {/* Decorative background elements */}

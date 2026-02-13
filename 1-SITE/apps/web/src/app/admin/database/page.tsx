@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument 
+import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { Database, Table, Search, RefreshCw, ArrowLeft, Loader2, ShieldAlert, Zap, HardDrive } from 'lucide-react';
+import { ArrowLeft, Database, HardDrive, Loader2, RefreshCw, Search, ShieldAlert, Table, Zap } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 /**
  * 🗄️ ADMIN DATABASE (NUCLEAR 2026)
@@ -50,7 +50,7 @@ export default function AdminDatabasePage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft size={12} /> 
+            <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -67,7 +67,7 @@ export default function AdminDatabasePage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-2xl text-[15px] font-medium focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
-            />
+             />
           </div>
           <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
             <RefreshCw size={16} /> <VoiceglotText translationKey="admin.database.sync" defaultText="Forceer Sync" />
@@ -79,22 +79,22 @@ export default function AdminDatabasePage() {
       <BentoGrid columns={4}>
         <BentoCard span="sm" className="bg-va-black text-white p-8 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/20 text-primary rounded-lg">
+            <div className="p-2 bg-primary/20 text-primary rounded-[20px]">
               <Database size={20} />
             </div>
-            <TextInstrument className="text-[15px] font-black tracking-widest opacity-40 text-white">Status</TextInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest opacity-40 text-white"><VoiceglotText translationKey="auto.page.status.ec53a8" defaultText="Status" /></TextInstrument>
           </div>
-          <HeadingInstrument level={3} className="text-3xl font-black tracking-tighter">HEALTHY</HeadingInstrument>
+          <HeadingInstrument level={3} className="text-3xl font-black tracking-tighter"><VoiceglotText translationKey="auto.page.healthy.f068eb" defaultText="HEALTHY" /></HeadingInstrument>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <TextInstrument className="text-[15px] font-black tracking-widest opacity-40 text-white">Drizzle ORM v0.30.0</TextInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest opacity-40 text-white"><VoiceglotText translationKey="auto.page.drizzle_orm_v0_30_0.ced759" defaultText="Drizzle ORM v0.30.0" /></TextInstrument>
           </div>
         </BentoCard>
         
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
           <div className="flex items-center gap-3 text-va-black/40">
             <Table size={20} />
-            <TextInstrument className="text-[15px] font-black tracking-widest">Tabellen</TextInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.tabellen.e3bdf1" defaultText="Tabellen" /></TextInstrument>
           </div>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">{tables.length}</HeadingInstrument>
         </BentoCard>
@@ -102,15 +102,15 @@ export default function AdminDatabasePage() {
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
           <div className="flex items-center gap-3 text-va-black/40">
             <HardDrive size={20} />
-            <TextInstrument className="text-[15px] font-black tracking-widest">Storage</TextInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.storage.8c4aa5" defaultText="Storage" /></TextInstrument>
           </div>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">1.2 GB</HeadingInstrument>
         </BentoCard>
 
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
           <div className="flex items-center gap-3 text-va-black/40">
-            <Zap size={20} />
-            <TextInstrument className="text-[15px] font-black tracking-widest">Queries/sec</TextInstrument>
+            <Zap strokeWidth={1.5} size={20} />
+            <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.queries_sec.892a3b" defaultText="Queries/sec" /></TextInstrument>
           </div>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-primary">142</HeadingInstrument>
         </BentoCard>
@@ -134,7 +134,7 @@ export default function AdminDatabasePage() {
               </HeadingInstrument>
               <div className="flex gap-2">
                 <div className="px-2 py-1 bg-va-off-white rounded text-[15px] font-bold tracking-widest text-va-black/40">Read</div>
-                <div className="px-2 py-1 bg-va-off-white rounded text-[15px] font-bold tracking-widest text-va-black/40">Write</div>
+                <div className="px-2 py-1 bg-va-off-white rounded text-[15px] font-bold tracking-widest text-va-black/40"><VoiceglotText translationKey="auto.page.write.1129c0" defaultText="Write" /></div>
               </div>
             </div>
             <div className="absolute -right-4 -bottom-4 text-va-black/[0.02] group-hover:text-primary/[0.05] transition-all">
@@ -150,11 +150,7 @@ export default function AdminDatabasePage() {
           <ShieldAlert size={32} />
         </div>
         <div className="space-y-1">
-          <HeadingInstrument level={4} className="text-red-500 font-black tracking-tight">NUCLEAR WARNING</HeadingInstrument>
-          <TextInstrument className="text-[15px] text-red-900/60 font-medium">
-            Wijzigingen in de database zijn onomkeerbaar. Gebruik deze tool uitsluitend voor onderhoud en debugging. 
-            Maak altijd een backup via de `scripts/maintenance/backup.sh` voordat je destructieve acties uitvoert.
-          </TextInstrument>
+          <HeadingInstrument level={4} className="text-red-500 font-black tracking-tight"><VoiceglotText translationKey="auto.page.nuclear_warning.0b1dd5" defaultText="NUCLEAR WARNING" /><TextInstrument className="text-[15px] text-red-900/60 font-medium"><VoiceglotText translationKey="auto.page.wijzigingen_in_de_da.5827f8" defaultText="Wijzigingen in de database zijn onomkeerbaar. Gebruik deze tool uitsluitend voor onderhoud en debugging. Maak altijd een backup via de `scripts/maintenance/backup.sh` voordat je destructieve acties uitvoert." /></TextInstrument></HeadingInstrument>
         </div>
       </ContainerInstrument>
     </PageWrapperInstrument>

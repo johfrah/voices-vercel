@@ -230,8 +230,8 @@ export const MediaLibrary: React.FC = () => {
       {/* 👤 ACTOR SIDEBAR */}
       <div className="w-full lg:w-64 space-y-6">
         <div className="bg-white rounded-[32px] shadow-aura p-6 space-y-4">
-          <div className="flex items-center gap-2 text-va-black font-black tracking-tighter text-sm">
-            <User size={16} />
+          <div className="flex items-center gap-2 text-va-black font-black tracking-tighter text-[15px]">
+            <User strokeWidth={1.5} size={16} />
             Stemacteurs
           </div>
           <div className="space-y-1 max-h-[400px] overflow-y-auto no-scrollbar">
@@ -262,7 +262,7 @@ export const MediaLibrary: React.FC = () => {
         {selectedActorId && youtubeUrl && (
           <div className="bg-red-50 rounded-[32px] p-6 space-y-4 border border-red-100 animate-in fade-in slide-in-from-left duration-500">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-red-600 font-black tracking-tighter text-sm">
+              <div className="flex items-center gap-2 text-red-600 font-black tracking-tighter text-[15px]">
                 <Youtube size={18} />
                 YouTube
               </div>
@@ -319,7 +319,7 @@ export const MediaLibrary: React.FC = () => {
                 {selectedActorId ? `${actors.find(a => a.id === selectedActorId)?.firstName}'s Portfolio` : 'Media Engine'}
               </h2>
             </div>
-            <p className="text-va-black/40 font-medium max-w-md text-sm">
+            <p className="text-va-black/40 font-medium max-w-md text-[15px]">
               {selectedActorId 
                 ? `Alle media gekoppeld aan deze stemacteur.` 
                 : 'Centraal beheer van alle assets. Geoptimaliseerd voor snelheid en System-integriteit.'}
@@ -334,7 +334,7 @@ export const MediaLibrary: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && fetchMedia()}
-                className="w-full bg-white border-none rounded-2xl py-4 pl-12 pr-6 shadow-aura focus:ring-2 focus:ring-primary/20 transition-all text-sm font-bold"
+                className="w-full bg-white border-none rounded-2xl py-4 pl-12 pr-6 shadow-aura focus:ring-2 focus:ring-primary/20 transition-all text-[15px] font-bold"
               />
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
             </div>
@@ -342,7 +342,7 @@ export const MediaLibrary: React.FC = () => {
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white border-none rounded-2xl py-4 px-6 shadow-aura text-sm font-black tracking-widest focus:ring-2 focus:ring-primary/20"
+              className="bg-white border-none rounded-2xl py-4 px-6 shadow-aura text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20"
             >
               <option value="newest">Nieuwst</option>
               <option value="oldest">Oudst</option>
@@ -354,7 +354,7 @@ export const MediaLibrary: React.FC = () => {
               flex items-center gap-2 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[15px] cursor-pointer transition-all shadow-pro
               ${isUploading ? 'bg-va-black/10 text-va-black/30' : 'bg-va-black text-white hover:scale-105 active:scale-95'}
             `}>
-              {isUploading ? <Upload className="animate-bounce" size={16} /> : <Plus size={16} />}
+              {isUploading ? <Upload className="animate-bounce" size={16} /> : <Plus strokeWidth={1.5} size={16} />}
               {isUploading ? 'Bezig...' : 'Upload'}
               <input type="file" className="hidden" onChange={handleUpload} disabled={isUploading} />
             </label>
@@ -372,7 +372,7 @@ export const MediaLibrary: React.FC = () => {
                 onClick={() => setSelectedIds([])}
                 className="text-white/40 hover:text-white transition-colors"
               >
-                <X size={16} />
+                <X strokeWidth={1.5} size={16} />
               </button>
             </div>
             

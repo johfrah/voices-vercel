@@ -1,25 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { 
-  Mic, 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  Lock, 
-  Unlock, 
-  CheckCircle2, 
-  Clock, 
-  AlertCircle,
-  Save,
-  ArrowLeft
+import {
+    ArrowLeft,
+    CheckCircle2,
+    Clock,
+    Lock,
+    MoreVertical,
+    Save,
+    Search,
+    Unlock
 } from 'lucide-react';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
-import { PageWrapperInstrument, SectionInstrument, ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument, InputInstrument } from '@/components/ui/LayoutInstruments';
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import Link from 'next/link';
+import { useState } from 'react';
 
 interface ActorRecord {
   id: number;
@@ -61,12 +57,10 @@ export default function VoiceManagerPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft size={12} /> 
+            <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
-            <VoiceglotText translationKey="admin.voice_manager.title" defaultText="Stemmen" />
-          </HeadingInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter "><VoiceglotText translationKey="admin.voice_manager.title" defaultText="Stemmen" /></HeadingInstrument>
         </ContainerInstrument>
 
         <ContainerInstrument className="flex gap-4 items-center">
@@ -75,7 +69,7 @@ export default function VoiceManagerPage() {
             <InputInstrument 
               type="text" 
               placeholder="Zoek..."
-              className="bg-white border border-black/5 rounded-2xl pl-12 pr-6 py-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all w-80 shadow-sm"
+              className="bg-white border border-black/5 rounded-2xl pl-12 pr-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all w-80 shadow-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -92,7 +86,7 @@ export default function VoiceManagerPage() {
                 : 'bg-va-black text-white hover:bg-va-black/80'
             }`}
           >
-            {isEditMode ? <Unlock size={14} /> : <Lock size={14} />}
+            {isEditMode ? <Unlock strokeWidth={1.5} size={14} /> : <Lock strokeWidth={1.5} size={14} />}
             {isEditMode ? <VoiceglotText translationKey="admin.edit_mode_on" defaultText="Bewerken" /> : <VoiceglotText translationKey="admin.edit_mode" defaultText="Bewerken" />}
           </ButtonInstrument>
         </ContainerInstrument>
@@ -114,14 +108,10 @@ export default function VoiceManagerPage() {
 
             <ContainerInstrument className="flex-1">
               <ContainerInstrument className="flex items-center gap-2">
-                <HeadingInstrument level={3} className="text-xl font-black tracking-tight">
-                  <VoiceglotText translationKey={`admin.actor.${actor.id}.name`} defaultText={`${actor.firstName} ${actor.lastName}`} noTranslate={true} />
-                </HeadingInstrument>
+                <HeadingInstrument level={3} className="text-xl font-black tracking-tight"><VoiceglotText translationKey={`admin.actor.${actor.id}.name`} defaultText={`${actor.firstName} ${actor.lastName}`} noTranslate={true} /></HeadingInstrument>
                 <TextInstrument as="span" className="text-[15px] font-bold text-va-black/20 tracking-widest">#{actor.id}</TextInstrument>
               </ContainerInstrument>
-              <TextInstrument className="text-[15px] font-black text-primary tracking-[0.2em] mt-1">
-                <VoiceglotText translationKey="admin.voice_manager.native" defaultText={`${actor.nativeLang} NATIVE`} />
-              </TextInstrument>
+              <TextInstrument className="text-[15px] font-black text-primary tracking-[0.2em] mt-1"><VoiceglotText translationKey="admin.voice_manager.native" defaultText={`${actor.nativeLang} NATIVE`} /></TextInstrument>
             </ContainerInstrument>
 
             {/* Status - Clickable in Edit Mode */}
@@ -139,9 +129,7 @@ export default function VoiceManagerPage() {
 
             {/* Price - Editable in Edit Mode */}
             <ContainerInstrument className="w-32">
-              <TextInstrument className="text-[15px] font-black text-va-black/30 tracking-widest mb-1">
-                <VoiceglotText translationKey="admin.voice_manager.rate_label" defaultText="Tarief" />
-              </TextInstrument>
+              <TextInstrument className="text-[15px] font-black text-va-black/30 tracking-widest mb-1"><VoiceglotText translationKey="admin.voice_manager.rate_label" defaultText="Tarief" /></TextInstrument>
               <ContainerInstrument className={`flex items-center gap-1 text-lg font-black tracking-tighter transition-all ${
                 isEditMode ? 'text-primary' : 'text-va-black'
               }`}>
@@ -165,12 +153,10 @@ export default function VoiceManagerPage() {
 
             {/* Score */}
             <ContainerInstrument className="text-right pr-4">
-              <TextInstrument className="text-[15px] font-black text-va-black/30 tracking-widest mb-1">
-                <VoiceglotText translationKey="admin.voice_manager.score_label" defaultText="Score" />
-              </TextInstrument>
+              <TextInstrument className="text-[15px] font-black text-va-black/30 tracking-widest mb-1"><VoiceglotText translationKey="admin.voice_manager.score_label" defaultText="Score" /></TextInstrument>
               <ContainerInstrument className="flex items-center gap-2 justify-end">
                 <ContainerInstrument className="w-24 h-1.5 bg-va-off-white rounded-full overflow-hidden">
-                  <ContainerInstrument className="h-full bg-primary" {...({ style: { width: `${actor.voiceScore}%` } } as any)} />
+                  <div className="h-full bg-primary" style={{ width: `${actor.voiceScore}%` }} />
                 </ContainerInstrument>
                 <TextInstrument as="span" className="text-[15px] font-black">{actor.voiceScore}</TextInstrument>
               </ContainerInstrument>
@@ -199,9 +185,7 @@ export default function VoiceManagerPage() {
       {isEditMode && (
         <ContainerInstrument className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-va-black text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce">
           <ContainerInstrument className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-          <TextInstrument as="span" className="text-[15px] font-black tracking-widest">
-            <VoiceglotText translationKey="admin.db_sync_active" defaultText="Sync Actief" />
-          </TextInstrument>
+          <TextInstrument as="span" className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="admin.db_sync_active" defaultText="Sync Actief" /></TextInstrument>
         </ContainerInstrument>
       )}
     </PageWrapperInstrument>

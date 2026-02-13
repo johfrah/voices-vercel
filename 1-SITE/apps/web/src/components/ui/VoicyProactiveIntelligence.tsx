@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, X, ArrowRight, TrendingUp } from 'lucide-react';
-import { ContainerInstrument, TextInstrument, HeadingInstrument, ButtonInstrument } from './LayoutInstruments';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowRight, Brain, TrendingUp, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 
 /**
  * 🧠 VOICY PROACTIVE INTELLIGENCE (GOD MODE 2026)
@@ -44,7 +45,7 @@ export const VoicyProactiveIntelligence = () => {
         icon: <TrendingUp size={16} />,
         cta: {
           label: 'Bekijk Trend',
-          onClick: () => window.location.href = '/account/mailbox?tab=insights'
+          onClick: () => window.location.href = '/admin/mailbox?tab=insights'
         }
       });
       setIsVisible(true);
@@ -77,18 +78,18 @@ export const VoicyProactiveIntelligence = () => {
                     <Brain size={18} className="text-va-black" />
                   </div>
                   <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em] text-primary">
-                    Voicy Intelligence
+                    <VoiceglotText translationKey="auto.voicyproactiveintelligence.voicy_intelligence.7a49dd" defaultText="Voicy Intelligence" />
                   </TextInstrument>
                 </div>
                 <button 
                   onClick={() => setIsVisible(false)}
                   className="text-white/20 hover:text-white transition-colors"
                 >
-                  <X size={16} />
+                  <X strokeWidth={1.5} size={16} />
                 </button>
               </div>
 
-              <HeadingInstrument level={4} className="text-sm font-black mb-2 leading-tight">
+              <HeadingInstrument level={4} className="text-[15px] font-black mb-2 leading-tight">
                 {tip.title}
               </HeadingInstrument>
               
@@ -103,14 +104,14 @@ export const VoicyProactiveIntelligence = () => {
                     className="bg-white text-va-black px-4 py-2 rounded-xl text-[15px] font-black tracking-widest hover:bg-primary hover:text-white transition-all flex items-center gap-2 shadow-lg"
                   >
                     {tip.cta.label}
-                    <ArrowRight size={12} />
+                    <ArrowRight strokeWidth={1.5} size={12} />
                   </ButtonInstrument>
                 )}
                 <ButtonInstrument 
                   onClick={() => setIsVisible(false)}
                   className="text-[15px] font-black tracking-widest text-white/40 hover:text-white transition-colors"
                 >
-                  Later
+                  <VoiceglotText translationKey="auto.voicyproactiveintelligence.later____.0d5296" defaultText="Later" />
                 </ButtonInstrument>
               </div>
             </div>

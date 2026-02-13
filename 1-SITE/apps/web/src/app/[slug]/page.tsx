@@ -65,8 +65,8 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
 
     const getIcon = (cat: string) => {
       const c = cat.toLowerCase();
-      if (c.includes('kwaliteit') || c.includes('veiligheid')) return <ShieldCheck className="text-primary/40" size={40} />;
-      if (c.includes('levering') || c.includes('annulering')) return <Zap className="text-primary/40" size={40} />;
+      if (c.includes('kwaliteit') || c.includes('veiligheid')) return <ShieldCheck strokeWidth={1.5} className="text-primary/40" size={40} />;
+      if (c.includes('levering') || c.includes('annulering')) return <Zap strokeWidth={1.5} className="text-primary/40" size={40} />;
       if (c.includes('betaling') || c.includes('inschrijving')) return <CreditCard className="text-primary/40" size={40} />;
       return <Info className="text-primary/40" size={40} />;
     };
@@ -96,7 +96,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
               <div className="lg:col-span-5 relative">
                 <div className="aspect-[4/5] bg-va-black rounded-[80px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000 flex items-center justify-center group">
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                  <span className="text-primary/10 font-light text-9xl rotate-12 tracking-tighter">VOICES</span>
+                  <span className="text-primary/10 font-light text-9xl rotate-12 tracking-tighter"><VoiceglotText translationKey="auto.page.voices.92ff10" defaultText="VOICES" /></span>
                 </div>
                 <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-[100px] animate-pulse" />
               </div>
@@ -105,15 +105,15 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
 
         case 'carousel':
           return (
-            <section key={block.id} className="py-48 bg-va-off-white border border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32 rounded-[100px] shadow-aura relative overflow-hidden group animate-in fade-in duration-1000 fill-mode-both">
+            <section key={block.id} className="py-48 bg-va-off-white border border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32 rounded-[20px] shadow-aura relative overflow-hidden group animate-in fade-in duration-1000 fill-mode-both">
               <div className="relative z-10">
                 <div className="flex items-center gap-6 mb-20">
-                  <Star className="text-primary/40 fill-primary/10" size={32} />
+                  <Star strokeWidth={1.5} className="text-primary/40 fill-primary/10" size={32} />
                   <HeadingInstrument level={2} className="text-5xl font-light tracking-tight text-va-black">{title || 'Onze Partners'}</HeadingInstrument>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                   {body.split('\n').filter(l => l.length > 5).map((partner, i) => (
-                    <div key={i} className="p-12 bg-white rounded-[60px] border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 hover:scale-[1.02] group/card">
+                    <div key={i} className="p-12 bg-white rounded-[20px] border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 hover:scale-[1.02] group/card">
                       <TextInstrument className="text-2xl font-medium text-va-black/40 group-hover/card:text-va-black transition-colors leading-tight">{partner}</TextInstrument>
                     </div>
                   ))}
@@ -145,7 +145,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                   return (
                     <div 
                       key={i} 
-                      className={`bg-white rounded-[60px] border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all duration-1000 group/bento flex flex-col overflow-hidden
+                      className={`bg-white rounded-[20px] border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all duration-1000 group/bento flex flex-col overflow-hidden
                         ${isLarge ? 'md:col-span-8' : 'md:col-span-4'}
                       `}
                     >
@@ -191,11 +191,11 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
           // Airbnb-style Overlay Island (Contextuele Beleving)
           return (
             <section key={block.id} className="py-32 relative min-h-[80vh] flex items-center animate-in fade-in duration-1000 fill-mode-both">
-              <div className="absolute inset-0 bg-va-black rounded-[80px] overflow-hidden shadow-aura-lg grayscale-[0.5] hover:grayscale-0 transition-all duration-1000 group/lifestyle">
+              <div className="absolute inset-0 bg-va-black rounded-[20px] overflow-hidden shadow-aura-lg grayscale-[0.5] hover:grayscale-0 transition-all duration-1000 group/lifestyle">
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60" />
-                <span className="absolute inset-0 flex items-center justify-center text-white/5 font-black text-[20vw] rotate-12 tracking-tighter pointer-events-none ">VOICES</span>
+                <span className="absolute inset-0 flex items-center justify-center text-white/5 font-black text-[20vw] rotate-12 tracking-tighter pointer-events-none "><VoiceglotText translationKey="auto.page.voices.92ff10" defaultText="VOICES" /></span>
               </div>
-              <div className="relative z-10 max-w-xl ml-12 lg:ml-24 p-16 bg-white/90 backdrop-blur-xl rounded-[60px] shadow-aura-lg border border-white/20">
+              <div className="relative z-10 max-w-xl ml-12 lg:ml-24 p-16 bg-white/90 backdrop-blur-xl rounded-[20px] shadow-aura-lg border border-white/20">
                 {title && <HeadingInstrument level={2} className="text-5xl font-light mb-8 tracking-tight text-va-black leading-none">{title}</HeadingInstrument>}
                 <div className="prose prose-xl text-va-black/60 font-medium leading-relaxed tracking-tight">
                   {body}
@@ -215,7 +215,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                 {steps.map((step, i) => {
                   const { title: stepTitle, body: stepBody } = extractTitle(step);
                   return (
-                    <div key={i} className="p-10 bg-white rounded-[60px] border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all duration-700 hover:-translate-y-2 group/step">
+                    <div key={i} className="p-10 bg-white rounded-[20px] border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all duration-700 hover:-translate-y-2 group/step">
                       <div className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center mb-8 group-hover/step:bg-primary/10 transition-colors duration-700">
                         <span className="text-va-black/20 font-light text-2xl group-hover/step:text-primary transition-colors">0{i + 1}</span>
                       </div>
@@ -284,9 +284,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
               <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-12 block">
                 {journey}
               </TextInstrument>
-              <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black">
-                <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
-              </HeadingInstrument>
+              <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black"><VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} /></HeadingInstrument>
               <div className="w-48 h-1 bg-black/5 rounded-full" />
             </header>
 
@@ -329,20 +327,15 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
 
             {/* 🏁 GLOBAL SIGNATURE CTA MANDATE */}
             <footer className="mt-80 text-center">
-              <div className="bg-va-black text-white p-32 rounded-[100px] shadow-aura-lg relative overflow-hidden group">
+              <div className="bg-va-black text-white p-32 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
                 <div className="relative z-10">
-                  <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block">
-                    <VoiceglotText translationKey="cta.next_step" defaultText="volgende stap" />
-                  </TextInstrument>
-                  <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9]">
-                    <VoiceglotText translationKey="cta.ready_title" defaultText="wil je onze stemmen beluisteren?" />
-                  </HeadingInstrument>
+                  <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block"><VoiceglotText translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
+                  <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9]"><VoiceglotText translationKey="cta.ready_title" defaultText="wil je onze stemmen beluisteren?" /></HeadingInstrument>
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-10">
-                    <Link href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[40px] font-medium text-base tracking-tight hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white">
-                      <VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" />
-                    </Link>
+                    <Link href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-tight hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white"><VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" /></Link>
                     <Link href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-tight flex items-center gap-4 group transition-all duration-700">
-                      <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" /> <ArrowRight size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
+                      <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" />
+                      <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
                     </Link>
                   </div>
                 </div>
@@ -353,6 +346,6 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
         </PageWrapperInstrument>
       );
   } catch (error: any) {
-    return <div className="p-32 text-center font-light text-va-black/10 text-2xl italic tracking-widest">Voices is calibrating...</div>;
+    return <div className="p-32 text-center font-light text-va-black/10 text-2xl italic tracking-widest"><VoiceglotText translationKey="auto.page.voices_is_calibratin.332891" defaultText="Voices is calibrating..." /></div>;
   }
 }

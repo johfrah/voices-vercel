@@ -6,8 +6,8 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Apple, ArrowRight, CheckCircle2, ChevronUp, CreditCard, Mic } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
 
 /**
  * ANIMATED PRICE COUNTER (Protocol 2026)
@@ -163,7 +163,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                         />
                       )}
                     </div>
-                    <span className="font-bold text-sm">{state.selectedActor?.display_name || 'Selecteer stem'}</span>
+                    <span className="font-bold text-[15px]">{state.selectedActor?.display_name || 'Selecteer stem'}</span>
                   </div>
                 </BentoCard>
 
@@ -176,7 +176,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                   </p>
                   <div className="flex items-center gap-2 text-primary">
                     <Mic size={16} />
-                    <span className="font-bold text-sm">{transcription ? 'Ingebroken' : 'Voice-to-Text'}</span>
+                    <span className="font-bold text-[15px]">{transcription ? 'Ingebroken' : 'Voice-to-Text'}</span>
                   </div>
                 </BentoCard>
               </div>
@@ -214,7 +214,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                 </button>
                 <button 
                   onClick={() => setStep('payment')}
-                  className="w-full h-16 bg-white border-2 border-black/5 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm tracking-widest hover:bg-gray-50 transition-all"
+                  className="w-full h-16 bg-white border-2 border-black/5 rounded-2xl flex items-center justify-center gap-2 font-bold text-[15px] tracking-widest hover:bg-gray-50 transition-all"
                 >
                   <VoiceglotText translationKey="checkout.mobile.other_payment" defaultText="Andere betaalmethode" />
                 </button>
@@ -274,12 +274,12 @@ export const MobileCheckoutSheet: React.FC = () => {
                   <p className="text-[15px] font-black tracking-widest text-primary mb-2">
                     <VoiceglotText translationKey="checkout.mobile.registered_briefing" defaultText="Geregistreerde Briefing" />
                   </p>
-                  <p className="text-sm font-medium leading-relaxed italic">&quot;{transcription}&quot;</p>
+                  <p className="text-[15px] font-medium leading-relaxed italic">&quot;{transcription}&quot;</p>
                   <button 
                     onClick={() => setStep('summary')}
                     className="mt-6 w-full py-4 bg-va-black text-white rounded-xl text-[15px] font-black tracking-widest flex items-center justify-center gap-2"
                   >
-                    <VoiceglotText translationKey="checkout.mobile.confirm_briefing" defaultText="Bevestig Briefing" /> <ArrowRight size={14} />
+                    <VoiceglotText translationKey="checkout.mobile.confirm_briefing" defaultText="Bevestig Briefing" /> <ArrowRight strokeWidth={1.5} size={14} />
                   </button>
                 </BentoCard>
               )}

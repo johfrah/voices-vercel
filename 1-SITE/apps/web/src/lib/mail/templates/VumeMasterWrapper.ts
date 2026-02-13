@@ -51,12 +51,20 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     </tr>
   `;
 
+  const logoHtml = `
+    <tr>
+      <td align="center" style="padding-bottom: 40px;">
+        <img src="https://voices-vercel.vercel.app/assets/common/branding/email/logos/email-logo.png" alt="Voices.be" width="140" style="display: block; border: 0;" />
+      </td>
+    </tr>
+  `;
+
   const signatureHtml = showSignature ? `
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; border-top: 1px solid #F0F0F0; padding-top: 30px;">
       <tr>
         <td width="100" style="vertical-align: middle; text-align: center;">
           <a href="https://www.voices.be/?utm_source=E-mail&utm_medium=be-mail" style="text-decoration: none;">
-            <img src="https://www.voices.be/wp-content/uploads/2024/07/johfrah.png" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
+            <img src="https://voices-vercel.vercel.app/assets/common/branding/founder/johfrah-avatar-be.png" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
           </a>
         </td>
         <td style="vertical-align: middle; padding-left: 31px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">
@@ -85,11 +93,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
           <td align="center" style="padding: 40px 20px;">
             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
               <!-- LOGO ABOVE CARD -->
-              <tr>
-                <td align="center" style="padding-bottom: 40px;">
-                  <img src="https://www.voices.be/wp-content/uploads/2023/05/Voices-Logo-Black.png" alt="Voices.be" width="140" style="display: block; border: 0;" />
-                </td>
-              </tr>
+              ${logoHtml}
               
               <tr>
                 <td style="background-color: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.04);">

@@ -61,25 +61,25 @@ export const EmailApprovalDashboard = () => {
         {pendingEmails.map(email => (
           <BentoCard key={email.id} title={email.subject}>
             <div className="p-4 bg-zinc-900 rounded-xl border border-zinc-800">
-              <p className="text-sm text-zinc-400 mb-2">Aan: {email.to}</p>
+              <p className="text-[15px] text-zinc-400 mb-2">Aan: {email.to}</p>
               <p className="text-[15px] text-zinc-500 tracking-widest mb-4">Template: {email.template}</p>
               
               <div className="flex gap-2">
                 <button 
                   onClick={() => handleApprove(email.id)}
-                  className="flex-1 py-2 bg-green-600 hover:bg-green-500 rounded-lg font-bold transition-colors"
+                  className="flex-1 py-2 bg-green-600 hover:bg-green-500 rounded-[20px] font-bold transition-colors"
                 >
                   GOEDGEKEURD
                 </button>
                 <button 
                   onClick={() => playClick('pro')}
-                  className="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-bold transition-colors"
+                  className="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-[20px] font-bold transition-colors"
                 >
                   BEWERK
                 </button>
                 <button 
                   onClick={() => handleReject(email.id)}
-                  className="px-4 py-2 bg-red-900/30 text-red-500 hover:bg-red-900/50 rounded-lg font-bold transition-colors"
+                  className="px-4 py-2 bg-red-900/30 text-red-500 hover:bg-red-900/50 rounded-[20px] font-bold transition-colors"
                 >
                   X
                 </button>
@@ -88,7 +88,7 @@ export const EmailApprovalDashboard = () => {
               {/* 🧠 Feedback Loop UI */}
               <div className="mt-4 pt-4 border-t border-zinc-800 space-y-3">
                 {email.isValueSensitive && (
-                  <div className="p-2 bg-red-900/20 border border-red-500/30 rounded-lg flex items-center gap-2">
+                  <div className="p-2 bg-red-900/20 border border-red-500/30 rounded-[20px] flex items-center gap-2">
                     <span className="text-[15px] font-black text-red-500 animate-pulse">☢️ WAARDE-ALARM:</span>
                     <span className="text-[15px] text-red-200 font-bold">Korting gedetecteerd - Strikte HITL vereist</span>
                   </div>

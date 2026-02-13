@@ -62,7 +62,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose }: Donatio
           onClick={onClose}
           className="absolute top-6 right-6 text-va-black/20 hover:text-va-black transition-colors"
         >
-          <X size={20} />
+          <X strokeWidth={1.5} size={20} />
         </button>
 
         <div className="p-10">
@@ -88,7 +88,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose }: Donatio
                     key={val}
                     type="button"
                     onClick={() => setAmount(val)}
-                    className={`py-3 rounded-[10px] text-sm font-light transition-all border ${
+                    className={`py-3 rounded-[10px] text-[15px] font-light transition-all border ${
                       amount === val 
                         ? "bg-va-black text-white border-va-black" 
                         : "bg-va-off-white text-va-black/40 border-transparent hover:border-va-black/10"
@@ -136,7 +136,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose }: Donatio
               ) : (
                 <>
                   <span>Doneer €{amount} nu</span>
-                  <ShieldCheck size={18} className="opacity-40" />
+                  <ShieldCheck strokeWidth={1.5} size={18} className="opacity-40" />
                 </>
               )}
             </ButtonInstrument>

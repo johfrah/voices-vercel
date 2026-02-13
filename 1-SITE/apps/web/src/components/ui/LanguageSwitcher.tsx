@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { Globe, Check, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface Language {
   code: string;
@@ -81,11 +81,8 @@ export const LanguageSwitcher: React.FC = () => {
           playClick('soft');
           setIsOpen(!isOpen);
         }}
-        className="flex items-center gap-2 px-2 py-2 transition-all duration-500 group"
+        className="relative p-2 rounded-xl transition-all duration-500 cursor-pointer group flex items-center justify-center min-w-[40px] h-[40px] hover:bg-va-black/5"
       >
-        <span className="text-[15px] font-medium tracking-widest text-va-black border-b-2 border-va-black pb-0.5 leading-none">
-          {currentLang.toUpperCase()}
-        </span>
         <Image 
           src="/assets/common/branding/icons/LANGUAGEa.svg" 
           alt="Language" 
@@ -94,6 +91,9 @@ export const LanguageSwitcher: React.FC = () => {
           className="w-6 h-6 transition-transform duration-500 group-hover:scale-110" 
           style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
         />
+        <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[15px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 ">
+          {currentLang}
+        </span>
       </button>
 
       <AnimatePresence>
@@ -125,7 +125,24 @@ export const LanguageSwitcher: React.FC = () => {
                         <span className={`text-[15px] mt-0.5 font-medium ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>{lang.native}</span>
                       </div>
                     </div>
-                    {isActive ? <Check size={14} className="text-white" /> : <ChevronRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
+                    {isActive ? (
+                      <Image 
+                        src="/assets/common/branding/icons/INFO.svg" 
+                        alt="Active" 
+                        width={14} 
+                        height={14} 
+                        className="brightness-0 invert"
+                      />
+                    ) : (
+                      <Image 
+                        src="/assets/common/branding/icons/FORWARD.svg" 
+                        alt="Forward" 
+                        width={12} 
+                        height={12} 
+                        className="opacity-0 group-hover:opacity-40 transition-opacity"
+                        style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+                      />
+                    )}
                   </button>
                 );
               })}

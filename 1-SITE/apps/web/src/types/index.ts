@@ -106,6 +106,8 @@ export interface Demo {
   title: string;
   audio_url: string;
   category: string;
+  actor_name?: string;
+  actor_photo?: string;
 }
 
 export interface SearchFilters {

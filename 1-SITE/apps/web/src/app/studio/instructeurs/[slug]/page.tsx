@@ -1,17 +1,17 @@
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    TextInstrument
+} from "@/components/ui/LayoutInstruments";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { StudioDataBridge } from "@/lib/studio-bridge";
-import { notFound } from "next/navigation";
+import { ArrowLeft, ArrowRight, Calendar, Globe, Instagram, Linkedin, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { 
-  PageWrapperInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument,
-  ButtonInstrument
-} from "@/components/ui/LayoutInstruments";
-import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { ArrowLeft, Calendar, MapPin, ArrowRight, Linkedin, Instagram, Globe } from "lucide-react";
+import { notFound } from "next/navigation";
 
 /**
  * INSTRUCTOR DETAIL PAGE
@@ -33,7 +33,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
         href="/studio/instructeurs" 
         className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
       >
-        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeft strokeWidth={1.5} size={14} className="group-hover:-translate-x-1 transition-transform" />
         <VoiceglotText translationKey="common.back_to_instructors" defaultText="TERUG NAAR OVERZICHT" />
       </Link>
 
@@ -70,22 +70,17 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
               )}
               {instructor.socials?.website && (
                 <a href={instructor.socials.website} target="_blank" className="text-white/20 hover:text-white transition-colors">
-                  <Globe size={20} />
+                  <Globe strokeWidth={1.5} size={20} />
                 </a>
               )}
             </ContainerInstrument>
           </ContainerInstrument>
-          
-          <ButtonInstrument className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl text-[15px] font-black tracking-widest transition-all mt-12">
-            <VoiceglotText translationKey="instructor.book_session" defaultText="PLAN EEN SESSIE" />
-          </ButtonInstrument>
+          <ButtonInstrument className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl text-[15px] font-black tracking-widest transition-all mt-12"><VoiceglotText translationKey="instructor.book_session" defaultText="PLAN EEN SESSIE" /></ButtonInstrument>
         </BentoCard>
 
         {/* 📝 BIO CARD */}
         <BentoCard span="lg" className="bg-white shadow-aura p-12 border border-black/5">
-          <HeadingInstrument level={2} className="text-[15px] font-black tracking-widest text-black/30 mb-8">
-            <VoiceglotText translationKey="instructor.about_title" defaultText="Over de instructeur" />
-          </HeadingInstrument>
+          <HeadingInstrument level={2} className="text-[15px] font-black tracking-widest text-black/30 mb-8"><VoiceglotText translationKey="instructor.about_title" defaultText="Over de instructeur" /></HeadingInstrument>
           <div className="prose prose-lg prose-black max-w-none">
             <TextInstrument className="text-black/60 font-medium leading-relaxed whitespace-pre-wrap">
               {instructor.bio || "Geen bio beschikbaar."}
@@ -95,9 +90,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
 
         {/* 🎓 WORKSHOPS CARD */}
         <BentoCard span="lg" className="bg-va-off-white p-12">
-          <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest text-black/30 mb-10">
-            <VoiceglotText translationKey="instructor.workshops_title" defaultText="Workshops door deze instructeur" />
-          </HeadingInstrument>
+          <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest text-black/30 mb-10"><VoiceglotText translationKey="instructor.workshops_title" defaultText="Workshops door deze instructeur" /></HeadingInstrument>
           
           <div className="grid md:grid-cols-2 gap-6">
             {workshops.length > 0 ? workshops.map((workshop) => (
@@ -110,12 +103,12 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
                   <HeadingInstrument level={4} className="text-lg font-black tracking-tight group-hover:text-primary transition-colors">
                     {workshop.title}
                   </HeadingInstrument>
-                  <ArrowRight size={18} className="text-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                  <ArrowRight strokeWidth={1.5} size={18} className="text-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
                 </div>
                 
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-[15px] font-bold text-black/40 tracking-widest">
-                    <Calendar size={12} /> 
+                    <Calendar strokeWidth={1.5} size={12} /> 
                     {workshop.editions?.[0] 
                       ? new Date(workshop.editions[0].date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })
                       : "Binnenkort"}
@@ -127,9 +120,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
               </Link>
             )) : (
               <div className="col-span-2 p-12 rounded-2xl border border-dashed border-black/10 text-center">
-                <TextInstrument className="text-[15px] font-black tracking-widest text-black/20">
-                  Momenteel geen workshops gepland
-                </TextInstrument>
+                <TextInstrument className="text-[15px] font-black tracking-widest text-black/20"><VoiceglotText translationKey="auto.page.momenteel_geen_works.7d9a37" defaultText="Momenteel geen workshops gepland" /></TextInstrument>
               </div>
             )}
           </div>
@@ -137,12 +128,10 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
 
         {/* 💬 QUOTE / FOOTER CARD */}
         <BentoCard span="sm" className="bg-primary text-black p-10 flex flex-col justify-center items-center text-center">
-          <HeadingInstrument level={4} className="text-2xl font-black tracking-tighter mb-4">
-            <VoiceglotText 
+          <HeadingInstrument level={4} className="text-2xl font-black tracking-tighter mb-4"><VoiceglotText 
               translationKey="instructor.quote" 
               defaultText="De stem is het instrument van de ziel." 
-            />
-          </HeadingInstrument>
+            /></HeadingInstrument>
           <TextInstrument className="text-[15px] font-black tracking-widest opacity-40">
             — {instructor.name}
           </TextInstrument>

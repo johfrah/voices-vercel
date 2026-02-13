@@ -26,12 +26,12 @@ export const OrderHeader: React.FC<OrderHeaderProps> = ({ id, date, journey, sta
       </div>
       <div className="flex gap-3">
         <span className={clsx(
-          "px-4 py-1.5 rounded-full text-sm font-semibold uppercase tracking-wider",
+          "px-4 py-1.5 rounded-full text-[15px] font-semibold uppercase tracking-wider",
           isStudio ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"
         )}>
           <VoiceglotText translationKey={`journey.${journey}`} defaultText={journey} />
         </span>
-        <span className="px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-sm font-semibold tracking-wider">
+        <span className="px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-[15px] font-semibold tracking-wider">
           <VoiceglotText translationKey={`order.status.${status}`} defaultText={status} />
         </span>
       </div>

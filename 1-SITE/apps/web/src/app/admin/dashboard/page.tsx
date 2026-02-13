@@ -42,14 +42,14 @@ export default function AdminDashboard() {
   }, []);
 
   const stats = [
-    { label: <VoiceglotText translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '12', icon: <Mail size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/account/mailbox' },
+    { label: <VoiceglotText translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '12', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },
     { label: <VoiceglotText translationKey="admin.stats.approvals" defaultText="Approval Queue" />, value: '5', icon: <Bell size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
     { label: <VoiceglotText translationKey="admin.stats.voices" defaultText="Actieve Stemmen" />, value: '142', icon: <Mic size={20} />, trend: '+12%', color: 'text-va-black/40' },
-    { label: <VoiceglotText translationKey="admin.stats.ai_status" defaultText="AI Sync Status" />, value: 'Live', icon: <Activity size={20} />, trend: '100%', color: 'text-green-500' },
+    { label: <VoiceglotText translationKey="admin.stats.ai_status" defaultText="AI Sync Status" />, value: 'Live', icon: <Activity strokeWidth={1.5} size={20} />, trend: '100%', color: 'text-green-500' },
   ];
 
   const notifications = [
-    { id: 1, type: 'mail', title: 'Nieuwe offerte-aanvraag', user: 'Greenpeace', time: '5 min geleden', icon: <Mail size={14} /> },
+    { id: 1, type: 'mail', title: 'Nieuwe offerte-aanvraag', user: 'Greenpeace', time: '5 min geleden', icon: <Mail strokeWidth={1.5} size={14} /> },
     { id: 2, type: 'approval', title: 'Factuur van Christina Van Geel', user: 'Wacht op goedkeuring', time: '12 min geleden', icon: <Bell size={14} /> },
     { id: 3, type: 'ai', title: 'Nieuwe FAQ suggestie gevonden', user: 'Voicy Intelligence', time: '1 uur geleden', icon: <Brain size={14} /> },
   ];
@@ -60,19 +60,13 @@ export default function AdminDashboard() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-2">
           <ContainerInstrument className="flex items-center gap-2 text-primary">
-            <ShieldCheck size={16} />
-            <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em]">
-              <VoiceglotText translationKey="admin.badge" defaultText="Voices Cockpit" />
-            </TextInstrument>
+            <ShieldCheck strokeWidth={1.5} size={16} />
+            <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em]"><VoiceglotText translationKey="admin.badge" defaultText="Voices Cockpit" /></TextInstrument>
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
-            <VoiceglotText translationKey="admin.title" defaultText="Beheer-dashboard" />
-          </HeadingInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter "><VoiceglotText translationKey="admin.title" defaultText="Beheer-dashboard" /></HeadingInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="flex gap-4">
-          <ButtonInstrument className="va-btn-nav">
-            <VoiceglotText translationKey="admin.cta.snapshot" defaultText="Snapshot Maken" />
-          </ButtonInstrument>
+          <ButtonInstrument className="va-btn-nav"><VoiceglotText translationKey="admin.cta.snapshot" defaultText="Snapshot Maken" /></ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
@@ -85,7 +79,7 @@ export default function AdminDashboard() {
               <ContainerInstrument className={`w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center ${stat.color} group-hover:scale-110 transition-transform`}>
                 {stat.icon}
               </ContainerInstrument>
-              <TextInstrument as="span" className="text-[15px] font-black text-va-black/40 bg-va-black/5 px-2 py-1 rounded-lg">
+              <TextInstrument as="span" className="text-[15px] font-black text-va-black/40 bg-va-black/5 px-2 py-1 rounded-[20px]">
                 {stat.trend}
               </TextInstrument>
             </ContainerInstrument>
@@ -102,90 +96,69 @@ export default function AdminDashboard() {
       {/* Live Feed & Notifications */}
       <SectionInstrument className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <ContainerInstrument className="lg:col-span-2 bg-white border border-black/5 rounded-[40px] p-10 shadow-sm">
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
-                <Activity size={20} />
-              </div>
-          <div>
-            <HeadingInstrument level={2} className="text-2xl font-black tracking-tight">
-              <VoiceglotText translationKey="admin.feed.title" defaultText="Live Intelligence Feed" />
-            </HeadingInstrument>
-            <TextInstrument className="text-[15px] text-va-black/40 font-medium">
-              <VoiceglotText translationKey="admin.feed.subtitle" defaultText="Real-time meldingen van Voicy & Mailbox" />
-            </TextInstrument>
-          </div>
-        </div>
-        <Link href="/account/mailbox" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
-          <VoiceglotText translationKey="admin.feed.full_inbox" defaultText="Volledige Inbox" /> <ArrowRight size={12} />
-        </Link>
-      </div>
+          <ContainerInstrument className="flex justify-between items-center mb-8">
+            <ContainerInstrument className="flex items-center gap-3">
+              <ContainerInstrument className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
+                <Activity strokeWidth={1.5} size={20} />
+              </ContainerInstrument>
+              <ContainerInstrument>
+                <HeadingInstrument level={2} className="text-2xl font-black tracking-tight"><VoiceglotText translationKey="admin.feed.title" defaultText="Live Intelligence Feed" /></HeadingInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-medium"><VoiceglotText translationKey="admin.feed.subtitle" defaultText="Real-time meldingen van Voicy & Mailbox" /></TextInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+            <ButtonInstrument as={Link} href="/admin/mailbox" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all"><VoiceglotText translationKey="admin.feed.full_inbox" defaultText="Volledige Inbox" /><ArrowRight strokeWidth={1.5} size={12} /></ButtonInstrument>
+          </ContainerInstrument>
 
-      <div className="space-y-4">
+      <ContainerInstrument className="space-y-4">
         {notifications.map((n) => (
-          <div key={n.id} className="flex items-center justify-between p-5 bg-va-off-white rounded-[24px] border border-black/[0.02] hover:border-primary/20 transition-all group cursor-pointer">
-            <div className="flex items-center gap-4">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+          <ContainerInstrument key={n.id} className="flex items-center justify-between p-5 bg-va-off-white rounded-[24px] border border-black/[0.02] hover:border-primary/20 transition-all group cursor-pointer">
+            <ContainerInstrument className="flex items-center gap-4">
+              <ContainerInstrument className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                 n.type === 'mail' ? 'bg-blue-500/10 text-blue-500' : 
                 n.type === 'approval' ? 'bg-orange-500/10 text-orange-500' : 
                 'bg-purple-500/10 text-purple-500'
               }`}>
                 {n.icon}
-              </div>
-              <div>
-                <TextInstrument className="text-sm font-black text-gray-900">
-                  <VoiceglotText translationKey={`admin.notification.${n.id}.title`} defaultText={n.title} noTranslate={true} />
-                </TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-bold tracking-widest">
-                  <VoiceglotText translationKey={`admin.notification.${n.id}.user`} defaultText={n.user} noTranslate={true} />
-                </TextInstrument>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-va-black/20">
+              </ContainerInstrument>
+              <ContainerInstrument>
+                <TextInstrument className="text-[15px] font-black text-gray-900"><VoiceglotText translationKey={`admin.notification.${n.id}.title`} defaultText={n.title} noTranslate={true} /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-bold tracking-widest"><VoiceglotText translationKey={`admin.notification.${n.id}.user`} defaultText={n.user} noTranslate={true} /></TextInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="flex items-center gap-4">
+              <ContainerInstrument className="flex items-center gap-1.5 text-va-black/20">
                 <Clock size={12} />
-                <span className="text-[15px] font-bold">{n.time}</span>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-                <ArrowRight size={14} className="text-primary" />
-              </div>
-            </div>
-          </div>
+                <TextInstrument as="span" className="text-[15px] font-bold">{n.time}</TextInstrument>
+              </ContainerInstrument>
+              <ContainerInstrument className="w-8 h-8 rounded-full bg-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                <ArrowRight strokeWidth={1.5} size={14} className="text-primary" />
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
         ))}
-      </div>
+      </ContainerInstrument>
     </ContainerInstrument>
 
         <ContainerInstrument className="bg-va-black text-white rounded-[40px] p-10 relative overflow-hidden flex flex-col justify-between">
-          <div className="relative z-10">
-            <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-primary/20">
+          <ContainerInstrument className="relative z-10">
+            <ContainerInstrument className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-primary/20">
               <Brain size={24} className="text-va-black" />
-            </div>
-            <HeadingInstrument level={2} className="text-3xl font-black tracking-tighter mb-4 leading-tight">
-              <VoiceglotText translationKey="admin.voicy_brain.title" defaultText="Voicy Brain is aan het werk" />
-            </HeadingInstrument>
-            <TextInstrument className="text-white/40 text-sm font-medium leading-relaxed mb-8">
-              <VoiceglotText translationKey="admin.voicy_brain.text" defaultText="Er zijn 3 nieuwe FAQ voorstellen en 2 trend-analyses klaar om te bekijken in de mailbox." />
-            </TextInstrument>
+            </ContainerInstrument>
+            <HeadingInstrument level={2} className="text-3xl font-black tracking-tighter mb-4 leading-tight"><VoiceglotText translationKey="admin.voicy_brain.title" defaultText="Voicy Brain is aan het work" /><TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed mb-8"><VoiceglotText translationKey="admin.voicy_brain.text" defaultText="Er zijn 3 nieuwe FAQ voorstellen en 2 trend-analyses klaar om te bekijken in de mailbox." /></TextInstrument></HeadingInstrument>
             
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <TextInstrument className="va-text-[15px] text-white/60 font-light">
-                  <VoiceglotText translationKey="admin.voicy_brain.syncing" defaultText="Syncing Gmail..." />
-                </TextInstrument>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5">
-                <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                <TextInstrument className="va-text-[15px] text-white/60 font-light">
-                  <VoiceglotText translationKey="admin.voicy_brain.analyzing" defaultText="Analyzing Trends" />
-                </TextInstrument>
-              </div>
-            </div>
-          </div>
+            <ContainerInstrument className="space-y-3">
+              <ContainerInstrument className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5">
+                <ContainerInstrument className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <TextInstrument className="text-[15px] tracking-widest text-white/60 font-light"><VoiceglotText translationKey="admin.voicy_brain.syncing" defaultText="Syncing Gmail..." /></TextInstrument>
+              </ContainerInstrument>
+              <ContainerInstrument className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5">
+                <ContainerInstrument className="w-2 h-2 bg-blue-500 rounded-full" />
+                <TextInstrument className="text-[15px] tracking-widest text-white/60 font-light"><VoiceglotText translationKey="admin.voicy_brain.analyzing" defaultText="Analyzing Trends" /></TextInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
 
-          <Link href="/account/mailbox?tab=insights" className="relative z-10 va-btn-pro !bg-primary w-full text-center mt-8">
-            <VoiceglotText translationKey="admin.voicy_brain.cta" defaultText="Bekijk Intelligence" />
-          </Link>
+          <ButtonInstrument as={Link} href="/admin/mailbox?tab=insights" className="relative z-10 va-btn-pro !bg-primary w-full text-center mt-8"><VoiceglotText translationKey="admin.voicy_brain.cta" defaultText="Bekijk Intelligence" /></ButtonInstrument>
 
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-[80px]" />
         </ContainerInstrument>
@@ -197,16 +170,9 @@ export default function AdminDashboard() {
         <BentoCard span="lg" className="bg-va-black text-white p-12 h-[400px] flex flex-col justify-between relative overflow-hidden group">
           <ContainerInstrument className="relative z-10">
             <Database className="text-primary mb-8" size={40} />
-            <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter mb-4">
-              <VoiceglotText translationKey="admin.database.title" defaultText="Database Manager" />
-            </HeadingInstrument>
-            <TextInstrument className="text-white/40 max-w-sm text-sm font-medium leading-relaxed">
-              <VoiceglotText translationKey="admin.database.text" defaultText="Beheer alle records (Stemmen, Reviews, Workshops) direct in de cloud. 100% visuele interface." />
-            </TextInstrument>
+            <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter mb-4"><VoiceglotText translationKey="admin.database.title" defaultText="Database Manager" /><TextInstrument className="text-white/40 max-w-sm text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="admin.database.text" defaultText="Beheer alle records (Stemmen, Reviews, Workshops) direct in de cloud. 100% visuele interface." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <Link href="/admin/database" className="relative z-10 va-btn-pro !bg-primary w-fit">
-            <VoiceglotText translationKey="admin.database.cta" defaultText="Open Database" />
-          </Link>
+          <Link href="/admin/database" className="relative z-10 va-btn-pro !bg-primary w-fit"><VoiceglotText translationKey="admin.database.cta" defaultText="Open Database" /></Link>
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-[80px] group-hover:bg-primary/20 transition-all duration-1000" />
         </BentoCard>
 
@@ -214,15 +180,11 @@ export default function AdminDashboard() {
         <BentoCard span="sm" className="bg-white border border-black/5 p-10 flex flex-col justify-between h-[400px] group hover:border-primary/20 transition-all">
           <ContainerInstrument>
             <Settings className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
-              <VoiceglotText translationKey="admin.settings.title" defaultText="Systeem Instellingen" />
-            </HeadingInstrument>
-            <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed">
-              <VoiceglotText translationKey="admin.settings.text" defaultText="Configureer bedrijfsinformatie, openingsuren en de globale vakantieregeling." />
-            </TextInstrument>
+            <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText translationKey="admin.settings.title" defaultText="Systeem Instellingen" /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="admin.settings.text" defaultText="Configureer bedrijfsinformatie, openingsuren en de globale vakantieregeling." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <Link href="/admin/settings" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
-            <VoiceglotText translationKey="admin.settings.cta" defaultText="Beheer Instellingen" /> <Sparkles size={12} />
+            <VoiceglotText translationKey="admin.settings.cta" defaultText="Beheer Instellingen" />
+            <Sparkles strokeWidth={1.5} size={12} />
           </Link>
         </BentoCard>
 
@@ -230,16 +192,9 @@ export default function AdminDashboard() {
         <BentoCard span="sm" className="bg-va-off-white p-10 flex flex-col justify-between h-[400px] border border-black/5 group hover:border-primary/20 transition-all">
           <ContainerInstrument>
             <Layout className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
-              <VoiceglotText translationKey="admin.architect.title" defaultText="Page Architect" />
-            </HeadingInstrument>
-              <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed">
-                <VoiceglotText translationKey="admin.architect.text" defaultText="Beheer je Bento Blueprints en maak nieuwe landingspagina's aan via de visuele builder." />
-              </TextInstrument>
+            <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText translationKey="admin.architect.title" defaultText="Page Architect" /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="admin.architect.text" defaultText="Beheer je Bento Blueprints en maak nieuwe landingspagina's aan via de visuele builder." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <Link href="/" className="text-[15px] font-black tracking-widest text-va-black/40 hover:text-va-black transition-colors">
-            <VoiceglotText translationKey="admin.architect.cta" defaultText="Naar Frontend Builder" />
-          </Link>
+          <Link href="/" className="text-[15px] font-black tracking-widest text-va-black/40 hover:text-va-black transition-colors"><VoiceglotText translationKey="admin.architect.cta" defaultText="Naar Frontend Builder" /></Link>
         </BentoCard>
 
         {/* User Management */}
@@ -247,31 +202,20 @@ export default function AdminDashboard() {
           <ContainerInstrument className="flex justify-between items-start">
             <ContainerInstrument>
               <Users className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
-              <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter mb-4">
-                <VoiceglotText translationKey="admin.users.title" defaultText="User DNA" />
-              </HeadingInstrument>
-              <TextInstrument className="text-va-black/40 max-w-sm text-sm font-medium leading-relaxed">
-                <VoiceglotText translationKey="admin.users.text" defaultText="Beheer klanten, rollen en journey-states. Bekijk AI-insights over bezoekergedrag." />
-              </TextInstrument>
+              <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter mb-4"><VoiceglotText translationKey="admin.users.title" defaultText="User DNA" /><TextInstrument className="text-va-black/40 max-w-sm text-[15px] font-medium leading-relaxed"><VoiceglotText translationKey="admin.users.text" defaultText="Beheer klanten, rollen en journey-states. Bekijk AI-insights over bezoekergedrag." /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex flex-col items-end gap-2">
-              <Link href="/admin/marketing/visitors" className="px-4 py-2 bg-green-500/10 text-green-500 rounded-full text-[15px] font-black hover:bg-green-500/20 transition-all">
-                <VoiceglotText translationKey="admin.users.online_count" defaultText="8 Online" />
-              </Link>
+              <Link href="/admin/marketing/visitors" className="px-4 py-2 bg-green-500/10 text-green-500 rounded-full text-[15px] font-black hover:bg-green-500/20 transition-all"><VoiceglotText translationKey="admin.users.online_count" defaultText="8 Online" /></Link>
             </ContainerInstrument>
           </ContainerInstrument>
-          <ButtonInstrument className="va-btn-pro !bg-va-black w-fit">
-            <VoiceglotText translationKey="admin.users.cta" defaultText="Gebruikers Beheren" />
-          </ButtonInstrument>
+          <ButtonInstrument className="va-btn-pro !bg-va-black w-fit"><VoiceglotText translationKey="admin.users.cta" defaultText="Gebruikers Beheren" /></ButtonInstrument>
         </BentoCard>
 
         {/* 🩹 GOD MODE: SELF-HEALING LOGS */}
         <BentoCard span="sm" className="bg-va-black text-white p-10 h-[400px] flex flex-col justify-between relative overflow-hidden group">
           <ContainerInstrument className="relative z-10">
-            <Zap className="text-primary mb-8" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-6">
-              <VoiceglotText translationKey="admin.self_healing.title" defaultText="Self-Healing Logs" />
-            </HeadingInstrument>
+            <Zap strokeWidth={1.5} className="text-primary mb-8" size={32} />
+            <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-6"><VoiceglotText translationKey="admin.self_healing.title" defaultText="Self-Healing Logs" /></HeadingInstrument>
             
             <div className="space-y-4">
               {recentHeals.length > 0 ? recentHeals.map((heal, i) => (
@@ -280,16 +224,12 @@ export default function AdminDashboard() {
                   <span className="truncate flex-1">{heal.message}</span>
                 </div>
               )) : (
-                <TextInstrument className="va-text-[15px] text-white/20 font-light">
-                  <VoiceglotText translationKey="admin.self_healing.empty" defaultText="Geen recente herstelacties." />
-                </TextInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-white/20 font-light"><VoiceglotText translationKey="admin.self_healing.empty" defaultText="Geen recente herstelacties." /></TextInstrument>
               )}
             </div>
           </ContainerInstrument>
           
-          <Link href="/admin/security" className="relative z-10 text-[15px] font-black tracking-widest text-primary hover:underline">
-            <VoiceglotText translationKey="admin.self_healing.view_all" defaultText="Bekijk alle logs" />
-          </Link>
+          <Link href="/admin/security" className="relative z-10 text-[15px] font-black tracking-widest text-primary hover:underline"><VoiceglotText translationKey="admin.self_healing.view_all" defaultText="Bekijk alle logs" /></Link>
           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-[40px]" />
         </BentoCard>
       </BentoGrid>

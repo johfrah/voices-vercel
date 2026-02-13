@@ -39,11 +39,11 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     headerImage,
     instructorName = 'Johfrah Lefebvre',
     instructorRole = 'Voice-over en coach',
-    instructorImage = 'https://www.voices.be/wp-content/uploads/2024/06/Photo-Johfrah-Lefebvre-6.jpg',
+    instructorImage = 'https://voices-vercel.vercel.app/assets/common/branding/founder/johfrah-avatar-be.png',
     description = 'In deze workshop leer je de basis van voice-overs inspreken: van stemopwarming tot tekstbegrip en intonatie en spreken in de microfoon.',
     learningPoints = 'Tijdens deze praktijkgerichte workshop werk je intensief met tekst en microfoon. Je doet niet alleen nieuwe vaardigheden op, maar gaat ook naar huis met een hoogwaardige opname.',
     schedule = '09u45: Aankomst\n10u00: Kennismaking\n10u15: Workshop deel 1\n13u30: Lunch\n14u15: Workshop deel 2\n17u00: Einde',
-    videoThumbnail = 'https://www.voices.be/wp-content/uploads/2025/01/beginners.jpg',
+    videoThumbnail = 'https://voices-vercel.vercel.app/assets/common/branding/email/headers/default-header.jpg',
     videoUrl = 'https://www.voices.be/studio/',
     aftermovieText = 'Ontdek hoe deelnemers hun stem leren inzetten om teksten echt te laten leven.'
   } = options;
@@ -82,7 +82,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tr>
                 <td width="60" style="vertical-align: top;">
-                  <img src="${headerImage || 'https://www.voices.be/wp-content/uploads/2024/06/12-1024x576.webp'}" width="60" height="60" style="border-radius: 50%; object-fit: cover; border: 1px solid #eee; display: block;" />
+                  <img src="${headerImage || 'https://voices-vercel.vercel.app/assets/common/branding/email/headers/default-header.jpg'}" width="60" height="60" style="border-radius: 50%; object-fit: cover; border: 1px solid #eee; display: block;" />
                 </td>
                 <td style="padding-left: 15px; vertical-align: top;">
                   <div style="font-weight: 600; font-size: 16px; color: #111; margin-bottom: 4px;">${date}</div>
@@ -158,6 +158,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     journey: 'studio',
     host,
     showSignature: false, // We gebruiken de specifieke Studio-signature hierboven
-    headerImage: headerImage || 'https://www.voices.be/wp-content/uploads/2024/06/12-1024x576.webp'
+    headerImage: headerImage || 'https://voices-vercel.vercel.app/assets/common/branding/email/headers/default-header.jpg',
+    showSignature: false, // We gebruiken de specifieke Studio-signature hierboven
   });
 }

@@ -19,7 +19,7 @@ export default function FooterWrapper() {
   if (!mounted) return null;
 
   // Verberg footer in de mailbox
-  if (window.location.pathname.startsWith('/account/mailbox')) {
+  if (window.location.pathname.startsWith('/admin/mailbox')) {
     return null;
   }
 

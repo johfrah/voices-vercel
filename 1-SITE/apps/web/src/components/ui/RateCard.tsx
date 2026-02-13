@@ -88,7 +88,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
 
       <div className="pt-6 border-top border-black/5">
         <div className="flex items-center gap-2 text-[15px] font-black tracking-[0.2em] text-primary group-hover:gap-3 transition-all">
-          Vul je aantal woorden in voor de prijs <Zap size={10} fill="currentColor" />
+          Vul je aantal woorden in voor de prijs <Zap strokeWidth={1.5} size={10} fill="currentColor" />
         </div>
       </div>
     </div>

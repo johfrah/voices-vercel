@@ -1,18 +1,19 @@
 "use client";
 
-import React from 'react';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { 
-  Stethoscope, 
-  HardHat, 
-  Laptop, 
-  Briefcase, 
-  Utensils, 
-  ShoppingCart,
-  Car,
-  Scale
+import {
+    Briefcase,
+    Car,
+    HardHat,
+    Laptop,
+    Scale,
+    ShoppingCart,
+    Stethoscope,
+    Utensils
 } from 'lucide-react';
+import React from 'react';
 
 const SECTORS = [
   { id: 'gezondheidszorg', label: 'Gezondheidszorg', icon: Stethoscope },
@@ -37,15 +38,15 @@ export const SectorSelector: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between px-4">
-        <h4 className="text-[15px] font-black tracking-[0.2em] text-va-black/30">
-          Personaliseer voor uw sector
+        <h4 className="text-[15px] font-black tracking-[0.2em] text-va-black/30 Raleway">
+          <VoiceglotText translationKey="auto.sectorselector.personaliseer_voor_u.6fc989" defaultText="Personaliseer voor uw sector" />
         </h4>
         {state.current_sector && (
           <button 
             onClick={() => updateSector(null)}
             className="text-[15px] font-black tracking-widest text-primary hover:opacity-70 transition-opacity"
           >
-            Wis filter
+            <VoiceglotText translationKey="auto.sectorselector.wis_filter____.76f73a" defaultText="Wis filter" />
           </button>
         )}
       </div>

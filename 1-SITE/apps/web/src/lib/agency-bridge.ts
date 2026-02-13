@@ -92,38 +92,59 @@ export class AgencyDataBridge {
     // @ts-ignore
     const results = await query.where(and(...conditions)).limit(50);
 
-    // 2. Haal demo's op voor deze actors
+    // 2. Haal demo's en media op voor deze actors
     const actorIds = results.map(a => a.id);
-    const demos = actorIds.length > 0 
-      ? await db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN ${actorIds}`)
-      : [];
+    const photoIds = results.map(a => a.photoId).filter(Boolean);
+    
+    const [demos, mediaResults] = await Promise.all([
+      actorIds.length > 0 
+        ? db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN ${actorIds}`)
+        : Promise.resolve([]),
+      photoIds.length > 0
+        ? db.select().from(media).where(sql`${media.id} IN ${photoIds}`)
+        : Promise.resolve([])
+    ]);
 
     // 3. Transformeer naar SearchResults formaat
     const ASSET_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || '';
 
-    const mappedResults = results.map(actor => ({
-      id: actor.wpProductId || actor.id,
-      display_name: actor.firstName,
-      first_name: actor.firstName,
-      gender: actor.gender,
-      native_lang: actor.nativeLang,
-      country: actor.country,
-      photo_url: actor.dropboxUrl ? (actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${ASSET_BASE_URL}${actor.dropboxUrl}`) : null,
-      starting_price: parseFloat(actor.priceUnpaid || '0'),
-      voice_score: actor.voiceScore,
-      tagline: actor.tagline,
-      ai_enabled: actor.isAi,
-      demos: demos
-        .filter(d => d.actorId === actor.id)
-        .map(d => ({
-          id: d.id, 
-          name: d.name,
-          title: d.name, 
-          url: d.url.startsWith('http') ? d.url : `${ASSET_BASE_URL}${d.url}`,
-          audio_url: d.url.startsWith('http') ? d.url : `${ASSET_BASE_URL}${d.url}`, 
-          type: d.type || 'commercial'
-        }))
-    }));
+    const mappedResults = results.map(actor => {
+      // 🛡️ LOUIS: photoId (Supabase Storage) prioritized over dropboxUrl/legacy URLs.
+      let photoUrl: string | null = null;
+      if (actor.photoId) {
+        const mediaItem = mediaResults.find(m => m.id === actor.photoId);
+        if (mediaItem) {
+          photoUrl = mediaItem.filePath.startsWith('http') ? mediaItem.filePath : `${ASSET_BASE_URL.replace(/\/$/, '')}/${mediaItem.filePath.replace(/^\//, '')}`;
+        }
+      }
+      if (!photoUrl && actor.dropboxUrl) {
+        photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${ASSET_BASE_URL}${actor.dropboxUrl}`;
+      }
+
+      return {
+        id: actor.wpProductId || actor.id,
+        display_name: actor.firstName,
+        first_name: actor.firstName,
+        gender: actor.gender,
+        native_lang: actor.nativeLang,
+        country: actor.country,
+        photo_url: photoUrl,
+        starting_price: parseFloat(actor.priceUnpaid || '0'),
+        voice_score: actor.voiceScore,
+        tagline: actor.tagline,
+        ai_enabled: actor.isAi,
+        demos: demos
+          .filter(d => d.actorId === actor.id)
+          .map(d => ({
+            id: d.id, 
+            name: d.name,
+            title: d.name, 
+            url: d.url.startsWith('http') ? d.url : `${ASSET_BASE_URL}${d.url}`,
+            audio_url: d.url.startsWith('http') ? d.url : `${ASSET_BASE_URL}${d.url}`, 
+            type: d.type || 'commercial'
+          }))
+      };
+    });
 
     return {
       count: mappedResults.length,

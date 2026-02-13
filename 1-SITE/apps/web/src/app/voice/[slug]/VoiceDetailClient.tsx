@@ -12,12 +12,14 @@ import { PricingCalculator } from "@/components/ui/PricingCalculator";
 import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useCheckout } from "@/contexts/CheckoutContext";
+import { useTranslation } from "@/contexts/TranslationContext";
 import { ArrowLeft, Heart, Mic, Music, Play, Share2, Star, Video as VideoIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from 'react';
 
 export function VoiceDetailClient({ actor }: { actor: any }) {
+  const { t } = useTranslation();
   const { updateBriefing, selectActor, state } = useCheckout();
   const [localBriefing, setLocalBriefing] = useState(state.briefing);
 
@@ -49,12 +51,12 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
   };
 
   // Custom content mapping for top voices
-  const hasCustomVideo = actor.first_name.toLowerCase() === 'ilari';
-  const hasCustomReels = actor.first_name.toLowerCase() === 'johfrah';
+  const hasCustomVideo = actor.first_name?.toLowerCase() === 'ilari';
+  const hasCustomReels = actor.first_name?.toLowerCase() === 'johfrah';
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-20 relative z-10">
-      {/* 🕸️ SUZY'S SCHEMA INJECTION: VoiceActor Entity & Breadcrumbs */}
+      {/* 🕸️ SUZY'S SCHEMA INJECTION: VoiceActor Knowledge Graph & Breadcrumbs */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -62,13 +64,18 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
             {
               "@context": "https://schema.org",
               "@type": "Person",
+              "@id": `https://www.voices.be/voice/${actor.slug}#person`,
               "name": actor.display_name,
-              "description": actor.description,
-              "image": actor.photo_url,
+              "description": actor.bio || actor.description,
+              "image": actor.photo_url || undefined,
               "jobTitle": "Voice-over Artist",
               "gender": actor.gender,
               "url": `https://www.voices.be/voice/${actor.slug}`,
-              "knowsAbout": actor.languages?.map((l: any) => l.name) || ["Nederlands"],
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": `https://www.voices.be/voice/${actor.slug}`
+              },
+              "knowsAbout": actor.languages?.map((l: any) => l.name) || actor.native_lang ? [actor.native_lang] : ["Nederlands"],
               "memberOf": {
                 "@type": "Organization",
                 "name": "Voices",
@@ -80,7 +87,9 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
                 "url": "https://www.voices.be"
               },
               "sameAs": [
+                actor.website,
                 actor.website_url,
+                actor.linkedin,
                 actor.linkedin_url,
                 actor.instagram_url
               ].filter(Boolean),
@@ -89,8 +98,38 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
                 "ratingValue": actor.voice_score,
                 "bestRating": "5",
                 "worstRating": "1",
-                "ratingCount": actor.reviews?.length || "10"
-              } : undefined
+                "ratingCount": String(actor.reviews?.length ?? 10)
+              } : undefined,
+              "offers": (() => {
+                const hasOffers = actor.starting_price || actor.price_ivr || actor.price_online || actor.price_unpaid;
+                if (!hasOffers) return undefined;
+                const offers: any[] = [];
+                const basePrice = parseFloat(String(actor.starting_price || actor.price_unpaid || 0));
+                if (basePrice > 0) {
+                  offers.push({
+                    "@type": "Offer",
+                    "priceCurrency": "EUR",
+                    "price": basePrice,
+                    "availability": "https://schema.org/InStock",
+                    "seller": { "@type": "Organization", "name": "Voices", "url": "https://www.voices.be" }
+                  });
+                }
+                const ivr = parseFloat(String(actor.price_ivr || 0));
+                if (ivr > 0) {
+                  offers.push({
+                    "@type": "Offer",
+                    "itemOffered": { "@type": "Service", "name": "IVR / Telefonie voice-over" },
+                    "priceCurrency": "EUR",
+                    "price": ivr,
+                    "availability": "https://schema.org/InStock"
+                  });
+                }
+                return offers.length > 0 ? offers : undefined;
+              })(),
+              "workExample": actor.demos?.length ? actor.demos.slice(0, 5).map((d: any) => ({
+                "@type": "CreativeWork",
+                "name": d.title || d.name
+              })) : undefined
             },
             {
               "@context": "https://schema.org",
@@ -122,17 +161,17 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
       <SectionInstrument className="mb-12 flex items-center justify-between">
         <Link 
           href="/agency" 
-          className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
+          className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
-          <ArrowLeft size={14} /> 
+          <ArrowLeft strokeWidth={1.5} size={14} /> 
           <VoiceglotText translationKey="artist.back_to_artists" defaultText="Terug naar alle stemmen" />
         </Link>
         <ContainerInstrument className="flex gap-4">
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Heart size={18} />
+            <Image src="/assets/common/branding/icons/FAVORITES.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
           </ButtonInstrument>
           <ButtonInstrument className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/20 hover:text-primary transition-all shadow-sm">
-            <Share2 size={18} />
+            <Share2 strokeWidth={1.5} size={18} />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -141,14 +180,14 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
         <BentoCard span="sm" className="!p-0 overflow-hidden bg-white shadow-aura">
           <ContainerInstrument className="aspect-[4/5] relative">
             <Image 
-              src={actor.photo_url || '/placeholder-artist.jpg'} 
+              src={actor.photo_url || '/assets/common/placeholders/placeholder-voice.jpg'} 
               alt={actor.display_name} 
               fill
               className="object-cover"
             />
             <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent" />
             <ContainerInstrument className="absolute bottom-8 left-8 right-8">
-              <HeadingInstrument level={1} className="text-3xl font-black text-white tracking-tighter mb-2">
+              <HeadingInstrument level={1} className="text-3xl font-light text-white tracking-tighter mb-2">
                 <VoiceglotText 
                   translationKey={`actor.${actor.id}.name`} 
                   defaultText={actor.display_name} 
@@ -156,11 +195,11 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
                 />
               </HeadingInstrument>
               <ContainerInstrument className="flex items-center gap-2">
-                <ContainerInstrument className="px-3 py-1 bg-primary rounded-full text-[15px] font-black text-white tracking-widest">
+                <ContainerInstrument className="px-3 py-1 bg-primary rounded-full text-[15px] font-light text-white tracking-widest">
                   <VoiceglotText translationKey="common.craftsman" defaultText="Vakman" />
                 </ContainerInstrument>
-                <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[15px] font-bold tracking-widest">
-                  <Star size={10} className="text-primary" fill="currentColor" /> 
+                <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[15px] font-light tracking-widest">
+                  <Star strokeWidth={1.5} size={10} className="text-primary" fill="currentColor" /> 
                   {actor.voice_score}
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -170,7 +209,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
 
         <BentoCard span="xl" className="bg-va-off-white/50 backdrop-blur-md border-white/20 shadow-aura p-12">
           <ContainerInstrument className="flex justify-between items-center mb-12">
-            <HeadingInstrument level={2} className="text-3xl font-black tracking-tight">
+            <HeadingInstrument level={2} className="text-3xl font-light tracking-tight">
               <VoiceglotText translationKey="common.portfolio" defaultText="Portfolio" /> & <TextInstrument as="span" className="text-primary font-light"><VoiceglotText translationKey="common.demos" defaultText="Demos" /></TextInstrument>
             </HeadingInstrument>
           </ContainerInstrument>
@@ -183,15 +222,15 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
               >
                 <ContainerInstrument className="flex items-center gap-4">
                   <ContainerInstrument className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                    <Play size={20} fill="currentColor" className="ml-1" />
+                    <Play strokeWidth={1.5} size={20} fill="currentColor" className="ml-1" />
                   </ContainerInstrument>
                   <ContainerInstrument>
-                    <HeadingInstrument level={4} className="font-black tracking-tight text-sm">
+                    <HeadingInstrument level={4} className="font-light tracking-tight text-[15px]">
                       <VoiceglotText translationKey={`actor.${actor.id}.demo.${i}.title`} defaultText={demo.title} />
                     </HeadingInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
-                <TextInstrument className="text-[15px] font-black text-va-black/20 tracking-widest">
+                <TextInstrument className="text-[15px] font-light text-va-black/20 tracking-widest">
                   <VoiceglotText translationKey={`common.category.${demo.category?.toLowerCase()}`} defaultText={demo.category} />
                 </TextInstrument>
               </ContainerInstrument>
@@ -203,17 +242,17 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
       {/* 🚀 DYNAMIC CONTENT FOR TOP VOICES */}
       {(hasCustomVideo || hasCustomReels) && (
         <SectionInstrument className="mb-20">
-          <HeadingInstrument level={2} className="text-4xl font-black tracking-tight mb-12">
+          <HeadingInstrument level={2} className="text-4xl font-light tracking-tight mb-12">
             {hasCustomVideo ? <VoiceglotText translationKey="common.in_action" defaultText="In Actie" /> : <VoiceglotText translationKey="common.brand_reels" defaultText="Brand Reels" />}
           </HeadingInstrument>
           <BentoGrid columns={3}>
             {hasCustomVideo && (
               <BentoCard span="full" className="aspect-video bg-black rounded-[40px] overflow-hidden relative group">
                 <div className="absolute inset-0 flex items-center justify-center bg-va-black/40">
-                  <VideoIcon size={48} className="text-white/20" />
+                  <VideoIcon strokeWidth={1.5} size={48} className="text-white/20" />
                 </div>
                 <div className="absolute bottom-8 left-8">
-                  <p className="text-white font-black tracking-widest text-sm">
+                  <p className="text-white font-light tracking-widest text-[15px]">
                     <VoiceglotText translationKey={`actor.${actor.id}.custom_video_label`} defaultText={`${actor.first_name} voor Hornbach`} />
                   </p>
                 </div>
@@ -221,17 +260,17 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
             )}
             {hasCustomReels && (
               <>
-                <BentoCard className="bg-white p-8 border border-black/5 shadow-sm">
-                  <Music className="text-primary mb-4" />
-                  <p className="font-black tracking-tight text-sm">Tesla Navigation</p>
-                  <p className="text-[15px] text-va-black/40 mt-2">
+                <BentoCard span="sm" className="bg-white p-8 border border-black/5 shadow-sm">
+                  <Music strokeWidth={1.5} className="text-primary mb-4" />
+                  <p className="font-light tracking-tight text-[15px]"><VoiceglotText translationKey="auto.voicedetailclient.tesla_navigation.b45eba" defaultText="Tesla Navigation" /></p>
+                  <p className="text-[15px] text-va-black/40 mt-2 font-light">
                     <VoiceglotText translationKey="common.tesla_desc" defaultText="De stem van autoriteit en rust." />
                   </p>
                 </BentoCard>
-                <BentoCard className="bg-white p-8 border border-black/5 shadow-sm">
-                  <Music className="text-primary mb-4" />
-                  <p className="font-black tracking-tight text-sm">Samsung Global</p>
-                  <p className="text-[15px] text-va-black/40 mt-2">
+                <BentoCard span="sm" className="bg-white p-8 border border-black/5 shadow-sm">
+                  <Music strokeWidth={1.5} className="text-primary mb-4" />
+                  <p className="font-light tracking-tight text-[15px]"><VoiceglotText translationKey="auto.voicedetailclient.samsung_global.8d9a4b" defaultText="Samsung Global" /></p>
+                  <p className="text-[15px] text-va-black/40 mt-2 font-light">
                     <VoiceglotText translationKey="common.samsung_desc" defaultText="Technologische perfectie." />
                   </p>
                 </BentoCard>
@@ -243,12 +282,12 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
 
       {/* 💰 ORDER ENGINE: De Script Editor & Pricing Calculator */}
       <SectionInstrument className="mb-20">
-        <div className="bg-white rounded-[48px] shadow-aura border border-black/5 p-8 md:p-12">
+        <div className="bg-white rounded-[20px] shadow-aura border border-black/5 p-8 md:p-12">
           <div className="mb-12">
-            <h2 className="text-4xl font-black tracking-tight">
+            <HeadingInstrument level={2} className="text-4xl font-light tracking-tight">
               <VoiceglotText translationKey="common.order_direct" defaultText="Direct Bestellen" />
-            </h2>
-            <p className="text-va-black/40 font-medium mt-2">
+            </HeadingInstrument>
+            <p className="text-va-black/40 font-light mt-2">
               <VoiceglotText 
                 translationKey="common.order_direct_desc" 
                 defaultText={`Voer je script in of bereken je prijs voor ${actor.display_name}.`} 
@@ -259,27 +298,23 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="space-y-8">
               <div className="space-y-4">
-                <label className="text-[15px] font-black tracking-widest text-va-black/30">
-                  <VoiceglotText translationKey="common.your_script" defaultText="1. Jouw Script" />
-                </label>
+                <label className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText translationKey="common.your_script" defaultText="1. Jouw Script" /></label>
                 <textarea 
                   value={localBriefing}
                   onChange={(e) => handleBriefingChange(e.target.value)}
-                  placeholder="Plak hier je tekst..."
-                  className="w-full h-64 bg-va-off-white border-none rounded-[32px] p-8 text-lg font-medium focus:ring-2 focus:ring-primary/20 transition-all resize-none outline-none"
+                  placeholder={t('common.placeholder.script', 'Plak hier je tekst...')}
+                  className="w-full h-64 bg-va-off-white border-none rounded-[20px] p-8 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all resize-none outline-none"
                 />
               </div>
-              <div className="p-6 bg-primary/5 rounded-[32px] border border-primary/10">
-                <p className="text-[15px] font-bold text-primary flex items-center gap-2">
-                  <Mic size={12} /> <VoiceglotText translationKey="common.script_tip" defaultText="Tip: Gebruik (Titel) voor meerdere bestanden." />
+              <div className="p-6 bg-primary/5 rounded-[20px] border border-primary/10">
+                <p className="text-[15px] font-light text-primary flex items-center gap-2">
+                  <Mic strokeWidth={1.5} size={12} /> <VoiceglotText translationKey="common.script_tip" defaultText="Tip: Gebruik (Titel) voor meerdere bestanden." />
                 </p>
               </div>
             </div>
             
             <div>
-              <label className="text-[15px] font-black tracking-widest text-va-black/30 block mb-4">
-                <VoiceglotText translationKey="common.config_price" defaultText="2. Configuratie & Prijs" />
-              </label>
+              <label className="text-[15px] font-light tracking-widest text-va-black/30 block mb-4"><VoiceglotText translationKey="common.config_price" defaultText="2. Configuratie & Prijs" /></label>
               <PricingCalculator mode="human" actor={actor} />
             </div>
           </div>
@@ -290,8 +325,8 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
       {actor.reviews && actor.reviews.length > 0 && (
         <ReviewsInstrument 
           reviews={actor.reviews} 
-          title={`Ervaringen met ${actor.display_name}`}
-          subtitle={`Lees waarom klanten kiezen voor het vakmanschap van ${actor.display_name}.`}
+          title={`${t('voice.reviews.title_prefix', 'Ervaringen met')} ${actor.display_name}`}
+          subtitle={`${t('voice.reviews.subtitle_prefix', 'Lees waarom klanten kiezen voor het vakmanschap van')} ${actor.display_name}.`}
         />
       )}
     </div>

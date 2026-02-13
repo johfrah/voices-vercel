@@ -50,9 +50,7 @@ export const OrderStepsInstrument: React.FC<{ currentStep?: string, isTelephony?
                 <TextInstrument className={cn(
                   "text-[15px] font-light tracking-[0.2em] text-center whitespace-nowrap uppercase",
                   isActive ? "text-va-black" : "text-va-black/30"
-                )}>
-                  <VoiceglotText translationKey={step.titleKey} defaultText={step.defaultTitle.split(' ').slice(1).join(' ')} />
-                </TextInstrument>
+                )}><VoiceglotText translationKey={step.titleKey} defaultText={step.defaultTitle.split(' ').slice(1).join(' ')} /></TextInstrument>
               </div>
 
               {!isLast && (

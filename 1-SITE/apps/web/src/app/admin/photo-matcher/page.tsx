@@ -70,14 +70,11 @@ export default function PhotoMatcherPage() {
     return !isWpThumbnail && !isWpScaled && !hasOriginal;
   });
 
-  // 🧠 Visual Grouping Logic
-  const groupedItems = paginatedItems.reduce((groups: { [key: string]: PhotoItem[] }, item) => {
-    const context = item.legacyContext?.post_title || item.legacyContext?.parent_id || 'Geen Context';
-    if (!groups[context]) groups[context] = [];
-    groups[context].push(item);
-    return groups;
-  }, {});
-
+  // 📊 Nuclear Stats
+  const totalInitialItems = 59436; // Uit de manifest read
+  const processedCount = manifest.filter(i => i.processed).length;
+  const progressPercentage = Math.round((processedCount / totalInitialItems) * 100);
+  
   // 🧹 Slop Items (thumbnails en redundante kopieën)
   const slopItems = allActiveItems.filter(item => {
     const isWpThumbnail = wpThumbnailPattern.test(item.fileName);
@@ -93,11 +90,23 @@ export default function PhotoMatcherPage() {
     return isWpThumbnail || isWpScaled || hasOriginal;
   });
 
-  // 📊 Nuclear Stats
-  const totalInitialItems = 59436; // Uit de manifest read
-  const processedCount = manifest.filter(i => i.processed).length;
-  const progressPercentage = Math.round((processedCount / totalInitialItems) * 100);
   const savedGB = (slopItems.length * 0.5 / 1024).toFixed(2); // Schatting 500KB per thumbnail
+
+  // 📄 Pagination Logic
+  const totalItems = showAutoMatched ? autoMatchedItems.length : goldItems.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedItems = showAutoMatched 
+    ? autoMatchedItems.slice(startIndex, startIndex + itemsPerPage)
+    : goldItems.slice(startIndex, startIndex + itemsPerPage);
+
+  // 🧠 Visual Grouping Logic
+  const groupedItems = paginatedItems.reduce((groups: { [key: string]: PhotoItem[] }, item) => {
+    const context = item.legacyContext?.post_title || item.legacyContext?.parent_id || 'Geen Context';
+    if (!groups[context]) groups[context] = [];
+    groups[context].push(item);
+    return groups;
+  }, {});
 
   // 🧠 Bulk Vision Scanner
   const scanPage = async () => {
@@ -293,19 +302,9 @@ export default function PhotoMatcherPage() {
 
   if (loading) return (
     <ContainerInstrument className="p-10 text-center">
-      <TextInstrument>
-        <VoiceglotText translationKey="admin.photo_matcher.loading" defaultText="laden van foto's..." />
-      </TextInstrument>
+      <TextInstrument><VoiceglotText translationKey="admin.photo_matcher.loading" defaultText="laden van foto's..." /></TextInstrument>
     </ContainerInstrument>
   );
-
-  // 📄 Pagination Logic
-  const totalItems = showAutoMatched ? autoMatchedItems.length : goldItems.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedItems = showAutoMatched 
-    ? autoMatchedItems.slice(startIndex, startIndex + itemsPerPage)
-    : goldItems.slice(startIndex, startIndex + itemsPerPage);
 
   if (goldItems.length === 0 && !loading && !showAutoMatched) {
     return (
@@ -313,18 +312,11 @@ export default function PhotoMatcherPage() {
         <ContainerInstrument className="max-w-5xl mx-auto">
           <ContainerInstrument className="py-20 text-center">
             <TextInstrument as="span" className="text-6xl block mb-4 font-light">🎉</TextInstrument>
-            <HeadingInstrument level={2} className="text-2xl font-bold text-gray-900">
-              <VoiceglotText translationKey="admin.photo_matcher.done_title" defaultText="alles is verwerkt!" />
-            </HeadingInstrument>
-            <TextInstrument className="text-gray-500 font-light">
-              <VoiceglotText translationKey="admin.photo_matcher.done_text" defaultText="lekker gewerkt, de database is weer een stukje schoner." />
-            </TextInstrument>
+            <HeadingInstrument level={2} className="text-2xl font-light text-gray-900"><VoiceglotText translationKey="admin.photo_matcher.done_title" defaultText="alles is verwerkt!" /><TextInstrument className="text-gray-500 font-light"><VoiceglotText translationKey="admin.photo_matcher.done_text" defaultText="lekker gewerkt, de database is weer een stukje schoner." /></TextInstrument></HeadingInstrument>
             {slopItems.length > 0 && (
-              <ButtonInstrument onClick={bulkCleanup} className="mt-8 px-6 py-2 bg-orange-500 text-white rounded-full text-sm font-medium">
-                🧹 ruim nog {slopItems.length} thumbnails op
-              </ButtonInstrument>
+              <ButtonInstrument onClick={bulkCleanup} className="mt-8 px-6 py-2 bg-orange-500 text-white rounded-full text-[15px] font-light"><VoiceglotText translationKey="admin.photo_matcher.cleanup_slop" defaultText={`🧹 ruim nog ${slopItems.length} thumbnails op`} /></ButtonInstrument>
             )}
-            <ButtonInstrument onClick={() => window.location.reload()} className="mt-4 px-6 py-2 bg-va-black text-white rounded-full text-sm font-medium block mx-auto">
+            <ButtonInstrument onClick={() => window.location.reload()} className="mt-4 px-6 py-2 bg-va-black text-white rounded-full text-[15px] font-light block mx-auto">
               refresh lijst
             </ButtonInstrument>
           </ContainerInstrument>
@@ -340,21 +332,21 @@ export default function PhotoMatcherPage() {
         <ContainerInstrument className="mb-8 bg-va-black text-white rounded-[32px] p-6 shadow-aura flex items-center justify-between">
           <div className="flex gap-10">
             <div>
-              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light">Nuclear Progress</TextInstrument>
+              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText translationKey="auto.page.nuclear_progress.caae6d" defaultText="Nuclear Progress" /></TextInstrument>
               <div className="flex items-center gap-3">
                 <div className="w-32 h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <div className="h-full bg-va-primary transition-all duration-500" style={{ width: `${progressPercentage}%` }} />
                 </div>
-                <TextInstrument className="text-sm font-bold">{progressPercentage}%</TextInstrument>
+                <TextInstrument className="text-[15px] font-light">{progressPercentage}%</TextInstrument>
               </div>
             </div>
             <div>
-              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light">Space Saved</TextInstrument>
-              <TextInstrument className="text-sm font-bold text-va-primary">{savedGB} GB</TextInstrument>
+              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText translationKey="auto.page.space_saved.abd335" defaultText="Space Saved" /></TextInstrument>
+              <TextInstrument className="text-[15px] font-light text-va-primary">{savedGB} GB</TextInstrument>
             </div>
             <div>
-              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light">Shortcuts</TextInstrument>
-              <TextInstrument className="text-[15px] font-medium text-white/60">
+              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText translationKey="auto.page.shortcuts.29e9d8" defaultText="Shortcuts" /></TextInstrument>
+              <TextInstrument className="text-[15px] font-light text-white/60">
                 <span className="text-white bg-white/10 px-1.5 py-0.5 rounded mr-1">A</span> Archive 
                 <span className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3">M</span> Match 
                 <span className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3">S</span> Skip
@@ -364,7 +356,7 @@ export default function PhotoMatcherPage() {
           {scanning && (
             <div className="flex items-center gap-3 bg-va-primary/20 px-4 py-2 rounded-full border border-va-primary/30">
               <div className="w-2 h-2 bg-va-primary rounded-full animate-pulse" />
-              <TextInstrument className="text-[15px] font-bold text-va-primary tracking-widest">
+              <TextInstrument className="text-[15px] font-light text-va-primary tracking-widest">
                 Scanning: {scanProgress}%
               </TextInstrument>
             </div>
@@ -373,10 +365,8 @@ export default function PhotoMatcherPage() {
 
         <ContainerInstrument className="mb-12 flex justify-between items-end border-b border-black/[0.03] pb-8">
           <ContainerInstrument>
-            <HeadingInstrument level={1} className="text-4xl font-light tracking-tight text-black mb-2">
-              <VoiceglotText translationKey="admin.photo_matcher.title" defaultText="photo matcher" />
-            </HeadingInstrument>
-            <TextInstrument className="text-gray-400 tracking-widest text-[15px] font-medium">
+            <HeadingInstrument level={1} className="text-4xl font-light tracking-tight text-black mb-2"><VoiceglotText translationKey="admin.photo_matcher.title" defaultText="photo matcher" /></HeadingInstrument>
+            <TextInstrument className="text-gray-400 tracking-widest text-[15px] font-light">
               {totalItems} <VoiceglotText translationKey="admin.photo_matcher.to_process" defaultText={showAutoMatched ? "automatisch gematchte foto's (ter controle)" : "foto's te verwerken"} />
               {totalPages > 1 && ` • pagina ${currentPage} van ${totalPages}`}
             </TextInstrument>
@@ -385,7 +375,7 @@ export default function PhotoMatcherPage() {
              <ButtonInstrument 
                 onClick={scanPage}
                 disabled={scanning}
-                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`px-6 py-2 rounded-full text-[15px] font-light transition-all ${
                   scanning ? 'bg-va-primary/10 text-va-primary/40 cursor-not-allowed' : 'bg-va-primary text-white hover:shadow-aura-lg'
                 }`}
               >
@@ -393,13 +383,11 @@ export default function PhotoMatcherPage() {
               </ButtonInstrument>
              <ButtonInstrument 
                 onClick={bulkCleanup}
-                className="px-6 py-2 bg-va-off-white border border-orange-200 text-orange-600 hover:bg-orange-50 transition-all rounded-full text-sm font-medium"
-              >
-                🧹 bulk cleanup
-              </ButtonInstrument>
+                className="px-6 py-2 bg-va-off-white border border-orange-200 text-orange-600 hover:bg-orange-50 transition-all rounded-full text-[15px] font-light"
+              ><VoiceglotText translationKey="auto.page.___bulk_cleanup.6d4c5c" defaultText="🧹 bulk cleanup" /></ButtonInstrument>
              <ButtonInstrument 
                 onClick={() => { setShowAutoMatched(!showAutoMatched); setCurrentPage(1); }}
-                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`px-6 py-2 rounded-full text-[15px] font-light transition-all ${
                   showAutoMatched 
                     ? 'bg-va-primary text-white' 
                     : 'bg-white border border-black/5 text-black hover:border-black'
@@ -409,9 +397,9 @@ export default function PhotoMatcherPage() {
               </ButtonInstrument>
              <ButtonInstrument 
                 onClick={() => window.location.reload()}
-                className="px-6 py-2 bg-white border border-black/5 text-black hover:border-black transition-all rounded-full text-sm font-medium"
+                className="px-6 py-2 bg-white border border-black/5 text-black hover:border-black transition-all rounded-full text-[15px] font-light"
               >
-                <VoiceglotText translationKey="admin.photo_matcher.refresh" defaultText="refresh lijst" />
+                refresh lijst
               </ButtonInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
@@ -423,7 +411,7 @@ export default function PhotoMatcherPage() {
               <ButtonInstrument
                 key={i + 1}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`w-10 h-10 rounded-full text-[15px] font-bold transition-all ${
+                className={`w-10 h-10 rounded-full text-[15px] font-light transition-all ${
                   currentPage === i + 1 ? 'bg-va-primary text-white' : 'bg-white border border-black/5 text-gray-400 hover:border-black'
                 }`}
               >
@@ -435,136 +423,151 @@ export default function PhotoMatcherPage() {
 
         <ContainerInstrument className="space-y-12">
           {Object.entries(groupedItems).map(([groupName, items]) => (
-            <div key={groupName} className="space-y-4">
-              <div className="flex items-center gap-4 px-4">
-                <div className="h-px flex-grow bg-black/[0.05]" />
-                <TextInstrument className="text-[15px] font-bold text-black/20 tracking-[0.3em]">
-                  {groupName}
-                </TextInstrument>
-                <div className="h-px flex-grow bg-black/[0.05]" />
-              </div>
-              
-              <div className="space-y-6">
-                {items.map((item: any) => {
-                  // 🤖 Vision Logic: Alleen voor beelden die we echt willen houden
-                  const isFeatured = item.fileName.includes('featured') || item.fileName.includes('photo') || item.fileName.includes('avatar');
-                  const isSvg = item.fileName.endsWith('.svg');
-                  const needsVision = !isFeatured && !isSvg;
+              <ContainerInstrument key={groupName} className="space-y-4">
+                <ContainerInstrument className="flex items-center gap-4 px-4">
+                  <ContainerInstrument className="h-px flex-grow bg-black/[0.05]" />
+                  <TextInstrument className="text-[15px] font-light text-black/20 tracking-[0.3em]">
+                    {groupName}
+                  </TextInstrument>
+                  <ContainerInstrument className="h-px flex-grow bg-black/[0.05]" />
+                </ContainerInstrument>
+                
+                <ContainerInstrument className="space-y-6">
+                  {items.map((item: any) => {
+                    // 🤖 Vision Logic: Alleen voor beelden die we echt willen houden
+                    const isFeatured = item.fileName.includes('featured') || item.fileName.includes('photo') || item.fileName.includes('avatar');
+                    const isSvg = item.fileName.endsWith('.svg');
+                    const needsVision = !isFeatured && !isSvg;
 
-                  return (
-                    <ContainerInstrument 
-                      key={item.path || item.id} 
-                      className={`bg-white rounded-[40px] p-8 shadow-aura border border-black/[0.03] flex gap-10 items-start transition-all hover:shadow-aura-lg ${processingId === item.path ? 'opacity-50 pointer-events-none' : ''} ${item.processed ? 'hidden' : ''}`}
-                    >
-                      {/* Foto Preview */}
-                      <ContainerInstrument className="w-56 h-56 flex-shrink-0 relative rounded-[32px] overflow-hidden bg-va-off-white border border-black/[0.03]">
-                        <Image 
-                          src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(item.path || item.filePath)}`}
-                          alt={item.fileName}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
-                        {(item.source === 'Combell Uploads' || item.id) && (
-                          <ContainerInstrument className="absolute top-4 right-4 bg-va-primary w-3 h-3 rounded-full border-2 border-white shadow-sm" />
-                        )}
-                      </ContainerInstrument>
-
-                      {/* Info & Suggestions */}
-                      <ContainerInstrument className="flex-grow space-y-6 pt-2">
-                        <ContainerInstrument>
-                          <ContainerInstrument className="flex items-center gap-3 mb-2">
-                            <TextInstrument as="span" className="text-[15px] font-medium tracking-[0.2em] text-va-primary/60">
-                              {item.source || 'automatisch'}
-                            </TextInstrument>
-                            <TextInstrument className="text-[15px] font-mono text-gray-300 break-all">{item.path || item.filePath}</TextInstrument>
-                          </ContainerInstrument>
-                          <HeadingInstrument level={3} className="text-xl font-light text-gray-900">{item.fileName}</HeadingInstrument>
-                        </ContainerInstrument>
-
-                        {/* 🧠 Vision Analysis Section */}
-                        {needsVision && (
-                          <ContainerInstrument className="p-6 bg-va-off-white rounded-[24px] border border-black/[0.02]">
-                            {item.analysis ? (
-                              item.analysis.loading ? (
-                                <TextInstrument className="text-[15px] text-va-primary/40 animate-pulse font-medium italic">vision analyseert...</TextInstrument>
-                              ) : (
-                                <div className="space-y-3">
-                                  <TextInstrument className="text-sm text-va-black/60 leading-relaxed font-medium">
-                                    &ldquo;{item.analysis.description}&rdquo;
-                                  </TextInstrument>
-                                  <div className="flex flex-wrap gap-2 items-center">
-                                    {item.analysis.labels.map((l: string) => (
-                                      <span key={l} className="px-3 py-1 bg-white rounded-full text-[15px] font-medium text-gray-400 border border-black/[0.03]">{l}</span>
-                                    ))}
-                                    <span className="px-3 py-1 bg-va-primary/5 text-va-primary rounded-full text-[15px] font-bold italic">{item.analysis.vibe}</span>
-                                    
-                                    <ButtonInstrument 
-                                      onClick={() => handleAction('match', item.path, undefined, item.analysis)}
-                                      className="ml-auto px-4 py-2 bg-va-black text-white rounded-xl text-[15px] font-black tracking-widest hover:bg-va-primary transition-all"
-                                    >
-                                      verplaats naar assets
-                                    </ButtonInstrument>
-                                  </div>
-                                </div>
-                              )
-                            ) : (
-                              <ButtonInstrument 
-                                onClick={() => analyzeImage(item)}
-                                className="text-[15px] font-bold text-va-primary/60 hover:text-va-primary transition-colors flex items-center gap-2"
-                              >
-                                ✨ vision beschrijving genereren
-                              </ButtonInstrument>
-                            )}
-                          </ContainerInstrument>
-                        )}
-
-                        <ContainerInstrument className="flex flex-wrap gap-3">
-                          {item.suggestions?.length > 0 ? (
-                            item.suggestions.map((s: any) => (
-                              <ButtonInstrument
-                                key={s.id}
-                                onClick={() => handleAction('match', item.path, s.id, item.analysis)}
-                                className={`px-5 py-4 rounded-2xl border text-left transition-all group flex items-center gap-4 ${
-                                  s.confidence === 'verified'
-                                    ? 'bg-va-off-white border-va-primary/20'
-                                    : 'bg-white border-black/[0.05] hover:border-va-primary'
-                                }`}
-                              >
-                                <ContainerInstrument>
-                                  <TextInstrument className="text-sm font-medium text-black">{s.name}</TextInstrument>
-                                  <TextInstrument className="text-[15px] text-gray-400 font-medium">
-                                    {s.confidence === 'verified' ? '✓ geverifieerd' : s.confidence}
-                                  </TextInstrument>
-                                </ContainerInstrument>
-                              </ButtonInstrument>
-                            ))
-                          ) : !showAutoMatched && (
-                            <TextInstrument className="text-[15px] text-gray-300 italic font-light">geen automatische match gevonden</TextInstrument>
+                    return (
+                      <ContainerInstrument 
+                        key={item.path || item.id} 
+                        className={`bg-white rounded-[40px] p-8 shadow-aura border border-black/[0.03] flex gap-10 items-start transition-all hover:shadow-aura-lg ${processingId === item.path ? 'opacity-50 pointer-events-none' : ''} ${item.processed ? 'hidden' : ''}`}
+                      >
+                        {/* Foto Preview */}
+                        <ContainerInstrument className="w-56 h-56 flex-shrink-0 relative rounded-[32px] overflow-hidden bg-va-off-white border border-black/[0.03]">
+                          <Image 
+                            src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(item.path || item.filePath)}`}
+                            alt={item.fileName}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                          {(item.source === 'Combell Uploads' || item.id) && (
+                            <ContainerInstrument className="absolute top-4 right-4 bg-va-primary w-3 h-3 rounded-full border-2 border-white shadow-sm" />
+                          )}
+                          {item.analysis?.authenticity && (
+                            <ContainerInstrument className={`absolute top-4 left-4 px-2 py-0.5 rounded-full text-[15px] font-bold uppercase tracking-tighter ${
+                              item.analysis.authenticity === 'real' ? 'bg-green-500 text-white' : 
+                              item.analysis.authenticity === 'stock' ? 'bg-orange-500 text-white' : 
+                              'bg-red-500 text-white'
+                            }`}>
+                              {item.analysis.authenticity}
+                            </ContainerInstrument>
                           )}
                         </ContainerInstrument>
-                      </ContainerInstrument>
 
-                      {/* Quick Actions */}
-                      <ContainerInstrument className="flex flex-col gap-3 w-36 pt-2">
-                        <ButtonInstrument 
-                          onClick={() => handleAction('ignore', item.path)}
-                          className="w-full py-3 px-4 border border-black/5 text-gray-400 hover:border-black hover:text-black rounded-2xl text-[15px] font-medium tracking-widest transition-all bg-white"
-                        >
-                          overslaan
-                        </ButtonInstrument>
-                        <ButtonInstrument 
-                          onClick={() => handleAction('archive', item.path)}
-                          className="w-full py-3 px-4 bg-va-off-white text-gray-400 hover:text-gray-600 rounded-2xl text-[15px] font-medium tracking-widest transition-all"
-                        >
-                          archiveren
-                        </ButtonInstrument>
+                        {/* Info & Suggestions */}
+                        <ContainerInstrument className="flex-grow space-y-6 pt-2">
+                          <ContainerInstrument>
+                            <ContainerInstrument className="flex items-center gap-3 mb-2">
+                              <TextInstrument as="span" className="text-[15px] font-light tracking-[0.2em] text-va-primary/60">
+                                {item.source || 'automatisch'}
+                              </TextInstrument>
+                              <TextInstrument className="text-[15px] font-mono text-gray-300 break-all">{item.path || item.filePath}</TextInstrument>
+                            </ContainerInstrument>
+                            <HeadingInstrument level={3} className="text-xl font-light text-gray-900">{item.fileName}</HeadingInstrument>
+                          </ContainerInstrument>
+
+                          {/* 🧠 Vision Analysis Section */}
+                          {needsVision && (
+                            <ContainerInstrument className="p-6 bg-va-off-white rounded-[24px] border border-black/[0.02]">
+                              {item.analysis ? (
+                                item.analysis.loading ? (
+                                  <TextInstrument className="text-[15px] text-va-primary/40 animate-pulse font-light italic"><VoiceglotText translationKey="auto.page.vision_analyseert___.062171" defaultText="vision analyseert..." /></TextInstrument>
+                                ) : (
+                                  <ContainerInstrument className="space-y-3">
+                                    <TextInstrument className="text-[15px] text-va-black/60 leading-relaxed font-light">
+                                      &ldquo;{item.analysis.description}&rdquo;
+                                    </TextInstrument>
+                                    <ContainerInstrument className="flex flex-wrap gap-2 items-center">
+                                      {item.analysis.labels.map((l: string) => (
+                                        <TextInstrument as="span" key={l} className="px-3 py-1 bg-white rounded-full text-[15px] font-light text-gray-400 border border-black/[0.03]">{l}</TextInstrument>
+                                      ))}
+                                      <TextInstrument as="span" className="px-3 py-1 bg-va-primary/5 text-va-primary rounded-full text-[15px] font-light italic">{item.analysis.vibe}</TextInstrument>
+                                      
+                                      {item.analysis.suggested_alt && (
+                                        <TextInstrument className="w-full text-[15px] text-gray-400 font-light italic mt-2">
+                                          Alt: {item.analysis.suggested_alt}
+                                        </TextInstrument>
+                                      )}
+                                      
+                                      <ButtonInstrument 
+                                        onClick={() => handleAction('match', item.path, undefined, item.analysis)}
+                                        className="ml-auto px-4 py-2 bg-va-black text-white rounded-xl text-[15px] font-light tracking-widest hover:bg-va-primary transition-all"
+                                      >
+                                        verplaats naar assets
+                                      </ButtonInstrument>
+                                    </ContainerInstrument>
+                                  </ContainerInstrument>
+                                )
+                              ) : (
+                                <ButtonInstrument 
+                                  onClick={() => analyzeImage(item)}
+                                  className="text-[15px] font-light text-va-primary/60 hover:text-va-primary transition-colors flex items-center gap-2"
+                                >
+                                  ✨ vision beschrijving genereren
+                                </ButtonInstrument>
+                              )}
+                            </ContainerInstrument>
+                          )}
+
+                          <ContainerInstrument className="flex flex-wrap gap-3">
+                            {item.suggestions?.length > 0 ? (
+                              item.suggestions.map((s: any) => (
+                                <ButtonInstrument
+                                  key={s.id}
+                                  onClick={() => handleAction('match', item.path, s.id, item.analysis)}
+                                  className={`px-5 py-4 rounded-2xl border text-left transition-all group flex items-center gap-4 ${
+                                    s.confidence === 'verified'
+                                      ? 'bg-va-off-white border-va-primary/20'
+                                      : 'bg-white border-black/[0.05] hover:border-va-primary'
+                                  }`}
+                                >
+                                  <ContainerInstrument>
+                                    <TextInstrument className="text-[15px] font-light text-black">{s.name}</TextInstrument>
+                                    <TextInstrument className="text-[15px] text-gray-400 font-light">
+                                      {s.confidence === 'verified' ? '✓ geverifieerd' : s.confidence}
+                                    </TextInstrument>
+                                  </ContainerInstrument>
+                                </ButtonInstrument>
+                              ))
+                            ) : !showAutoMatched && (
+                              <TextInstrument className="text-[15px] text-gray-300 italic font-light"><VoiceglotText translationKey="auto.page.geen_automatische_ma.4df367" defaultText="geen automatische match gevonden" /></TextInstrument>
+                            )}
+                          </ContainerInstrument>
+
+                        {/* Quick Actions */}
+                        <ContainerInstrument className="flex flex-col gap-3 w-36 pt-2">
+                          <ButtonInstrument 
+                            onClick={() => handleAction('ignore', item.path)}
+                            className="w-full py-3 px-4 border border-black/5 text-gray-400 hover:border-black hover:text-black rounded-2xl text-[15px] font-light tracking-widest transition-all bg-white"
+                          >
+                            overslaan
+                          </ButtonInstrument>
+                          <ButtonInstrument 
+                            onClick={() => handleAction('archive', item.path)}
+                            className="w-full py-3 px-4 bg-va-off-white text-gray-400 hover:text-gray-600 rounded-2xl text-[15px] font-light tracking-widest transition-all"
+                          >
+                            archiveren
+                          </ButtonInstrument>
+                        </ContainerInstrument>
+                        </ContainerInstrument>
                       </ContainerInstrument>
-                    </ContainerInstrument>
-                  );
-                })}
-              </div>
-            </div>
+                    );
+                  })}
+                </ContainerInstrument>
+              </ContainerInstrument>
           ))}
         </ContainerInstrument>
 
@@ -575,7 +578,7 @@ export default function PhotoMatcherPage() {
               <ButtonInstrument
                 key={i + 1}
                 onClick={() => { setCurrentPage(i + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                className={`w-12 h-12 rounded-full text-sm font-medium transition-all ${
+                className={`w-12 h-12 rounded-full text-[15px] font-light transition-all ${
                   currentPage === i + 1 ? 'bg-va-primary text-white' : 'bg-white border border-black/5 text-gray-400 hover:border-black'
                 }`}
               >
@@ -588,6 +591,3 @@ export default function PhotoMatcherPage() {
     </PageWrapperInstrument>
   );
 }
-
-// Verwijder de dubbele/foutieve footer code hieronder
-

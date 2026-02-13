@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument, InputInstrument, PageWrapperInstrument, SectionInstrument, SelectInstrument, OptionInstrument } from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, OptionInstrument, PageWrapperInstrument, SectionInstrument, SelectInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { Search, Filter, FileText, Mic, Video, Shield, ArrowLeft, Download, ExternalLink, Calendar, User, Hash } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
+import { ArrowLeft, Calendar, Download, FileText, Hash, Mic, Search, Shield, User, Video } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 /**
  * 🏛️ THE VAULT BROWSER
@@ -48,7 +48,7 @@ export default function VaultBrowserPage() {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'script': return <FileText size={16} className="text-blue-500" />;
-      case 'briefing': return <Shield size={16} className="text-orange-500" />;
+      case 'briefing': return <Shield strokeWidth={1.5} size={16} className="text-orange-500" />;
       case 'demo_inbound': return <Mic size={16} className="text-purple-500" />;
       case 'example_video': return <Video size={16} className="text-red-500" />;
       default: return <FileText size={16} className="text-gray-400" />;
@@ -65,17 +65,15 @@ export default function VaultBrowserPage() {
             <ContainerInstrument>
               <ContainerInstrument className="flex items-center gap-3 mb-2">
                 <ButtonInstrument onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-                  <ArrowLeft size={16} />
+                  <ArrowLeft strokeWidth={1.5} size={16} />
                 </ButtonInstrument>
                 <HeadingInstrument level={1} className="text-4xl font-bold tracking-tight text-black">
                   <VoiceglotText translationKey="admin.vault.title" defaultText="The Vault" />
-                  <TextInstrument as="span" className="text-orange-500 text-2xl ml-2 font-light">
-                    <VoiceglotText translationKey="admin.vault.subtitle" defaultText="Kluis" />
-                  </TextInstrument>
+                  <TextInstrument as="span" className="text-orange-500 text-2xl ml-2 font-light"><VoiceglotText translationKey="admin.vault.subtitle" defaultText="Kluis" /></TextInstrument>
                 </HeadingInstrument>
               </ContainerInstrument>
               <TextInstrument className="text-gray-500 tracking-widest text-[15px] font-black flex items-center gap-2">
-                <Shield size={12} />
+                <Shield strokeWidth={1.5} size={12} />
                 <VoiceglotText translationKey="admin.vault.description" defaultText="Beveiligde Documenten & Inbound Assets" />
               </TextInstrument>
             </ContainerInstrument>
@@ -87,7 +85,7 @@ export default function VaultBrowserPage() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
               <InputInstrument 
                 placeholder="Zoek op bestandsnaam..." 
-                className="pl-12 py-3 bg-gray-50 border-none rounded-2xl text-sm"
+                className="pl-12 py-3 bg-gray-50 border-none rounded-2xl text-[15px]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e: any) => e.key === 'Enter' && fetchFiles()}
@@ -97,14 +95,14 @@ export default function VaultBrowserPage() {
               <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
               <InputInstrument 
                 placeholder="Project ID (6 cijfers)" 
-                className="pl-12 py-3 bg-gray-50 border-none rounded-2xl text-sm"
+                className="pl-12 py-3 bg-gray-50 border-none rounded-2xl text-[15px]"
                 value={projectIdFilter}
                 onChange={(e) => setProjectIdFilter(e.target.value)}
                 onKeyDown={(e: any) => e.key === 'Enter' && fetchFiles()}
               />
             </ContainerInstrument>
             <SelectInstrument 
-              className="py-3 px-4 bg-gray-50 border-none rounded-2xl text-sm appearance-none cursor-pointer"
+              className="py-3 px-4 bg-gray-50 border-none rounded-2xl text-[15px] appearance-none cursor-pointer"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
             >
@@ -144,25 +142,25 @@ export default function VaultBrowserPage() {
                     </ContainerInstrument>
                   </ContainerInstrument>
 
-                  <HeadingInstrument level={3} className="font-bold text-sm mb-1 truncate" title={file.originalName}>
+                  <HeadingInstrument level={3} className="font-bold text-[15px] mb-1 truncate" title={file.originalName}>
                     {file.originalName}
                   </HeadingInstrument>
                   
                   <ContainerInstrument className="space-y-2">
                     <ContainerInstrument className="flex items-center gap-2 text-[15px] text-gray-400 font-bold tracking-widest">
-                      <Calendar size={10} />
+                      <Calendar strokeWidth={1.5} size={10} />
                       {format(new Date(file.createdAt), 'dd MMM yyyy', { locale: nl })}
                     </ContainerInstrument>
                     
                     {file.customer && (
                       <ContainerInstrument className="flex items-center gap-2 text-[15px] text-gray-600 font-bold">
-                        <User size={10} />
+                        <User strokeWidth={1.5} size={10} />
                         {file.customer.firstName} {file.customer.lastName}
                       </ContainerInstrument>
                     )}
 
                     {file.project && (
-                      <ContainerInstrument className="inline-block px-2 py-1 bg-orange-50 text-orange-700 rounded-lg text-[15px] font-black tracking-widest">
+                      <ContainerInstrument className="inline-block px-2 py-1 bg-orange-50 text-orange-700 rounded-[20px] text-[15px] font-black tracking-widest">
                         <VoiceglotText translationKey="admin.vault.project_id" defaultText="Project" /> #{file.project.wpOrderId}
                       </ContainerInstrument>
                     )}
@@ -172,10 +170,8 @@ export default function VaultBrowserPage() {
             </ContainerInstrument>
           ) : (
             <ContainerInstrument className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-              <Shield size={48} className="mx-auto text-gray-300 mb-4" />
-              <TextInstrument className="text-gray-500 font-bold">
-                <VoiceglotText translationKey="admin.vault.empty" defaultText="Geen bestanden gevonden in de kluis." />
-              </TextInstrument>
+              <Shield strokeWidth={1.5} size={48} className="mx-auto text-gray-300 mb-4" />
+              <TextInstrument className="text-gray-500 font-bold"><VoiceglotText translationKey="admin.vault.empty" defaultText="Geen bestanden gevonden in de kluis." /></TextInstrument>
             </ContainerInstrument>
           )}
 

@@ -1,10 +1,19 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { SlidersHorizontal, X } from 'lucide-react';
 import { SearchFilters } from '@/types';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
+import { 
+  ButtonInstrument, 
+  ContainerInstrument, 
+  InputInstrument, 
+  OptionInstrument, 
+  SelectInstrument, 
+  TextInstrument 
+} from './LayoutInstruments';
+import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 
@@ -19,53 +28,56 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
   const searchParams = useSearchParams();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // Helper to generate clean URL
-  const generateCleanUrl = (newParams: Record<string, string | undefined>) => {
-    // Start with current params but allow overrides
-    const finalParams = { ...combinedParams, ...newParams };
-    
-    const segments: string[] = ['agency', 'voice-overs'];
-    
-    // Add language if present
-    if (finalParams.language) {
-      segments.push(finalParams.language.toLowerCase());
-    }
-    
-    // Add gender if present
-    if (finalParams.gender) {
-      const genderSlug = finalParams.gender.toLowerCase().includes('man') ? 'man' : 'vrouw';
-      segments.push(genderSlug);
-    }
-    
-    // Add style if present
-    if (finalParams.style) {
-      segments.push(finalParams.style.toLowerCase());
-    }
-
-    // Handle search as query param
-    const query = new URLSearchParams();
-    if (finalParams.search) {
-      query.set('search', finalParams.search);
-    }
-
-    const queryString = query.toString();
-    return `/${segments.join('/')}${queryString ? `?${queryString}` : ''}`;
-  };
-
   const updateQuery = (newParams: Record<string, string | undefined>) => {
-    const targetUrl = generateCleanUrl(newParams);
-    router.push(targetUrl);
+    const nextParams = new URLSearchParams(searchParams.toString());
+    Object.entries(newParams).forEach(([key, value]) => {
+      if (value) nextParams.set(key, value);
+      else nextParams.delete(key);
+    });
+    router.push(`?${nextParams.toString()}`, { scroll: false });
   };
+
+  // 🌍 MARKET-BASED LANGUAGE LOGIC
+  // We sorteren de talen op basis van de huidige markt (BE/NL)
+  const sortedLanguages = React.useMemo(() => {
+    const market = combinedParams.market || 'BE';
+    const primaryLang = market === 'BE' ? 'Vlaams' : 'Nederlands';
+    const secondaryLang = market === 'BE' ? 'Nederlands' : 'Vlaams';
+    
+    const baseLangs = [...filters.languages];
+    
+    // Verwijder de primaire en secundaire talen uit de lijst om ze bovenaan te zetten
+    const filteredLangs = baseLangs.filter(l => l !== primaryLang && l !== secondaryLang);
+    
+    // Sorteer de rest alfabetisch
+    filteredLangs.sort((a, b) => a.localeCompare(b));
+    
+    // Bouw de nieuwe lijst: Primair -> Secundair -> De rest
+    const result = [];
+    if (baseLangs.includes(primaryLang)) result.push(primaryLang);
+    if (baseLangs.includes(secondaryLang)) result.push(secondaryLang);
+    
+    return [...result, ...filteredLangs];
+  }, [filters.languages, combinedParams.market]);
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white/80 backdrop-blur-2xl border border-black/5 rounded-[40px] p-4 md:p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-4 group/search">
-        <div className="flex-1 w-full relative group">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={20} />
-          <input 
+    <ContainerInstrument className="space-y-6">
+      <ContainerInstrument className="bg-white/80 backdrop-blur-2xl border border-black/5 rounded-[40px] p-4 md:p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-4 group/search">
+        <ContainerInstrument className="flex-1 w-full relative group">
+          <ContainerInstrument className="absolute left-6 top-1/2 -translate-y-1/2">
+            <VoiceglotImage 
+              src="/assets/common/branding/icons/SEARCH.svg" 
+              alt="Search" 
+              width={20} 
+              height={20} 
+              className="opacity-20 group-focus-within:opacity-100 transition-opacity"
+              style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+            />
+          </ContainerInstrument>
+          <InputInstrument 
             type="text" 
             placeholder={t('agency.filter.search_placeholder', 'Zoek op naam, stijl of kenmerk...')}
-            className="w-full bg-va-off-white border-none rounded-[24px] py-5 pl-16 pr-6 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20"
+            className="w-full bg-va-off-white border-none rounded-[24px] py-5 pl-16 pr-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20"
             defaultValue={combinedParams.search}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -73,43 +85,65 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
               }
             }}
           />
-        </div>
+        </ContainerInstrument>
         
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-          <select 
-            className="flex-1 lg:w-40 bg-va-off-white border-none rounded-[24px] py-5 px-6 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
-            value={combinedParams.language || ''}
-            onChange={(e) => updateQuery({ language: e.target.value || undefined })}
-          >
-            <option value=""><VoiceglotText translationKey="agency.filter.all_languages" defaultText="Alle Talen" /></option>
-            {filters.languages.map(lang => (
-              <option key={lang} value={lang}>{lang}</option>
-            ))}
-          </select>
+          <ContainerInstrument className="flex-1 lg:w-56 relative group/select">
+            <SelectInstrument 
+              className="w-full bg-va-off-white border-none rounded-[24px] py-5 px-8 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
+              value={combinedParams.language || ''}
+              onChange={(e) => updateQuery({ language: e.target.value || undefined })}
+            >
+              <OptionInstrument value=""><VoiceglotText translationKey="agency.filter.all_languages" defaultText="Alle Talen" /></OptionInstrument>
+              {sortedLanguages.map(lang => (
+                <OptionInstrument key={lang} value={lang}>{lang}</OptionInstrument>
+              ))}
+            </SelectInstrument>
+            <ContainerInstrument className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-hover/select:opacity-100 transition-opacity">
+              <VoiceglotImage 
+                src="/assets/common/branding/icons/DOWN.svg" 
+                alt="Select" 
+                width={14} 
+                height={14} 
+                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+              />
+            </ContainerInstrument>
+          </ContainerInstrument>
 
-          <select 
-            className="hidden md:block lg:w-40 bg-va-off-white border-none rounded-[24px] py-5 px-6 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
-            value={combinedParams.gender || ''}
-            onChange={(e) => updateQuery({ gender: e.target.value || undefined })}
-          >
-            <option value=""><VoiceglotText translationKey="agency.filter.gender" defaultText="Geslacht" /></option>
-            {filters.genders.map(g => (
-              <option key={g} value={g}>{g}</option>
-            ))}
-          </select>
+          <ContainerInstrument className="hidden md:block lg:w-44 relative group/select">
+            <SelectInstrument 
+              className="w-full bg-va-off-white border-none rounded-[24px] py-5 px-8 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
+              value={combinedParams.gender || ''}
+              onChange={(e) => updateQuery({ gender: e.target.value || undefined })}
+            >
+              <OptionInstrument value=""><VoiceglotText translationKey="agency.filter.gender" defaultText="Geslacht" /></OptionInstrument>
+              {filters.genders.map(g => (
+                <OptionInstrument key={g} value={g}>{g}</OptionInstrument>
+              ))}
+            </SelectInstrument>
+            <ContainerInstrument className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-hover/select:opacity-100 transition-opacity">
+              <VoiceglotImage 
+                src="/assets/common/branding/icons/DOWN.svg" 
+                alt="Select" 
+                width={14} 
+                height={14} 
+                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+              />
+            </ContainerInstrument>
+          </ContainerInstrument>
 
-          <button 
+          <ButtonInstrument 
             onClick={() => setIsSheetOpen(true)}
             className="w-16 h-16 rounded-[24px] bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all duration-500 shadow-lg active:scale-95"
           >
             <SlidersHorizontal size={20} />
-          </button>
+          </ButtonInstrument>
         </div>
-      </div>
+      </ContainerInstrument>
 
       {/* Active Filters Chips */}
       {(combinedParams.search || combinedParams.gender || combinedParams.style || combinedParams.language) && (
-        <div className="flex flex-wrap gap-2 px-4">
+        <ContainerInstrument className="flex flex-wrap gap-2 px-4">
           {combinedParams.search && (
             <Chip label={`${t('common.search', 'Zoek')}: ${combinedParams.search}`} onRemove={() => updateQuery({ search: undefined })} />
           )}
@@ -122,13 +156,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
           {combinedParams.style && (
             <Chip label={`${t('common.style', 'Stijl')}: ${combinedParams.style}`} onRemove={() => updateQuery({ style: undefined })} />
           )}
-          <button 
+          <ButtonInstrument 
             onClick={() => updateQuery({ search: undefined, gender: undefined, style: undefined, language: undefined })}
             className="text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-colors ml-2"
           >
             <VoiceglotText translationKey="agency.filter.clear_all" defaultText="Wis alles" />
-          </button>
-        </div>
+          </ButtonInstrument>
+        </ContainerInstrument>
       )}
 
       {/* De Filter Sheet (Mobile & Advanced) */}
@@ -139,15 +173,15 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
       />
-    </div>
+    </ContainerInstrument>
   );
 };
 
 const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => (
-  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-full text-[15px] font-black tracking-widest shadow-sm">
-    {label}
-    <button onClick={onRemove} className="hover:text-primary transition-colors">
-      <X size={12} />
-    </button>
-  </div>
+  <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-full text-[15px] font-black tracking-widest shadow-sm">
+    <TextInstrument>{label}</TextInstrument>
+    <ButtonInstrument onClick={onRemove} className="hover:text-primary transition-colors">
+      <X strokeWidth={1.5} size={12} />
+    </ButtonInstrument>
+  </ContainerInstrument>
 );

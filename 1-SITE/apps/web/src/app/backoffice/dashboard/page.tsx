@@ -64,13 +64,13 @@ async function RecentActivity() {
               <ShoppingCart size={18} />
             </ContainerInstrument>
             <ContainerInstrument>
-              <TextInstrument className="text-sm font-bold">Order #{order.wpOrderId}</TextInstrument>
-              <TextInstrument className="text-[15px] text-black/40 font-black">{order.user?.firstName} {order.user?.lastName}</TextInstrument>
+              <TextInstrument className="text-[15px] font-light">Order #{order.wpOrderId}</TextInstrument>
+              <TextInstrument className="text-[15px] text-va-black/40 font-light">{order.user?.firstName} {order.user?.lastName}</TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="text-right">
-            <TextInstrument className="text-sm font-black">€ {order.total}</TextInstrument>
-            <TextInstrument className="text-[15px] text-black/40 font-bold">{new Date(order.createdAt!).toLocaleDateString()}</TextInstrument>
+            <TextInstrument className="text-[15px] font-light">€ {order.total}</TextInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light">{new Date(order.createdAt!).toLocaleDateString()}</TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
       ))}
@@ -85,18 +85,9 @@ export default async function BackofficeDashboard() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
       <ContainerInstrument className="max-w-7xl mx-auto">
         <SectionInstrument className="mb-12">
-          <ContainerInstrument className="inline-block bg-black text-white text-[15px] font-black px-3 py-1 rounded-full mb-6 tracking-widest ">
-            <VoiceglotText translationKey="admin.dashboard.badge" defaultText="Voices" />
-          </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter leading-none mb-4">
-            <VoiceglotText translationKey="admin.dashboard.title_part1" defaultText="Het " />
-            <TextInstrument as="span" className="text-va-primary font-light">
-              <VoiceglotText translationKey="admin.dashboard.title_part2" defaultText="overzicht." />
-            </TextInstrument>
-          </HeadingInstrument>
-          <TextInstrument className="text-xl text-black/40 font-medium tracking-tight">
-            <VoiceglotText translationKey="admin.dashboard.subtitle" defaultText="Real-time overzicht van het Voices ecosysteem." />
-          </TextInstrument>
+          <ContainerInstrument className="inline-block bg-black text-white text-[15px] font-light px-3 py-1 rounded-full mb-6 tracking-widest "><VoiceglotText translationKey="admin.dashboard.badge" defaultText="Voices" /></ContainerInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter leading-none mb-4"><VoiceglotText translationKey="admin.dashboard.title_part1" defaultText="Het " /><TextInstrument as="span" className="text-va-primary font-light"><VoiceglotText translationKey="admin.dashboard.title_part2" defaultText="overzicht." /></TextInstrument></HeadingInstrument>
+          <TextInstrument className="text-xl text-va-black/40 font-light tracking-tight"><VoiceglotText translationKey="admin.dashboard.subtitle" defaultText="Real-time overzicht van het Voices ecosysteem." /></TextInstrument>
         </SectionInstrument>
 
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
@@ -106,26 +97,18 @@ export default async function BackofficeDashboard() {
               <ContainerInstrument className="p-3 bg-green-500/10 text-green-600 rounded-2xl">
                 <ShoppingCart size={24} />
               </ContainerInstrument>
-              <TextInstrument as="span" className="text-[15px] font-black text-black/20 tracking-widest">
-                <VoiceglotText translationKey="admin.dashboard.card.voices" defaultText="Voices Agency" />
-              </TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText translationKey="admin.dashboard.card.voices" defaultText="Voices Agency" /></TextInstrument>
             </ContainerInstrument>
-            <TextInstrument className="text-4xl font-black tracking-tighter mb-1">€ {Number(stats.revenue).toLocaleString('nl-BE')}</TextInstrument>
-            <TextInstrument className="text-[15px] text-black/40 font-bold tracking-widest">
-              <VoiceglotText translationKey="admin.dashboard.revenue" defaultText="Omzet" />
-            </TextInstrument>
+            <TextInstrument className="text-4xl font-light tracking-tighter mb-1">€ {Number(stats.revenue).toLocaleString('nl-BE')}</TextInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText translationKey="admin.dashboard.revenue" defaultText="Omzet" /></TextInstrument>
             <ContainerInstrument className="mt-6 pt-6 border-t border-black/5 flex justify-between">
               <ContainerInstrument>
-                <TextInstrument className="text-lg font-black">{stats.orders}</TextInstrument>
-                <TextInstrument className="text-[15px] text-black/40 font-bold">
-                  <VoiceglotText translationKey="admin.dashboard.orders" defaultText="Orders" />
-                </TextInstrument>
+                <TextInstrument className="text-lg font-light">{stats.orders}</TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="admin.dashboard.orders" defaultText="Orders" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="text-right">
-                <TextInstrument className="text-lg font-black">{stats.actors}</TextInstrument>
-                <TextInstrument className="text-[15px] text-black/40 font-bold">
-                  <VoiceglotText translationKey="admin.dashboard.voices" defaultText="Stemmen" />
-                </TextInstrument>
+                <TextInstrument className="text-lg font-light">{stats.actors}</TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="admin.dashboard.voices" defaultText="Stemmen" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -134,30 +117,20 @@ export default async function BackofficeDashboard() {
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-va-primary/10 text-va-primary rounded-2xl">
-                <Activity size={24} />
+                <Activity strokeWidth={1.5} size={24} />
               </ContainerInstrument>
-              <TextInstrument as="span" className="text-[15px] font-black text-black/20 tracking-widest">
-                <VoiceglotText translationKey="admin.dashboard.card.ademing" defaultText="Ademing" />
-              </TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText translationKey="admin.dashboard.card.ademing" defaultText="Ademing" /></TextInstrument>
             </ContainerInstrument>
-            <TextInstrument className="text-4xl font-black tracking-tighter mb-1">{stats.ademingListenTime}u</TextInstrument>
-            <TextInstrument className="text-[15px] text-black/40 font-bold tracking-widest">
-              <VoiceglotText translationKey="admin.dashboard.listen_time" defaultText="Luistertijd" />
-            </TextInstrument>
+            <TextInstrument className="text-4xl font-light tracking-tighter mb-1">{stats.ademingListenTime}u</TextInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText translationKey="admin.dashboard.listen_time" defaultText="Luistertijd" /></TextInstrument>
             <ContainerInstrument className="mt-6 pt-6 border-t border-black/5 flex justify-between">
               <ContainerInstrument>
-                <TextInstrument className="text-lg font-black">{stats.avgStreak}d</TextInstrument>
-                <TextInstrument className="text-[15px] text-black/40 font-bold">
-                  <VoiceglotText translationKey="admin.dashboard.streak" defaultText="Streak" />
-                </TextInstrument>
+                <TextInstrument className="text-lg font-light">{stats.avgStreak}d</TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="admin.dashboard.streak" defaultText="Streak" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="text-right">
-                <TextInstrument className="text-lg font-black">
-                  <VoiceglotText translationKey="admin.dashboard.active" defaultText="Actief" />
-                </TextInstrument>
-                <TextInstrument className="text-[15px] text-black/40 font-bold">
-                  <VoiceglotText translationKey="admin.dashboard.status" defaultText="Status" />
-                </TextInstrument>
+                <TextInstrument className="text-lg font-light"><VoiceglotText translationKey="admin.dashboard.active" defaultText="Actief" /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="admin.dashboard.status" defaultText="Status" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -168,58 +141,40 @@ export default async function BackofficeDashboard() {
               <ContainerInstrument className="p-3 bg-blue-500/10 text-blue-600 rounded-2xl">
                 <Users size={24} />
               </ContainerInstrument>
-              <TextInstrument as="span" className="text-[15px] font-black text-black/20 tracking-widest">
-                <VoiceglotText translationKey="admin.dashboard.card.users" defaultText="Gebruikers" />
-              </TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText translationKey="admin.dashboard.card.users" defaultText="Gebruikers" /></TextInstrument>
             </ContainerInstrument>
-            <TextInstrument className="text-4xl font-black tracking-tighter mb-1">{stats.users.toLocaleString('nl-BE')}</TextInstrument>
-            <TextInstrument className="text-[15px] text-black/40 font-bold tracking-widest">
-              <VoiceglotText translationKey="admin.dashboard.profiles" defaultText="Unieke Profielen" />
-            </TextInstrument>
+            <TextInstrument className="text-4xl font-light tracking-tighter mb-1">{stats.users.toLocaleString('nl-BE')}</TextInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText translationKey="admin.dashboard.profiles" defaultText="Unieke Profielen" /></TextInstrument>
             <ContainerInstrument className="mt-6 pt-6 border-t border-black/5 flex justify-between">
               <ContainerInstrument>
-                <TextInstrument className="text-lg font-black">{stats.chats}</TextInstrument>
-                <TextInstrument className="text-[15px] text-black/40 font-bold">
-                  <VoiceglotText translationKey="admin.dashboard.chats" defaultText="Chats" />
-                </TextInstrument>
+                <TextInstrument className="text-lg font-light">{stats.chats}</TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="admin.dashboard.chats" defaultText="Chats" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="text-right">
-                <TextInstrument className="text-lg font-black">360°</TextInstrument>
-                <TextInstrument className="text-[15px] text-black/40 font-bold">
-                  <VoiceglotText translationKey="admin.dashboard.visibility" defaultText="Zichtbaarheid" />
-                </TextInstrument>
-              </ContainerInstrument>
+                <TextInstrument className="text-lg font-light">360°</TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="admin.dashboard.visibility" defaultText="Zichtbaarheid" /></TextInstrument>
             </ContainerInstrument>
+          </ContainerInstrument>
           </ContainerInstrument>
 
           {/* 🎓 STUDIO & ACADEMY CARD */}
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-orange-500/10 text-orange-600 rounded-2xl">
-                <Calendar size={24} />
+                <Calendar strokeWidth={1.5} size={24} />
               </ContainerInstrument>
-              <TextInstrument as="span" className="text-[15px] font-black text-black/20 tracking-widest">
-                <VoiceglotText translationKey="admin.dashboard.card.studio" defaultText="Studio & Academy" />
-              </TextInstrument>
+              <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText translationKey="admin.dashboard.card.studio" defaultText="Studio & Academy" /></TextInstrument>
             </ContainerInstrument>
-            <TextInstrument className="text-4xl font-black tracking-tighter mb-1">{stats.workshops}</TextInstrument>
-            <TextInstrument className="text-[15px] text-black/40 font-bold tracking-widest">
-              <VoiceglotText translationKey="admin.dashboard.workshops" defaultText="Workshops" />
-            </TextInstrument>
+            <TextInstrument className="text-4xl font-light tracking-tighter mb-1">{stats.workshops}</TextInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText translationKey="admin.dashboard.workshops" defaultText="Workshops" /></TextInstrument>
             <ContainerInstrument className="mt-6 pt-6 border-t border-black/5 flex justify-between">
               <ContainerInstrument>
-                <TextInstrument className="text-lg font-black">16</TextInstrument>
-                <TextInstrument className="text-[15px] text-black/40 font-bold">
-                  <VoiceglotText translationKey="admin.dashboard.sessions" defaultText="Sessies" />
-                </TextInstrument>
+                <TextInstrument className="text-lg font-light">16</TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="admin.dashboard.sessions" defaultText="Sessies" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="text-right">
-                <TextInstrument className="text-lg font-black">
-                  <VoiceglotText translationKey="admin.dashboard.live" defaultText="Live" />
-                </TextInstrument>
-                <TextInstrument className="text-[15px] text-black/40 font-bold">
-                  <VoiceglotText translationKey="admin.dashboard.status" defaultText="Status" />
-                </TextInstrument>
+                <TextInstrument className="text-lg font-light"><VoiceglotText translationKey="admin.dashboard.live" defaultText="Live" /></TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="admin.dashboard.status" defaultText="Status" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -227,47 +182,32 @@ export default async function BackofficeDashboard() {
 
         <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
-            <HeadingInstrument level={2} className="text-xl font-black tracking-tighter mb-8 italic">
-              <VoiceglotText translationKey="admin.dashboard.recent_activity" defaultText="Activiteit" />
-            </HeadingInstrument>
+            <HeadingInstrument level={2} className="text-xl font-light tracking-tighter mb-8 italic"><VoiceglotText translationKey="admin.dashboard.recent_activity" defaultText="Activiteit" /></HeadingInstrument>
             <RecentActivity />
           </ContainerInstrument>
           
           <ContainerInstrument className="bg-black text-white rounded-[40px] p-8 border border-black/[0.03] shadow-lg overflow-hidden relative">
             <ContainerInstrument className="relative z-10">
-              <HeadingInstrument level={2} className="text-xl font-black tracking-tighter mb-4 italic">
-                <VoiceglotText translationKey="admin.dashboard.ai_title" defaultText="Intelligence" />
-              </HeadingInstrument>
-              <TextInstrument className="text-white/60 text-sm mb-8 font-light">
-                <VoiceglotText translationKey="admin.dashboard.ai_subtitle" defaultText="Analyse van het platform..." />
-              </TextInstrument>
+              <HeadingInstrument level={2} className="text-xl font-light tracking-tighter mb-4 italic"><VoiceglotText translationKey="admin.dashboard.ai_title" defaultText="Intelligence" /><TextInstrument className="text-white/60 text-[15px] mb-8 font-light"><VoiceglotText translationKey="admin.dashboard.ai_subtitle" defaultText="Analyse van het platform..." /></TextInstrument></HeadingInstrument>
               <ContainerInstrument className="space-y-6">
                 <ContainerInstrument className="p-4 bg-white/10 rounded-xl border border-white/10">
-                  <TextInstrument className="text-[15px] font-black text-va-primary mb-1">
-                    <VoiceglotText translationKey="admin.dashboard.insight_label_1" defaultText="Inzicht #1" />
-                  </TextInstrument>
-                  <TextInstrument className="text-sm font-light">
-                    <VoiceglotText 
+                  <TextInstrument className="text-[15px] font-light text-va-primary mb-1"><VoiceglotText translationKey="admin.dashboard.insight_label_1" defaultText="Inzicht #1" /></TextInstrument>
+                  <TextInstrument className="text-[15px] font-light"><VoiceglotText 
                       translationKey="admin.dashboard.insight_1" 
                       defaultText="&quot;80% van de Ademing-gebruikers toont interesse in professionele stemcoaching.&quot;" 
-                    />
-                  </TextInstrument>
+                    /></TextInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="p-4 bg-white/10 rounded-xl border border-white/10">
-                  <TextInstrument className="text-[15px] font-black text-va-primary mb-1">
-                    <VoiceglotText translationKey="admin.dashboard.insight_label_2" defaultText="Inzicht #2" />
-                  </TextInstrument>
-                  <TextInstrument className="text-sm font-light">
-                    <VoiceglotText 
+                  <TextInstrument className="text-[15px] font-light text-va-primary mb-1"><VoiceglotText translationKey="admin.dashboard.insight_label_2" defaultText="Inzicht #2" /></TextInstrument>
+                  <TextInstrument className="text-[15px] font-light"><VoiceglotText 
                       translationKey="admin.dashboard.insight_2" 
                       defaultText="&quot;De gemiddelde orderwaarde stijgt met 15% na een aanbeveling.&quot;" 
-                    />
-                  </TextInstrument>
+                    /></TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             {/* Liquid Gradient Background for the AI card */}
-            <ContainerInstrument className="absolute inset-0 hmagic opacity-20 pointer-events-none" />
+            <ContainerInstrument className="absolute inset-0 hmagic opacity-20 pointer-events-none" aria-hidden="true" />
           </ContainerInstrument>
         </ContainerInstrument>
       </ContainerInstrument>

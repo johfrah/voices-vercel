@@ -1,21 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument 
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
+import { PricingCalculator } from "@/components/ui/PricingCalculator";
+import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { ArrowLeft, Play, Star, Heart, Share2, Mic, ShieldCheck, Video as VideoIcon, Music } from "lucide-react";
+import { useCheckout } from "@/contexts/CheckoutContext";
+import { ArrowLeft, Heart, Mic, Music, Play, Share2, Star, Video as VideoIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
-import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
-import { PricingCalculator } from "@/components/ui/PricingCalculator";
-import { useCheckout } from "@/contexts/CheckoutContext";
+import { useEffect, useState } from 'react';
 
 export function VoiceDetailClient({ actor }: { actor: any }) {
   const { updateBriefing, selectActor, state } = useCheckout();
@@ -59,7 +59,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
-          <ArrowLeft size={14} /> 
+          <ArrowLeft strokeWidth={1.5} size={14} /> 
           <VoiceglotText translationKey="artist.back_to_artists" defaultText="Terug naar alle stemmen" />
         </Link>
         <ContainerInstrument className="flex gap-4">
@@ -83,19 +83,15 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
             />
             <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent" />
             <ContainerInstrument className="absolute bottom-8 left-8 right-8">
-              <HeadingInstrument level={1} className="text-3xl font-black text-white tracking-tighter mb-2">
-                <VoiceglotText 
+              <HeadingInstrument level={1} className="text-3xl font-black text-white tracking-tighter mb-2"><VoiceglotText 
                   translationKey={`actor.${actor.id}.name`} 
                   defaultText={actor.display_name} 
                   noTranslate={true} 
-                />
-              </HeadingInstrument>
+                /></HeadingInstrument>
               <ContainerInstrument className="flex items-center gap-2">
-                <ContainerInstrument className="px-3 py-1 bg-primary rounded-full text-[15px] font-black text-white tracking-widest">
-                  <VoiceglotText translationKey="common.craftsman" defaultText="Vakman" />
-                </ContainerInstrument>
+                <ContainerInstrument className="px-3 py-1 bg-primary rounded-full text-[15px] font-black text-white tracking-widest"><VoiceglotText translationKey="common.craftsman" defaultText="Vakman" /></ContainerInstrument>
                 <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[15px] font-bold tracking-widest">
-                  <Star size={10} className="text-primary" fill="currentColor" /> 
+                  <Star strokeWidth={1.5} size={10} className="text-primary" fill="currentColor" /> 
                   {actor.voice_score}
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -105,9 +101,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
 
         <BentoCard span="xl" className="bg-va-off-white/50 backdrop-blur-md border-white/20 shadow-aura p-12">
           <ContainerInstrument className="flex justify-between items-center mb-12">
-            <HeadingInstrument level={2} className="text-3xl font-black tracking-tight">
-              <VoiceglotText translationKey="common.portfolio" defaultText="Portfolio" /> & <TextInstrument as="span" className="text-primary font-light"><VoiceglotText translationKey="common.demos" defaultText="Demos" /></TextInstrument>
-            </HeadingInstrument>
+            <HeadingInstrument level={2} className="text-3xl font-black tracking-tight"><VoiceglotText translationKey="common.portfolio" defaultText="Portfolio" /> & <TextInstrument as="span" className="text-primary font-light"><VoiceglotText translationKey="common.demos" defaultText="Demos" /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
 
           <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -121,14 +115,10 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
                     <Play size={20} fill="currentColor" className="ml-1" />
                   </ContainerInstrument>
                   <ContainerInstrument>
-                    <HeadingInstrument level={4} className="font-black tracking-tight text-sm">
-                      <VoiceglotText translationKey={`actor.${actor.id}.demo.${i}.title`} defaultText={demo.title} />
-                    </HeadingInstrument>
+                    <HeadingInstrument level={4} className="font-black tracking-tight text-[15px]"><VoiceglotText translationKey={`actor.${actor.id}.demo.${i}.title`} defaultText={demo.title} /></HeadingInstrument>
+                    <TextInstrument className="text-[15px] font-black text-va-black/20 tracking-widest"><VoiceglotText translationKey={`common.category.${demo.category?.toLowerCase()}`} defaultText={demo.category} /></TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
-                <TextInstrument className="text-[15px] font-black text-va-black/20 tracking-widest">
-                  <VoiceglotText translationKey={`common.category.${demo.category?.toLowerCase()}`} defaultText={demo.category} />
-                </TextInstrument>
               </ContainerInstrument>
             ))}
           </ContainerInstrument>
@@ -148,7 +138,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
                   <VideoIcon size={48} className="text-white/20" />
                 </div>
                 <div className="absolute bottom-8 left-8">
-                  <p className="text-white font-black tracking-widest text-sm">
+                  <p className="text-white font-black tracking-widest text-[15px]">
                     <VoiceglotText translationKey={`actor.${actor.id}.custom_video_label`} defaultText={`${actor.first_name} voor Hornbach`} />
                   </p>
                 </div>
@@ -158,14 +148,14 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
               <>
                 <BentoCard className="bg-white p-8 border border-black/5 shadow-sm">
                   <Music className="text-primary mb-4" />
-                  <p className="font-black tracking-tight text-sm">Tesla Navigation</p>
+                  <p className="font-black tracking-tight text-[15px]"><VoiceglotText translationKey="auto.voicedetailclient.tesla_navigation.b45eba" defaultText="Tesla Navigation" /></p>
                   <p className="text-[15px] text-va-black/40 mt-2">
                     <VoiceglotText translationKey="common.tesla_desc" defaultText="De stem van autoriteit en rust." />
                   </p>
                 </BentoCard>
                 <BentoCard className="bg-white p-8 border border-black/5 shadow-sm">
                   <Music className="text-primary mb-4" />
-                  <p className="font-black tracking-tight text-sm">Samsung Global</p>
+                  <p className="font-black tracking-tight text-[15px]"><VoiceglotText translationKey="auto.voicedetailclient.samsung_global.8d9a4b" defaultText="Samsung Global" /></p>
                   <p className="text-[15px] text-va-black/40 mt-2">
                     <VoiceglotText translationKey="common.samsung_desc" defaultText="Technologische perfectie." />
                   </p>
@@ -194,9 +184,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="space-y-8">
               <div className="space-y-4">
-                <label className="text-[15px] font-black tracking-widest text-va-black/30">
-                  <VoiceglotText translationKey="common.your_script" defaultText="1. Jouw Script" />
-                </label>
+                <label className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="common.your_script" defaultText="1. Jouw Script" /></label>
                 <textarea 
                   value={localBriefing}
                   onChange={(e) => handleBriefingChange(e.target.value)}
@@ -212,9 +200,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
             </div>
             
             <div>
-              <label className="text-[15px] font-black tracking-widest text-va-black/30 block mb-4">
-                <VoiceglotText translationKey="common.config_price" defaultText="2. Configuratie & Prijs" />
-              </label>
+              <label className="text-[15px] font-black tracking-widest text-va-black/30 block mb-4"><VoiceglotText translationKey="common.config_price" defaultText="2. Configuratie & Prijs" /></label>
               <PricingCalculator mode="human" actor={actor} />
             </div>
           </div>

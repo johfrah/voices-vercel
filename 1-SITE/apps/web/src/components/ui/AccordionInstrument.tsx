@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import Image from 'next/image';
 import { HeadingInstrument, TextInstrument } from './LayoutInstruments';
 
 interface AccordionItem {
@@ -24,11 +24,17 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
             onClick={() => setOpenId(openId === item.id ? null : item.id)}
             className="w-full px-10 py-8 flex items-center justify-between text-left group"
           >
-            <HeadingInstrument level={4} className="text-sm font-medium tracking-widest text-va-black/60 group-hover:text-va-black transition-colors">
+            <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/60 group-hover:text-va-black transition-colors">
               {item.title}
             </HeadingInstrument>
-            <div className={`p-2 rounded-full bg-va-black/5 transition-transform duration-500 ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
-              <ChevronDown size={18} />
+            <div className={`p-2 rounded-full bg-va-black/5 transition-all duration-500 flex items-center justify-center ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
+              <Image 
+                src="/assets/common/branding/icons/DOWN.svg" 
+                alt="Toggle" 
+                width={18} 
+                height={18} 
+                style={openId === item.id ? { filter: 'invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)' } : { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+              />
             </div>
           </button>
           <div 
@@ -36,7 +42,7 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
               openId === item.id ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
             }`}
           >
-            <div className="px-10 pb-10 prose prose-lg text-va-black/40 font-medium">
+            <div className="px-10 pb-10 prose prose-lg text-va-black/40 font-light">
               <div dangerouslySetInnerHTML={{ __html: item.content }} />
             </div>
           </div>

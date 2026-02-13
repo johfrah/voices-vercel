@@ -51,8 +51,8 @@ export const CodyPreviewBanner = () => {
           className="fixed top-0 left-0 right-0 z-[10002] bg-primary text-white py-2 px-6 flex justify-between items-center shadow-2xl"
         >
           <div className="flex items-center gap-3">
-            <div className="bg-white/20 p-1.5 rounded-lg animate-pulse">
-              <Zap size={14} fill="currentColor" />
+            <div className="bg-white/20 p-1.5 rounded-[20px] animate-pulse">
+              <Zap strokeWidth={1.5} size={14} fill="currentColor" />
             </div>
             <div className="flex flex-col">
               <span className="text-[15px] font-black tracking-widest leading-none">Cody Live Preview</span>
@@ -70,7 +70,7 @@ export const CodyPreviewBanner = () => {
               className="p-1.5 hover:bg-white/20 rounded-full transition-colors"
               title="Stop Preview"
             >
-              <X size={18} />
+              <X strokeWidth={1.5} size={18} />
             </button>
           </div>
         </motion.div>

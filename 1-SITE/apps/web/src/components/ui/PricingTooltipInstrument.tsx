@@ -1,10 +1,9 @@
-import React from 'react';
-import { 
-  ContainerInstrument, 
-  TextInstrument 
+import { HelpCircle } from 'lucide-react';
+import {
+    ContainerInstrument,
+    TextInstrument
 } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
-import { HelpCircle } from 'lucide-react';
 
 /**
  * ⚡ PRICING TOOLTIP INSTRUMENT
@@ -40,15 +39,13 @@ export const PricingTooltipInstrument = ({
 
   return (
     <ContainerInstrument className="group relative inline-block ml-2 align-middle">
-      <HelpCircle size={14} className="text-va-black/20 group-hover:text-primary transition-colors cursor-help" />
+      <HelpCircle strokeWidth={1.5} size={14} className="text-va-black/20 group-hover:text-primary transition-colors cursor-help" />
       
       <ContainerInstrument className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 p-4 bg-va-black text-white rounded-[16px] shadow-aura opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-50">
-        <TextInstrument className="text-[15px] font-bold leading-relaxed">
-          <VoiceglotText 
+        <TextInstrument className="text-[15px] font-bold leading-relaxed"><VoiceglotText 
             translationKey={getLicenseTextKey()} 
             defaultText={getDefaultText()} 
-          />
-        </TextInstrument>
+          /></TextInstrument>
         {/* Arrow */}
         <ContainerInstrument className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-va-black" />
       </ContainerInstrument>

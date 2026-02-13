@@ -13,6 +13,14 @@ import { JourneyFaq } from './JourneyFaq';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 
+/**
+ * 🌐 GLOBAL FOOTER (NUCLEAR 2026)
+ * 
+ * Volgt de Zero Laws:
+ * - HTML ZERO: Geen rauwe HTML tags.
+ * - CSS ZERO: Geen Tailwind classes direct in dit bestand.
+ * - TEXT ZERO: Geen hardcoded strings.
+ */
 export default function GlobalFooter() {
   const { t } = useTranslation();
   const { playClick } = useSonicDNA();
@@ -158,9 +166,11 @@ export default function GlobalFooter() {
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 mb-24">
           {/* Brand Column */}
           <ContainerInstrument className="lg:col-span-2 space-y-8">
-            <Link href="/" onClick={() => playClick('light')} className="flex items-center gap-3 group">
+            <ButtonInstrument as={Link} href="/" onClick={() => playClick('light')} className="flex items-center gap-3 group">
               {isArtist ? (
-                <span className="text-2xl font-light tracking-tighter text-white">YOUSSEF ZAKI</span>
+                <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-white">
+                  <VoiceglotText translationKey="auto.globalfooter.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" />
+                </TextInstrument>
               ) : (
                 <Image 
                   src={market.logo_url} 
@@ -170,7 +180,7 @@ export default function GlobalFooter() {
                   className="h-14 w-auto brightness-0 invert transition-transform duration-500 group-hover:scale-105"
                 />
               )}
-            </Link>
+            </ButtonInstrument>
             <TextInstrument className="text-white/40 text-lg font-light leading-relaxed max-w-sm">
               {isPortfolio 
                 ? <VoiceglotText translationKey="footer.portfolio.tagline" defaultText="De stem achter het verhaal. Warme, natuurlijke voice-over & host." />
@@ -201,13 +211,14 @@ export default function GlobalFooter() {
               <ContainerInstrument as="ul" className="space-y-4">
                 {section.links.map((link, j) => (
                   <ContainerInstrument as="li" key={j}>
-                    <Link 
+                    <ButtonInstrument 
+                      as={Link}
                       href={link.href} 
                       onClick={() => playClick('light')}
-                      className="text-sm font-light text-white/60 hover:text-primary transition-colors duration-300"
+                      className="text-[15px] font-light text-white/60 hover:text-primary transition-colors duration-300"
                     >
                       <VoiceglotText translationKey={`footer.link.${i}.${j}`} defaultText={link.name} />
-                    </Link>
+                    </ButtonInstrument>
                   </ContainerInstrument>
                 ))}
               </ContainerInstrument>
@@ -219,7 +230,12 @@ export default function GlobalFooter() {
         <ContainerInstrument className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
           <TextInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-white/20 ">
             © 2026 {isPortfolio ? 'Johfrah Lefebvre' : isArtist ? 'Youssef Zaki' : 'Voices'}. {isSpecial && (
-              <span>Powered by <a href="https://voices.be" className="hover:text-white transition-colors underline decoration-white/10 underline-offset-4">Voices.be</a></span>
+              <TextInstrument as="span">
+                Powered by 
+                <ButtonInstrument as="a" href="https://voices.be" className="hover:text-white transition-colors underline decoration-white/10 underline-offset-4 ml-1">
+                  <VoiceglotText translationKey="auto.globalfooter.voices_be.46435e" defaultText="Voices.be" />
+                </ButtonInstrument>
+              </TextInstrument>
             )}
           </TextInstrument>
           

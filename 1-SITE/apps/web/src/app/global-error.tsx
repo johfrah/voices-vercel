@@ -1,16 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
-import { 
-  RootLayoutInstrument, 
-  PageWrapperInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument 
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { AlertCircle, RefreshCw } from 'lucide-react';
+import { useEffect } from 'react';
 
 /**
  * 🛡️ GLOBAL ERROR (NUCLEAR 2026)
@@ -37,15 +35,10 @@ export default function GlobalError({
             </ContainerInstrument>
             
             <div className="space-y-2">
-              <HeadingInstrument level={1} className="text-3xl font-black tracking-tighter">
-                <VoiceglotText translationKey="error.global.title" defaultText="Systeem Fout" />
-              </HeadingInstrument>
-              <TextInstrument className="text-va-black/40 font-medium leading-relaxed">
-                <VoiceglotText 
+              <HeadingInstrument level={1} className="text-3xl font-black tracking-tighter"><VoiceglotText translationKey="error.global.title" defaultText="Systeem Fout" /><TextInstrument className="text-va-black/40 font-medium leading-relaxed"><VoiceglotText 
                   translationKey="error.global.text" 
                   defaultText="Er ging iets mis bij het laden van de Freedom Machine. Onze excuses voor het ongemak." 
-                />
-              </TextInstrument>
+                /></TextInstrument></HeadingInstrument>
             </div>
 
             <ButtonInstrument 

@@ -1,27 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  ButtonInstrument
+import {
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { 
-  Users, 
-  Activity, 
-  Eye, 
-  MousePointer2, 
-  Clock, 
-  Globe, 
-  Monitor,
-  ArrowRight,
-  PlayCircle
+import {
+    Activity,
+    ArrowRight,
+    Eye,
+    Globe,
+    Monitor,
+    MousePointer2,
+    Users
 } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 /**
  * 🏺 LIVE VISITOR COCKPIT (2026)
@@ -62,31 +59,33 @@ export default function LiveVisitorCockpit() {
     return () => clearInterval(interval);
   }, []);
 
+  const recentSessions = visitors.filter(v => new Date(v.lastVisitAt).getTime() > Date.now() - 3600000);
+
   return (
     <PageWrapperInstrument className="p-12 space-y-12 max-w-[1600px] mx-auto">
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-2">
           <ContainerInstrument className="flex items-center gap-2 text-primary">
-            <Activity size={16} />
-            <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em]">
+            <Activity strokeWidth={1.5} size={16} />
+            <TextInstrument as="span" className="text-[15px] font-light tracking-[0.2em]">
               <VoiceglotText translationKey="admin.visitors.badge" defaultText="Live Intelligence" />
             </TextInstrument>
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter ">
             <VoiceglotText translationKey="admin.visitors.title" defaultText="Visitor Cockpit" />
           </HeadingInstrument>
         </ContainerInstrument>
         
         <ContainerInstrument className="flex gap-4 bg-va-black text-white p-6 rounded-[24px] border border-white/5">
           <div className="flex flex-col">
-            <span className="text-[15px] font-black tracking-widest text-white/40">Live Radar</span>
-            <span className="text-3xl font-black text-primary">{visitors.filter(v => new Date(v.lastVisitAt).getTime() > Date.now() - 300000).length}</span>
+            <span className="text-[15px] font-light tracking-widest text-white/40"><VoiceglotText translationKey="auto.page.live_radar.71ada0" defaultText="Live Radar" /></span>
+            <span className="text-3xl font-light text-primary">{visitors.filter(v => new Date(v.lastVisitAt).getTime() > Date.now() - 300000).length}</span>
           </div>
           <div className="w-px h-full bg-white/10 mx-4" />
           <div className="flex flex-col">
-            <span className="text-[15px] font-black tracking-widest text-white/40">Uniek Vandaag</span>
-            <span className="text-3xl font-black">{stats?.totalToday || 0}</span>
+            <span className="text-[15px] font-light tracking-widest text-white/40"><VoiceglotText translationKey="auto.page.uniek_vandaag.abc54b" defaultText="Uniek Vandaag" /></span>
+            <span className="text-3xl font-light">{stats?.totalToday || 0}</span>
           </div>
         </ContainerInstrument>
       </SectionInstrument>
@@ -94,16 +93,16 @@ export default function LiveVisitorCockpit() {
       {/* Live Table */}
       <SectionInstrument className="bg-white border border-black/5 rounded-[40px] overflow-hidden shadow-sm">
         <div className="p-8 border-b border-black/5 flex justify-between items-center">
-          <HeadingInstrument level={2} className="text-xl font-black tracking-tight">
+          <HeadingInstrument level={2} className="text-xl font-light tracking-tight">
             <VoiceglotText translationKey="admin.visitors.table_title" defaultText="Intelligence Playlist" />
           </HeadingInstrument>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-[15px] font-black tracking-widest text-va-black/40">{visitors.length} Live</span>
+              <div className={`w-2 h-2 bg-green-500 rounded-full animate-pulse`} />
+              <span className="text-[15px] font-light tracking-widest text-va-black/40">{visitors.length} Live</span>
             </div>
             <div className="w-px h-4 bg-black/10" />
-            <span className="text-[15px] font-black tracking-widest text-va-black/20">{recentSessions.length} Recent</span>
+            <span className="text-[15px] font-light tracking-widest text-va-black/20">{recentSessions.length} Recent</span>
           </div>
         </div>
 
@@ -111,12 +110,12 @@ export default function LiveVisitorCockpit() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-va-off-white">
-                <th className="p-6 text-[15px] font-black tracking-widest text-va-black/40">Bezoeker</th>
-                <th className="p-6 text-[15px] font-black tracking-widest text-va-black/40">Status</th>
-                <th className="p-6 text-[15px] font-black tracking-widest text-va-black/40">Huidige Pagina</th>
-                <th className="p-6 text-[15px] font-black tracking-widest text-va-black/40">Duur</th>
-                <th className="p-6 text-[15px] font-black tracking-widest text-va-black/40">Events</th>
-                <th className="p-6 text-[15px] font-black tracking-widest text-va-black/40 text-right">Actie</th>
+                <th className="p-6 text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText translationKey="auto.page.bezoeker.fa9ef7" defaultText="Bezoeker" /></th>
+                <th className="p-6 text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText translationKey="auto.page.status.ec53a8" defaultText="Status" /></th>
+                <th className="p-6 text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText translationKey="auto.page.huidige_pagina.ff04e6" defaultText="Huidige pagina" /></th>
+                <th className="p-6 text-[15px] font-light tracking-widest text-va-black/40">Duur</th>
+                <th className="p-6 text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText translationKey="auto.page.events.87f9f7" defaultText="Events" /></th>
+                <th className="p-6 text-[15px] font-light tracking-widest text-va-black/40 text-right"><VoiceglotText translationKey="auto.page.actie.98b596" defaultText="Actie" /></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-black/5">
@@ -124,15 +123,15 @@ export default function LiveVisitorCockpit() {
                 <tr>
                   <td colSpan={6} className="p-20 text-center">
                     <div className="flex flex-col items-center gap-4">
-                      <Activity className="text-primary animate-spin" size={40} />
-                      <span className="text-[15px] font-bold tracking-widest text-va-black/20">Laden van Mat Radar...</span>
+                      <Activity strokeWidth={1.5} className="text-primary animate-spin" size={40} />
+                      <span className="text-[15px] font-light tracking-widest text-va-black/20"><VoiceglotText translationKey="auto.page.laden_van_mat_radar_.b71278" defaultText="Laden van radar..." /></span>
                     </div>
                   </td>
                 </tr>
               ) : visitors.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="p-20 text-center">
-                    <TextInstrument className="text-va-black/40 font-medium">Geen bezoekers op de radar.</TextInstrument>
+                    <TextInstrument className="text-va-black/40 font-light text-[15px]"><VoiceglotText translationKey="auto.page.geen_bezoekers_op_de.a7be98" defaultText="Geen bezoekers op de radar." /></TextInstrument>
                   </td>
                 </tr>
               ) : (
@@ -142,14 +141,14 @@ export default function LiveVisitorCockpit() {
                     <tr key={v.id} className="hover:bg-va-off-white transition-colors group">
                       <td className="p-6">
                         <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-[15px] ${isLive ? "bg-va-black text-white" : "bg-va-black/5 text-va-black/40"}`}>
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-light text-[15px] ${isLive ? "bg-va-black text-white" : "bg-va-black/5 text-va-black/40"}`}>
                             {v.visitorHash.substring(0, 2).toUpperCase()}
                           </div>
                           <div>
-                            <TextInstrument className="text-sm font-black text-va-black">
+                            <TextInstrument className="text-[15px] font-light text-va-black">
                               {v.companyName || 'Anonieme Bezoeker'}
                             </TextInstrument>
-                            <TextInstrument className="text-[15px] text-va-black/40 font-bold tracking-widest">
+                            <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest">
                               {v.locationCity ? `${v.locationCity}, ${v.locationCountry}` : v.visitorHash}
                             </TextInstrument>
                           </div>
@@ -159,38 +158,38 @@ export default function LiveVisitorCockpit() {
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
                             <div className={`w-1.5 h-1.5 rounded-full ${isLive ? "bg-green-500 animate-pulse" : "bg-va-black/20"}`} />
-                            <span className={`text-[15px] font-black ${isLive ? "text-green-500" : "text-va-black/20"}`}>
+                            <span className={`text-[15px] font-light ${isLive ? "text-green-500" : "text-va-black/20"}`}>
                               {isLive ? 'Live' : 'Recent'}
                             </span>
                           </div>
-                          <span className="text-[12px] font-bold text-va-black/20 tracking-widest ">{v.journeyState}</span>
+                          <span className="text-[15px] font-light text-va-black/20 tracking-widest ">{v.journeyState}</span>
                         </div>
                       </td>
                       <td className="p-6">
-                        <div className="flex items-center gap-2 text-[15px] font-bold bg-va-black/5 px-3 py-1.5 rounded-lg w-fit max-w-[200px] truncate">
-                          <Monitor size={12} className="text-va-black/20" />
+                        <div className="flex items-center gap-2 text-[15px] font-light bg-va-black/5 px-3 py-1.5 rounded-[20px] w-fit max-w-[200px] truncate">
+                          <Monitor strokeWidth={1.5} size={12} className="text-va-black/20" />
                           <span>{v.currentPage || '/'}</span>
                         </div>
                       </td>
                       <td className="p-6">
-                        <div className="flex items-center gap-2 text-[15px] font-bold">
-                          <Globe size={12} className="text-va-black/20" />
+                        <div className="flex items-center gap-2 text-[15px] font-light">
+                          <Globe strokeWidth={1.5} size={12} className="text-va-black/20" />
                           <span>{v.market}</span>
                         </div>
                       </td>
                       <td className="p-6">
                         <div className="flex flex-col gap-1">
-                          <span className="text-[13px] font-bold text-va-black/60">{v.utmSource || 'Direct'}</span>
-                          <span className="text-[11px] font-medium text-va-black/20">{v.utmMedium || '-'}</span>
+                          <span className="text-[15px] font-light text-va-black/60">{v.utmSource || 'Direct'}</span>
+                          <span className="text-[15px] font-light text-va-black/20">{v.utmMedium || '-'}</span>
                         </div>
                       </td>
                       <td className="p-6 text-right">
                         <Link 
                           href={`/admin/marketing/visitors/${v.visitorHash}`}
-                          className="inline-flex items-center gap-2 bg-va-black text-white px-4 py-2 rounded-xl text-[15px] font-black tracking-widest hover:bg-primary transition-all group-hover:scale-105"
+                          className="inline-flex items-center gap-2 bg-va-black text-white px-4 py-2 rounded-xl text-[15px] font-light tracking-widest hover:bg-primary transition-all group-hover:scale-105"
                         >
                           <Eye size={14} />
-                          <span>Details</span>
+                          <span><VoiceglotText translationKey="auto.page.details.3ec365" defaultText="Details" /></span>
                         </Link>
                       </td>
                     </tr>
@@ -206,40 +205,25 @@ export default function LiveVisitorCockpit() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <ContainerInstrument className="bg-va-black text-white p-10 rounded-[40px] relative overflow-hidden">
           <MousePointer2 className="text-primary mb-6" size={32} />
-          <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
-            Heatmap Insights
-          </HeadingInstrument>
-          <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed mb-6">
-            Meest geklikte elementen in de laatste 24 uur. Focus op de &apos;Tarieven&apos; knop bij Agency.
-          </TextInstrument>
-          <Link href="#" className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2">
-            Bekijk Heatmap <ArrowRight size={12} />
+          <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText translationKey="auto.page.heatmap_insights.66123f" defaultText="Heatmap insights" /><TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText translationKey="auto.page.meest_geklikte_eleme.7483c3" defaultText="Meest geklikte elementen in de laatste 24 uur. Focus op de &apos;Tarieven&apos; knop bij Agency." /></TextInstrument></HeadingInstrument>
+          <Link href="#" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2">
+            Bekijk Heatmap <ArrowRight strokeWidth={1.5} size={12} />
           </Link>
         </ContainerInstrument>
 
         <ContainerInstrument className="bg-white border border-black/5 p-10 rounded-[40px]">
           <Users className="text-va-black/20 mb-6" size={32} />
-          <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
-            Customer DNA
-          </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed mb-6">
-            80% van de huidige bezoekers zijn &apos;Decision Makers&apos; binnen de Agency journey.
-          </TextInstrument>
-          <Link href="/admin/users" className="text-[15px] font-black tracking-widest text-va-black/40 flex items-center gap-2">
-            User DNA Dashboard <ArrowRight size={12} />
+          <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText translationKey="auto.page.customer_dna.d578eb" defaultText="Customer DNA" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText translationKey="auto.page.80__van_de_huidige_b.6971bf" defaultText="80% van de huidige bezoekers zijn &apos;Decision Makers&apos; binnen de Agency journey." /></TextInstrument></HeadingInstrument>
+          <Link href="/admin/users" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
+            User DNA Dashboard <ArrowRight strokeWidth={1.5} size={12} />
           </Link>
         </ContainerInstrument>
 
         <ContainerInstrument className="bg-va-off-white border border-black/5 p-10 rounded-[40px]">
           <Eye className="text-va-black/20 mb-6" size={32} />
-          <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
-            Drop-off Radar
-          </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed mb-6">
-            Hoge bounce-rate op de &apos;Over Ons&apos; pagina. AI stelt voor om de CTA te verduidelijken.
-          </TextInstrument>
-          <Link href="#" className="text-[15px] font-black tracking-widest text-va-black/40 flex items-center gap-2">
-            Analyseer Flow <ArrowRight size={12} />
+          <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText translationKey="auto.page.drop_off_radar.e0c6b4" defaultText="Drop-off radar" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText translationKey="auto.page.hoge_bounce_rate_op_.61ffa3" defaultText="Hoge bounce-rate op de &apos;Over Ons&apos; pagina. AI stelt voor om de CTA te verduidelijken." /></TextInstrument></HeadingInstrument>
+          <Link href="#" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
+            Analyseer Flow <ArrowRight strokeWidth={1.5} size={12} />
           </Link>
         </ContainerInstrument>
       </div>

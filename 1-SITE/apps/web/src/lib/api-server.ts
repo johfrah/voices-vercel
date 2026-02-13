@@ -97,31 +97,40 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     console.log('✅ ACTORS FETCH SUCCESS:', { count: dbResults.length });
 
     const actorIds = dbResults.map(a => a.id);
+    const photoIds = dbResults.map(a => a.photoId).filter(Boolean);
     
-    // Fetch demos, reviews and translations in batch
+    // Fetch demos, reviews, translations and media in batch
     let demos: any[] = [];
     let dbReviews: any[] = [];
+    let mediaResults: any[] = [];
     let translationMap: Record<string, string> = {};
 
     try {
-      const [demosRes, reviewsRes, transRes] = await Promise.all([
+      const [demosRes, reviewsRes, transRes, mediaRes] = await Promise.all([
         actorIds.length > 0 
           ? db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN (${sql.join(actorIds, sql`, `)})`)
           : Promise.resolve([]),
         db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(10),
-        VoiceglotBridge.translateBatch(dbResults.map(a => a.bio || '').filter(Boolean), lang)
+        VoiceglotBridge.translateBatch(dbResults.map(a => a.bio || '').filter(Boolean), lang),
+        photoIds.length > 0
+          ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`)
+          : Promise.resolve([])
       ]);
       demos = demosRes;
       dbReviews = reviewsRes;
       translationMap = transRes;
+      mediaResults = mediaRes;
     } catch (relError) {
       console.warn('⚠️ Drizzle relation fetch failed, falling back to SDK');
-      const [demosRes, reviewsRes, transRes] = await Promise.all([
+      const [demosRes, reviewsRes, transRes, mediaRes] = await Promise.all([
         actorIds.length > 0 
           ? supabase.from('actor_demos').select('*').in('actor_id', actorIds)
           : Promise.resolve({ data: [] }),
         supabase.from('reviews').select('*').order('created_at', { ascending: false }).limit(10),
-        VoiceglotBridge.translateBatch(dbResults.map(a => a.bio || '').filter(Boolean), lang)
+        VoiceglotBridge.translateBatch(dbResults.map(a => a.bio || '').filter(Boolean), lang),
+        photoIds.length > 0
+          ? supabase.from('media').select('*').in('id', photoIds)
+          : Promise.resolve({ data: [] })
       ]);
       
       demos = (demosRes.data || []).map(d => ({ ...d, actorId: d.actor_id }));
@@ -133,10 +142,24 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         createdAt: r.created_at
       }));
       translationMap = transRes;
+      mediaResults = (mediaRes.data || []).map(m => ({ ...m, filePath: m.file_path }));
     }
 
     const mappedResults = dbResults.map((actor) => {
-      const photoUrl = actor.dropboxUrl || '';
+      // 🛡️ LOUIS: photoId (Supabase Storage) prioritized over photo_url/dropboxUrl.
+      let photoUrl = '';
+      if (actor.photoId) {
+        const mediaItem = mediaResults.find(m => m.id === actor.photoId);
+        if (mediaItem) {
+          photoUrl = mediaItem.filePath;
+        }
+      }
+      if (!photoUrl && actor.photo_url) photoUrl = actor.photo_url;
+      if (!photoUrl && actor.dropboxUrl) {
+        const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_URL || '';
+        photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${ASSET_BASE}${actor.dropboxUrl}`;
+      }
+
       const proxiedPhoto = photoUrl.startsWith('http') 
         ? photoUrl 
         : (photoUrl ? `/api/proxy?path=${encodeURIComponent(photoUrl)}` : '');
@@ -253,9 +276,14 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
         nativeLang: data.native_lang,
         voiceScore: data.voice_score,
         dropboxUrl: data.dropbox_url,
+        photoId: data.photo_id,
         priceUnpaid: data.price_unpaid,
+        priceIvr: data.price_ivr,
+        priceOnline: data.price_online,
         isAi: data.is_ai,
         aiTags: data.ai_tags,
+        website: data.website,
+        linkedin: data.linkedin,
         deliveryDaysMin: data.delivery_days_min,
         deliveryDaysMax: data.delivery_days_max,
         cutoffTime: data.cutoff_time,
@@ -268,12 +296,17 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
 
   let demos: any[] = [];
   let dbReviews: any[] = [];
+  let mediaItem: { filePath: string } | null = null;
 
   try {
-    [demos, dbReviews] = await Promise.all([
+    const [demosRes, reviewsRes, mediaRes] = await Promise.all([
       db.select().from(actorDemos).where(eq(actorDemos.actorId, actor.id)),
-      db.select().from(reviews).where(sql`${reviews.iapContext}->>'actorId' = ${actor.id.toString()}`).limit(3)
+      db.select().from(reviews).where(sql`${reviews.iapContext}->>'actorId' = ${actor.id.toString()}`).limit(3),
+      actor.photoId ? db.select().from(media).where(eq(media.id, actor.photoId)).limit(1) : Promise.resolve([])
     ]);
+    demos = demosRes;
+    dbReviews = reviewsRes;
+    mediaItem = mediaRes[0] || null;
   } catch (relError) {
     console.warn('⚠️ getActor relations Drizzle failed, falling back to SDK');
     const [demosRes, reviewsRes] = await Promise.all([
@@ -288,8 +321,26 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
       textEn: r.text_en,
       createdAt: r.created_at
     }));
+    if (actor.photoId) {
+      const { data: m } = await supabase.from('media').select('file_path').eq('id', actor.photoId).single();
+      if (m) mediaItem = { filePath: m.file_path };
+    }
   }
-  
+
+  // 🛡️ LOUIS: photoId (Supabase Storage) prioritized over dropboxUrl/legacy URLs
+  const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_URL || '';
+  let photoUrl = '';
+  if (actor.photoId && mediaItem) {
+    const fp = mediaItem.filePath;
+    photoUrl = fp.startsWith('http') ? fp : (fp ? `/api/proxy?path=${encodeURIComponent(fp)}` : '');
+  }
+  if (!photoUrl && actor.dropboxUrl) {
+    photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${ASSET_BASE}${actor.dropboxUrl}`;
+  }
+  if (!photoUrl && actor.photo_url) {
+    photoUrl = actor.photo_url.startsWith('http') ? actor.photo_url : `/api/proxy?path=${encodeURIComponent(actor.photo_url)}`;
+  }
+
   const [translatedBio] = await Promise.all([
     VoiceglotBridge.t(actor.bio || '', lang)
   ]);
@@ -302,8 +353,13 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     slug: actor.firstName.toLowerCase(),
     gender: actor.gender || '',
     native_lang: (actor.nativeLang as string | undefined) ?? undefined,
-    photo_url: actor.dropboxUrl || '',
+    photo_url: photoUrl,
+    description: actor.bio,
+    website: actor.website,
+    linkedin: actor.linkedin,
     starting_price: parseFloat(actor.priceUnpaid || '0'),
+    price_ivr: parseFloat(actor.priceIvr || actor.price_ivr || '0'),
+    price_online: parseFloat(actor.priceOnline || actor.price_online || '0'),
     voice_score: actor.voiceScore || 10,
     ai_enabled: actor.isAi || false,
     ai_tags: actor.aiTags || '',

@@ -8,10 +8,11 @@ import {
   TextInstrument, 
   HeadingInstrument 
 } from '@/components/ui/LayoutInstruments';
-import { LucideMic, LucideX, LucideChevronRight, LucideUsers, Heart } from 'lucide-react';
+import { LucideX, LucideChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 export const CastingDock = () => {
   const { state, toggleActorSelection } = useVoicesState();
@@ -24,8 +25,8 @@ export const CastingDock = () => {
   };
 
   const startCasting = () => {
-    // Navigeer naar de geconsolideerde Studio Launchpad
-    window.location.href = '/studio/launchpad';
+    // Navigeer naar de geconsolideerde Casting Launchpad
+    window.location.href = '/casting/launchpad/';
   };
 
   return (
@@ -49,7 +50,7 @@ export const CastingDock = () => {
                       {actor.photoUrl ? (
                         <Image src={actor.photoUrl} alt={actor.firstName} fill className="object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-va-black font-bold text-[15px] md:text-base">
+                        <div className="w-full h-full flex items-center justify-center text-va-black font-light text-[15px] md:text-base">
                           {actor.firstName[0]}
                         </div>
                       )}
@@ -58,12 +59,10 @@ export const CastingDock = () => {
                 ))}
               </div>
               <div className="flex flex-col min-w-0">
-                <TextInstrument className="text-white font-medium leading-none text-sm md:text-base truncate">
+                <TextInstrument className="text-white font-light leading-none text-[15px] md:text-base truncate">
                   {selectedActors.length} {selectedActors.length === 1 ? 'stem' : 'stemmen'}
                 </TextInstrument>
-                <TextInstrument className="text-white/40 text-[15px] md:text-[15px] mt-1 truncate font-light">
-                  Klaar voor jouw demo
-                </TextInstrument>
+                <TextInstrument className="text-white/40 text-[15px] md:text-[15px] mt-1 truncate font-light"><VoiceglotText translationKey="auto.castingdock.klaar_voor_jouw_demo.c40c51" defaultText="Klaar voor jouw demo" /></TextInstrument>
               </div>
             </div>
 
@@ -71,8 +70,14 @@ export const CastingDock = () => {
               onClick={startCasting}
               className="bg-primary hover:bg-primary/90 text-white px-4 md:px-6 py-3 rounded-[18px] flex items-center gap-2 whitespace-nowrap shrink-0 h-12 md:h-auto"
             >
-              <LucideMic size={16} className="md:w-[18px] md:h-[18px]" />
-              <span className="text-sm md:text-base font-bold tracking-wider">Gratis Proefopname</span>
+              <Image 
+                src="/assets/common/branding/icons/MIC.svg" 
+                alt="Mic" 
+                width={18} 
+                height={18} 
+                className="brightness-0 invert"
+              />
+              <span className="text-[15px] md:text-base font-light tracking-wider"><VoiceglotText translationKey="auto.castingdock.gratis_proefopname.5a39e6" defaultText="Gratis proefopname" /></span>
               <LucideChevronRight size={16} className="md:w-[18px] md:h-[18px]" />
             </ButtonInstrument>
           </ContainerInstrument>

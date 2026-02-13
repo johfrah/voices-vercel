@@ -171,7 +171,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               <FileText size={24} />
             </div>
             <div>
-              <h4 className="text-sm font-light tracking-tight">
+              <h4 className="text-[15px] font-light tracking-tight">
                 <VoiceglotText translationKey="checkout.admin.quote_mode" defaultText="Admin Offerte Modus" />
               </h4>
               <p className="text-[15px] font-light text-va-black/40 tracking-widest">
@@ -193,9 +193,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           <div className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
             <CheckCircle2 strokeWidth={1.5} size={20} />
           </div>
-          <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
-            <VoiceglotText translationKey="checkout.details.title" defaultText="Jouw Gegevens" />
-          </HeadingInstrument>
+          <HeadingInstrument level={3} className="text-xl font-light tracking-tight"><VoiceglotText translationKey="checkout.details.title" defaultText="Jouw Gegevens" /></HeadingInstrument>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -336,11 +334,9 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           <div className="bg-white p-8 rounded-[20px] border border-black/[0.03] shadow-aura space-y-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-                <Sparkles size={20} />
+                <Sparkles strokeWidth={1.5} size={20} />
               </div>
-              <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
-                <VoiceglotText translationKey="checkout.payment.title" defaultText="Betaalmethode" />
-              </HeadingInstrument>
+              <HeadingInstrument level={3} className="text-xl font-light tracking-tight"><VoiceglotText translationKey="checkout.payment.title" defaultText="Betaalmethode" /></HeadingInstrument>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -393,13 +389,13 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       ) : (
         <div className="p-8 bg-primary/5 rounded-[20px] border border-primary/10 flex items-center gap-6 animate-fade-in">
           <div className="w-14 h-14 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm">
-            <Sparkles size={28} />
+            <Sparkles strokeWidth={1.5} size={28} />
           </div>
           <div>
             <h4 className="text-lg font-light tracking-tight">
               <VoiceglotText translationKey="checkout.ready_to_send.title" defaultText="Klaar voor verzending" />
             </h4>
-            <p className="text-sm text-va-black/40 font-light leading-relaxed">
+            <p className="text-[15px] text-va-black/40 font-light leading-relaxed">
               <VoiceglotText 
                 translationKey="checkout.ready_to_send.desc" 
                 defaultText={`Je staat op het punt een officiële offerte te sturen naar ${formData.email}. In de volgende stap kun je de begeleidende e-mail personaliseren.`} 
@@ -441,11 +437,11 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           {isSubmitting ? (
             <><Loader2 className="animate-spin" size={24} /> <VoiceglotText translationKey="common.processing" defaultText="Verwerken..." /></>
           ) : formData.isQuote ? (
-            <><VoiceglotText translationKey="checkout.cta.quote" defaultText="Preview Offerte E-mail" /> <Send size={20} /></>
+            <><VoiceglotText translationKey="checkout.cta.quote" defaultText="Preview Offerte E-mail" /> <Send strokeWidth={1.5} size={20} /></>
           ) : (
             <>
               <VoiceglotText translationKey="checkout.cta.pay" defaultText={`Nu Betalen via ${selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1)}`} />
-              <Send size={20} className="group-hover:translate-x-1 transition-transform" />
+              <Send strokeWidth={1.5} size={20} className="group-hover:translate-x-1 transition-transform" />
             </>
           )}
         </ButtonInstrument>

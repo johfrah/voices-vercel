@@ -50,7 +50,7 @@ export const ProfitEngineWidget: React.FC = () => {
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-8">
           <div className="w-12 h-12 bg-va-black rounded-xl flex items-center justify-center text-white shadow-lg">
-            <Zap size={20} />
+            <Zap strokeWidth={1.5} size={20} />
           </div>
           <div className="text-right">
             <span className="text-[15px] font-black tracking-widest text-va-black/30">Status</span>
@@ -63,7 +63,7 @@ export const ProfitEngineWidget: React.FC = () => {
 
         <div className="space-y-6">
           <div>
-            <h3 className="text-sm font-black tracking-widest text-va-black/40 mb-1">Netto Winst (30d)</h3>
+            <h3 className="text-[15px] font-black tracking-widest text-va-black/40 mb-1">Netto Winst (30d)</h3>
             <div className="text-5xl font-black tracking-tighter text-va-black">
               {stats.profit.formatted.split(',')[0]}
             </div>
