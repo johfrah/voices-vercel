@@ -119,37 +119,47 @@ class ChrisWatchdog {
     return result;
   }
 
-  async run(targetPath: string) {
+  async run(targetPath: string): Promise<boolean> {
     console.log(`🚀 CHRIS WATCHDOG: Start audit op ${targetPath}...`);
     
     if (!fs.existsSync(targetPath)) {
       console.error(`🔴 Pad niet gevonden: ${targetPath}`);
-      return;
+      return false;
     }
+
+    let hasCriticalIssues = false;
 
     const stats = fs.statSync(targetPath);
     if (stats.isFile()) {
       const result = await this.auditFile(targetPath);
       this.report(result);
+      if (result.issues.some(i => i.severity === 'CRITICAL')) hasCriticalIssues = true;
     } else {
-      this.auditDir(targetPath);
+      hasCriticalIssues = await this.auditDir(targetPath);
     }
+
+    return !hasCriticalIssues;
   }
 
-  private auditDir(dir: string) {
+  private async auditDir(dir: string): Promise<boolean> {
     const files = fs.readdirSync(dir);
-    files.forEach(async file => {
+    let hasCriticalIssues = false;
+
+    for (const file of files) {
       const fullPath = path.join(dir, file);
       const stats = fs.statSync(fullPath);
       if (stats.isDirectory()) {
         if (!fullPath.includes('node_modules') && !fullPath.includes('.next') && !fullPath.includes('.git')) {
-          this.auditDir(fullPath);
+          const subDirHasIssues = await this.auditDir(fullPath);
+          if (subDirHasIssues) hasCriticalIssues = true;
         }
       } else if (/\.(tsx|ts|js|jsx)$/.test(file)) {
         const result = await this.auditFile(fullPath);
         this.report(result);
+        if (result.issues.some(i => i.severity === 'CRITICAL')) hasCriticalIssues = true;
       }
-    });
+    }
+    return hasCriticalIssues;
   }
 
   private report(result: AuditResult) {
@@ -220,5 +230,15 @@ if (mode === 'fix') {
     process.exit(ok ? 0 : 1);
   });
 } else {
-  watchdog.run(target).catch(console.error);
+  watchdog.run(target).then(success => {
+    if (!success) {
+      console.error('🔴 CHRIS: Kritieke fouten gevonden. Audit failed.');
+      process.exit(1);
+    }
+    console.log('✅ CHRIS: Audit geslaagd. Geen kritieke fouten.');
+    process.exit(0);
+  }).catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
 }
