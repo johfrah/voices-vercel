@@ -140,7 +140,7 @@ export default function RootLayout({
     return (
       <RootLayoutInstrument lang={market.language} className={`${raleway.className} theme-${market.theme} ${raleway.variable}`}>
         <Providers>
-          <SonicDNAHandler strokeWidth={1.5} />
+          <SonicDNAHandler />
           <PageWrapperInstrument>
             {children}
           </PageWrapperInstrument>
@@ -157,27 +157,27 @@ export default function RootLayout({
       />
       <Providers>
         <EditModeOverlay>
-          <LiquidTransitionOverlay strokeWidth={1.5} />
-          <CodyPreviewBanner strokeWidth={1.5} />
-          <VoicejarTracker strokeWidth={1.5} />
-          <GlobalNav strokeWidth={1.5} />
-          <MobileFloatingDock strokeWidth={1.5} />
-          <Analytics strokeWidth={1.5} />
-          <CommandPalette strokeWidth={1.5} />
-          <Toaster strokeWidth={1.5} position="bottom-right" />
-          <SonicDNAHandler strokeWidth={1.5} />
-          <GlobalAudioOrchestrator strokeWidth={1.5} />
+          <LiquidTransitionOverlay />
+          <CodyPreviewBanner />
+          <VoicejarTracker />
+          <GlobalNav />
+          <MobileFloatingDock />
+          <Analytics />
+          <CommandPalette />
+          <Toaster position="bottom-right" />
+          <SonicDNAHandler />
+          <GlobalAudioOrchestrator />
           <Suspense  fallback={null}>
-            <VoicyBridge strokeWidth={1.5} />
+            <VoicyBridge />
           </Suspense>
-          <VoicyChat strokeWidth={1.5} />
+          <VoicyChat />
           <PageWrapperInstrument>
             <Suspense  fallback={<LoadingScreenInstrument />}>
               {children}
             </Suspense>
           </PageWrapperInstrument>
-          <CookieBanner strokeWidth={1.5} />
-          <FooterWrapper strokeWidth={1.5} />
+          <CookieBanner />
+          <FooterWrapper />
         </EditModeOverlay>
       </Providers>
     </RootLayoutInstrument>
