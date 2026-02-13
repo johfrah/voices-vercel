@@ -90,7 +90,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tr>
                 <td width="60" style="vertical-align: top;">
-                  <img src="${headerImage || 'https://voices-vercel.vercel.app/assets/common/branding/email/headers/default-header.jpg'}" width="60" height="60" style="border-radius: 50%; object-fit: cover; border: 1px solid #eee; display: block;" />
+                  <img src="${headerImage || 'https://voices-vercel.vercel.app/assets/common/branding/founder/johfrah-avatar-be.png'}" width="60" height="60" style="border-radius: 50%; object-fit: cover; border: 1px solid #eee; display: block;" />
                 </td>
                 <td style="padding-left: 15px; vertical-align: top;">
                   <div style="font-weight: 600; font-size: 16px; color: #111; margin-bottom: 4px;">${date}</div>
@@ -165,8 +165,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     previewText: workshopName,
     journey: 'studio',
     host,
-    showSignature: false, // We gebruiken de specifieke Studio-signature hierboven
-    headerImage: headerImage || 'https://voices-vercel.vercel.app/assets/common/branding/email/headers/default-header.jpg',
+    headerImage: headerImage, // Geen default meer, zodat de gradient verschijnt
     optOutUrl
   });
 }

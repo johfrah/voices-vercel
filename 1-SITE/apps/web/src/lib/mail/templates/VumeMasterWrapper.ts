@@ -55,7 +55,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const logoHtml = `
     <tr>
       <td align="center" style="padding-bottom: 40px;">
-        <img src="https://voices-vercel.vercel.app/assets/common/branding/email/logos/email-logo.png" alt="Voices.be" width="140" style="display: block; border: 0;" />
+                  <img src="https://voices-vercel.vercel.app/assets/common/branding/logo-color.png" alt="Voices.be" width="140" style="display: block; border: 0;" />
       </td>
     </tr>
   `;
