@@ -13,10 +13,11 @@ interface WrapperOptions {
   journey?: 'agency' | 'artist' | 'portfolio' | 'studio' | 'auth';
   market?: string;
   host?: string;
+  showSignature?: boolean;
 }
 
 export function VumeMasterWrapper(content: string, options: WrapperOptions) {
-  const { title, previewText, journey = 'agency', host = 'voices.be' } = options;
+  const { title, previewText, journey = 'agency', host = 'voices.be', showSignature = true } = options;
   const market = MarketManager.getCurrentMarket(host);
   
   const dna = {
@@ -26,6 +27,20 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     studio: { bg: '#FBFBF9', card: '#FFFFFF', accent: '#FF4F00', text: '#1A1A1A', secondary: '#6B7280' },
     auth: { bg: '#FBFBF9', card: '#FFFFFF', accent: '#FF4F00', text: '#1A1A1A', secondary: '#6B7280' }
   }[journey];
+
+  const signatureHtml = showSignature ? `
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; border-top: 1px solid #F0F0F0; padding-top: 30px;">
+      <tr>
+        <td width="60" style="vertical-align: top; padding-right: 20px;">
+          <img src="https://www.voices.be/assets/common/founder/johfrah-avatar-be.png" alt="Johfrah Lefebvre" width="60" height="60" style="display: block; border-radius: 50%; border: 2px solid #FFFFFF; box-shadow: 0 4px 10px rgba(0,0,0,0.05);" />
+        </td>
+        <td style="vertical-align: middle;">
+          <p style="margin: 0; font-size: 15px; font-weight: 500; color: #1A1A1A;">Johfrah Lefebvre</p>
+          <p style="margin: 2px 0 0 0; font-size: 13px; color: #6B7280; font-weight: 300;">Founder Voices.be</p>
+        </td>
+      </tr>
+    </table>
+  ` : '';
 
   return `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -56,6 +71,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
                     <tr>
                       <td style="color: ${dna.text}; font-size: 16px; line-height: 1.8; font-weight: 300; letter-spacing: 0.01em;">
                         ${content}
+                        ${signatureHtml}
                       </td>
                     </tr>
                   </table>
