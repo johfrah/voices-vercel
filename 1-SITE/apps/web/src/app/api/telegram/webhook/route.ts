@@ -184,15 +184,24 @@ export async function POST(request: NextRequest) {
           const isAdmin = senderId !== undefined && isAllowedUser(senderId);
           const gemini = GeminiService.getInstance();
 
-          // ⚡ PRICING CONTEXT: Inject real-time pricing data from PricingEngine
+          // ⚡ PRICING CONTEXT: Inject real-time pricing data from Supabase app_configs
+          const { data: configs } = await (await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/app_configs?key=eq.pricing_config`, {
+            headers: {
+              'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+              'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`
+            }
+          })).json().then(res => ({ data: res }));
+
+          const dbPricing = configs?.[0]?.value || {};
+          
           const pricingContext = `
-ACTUELE TARIEVEN (2026):
-- Basis Video (unpaid): €239 (tot 100 woorden)
-- Telefoon/IVR: €89 (tot 5 prompts)
+ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
+- Basis Video (unpaid): €${dbPricing.unpaid_base || 239} (tot 100 woorden)
+- Telefoon/IVR: €${dbPricing.ivr_base || 89} (tot 5 prompts)
 - Commercial (paid): Vanaf €250 (afhankelijk van usage)
-- Extra woorden: €0,25 per woord (boven 100 woorden)
-- Wachtmuziek: €59 per track
-- BTW: 21% (tenzij vrijgesteld)
+- Extra woorden: €${dbPricing.bulk_word_ivr || 0.25} per woord
+- Wachtmuziek: €${dbPricing.music_mix || 59} per track
+- BTW: ${Math.round((dbPricing.vat_rate || 0.21) * 100)}%
           `;
 
           // Determine if we should use Voicy (mode or /voicy prefix)
