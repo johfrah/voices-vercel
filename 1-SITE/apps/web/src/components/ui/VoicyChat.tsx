@@ -275,12 +275,7 @@ export const VoicyChat: React.FC = () => {
   // 🧠 Smart Chips logic
   const getSmartChips = () => {
     if (isAdmin) {
-      return [
-        { label: "Edit Mode", action: "toggle_edit_mode", src: "/assets/common/branding/icons/MENU.svg" },
-        { label: "Dashboard", action: "open_dashboard", src: "/assets/common/branding/icons/INFO.svg" },
-        { label: "Mailbox", action: "open_mailbox", src: "/assets/common/branding/icons/ACCOUNT.svg" },
-        { label: "Nieuwe Pagina", action: "create_page", src: "/assets/common/branding/icons/FORWARD.svg" }
-      ].filter(chip => !clickedChips.includes(chip.label));
+      return []; // 🚀 ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
     }
 
     const chips = [];
