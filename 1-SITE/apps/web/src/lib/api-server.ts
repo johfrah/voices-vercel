@@ -1,17 +1,23 @@
-import { and, asc, desc, eq, or, sql } from "drizzle-orm";
 import { db } from "@db";
-import { actorDemos, actors, contentArticles, contentBlocks, media, reviews, translations, lessons } from "@db/schema";
-import { VoiceglotBridge } from "./voiceglot-bridge";
-import { 
-  Actor, 
-  SearchResults, 
-} from "../types";
+import { actorDemos, actors, contentArticles, contentBlocks, lessons, media, reviews } from "@db/schema";
 import { createClient } from "@supabase/supabase-js";
+import { and, asc, desc, eq, or, sql } from "drizzle-orm";
+import {
+    Actor,
+    SearchResults,
+} from "../types";
+import { VoiceglotBridge } from "./voiceglot-bridge";
 
 // 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt (DNS/Pooler issues)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false
+  }
+});
 
 /**
  * 🚀 SERVER-ONLY API (2026)

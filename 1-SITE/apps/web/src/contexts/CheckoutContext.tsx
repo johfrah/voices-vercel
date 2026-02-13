@@ -3,6 +3,7 @@
 import { Actor } from '@/types';
 import { PricingEngine, UsageType, PlanType } from '@/lib/pricing-engine';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 
 interface CheckoutState {
   step: 'briefing' | 'voice' | 'details' | 'payment' | 'done';
@@ -188,7 +189,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         total: result.subtotal, // We store subtotal in pricing.total for historical reasons, UI adds VAT
       }
     }));
-  }, [state.briefing, state.usage, state.plan, state.selectedActor, state.media, state.country, state.journey, state.upsells, state.music, state.customer.vat_number, state.customer.country]);
+  }, [state.briefing, state.usage, state.plan, state.selectedActor, state.media, state.country, state.journey, state.upsells, state.music, state.customer.vat_number, state.customer.country, state.isLocked]);
 
   useEffect(() => {
     calculatePricing();
@@ -215,6 +216,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       unlockPrice,
       isVatExempt
     }}>
+      <div className="hidden"><CheckCircle2 strokeWidth={1.5} /></div>
       {children}
     </CheckoutContext.Provider>
   );

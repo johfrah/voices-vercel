@@ -8,8 +8,10 @@ import { GeminiService } from '@/services/GeminiService';
  * ⚡ CHAT & VOICY API (2026) - CORE EDITION
  */
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const { action, ...params } = body;
+  try {
+    const body = await request.json();
+    console.log('[Voicy API] Incoming request:', { action: body.action, message: body.message });
+    const { action, ...params } = body;
 
   switch (action) {
     case 'send':
@@ -20,6 +22,10 @@ export async function POST(request: NextRequest) {
       return handleGetConversations(params);
     default:
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+  }
+  } catch (error: any) {
+    console.error('[Voicy API Error]:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
@@ -87,10 +93,12 @@ async function handleSendMessage(params: any) {
 
       if (faqResults.length > 0) {
         aiContent = (isEnglish ? faqResults[0].answerEn : faqResults[0].answerNl) || "";
+        console.log('[Voicy API] FAQ Match found:', aiContent.substring(0, 50));
       }
 
       // 2. Als FAQ niets vindt of het is een complexe vraag -> Trigger Gemini Brain
       if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic) {
+        console.log('[Voicy API] Triggering Gemini Brain...', { mode, hasPreviewLogic: !!previewLogic });
         // 🛡️ MODERATION GUARD: Blokkeer misbruik of off-topic vragen
         const forbiddenPatterns = /hack|exploit|password|admin|discount|free|gratis|korting|system|internal/i;
         if (forbiddenPatterns.test(message) && senderType !== 'admin') {
@@ -154,6 +162,7 @@ async function handleSendMessage(params: any) {
         const model = (gemini as any).genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const result = await model.generateContent(prompt);
         aiContent = result.response.text();
+        console.log('[Voicy API] Gemini Response received:', aiContent.substring(0, 50));
       }
 
       // 3. Admin-specifieke acties injecteren
@@ -218,6 +227,10 @@ async function handleSendMessage(params: any) {
     });
   } catch (error: any) {
     console.error('[Core Chat Send Error]:', error);
+    // 🛡️ CHRIS-PROTOCOL: Detect specific Gemini errors
+    if (error.message?.includes('403 Forbidden')) {
+      console.error('🚨 GEMINI AUTH ERROR: GOOGLE_API_KEY is likely invalid or missing.');
+    }
     // 🛡️ Graceful Fallback for Chat: Allow AI to respond even if DB write fails
     if (!params.conversationId) {
       return handleSendMessage({ ...params, mode: 'ask', _db_fallback: true });
