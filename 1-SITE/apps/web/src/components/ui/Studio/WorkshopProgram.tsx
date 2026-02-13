@@ -25,7 +25,7 @@ export const WorkshopProgram: React.FC<WorkshopProgramProps> = ({ dagindeling, i
             <ul className="space-y-4 list-none p-0">
               {[1, 2, 3, 4, 5].map((i) => (
                 <li key={i} className="flex gap-4">
-                  <Check strokeWidth={1.5}Circle2 className="text-primary shrink-0" size={20} />
+                  <CheckCircle2 strokeWidth={1.5} className="text-primary shrink-0" size={20} />
                   <span>
                     <VoiceglotText 
                       translationKey={`workshop.program.step${i}`} 

@@ -54,7 +54,7 @@ export default function AboutPage() {
             span="xl" 
             className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-12 flex flex-col justify-between min-h-[400px]"
             title={<VoiceglotText translationKey="about.mission.label" defaultText="Onze Missie" />}
-            icon={<User strokeWidth={1.5}s size={20} />}
+            icon={<Users size={20} />}
           >
             <ContainerInstrument className="space-y-6">
               <HeadingInstrument level={2} className="text-4xl font-black tracking-tight">
@@ -89,7 +89,7 @@ export default function AboutPage() {
                 </TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex items-center gap-3">
-                <User strokeWidth={1.5}s size={16} className="text-primary" />
+                <Users size={16} className="text-primary" />
                 <TextInstrument className="text-[15px] font-black tracking-widest">
                   <VoiceglotText translationKey="about.value3" defaultText="Vriendelijkheid" />
                 </TextInstrument>

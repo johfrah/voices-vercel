@@ -158,7 +158,7 @@ export const CommandPalette = () => {
               <span><VoiceglotText translationKey="admin.studio.calendar" defaultText="Studio Kalender" /></span>
             </Item>
             <Item onSelect={() => runCommand(() => router.push('/studio/participants'))}>
-              <User strokeWidth={1.5}s className="w-4 h-4 mr-3" />
+              <Users className="w-4 h-4 mr-3" />
               <span><VoiceglotText translationKey="admin.studio.participants" defaultText="Deelnemers Overzicht" /></span>
             </Item>
           </Command.Group>

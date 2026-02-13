@@ -55,9 +55,9 @@ interface CheckoutContextType {
   updateUsage: (usage: CheckoutState['usage']) => void;
   updatePlan: (plan: PlanType) => void;
   updateMedia: (media: CheckoutState['media']) => void;
-  updateMusic: (music: Partial<Check strokeWidth={1.5}outState['music']>) => void;
+  updateMusic: (music: Partial<CheckoutState['music']>) => void;
   selectActor: (actor: Actor | null) => void;
-  updateCustomer: (customer: Partial<Check strokeWidth={1.5}outState['customer']>) => void;
+  updateCustomer: (customer: Partial<CheckoutState['customer']>) => void;
   calculatePricing: () => void;
 }
 
@@ -101,10 +101,10 @@ const initialState: CheckoutState = {
   },
 };
 
-const CheckoutContext = createContext<Check strokeWidth={1.5}outContextType | undefined>(undefined);
+const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined);
 
 export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<Check strokeWidth={1.5}outState>(initialState);
+  const [state, setState] = useState<CheckoutState>(initialState);
 
   const setStep = (step: CheckoutState['step']) => setState(prev => ({ ...prev, step }));
   
@@ -128,12 +128,12 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   
   const updateMedia = (media: CheckoutState['media']) => setState(prev => ({ ...prev, media }));
   
-  const updateMusic = (music: Partial<Check strokeWidth={1.5}outState['music']>) => 
+  const updateMusic = (music: Partial<CheckoutState['music']>) => 
     setState(prev => ({ ...prev, music: { ...prev.music, ...music } }));
   
   const selectActor = (actor: Actor | null) => setState(prev => ({ ...prev, selectedActor: actor }));
   
-  const updateCustomer = (customer: Partial<Check strokeWidth={1.5}outState['customer']>) => 
+  const updateCustomer = (customer: Partial<CheckoutState['customer']>) => 
     setState(prev => ({ ...prev, customer: { ...prev.customer, ...customer } }));
 
   const calculatePricing = useCallback(() => {
@@ -194,7 +194,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [calculatePricing]);
 
   return (
-    <Check strokeWidth={1.5}outContext.Provider value={{ 
+    <CheckoutContext.Provider value={{ 
       state, 
       setStep, 
       setJourney,

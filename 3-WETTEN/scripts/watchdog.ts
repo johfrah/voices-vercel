@@ -213,8 +213,14 @@ class ChrisWatchdog {
     });
 
     // Fix Atomic Icon Mandate (Lucide icons strokeWidth)
-    const iconPattern = /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind)(?![^>]*strokeWidth={1\.5})([^>]*)>/g;
+    // 🛡️ CHRIS-PROTOCOL: Regex verfijnd om geen TypeScript generics (bv. useState<User>) te slopen.
+    const iconPattern = /<(Zap|Star|Check|Plus|X|ArrowRight|ChevronDown|User|Mail|Briefcase|ShieldCheck|CheckCircle2|LogOut|Sparkles|ArrowLeft|Quote|Calendar|MessageSquare|HelpCircle|Shield|Send|Unlock|Lock|Activity|Monitor|Radio|Globe|Mic2|Phone|Building2|BookOpen|Wind)(?=\s|\/>)(?![^>]*strokeWidth={1\.5})([^>]*)>/g;
     content = content.replace(iconPattern, (match, p1, p2) => {
+        // Extra check: negeer als het eruit ziet als een type (bv. <User | null>)
+        if (p2.includes('|') || p2.includes('[') || p2.trim() === '') {
+            if (!p2.includes('=') && !match.includes('/>')) return match; 
+        }
+        
         if (match.includes('strokeWidth=')) {
             // Replace existing strokeWidth
             console.log(`   ✅ [FIX] ${path.basename(filePath)}: Updated strokeWidth for ${p1}`);

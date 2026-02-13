@@ -80,7 +80,7 @@ export default function ContactPage() {
             {isSent ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in duration-500">
                 <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center">
-                  <Check strokeWidth={1.5}Circle2 size={40} />
+                  <CheckCircle2 strokeWidth={1.5} size={40} />
                 </div>
                 <HeadingInstrument level={2} className="text-3xl font-black tracking-tight">
                   <VoiceglotText translationKey="contact.success.title" defaultText="Bericht Ontvangen!" />

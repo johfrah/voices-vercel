@@ -280,7 +280,7 @@ export const MediaLibrary: React.FC = () => {
 
             {youtubeUrl.startsWith('local:') ? (
               <div className="p-4 bg-green-100 text-green-700 rounded-2xl text-[15px] font-black tracking-widest flex items-center gap-2">
-                <Check strokeWidth={1.5}Square size={14} /> Geconverteerd
+                <CheckSquare size={14} /> Geconverteerd
               </div>
             ) : (
               <a 
@@ -451,7 +451,7 @@ export const MediaLibrary: React.FC = () => {
                     ${selectedIds.includes(item.id) ? 'bg-primary text-white scale-110' : 'bg-white/80 backdrop-blur-md opacity-0 group-hover:opacity-100'}
                   `}
                 >
-                  {selectedIds.includes(item.id) ? <Check strokeWidth={1.5}Square size={14} /> : <Square size={14} className="text-va-black/20" />}
+                  {selectedIds.includes(item.id) ? <CheckSquare size={14} /> : <Square size={14} className="text-va-black/20" />}
                 </div>
 
                 {/* Preview Area */}

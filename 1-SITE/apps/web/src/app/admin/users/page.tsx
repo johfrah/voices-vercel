@@ -78,7 +78,7 @@ export default function AdminUsersPage() {
             />
           </div>
           <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
-            <User strokeWidth={1.5}Plus size={16} /> <VoiceglotText translationKey="admin.users.add" defaultText="Nieuwe Gebruiker" />
+            <UserPlus size={16} /> <VoiceglotText translationKey="admin.users.add" defaultText="Nieuwe Gebruiker" />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -133,7 +133,7 @@ export default function AdminUsersPage() {
                   <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
                     user.role === 'admin' ? 'bg-va-black text-white' : 'bg-va-off-white text-va-black/40'
                   }`}>
-                    {user.role === 'admin' ? <Shield strokeWidth={1.5} size={10} /> : <User strokeWidth={1.5}s size={10} />}
+                    {user.role === 'admin' ? <Shield strokeWidth={1.5} size={10} /> : <Users size={10} />}
                     {user.role}
                   </div>
                 </td>

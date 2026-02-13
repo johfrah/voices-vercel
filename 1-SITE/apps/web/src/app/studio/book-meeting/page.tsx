@@ -22,7 +22,7 @@ export default function BookMeetingPage() {
       <PageWrapperInstrument className="min-h-screen bg-va-off-white flex items-center justify-center px-6">
         <ContainerInstrument className="max-w-3xl mx-auto text-center space-y-8 py-20">
           <ContainerInstrument className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white mx-auto shadow-aura animate-in zoom-in duration-700">
-            <Check strokeWidth={1.5}Circle2 size={48} />
+            <CheckCircle2 strokeWidth={1.5} size={48} />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-4">
             <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">

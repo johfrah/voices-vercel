@@ -34,12 +34,18 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Mock data voor de demo fase
-  const tracks = [
-    { id: 1, actorName: 'Stem 1', status: 'ready', duration: '0:45' },
-    { id: 2, actorName: 'Stem 2', status: 'ready', duration: '0:38' },
-    { id: 3, actorName: 'Stem 3', status: 'pending', duration: '--:--' },
-  ];
+  // Sherlock: Mock data voor de demo fase met audities
+  const [tracks, setTracks] = useState([
+    { id: 1, actorName: 'Thomas', status: 'ready', duration: '0:45', auditionUrl: null },
+    { id: 2, actorName: 'Sarah', status: 'ready', duration: '0:38', auditionUrl: null },
+    { id: 3, actorName: 'Emma', status: 'pending', duration: '--:--', auditionUrl: null },
+  ]);
+
+  const handleAuditionUpload = (trackId: number, file: File) => {
+    // Sherlock: In een echte scenario uploaden we naar Supabase Storage
+    const url = URL.createObjectURL(file);
+    setTracks(prev => prev.map(t => t.id === trackId ? { ...t, status: 'ready', auditionUrl: url, duration: '0:30' } : t));
+  };
 
   const waveformCount = isMobile ? 30 : 60;
 
@@ -103,6 +109,20 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                       <TextInstrument className="text-[15px] md:text-[15px] text-va-black/20 font-mono">
                         {track.duration}
                       </TextInstrument>
+                      
+                      {/* Sherlock: Upload knop voor de stemacteur (zichtbaar als er nog geen auditie is) */}
+                      {!track.auditionUrl && track.status === 'pending' && (
+                        <label className="cursor-pointer bg-primary/10 text-primary px-4 py-2 rounded-full text-xs font-bold tracking-widest hover:bg-primary/20 transition-all">
+                          UPLOAD AUDITIE
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="audio/*" 
+                            onChange={(e) => e.target.files?.[0] && handleAuditionUpload(track.id, e.target.files[0])}
+                          />
+                        </label>
+                      )}
+
                       {track.status === 'ready' ? (
                         <button 
                           onClick={() => setActiveTrack(activeTrack === track.id ? null : track.id)}
@@ -198,9 +218,12 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                 <TextInstrument className="text-white/60 text-[15px] md:text-sm leading-relaxed font-light">
                   Zodra je de perfecte stem hebt gevonden, kun je direct de volledige productie starten.
                 </TextInstrument>
-                <ButtonInstrument className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-[15px] md:rounded-[20px] font-medium flex items-center justify-center gap-2 active:scale-95">
+                <ButtonInstrument 
+                  className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-[15px] md:rounded-[20px] font-medium flex items-center justify-center gap-2 active:scale-95"
+                  onClick={() => window.location.href = `/checkout?session=${activeTrack}`}
+                >
                   <LucideCheckCircle size={18} className="md:w-5 md:h-5" />
-                  <span>Nu boeken</span>
+                  <span>Omzetten naar bestelling</span>
                 </ButtonInstrument>
               </ContainerInstrument>
             </div>

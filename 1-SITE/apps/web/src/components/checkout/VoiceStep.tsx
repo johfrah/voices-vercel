@@ -98,7 +98,7 @@ export const VoiceStep: React.FC = () => {
                <VoiceCard voice={actor} />
               {state.selectedActor?.id === actor.id && (
                 <div className="absolute top-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg z-20 animate-in zoom-in duration-300">
-                  <Check strokeWidth={1.5}Circle2 size={20} />
+                  <CheckCircle2 strokeWidth={1.5} size={20} />
                 </div>
               )}
             </div>

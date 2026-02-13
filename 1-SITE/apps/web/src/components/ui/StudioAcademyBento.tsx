@@ -71,7 +71,7 @@ export const StudioAcademyBento = () => {
       {/* 🌟 De Coaches (Bernadette & Johfrah) */}
       <BentoCard span="md" className="bg-va-off-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
-          <User strokeWidth={1.5}s className="text-va-black/20 mb-4" size={24} />
+          <Users className="text-va-black/20 mb-4" size={24} />
           <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-2 text-va-black">
             <VoiceglotText translationKey="studio.coaches.title" defaultText="Topcoaches" />
           </HeadingInstrument>

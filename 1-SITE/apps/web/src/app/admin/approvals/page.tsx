@@ -117,7 +117,7 @@ export default function AdminApprovalsPage() {
                   <div className="space-y-2">
                     {item.isValueSensitive && (
                       <div className="flex items-center gap-2 p-2 bg-red-500/5 border border-red-500/10 rounded-lg">
-                        <Shield strokeWidth={1.5}Alert size={12} className="text-red-500" />
+                        <ShieldAlert size={12} className="text-red-500" />
                         <span className="text-[15px] font-black text-red-500 tracking-widest">Waarde-Alarm (Korting)</span>
                       </div>
                     )}

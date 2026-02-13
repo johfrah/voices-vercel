@@ -55,7 +55,7 @@ async function ParticipantsContent() {
       <BentoGrid>
         {/* Stats Summary */}
         <BentoCard span="sm" className="bg-va-black text-white p-8">
-          <User strokeWidth={1.5}s className="text-primary mb-6" size={32} />
+          <Users className="text-primary mb-6" size={32} />
           <ContainerInstrument className="text-4xl font-black tracking-tighter mb-2">{participants.length}</ContainerInstrument>
           <TextInstrument className="text-[15px] font-black tracking-widest text-white/40">
             <VoiceglotText translationKey="studio.participants.total_label" defaultText="Totaal" />

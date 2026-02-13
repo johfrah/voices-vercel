@@ -45,11 +45,11 @@ export const WorkshopPlanningInstrument: React.FC<WorkshopPlanningInstrumentProp
               <VoiceglotText translationKey="order.workshop.details" defaultText="Details" />
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Check strokeWidth={1.5}Circle2 className="w-4 h-4 text-emerald-500" />
+              <CheckCircle2 strokeWidth={1.5} className="w-4 h-4 text-emerald-500" />
               <span className="font-medium"><VoiceglotText translationKey="order.workshop.age" defaultText="Leeftijd:" /></span> {age || 'N/A'}
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Check strokeWidth={1.5}Circle2 className="w-4 h-4 text-emerald-500" />
+              <CheckCircle2 strokeWidth={1.5} className="w-4 h-4 text-emerald-500" />
               <span className="font-medium"><VoiceglotText translationKey="order.workshop.profession" defaultText="Beroep:" /></span> {profession || 'N/A'}
             </div>
           </div>

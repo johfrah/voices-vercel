@@ -147,7 +147,7 @@ export default function AdminDatabasePage() {
       {/* Warning */}
       <ContainerInstrument className="p-8 bg-red-500/5 border border-red-500/10 rounded-[32px] flex items-center gap-6">
         <div className="w-16 h-16 bg-red-500 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-red-500/20">
-          <Shield strokeWidth={1.5}Alert size={32} />
+          <ShieldAlert size={32} />
         </div>
         <div className="space-y-1">
           <HeadingInstrument level={4} className="text-red-500 font-black tracking-tight">NUCLEAR WARNING</HeadingInstrument>

@@ -175,7 +175,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       <div className="bg-white p-8 rounded-[20px] border border-black/[0.03] shadow-aura space-y-6">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-            <Check strokeWidth={1.5}Circle2 size={20} />
+            <CheckCircle2 strokeWidth={1.5} size={20} />
           </div>
           <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
             <VoiceglotText translationKey="checkout.details.title" defaultText="Jouw Gegevens" />
@@ -251,7 +251,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                    <span className="text-[15px] font-light tracking-widest">
                      <VoiceglotText translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" />
                    </span>
-                   <Check strokeWidth={1.5}Circle2 size={18} />
+                   <CheckCircle2 strokeWidth={1.5} size={18} />
                  </div>
                ) : vatStatus.valid === false ? (
                  <div className="flex items-center gap-2 text-red-500 animate-shake">

@@ -233,10 +233,10 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           </div>
           <div className="text-right">
             <div className="flex items-center gap-2 text-[15px] font-bold text-green-500 tracking-widest mb-1">
-              <Check strokeWidth={1.5}Circle2 size={12} /> <VoiceglotText translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
+              <CheckCircle2 strokeWidth={1.5} size={12} /> <VoiceglotText translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
             </div>
             <div className="flex items-center gap-2 text-[15px] font-bold text-green-500 tracking-widest">
-              <Check strokeWidth={1.5}Circle2 size={12} /> <VoiceglotText translationKey="studio.booking.certificate" defaultText="Certificaat" />
+              <CheckCircle2 strokeWidth={1.5} size={12} /> <VoiceglotText translationKey="studio.booking.certificate" defaultText="Certificaat" />
             </div>
           </div>
         </div>

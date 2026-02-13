@@ -246,7 +246,7 @@ export default function AdminDashboard() {
         <BentoCard span="lg" className="bg-white border border-black/5 p-12 h-[400px] flex flex-col justify-between group hover:border-primary/20 transition-all">
           <ContainerInstrument className="flex justify-between items-start">
             <ContainerInstrument>
-              <User strokeWidth={1.5}s className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
+              <Users className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
               <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter mb-4">
                 <VoiceglotText translationKey="admin.users.title" defaultText="User DNA" />
               </HeadingInstrument>

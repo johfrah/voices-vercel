@@ -27,7 +27,7 @@ export default function MailboxPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [activeFolder, setActiveFolder] = useState('INBOX');
   const [activeAccount, setActiveAccount] = useState('johfrah@voices.be');
-  const [activeTab, setActiveTab] = useState<Mail strokeWidth={1.5}boxTab>('inbox');
+  const [activeTab, setActiveTab] = useState<MailboxTab>('inbox');
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -745,7 +745,7 @@ export default function MailboxPage() {
                               <ContainerInstrument className="flex justify-between items-start mb-4">
                                 <ContainerInstrument className="flex items-center gap-3">
                                   <ContainerInstrument className="w-10 h-10 bg-primary/5 text-primary rounded-[10px] flex items-center justify-center">
-                                    <MessageSquare strokeWidth={1.5}Quote size={20} />
+                                    <MessageSquareQuote size={20} />
                                   </ContainerInstrument>
                                   <ContainerInstrument>
                                     <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40">

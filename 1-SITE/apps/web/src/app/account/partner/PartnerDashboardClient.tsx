@@ -32,7 +32,7 @@ export default function PartnerDashboardClient() {
 
   const stats = [
     { label: 'Actieve Projecten', value: '12', icon: <Briefcase strokeWidth={1.5} size={20} />, trend: '+2' },
-    { label: 'Totaal Bereik', value: '45.2k', icon: <User strokeWidth={1.5}s size={20} />, trend: '+12%' },
+    { label: 'Totaal Bereik', value: '45.2k', icon: <Users size={20} />, trend: '+12%' },
     { label: 'Conversie', value: '3.8%', icon: <TrendingUp size={20} />, trend: '+0.4%' },
     { label: 'Inkomsten (30d)', value: '€ 2.450', icon: <BarChart3 size={20} />, trend: '+15%' },
   ];

@@ -635,11 +635,11 @@ function JohfraiContent() {
                 </p>
               </div>
               <ul className="space-y-3 flex-1">
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.basic.feat1" defaultText="500 woorden / maand" /></li>
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.basic.feat2" defaultText="Jaarbudget (6.000 w.)" /></li>
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.basic.feat3" defaultText="Vlaams (NL-BE)" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.basic.feat1" defaultText="500 woorden / maand" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.basic.feat2" defaultText="Jaarbudget (6.000 w.)" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.basic.feat3" defaultText="Vlaams (NL-BE)" /></li>
                 <li className="flex items-center gap-2 text-[15px] font-medium text-va-black/30"><X strokeWidth={1.5} size={14} /> <VoiceglotText translationKey="johfrai.pricing.basic.feat4" defaultText="Geen FR/EN" /></li>
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.basic.feat5" defaultText="Telefonie (8kHz)" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.basic.feat5" defaultText="Telefonie (8kHz)" /></li>
               </ul>
               <button 
                 onClick={() => handleCheckout('basic')}
@@ -665,10 +665,10 @@ function JohfraiContent() {
               </div>
               <ul className="space-y-3 flex-1 text-white">
                 <li className="flex items-center gap-2 text-[15px] font-medium"><Zap strokeWidth={1.5} size={14} className="text-primary" fill="currentColor" /> <VoiceglotText translationKey="johfrai.pricing.pro.feat1" defaultText="1.500 woorden / maand" /></li>
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-primary" /> <VoiceglotText translationKey="johfrai.pricing.pro.feat2" defaultText="Jaarbudget (18.000 w.)" /></li>
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-primary" /> <VoiceglotText translationKey="johfrai.pricing.pro.feat3" defaultText="Vlaams + FR + EN" /></li>
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-primary" /> <VoiceglotText translationKey="johfrai.pricing.pro.feat4" defaultText="Muziekmix inbegrepen" /></li>
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-primary" /> <VoiceglotText translationKey="johfrai.pricing.pro.feat5" defaultText="HD Video (48kHz)" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-primary" /> <VoiceglotText translationKey="johfrai.pricing.pro.feat2" defaultText="Jaarbudget (18.000 w.)" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-primary" /> <VoiceglotText translationKey="johfrai.pricing.pro.feat3" defaultText="Vlaams + FR + EN" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-primary" /> <VoiceglotText translationKey="johfrai.pricing.pro.feat4" defaultText="Muziekmix inbegrepen" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-primary" /> <VoiceglotText translationKey="johfrai.pricing.pro.feat5" defaultText="HD Video (48kHz)" /></li>
                 <li className="flex items-center gap-2 text-[15px] font-medium"><ShieldCheck strokeWidth={1.5} size={14} className="text-primary" /> <VoiceglotText translationKey="johfrai.pricing.pro.feat6" defaultText="1× per kwartaal Menselijke Fix" /></li>
               </ul>
               <button 
@@ -691,10 +691,10 @@ function JohfraiContent() {
                 </p>
               </div>
               <ul className="space-y-3 flex-1">
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.studio.feat1" defaultText="5.000 woorden / maand" /></li>
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.studio.feat2" defaultText="Jaarbudget (60.000 w.)" /></li>
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.studio.feat3" defaultText="Volume/Agency gebruik" /></li>
-                <li className="flex items-center gap-2 text-[15px] font-medium"><Check strokeWidth={1.5}Circle2 size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.studio.feat4" defaultText="Custom Dictionary (Studio)" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.studio.feat1" defaultText="5.000 woorden / maand" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.studio.feat2" defaultText="Jaarbudget (60.000 w.)" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.studio.feat3" defaultText="Volume/Agency gebruik" /></li>
+                <li className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.studio.feat4" defaultText="Custom Dictionary (Studio)" /></li>
                 <li className="flex items-center gap-2 text-[15px] font-medium"><ShieldCheck strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText translationKey="johfrai.pricing.studio.feat5" defaultText="1× per maand Menselijke Fix" /></li>
               </ul>
               <button 

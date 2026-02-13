@@ -293,7 +293,7 @@ export const MobileCheckoutSheet: React.FC = () => {
               className="py-12 text-center space-y-6"
             >
               <div className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check strokeWidth={1.5}Circle2 size={48} />
+                <CheckCircle2 strokeWidth={1.5} size={48} />
               </div>
               <h2 className="text-4xl font-black tracking-tighter">
                 <VoiceglotText translationKey="checkout.mobile.success_title" defaultText="Bestelling Gelukt!" />

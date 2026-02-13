@@ -525,19 +525,19 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
             </HeadingInstrument>
             <ContainerInstrument as="ul" className="space-y-4 text-[15px] font-medium">
               <ContainerInstrument as="li" className="flex gap-3">
-                <Check strokeWidth={1.5}Circle2 size={16} className="shrink-0 text-white" />
+                <CheckCircle2 strokeWidth={1.5} size={16} className="shrink-0 text-white" />
                 <TextInstrument as="span">
                   <VoiceglotText translationKey="academy.lesson.briefing_1" defaultText="Gebruik oortjes of een koptelefoon." />
                 </TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument as="li" className="flex gap-3">
-                <Check strokeWidth={1.5}Circle2 size={16} className="shrink-0 text-white" />
+                <CheckCircle2 strokeWidth={1.5} size={16} className="shrink-0 text-white" />
                 <TextInstrument as="span">
                   <VoiceglotText translationKey="academy.lesson.briefing_2" defaultText="Zet je camera aan (optioneel)." />
                 </TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument as="li" className="flex gap-3">
-                <Check strokeWidth={1.5}Circle2 size={16} className="shrink-0 text-white" />
+                <CheckCircle2 strokeWidth={1.5} size={16} className="shrink-0 text-white" />
                 <TextInstrument as="span">
                   <VoiceglotText translationKey="academy.lesson.briefing_3" defaultText="Geef browser toegang tot microfoon." />
                 </TextInstrument>

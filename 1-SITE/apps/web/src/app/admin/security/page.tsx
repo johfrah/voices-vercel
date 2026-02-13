@@ -76,7 +76,7 @@ export default function AdminSecurityPage() {
               </TextInstrument>
             </div>
             <div className={`p-4 rounded-2xl ${isMfaActive ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-              {isMfaActive ? <ShieldCheck strokeWidth={1.5} size={32} /> : <Shield strokeWidth={1.5}Alert size={32} />}
+              {isMfaActive ? <ShieldCheck strokeWidth={1.5} size={32} /> : <ShieldAlert size={32} />}
             </div>
           </div>
 
@@ -147,8 +147,8 @@ export default function AdminSecurityPage() {
         </div>
         <div className="space-y-2">
           {[
-            { action: 'Admin Login', time: 'Zojuist', status: 'Success', icon: <Check strokeWidth={1.5}Circle2 className="text-green-500" size={12} /> },
-            { action: 'Mailbox Sync', time: '10 min geleden', status: 'Success', icon: <Check strokeWidth={1.5}Circle2 className="text-green-500" size={12} /> },
+            { action: 'Admin Login', time: 'Zojuist', status: 'Success', icon: <CheckCircle2 strokeWidth={1.5} className="text-green-500" size={12} /> },
+            { action: 'Mailbox Sync', time: '10 min geleden', status: 'Success', icon: <CheckCircle2 strokeWidth={1.5} className="text-green-500" size={12} /> },
             { action: 'Database Access', time: '1 uur geleden', status: 'MFA Verified', icon: <ShieldCheck strokeWidth={1.5} className="text-primary" size={12} /> },
           ].map((log, i) => (
             <div key={i} className="flex items-center justify-between p-4 bg-va-off-white/50 rounded-2xl border border-transparent hover:border-black/5 transition-all">

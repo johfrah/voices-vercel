@@ -133,7 +133,7 @@ export default function VoiceManagerPage() {
                 actor.status === 'live' ? 'bg-green-500/10 text-green-600' : 'bg-yellow-500/10 text-yellow-600'
               }`}
             >
-              {actor.status === 'live' ? <Check strokeWidth={1.5}Circle2 size={14} /> : <Clock size={14} />}
+              {actor.status === 'live' ? <CheckCircle2 strokeWidth={1.5} size={14} /> : <Clock size={14} />}
               <TextInstrument as="span" className="text-[15px] font-black tracking-widest">{actor.status}</TextInstrument>
             </ContainerInstrument>
 

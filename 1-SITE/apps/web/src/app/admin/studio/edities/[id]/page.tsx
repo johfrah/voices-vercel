@@ -49,7 +49,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
         <BentoCard span="lg" className="bg-white shadow-aura border border-black/5 overflow-hidden">
           <div className="p-8 border-b border-black/5 bg-va-off-white/50 flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <User strokeWidth={1.5}s size={20} className="text-primary" />
+              <Users size={20} className="text-primary" />
               <span className="text-sm font-black tracking-tight">
                 {participants.length} Deelnemers
               </span>
@@ -81,7 +81,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                   <div className="flex items-center gap-4">
                     {p.dropboxUrl ? (
                       <div className="flex items-center gap-2 text-green-500 text-[15px] font-black tracking-widest">
-                        <Check strokeWidth={1.5}Circle2 size={14} /> AUDIO LIVE
+                        <CheckCircle2 strokeWidth={1.5} size={14} /> AUDIO LIVE
                       </div>
                     ) : (
                       <ButtonInstrument className="flex items-center gap-2 px-4 py-3 bg-va-off-white border border-black/5 text-[15px] font-black tracking-widest rounded-xl hover:border-primary transition-all">

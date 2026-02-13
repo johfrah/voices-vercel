@@ -149,7 +149,7 @@ export default async function ActorAssignmentCockpit() {
                     "px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest flex items-center gap-2",
                     item.deliveryStatus === 'approved' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
                   )}>
-                    {item.deliveryStatus === 'approved' ? <Check strokeWidth={1.5}Circle2 size={12} /> : <Clock size={12} />}
+                    {item.deliveryStatus === 'approved' ? <CheckCircle2 strokeWidth={1.5} size={12} /> : <Clock size={12} />}
                     <VoiceglotText translationKey={`common.status.${item.deliveryStatus}`} defaultText={item.deliveryStatus || ''} />
                   </div>
                   {item.isOverdue && (

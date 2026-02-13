@@ -102,7 +102,7 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
 
   const widgets: BuilderWidget[] = [
     { type: 'text', label: 'Tekst Blok', icon: <Type size={18} />, description: 'Voiceglot-ready tekst' },
-    { type: 'actor-feed', label: 'Actor Feed', icon: <User strokeWidth={1.5}s size={18} />, description: 'Live stemmen lijst' },
+    { type: 'actor-feed', label: 'Actor Feed', icon: <Users size={18} />, description: 'Live stemmen lijst' },
     { type: 'video', label: 'Video Focus', icon: <Video size={18} />, description: 'Bento video speler' },
     { type: 'audio', label: 'Audio Demo', icon: <Music size={18} />, description: 'Sonic DNA player' },
     { type: 'cta', label: 'Call to Action', icon: <MousePointer2 size={18} />, description: 'Conversie knop' },

@@ -53,7 +53,7 @@ export default function SuccessPageClient() {
 
       <ContainerInstrument className="max-w-2xl text-center space-y-8 relative z-10">
         <ContainerInstrument className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto animate-in zoom-in duration-700">
-          <Check strokeWidth={1.5}Circle2 size={48} />
+          <CheckCircle2 strokeWidth={1.5} size={48} />
         </ContainerInstrument>
         
         <ContainerInstrument className="space-y-2">

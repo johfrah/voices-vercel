@@ -72,7 +72,7 @@ export const WorkshopInterestForm: React.FC = () => {
     return (
       <div className="max-w-xl mx-auto text-center space-y-8 py-20">
         <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
-          <Check strokeWidth={1.5}Circle2 size={40} />
+          <CheckCircle2 strokeWidth={1.5} size={40} />
         </div>
         <HeadingInstrument level={2} className="text-4xl font-black tracking-tighter">
           <VoiceglotText translationKey="workshop.interest.success.title" defaultText="Bedankt!" />
@@ -125,7 +125,7 @@ export const WorkshopInterestForm: React.FC = () => {
                       ? "bg-primary border-primary"
                       : "border-black/10 group-hover:border-primary/30"
                   )}>
-                    {selectedWorkshops.includes(w.id) && <Check strokeWidth={1.5}Circle2 size={14} className="text-white" />}
+                    {selectedWorkshops.includes(w.id) && <CheckCircle2 strokeWidth={1.5} size={14} className="text-white" />}
                   </div>
                 </button>
               ))}

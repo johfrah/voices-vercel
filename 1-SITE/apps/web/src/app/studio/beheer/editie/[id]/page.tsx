@@ -54,7 +54,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
         <BentoCard span="lg" className="bg-white shadow-aura border border-black/5 overflow-hidden">
           <div className="p-8 border-b border-black/5 bg-va-off-white/50 flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <User strokeWidth={1.5}s size={20} className="text-primary" />
+              <Users size={20} className="text-primary" />
               <span className="text-sm font-black tracking-tight">
                 {participants.length} Deelnemers bevestigd
               </span>

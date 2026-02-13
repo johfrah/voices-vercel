@@ -73,7 +73,7 @@ export default function CheckoutPageClient() {
         <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Form Area */}
           <ContainerInstrument className="lg:col-span-7">
-            <Check strokeWidth={1.5}outForm />
+            <CheckoutForm />
           </ContainerInstrument>
 
           {/* Summary Area */}

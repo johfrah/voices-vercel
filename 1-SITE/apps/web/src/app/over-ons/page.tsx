@@ -89,7 +89,7 @@ export default function AboutPage() {
             className="bg-va-off-white p-12 flex flex-col md:flex-row items-center gap-12"
           >
             <ContainerInstrument className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <User strokeWidth={1.5}s size={32} className="text-primary" />
+              <Users size={32} className="text-primary" />
             </ContainerInstrument>
             <ContainerInstrument className="space-y-4">
               <HeadingInstrument level={2} className="text-3xl font-black tracking-tight">

@@ -228,7 +228,7 @@ export const ZeroLossCheckoutInstrument = ({
             "Beveiligde betaling via Mollie"
           ].map((usp, i) => (
             <ContainerInstrument key={i} className="flex items-center gap-3 text-[15px] font-medium tracking-tight text-va-black/30">
-              <Check strokeWidth={1.5}Circle2 size={14} className="text-primary" />
+              <CheckCircle2 strokeWidth={1.5} size={14} className="text-primary" />
               {usp}
             </ContainerInstrument>
           ))}

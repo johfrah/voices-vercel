@@ -85,7 +85,7 @@ export const AgencyFilterSheet: React.FC<{
                 {/* Gender Section */}
                 <section className="space-y-4">
                   <div className="flex items-center gap-2 text-va-black/40">
-                    <User strokeWidth={1.5}s size={14} />
+                    <Users size={14} />
                     <h3 className="text-[15px] font-black tracking-widest">Geslacht</h3>
                   </div>
                   <div className="grid grid-cols-2 gap-3">

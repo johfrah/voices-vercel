@@ -167,11 +167,11 @@ export default function StudioReviewsPage() {
             <div className="mt-8 flex gap-2">
               {review.status === 'pending' && (
                 <ButtonInstrument className="va-btn-pro !py-3 flex-1">
-                  <Check strokeWidth={1.5}Circle size={14} /> <VoiceglotText translationKey="admin.reviews.action.approve" defaultText="Goedkeuren" />
+                  <CheckCircle size={14} /> <VoiceglotText translationKey="admin.reviews.action.approve" defaultText="Goedkeuren" />
                 </ButtonInstrument>
               )}
               <ButtonInstrument className="va-btn-secondary !py-3 !px-4 !bg-va-off-white !text-va-black/20 hover:!text-red-500">
-                <X strokeWidth={1.5}Circle size={14} />
+                <XCircle size={14} />
               </ButtonInstrument>
             </div>
           </BentoCard>

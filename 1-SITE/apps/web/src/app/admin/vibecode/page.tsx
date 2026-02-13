@@ -371,7 +371,7 @@ export async function onBeforeCheckout(context) {
       {/* Warning */}
       <ContainerInstrument className="p-8 bg-va-black text-white rounded-[32px] flex items-center gap-6">
         <div className="w-16 h-16 bg-primary text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
-          <Shield strokeWidth={1.5}Alert size={32} />
+          <ShieldAlert size={32} />
         </div>
         <div className="space-y-1">
           <HeadingInstrument level={4} className="text-primary font-black tracking-tight">

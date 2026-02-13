@@ -89,7 +89,7 @@ export default async function InstructorDashboardPage() {
 
         <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>
-            <User strokeWidth={1.5}s className="text-primary mb-6" size={24} />
+            <Users className="text-primary mb-6" size={24} />
             <TextInstrument className="va-text-[15px] text-black/30 font-light">
               <VoiceglotText translationKey="studio.beheer.stats.capacity" defaultText="Totale Capaciteit" />
             </TextInstrument>

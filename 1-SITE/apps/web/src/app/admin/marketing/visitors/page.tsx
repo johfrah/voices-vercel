@@ -218,7 +218,7 @@ export default function LiveVisitorCockpit() {
         </ContainerInstrument>
 
         <ContainerInstrument className="bg-white border border-black/5 p-10 rounded-[40px]">
-          <User strokeWidth={1.5}s className="text-va-black/20 mb-6" size={32} />
+          <Users className="text-va-black/20 mb-6" size={32} />
           <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-4">
             Customer DNA
           </HeadingInstrument>

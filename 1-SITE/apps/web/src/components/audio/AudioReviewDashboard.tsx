@@ -154,7 +154,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
         </div>
 
         <button className="mt-auto w-full py-4 bg-primary text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-          <Check strokeWidth={1.5}Circle2 size={18} /> <VoiceglotText translationKey="common.approve" defaultText="Goedkeuren" />
+          <CheckCircle2 strokeWidth={1.5} size={18} /> <VoiceglotText translationKey="common.approve" defaultText="Goedkeuren" />
         </button>
       </div>
 

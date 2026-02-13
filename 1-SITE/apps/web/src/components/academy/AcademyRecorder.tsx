@@ -272,7 +272,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
               className="va-btn-pro !rounded-full !px-12 flex items-center gap-3"
               data-voices-sonic-dna="click-premium"
             >
-              <Check strokeWidth={1.5}Circle2 size={20} /> 
+              <CheckCircle2 strokeWidth={1.5} size={20} /> 
               <VoiceglotText translationKey="academy.recorder.submit" defaultText="INLEVEREN VOOR FEEDBACK" />
             </button>
           </>

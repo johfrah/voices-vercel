@@ -80,7 +80,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
       <ul className="space-y-3 mb-8">
         {config.features.map((feature, i) => (
           <li key={i} className="flex items-center gap-2 text-[15px] font-medium text-va-black/60">
-            <Check strokeWidth={1.5}Circle2 size={14} className="text-green-500 shrink-0" />
+            <CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500 shrink-0" />
             {feature}
           </li>
         ))}
