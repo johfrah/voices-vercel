@@ -4,10 +4,11 @@
 
 ---
 
-## 1. 🧘 HET MANTRA: "NEXT-ONLY, DATA-BACKEND, TONE-OF-VOICE"
+## 1. 🧘 HET MANTRA: "NEXT-ONLY, DATA-BACKEND, SCHEMA-FIRST"
 We bouwen geen pagina's meer in PHP; we instrueren de **Voices Engine** via een headless data-backend. De UI is een intelligent instrument, geen statische weergave.
 
 - **Next.js Mandaat:** De browser-ervaring wordt uitsluitend gebouwd in Next.js (App Router). PHP is verboden voor nieuwe UI-pixels.
+- **Schema-First:** Elke pagina is een entiteit in de Knowledge Graph. JSON-LD is verplicht voor alle detailpagina's.
 - **Native Journey Architectuur:** Elke journey (Agency, Studio, Academy, etc.) is een native onderdeel van het ecosysteem.
 - **TypeScript-First:** Elke regel frontend code MOET in TypeScript zijn voor 100% data-integriteit.
 - **Tone of Voice Fysica:** Elke interface MOET voldoen aan de `documentation/beautyinspiration.md` (Spatial Growth, Liquid Gradients, Sonic DNA).
