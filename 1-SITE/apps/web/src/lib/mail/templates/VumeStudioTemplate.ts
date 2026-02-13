@@ -45,7 +45,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     description = 'In deze workshop leer je de basis van voice-overs inspreken: van stemopwarming tot tekstbegrip en intonatie en spreken in de microfoon.',
     learningPoints = 'Tijdens deze praktijkgerichte workshop werk je intensief met tekst en microfoon. Je doet niet alleen nieuwe vaardigheden op, maar gaat ook naar huis met een hoogwaardige opname.',
     schedule = '09u45: Aankomst\n10u00: Kennismaking\n10u15: Workshop deel 1\n13u30: Lunch\n14u15: Workshop deel 2\n17u00: Einde',
-    videoThumbnail = 'https://voices-vercel.vercel.app/assets/studio/workshops/headers/workshop-basic.png',
+    videoThumbnail = 'https://voices-vercel.vercel.app/assets/studio/common/branding/VSTUDIO.webp',
     videoUrl = 'https://www.voices.be/studio/',
     aftermovieText = 'Ontdek hoe deelnemers hun stem leren inzetten om teksten echt te laten leven.',
     optOutToken,
@@ -90,7 +90,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tr>
                 <td width="60" style="vertical-align: top;">
-                  <img src="${headerImage || 'https://voices-vercel.vercel.app/assets/studio/workshops/headers/workshop-basic.png'}" width="60" height="60" style="border-radius: 50%; object-fit: cover; border: 1px solid #eee; display: block;" />
+                  <img src="${headerImage || 'https://voices-vercel.vercel.app/assets/studio/common/branding/VSTUDIO.webp'}" width="60" height="60" style="border-radius: 50%; object-fit: cover; border: 1px solid #eee; display: block;" />
                 </td>
                 <td style="padding-left: 15px; vertical-align: top;">
                   <div style="font-weight: 600; font-size: 16px; color: #111; margin-bottom: 4px;">${date}</div>
@@ -165,7 +165,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     previewText: workshopName,
     journey: 'studio',
     host,
-    headerImage: headerImage || 'https://voices-vercel.vercel.app/assets/studio/workshops/headers/workshop-basic.png',
+    headerImage: headerImage || 'https://voices-vercel.vercel.app/assets/studio/common/branding/VSTUDIO.webp',
     optOutUrl
   });
 }
