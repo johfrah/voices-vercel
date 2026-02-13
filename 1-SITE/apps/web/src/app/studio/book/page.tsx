@@ -78,7 +78,7 @@ function BookingContent() {
 export default function BookingPage() {
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20">
-      <Suspense fallback={<div className="animate-pulse text-va-black/20 font-black tracking-widest text-center py-40"><VoiceglotText translationKey="auto.page.laden___.cb4395" defaultText="Laden..." /></div>}>
+      <Suspense fallback={<ContainerInstrument className="animate-pulse text-va-black/20 font-black tracking-widest text-center py-40"><VoiceglotText translationKey="auto.page.laden___.cb4395" defaultText="Laden..." /></ContainerInstrument>}>
         <BookingContent />
       </Suspense>
     </PageWrapperInstrument>

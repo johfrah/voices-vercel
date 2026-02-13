@@ -74,9 +74,9 @@ export default function NotFound() {
             <ContainerInstrument className="flex items-center gap-2 mb-8 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest w-fit">
               <Sparkles strokeWidth={1.5} size={12} /><VoiceglotText translationKey="auto.not_found.voicy_ghost_content_.432daf" defaultText="Voicy Ghost Content (Live Generated)" />
             </ContainerInstrument>
-            <div className="prose prose-va max-w-none">
+            <ContainerInstrument className="prose prose-va max-w-none">
               <div dangerouslySetInnerHTML={{ __html: ghostContent.replace(/\n/g, '<br/>') }} />
-            </div>
+            </ContainerInstrument>
             <Link href="/agency" className="va-btn-pro mt-12 inline-block"><VoiceglotText translationKey="auto.not_found.bekijk_onze_stemmen.a6c827" defaultText="Bekijk onze stemmen" /></Link>
           </ContainerInstrument>
         ) : (

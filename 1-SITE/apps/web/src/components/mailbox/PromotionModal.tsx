@@ -50,17 +50,17 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-va-black/40 backdrop-blur-sm">
+    <ContainerInstrument className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-va-black/40 backdrop-blur-sm">
       <ContainerInstrument className="w-full max-w-md bg-white rounded-[32px] shadow-2xl overflow-hidden border border-gray-100">
-        <div className="p-8">
-          <div className="flex justify-between items-start mb-6">
-            <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center">
+        <ContainerInstrument className="p-8">
+          <ContainerInstrument className="flex justify-between items-start mb-6">
+            <ContainerInstrument className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center">
               <Rocket size={24} />
-            </div>
+            </ContainerInstrument>
             <ButtonInstrument onClick={onClose} className="p-2 hover:bg-gray-50 rounded-xl transition-colors">
               <X strokeWidth={1.5} size={20} className="text-gray-400" />
             </ButtonInstrument>
-          </div>
+          </ContainerInstrument>
 
           <HeadingInstrument level={3} className="text-2xl font-black tracking-tight text-gray-900 mb-2">
             Promoot naar Profiel
@@ -70,25 +70,25 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
           </TextInstrument>
 
           {isSuccess ? (
-            <div className="py-12 text-center space-y-4">
-              <div className="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto animate-bounce">
+            <ContainerInstrument className="py-12 text-center space-y-4">
+              <ContainerInstrument className="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto animate-bounce">
                 <Check strokeWidth={1.5} size={32} />
-              </div>
-              <p className="font-bold text-green-600">Succesvol gepromoveerd!</p>
-            </div>
+              </ContainerInstrument>
+              <TextInstrument className="font-bold text-green-600">Succesvol gepromoveerd!</TextInstrument>
+            </ContainerInstrument>
           ) : (
-            <div className="space-y-6">
-              <div>
-                <label className="text-[15px] font-black tracking-widest text-gray-400 mb-2 block">Demo Naam</label>
+            <ContainerInstrument className="space-y-6">
+              <ContainerInstrument>
+                <LabelInstrument className="text-[15px] font-black tracking-widest text-gray-400 mb-2 block">Demo Naam</LabelInstrument>
                 <InputInstrument 
                   value={demoName}
                   onChange={(e) => setDemoName(e.target.value)}
                   className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-[15px] font-bold"
                 />
-              </div>
+              </ContainerInstrument>
 
-              <div>
-                <label className="text-[15px] font-black tracking-widest text-gray-400 mb-2 block">Type</label>
+              <ContainerInstrument>
+                <LabelInstrument className="text-[15px] font-black tracking-widest text-gray-400 mb-2 block">Type</LabelInstrument>
                 <select 
                   value={demoType}
                   onChange={(e) => setDemoType(e.target.value)}
@@ -99,9 +99,9 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
                   <option value="corporate">Corporate</option>
                   <option value="telephony">Telephony</option>
                 </select>
-              </div>
+              </ContainerInstrument>
 
-              <div className="pt-4">
+              <ContainerInstrument className="pt-4">
                 <ButtonInstrument 
                   onClick={handlePromote}
                   disabled={isPromoting || !actorId}
@@ -115,13 +115,13 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
                   )}
                 </ButtonInstrument>
                 {!actorId && (
-                  <p className="text-[15px] text-red-500 mt-2 text-center font-bold">⚠️ Geen acteur gekoppeld aan deze mail.</p>
+                  <TextInstrument className="text-[15px] text-red-500 mt-2 text-center font-bold">⚠️ Geen acteur gekoppeld aan deze mail.</TextInstrument>
                 )}
-              </div>
-            </div>
+              </ContainerInstrument>
+            </ContainerInstrument>
           )}
-        </div>
+        </ContainerInstrument>
       </ContainerInstrument>
-    </div>
+    </ContainerInstrument>
   );
 };

@@ -48,22 +48,22 @@ export default function BookMeetingPage() {
             /></TextInstrument></HeadingInstrument>
         </SectionInstrument>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
           {/* Step 1: Pick a slot */}
-          <div className="space-y-8">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-light">1</div>
+          <ContainerInstrument className="space-y-8">
+            <ContainerInstrument className="flex items-center gap-4">
+              <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-light">1</ContainerInstrument>
               <h2 className="text-xl font-light tracking-tight"><VoiceglotText translationKey="auto.page.kies_een_moment.6552a2" defaultText="Kies een moment" /></h2>
-            </div>
+            </ContainerInstrument>
             <AppointmentPicker onSelect={setSelectedSlot} />
-          </div>
+          </ContainerInstrument>
 
           {/* Step 2: Details & Confirm */}
-          <div className={`space-y-8 transition-opacity duration-500 ${selectedSlot ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-light">2</div>
+          <ContainerInstrument className={`space-y-8 transition-opacity duration-500 ${selectedSlot ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
+            <ContainerInstrument className="flex items-center gap-4">
+              <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-light">2</ContainerInstrument>
               <h2 className="text-xl font-light tracking-tight"><VoiceglotText translationKey="auto.page.jouw_gegevens.dbb685" defaultText="Jouw gegevens" /></h2>
-            </div>
+            </ContainerInstrument>
             
             {selectedSlot && (
               <ZeroLossCheckoutInstrument 
@@ -78,8 +78,8 @@ export default function BookMeetingPage() {
                 }}
               />
             )}
-          </div>
-        </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
       </ContainerInstrument>
     </PageWrapperInstrument>
   );

@@ -2,7 +2,6 @@
 
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { Info } from 'lucide-react';
 import React from 'react';
 import { TelephonySmartSuggestions } from './TelephonySmartSuggestions';
 import { 
@@ -13,6 +12,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export const BriefingStep: React.FC = () => {
   const { state, updateBriefing, updatePronunciation, updateUsage, setStep } = useCheckout();
@@ -47,7 +47,7 @@ export const BriefingStep: React.FC = () => {
             className="w-full h-64 bg-va-off-white border-none rounded-[20px] p-8 text-lg font-light focus:ring-2 focus:ring-primary/20 transition-all resize-none"
           />
           <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light tracking-widest text-va-black/20 ">
-            <Info size={14} strokeWidth={1.5} />
+            <Image src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
             {state.usage === 'telefonie' ? (
               <TextInstrument>
                 <VoiceglotText 
@@ -93,7 +93,7 @@ export const BriefingStep: React.FC = () => {
                 key={type.id}
                 onClick={() => updateUsage(type.id as any)}
                 className={cn(
-                  "py-5 px-6 rounded-[10px] border-2 font-light uppercase tracking-widest text-[12px] transition-all",
+                  "py-5 px-6 rounded-[10px] border-2 font-light tracking-widest text-[12px] transition-all",
                   state.usage === type.id 
                     ? 'border-primary bg-primary/5 text-primary' 
                     : 'border-va-black/5 hover:border-va-black/10 text-va-black/40'

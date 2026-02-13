@@ -81,7 +81,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
           />
         </ContainerInstrument>
         
-        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+        <ContainerInstrument className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
           <ContainerInstrument className="flex-1 lg:w-56 relative group/select">
             <SelectInstrument 
               className="w-full bg-va-off-white border-none rounded-[24px] py-5 px-8 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
@@ -132,7 +132,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
           >
             <SlidersHorizontal size={20} />
           </ButtonInstrument>
-        </div>
+        </ContainerInstrument>
       </ContainerInstrument>
 
       {/* Active Filters Chips */}

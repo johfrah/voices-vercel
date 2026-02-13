@@ -16,14 +16,14 @@ export const GuaranteesBento = () => {
     <BentoGrid className="mb-32">
       {/* 🛡️ MAIN CARD: 100% Tevredenheid */}
       <BentoCard span="xl" className="h-[400px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
-        <div className="absolute inset-0 z-0">
+        <ContainerInstrument className="absolute inset-0 z-0">
           <Image 
             src="/assets/service-photo.jpg" 
             alt="Service" 
             fill 
             className="object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-1000"
           />
-        </div>
+        </ContainerInstrument>
         <ContainerInstrument plain className="relative z-10">
           <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
             <ShieldCheck strokeWidth={1.5} size={32} fill="currentColor" />
@@ -33,7 +33,7 @@ export const GuaranteesBento = () => {
               defaultText="Is de toon niet helemaal wat je zocht? Vraag met één klik een gratis retake aan. Let op: voor tekstwijzigingen achteraf rekenen we een klein supplement." 
             /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
-        <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
+        <ContainerInstrument className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
       </BentoCard>
 
       {/* 🌍 Native Speakers */}

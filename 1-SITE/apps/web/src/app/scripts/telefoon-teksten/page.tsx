@@ -61,9 +61,9 @@ export default function ScriptsPage() {
             >
               <ContainerInstrument>
                 <ContainerInstrument className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <ContainerInstrument className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                     <FileText size={20} />
-                  </div>
+                  </ContainerInstrument>
                   <HeadingInstrument level={3} className="text-xl font-black tracking-tight"><VoiceglotText translationKey={`${cat.key}.title`} defaultText={cat.title} /></HeadingInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="p-6 bg-va-off-white rounded-2xl border border-black/5 relative group">

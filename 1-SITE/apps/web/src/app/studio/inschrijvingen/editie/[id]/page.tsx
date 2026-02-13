@@ -48,77 +48,77 @@ export default async function EditionParticipantsPage({ params }: { params: { id
       <BentoGrid columns={3} className="gap-8">
         {/* PARTICIPANTS LIST */}
         <BentoCard span="lg" className="bg-white shadow-aura border border-black/5 overflow-hidden">
-          <div className="p-8 border-b border-black/5 bg-va-off-white/50 flex justify-between items-center">
-            <div className="flex items-center gap-3">
+          <ContainerInstrument className="p-8 border-b border-black/5 bg-va-off-white/50 flex justify-between items-center">
+            <ContainerInstrument className="flex items-center gap-3">
               <Users size={20} className="text-primary" />
-              <span className="text-[15px] font-black tracking-tight">
+              <TextInstrument className="text-[15px] font-black tracking-tight">
                 {participants.length} Deelnemers bevestigd
-              </span>
-            </div>
-            <div className="text-[15px] font-bold text-black/20 tracking-widest"><VoiceglotText translationKey="auto.page.privacy_mode_actief_.8c697e" defaultText="Privacy Mode Actief (No PII)" /></div>
-          </div>
+              </TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="text-[15px] font-bold text-black/20 tracking-widest"><VoiceglotText translationKey="auto.page.privacy_mode_actief_.8c697e" defaultText="Privacy Mode Actief (No PII)" /></ContainerInstrument>
+          </ContainerInstrument>
 
-          <div className="divide-y divide-black/5">
+          <ContainerInstrument className="divide-y divide-black/5">
             {participants.length > 0 ? participants.map((p: any) => {
               const user = p.order?.user;
               const dna = user?.preferences || {};
               
               return (
-                <div key={p.id} className="p-8 hover:bg-va-off-white/30 transition-colors group">
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div className="flex items-center gap-6">
-                      <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center font-black text-lg">
+                <ContainerInstrument key={p.id} className="p-8 hover:bg-va-off-white/30 transition-colors group">
+                  <ContainerInstrument className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <ContainerInstrument className="flex items-center gap-6">
+                      <ContainerInstrument className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center font-black text-lg">
                         {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
-                      </div>
-                      <div>
-                        <div className="text-xl font-black tracking-tight">
+                      </ContainerInstrument>
+                      <ContainerInstrument>
+                        <ContainerInstrument className="text-xl font-black tracking-tight">
                           {user?.firstName} {user?.lastName}
-                        </div>
-                        <div className="flex gap-4 mt-1">
-                          <div className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
+                        </ContainerInstrument>
+                        <ContainerInstrument className="flex gap-4 mt-1">
+                          <ContainerInstrument className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
                             <Briefcase strokeWidth={1.5} size={10} /> {dna.profession || 'Niet opgegeven'}
-                          </div>
-                          <div className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
+                          </ContainerInstrument>
+                          <ContainerInstrument className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
                             <Calendar strokeWidth={1.5} size={10} /> {dna.age || '?'} jaar
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                          </ContainerInstrument>
+                        </ContainerInstrument>
+                      </ContainerInstrument>
+                    </ContainerInstrument>
 
                     {/* USER DNA TAGS */}
-                    <div className="flex flex-wrap gap-2">
-                      <div className={cn(
+                    <ContainerInstrument className="flex flex-wrap gap-2">
+                      <ContainerInstrument className={cn(
                         "px-3 py-1.5 rounded-full text-[15px] font-black uppercase tracking-widest border",
                         dna.experience === 'beginner' ? "bg-green-500/5 border-green-500/20 text-green-600" :
                         dna.experience === 'intermediate' ? "bg-blue-500/5 border-blue-500/20 text-blue-600" :
                         "bg-primary/5 border-primary/20 text-primary"
                       )}>
                         {dna.experience || 'beginner'}
-                      </div>
+                      </ContainerInstrument>
                       {dna.goal && (
-                        <div className="px-3 py-1.5 rounded-full text-[15px] font-black tracking-widest bg-black/5 border-black/10 text-black/40"><VoiceglotText translationKey="auto.page.doelgericht.9fe0a2" defaultText="Doelgericht" /></div>
+                        <ContainerInstrument className="px-3 py-1.5 rounded-full text-[15px] font-black tracking-widest bg-black/5 border-black/10 text-black/40"><VoiceglotText translationKey="auto.page.doelgericht.9fe0a2" defaultText="Doelgericht" /></ContainerInstrument>
                       )}
-                    </div>
-                  </div>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
 
                   {/* GOAL / EXPECTATIONS (IF AVAILABLE) */}
                   {dna.goal && (
-                    <div className="mt-6 p-4 rounded-xl bg-va-off-white/50 border border-black/5 italic text-[15px] text-black/60 leading-relaxed">
+                    <ContainerInstrument className="mt-6 p-4 rounded-xl bg-va-off-white/50 border border-black/5 italic text-[15px] text-black/60 leading-relaxed">
                       &quot;{dna.goal}&quot;
-                    </div>
+                    </ContainerInstrument>
                   )}
-                </div>
+                </ContainerInstrument>
               );
             }) : (
-              <div className="py-20 text-center">
+              <ContainerInstrument className="py-20 text-center">
                 <TextInstrument className="text-[15px] font-black tracking-widest text-black/20"><VoiceglotText translationKey="auto.page.nog_geen_deelnemers_.42e5b2" defaultText="Nog geen deelnemers voor deze editie." /></TextInstrument>
-              </div>
+              </ContainerInstrument>
             )}
-          </div>
+          </ContainerInstrument>
         </BentoCard>
 
         {/* SIDEBAR: INSTRUCTOR INFO & TIPS */}
-        <div className="space-y-8">
+        <ContainerInstrument className="space-y-8">
           <BentoCard span="sm" className="bg-va-black text-white p-10">
             <Star strokeWidth={1.5} className="text-primary mb-6" size={24} />
             <HeadingInstrument level={3} className="text-xl font-black tracking-tighter mb-4"><VoiceglotText translationKey="studio.beheer.prepare_title" defaultText="Bereid je voor" /><TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed mb-8"><VoiceglotText 
@@ -126,19 +126,19 @@ export default async function EditionParticipantsPage({ params }: { params: { id
                 defaultText="Gebruik het &lsquo;User DNA&rsquo; om je coaching aan te passen. Heb je veel beginners? Focus dan meer op de basis." 
               /></TextInstrument></HeadingInstrument>
             
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
+            <ContainerInstrument className="space-y-4">
+              <ContainerInstrument className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
                 <Info size={16} className="text-primary" />
-                <span className="text-[15px] font-bold tracking-widest"><VoiceglotText translationKey="auto.page.80__beginners.b68114" defaultText="80% Beginners" /></span>
-              </div>
-            </div>
+                <TextInstrument className="text-[15px] font-bold tracking-widest"><VoiceglotText translationKey="auto.page.80__beginners.b68114" defaultText="80% Beginners" /></TextInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
           </BentoCard>
 
           <BentoCard span="sm" className="bg-va-off-white p-10 border border-black/5">
             <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest text-black/30 mb-6"><VoiceglotText translationKey="auto.page.hulp_nodig_.064cd1" defaultText="Hulp nodig?" /><TextInstrument className="text-[15px] font-medium text-black/60 leading-relaxed mb-8"><VoiceglotText translationKey="auto.page.vragen_over_de_deeln.67c93a" defaultText="Vragen over de deelnemers of de logistiek? Neem contact op met de admin." /></TextInstrument></HeadingInstrument>
             <Link href="/studio/afspraak" className="text-[15px] font-black tracking-widest text-primary hover:underline"><VoiceglotText translationKey="auto.page.contacteer_admin.95d7f1" defaultText="CONTACTEER ADMIN" /></Link>
           </BentoCard>
-        </div>
+        </ContainerInstrument>
       </BentoGrid>
     </PageWrapperInstrument>
   );

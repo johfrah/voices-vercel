@@ -5,7 +5,6 @@ import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { WorkshopProgram } from "@/components/ui/Studio/WorkshopProgram";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { ArrowRight, Play } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from 'react';
 
@@ -42,7 +41,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
           />
         )}
         <ContainerInstrument className="absolute bottom-8 left-8 right-8">
-          <TextInstrument className="text-white/60 text-[15px] font-medium max-w-md leading-relaxed">
+          <TextInstrument className="text-white/60 text-[15px] font-light max-w-md leading-relaxed">
             {workshop.aftermovie_description || (
               <VoiceglotText 
                 translationKey="workshop.aftermovie.default_desc" 
@@ -69,10 +68,10 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
       <WorkshopProgram dagindeling={currentProgram} image={workshop.image} />
 
       {/* INSTRUCTEUR BENTO */}
-      <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between">
+      <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between rounded-[20px]">
         <ContainerInstrument>
-          <ContainerInstrument className="text-[15px] font-black tracking-widest text-white/30 mb-8"><VoiceglotText translationKey="workshop.instructor.label" defaultText="Jouw Workshopgever" /></ContainerInstrument>
-          <ContainerInstrument className="relative w-32 h-32 rounded-3xl overflow-hidden mb-6 border-2 border-white/10">
+          <ContainerInstrument className="text-[15px] font-light tracking-widest text-white/30 mb-8"><VoiceglotText translationKey="workshop.instructor.label" defaultText="Jouw workshopgever" /></ContainerInstrument>
+          <ContainerInstrument className="relative w-32 h-32 rounded-[10px] overflow-hidden mb-6 border-2 border-white/10">
             <Image 
               src={workshop.voice_header || "/assets/common/founder/johfrah-avatar-be.png"} 
               alt={workshop.instructeur || "Workshopgever"}
@@ -80,8 +79,8 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
               className="object-cover"
             />
           </ContainerInstrument>
-          <HeadingInstrument level={4} className="text-2xl font-black tracking-tight mb-4"><VoiceglotText translationKey={`workshop.${workshop.id}.instructor_name`} defaultText={workshop.instructeur || "Johfrah"} /></HeadingInstrument>
-          <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed line-clamp-4">
+          <HeadingInstrument level={4} className="text-2xl font-light tracking-tight mb-4 text-white"><VoiceglotText translationKey={`workshop.${workshop.id}.instructor_name`} defaultText={workshop.instructeur || "Johfrah"} /></HeadingInstrument>
+          <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed line-clamp-4">
             {workshop.about_me || (
               <VoiceglotText 
                 translationKey="workshop.instructor.default_about" 
@@ -90,7 +89,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop }) =>
             )}
           </TextInstrument>
         </ContainerInstrument>
-        <ButtonInstrument className="text-[15px] font-black tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all mt-8"><VoiceglotText translationKey="workshop.instructor.action" defaultText="MEER OVER DE WORKSHOPGEVER" /><ArrowRight strokeWidth={1.5} size={14} /></ButtonInstrument>
+        <ButtonInstrument className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all mt-8"><VoiceglotText translationKey="workshop.instructor.action" defaultText="Meer over de workshopgever" /><Image src="/assets/common/branding/icons/FORWARD.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /></ButtonInstrument>
       </BentoCard>
     </BentoGrid>
   );

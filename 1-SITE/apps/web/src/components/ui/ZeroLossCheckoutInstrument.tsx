@@ -85,7 +85,7 @@ export const ZeroLossCheckoutInstrument = ({
                       <User strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                       <InputInstrument 
                         value={formData.firstName}
-                        onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        onChange={(e) => { handleInputChange('firstName', e.target.value); }}
                         className="w-full pl-14 pr-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px]" 
                         placeholder="Julie" 
                       />
@@ -95,7 +95,7 @@ export const ZeroLossCheckoutInstrument = ({
                     <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText translationKey="auto.zerolosscheckoutinstrument.familienaam.b88d3a" defaultText="Familienaam" /></TextInstrument>
                     <InputInstrument 
                       value={formData.lastName}
-                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                      onChange={(e) => { handleInputChange('lastName', e.target.value); }}
                       className="w-full px-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px]" 
                       placeholder="Vandamme" 
                     />
@@ -109,7 +109,7 @@ export const ZeroLossCheckoutInstrument = ({
                     <InputInstrument 
                       type="email"
                       value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      onChange={(e) => { handleInputChange('email', e.target.value); }}
                       className="w-full pl-14 pr-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium" 
                       placeholder="julie@voorbeeld.com" 
                     />
@@ -117,7 +117,7 @@ export const ZeroLossCheckoutInstrument = ({
                 </ContainerInstrument>
 
                 <ButtonInstrument 
-                  onClick={nextStep}
+                  onClick={() => { nextStep(); }}
                   disabled={!formData.email || !formData.firstName}
                   className="w-full py-6 rounded-[24px] bg-va-black text-white text-[15px] font-light tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2 group disabled:opacity-20"
                 >
@@ -134,7 +134,7 @@ export const ZeroLossCheckoutInstrument = ({
                     <Briefcase strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                     <InputInstrument 
                       value={formData.company}
-                      onChange={(e) => handleInputChange('company', e.target.value)}
+                      onChange={(e) => { handleInputChange('company', e.target.value); }}
                       className="w-full pl-14 pr-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium" 
                       placeholder="Mijn Bedrijf BV" 
                     />
@@ -147,7 +147,7 @@ export const ZeroLossCheckoutInstrument = ({
                     <ShieldCheck strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                     <InputInstrument 
                       value={formData.vatNumber}
-                      onChange={(e) => handleInputChange('vatNumber', e.target.value)}
+                      onChange={(e) => { handleInputChange('vatNumber', e.target.value); }}
                       className="w-full pl-14 pr-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium" 
                       placeholder="BE 0123.456.789" 
                     />
@@ -157,7 +157,7 @@ export const ZeroLossCheckoutInstrument = ({
 
                 <ContainerInstrument className="flex gap-4">
                   <ButtonInstrument 
-                    onClick={() => setStep(1)}
+                    onClick={() => { setStep(1); }}
                     className="flex-1 py-6 rounded-[24px] bg-va-off-white text-va-black/40 text-[15px] font-light tracking-widest hover:bg-va-black hover:text-white transition-all"
                   >
                     <VoiceglotText translationKey="auto.zerolosscheckoutinstrument.terug____.211082" defaultText="Terug" />

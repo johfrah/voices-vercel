@@ -51,20 +51,20 @@ export default async function StudioAdminPage() {
               €{financeStats.totalRevenue.toLocaleString('nl-BE')}
             </HeadingInstrument>
           </ContainerInstrument>
-          <div className="pt-8 border-t border-white/5 space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-[15px] font-bold text-white/20 tracking-widest">
+          <ContainerInstrument className="pt-8 border-t border-white/5 space-y-4">
+            <ContainerInstrument className="flex justify-between items-center">
+              <TextInstrument className="text-[15px] font-bold text-white/20 tracking-widest">
                 <VoiceglotText translationKey="common.net_profit" defaultText="Netto Winst" />
-              </span>
-              <span className="text-[15px] font-black text-primary">€{financeStats.netRevenue.toLocaleString('nl-BE')}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-[15px] font-bold text-white/20 tracking-widest">
+              </TextInstrument>
+              <TextInstrument className="text-[15px] font-black text-primary">€{financeStats.netRevenue.toLocaleString('nl-BE')}</TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="flex justify-between items-center">
+              <TextInstrument className="text-[15px] font-bold text-white/20 tracking-widest">
                 <VoiceglotText translationKey="common.margin" defaultText="Marge" />
-              </span>
-              <span className="text-[15px] font-black">{financeStats.marginPercentage.toFixed(1)}%</span>
-            </div>
-          </div>
+              </TextInstrument>
+              <TextInstrument className="text-[15px] font-black">{financeStats.marginPercentage.toFixed(1)}%</TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
         </BentoCard>
 
         {/* QUICK ACTIONS (Step 3) */}
@@ -72,10 +72,10 @@ export default async function StudioAdminPage() {
           <ContainerInstrument>
             <Mail strokeWidth={1.5} className="text-primary mb-6" size={24} />
             <TextInstrument className="text-[15px] font-black tracking-widest text-black/30"><VoiceglotText translationKey="admin.studio.mail_triggers" defaultText="Smart Mail Triggers" /></TextInstrument>
-            <div className="space-y-3 mt-6">
+            <ContainerInstrument className="space-y-3 mt-6">
               <ButtonInstrument className="w-full py-3 bg-white border border-black/5 text-[15px] font-black tracking-widest hover:bg-primary transition-all"><VoiceglotText translationKey="admin.studio.trigger.new_edition" defaultText="Nieuwe Editie Aankondiging" /></ButtonInstrument>
               <ButtonInstrument className="w-full py-3 bg-white border border-black/5 text-[15px] font-black tracking-widest hover:bg-primary transition-all"><VoiceglotText translationKey="admin.studio.trigger.certificates" defaultText="Certificaten Klaar (Bulk)" /></ButtonInstrument>
-            </div>
+            </ContainerInstrument>
           </ContainerInstrument>
           <TextInstrument className="text-[15px] font-medium text-black/30 mt-8"><VoiceglotText translationKey="admin.studio.mail_disclaimer" defaultText="* Mails worden alleen door Johfrah getriggerd." /></TextInstrument>
         </BentoCard>
@@ -95,43 +95,43 @@ export default async function StudioAdminPage() {
         <BentoCard span="lg" className="bg-white shadow-aura p-10 border border-black/5">
           <HeadingInstrument level={2} className="text-[15px] font-black tracking-widest text-black/30 mb-8"><VoiceglotText translationKey="admin.studio.all_editions" defaultText="Alle Studio Edities" /></HeadingInstrument>
           
-          <div className="space-y-4">
+          <ContainerInstrument className="space-y-4">
             {allEditions.map((edition) => (
-              <div key={edition.id} className="p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-black/5 transition-all flex flex-col md:flex-row justify-between items-center gap-6">
-                <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 rounded-xl bg-black text-white flex flex-col items-center justify-center">
-                    <span className="text-[15px] font-black">{edition.date.getDate()}</span>
-                    <span className="text-[15px] font-bold ">{edition.date.toLocaleString('nl-BE', { month: 'short' })}</span>
-                  </div>
-                  <div>
+              <ContainerInstrument key={edition.id} className="p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-black/5 transition-all flex flex-col md:flex-row justify-between items-center gap-6">
+                <ContainerInstrument className="flex items-center gap-6">
+                  <ContainerInstrument className="w-12 h-12 rounded-xl bg-black text-white flex flex-col items-center justify-center">
+                    <TextInstrument className="text-[15px] font-black">{edition.date.getDate()}</TextInstrument>
+                    <TextInstrument className="text-[15px] font-bold ">{edition.date.toLocaleString('nl-BE', { month: 'short' })}</TextInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument>
                     <HeadingInstrument level={4} className="text-lg font-black tracking-tight"><VoiceglotText translationKey={`workshop.${edition.workshop?.id}.title`} defaultText={edition.workshop?.title || ''} noTranslate={true} /></HeadingInstrument>
-                    <div className="flex gap-4 mt-1">
-                      <span className="text-[15px] font-bold text-black/30 tracking-widest">
+                    <ContainerInstrument className="flex gap-4 mt-1">
+                      <TextInstrument className="text-[15px] font-bold text-black/30 tracking-widest">
                         <VoiceglotText translationKey={`instructor.${edition.instructor?.id}.name`} defaultText={edition.instructor?.name || ''} noTranslate={true} />
-                      </span>
-                      <span className="text-[15px] font-bold text-black/30 tracking-widest">
+                      </TextInstrument>
+                      <TextInstrument className="text-[15px] font-bold text-black/30 tracking-widest">
                         <VoiceglotText translationKey={`location.${edition.location?.id}.name`} defaultText={edition.location?.name || ''} noTranslate={true} />
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                      </TextInstrument>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
+                </ContainerInstrument>
                 
-                <div className="flex items-center gap-6">
-                  <div className="text-right">
-                    <div className="text-[15px] font-black tracking-widest text-black/20 mb-1">
+                <ContainerInstrument className="flex items-center gap-6">
+                  <ContainerInstrument className="text-right">
+                    <ContainerInstrument className="text-[15px] font-black tracking-widest text-black/20 mb-1">
                       <VoiceglotText translationKey="common.status" defaultText="Status" />
-                    </div>
-                    <span className="text-[15px] font-black tracking-widest text-black/40">
+                    </ContainerInstrument>
+                    <TextInstrument className="text-[15px] font-black tracking-widest text-black/40">
                       <VoiceglotText translationKey={`common.status.${edition.status}`} defaultText={edition.status || ''} />
-                    </span>
-                  </div>
+                    </TextInstrument>
+                  </ContainerInstrument>
                   <Link href={`/admin/studio/edities/${edition.id}`} className="p-4 rounded-xl bg-white border border-black/5 hover:border-primary transition-all">
                     <Settings size={16} className="text-black/20" />
                   </Link>
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
             ))}
-          </div>
+          </ContainerInstrument>
         </BentoCard>
       </BentoGrid>
       </ContainerInstrument>

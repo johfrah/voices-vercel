@@ -113,7 +113,7 @@ export const JitsiMeeting: React.FC<JitsiMeetingProps> = ({ roomName, userName }
 
   return (
     <ContainerInstrument id="voices-meeting-container" className="relative h-[80vh] w-full bg-va-off-white rounded-[20px] overflow-hidden shadow-aura border border-va-black/5">
-      <div ref={jitsiContainerRef} className="h-full w-full" />
+      <ContainerInstrument ref={jitsiContainerRef} className="h-full w-full" />
       
       {loading && (
         <ContainerInstrument className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-10">

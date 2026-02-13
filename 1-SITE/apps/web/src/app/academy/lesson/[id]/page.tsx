@@ -173,13 +173,13 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
     return (
       <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
         {isAdmin && (
-          <div className="mb-8 p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <ContainerInstrument className="mb-8 p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-between">
+            <ContainerInstrument className="flex items-center gap-3">
               <EyeOff size={20} className="text-primary" />
               <TextInstrument className="text-[15px] font-black tracking-tight text-primary"><VoiceglotText translationKey="auto.page.student_preview_modu.c2e4cb" defaultText="Student Preview Modus" /></TextInstrument>
-            </div>
+            </ContainerInstrument>
             <Link href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[15px]"><VoiceglotText translationKey="auto.page.terug_naar_admin_mod.f246ba" defaultText="Terug naar Admin Mode" /></Link>
-          </div>
+          </ContainerInstrument>
         )}
         <SectionInstrument className="mb-12 space-y-6">
           <Link 
@@ -348,12 +348,12 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         `}} />
       )}
       {isAdmin && (
-        <div className="mb-8 p-4 bg-va-black rounded-2xl flex items-center justify-between shadow-xl border border-white/5">
-          <div className="flex items-center gap-3 text-white">
+        <ContainerInstrument className="mb-8 p-4 bg-va-black rounded-2xl flex items-center justify-between shadow-xl border border-white/5">
+          <ContainerInstrument className="flex items-center gap-3 text-white">
             <Eye size={20} className="text-primary" />
             <TextInstrument className="text-[15px] font-black tracking-tight"><VoiceglotText translationKey="auto.page.admin_mode_actief.f3753b" defaultText="Admin Mode Actief" /></TextInstrument>
-          </div>
-          <div className="flex gap-4">
+          </ContainerInstrument>
+          <ContainerInstrument className="flex gap-4">
             {!isPreviewMode ? (
               <>
                 <button 
@@ -367,8 +367,8 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
             ) : (
               <Link href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[15px]"><VoiceglotText translationKey="auto.page.terug_naar_admin_mod.f246ba" defaultText="Terug naar Admin Mode" /></Link>
             )}
-          </div>
-        </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
       )}
       {/* Header */}
       <SectionInstrument className="mb-12 space-y-6">
@@ -425,17 +425,17 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
                   /></TextInstrument>
                 <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <ContainerInstrument className="space-y-4">
-                    <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">1</div>
+                    <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">1</ContainerInstrument>
                     <TextInstrument className="font-bold text-[15px] tracking-widest"><VoiceglotText translationKey="academy.lesson1.q1" defaultText="Geloof je jezelf?" /></TextInstrument>
                     <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText translationKey="academy.lesson1.q1.desc" defaultText="Hoor je iemand die een tekst voorleest, of hoor je iemand die een verhaal vertelt aan een vriend?" /></TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="space-y-4">
-                    <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">2</div>
+                    <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">2</ContainerInstrument>
                     <TextInstrument className="font-bold text-[15px] tracking-widest"><VoiceglotText translationKey="academy.lesson1.q2" defaultText="Hoor je de adem?" /></TextInstrument>
                     <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText translationKey="academy.lesson1.q2.desc" defaultText="Zit er rust in je klank, of hoor je de inspanning en de nood om de zin af te maken?" /></TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="space-y-4">
-                    <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">3</div>
+                    <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">3</ContainerInstrument>
                     <TextInstrument className="font-bold text-[15px] tracking-widest"><VoiceglotText translationKey="academy.lesson1.q3" defaultText="De Glimlach?" /></TextInstrument>
                     <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText translationKey="academy.lesson1.q3.desc" defaultText="Kun je horen dat je plezier hebt in wat je vertelt, of klinkt het als een verplichte opdracht?" /></TextInstrument>
                   </ContainerInstrument>
@@ -455,24 +455,24 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
             <BentoGrid columns={2} className="mt-12">
               <BentoCard span="md" className="bg-va-black text-white p-8">
                 <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-4 text-primary"><VoiceglotText translationKey="academy.admin.intro_script_title" defaultText="Introductie Script (2 min)" /></HeadingInstrument>
-                <div className="prose prose-invert prose-xs max-h-96 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10">
+                <ContainerInstrument className="prose prose-invert prose-xs max-h-96 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10">
                   <AcademyContent 
                     translationKey={`academy.lesson.${params.id}.intro_script`} 
                     defaultHtml={data.intro_script || "Geen intro script beschikbaar."} 
                     variables={variables}
                   />
-                </div>
+                </ContainerInstrument>
               </BentoCard>
 
               <BentoCard span="md" className="bg-va-black text-white p-8">
                 <HeadingInstrument level={3} className="text-xl font-black tracking-tight mb-4 text-primary"><VoiceglotText translationKey="academy.admin.deep_dive_script_title" defaultText="Verdieping Script (4 min)" /></HeadingInstrument>
-                <div className="prose prose-invert prose-xs max-h-96 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10">
+                <ContainerInstrument className="prose prose-invert prose-xs max-h-96 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10">
                   <AcademyContent 
                     translationKey={`academy.lesson.${params.id}.deep_dive_script`} 
                     defaultHtml={data.deep_dive_script || "Geen verdieping script beschikbaar."} 
                     variables={variables}
                   />
-                </div>
+                </ContainerInstrument>
               </BentoCard>
             </BentoGrid>
           )}

@@ -60,7 +60,7 @@ export default async function InstructorDashboardPage() {
       <ContainerInstrument className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <ContainerInstrument>
           <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2"><VoiceglotText translationKey="studio.beheer.cockpit_badge" defaultText="Instructor Cockpit" /></TextInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter"><VoiceglotText translationKey="studio.beheer.welcome" defaultText="Welkom," /> <span className="text-primary">{effectiveInstructor.name.split(' ')[0]}</span>.</HeadingInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter"><VoiceglotText translationKey="studio.beheer.welcome" defaultText="Welkom," /> <TextInstrument className="text-primary font-light">{effectiveInstructor.name.split(' ')[0]}</TextInstrument>.</HeadingInstrument>
         </ContainerInstrument>
         
         <ButtonInstrument className="va-btn-pro">
@@ -101,52 +101,52 @@ export default async function InstructorDashboardPage() {
         <BentoCard span="lg" className="bg-white shadow-aura p-10 border border-black/5">
           <HeadingInstrument level={2} className="text-[15px] tracking-widest text-black/30 mb-8"><VoiceglotText translationKey="studio.beheer.active_workshops" defaultText="Jouw Actieve Workshops" /></HeadingInstrument>
           
-          <div className="space-y-4">
+          <ContainerInstrument className="space-y-4">
             {upcomingEditions.length > 0 ? upcomingEditions.map((edition) => (
-              <div key={edition.id} className="group p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-black/5 transition-all flex flex-col md:flex-row justify-between items-center gap-6">
-                <div className="flex items-center gap-6 w-full md:w-auto">
-                  <div className="w-14 h-14 rounded-2xl bg-black text-white flex flex-col items-center justify-center">
-                    <span className="text-[15px] font-black">{edition.date.getDate()}</span>
-                    <span className="text-[15px] font-bold ">{edition.date.toLocaleString('nl-BE', { month: 'short' })}</span>
-                  </div>
-                  <div>
+              <ContainerInstrument key={edition.id} className="group p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-black/5 transition-all flex flex-col md:flex-row justify-between items-center gap-6">
+                <ContainerInstrument className="flex items-center gap-6 w-full md:w-auto">
+                  <ContainerInstrument className="w-14 h-14 rounded-2xl bg-black text-white flex flex-col items-center justify-center">
+                    <TextInstrument className="text-[15px] font-black">{edition.date.getDate()}</TextInstrument>
+                    <TextInstrument className="text-[15px] font-bold ">{edition.date.toLocaleString('nl-BE', { month: 'short' })}</TextInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument>
                     <HeadingInstrument level={4} className="text-lg font-black tracking-tight">
                       {edition.workshop?.title}
                     </HeadingInstrument>
-                    <div className="flex flex-wrap gap-4 mt-1">
-                      <div className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
+                    <ContainerInstrument className="flex flex-wrap gap-4 mt-1">
+                      <ContainerInstrument className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
                         <MapPin size={10} /> {edition.location?.name || 'Gent'}
-                      </div>
-                      <div className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
+                      </ContainerInstrument>
+                      <ContainerInstrument className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
                         <Clock size={10} /> {edition.date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                      </ContainerInstrument>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
+                </ContainerInstrument>
                 
-                <div className="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end">
-                  <div className="text-right">
-                    <div className="text-[15px] font-black tracking-widest text-black/20 mb-1">
+                <ContainerInstrument className="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end">
+                  <ContainerInstrument className="text-right">
+                    <ContainerInstrument className="text-[15px] font-black tracking-widest text-black/20 mb-1">
                       <VoiceglotText translationKey="studio.beheer.occupancy" defaultText="Bezetting" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 h-1.5 bg-black/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary w-[75%]" />
-                      </div>
-                      <span className="text-[15px] font-black">6/{edition.capacity}</span>
-                    </div>
-                  </div>
+                    </ContainerInstrument>
+                    <ContainerInstrument className="flex items-center gap-2">
+                      <ContainerInstrument className="w-24 h-1.5 bg-black/5 rounded-full overflow-hidden">
+                        <ContainerInstrument className="h-full bg-primary w-[75%]" />
+                      </ContainerInstrument>
+                      <TextInstrument className="text-[15px] font-black">6/{edition.capacity}</TextInstrument>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
                   <Link href={`/studio/inschrijvingen/editie/${edition.id}`} className="va-btn-secondary !p-4 !rounded-xl">
                     <Settings size={16} className="text-black/20 group-hover/btn:text-primary transition-colors" />
                   </Link>
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
             )) : (
-              <div className="py-20 text-center border-2 border-dashed border-black/5 rounded-[32px]">
+              <ContainerInstrument className="py-20 text-center border-2 border-dashed border-black/5 rounded-[32px]">
                 <TextInstrument className="text-[15px] tracking-widest text-black/20 font-light"><VoiceglotText translationKey="studio.beheer.no_workshops" defaultText="Nog geen workshops gepland. Start met je eerste!" /></TextInstrument>
-              </div>
+              </ContainerInstrument>
             )}
-          </div>
+          </ContainerInstrument>
         </BentoCard>
 
         {/* QUICK ACTIONS / TIPS */}

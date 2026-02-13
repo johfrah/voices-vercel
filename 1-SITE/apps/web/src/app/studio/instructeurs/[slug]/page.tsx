@@ -81,49 +81,49 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
         {/* 📝 BIO CARD */}
         <BentoCard span="lg" className="bg-white shadow-aura p-12 border border-black/5">
           <HeadingInstrument level={2} className="text-[15px] font-black tracking-widest text-black/30 mb-8"><VoiceglotText translationKey="instructor.about_title" defaultText="Over de instructeur" /></HeadingInstrument>
-          <div className="prose prose-lg prose-black max-w-none">
+          <ContainerInstrument className="prose prose-lg prose-black max-w-none">
             <TextInstrument className="text-black/60 font-medium leading-relaxed whitespace-pre-wrap">
               {instructor.bio || "Geen bio beschikbaar."}
             </TextInstrument>
-          </div>
+          </ContainerInstrument>
         </BentoCard>
 
         {/* 🎓 WORKSHOPS CARD */}
         <BentoCard span="lg" className="bg-va-off-white p-12">
           <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest text-black/30 mb-10"><VoiceglotText translationKey="instructor.workshops_title" defaultText="Workshops door deze instructeur" /></HeadingInstrument>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          <ContainerInstrument className="grid md:grid-cols-2 gap-6">
             {workshops.length > 0 ? workshops.map((workshop) => (
               <Link 
                 key={workshop.id} 
                 href={`/studio/${workshop.slug}`}
                 className="group bg-white p-6 rounded-2xl border border-black/5 hover:border-primary/20 hover:shadow-xl transition-all duration-500"
               >
-                <div className="flex justify-between items-start mb-4">
+                <ContainerInstrument className="flex justify-between items-start mb-4">
                   <HeadingInstrument level={4} className="text-lg font-black tracking-tight group-hover:text-primary transition-colors">
                     {workshop.title}
                   </HeadingInstrument>
                   <ArrowRight strokeWidth={1.5} size={18} className="text-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                </div>
+                </ContainerInstrument>
                 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-[15px] font-bold text-black/40 tracking-widest">
+                <ContainerInstrument className="space-y-2">
+                  <ContainerInstrument className="flex items-center gap-2 text-[15px] font-bold text-black/40 tracking-widest">
                     <Calendar strokeWidth={1.5} size={12} /> 
                     {workshop.editions?.[0] 
                       ? new Date(workshop.editions[0].date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })
                       : "Binnenkort"}
-                  </div>
-                  <div className="flex items-center gap-2 text-[15px] font-bold text-black/40 tracking-widest">
+                  </ContainerInstrument>
+                  <ContainerInstrument className="flex items-center gap-2 text-[15px] font-bold text-black/40 tracking-widest">
                     <MapPin size={12} /> {workshop.editions?.[0]?.location || "Gent"}
-                  </div>
-                </div>
+                  </ContainerInstrument>
+                </ContainerInstrument>
               </Link>
             )) : (
-              <div className="col-span-2 p-12 rounded-2xl border border-dashed border-black/10 text-center">
+              <ContainerInstrument className="col-span-2 p-12 rounded-2xl border border-dashed border-black/10 text-center">
                 <TextInstrument className="text-[15px] font-black tracking-widest text-black/20"><VoiceglotText translationKey="auto.page.momenteel_geen_works.7d9a37" defaultText="Momenteel geen workshops gepland" /></TextInstrument>
-              </div>
+              </ContainerInstrument>
             )}
-          </div>
+          </ContainerInstrument>
         </BentoCard>
 
         {/* 💬 QUOTE / FOOTER CARD */}

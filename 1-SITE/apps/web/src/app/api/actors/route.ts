@@ -7,7 +7,7 @@ import { getActors } from '@/lib/api-server';
  * Serveert de stemacteurs data aan de client-side componenten.
  * Voldoet aan het Chris-Protocol: Forensische logging en rigide validatie.
  */
-// export const runtime = 'edge';
+export const runtime = 'edge';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

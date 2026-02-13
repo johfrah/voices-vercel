@@ -81,18 +81,18 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
                 style={{ filter: 'invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)' }}
               /></Link>
           </ContainerInstrument>
-          <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
+          <ContainerInstrument className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
         </BentoCard>
       ) : (
         <BentoCard span="xl" className="h-[500px] flex flex-col justify-between group overflow-hidden relative p-12 bg-white border border-black/[0.03] shadow-aura">
-          <div className="absolute inset-0 z-0">
+          <ContainerInstrument className="absolute inset-0 z-0">
             <Image 
               src="/assets/voice-photo.jpg" 
               alt="Casting" 
               fill 
               className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-1000"
             />
-          </div>
+          </ContainerInstrument>
           <ContainerInstrument plain className="relative z-10">
             <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[15px] flex items-center justify-center text-white mb-8 shadow-lg shadow-primary/10">
               <Image 
@@ -121,7 +121,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
       <ContainerInstrument plain className="space-y-8">
         <BentoCard span="sm" className="bg-va-dark-soft text-white p-8 flex flex-col justify-between h-[240px] border-none !rounded-[20px]">
           <ContainerInstrument plain>
-            <div className="mb-4">
+            <ContainerInstrument className="mb-4">
               <Image 
                 src="/assets/common/branding/icons/INFO.svg" 
                 alt="Speed" 
@@ -129,7 +129,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
                 height={24} 
                 style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
               />
-            </div>
+            </ContainerInstrument>
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2 text-primary"><VoiceglotText translationKey="home.showcase.speed.title" defaultText="Snelheid" /><TextInstrument className="text-white/60 text-[15px] font-light leading-relaxed"><VoiceglotText translationKey="home.showcase.speed.description" defaultText="Opnames in topkwaliteit. Vaak al binnen 24 uur geleverd." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-white/30"><VoiceglotText translationKey="home.showcase.speed.footer" defaultText="Directe levering" /></TextInstrument>
@@ -137,7 +137,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
 
         <BentoCard span="sm" className="hred text-white p-8 flex flex-col justify-between h-[240px] border-none !rounded-[20px]">
           <ContainerInstrument plain>
-            <div className="mb-4">
+            <ContainerInstrument className="mb-4">
               <Image 
                 src="/assets/common/branding/icons/FAVORITES.svg" 
                 alt="Quality" 
@@ -145,7 +145,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
                 height={24} 
                 className="brightness-0 invert"
               />
-            </div>
+            </ContainerInstrument>
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2"><VoiceglotText translationKey="home.showcase.quality.title" defaultText="Kwaliteit" /><TextInstrument className="text-white/90 text-[15px] font-light leading-relaxed"><VoiceglotText translationKey="home.showcase.quality.description" defaultText="Wij werken alleen met stemacteurs die hun vak verstaan." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-white/50"><VoiceglotText translationKey="home.showcase.quality.footer" defaultText="Geselecteerde stemmen" /></TextInstrument>

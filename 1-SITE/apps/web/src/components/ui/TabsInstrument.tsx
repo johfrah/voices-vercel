@@ -13,9 +13,9 @@ export const TabsInstrument: React.FC<{ items: TabItem[] }> = ({ items }) => {
   const [activeId, setActiveId] = useState(items[0]?.id);
 
   return (
-    <div className="w-full bg-va-black text-white p-12 rounded-[60px] shadow-2xl relative overflow-hidden">
-      <div className="relative z-10">
-        <div className="flex flex-wrap gap-3 mb-16">
+    <ContainerInstrument className="w-full bg-va-black text-white p-12 rounded-[60px] shadow-2xl relative overflow-hidden">
+      <ContainerInstrument className="relative z-10">
+        <ContainerInstrument className="flex flex-wrap gap-3 mb-16">
           {items.map((item) => (
             <button
               key={item.id}
@@ -29,24 +29,24 @@ export const TabsInstrument: React.FC<{ items: TabItem[] }> = ({ items }) => {
               {item.title}
             </button>
           ))}
-        </div>
+        </ContainerInstrument>
         
-        <div className="min-h-[300px]">
+        <ContainerInstrument className="min-h-[300px]">
           {items.map((item) => (
-            <div 
+            <ContainerInstrument 
               key={item.id}
               className={`transition-all duration-700 ${
                 activeId === item.id ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 hidden'
               }`}
             >
-              <div className="prose prose-2xl prose-invert max-w-4xl font-medium leading-tight opacity-80">
+              <ContainerInstrument className="prose prose-2xl prose-invert max-w-4xl font-medium leading-tight opacity-80">
                 <div dangerouslySetInnerHTML={{ __html: item.content }} />
-              </div>
-            </div>
+              </ContainerInstrument>
+            </ContainerInstrument>
           ))}
-        </div>
-      </div>
-      <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
-    </div>
+        </ContainerInstrument>
+      </ContainerInstrument>
+      <ContainerInstrument className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
+    </ContainerInstrument>
   );
 };

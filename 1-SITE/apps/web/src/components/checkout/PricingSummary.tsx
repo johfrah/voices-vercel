@@ -3,7 +3,6 @@
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { motion } from 'framer-motion';
-import { FileText, Loader2, Music, ShieldCheck, Zap } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { 
@@ -64,7 +63,7 @@ export const PricingSummary: React.FC = () => {
             <ContainerInstrument className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <ContainerInstrument className="flex items-center gap-4 relative z-10">
               <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-primary/20 flex items-center justify-center text-primary shadow-inner">
-                <Zap strokeWidth={1.5} size={24} fill="currentColor" className="animate-pulse" />
+                <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="animate-pulse" />
               </ContainerInstrument>
               <ContainerInstrument>
                 <HeadingInstrument level={4} className="font-light text-lg tracking-tight text-white">
@@ -94,7 +93,7 @@ export const PricingSummary: React.FC = () => {
         {state.selectedActor && !isSubscription && (
           <ContainerInstrument className="flex justify-between items-center p-4 bg-white rounded-[20px] border border-va-black/5 shadow-aura">
             <ContainerInstrument className="flex items-center gap-3">
-              <ContainerInstrument className="w-10 h-10 rounded-full overflow-hidden bg-va-off-white relative border border-va-black/5">
+              <ContainerInstrument className="w-10 h-10 rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5">
                 <Image 
                   src={state.selectedActor.photo_url || '/mic-placeholder.png'} 
                   alt={state.selectedActor.display_name || 'Stemacteur'} 
@@ -119,7 +118,7 @@ export const PricingSummary: React.FC = () => {
           <ContainerInstrument className="flex justify-between items-center p-4 bg-white rounded-[20px] border border-va-black/5 shadow-aura">
             <ContainerInstrument className="flex items-center gap-3">
               <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-                <FileText size={20} strokeWidth={1.5} />
+                <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
               </ContainerInstrument>
               <ContainerInstrument>
                 <HeadingInstrument level={4} className="font-light text-[15px] text-va-black">
@@ -142,7 +141,7 @@ export const PricingSummary: React.FC = () => {
           <ContainerInstrument className="flex justify-between items-center p-4 bg-white rounded-[20px] border border-va-black/5 shadow-aura border-l-4 border-primary">
             <ContainerInstrument className="flex items-center gap-3">
               <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
-                <Music size={20} strokeWidth={1.5} />
+                <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
               </ContainerInstrument>
               <ContainerInstrument>
                 <HeadingInstrument level={4} className="font-light text-[15px] text-va-black">
@@ -166,9 +165,9 @@ export const PricingSummary: React.FC = () => {
         {isJohfrai && (
           <ContainerInstrument className="p-6 bg-primary/5 border border-primary/10 rounded-[20px] space-y-3 animate-in fade-in slide-in-from-right-4 duration-500">
             <ContainerInstrument className="flex items-center gap-2 text-primary">
-              <ShieldCheck strokeWidth={1.5} size={16} />
+              <Image src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
               <TextInstrument className="text-[12px] font-light tracking-widest ">
-                <VoiceglotText translationKey="common.human_guarantee" defaultText="De Menselijke Garantie" />
+                <VoiceglotText translationKey="common.human_guarantee" defaultText="De menselijke garantie" />
               </TextInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-[15px] font-light text-va-black/60 leading-relaxed">

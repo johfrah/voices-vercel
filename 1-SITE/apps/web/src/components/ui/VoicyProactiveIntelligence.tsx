@@ -69,25 +69,25 @@ export const VoicyProactiveIntelligence = () => {
         >
           <ContainerInstrument className="bg-va-black text-white p-6 rounded-[32px] shadow-2xl border border-white/10 relative overflow-hidden group">
             {/* Background Glow */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/20 rounded-full blur-[40px] group-hover:bg-primary/30 transition-all duration-1000" />
+            <ContainerInstrument className="absolute -top-20 -right-20 w-40 h-40 bg-primary/20 rounded-full blur-[40px] group-hover:bg-primary/30 transition-all duration-1000" />
             
-            <div className="relative z-10">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+            <ContainerInstrument className="relative z-10">
+              <ContainerInstrument className="flex justify-between items-start mb-4">
+                <ContainerInstrument className="flex items-center gap-2">
+                  <ContainerInstrument className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                     <Brain size={18} className="text-va-black" />
-                  </div>
+                  </ContainerInstrument>
                   <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em] text-primary">
                     <VoiceglotText translationKey="auto.voicyproactiveintelligence.voicy_intelligence.7a49dd" defaultText="Voicy Intelligence" />
                   </TextInstrument>
-                </div>
+                </ContainerInstrument>
                 <button 
                   onClick={() => setIsVisible(false)}
                   className="text-white/20 hover:text-white transition-colors"
                 >
                   <X strokeWidth={1.5} size={16} />
                 </button>
-              </div>
+              </ContainerInstrument>
 
               <HeadingInstrument level={4} className="text-[15px] font-black mb-2 leading-tight">
                 {tip.title}
@@ -97,7 +97,7 @@ export const VoicyProactiveIntelligence = () => {
                 {tip.description}
               </TextInstrument>
 
-              <div className="flex items-center gap-3">
+              <ContainerInstrument className="flex items-center gap-3">
                 {tip.cta && (
                   <ButtonInstrument 
                     onClick={tip.cta.onClick}
@@ -113,8 +113,8 @@ export const VoicyProactiveIntelligence = () => {
                 >
                   <VoiceglotText translationKey="auto.voicyproactiveintelligence.later____.0d5296" defaultText="Later" />
                 </ButtonInstrument>
-              </div>
-            </div>
+              </ContainerInstrument>
+            </ContainerInstrument>
           </ContainerInstrument>
         </motion.div>
       )}

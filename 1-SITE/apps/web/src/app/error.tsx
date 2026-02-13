@@ -48,22 +48,22 @@ export default function Error({
   return (
     <ContainerInstrument className="min-h-[60vh] flex flex-col items-center justify-center gap-8 py-20 px-6">
       {/* 🕵️ Diagnostic Error Layer (Visible for debugging) */}
-      <div className="bg-red-50 p-4 rounded-xl border border-red-100 mb-4 max-w-2xl overflow-auto animate-in fade-in duration-700">
+      <ContainerInstrument className="bg-red-50 p-4 rounded-xl border border-red-100 mb-4 max-w-2xl overflow-auto animate-in fade-in duration-700">
         <p className="text-red-800 font-mono text-[15px] font-bold mb-1"><VoiceglotText translationKey="auto.error.diagnostic_info_.a840d6" defaultText="Diagnostic Info:" /></p>
         <p className="text-red-800 font-mono text-[15px]">{error.message || 'Unknown error'}</p>
         {error.cause && <p className="text-red-600 font-mono text-[15px] mt-2 border-t border-red-100 pt-2">Cause: {String(error.cause)}</p>}
         <p className="text-red-400 font-mono text-[15px] mt-2">Digest: {error.digest || 'no-digest'}</p>
-      </div>
+      </ContainerInstrument>
       <ContainerInstrument className="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center">
         <AlertCircle size={40} />
       </ContainerInstrument>
 
-      <div className="text-center space-y-2">
+      <ContainerInstrument className="text-center space-y-2">
         <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter"><VoiceglotText translationKey="error.app.title" defaultText="Oeps, even geduld" /><TextInstrument className="text-va-black/40 font-medium max-w-md mx-auto"><VoiceglotText 
             translationKey="error.app.text" 
             defaultText="De pagina kon niet volledig worden geladen. We proberen de verbinding te herstellen." 
           /></TextInstrument></HeadingInstrument>
-      </div>
+      </ContainerInstrument>
 
       <ButtonInstrument onClick={reset} className="va-btn-pro !px-12">
         <RefreshCw size={18} />

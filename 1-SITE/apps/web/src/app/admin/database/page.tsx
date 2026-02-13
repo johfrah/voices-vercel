@@ -39,9 +39,9 @@ export default function AdminDatabasePage() {
   const filteredTables = tables.filter(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <ContainerInstrument className="min-h-screen flex items-center justify-center">
       <Loader2 className="animate-spin text-primary" size={40} />
-    </div>
+    </ContainerInstrument>
   );
 
   return (
@@ -59,7 +59,7 @@ export default function AdminDatabasePage() {
         </ContainerInstrument>
         
         <ContainerInstrument className="flex gap-4">
-          <div className="relative group">
+          <ContainerInstrument className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} />
             <input 
               type="text" 
@@ -68,7 +68,7 @@ export default function AdminDatabasePage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-2xl text-[15px] font-medium focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
              />
-          </div>
+          </ContainerInstrument>
           <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
             <RefreshCw size={16} /> <VoiceglotText translationKey="admin.database.sync" defaultText="Forceer Sync" />
           </ButtonInstrument>
@@ -78,40 +78,40 @@ export default function AdminDatabasePage() {
       {/* DB Stats */}
       <BentoGrid columns={4}>
         <BentoCard span="sm" className="bg-va-black text-white p-8 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/20 text-primary rounded-[20px]">
+          <ContainerInstrument className="flex items-center gap-3">
+            <ContainerInstrument className="p-2 bg-primary/20 text-primary rounded-[20px]">
               <Database size={20} />
-            </div>
+            </ContainerInstrument>
             <TextInstrument className="text-[15px] font-black tracking-widest opacity-40 text-white"><VoiceglotText translationKey="auto.page.status.ec53a8" defaultText="Status" /></TextInstrument>
-          </div>
+          </ContainerInstrument>
           <HeadingInstrument level={3} className="text-3xl font-black tracking-tighter"><VoiceglotText translationKey="auto.page.healthy.f068eb" defaultText="HEALTHY" /></HeadingInstrument>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <ContainerInstrument className="flex items-center gap-2">
+            <ContainerInstrument className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <TextInstrument className="text-[15px] font-black tracking-widest opacity-40 text-white"><VoiceglotText translationKey="auto.page.drizzle_orm_v0_30_0.ced759" defaultText="Drizzle ORM v0.30.0" /></TextInstrument>
-          </div>
+          </ContainerInstrument>
         </BentoCard>
         
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
-          <div className="flex items-center gap-3 text-va-black/40">
+          <ContainerInstrument className="flex items-center gap-3 text-va-black/40">
             <Table size={20} />
             <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.tabellen.e3bdf1" defaultText="Tabellen" /></TextInstrument>
-          </div>
+          </ContainerInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">{tables.length}</HeadingInstrument>
         </BentoCard>
 
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
-          <div className="flex items-center gap-3 text-va-black/40">
+          <ContainerInstrument className="flex items-center gap-3 text-va-black/40">
             <HardDrive size={20} />
             <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.storage.8c4aa5" defaultText="Storage" /></TextInstrument>
-          </div>
+          </ContainerInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">1.2 GB</HeadingInstrument>
         </BentoCard>
 
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
-          <div className="flex items-center gap-3 text-va-black/40">
+          <ContainerInstrument className="flex items-center gap-3 text-va-black/40">
             <Zap strokeWidth={1.5} size={20} />
             <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.queries_sec.892a3b" defaultText="Queries/sec" /></TextInstrument>
-          </div>
+          </ContainerInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter text-primary">142</HeadingInstrument>
         </BentoCard>
       </BentoGrid>
@@ -120,38 +120,38 @@ export default function AdminDatabasePage() {
       <BentoGrid columns={3}>
         {filteredTables.map((table) => (
           <BentoCard key={table} span="sm" className="bg-white border border-black/5 p-8 group hover:border-primary transition-all cursor-pointer relative overflow-hidden">
-            <div className="space-y-4 relative z-10">
-              <div className="flex justify-between items-start">
-                <div className="p-3 bg-va-off-white rounded-2xl text-va-black/20 group-hover:text-primary group-hover:bg-primary/5 transition-all">
+            <ContainerInstrument className="space-y-4 relative z-10">
+              <ContainerInstrument className="flex justify-between items-start">
+                <ContainerInstrument className="p-3 bg-va-off-white rounded-2xl text-va-black/20 group-hover:text-primary group-hover:bg-primary/5 transition-all">
                   <Table size={24} />
-                </div>
-                <div className="text-[15px] font-black text-va-black/20 tracking-widest">
+                </ContainerInstrument>
+                <ContainerInstrument className="text-[15px] font-black text-va-black/20 tracking-widest">
                   {Math.floor(Math.random() * 10000)} rijen
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
               <HeadingInstrument level={3} className="text-xl font-black tracking-tight group-hover:text-primary transition-colors">
                 {table}
               </HeadingInstrument>
-              <div className="flex gap-2">
-                <div className="px-2 py-1 bg-va-off-white rounded text-[15px] font-bold tracking-widest text-va-black/40">Read</div>
-                <div className="px-2 py-1 bg-va-off-white rounded text-[15px] font-bold tracking-widest text-va-black/40"><VoiceglotText translationKey="auto.page.write.1129c0" defaultText="Write" /></div>
-              </div>
-            </div>
-            <div className="absolute -right-4 -bottom-4 text-va-black/[0.02] group-hover:text-primary/[0.05] transition-all">
+              <ContainerInstrument className="flex gap-2">
+                <ContainerInstrument className="px-2 py-1 bg-va-off-white rounded text-[15px] font-bold tracking-widest text-va-black/40">Read</ContainerInstrument>
+                <ContainerInstrument className="px-2 py-1 bg-va-off-white rounded text-[15px] font-bold tracking-widest text-va-black/40"><VoiceglotText translationKey="auto.page.write.1129c0" defaultText="Write" /></ContainerInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="absolute -right-4 -bottom-4 text-va-black/[0.02] group-hover:text-primary/[0.05] transition-all">
               <Database size={120} />
-            </div>
+            </ContainerInstrument>
           </BentoCard>
         ))}
       </BentoGrid>
 
       {/* Warning */}
       <ContainerInstrument className="p-8 bg-red-500/5 border border-red-500/10 rounded-[32px] flex items-center gap-6">
-        <div className="w-16 h-16 bg-red-500 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-red-500/20">
+        <ContainerInstrument className="w-16 h-16 bg-red-500 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-red-500/20">
           <ShieldAlert size={32} />
-        </div>
-        <div className="space-y-1">
+        </ContainerInstrument>
+        <ContainerInstrument className="space-y-1">
           <HeadingInstrument level={4} className="text-red-500 font-black tracking-tight"><VoiceglotText translationKey="auto.page.nuclear_warning.0b1dd5" defaultText="NUCLEAR WARNING" /><TextInstrument className="text-[15px] text-red-900/60 font-medium"><VoiceglotText translationKey="auto.page.wijzigingen_in_de_da.5827f8" defaultText="Wijzigingen in de database zijn onomkeerbaar. Gebruik deze tool uitsluitend voor onderhoud en debugging. Maak altijd een backup via de `scripts/maintenance/backup.sh` voordat je destructieve acties uitvoert." /></TextInstrument></HeadingInstrument>
-        </div>
+        </ContainerInstrument>
       </ContainerInstrument>
     </PageWrapperInstrument>
   );

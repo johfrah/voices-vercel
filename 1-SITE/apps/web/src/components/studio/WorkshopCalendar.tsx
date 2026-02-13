@@ -2,7 +2,6 @@
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, MapPin, Users } from 'lucide-react';
 import React from 'react';
 import { 
   ContainerInstrument, 
@@ -11,6 +10,7 @@ import {
   HeadingInstrument
 } from '@/components/ui/LayoutInstruments';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) => {
   const { playClick } = useSonicDNA();
@@ -26,11 +26,11 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
       <ContainerInstrument className="flex items-center justify-between mb-8">
         <ContainerInstrument className="flex items-center gap-4">
           <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-va-black text-white flex items-center justify-center shadow-lg group-hover/calendar:bg-primary transition-all duration-500">
-            <CalendarIcon size={24} strokeWidth={1.5} />
+            <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" />
           </ContainerInstrument>
           <ContainerInstrument>
             <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-va-black">
-              <VoiceglotText translationKey="studio.calendar.title" defaultText="Workshop Kalender" />
+              <VoiceglotText translationKey="studio.calendar.title" defaultText="Workshop kalender" />
             </HeadingInstrument>
             <TextInstrument className="text-[12px] font-light tracking-widest text-va-black/30 mt-1 ">
               <VoiceglotText translationKey="studio.calendar.month" defaultText="Februari 2026" />
@@ -40,15 +40,15 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
         <ContainerInstrument className="flex gap-2">
           <ButtonInstrument 
             onClick={() => playClick('light')}
-            className="w-10 h-10 rounded-full bg-white border border-va-black/5 flex items-center justify-center text-va-black/40 hover:text-primary transition-all shadow-sm active:scale-95"
+            className="w-10 h-10 rounded-[10px] bg-white border border-va-black/5 flex items-center justify-center text-va-black/40 hover:text-primary transition-all shadow-sm active:scale-95"
           >
-            <ChevronLeft size={20} strokeWidth={1.5} />
+            <Image src="/assets/common/branding/icons/BACK.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
           </ButtonInstrument>
           <ButtonInstrument 
             onClick={() => playClick('light')}
-            className="w-10 h-10 rounded-full bg-white border border-va-black/5 flex items-center justify-center text-va-black/40 hover:text-primary transition-all shadow-sm active:scale-95"
+            className="w-10 h-10 rounded-[10px] bg-white border border-va-black/5 flex items-center justify-center text-va-black/40 hover:text-primary transition-all shadow-sm active:scale-95"
           >
-            <ChevronRight size={20} strokeWidth={1.5} />
+            <Image src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
           </ButtonInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
@@ -68,7 +68,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
               key={i} 
               onClick={() => handleDayClick(day)}
               className={cn(
-                "aspect-square rounded-[10px] flex items-center justify-center text-[15px] font-medium transition-all cursor-pointer active:scale-90",
+                "aspect-square rounded-[10px] flex items-center justify-center text-[15px] font-light transition-all cursor-pointer active:scale-90",
                 hasWorkshop 
                   ? 'bg-primary text-white shadow-aura scale-110 hover:rotate-3' 
                   : 'bg-va-off-white text-va-black/40 hover:bg-white hover:shadow-sm'
@@ -93,28 +93,28 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
           >
             <ContainerInstrument className="flex items-center gap-4">
               <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-va-off-white flex flex-col items-center justify-center group-hover:bg-primary/10 transition-all">
-                <TextInstrument className="text-[10px] font-bold text-va-black/30 group-hover:text-primary transition-all ">
+                <TextInstrument className="text-[10px] font-light text-va-black/30 group-hover:text-primary transition-all ">
                   <VoiceglotText translationKey="common.month.feb.short" defaultText="FEB" />
                 </TextInstrument>
-                <TextInstrument className="text-[15px] font-medium text-va-black group-hover:text-primary transition-all">12</TextInstrument>
+                <TextInstrument className="text-[15px] font-light text-va-black group-hover:text-primary transition-all">12</TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="text-left">
-                <HeadingInstrument level={5} className="text-[15px] font-medium tracking-tight">
+                <HeadingInstrument level={5} className="text-[15px] font-light tracking-tight">
                   <VoiceglotText translationKey={`workshop.${workshop.id}.title`} defaultText={workshop.title} noTranslate={true} />
                 </HeadingInstrument>
                 <ContainerInstrument className="flex items-center gap-3 mt-1">
                   <ContainerInstrument className="flex items-center gap-1 text-[12px] font-light text-va-black/30 tracking-widest ">
-                    <Clock size={10} strokeWidth={1.5} /> 10:00 - 17:00
+                    <Image src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 10:00 - 17:00
                   </ContainerInstrument>
                   <ContainerInstrument className="flex items-center gap-1 text-[12px] font-light text-va-black/30 tracking-widest ">
-                    <MapPin size={10} strokeWidth={1.5} /> 
+                    <Image src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 
                     <VoiceglotText translationKey="common.location.brussels" defaultText="Studio Brussel" />
                   </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2">
-              <Users size={12} className="text-va-black/20" strokeWidth={1.5} />
+              <Image src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
               <TextInstrument className="text-[12px] font-light text-va-black/40 tracking-widest ">6/8</TextInstrument>
             </ContainerInstrument>
           </ButtonInstrument>

@@ -65,7 +65,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
       <tr>
         <td width="100" style="vertical-align: middle; text-align: center;">
           <a href="https://www.voices.be/?utm_source=E-mail&utm_medium=be-mail" style="text-decoration: none;">
-            <img src="https://voices-vercel.vercel.app/assets/common/branding/founder/johfrah-avatar-be.png" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
+            <img src="https://voices-vercel.vercel.app/assets/common/branding/founder/johfrah.png" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
           </a>
         </td>
         <td style="vertical-align: middle; padding-left: 31px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">

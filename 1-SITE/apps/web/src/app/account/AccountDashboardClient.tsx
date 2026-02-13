@@ -12,19 +12,10 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-    Activity,
-    ArrowRight,
-    Brain,
-    Mail,
-    Settings,
-    ShieldCheck,
-    ShoppingBag,
-    Zap
-} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { LoginPageClient } from '../auth/login/LoginPageClient';
+import Image from 'next/image';
 
 export default function AccountDashboardClient() {
   const { user, isAdmin, isLoading, isAuthenticated, logout } = useAuth();
@@ -67,18 +58,18 @@ export default function AccountDashboardClient() {
           {isAdmin && (
             <BentoCard 
               span="sm" 
-              className="va-card-dna p-12"
+              className="va-card-dna p-12 rounded-[20px]"
               onClick={() => router.push('/admin/mailbox')}
             >
               <ContainerInstrument className="space-y-4">
-                <ContainerInstrument className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-8 bg-blue-500 shadow-lg shadow-blue-500/20">
-                  <Mail strokeWidth={1.5} size={24} className="text-white" />
+                <ContainerInstrument className="w-14 h-14 rounded-[10px] flex items-center justify-center text-white mb-8 bg-blue-500 shadow-lg shadow-blue-500/20">
+                  <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" />
                 </ContainerInstrument>
-                <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4"><VoiceglotText translationKey="account.card.mailbox.title" defaultText="Mailbox" /><TextInstrument className="text-va-black/40 font-light max-w-xs"><VoiceglotText translationKey="account.card.mailbox.desc" defaultText="Beheer je beveiligde communicatie." /></TextInstrument></HeadingInstrument>
+                <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4 text-va-black"><VoiceglotText translationKey="account.card.mailbox.title" defaultText="Mailbox" /><TextInstrument className="text-va-black/40 font-light max-w-xs"><VoiceglotText translationKey="account.card.mailbox.desc" defaultText="Beheer je beveiligde communicatie." /></TextInstrument></HeadingInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-blue-500 ">
-                <VoiceglotText translationKey="account.card.mailbox.cta" defaultText="Open Inbox" />
-                <ArrowRight strokeWidth={1.5} size={14} />
+                <VoiceglotText translationKey="account.card.mailbox.cta" defaultText="Open inbox" />
+                <Image src="/assets/common/branding/icons/FORWARD.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
               </ContainerInstrument>
             </BentoCard>
           )}
@@ -90,8 +81,8 @@ export default function AccountDashboardClient() {
             onClick={() => router.push('/account/orders')}
           >
             <ContainerInstrument className="space-y-4">
-              <ContainerInstrument className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-8 bg-white/20 backdrop-blur-md">
-                <ShoppingBag size={24} className="text-white" />
+              <ContainerInstrument className="w-14 h-14 rounded-[10px] flex items-center justify-center text-white mb-8 bg-white/20 backdrop-blur-md">
+                <Image src="/assets/common/branding/icons/CART.svg" width={24} height={24} alt="" className="brightness-0 invert" />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4 text-white">
                 <VoiceglotText translationKey="account.card.orders.title" defaultText="Bestellingen" />
@@ -101,22 +92,22 @@ export default function AccountDashboardClient() {
               </HeadingInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-white ">
-              <VoiceglotText translationKey="account.card.orders.cta" defaultText="Bekijk Orders" />
-              <ArrowRight strokeWidth={1.5} size={14} />
+              <VoiceglotText translationKey="account.card.orders.cta" defaultText="Bekijk orders" />
+              <Image src="/assets/common/branding/icons/FORWARD.svg" width={14} height={14} alt="" className="brightness-0 invert" />
             </ContainerInstrument>
           </BentoCard>
 
           {/* ⚙️ SETTINGS CARD */}
           <BentoCard 
             span="sm" 
-            className="va-card-dna p-12"
+            className="va-card-dna p-12 rounded-[20px]"
             onClick={() => router.push('/account/settings')}
           >
             <ContainerInstrument className="space-y-4">
-              <ContainerInstrument className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-8 bg-primary shadow-lg shadow-primary/20">
-                <Settings size={24} className="text-white" />
+              <ContainerInstrument className="w-14 h-14 rounded-[10px] flex items-center justify-center text-white mb-8 bg-primary shadow-lg shadow-primary/20">
+                <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" />
               </ContainerInstrument>
-              <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4">
+              <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4 text-va-black">
                 <VoiceglotText translationKey="account.card.settings.title" defaultText="Instellingen" />
                 <TextInstrument className="text-va-black/40 font-light max-w-xs">
                   <VoiceglotText translationKey="account.card.settings.desc" defaultText="Beheer je profiel en voorkeuren." />
@@ -125,21 +116,21 @@ export default function AccountDashboardClient() {
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-primary ">
               <VoiceglotText translationKey="account.card.settings.cta" defaultText="Aanpassen" />
-              <ArrowRight strokeWidth={1.5} size={14} />
+              <Image src="/assets/common/branding/icons/FORWARD.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             </ContainerInstrument>
           </BentoCard>
 
           {/* 🚀 PARTNER */}
           <BentoCard 
             span="sm" 
-            className="va-card-dna p-12"
+            className="va-card-dna p-12 rounded-[20px]"
             onClick={() => router.push('/account/partner')}
           >
             <ContainerInstrument className="space-y-4">
-              <ContainerInstrument className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-8 bg-primary shadow-lg shadow-primary/20">
-                <Zap strokeWidth={1.5} size={24} className="text-white" />
+              <ContainerInstrument className="w-14 h-14 rounded-[10px] flex items-center justify-center text-white mb-8 bg-primary shadow-lg shadow-primary/20">
+                <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" />
               </ContainerInstrument>
-              <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4">
+              <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4 text-va-black">
                 <VoiceglotText translationKey="account.card.partner.title" defaultText="Partner" />
                 <TextInstrument className="text-va-black/40 font-light max-w-xs">
                   <VoiceglotText translationKey="account.card.partner.desc" defaultText="Exclusieve tools voor partners." />
@@ -148,7 +139,7 @@ export default function AccountDashboardClient() {
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-primary ">
               <VoiceglotText translationKey="account.card.partner.cta" defaultText="Open" />
-              <ArrowRight strokeWidth={1.5} size={14} />
+              <Image src="/assets/common/branding/icons/FORWARD.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             </ContainerInstrument>
           </BentoCard>
 
@@ -161,63 +152,63 @@ export default function AccountDashboardClient() {
           <ContainerInstrument className="va-container grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Lead Vibe & Activity */}
-            <BentoCard span="sm" className="va-card-dna p-10">
+            <BentoCard span="sm" className="va-card-dna p-10 rounded-[20px]">
               <ContainerInstrument>
-                <div className="flex justify-between items-start mb-8">
-                  <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
-                    <Activity strokeWidth={1.5} size={24} />
-                  </div>
-                  <ContainerInstrument className={`px-3 py-1 rounded-full text-[15px] font-light tracking-widest ${
+                <ContainerInstrument className="flex justify-between items-start mb-8">
+                  <ContainerInstrument className="w-12 h-12 bg-primary/10 text-primary rounded-[10px] flex items-center justify-center">
+                    <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                  </ContainerInstrument>
+                  <ContainerInstrument className={`px-3 py-1 rounded-[10px] text-[15px] font-light tracking-widest ${
                     customerDNA.intelligence.leadVibe === 'burning' ? 'bg-red-500 text-white' :
                     customerDNA.intelligence.leadVibe === 'hot' ? 'bg-orange-500 text-white' :
                     'bg-va-off-white text-va-black/40'
                   }`}>
                     {customerDNA.intelligence.leadVibe} <VoiceglotText translationKey="common.vibe" defaultText="vibe" />
                   </ContainerInstrument>
-                </div>
-                <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-2"><VoiceglotText translationKey="account.dna.activity.title" defaultText="Activiteit" /><TextInstrument className="text-va-black/40 text-[15px] font-light"><VoiceglotText translationKey="account.dna.activity.text" defaultText={`Je hebt ${customerDNA.stats.orderCount} projecten afgerond.`} /></TextInstrument></HeadingInstrument>
+                </ContainerInstrument>
+                <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-2 text-va-black"><VoiceglotText translationKey="account.dna.activity.title" defaultText="Activiteit" /><TextInstrument className="text-va-black/40 text-[15px] font-light"><VoiceglotText translationKey="account.dna.activity.text" defaultText={`Je hebt ${customerDNA.stats.orderCount} projecten afgerond.`} /></TextInstrument></HeadingInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="pt-8 border-t border-black/5 mt-8">
-                <div className="flex justify-between items-center">
-                  <span className="text-[15px] font-light tracking-widest text-va-black/20 ">
+                <ContainerInstrument className="flex justify-between items-center">
+                  <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/20 ">
                     <VoiceglotText translationKey="common.status" defaultText="Status" />
-                  </span>
-                  <span className="text-[15px] font-light tracking-widest text-primary ">
+                  </TextInstrument>
+                  <TextInstrument className="text-[15px] font-light tracking-widest text-primary ">
                     <VoiceglotText translationKey={`common.journey_state.${customerDNA.intelligence.journeyState?.toLowerCase()}`} defaultText={customerDNA.intelligence.journeyState || 'Ontdekker'} />
-                  </span>
-                </div>
+                  </TextInstrument>
+                </ContainerInstrument>
               </ContainerInstrument>
             </BentoCard>
 
             {/* AI Insights (The DNA) */}
-            <BentoCard span="lg" className="bg-va-black text-white p-12 relative overflow-hidden group va-interactive">
+            <BentoCard span="lg" className="bg-va-black text-white p-12 relative overflow-hidden group va-interactive rounded-[20px]">
               <ContainerInstrument className="relative z-10">
-                <Brain className="text-primary mb-8" size={40} />
-                <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-4"><VoiceglotText translationKey="account.dna.title" defaultText="Customer DNA" /></HeadingInstrument>
-                <div className="grid grid-cols-2 gap-8 mt-8">
-                  <div className="space-y-2">
-                    <span className="text-[15px] font-light tracking-widest text-white/20 block ">
+                <Image src="/assets/common/branding/icons/INFO.svg" width={40} height={40} alt="" className="text-primary mb-8 brightness-0 invert opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-4 text-white"><VoiceglotText translationKey="account.dna.title" defaultText="Customer DNA" /></HeadingInstrument>
+                <ContainerInstrument className="grid grid-cols-2 gap-8 mt-8">
+                  <ContainerInstrument className="space-y-2">
+                    <TextInstrument className="text-[15px] font-light tracking-widest text-white/20 block ">
                       <VoiceglotText translationKey="account.dna.languages" defaultText="Voorkeurstalen" />
-                    </span>
-                    <div className="flex flex-wrap gap-2">
+                    </TextInstrument>
+                    <ContainerInstrument className="flex flex-wrap gap-2">
                       {customerDNA.dna.preferredLanguages.map((lang: string) => (
-                        <span key={lang} className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[15px] font-light tracking-wider ">{lang}</span>
-                      )) || <span className="text-[15px] text-white/40 italic font-light"><VoiceglotText translationKey="common.no_data" defaultText="Nog geen data" /></span>}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <span className="text-[15px] font-light tracking-widest text-white/20 block ">
+                        <TextInstrument key={lang} className="px-2 py-1 bg-white/5 border border-white/10 rounded-[5px] text-[15px] font-light tracking-wider ">{lang}</TextInstrument>
+                      )) || <TextInstrument className="text-[15px] text-white/40 italic font-light"><VoiceglotText translationKey="common.no_data" defaultText="Nog geen data" /></TextInstrument>}
+                    </ContainerInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="space-y-2">
+                    <TextInstrument className="text-[15px] font-light tracking-widest text-white/20 block ">
                       <VoiceglotText translationKey="account.dna.journeys" defaultText="Top Journeys" />
-                    </span>
-                    <div className="flex flex-wrap gap-2">
+                    </TextInstrument>
+                    <ContainerInstrument className="flex flex-wrap gap-2">
                       {customerDNA.dna.topJourneys.map((j: string) => (
-                        <span key={j} className="px-2 py-1 bg-primary/20 border border-primary/30 rounded text-[15px] font-light text-primary tracking-wider">{j}</span>
-                      )) || <span className="text-[15px] text-white/40 italic font-light"><VoiceglotText translationKey="common.no_data" defaultText="Nog geen data" /></span>}
-                    </div>
-                  </div>
-                </div>
+                        <TextInstrument key={j} className="px-2 py-1 bg-primary/20 border border-primary/30 rounded-[5px] text-[15px] font-light text-primary tracking-wider">{j}</TextInstrument>
+                      )) || <TextInstrument className="text-[15px] text-white/40 italic font-light"><VoiceglotText translationKey="common.no_data" defaultText="Nog geen data" /></TextInstrument>}
+                    </ContainerInstrument>
+                  </ContainerInstrument>
+                </ContainerInstrument>
               </ContainerInstrument>
-              <ContainerInstrument className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-[80px]" />
+              <ContainerInstrument className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-[20px] blur-[80px]" />
             </BentoCard>
 
           </ContainerInstrument>

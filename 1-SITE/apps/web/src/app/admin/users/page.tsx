@@ -47,9 +47,9 @@ export default function AdminUsersPage() {
   );
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <ContainerInstrument className="min-h-screen flex items-center justify-center">
       <Loader2 className="animate-spin text-primary" size={40} />
-    </div>
+    </ContainerInstrument>
   );
 
   return (
@@ -65,7 +65,7 @@ export default function AdminUsersPage() {
         </ContainerInstrument>
         
         <ContainerInstrument className="flex gap-4">
-          <div className="relative group">
+          <ContainerInstrument className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} />
             <input 
               type="text" 
@@ -74,7 +74,7 @@ export default function AdminUsersPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-2xl text-[15px] font-medium focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
             />
-          </div>
+          </ContainerInstrument>
           <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
             <UserPlus size={16} /> <VoiceglotText translationKey="admin.users.add" defaultText="Nieuwe Gebruiker" />
           </ButtonInstrument>
@@ -117,29 +117,29 @@ export default function AdminUsersPage() {
             {filteredUsers.map((user) => (
               <tr key={user.id} className="border-b border-black/5 hover:bg-va-off-white/20 transition-colors group">
                 <td className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-va-off-white rounded-full flex items-center justify-center font-black text-va-black/20 ">
+                  <ContainerInstrument className="flex items-center gap-4">
+                    <ContainerInstrument className="w-10 h-10 bg-va-off-white rounded-full flex items-center justify-center font-black text-va-black/20 ">
                       {user.name?.charAt(0) || user.email?.charAt(0)}
-                    </div>
-                    <div>
+                    </ContainerInstrument>
+                    <ContainerInstrument>
                       <TextInstrument className="font-black text-va-black tracking-tight">{user.name || 'Onbekend'}</TextInstrument>
                       <TextInstrument className="text-[15px] text-va-black/40 font-medium">{user.email}</TextInstrument>
-                    </div>
-                  </div>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
                 </td>
                 <td className="p-6">
-                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
+                  <ContainerInstrument className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
                     user.role === 'admin' ? 'bg-va-black text-white' : 'bg-va-off-white text-va-black/40'
                   }`}>
                     {user.role === 'admin' ? <Shield strokeWidth={1.5} size={10} /> : <Users size={10} />}
                     {user.role}
-                  </div>
+                  </ContainerInstrument>
                 </td>
                 <td className="p-6">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  <ContainerInstrument className="flex items-center gap-2">
+                    <ContainerInstrument className="w-1.5 h-1.5 rounded-full bg-green-500" />
                     <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.actief.63cc56" defaultText="Actief" /></TextInstrument>
-                  </div>
+                  </ContainerInstrument>
                 </td>
                 <td className="p-6">
                   <TextInstrument className="text-[15px] font-medium text-va-black/40">
@@ -147,7 +147,7 @@ export default function AdminUsersPage() {
                   </TextInstrument>
                 </td>
                 <td className="p-6">
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ContainerInstrument className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
                       <Edit3 size={14} />
                     </button>
@@ -157,7 +157,7 @@ export default function AdminUsersPage() {
                     <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
                       <MoreHorizontal size={14} />
                     </button>
-                  </div>
+                  </ContainerInstrument>
                 </td>
               </tr>
             ))}

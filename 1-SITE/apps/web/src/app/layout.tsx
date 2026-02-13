@@ -11,6 +11,7 @@ import { VoicejarTracker } from "@/components/ui/VoicejarTracker";
 import { VoicyBridge } from "@/components/ui/VoicyBridge";
 import { VoicyChat } from "@/components/ui/VoicyChat";
 import { GlobalAudioOrchestrator } from "@/components/ui/GlobalAudioOrchestrator";
+import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
 import { MarketManager } from "@config/market-manager";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
@@ -156,6 +157,7 @@ export default function RootLayout({
       />
       <Providers>
         <EditModeOverlay>
+          <LiquidTransitionOverlay />
           <CodyPreviewBanner />
           <VoicejarTracker />
           <GlobalNav />

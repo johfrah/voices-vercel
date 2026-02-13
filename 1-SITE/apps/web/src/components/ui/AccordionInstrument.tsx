@@ -14,9 +14,9 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <div className="w-full space-y-4">
+    <ContainerInstrument className="w-full space-y-4">
       {items.map((item) => (
-        <div 
+        <ContainerInstrument 
           key={item.id} 
           className="border border-va-black/5 rounded-[32px] bg-white overflow-hidden transition-all duration-500 hover:shadow-lg"
         >
@@ -27,7 +27,7 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
             <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/60 group-hover:text-va-black transition-colors">
               {item.title}
             </HeadingInstrument>
-            <div className={`p-2 rounded-full bg-va-black/5 transition-all duration-500 flex items-center justify-center ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
+            <ContainerInstrument className={`p-2 rounded-full bg-va-black/5 transition-all duration-500 flex items-center justify-center ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
               <Image 
                 src="/assets/common/branding/icons/DOWN.svg" 
                 alt="Toggle" 
@@ -35,19 +35,19 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
                 height={18} 
                 style={openId === item.id ? { filter: 'invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)' } : { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
               />
-            </div>
+            </ContainerInstrument>
           </button>
-          <div 
+          <ContainerInstrument 
             className={`transition-all duration-500 ease-in-out ${
               openId === item.id ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
             }`}
           >
-            <div className="px-10 pb-10 prose prose-lg text-va-black/40 font-light">
+            <ContainerInstrument className="px-10 pb-10 prose prose-lg text-va-black/40 font-light">
               <div dangerouslySetInnerHTML={{ __html: item.content }} />
-            </div>
-          </div>
-        </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
       ))}
-    </div>
+    </ContainerInstrument>
   );
 };

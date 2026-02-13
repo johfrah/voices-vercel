@@ -1,9 +1,9 @@
 "use client";
 
 import { useCheckout } from '@/contexts/CheckoutContext';
-import { Building2, Check, Copy, Sparkles } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { VoiceglotText } from '../ui/VoiceglotText';
+import Image from 'next/image';
 
 const TELEPHONY_TEMPLATES = [
   {
@@ -68,31 +68,31 @@ export const TelephonySmartSuggestions: React.FC = () => {
   if (state.usage !== 'telefonie') return null;
 
   return (
-    <div className="bg-va-off-white/50 rounded-[40px] p-8 border-none shadow-none space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="bg-va-off-white/50 rounded-[20px] p-8 border-none shadow-none space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-          <Sparkles strokeWidth={1.5} size={20} />
+        <div className="w-10 h-10 bg-primary/10 rounded-[10px] flex items-center justify-center text-primary">
+          <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
         </div>
         <div>
-          <h3 className="text-[15px] font-black tracking-widest">
-            <VoiceglotText translationKey="checkout.telephony.suggestions.title" defaultText="Smart Suggestions" />
+          <h3 className="text-[15px] font-light tracking-widest text-va-black">
+            <VoiceglotText translationKey="checkout.telephony.suggestions.title" defaultText="Smart suggestions" />
           </h3>
-          <p className="text-[15px] font-bold text-va-black/40 tracking-wider">
-            <VoiceglotText translationKey="checkout.telephony.suggestions.subtitle" defaultText="Telephony Script Assistant" />
+          <p className="text-[15px] font-light text-va-black/40 tracking-wider">
+            <VoiceglotText translationKey="checkout.telephony.suggestions.subtitle" defaultText="Telephony script assistant" />
           </p>
         </div>
       </div>
 
       <div className="space-y-4">
-        <label className="flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/30">
-          <Building2 strokeWidth={1.5} size={12} /> <VoiceglotText translationKey="checkout.telephony.company_label" defaultText="Jouw Bedrijfsnaam" />
+        <label className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/30">
+          <Image src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> <VoiceglotText translationKey="checkout.telephony.company_label" defaultText="Jouw bedrijfsnaam" />
         </label>
         <input
           type="text"
           value={companyName}
           onChange={(e) => handleCompanyChange(e.target.value)}
           placeholder="Bijv. Voices.be"
-          className="w-full bg-white border-none rounded-xl py-4 px-6 text-[15px] font-bold shadow-sm focus:ring-2 focus:ring-primary/20 transition-all"
+          className="w-full bg-white border-none rounded-[10px] py-4 px-6 text-[15px] font-light shadow-sm focus:ring-2 focus:ring-primary/20 transition-all"
         />
       </div>
 
@@ -101,28 +101,28 @@ export const TelephonySmartSuggestions: React.FC = () => {
           <button
             key={template.id}
             onClick={() => handleApplyTemplate(template.text, template.id)}
-            className="group flex items-center justify-between p-4 bg-white hover:bg-primary hover:text-white rounded-xl transition-all text-left shadow-sm"
+            className="group flex items-center justify-between p-4 bg-white hover:bg-primary hover:text-white rounded-[10px] transition-all text-left shadow-sm"
           >
             <div className="flex-1">
-              <p className="text-[15px] font-black tracking-widest opacity-40 group-hover:opacity-100 mb-1">
+              <p className="text-[15px] font-light tracking-widest opacity-40 group-hover:opacity-100 mb-1">
                 {template.title}
               </p>
-              <p className="text-[15px] font-medium line-clamp-1 opacity-80 group-hover:opacity-100">
+              <p className="text-[15px] font-light line-clamp-1 opacity-80 group-hover:opacity-100">
                 {template.text.replace(/\[Bedrijf\]/g, companyName || '...') }
               </p>
             </div>
             <div className="ml-4">
               {copiedId === template.id ? (
-                <Check strokeWidth={1.5} size={16} className="text-green-500 group-hover:text-white" />
+                <Image src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className="brightness-0 invert" />
               ) : (
-                <Copy size={16} className="opacity-20 group-hover:opacity-100" />
+                <Image src="/assets/common/branding/icons/FORWARD.svg" width={16} height={16} alt="" className="opacity-20 group-hover:opacity-100" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
               )}
             </div>
           </button>
         ))}
       </div>
       
-      <p className="text-[15px] font-bold text-va-black/20 tracking-widest text-center">
+      <p className="text-[15px] font-light text-va-black/20 tracking-widest text-center">
         <VoiceglotText translationKey="checkout.telephony.suggestions.hint" defaultText="Klik op een suggestie om deze toe te voegen aan je script" />
       </p>
     </div>

@@ -95,16 +95,16 @@ export default function PageArchitectPage() {
         {pages.map((page) => (
           <BentoCard key={page.id} span="sm" className="bg-white border border-black/5 p-8 rounded-[40px] hover:shadow-aura transition-all group flex flex-col justify-between h-[320px]">
             <ContainerInstrument>
-              <div className="flex justify-between items-start mb-6">
-                <div className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center text-va-black/20 group-hover:text-primary transition-colors">
+              <ContainerInstrument className="flex justify-between items-start mb-6">
+                <ContainerInstrument className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center text-va-black/20 group-hover:text-primary transition-colors">
                   <FileText size={24} />
-                </div>
-                <div className="flex gap-2">
-                  <span className="px-3 py-1 bg-primary/5 text-primary rounded-full text-[15px] font-black tracking-widest border border-primary/10">
+                </ContainerInstrument>
+                <ContainerInstrument className="flex gap-2">
+                  <TextInstrument className="px-3 py-1 bg-primary/5 text-primary rounded-full text-[15px] font-black tracking-widest border border-primary/10">
                     {page.iapContext?.journey || 'common'}
-                  </span>
-                </div>
-              </div>
+                  </TextInstrument>
+                </ContainerInstrument>
+              </ContainerInstrument>
               <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-2">
                 <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} noTranslate={true} />
               </HeadingInstrument>
@@ -114,12 +114,12 @@ export default function PageArchitectPage() {
             </ContainerInstrument>
 
             <ContainerInstrument className="flex items-center justify-between pt-8 border-t border-black/5">
-              <div className="flex items-center gap-2 text-va-black/20">
+              <ContainerInstrument className="flex items-center gap-2 text-va-black/20">
                 <Globe strokeWidth={1.5} size={12} />
-                <span className="text-[15px] font-bold tracking-widest">
+                <TextInstrument className="text-[15px] font-bold tracking-widest">
                   <VoiceglotText translationKey="common.status.live" defaultText="Live" />
-                </span>
-              </div>
+                </TextInstrument>
+              </ContainerInstrument>
               <Link href={`/admin/pages/${page.slug}`} className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
                 <ChevronRight size={18} />
               </Link>

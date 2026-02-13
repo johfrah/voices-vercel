@@ -100,73 +100,73 @@ export default function VisitorPlayerPage() {
     <PageWrapperInstrument className="p-12 space-y-8 max-w-[1800px] mx-auto min-h-screen">
       {/* Header */}
       <SectionInstrument className="flex justify-between items-center">
-        <div className="space-y-2">
+        <ContainerInstrument className="space-y-2">
           <Link href="/admin/marketing/visitors" className="flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[15px] font-black tracking-widest mb-4">
             <ArrowLeft strokeWidth={1.5} size={12} /><VoiceglotText translationKey="auto.page.terug_naar_cockpit.87606e" defaultText="Terug naar cockpit" /></Link>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
+          <ContainerInstrument className="flex items-center gap-3">
+            <ContainerInstrument className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
               <Activity strokeWidth={1.5} size={20} />
-            </div>
-            <div>
+            </ContainerInstrument>
+            <ContainerInstrument>
               <HeadingInstrument level={1} className="text-4xl font-black tracking-tighter "><VoiceglotText translationKey="auto.page.sessie_replay.064195" defaultText="Sessie Replay" /></HeadingInstrument>
               <TextInstrument className="text-[15px] text-va-black/40 font-medium">
-                Visitor Hash: <span className="text-va-black font-bold">{hash}</span>
+                Visitor Hash: <TextInstrument className="text-va-black font-bold">{hash}</TextInstrument>
               </TextInstrument>
-            </div>
-          </div>
-        </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
 
         {session && (
-          <div className="flex gap-4">
+          <ContainerInstrument className="flex gap-4">
             <ContainerInstrument className="flex gap-6 bg-white border border-black/5 p-6 rounded-[24px] shadow-sm">
-              <div className="flex flex-col">
-                <span className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.starttijd.b80649" defaultText="Starttijd" /></span>
-                <span className="text-[15px] font-bold">{new Date(session.createdAt).toLocaleString()}</span>
-              </div>
-              <div className="w-px h-full bg-black/5" />
-              <div className="flex flex-col">
-                <span className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.pagina.265753" defaultText="Pagina" /></span>
-                <span className="text-[15px] font-bold max-w-[200px] truncate">{session.url?.replace('https://www.voices.be', '') || '/'}</span>
-              </div>
+              <ContainerInstrument className="flex flex-col">
+                <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.starttijd.b80649" defaultText="Starttijd" /></TextInstrument>
+                <TextInstrument className="text-[15px] font-bold">{new Date(session.createdAt).toLocaleString()}</TextInstrument>
+              </ContainerInstrument>
+              <ContainerInstrument className="w-px h-full bg-black/5" />
+              <ContainerInstrument className="flex flex-col">
+                <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.pagina.265753" defaultText="Pagina" /></TextInstrument>
+                <TextInstrument className="text-[15px] font-bold max-w-[200px] truncate">{session.url?.replace('https://www.voices.be', '') || '/'}</TextInstrument>
+              </ContainerInstrument>
             </ContainerInstrument>
             
             {session.user && (
               <Link href={`/admin/users/${session.userId}`} className="flex items-center gap-4 bg-va-black text-white p-6 rounded-[24px] shadow-lg hover:bg-primary transition-all group">
-                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center font-black text-[15px]">
+                <ContainerInstrument className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center font-black text-[15px]">
                   {session.user.firstName?.[0]}{session.user.lastName?.[0]}
-                </div>
+                </ContainerInstrument>
                 <div>
                   <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.bekijk_dna.9a6c88" defaultText="Bekijk DNA" /></TextInstrument>
                   <TextInstrument className="text-[15px] font-bold text-white/60 group-hover:text-white">{session.user.firstName} {session.user.lastName}</TextInstrument>
-                </div>
+                </ContainerInstrument>
               </Link>
             )}
-          </div>
+          </ContainerInstrument>
         )}
       </SectionInstrument>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Main Player Area */}
-        <div className="lg:col-span-3 space-y-8">
+        <ContainerInstrument className="lg:col-span-3 space-y-8">
           <SectionInstrument className="bg-va-black rounded-[40px] overflow-hidden shadow-2xl border border-white/5 relative min-h-[700px] flex items-center justify-center">
             {loading ? (
-              <div className="flex flex-col items-center gap-4">
+              <ContainerInstrument className="flex flex-col items-center gap-4">
                 <Activity strokeWidth={1.5} className="text-primary animate-spin" size={48} />
                 <TextInstrument className="text-white/40 text-[15px] font-black tracking-widest"><VoiceglotText translationKey="auto.page.reconstrueren_van_se.55b81b" defaultText="Reconstrueren van sessie..." /></TextInstrument>
-              </div>
+              </ContainerInstrument>
             ) : error ? (
-              <div className="bg-red-500/10 border border-red-500/20 p-8 rounded-3xl text-center max-w-md">
+              <ContainerInstrument className="bg-red-500/10 border border-red-500/20 p-8 rounded-3xl text-center max-w-md">
                 <TextInstrument className="text-red-500 font-bold mb-4">{error}</TextInstrument>
                 <Link href="/admin/marketing/visitors" className="va-btn-pro !bg-white !text-va-black"><VoiceglotText translationKey="auto.page.terug_naar_cockpit.dada9f" defaultText="Terug naar Cockpit" /></Link>
-              </div>
+              </ContainerInstrument>
             ) : (
-              <div ref={playerContainerRef} className="w-full h-full" />
+              <ContainerInstrument ref={playerContainerRef} className="w-full h-full" />
             )}
           </SectionInstrument>
 
           {/* Intelligence Sidebar / Info */}
           {!loading && !error && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <ContainerInstrument className="bg-white border border-black/5 p-8 rounded-[32px] shadow-sm">
                 <MousePointer2 className="text-primary mb-4" size={24} />
                 <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2"><VoiceglotText translationKey="auto.page.interactie_score.ddc459" defaultText="Interactie Score" /><TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.deze_bezoeker_vertoo.018e30" defaultText="Deze bezoeker vertoonde een hoge mate van interesse in de prijs-calculator. 
@@ -186,17 +186,17 @@ export default function VisitorPlayerPage() {
                 <Clock className="text-primary mb-4" size={24} />
                 <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2 text-white"><VoiceglotText translationKey="auto.page.retentie_policy.4c86b2" defaultText="Retentie Policy" /><TextInstrument className="text-white/40 text-[15px] leading-relaxed font-light"><VoiceglotText translationKey="auto.page.deze_opname_wordt_co.8fd284" defaultText="Deze opname wordt conform het Zero-Mandaat 14 dagen bewaard. Daarna worden de ruwe events automatisch gewist." /></TextInstrument></HeadingInstrument>
               </ContainerInstrument>
-            </div>
+            </ContainerInstrument>
           )}
-        </div>
+        </ContainerInstrument>
 
         {/* Playlist Sidebar */}
-        <div className="space-y-6">
+        <ContainerInstrument className="space-y-6">
           <ContainerInstrument className="bg-white border border-black/5 rounded-[32px] p-6 shadow-sm h-fit">
             <HeadingInstrument level={2} className="text-[15px] font-black tracking-widest text-va-black/40 mb-6 flex items-center gap-2">
               <Play size={12} fill="currentColor" /><VoiceglotText translationKey="auto.page.intelligence_playlis.05eaf7" defaultText="Intelligence Playlist" /></HeadingInstrument>
             
-            <div className="space-y-3 max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
+            <ContainerInstrument className="space-y-3 max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
               {recentSessions.map((s) => (
                 <Link 
                   key={s.id} 
@@ -208,14 +208,14 @@ export default function VisitorPlayerPage() {
                       : "bg-va-off-white border-transparent hover:border-black/10"
                   )}
                 >
-                  <div className="flex justify-between items-start mb-2">
+                  <ContainerInstrument className="flex justify-between items-start mb-2">
                     <TextInstrument className={cn("text-[15px] font-black uppercase tracking-widest", s.visitorHash === hash ? "text-primary" : "text-va-black/40")}>
                       {new Date(s.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </TextInstrument>
                     {s.visitorHash === hash && (
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+                      <ContainerInstrument className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                     )}
-                  </div>
+                  </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-bold truncate mb-1">
                     {s.user?.firstName ? `${s.user.firstName} ${s.user.lastName}` : 'Anonieme Bezoeker'}
                   </TextInstrument>
@@ -224,7 +224,7 @@ export default function VisitorPlayerPage() {
                   </TextInstrument>
                 </Link>
               ))}
-            </div>
+            </ContainerInstrument>
           </ContainerInstrument>
 
           {/* AI Insights Card */}
@@ -232,10 +232,10 @@ export default function VisitorPlayerPage() {
             <Sparkles strokeWidth={1.5} className="text-primary mb-4" size={24} />
             <HeadingInstrument level={3} className="text-[15px] font-black tracking-widest mb-2"><VoiceglotText translationKey="auto.page.ai_analyse.a49774" defaultText="AI Analyse" /><TextInstrument className="text-[15px] text-white/40 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.voicy_merkt_op_dat_d.2aca6b" defaultText="Voicy merkt op dat deze bezoeker twijfelt tussen de &apos;Pro&apos; en &apos;Studio&apos; plannen. 
               Overweeg een persoonlijke kortingscode te sturen." /></TextInstrument></HeadingInstrument>
-            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
+            <ContainerInstrument className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
           </ContainerInstrument>
-        </div>
-      </div>
+        </ContainerInstrument>
+      </ContainerInstrument>
     </PageWrapperInstrument>
   );
 }

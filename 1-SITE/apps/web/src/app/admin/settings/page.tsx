@@ -114,9 +114,9 @@ export default function AdminSettingsPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <ContainerInstrument className="min-h-screen flex items-center justify-center">
       <Loader2 className="animate-spin text-primary" size={40} />
-    </div>
+    </ContainerInstrument>
   );
 
   return (
@@ -151,13 +151,13 @@ export default function AdminSettingsPage() {
         {/* 🏢 BEDRIJFSINFORMATIE */}
         <BentoCard span="lg" className="bg-white border border-black/5 p-10 space-y-8">
           <ContainerInstrument className="flex items-center gap-4 border-b border-black/5 pb-6">
-            <div className="w-12 h-12 bg-blue-500/10 text-blue-600 rounded-2xl flex items-center justify-center">
+            <ContainerInstrument className="w-12 h-12 bg-blue-500/10 text-blue-600 rounded-2xl flex items-center justify-center">
               <Building2 strokeWidth={1.5} size={24} />
-            </div>
-            <div>
+            </ContainerInstrument>
+            <ContainerInstrument>
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.bedrijfsinformatie.9a8f1d" defaultText="Bedrijfsinformatie" /></HeadingInstrument>
               <TextInstrument className="text-[15px] text-va-black/40 font-medium"><VoiceglotText translationKey="auto.page.algemene_bedrijfsgeg.3e57b1" defaultText="Algemene bedrijfsgegevens voor facturatie en contact." /></TextInstrument>
-            </div>
+            </ContainerInstrument>
           </ContainerInstrument>
 
           <ContainerInstrument className="grid grid-cols-2 gap-8">
@@ -236,13 +236,13 @@ export default function AdminSettingsPage() {
         {/* 🕒 ALGEMENE INSTELLINGEN */}
         <BentoCard span="sm" className="bg-white border border-black/5 p-10 space-y-8">
           <ContainerInstrument className="flex items-center gap-4 border-b border-black/5 pb-6">
-            <div className="w-12 h-12 bg-orange-500/10 text-orange-600 rounded-2xl flex items-center justify-center">
+            <ContainerInstrument className="w-12 h-12 bg-orange-500/10 text-orange-600 rounded-2xl flex items-center justify-center">
               <Clock size={24} />
-            </div>
+            </ContainerInstrument>
             <div>
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.algemeen.c132c7" defaultText="Algemeen" /></HeadingInstrument>
               <TextInstrument className="text-[15px] text-va-black/40 font-medium"><VoiceglotText translationKey="auto.page.systeem_brede_parame.6a6443" defaultText="Systeem-brede parameters." /></TextInstrument>
-            </div>
+            </ContainerInstrument>
           </ContainerInstrument>
 
           <ContainerInstrument className="space-y-6">

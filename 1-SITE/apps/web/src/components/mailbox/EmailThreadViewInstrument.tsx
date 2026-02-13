@@ -115,10 +115,10 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
         </ContainerInstrument>
         
         <ContainerInstrument className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 bg-pink-50 text-pink-600 px-2 py-0.5 rounded-md text-[15px] font-light tracking-widest border border-pink-100">
+          <ContainerInstrument className="flex items-center gap-1.5 bg-pink-50 text-pink-600 px-2 py-0.5 rounded-md text-[15px] font-light tracking-widest border border-pink-100">
             <ShieldCheck strokeWidth={1.5} size={10} />
             Secure Thread
-          </div>
+          </ContainerInstrument>
           <TextInstrument as="span" className="text-[15px] font-light tracking-widest text-gray-400">
             {thread.messages.length} berichten
           </TextInstrument>
@@ -135,45 +135,45 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
           return (
             <ContainerInstrument key={message.id} className="bg-white border border-gray-100 rounded-[32px] shadow-sm overflow-hidden">
               {/* Message Header (Spark Style) */}
-              <div className="px-6 py-5 flex items-start justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-va-black text-white flex items-center justify-center text-[15px] font-light relative overflow-hidden shrink-0">
-                    <Image 
-                      src={gravatarUrl} 
-                      alt="" 
-                      fill
-                      className="object-cover z-10" 
-                      unoptimized
-                    />
-                    <span className="relative z-0">{initial}</span>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <TextInstrument as="span" className="text-[15px] font-light text-gray-900">
-                        {senderName}
-                      </TextInstrument>
+              <ContainerInstrument className="px-6 py-5 flex items-start justify-between">
+                  <ContainerInstrument className="flex items-center gap-4">
+                    <ContainerInstrument className="w-10 h-10 rounded-full bg-va-black text-white flex items-center justify-center text-[15px] font-light relative overflow-hidden shrink-0">
+                      <Image 
+                        src={gravatarUrl} 
+                        alt="" 
+                        fill
+                        className="object-cover z-10" 
+                        unoptimized
+                      />
+                      <TextInstrument className="relative z-0 font-light">{initial}</TextInstrument>
+                    </ContainerInstrument>
+                    <ContainerInstrument>
+                      <ContainerInstrument className="flex items-center gap-2 flex-wrap">
+                        <TextInstrument as="span" className="text-[15px] font-light text-gray-900">
+                          {senderName}
+                        </TextInstrument>
                       <TextInstrument as="span" className="text-[15px] text-gray-400 font-light">
                         to &apos;Johfrah Lefebvre&apos;
                       </TextInstrument>
-                    </div>
+                    </ContainerInstrument>
                     <TextInstrument as="p" className="text-[15px] text-gray-400 font-light">
                       {message.senderEmail}
                     </TextInstrument>
-                  </div>
-                </div>
+                  </ContainerInstrument>
+                </ContainerInstrument>
                 
-                <div className="flex items-center gap-3">
+                <ContainerInstrument className="flex items-center gap-3">
                   <TextInstrument as="span" className="text-[15px] font-light text-gray-400">
                     {format(new Date(message.date), 'd MMM, HH:mm', { locale: nl })}
                   </TextInstrument>
                   <ButtonInstrument className="p-1 text-gray-300 hover:text-va-black transition-colors">
                     <X strokeWidth={1.5} size={14} className="rotate-45" />
                   </ButtonInstrument>
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
 
               {/* AI Quick Actions (Spark Style) */}
-              <div className="px-6 pb-2 flex gap-2">
+              <ContainerInstrument className="px-6 pb-2 flex gap-2">
                 <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-[20px] text-[15px] font-light tracking-widest border border-blue-100/50 hover:bg-blue-100 transition-all">
                   <Sparkles strokeWidth={1.5} size={12} />
                   Translate to English
@@ -181,28 +181,28 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                 <ButtonInstrument className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-[20px] text-[15px] font-light tracking-widest border border-gray-100 hover:bg-gray-100 transition-all">
                   <Languages size={12} />
                 </ButtonInstrument>
-              </div>
+              </ContainerInstrument>
 
               {/* Message Body */}
-              <div 
+              <ContainerInstrument 
                 className="px-6 py-4 text-[15px] text-gray-800 leading-relaxed prose prose-sm max-w-none font-light"
                 dangerouslySetInnerHTML={{ __html: message.htmlBody }} 
               />
 
               {/* Attachments (Spark Style Cards) */}
               {message.attachments && message.attachments.length > 0 && (
-                <div className="px-6 pb-6 mt-4 border-t border-gray-50 pt-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2 text-gray-400">
+                <ContainerInstrument className="px-6 pb-6 mt-4 border-t border-gray-50 pt-6">
+                  <ContainerInstrument className="flex items-center justify-between mb-4">
+                    <ContainerInstrument className="flex items-center gap-2 text-gray-400">
                       <Paperclip size={14} />
-                      <span className="text-[15px] font-light tracking-widest">{message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}</span>
-                    </div>
+                      <TextInstrument className="text-[15px] font-light tracking-widest">{message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}</TextInstrument>
+                    </ContainerInstrument>
                     <ButtonInstrument className="text-[15px] font-light text-blue-600 hover:underline tracking-widest">
                       Save all {(message.attachments.reduce((sum, a) => sum + a.size, 0) / 1024).toFixed(0)} KB
                     </ButtonInstrument>
-                  </div>
+                  </ContainerInstrument>
                   
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  <ContainerInstrument className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {message.attachments.map((att) => (
                       <div 
                         key={att.id} 
@@ -211,47 +211,47 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                         onClick={() => setSpotlightFile(att)}
                         className="group/att cursor-pointer"
                       >
-                        <div className={`aspect-square rounded-2xl border flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden ${focusedAttachmentId === att.id ? 'bg-gray-50 border-va-black/20 shadow-md' : 'bg-white border-gray-100 shadow-sm'}`}>
-                          <div className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
+                        <ContainerInstrument className={`aspect-square rounded-2xl border flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden ${focusedAttachmentId === att.id ? 'bg-gray-50 border-va-black/20 shadow-md' : 'bg-white border-gray-100 shadow-sm'}`}>
+                          <ContainerInstrument className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
                             {isPdf(att.filename) ? <FileText size={24} /> : isAudio(att.filename) ? <Mic size={24} /> : isVideo(att.filename) ? <Play size={24} /> : <ImageIcon size={24} />}
-                          </div>
-                          <div className="text-center px-2">
+                          </ContainerInstrument>
+                          <ContainerInstrument className="text-center px-2">
                             <p className="text-[15px] font-light text-gray-900 truncate w-full max-w-[100px]">{att.filename}</p>
                             <p className="text-[15px] font-light text-gray-400 ">{(att.size / 1024).toFixed(0)} KB</p>
-                          </div>
+                          </ContainerInstrument>
                           
                           {/* Hover Actions */}
-                          <div className="absolute inset-0 bg-va-black/5 opacity-0 group-hover/att:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                            <div className="bg-white p-2 rounded-full shadow-lg text-va-black">
+                          <ContainerInstrument className="absolute inset-0 bg-va-black/5 opacity-0 group-hover/att:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            <ContainerInstrument className="bg-white p-2 rounded-full shadow-lg text-va-black">
                               <Maximize2 size={14} />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                            </ContainerInstrument>
+                          </ContainerInstrument>
+                        </ContainerInstrument>
+                      </ContainerInstrument>
                     ))}
-                  </div>
-                </div>
+                  </ContainerInstrument>
+                </ContainerInstrument>
               )}
 
               {/* AI Quick Replies (Spark Style) */}
-              <div className="px-6 py-4 bg-gray-50/30 border-t border-gray-50 flex items-center justify-between">
-                <div className="flex gap-2">
-                  <span className="text-[15px] font-light text-blue-600 mr-2 flex items-center gap-1"><Sparkles strokeWidth={1.5} size={10} /> +ai</span>
+              <ContainerInstrument className="px-6 py-4 bg-gray-50/30 border-t border-gray-50 flex items-center justify-between">
+                <ContainerInstrument className="flex gap-2">
+                  <TextInstrument className="text-[15px] font-light text-blue-600 mr-2 flex items-center gap-1"><Sparkles strokeWidth={1.5} size={10} /> +ai</TextInstrument>
                   {['Interested', 'Not interested', 'Thanks'].map((reply) => (
                     <ButtonInstrument key={reply} className="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-[15px] font-light text-gray-600 hover:border-va-black transition-all shadow-sm">
                       {reply}
                     </ButtonInstrument>
                   ))}
-                </div>
-                <div className="flex gap-4">
+                </ContainerInstrument>
+                <ContainerInstrument className="flex gap-4">
                   <ButtonInstrument onClick={() => onReply(message)} className="text-gray-300 hover:text-va-black transition-colors">
                     <Reply size={18} />
                   </ButtonInstrument>
                   <ButtonInstrument className="text-gray-300 hover:text-va-black transition-colors">
                     <Forward size={18} />
                   </ButtonInstrument>
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
             </ContainerInstrument>
           );
         })}
@@ -278,11 +278,11 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
               className="max-w-5xl w-full max-h-full flex flex-col items-center gap-6"
               onClick={e => e.stopPropagation()}
             >
-              <div className="w-full flex justify-between items-center text-white/80">
-                <div className="flex flex-col">
-                  <span className="text-2xl font-light">{spotlightFile.filename}</span>
-                  <span className="text-[15px] tracking-widest opacity-50">{spotlightFile.category} • {(spotlightFile.size / 1024 / 1024).toFixed(2)} MB</span>
-                </div>
+              <ContainerInstrument className="w-full flex justify-between items-center text-white/80">
+                <ContainerInstrument className="flex flex-col">
+                  <TextInstrument className="text-2xl font-light">{spotlightFile.filename}</TextInstrument>
+                  <TextInstrument className="text-[15px] tracking-widest opacity-50 font-light">{spotlightFile.category} • {(spotlightFile.size / 1024 / 1024).toFixed(2)} MB</TextInstrument>
+                </ContainerInstrument>
                 <a 
                   href={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 
                   download={spotlightFile.filename}
@@ -291,9 +291,9 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                   <Download size={18} />
                   Downloaden
                 </a>
-              </div>
+              </ContainerInstrument>
 
-              <div className="w-full aspect-video bg-black/40 rounded-[32px] overflow-hidden flex items-center justify-center border border-white/10 shadow-2xl">
+              <ContainerInstrument className="w-full aspect-video bg-black/40 rounded-[32px] overflow-hidden flex items-center justify-center border border-white/10 shadow-2xl">
                 {isVideo(spotlightFile.filename) ? (
                   <video 
                     src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 
@@ -302,38 +302,38 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                     className="max-w-full max-h-full"
                   />
                 ) : isImage(spotlightFile.filename) ? (
-                  <div className="relative w-full h-full">
+                  <ContainerInstrument className="relative w-full h-full">
                     <Image 
                       src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 
                       alt={spotlightFile.filename}
                       fill
                       className="object-contain"
                     />
-                  </div>
+                  </ContainerInstrument>
                 ) : isAudio(spotlightFile.filename) ? (
-                  <div className="flex flex-col items-center gap-8 w-full p-12">
-                    <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center animate-pulse">
+                  <ContainerInstrument className="flex flex-col items-center gap-8 w-full p-12">
+                    <ContainerInstrument className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center animate-pulse">
                       <Mic size={48} className="text-white" />
-                    </div>
+                    </ContainerInstrument>
                     <audio 
                       src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 
                       controls 
                       autoPlay 
                       className="w-full max-w-md"
                     />
-                  </div>
+                  </ContainerInstrument>
                 ) : isPdf(spotlightFile.filename) ? (
                   <iframe 
                     src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 
                     className="w-full h-full border-none"
                   />
                 ) : (
-                  <div className="text-center space-y-4">
+                  <ContainerInstrument className="text-center space-y-4">
                     <FileText size={64} className="mx-auto text-white/20" />
                     <p className="text-white/50 font-light">Voorvertoning niet beschikbaar voor dit bestandstype.</p>
-                  </div>
+                  </ContainerInstrument>
                 )}
-              </div>
+              </ContainerInstrument>
             </motion.div>
           </motion.div>
         )}

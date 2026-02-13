@@ -1,8 +1,8 @@
 "use client";
 
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { FileText, Mail, Send, Sparkles, X } from 'lucide-react';
 import React from 'react';
+import Image from 'next/image';
 
 interface EmailPreviewModalProps {
   isOpen: boolean;
@@ -28,16 +28,16 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-va-black/60 backdrop-blur-xl animate-fade-in">
-      <div className="w-full max-w-3xl bg-white rounded-[40px] shadow-aura overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-3xl bg-white rounded-[20px] shadow-aura overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-8 border-b border-black/5 flex justify-between items-center bg-va-off-white">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-              <Mail strokeWidth={1.5} size={24} />
+            <div className="w-12 h-12 bg-primary/10 rounded-[10px] flex items-center justify-center text-primary">
+              <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             </div>
             <div>
-              <h3 className="text-xl font-black tracking-tighter">Offerte Preview</h3>
-              <p className="text-[15px] font-bold text-va-black/40 tracking-widest">Personaliseer je bericht voor verzending</p>
+              <h3 className="text-xl font-light tracking-tighter text-va-black">Offerte preview</h3>
+              <p className="text-[15px] font-light text-va-black/40 tracking-widest">Personaliseer je bericht voor verzending</p>
             </div>
           </div>
           <button 
@@ -45,30 +45,30 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
               playClick('soft');
               onClose();
             }}
-            className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-va-black/20 hover:text-va-black transition-all"
+            className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 hover:text-va-black transition-all"
           >
-            <X strokeWidth={1.5} size={24} />
+            <Image src="/assets/common/branding/icons/BACK.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
           </button>
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-10 space-y-8">
           <div className="space-y-4">
-            <label className="text-[15px] font-black tracking-widest text-va-black/40 ml-2">E-mail Bericht</label>
+            <label className="text-[15px] font-light tracking-widest text-va-black/40 ml-2">E-mail bericht</label>
             <textarea 
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full h-80 bg-va-off-white border-none rounded-[32px] p-8 text-base font-medium leading-relaxed focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+              className="w-full h-80 bg-va-off-white border-none rounded-[20px] p-8 text-base font-light leading-relaxed focus:ring-2 focus:ring-primary/20 transition-all resize-none"
             />
           </div>
 
-          <div className="bg-primary/5 rounded-[32px] p-8 border border-primary/10 flex items-start gap-6">
-            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary shadow-sm">
-              <FileText size={24} />
+          <div className="bg-primary/5 rounded-[20px] p-8 border border-primary/10 flex items-start gap-6">
+            <div className="w-12 h-12 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm">
+              <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             </div>
             <div className="flex-1">
-              <h4 className="text-[15px] font-black tracking-tight mb-1">Bijlage: Offerte_Voices.pdf</h4>
-              <p className="text-[15px] text-va-black/40 font-medium leading-relaxed">
+              <h4 className="text-[15px] font-light tracking-tight mb-1 text-va-black">Bijlage: Offerte_Voices.pdf</h4>
+              <p className="text-[15px] text-va-black/40 font-light leading-relaxed">
                 Het systeem genereert automatisch een PDF met de tarieven en voorwaarden. 
                 De klant kan deze digitaal ondertekenen.
               </p>
@@ -78,8 +78,8 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
 
         {/* Footer */}
         <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center">
-          <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/30">
-            <Sparkles strokeWidth={1.5} size={14} className="text-primary" />
+          <div className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/30">
+            <Image src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
             Core Admin Protocol Active
           </div>
           <button 
@@ -89,7 +89,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
             }}
             className="va-btn-pro !bg-primary flex items-center gap-3 !px-10"
           >
-            Offerte Verzenden <Send strokeWidth={1.5} size={18} />
+            Offerte verzenden <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert" />
           </button>
         </div>
       </div>

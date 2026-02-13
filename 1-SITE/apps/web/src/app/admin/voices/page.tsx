@@ -156,7 +156,7 @@ export default function VoiceManagerPage() {
               <TextInstrument className="text-[15px] font-black text-va-black/30 tracking-widest mb-1"><VoiceglotText translationKey="admin.voice_manager.score_label" defaultText="Score" /></TextInstrument>
               <ContainerInstrument className="flex items-center gap-2 justify-end">
                 <ContainerInstrument className="w-24 h-1.5 bg-va-off-white rounded-full overflow-hidden">
-                  <div className="h-full bg-primary" style={{ width: `${actor.voiceScore}%` }} />
+                  <ContainerInstrument className="h-full bg-primary" style={{ width: `${actor.voiceScore}%` }} />
                 </ContainerInstrument>
                 <TextInstrument as="span" className="text-[15px] font-black">{actor.voiceScore}</TextInstrument>
               </ContainerInstrument>

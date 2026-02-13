@@ -153,11 +153,11 @@ export default function VumeAdminPage() {
           <ContainerInstrument className="col-span-6 bg-white rounded-[30px] shadow-aura border border-black/[0.03] overflow-hidden flex flex-col relative">
             <ContainerInstrument className="p-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
               <ContainerInstrument className="flex items-center gap-3">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-400/20" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-400/20" />
-                  <div className="w-3 h-3 rounded-full bg-green-400/20" />
-                </div>
+                <ContainerInstrument className="flex gap-1.5">
+                  <ContainerInstrument className="w-3 h-3 rounded-full bg-red-400/20" />
+                  <ContainerInstrument className="w-3 h-3 rounded-full bg-yellow-400/20" />
+                  <ContainerInstrument className="w-3 h-3 rounded-full bg-green-400/20" />
+                </ContainerInstrument>
                 <TextInstrument className="text-[13px] font-mono text-va-black/40 ml-4">Subject: {selectedTemplate.previewSubject}</TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex gap-2">
@@ -166,7 +166,7 @@ export default function VumeAdminPage() {
             </ContainerInstrument>
             
             <ContainerInstrument className="flex-grow overflow-y-auto bg-[#FAFAFA] p-8 flex justify-center">
-              <div className="w-full max-w-[600px] shadow-2xl rounded-[20px] overflow-hidden bg-white h-fit">
+              <ContainerInstrument className="w-full max-w-[600px] shadow-2xl rounded-[20px] overflow-hidden bg-white h-fit">
                 {previewHtml ? (
                   <iframe 
                     srcDoc={previewHtml} 
@@ -178,7 +178,7 @@ export default function VumeAdminPage() {
                     <Zap strokeWidth={1.5} className="animate-pulse text-primary/20" size={48} />
                   </ContainerInstrument>
                 )}
-              </div>
+              </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
 
@@ -211,14 +211,14 @@ export default function VumeAdminPage() {
             <ContainerInstrument className="bg-white p-8 rounded-[30px] border border-black/[0.03] shadow-aura flex-grow">
               <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-6 ">IAP Context</HeadingInstrument>
               <ContainerInstrument className="space-y-4">
-                <div className="p-4 bg-va-off-white rounded-xl space-y-1">
+                <ContainerInstrument className="p-4 bg-va-off-white rounded-xl space-y-1">
                   <TextInstrument className="text-[12px] tracking-widest text-va-black/30 font-light">Journey</TextInstrument>
                   <TextInstrument className="font-bold text-[15px] capitalize">{selectedTemplate.journey}</TextInstrument>
-                </div>
-                <div className="p-4 bg-va-off-white rounded-xl space-y-1">
+                </ContainerInstrument>
+                <ContainerInstrument className="p-4 bg-va-off-white rounded-xl space-y-1">
                   <TextInstrument className="text-[12px] tracking-widest text-va-black/30 font-light">Persona</TextInstrument>
                   <TextInstrument className="font-bold text-[15px]">Professional Voice-over</TextInstrument>
-                </div>
+                </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

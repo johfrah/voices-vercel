@@ -25,46 +25,46 @@ export default function JohfrahContactPage() {
               defaultText="Heb je een project waar je mijn stem, regie of host-skills voor wilt inzetten? Ik hoor het graag." 
             /></TextInstrument></HeadingInstrument>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Contact Info */}
-            <div className="space-y-8">
-              <div className="flex items-center gap-4 group">
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+            <ContainerInstrument className="space-y-8">
+              <ContainerInstrument className="flex items-center gap-4 group">
+                <ContainerInstrument className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                   <Mail strokeWidth={1.5} size={20} />
-                </div>
+                </ContainerInstrument>
                 <div>
                   <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.email.ce8ae9" defaultText="Email" /></TextInstrument>
                   <a href="mailto:johfrah@johfrah.be" className="text-[15px] font-light hover:text-primary transition-colors"><VoiceglotText translationKey="auto.page.johfrah_johfrah_be.3cb465" defaultText="johfrah@johfrah.be" /></a>
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
 
-              <div className="flex items-center gap-4 group">
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+              <ContainerInstrument className="flex items-center gap-4 group">
+                <ContainerInstrument className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                   <Phone strokeWidth={1.5} size={20} />
-                </div>
+                </ContainerInstrument>
                 <div>
                   <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.telefoon.fe260f" defaultText="Telefoon" /></TextInstrument>
                   <a href="tel:+3227931991" className="text-[15px] font-light hover:text-primary transition-colors">+32 (0)2 793 19 91</a>
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
 
-              <div className="flex items-center gap-4 group">
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+              <ContainerInstrument className="flex items-center gap-4 group">
+                <ContainerInstrument className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                   <MapPin size={20} />
-                </div>
-                <div>
+                </ContainerInstrument>
+                <ContainerInstrument>
                   <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.page.locatie.e7a1cf" defaultText="Locatie" /></TextInstrument>
                   <TextInstrument className="text-[15px] font-light"><VoiceglotText translationKey="auto.page.brussel___antwerpen_.292ffa" defaultText="Brussel / Antwerpen, België" /></TextInstrument>
-                </div>
-              </div>
-            </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
 
             {/* Direct Action */}
-            <div className="bg-va-black text-white p-10 rounded-[40px] space-y-6 shadow-2xl">
+            <ContainerInstrument className="bg-va-black text-white p-10 rounded-[40px] space-y-6 shadow-2xl">
               <HeadingInstrument level={3} className="text-2xl font-light tracking-tight"><VoiceglotText translationKey="auto.page.direct_boeken_.f7adf2" defaultText="Direct Boeken?" /><TextInstrument className="text-white/60 text-[15px] leading-relaxed font-light"><VoiceglotText translationKey="auto.page.wil_je_direct_een_st.61a56d" defaultText="Wil je direct een stemopname inplannen of een offerte aanvragen via de Voices Engine?" /></TextInstrument></HeadingInstrument>
               <ButtonInstrument as="a" href="https://voices.be/studio/book" className="va-btn-pro w-full text-center"><VoiceglotText translationKey="auto.page.plan_een_sessie.f95b87" defaultText="Plan een sessie" /></ButtonInstrument>
-            </div>
-          </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
         </ContainerInstrument>
       </SectionInstrument>
     </PageWrapperInstrument>

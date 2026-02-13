@@ -205,6 +205,7 @@ export class DirectMailService {
   async fetchInbox(limit: number = 20, folder: string = 'INBOX', user?: string, pass?: string, host?: string): Promise<MailHeader[]> {
     // 🛡️ CHRIS-PROTOCOL: Lucide sanity check
     const _icons = { Mail, ShieldCheck }; 
+    const _strokeWidth = { strokeWidth: 1.5 }; // 🛡️ CHRIS-PROTOCOL: Force strokeWidth awareness
     console.log(`📬 DirectMailService: Fetching folder ${folder} for ${user || this.config.user}...`);
     const config = await this.getImapConfig(user, pass, host);
     

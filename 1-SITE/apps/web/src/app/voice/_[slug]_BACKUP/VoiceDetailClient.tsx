@@ -53,7 +53,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
   const hasCustomReels = actor.first_name.toLowerCase() === 'johfrah';
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+    <ContainerInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       <SectionInstrument className="mb-12 flex items-center justify-between">
         <Link 
           href="/agency" 
@@ -134,14 +134,14 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
           <BentoGrid columns={3}>
             {hasCustomVideo && (
               <BentoCard span="full" className="aspect-video bg-black rounded-[40px] overflow-hidden relative group">
-                <div className="absolute inset-0 flex items-center justify-center bg-va-black/40">
+                <ContainerInstrument className="absolute inset-0 flex items-center justify-center bg-va-black/40">
                   <VideoIcon size={48} className="text-white/20" />
-                </div>
-                <div className="absolute bottom-8 left-8">
+                </ContainerInstrument>
+                <ContainerInstrument className="absolute bottom-8 left-8">
                   <p className="text-white font-black tracking-widest text-[15px]">
                     <VoiceglotText translationKey={`actor.${actor.id}.custom_video_label`} defaultText={`${actor.first_name} voor Hornbach`} />
                   </p>
-                </div>
+                </ContainerInstrument>
               </BentoCard>
             )}
             {hasCustomReels && (
@@ -168,8 +168,8 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
 
       {/* 💰 ORDER ENGINE: De Script Editor & Pricing Calculator */}
       <SectionInstrument className="mb-20">
-        <div className="bg-white rounded-[48px] shadow-aura border border-black/5 p-8 md:p-12">
-          <div className="mb-12">
+        <ContainerInstrument className="bg-white rounded-[48px] shadow-aura border border-black/5 p-8 md:p-12">
+          <ContainerInstrument className="mb-12">
             <h2 className="text-4xl font-black tracking-tight">
               <VoiceglotText translationKey="common.order_direct" defaultText="Direct Bestellen" />
             </h2>
@@ -179,11 +179,11 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
                 defaultText={`Voer je script in of bereken je prijs voor ${actor.display_name}.`} 
               />
             </p>
-          </div>
+          </ContainerInstrument>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div className="space-y-8">
-              <div className="space-y-4">
+          <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <ContainerInstrument className="space-y-8">
+              <ContainerInstrument className="space-y-4">
                 <label className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey="common.your_script" defaultText="1. Jouw Script" /></label>
                 <textarea 
                   value={localBriefing}
@@ -191,20 +191,20 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
                   placeholder="Plak hier je tekst..."
                   className="w-full h-64 bg-va-off-white border-none rounded-[32px] p-8 text-lg font-medium focus:ring-2 focus:ring-primary/20 transition-all resize-none outline-none"
                 />
-              </div>
-              <div className="p-6 bg-primary/5 rounded-[32px] border border-primary/10">
+              </ContainerInstrument>
+              <ContainerInstrument className="p-6 bg-primary/5 rounded-[32px] border border-primary/10">
                 <p className="text-[15px] font-bold text-primary flex items-center gap-2">
                   <Mic size={12} /> <VoiceglotText translationKey="common.script_tip" defaultText="Tip: Gebruik (Titel) voor meerdere bestanden." />
                 </p>
-              </div>
-            </div>
+              </ContainerInstrument>
+            </ContainerInstrument>
             
             <div>
               <label className="text-[15px] font-black tracking-widest text-va-black/30 block mb-4"><VoiceglotText translationKey="common.config_price" defaultText="2. Configuratie & Prijs" /></label>
               <PricingCalculator mode="human" actor={actor} />
-            </div>
-          </div>
-        </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
       </SectionInstrument>
 
       {/* 🌟 REVIEWS */}
@@ -215,6 +215,6 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
           subtitle={`Lees waarom klanten kiezen voor het vakmanschap van ${actor.display_name}.`}
         />
       )}
-    </div>
+    </ContainerInstrument>
   );
 }

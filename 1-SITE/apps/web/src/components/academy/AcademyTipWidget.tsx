@@ -61,24 +61,24 @@ export const AcademyTipWidget: React.FC<{ userId: number }> = ({ userId }) => {
 
   return (
     <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/5 shadow-aura group hover:border-primary/20 transition-all duration-500">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+      <ContainerInstrument className="flex items-center justify-between mb-6">
+        <ContainerInstrument className="flex items-center gap-3">
+          <ContainerInstrument className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
             {getIcon()}
-          </div>
-          <div>
+          </ContainerInstrument>
+          <ContainerInstrument>
             <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText translationKey={`academy.tips.cat.${tip.category}`} defaultText={getCategoryLabel()} /></TextInstrument>
             <HeadingInstrument level={4} className="text-xl font-black tracking-tighter leading-none"><VoiceglotText translationKey={`academy.tips.title.${tip.id}`} defaultText={tip.title} /></HeadingInstrument>
-          </div>
-        </div>
-      </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
 
       <TextInstrument className="text-[15px] text-va-black/60 font-medium leading-relaxed mb-6"><VoiceglotText translationKey={`academy.tips.content.${tip.id}`} defaultText={tip.content} /></TextInstrument>
 
-      <div className="flex items-center gap-2 text-[15px] font-black tracking-widest text-primary group-hover:gap-4 transition-all">
+      <ContainerInstrument className="flex items-center gap-2 text-[15px] font-black tracking-widest text-primary group-hover:gap-4 transition-all">
         <VoiceglotText translationKey="academy.tips.next" defaultText="Volgende tip" />
         <ArrowRight strokeWidth={1.5} size={12} />
-      </div>
+      </ContainerInstrument>
     </ContainerInstrument>
   );
 };

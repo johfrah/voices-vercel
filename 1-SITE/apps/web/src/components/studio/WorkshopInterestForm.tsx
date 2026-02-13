@@ -10,8 +10,8 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
-import { AlertCircle, ArrowRight, CheckCircle2, Send, Star } from 'lucide-react';
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const WORKSHOPS = [
   { id: '260250', title: 'Voice-over voor Beginners' },
@@ -93,40 +93,40 @@ export const WorkshopInterestForm: React.FC = () => {
 
   if (isSubmitted) {
     return (
-      <div className="max-w-xl mx-auto text-center space-y-8 py-16 px-4 sm:py-24">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto transition-transform duration-100">
-          <CheckCircle2 strokeWidth={1.5} size={32} className="sm:w-10 sm:h-10" />
-        </div>
+      <ContainerInstrument className="max-w-xl mx-auto text-center space-y-8 py-16 px-4 sm:py-24">
+        <ContainerInstrument className="w-16 h-16 sm:w-20 sm:h-20 bg-green-500/10 text-green-500 rounded-[20px] flex items-center justify-center mx-auto transition-transform duration-100">
+          <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="sm:w-10 sm:h-10" />
+        </ContainerInstrument>
         <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-va-black">
           <VoiceglotText translationKey="workshop.interest.success.title" defaultText="Bedankt!" />
         </HeadingInstrument>
         <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed max-w-md mx-auto">
           <VoiceglotText translationKey="workshop.interest.success.text" defaultText="We hebben je interesse ontvangen. Johfrah neemt binnenkort contact met je op." />
         </TextInstrument>
-      </div>
+      </ContainerInstrument>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10 sm:space-y-12 px-4 sm:px-6">
+    <ContainerInstrument className="max-w-4xl mx-auto space-y-10 sm:space-y-12 px-4 sm:px-6">
       {/* STAPPEN INDICATOR */}
-      <div className="flex items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
-        <div className={cn("h-1 rounded-full transition-all duration-100", step === 1 ? "bg-primary w-8" : "bg-black/10 w-2")} />
-        <div className={cn("h-1 rounded-full transition-all duration-100", step === 2 ? "bg-primary w-8" : "bg-black/10 w-2")} />
-      </div>
+      <ContainerInstrument className="flex items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
+        <ContainerInstrument className={cn("h-1 rounded-[10px] transition-all duration-100", step === 1 ? "bg-primary w-8" : "bg-black/10 w-2")} />
+        <ContainerInstrument className={cn("h-1 rounded-[10px] transition-all duration-100", step === 2 ? "bg-primary w-8" : "bg-black/10 w-2")} />
+      </ContainerInstrument>
 
       {step === 1 ? (
         <form onSubmit={handleNextStep} className="space-y-10 sm:space-y-12 animate-in fade-in slide-in-from-right-4 duration-300">
           {/* Workshop Selection */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-6 sm:mb-8">
-              <Star strokeWidth={1.5} className="text-primary fill-primary shrink-0" size={24} />
+          <ContainerInstrument className="space-y-6">
+            <ContainerInstrument className="flex items-center gap-3 mb-6 sm:mb-8">
+              <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="shrink-0" />
               <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
                 <VoiceglotText translationKey="workshop.interest.title" defaultText="Voor welke workshop(s) heb je interesse?" />
               </HeadingInstrument>
-            </div>
+            </ContainerInstrument>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {WORKSHOPS.map((w) => (
                 <button
                   key={w.id}
@@ -139,27 +139,27 @@ export const WorkshopInterestForm: React.FC = () => {
                       : "bg-white border-black/5 text-va-black hover:border-primary/30"
                   )}
                 >
-                  <span className="font-light text-[15px] tracking-tight">
+                  <TextInstrument className="font-light text-[15px] tracking-tight">
                     <VoiceglotText translationKey={`workshop.${w.id}.title`} defaultText={w.title} noTranslate={true} />
-                  </span>
-                  <div className={cn(
-                    "w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-100",
+                  </TextInstrument>
+                  <ContainerInstrument className={cn(
+                    "w-6 h-6 rounded-[10px] border-2 flex items-center justify-center shrink-0 transition-all duration-100",
                     selectedWorkshops.includes(w.id)
                       ? "bg-primary border-primary"
                       : "border-black/10 group-hover:border-primary/30"
                   )}>
-                    {selectedWorkshops.includes(w.id) && <CheckCircle2 strokeWidth={1.5} size={14} className="text-white" />}
-                  </div>
+                    {selectedWorkshops.includes(w.id) && <Image src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" className="brightness-0 invert" />}
+                  </ContainerInstrument>
                 </button>
               ))}
-            </div>
-          </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
 
           {/* Basic Info */}
-          <div className="pt-10 sm:pt-12 border-t border-black/5 space-y-6 sm:space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-              <div className="space-y-2">
-                <label className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.first_name" defaultText="Voornaam" /></label>
+          <ContainerInstrument className="pt-10 sm:pt-12 border-t border-black/5 space-y-6 sm:space-y-8">
+            <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+              <ContainerInstrument className="space-y-2">
+                <LabelInstrument className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.first_name" defaultText="Voornaam" /></LabelInstrument>
                 <InputInstrument 
                   required 
                   placeholder={t('common.placeholder.first_name', 'Jouw voornaam')} 
@@ -167,9 +167,9 @@ export const WorkshopInterestForm: React.FC = () => {
                   value={formData.firstName}
                   onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                 />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.last_name" defaultText="Familienaam" /></label>
+              </ContainerInstrument>
+              <ContainerInstrument className="space-y-2">
+                <LabelInstrument className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.last_name" defaultText="Familienaam" /></LabelInstrument>
                 <InputInstrument 
                   required 
                   placeholder={t('common.placeholder.last_name', 'Jouw familienaam')} 
@@ -177,9 +177,9 @@ export const WorkshopInterestForm: React.FC = () => {
                   value={formData.lastName}
                   onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                 />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.email" defaultText="E-mailadres" /></label>
+              </ContainerInstrument>
+              <ContainerInstrument className="space-y-2 md:col-span-2">
+                <LabelInstrument className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.email" defaultText="E-mailadres" /></LabelInstrument>
                 <InputInstrument 
                   required 
                   type="email" 
@@ -188,8 +188,8 @@ export const WorkshopInterestForm: React.FC = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />
-              </div>
-            </div>
+              </ContainerInstrument>
+            </ContainerInstrument>
 
             <ButtonInstrument
               type="submit"
@@ -197,38 +197,38 @@ export const WorkshopInterestForm: React.FC = () => {
               className="w-full py-5 sm:py-6 rounded-[10px] bg-black text-white font-light tracking-tight text-[15px] hover:bg-primary transition-all duration-100 shadow-aura flex items-center justify-center gap-3 group min-h-[52px] active:scale-[0.99] disabled:opacity-50 disabled:active:scale-100"
             >
               <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" />
-              <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-1 transition-transform duration-100" />
+              <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert group-hover:translate-x-1 transition-transform duration-100" />
             </ButtonInstrument>
-          </div>
+          </ContainerInstrument>
         </form>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-10 sm:space-y-12 animate-in fade-in slide-in-from-right-4 duration-300">
           {submitError && (
-            <div className="flex items-center gap-3 p-4 rounded-[10px] bg-red-500/10 text-red-600 border border-red-500/20" role="alert">
-              <AlertCircle strokeWidth={1.5} size={20} className="shrink-0" />
+            <ContainerInstrument className="flex items-center gap-3 p-4 rounded-[10px] bg-red-500/10 text-red-600 border border-red-500/20" role="alert">
+              <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="shrink-0" />
               <TextInstrument className="text-[15px] font-light">{submitError}</TextInstrument>
-            </div>
+            </ContainerInstrument>
           )}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-6 sm:mb-8">
-              <Star strokeWidth={1.5} className="text-primary fill-primary shrink-0" size={24} />
+          <ContainerInstrument className="space-y-6">
+            <ContainerInstrument className="flex items-center gap-3 mb-6 sm:mb-8">
+              <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="shrink-0" />
               <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
                 <VoiceglotText translationKey="workshop.interest.step2.title" defaultText="Help ons je beter te leren kennen" />
               </HeadingInstrument>
-            </div>
+            </ContainerInstrument>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-              <div className="space-y-2">
-                <label className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.profession" defaultText="Beroep" /></label>
+            <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+              <ContainerInstrument className="space-y-2">
+                <LabelInstrument className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.profession" defaultText="Beroep" /></LabelInstrument>
                 <InputInstrument 
                   placeholder={t('common.placeholder.profession', 'Wat doe je in het dagelijks leven?')} 
                   className="w-full"
                   value={formData.profession}
                   onChange={(e) => setFormData({...formData, profession: e.target.value})}
                 />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.age" defaultText="Leeftijd" /></label>
+              </ContainerInstrument>
+              <ContainerInstrument className="space-y-2">
+                <LabelInstrument className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.age" defaultText="Leeftijd" /></LabelInstrument>
                 <InputInstrument 
                   type="number" 
                   placeholder={t('common.placeholder.age', 'Je leeftijd')} 
@@ -236,9 +236,9 @@ export const WorkshopInterestForm: React.FC = () => {
                   value={formData.age}
                   onChange={(e) => setFormData({...formData, age: e.target.value})}
                 />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.experience" defaultText="Ervaring met stemwerk" /></label>
+              </ContainerInstrument>
+              <ContainerInstrument className="space-y-2 md:col-span-2">
+                <LabelInstrument className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.experience" defaultText="Ervaring met stemwerk" /></LabelInstrument>
                 <select 
                   className="w-full p-4 rounded-[20px] border-2 border-black/5 bg-white text-[15px] font-light outline-none focus:border-primary transition-all duration-100 min-h-[52px]"
                   value={formData.experience}
@@ -249,9 +249,9 @@ export const WorkshopInterestForm: React.FC = () => {
                   <option value="intermediate"><VoiceglotText translationKey="common.level.intermediate" defaultText="Enige ervaring (hobby/amateur)" /></option>
                   <option value="pro"><VoiceglotText translationKey="common.level.pro" defaultText="Professional" /></option>
                 </select>
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.goal" defaultText="Wat is je doel?" /></label>
+              </ContainerInstrument>
+              <ContainerInstrument className="space-y-2 md:col-span-2">
+                <LabelInstrument className="text-[15px] font-light text-black/50 px-1"><VoiceglotText translationKey="common.goal" defaultText="Wat is je doel?" /></LabelInstrument>
                 <textarea 
                   rows={4}
                   placeholder={t('common.placeholder.goal', 'Wat hoop je te bereiken met deze workshop?')} 
@@ -259,11 +259,11 @@ export const WorkshopInterestForm: React.FC = () => {
                   value={formData.goal}
                   onChange={(e) => setFormData({...formData, goal: e.target.value})}
                 />
-              </div>
-            </div>
-          </div>
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
 
-          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4">
+          <ContainerInstrument className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4">
             <ButtonInstrument
               type="button"
               onClick={() => { playClick('light'); setStep(1); setSubmitError(null); }}
@@ -277,11 +277,11 @@ export const WorkshopInterestForm: React.FC = () => {
               className="flex-1 py-5 sm:py-6 rounded-[10px] bg-black text-white font-light tracking-tight text-[15px] hover:bg-primary transition-all duration-100 shadow-aura flex items-center justify-center gap-3 group min-h-[52px] active:scale-[0.99] disabled:opacity-50 disabled:active:scale-100"
             >
               {isLoading ? <VoiceglotText translationKey="common.processing" defaultText="Verwerken…" /> : <VoiceglotText translationKey="workshop.interest.submit" defaultText="Inschrijving voltooien" />}
-              <Send strokeWidth={1.5} size={18} className={cn("shrink-0 transition-transform duration-100", isLoading && "opacity-50")} />
+              <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className={cn("brightness-0 invert shrink-0 transition-transform duration-100", isLoading && "opacity-50")} />
             </ButtonInstrument>
-          </div>
+          </ContainerInstrument>
         </form>
       )}
-    </div>
+    </ContainerInstrument>
   );
 };

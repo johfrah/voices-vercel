@@ -31,37 +31,37 @@ export const OrderStepsInstrument: React.FC<{ currentStep?: string, isTelephony?
 
   return (
     <ContainerInstrument className="va-order-steps-container py-16">
-      <div className="max-w-4xl mx-auto flex items-center justify-between px-4">
+      <ContainerInstrument className="max-w-4xl mx-auto flex items-center justify-between px-4">
         {steps.map((step, index) => {
           const isActive = step.id === currentStep;
           const isLast = index === steps.length - 1;
 
           return (
             <React.Fragment key={step.id}>
-              <div className="flex flex-col items-center gap-4 group">
-                <div className={cn(
+              <ContainerInstrument className="flex flex-col items-center gap-4 group">
+                <ContainerInstrument className={cn(
                   "w-16 h-16 rounded-[15px] flex items-center justify-center transition-all duration-700 shadow-aura border border-black/[0.03]",
                   isActive 
                     ? "bg-primary text-white scale-110 shadow-lg shadow-primary/20 border-primary/20" 
                     : "bg-white text-va-black/20 group-hover:bg-va-black/5 group-hover:text-va-black/40"
                 )}>
-                  <span className="text-2xl font-extralight tracking-tighter">0{index + 1}</span>
-                </div>
+                  <TextInstrument className="text-2xl font-extralight tracking-tighter">0{index + 1}</TextInstrument>
+                </ContainerInstrument>
                 <TextInstrument className={cn(
                   "text-[15px] font-light tracking-[0.2em] text-center whitespace-nowrap uppercase",
                   isActive ? "text-va-black" : "text-va-black/30"
                 )}><VoiceglotText translationKey={step.titleKey} defaultText={step.defaultTitle.split(' ').slice(1).join(' ')} /></TextInstrument>
-              </div>
+              </ContainerInstrument>
 
               {!isLast && (
-                <div className="flex-1 flex justify-center items-center px-6">
-                  <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-black/5 to-transparent" />
-                </div>
+                <ContainerInstrument className="flex-1 flex justify-center items-center px-6">
+                  <ContainerInstrument className="w-full h-[1px] bg-gradient-to-r from-transparent via-black/5 to-transparent" />
+                </ContainerInstrument>
               )}
             </React.Fragment>
           );
         })}
-      </div>
+      </ContainerInstrument>
     </ContainerInstrument>
   );
 };

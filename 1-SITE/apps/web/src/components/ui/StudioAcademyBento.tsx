@@ -17,14 +17,14 @@ export const StudioAcademyBento = () => {
     <BentoGrid className="mb-32">
       {/* 🎙️ MAIN CARD: Workshops */}
       <BentoCard span="xl" className="h-[450px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
-        <div className="absolute inset-0 z-0">
+        <ContainerInstrument className="absolute inset-0 z-0">
           <Image 
             src="/assets/perfect-photo.jpg" 
             alt="Studio" 
             fill 
             className="object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-1000"
           />
-        </div>
+        </ContainerInstrument>
         <ContainerInstrument plain className="relative z-10">
           <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
             <Mic size={32} fill="currentColor" />
@@ -34,7 +34,7 @@ export const StudioAcademyBento = () => {
               defaultText="Van basisuitspraak tot professionele voice-over technieken. Leer van de besten in onze maandelijkse workshops." 
             /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
-        <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
+        <ContainerInstrument className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
       </BentoCard>
 
       {/* 🎓 Academy Quick-Link */}

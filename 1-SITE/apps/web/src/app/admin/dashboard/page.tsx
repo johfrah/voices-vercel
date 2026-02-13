@@ -217,20 +217,20 @@ export default function AdminDashboard() {
             <Zap strokeWidth={1.5} className="text-primary mb-8" size={32} />
             <HeadingInstrument level={2} className="text-2xl font-black tracking-tight mb-6"><VoiceglotText translationKey="admin.self_healing.title" defaultText="Self-Healing Logs" /></HeadingInstrument>
             
-            <div className="space-y-4">
+            <ContainerInstrument className="space-y-4">
               {recentHeals.length > 0 ? recentHeals.map((heal, i) => (
-                <div key={heal.id} className="flex items-center gap-3 text-[15px] font-bold text-white/40 tracking-widest border-b border-white/5 pb-2">
-                  <span className="text-primary">{heal.source.split('-')[0]}</span>
-                  <span className="truncate flex-1">{heal.message}</span>
-                </div>
+                <ContainerInstrument key={heal.id} className="flex items-center gap-3 text-[15px] font-bold text-white/40 tracking-widest border-b border-white/5 pb-2">
+                  <TextInstrument className="text-primary font-light">{heal.source.split('-')[0]}</TextInstrument>
+                  <TextInstrument className="truncate flex-1 font-light">{heal.message}</TextInstrument>
+                </ContainerInstrument>
               )) : (
                 <TextInstrument className="text-[15px] tracking-widest text-white/20 font-light"><VoiceglotText translationKey="admin.self_healing.empty" defaultText="Geen recente herstelacties." /></TextInstrument>
               )}
-            </div>
+            </ContainerInstrument>
           </ContainerInstrument>
           
           <Link href="/admin/security" className="relative z-10 text-[15px] font-black tracking-widest text-primary hover:underline"><VoiceglotText translationKey="admin.self_healing.view_all" defaultText="Bekijk alle logs" /></Link>
-          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-[40px]" />
+          <ContainerInstrument className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-[40px]" />
         </BentoCard>
       </BentoGrid>
 

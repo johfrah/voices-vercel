@@ -59,9 +59,9 @@ export default function VoiceglotAdminPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <ContainerInstrument className="min-h-screen flex items-center justify-center">
       <Loader2 className="animate-spin text-primary" size={40} />
-    </div>
+    </ContainerInstrument>
   );
 
   return (
@@ -91,12 +91,12 @@ export default function VoiceglotAdminPage() {
       {/* Stats Overview */}
       <BentoGrid columns={4}>
         <BentoCard span="sm" className="bg-va-black text-white p-8 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/20 text-primary rounded-[20px]">
+          <ContainerInstrument className="flex items-center gap-3">
+            <ContainerInstrument className="p-2 bg-primary/20 text-primary rounded-[20px]">
               <Globe strokeWidth={1.5} size={20} />
-            </div>
+            </ContainerInstrument>
             <TextInstrument className="text-[15px] opacity-40 text-white font-light"><VoiceglotText translationKey="admin.voiceglot.registry" defaultText="Registry" /></TextInstrument>
-          </div>
+          </ContainerInstrument>
           <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">
             {stats?.totalStrings || 0}
           </HeadingInstrument>
@@ -105,21 +105,21 @@ export default function VoiceglotAdminPage() {
 
         {stats?.coverage?.map((c: any) => (
           <BentoCard key={c.lang} span="sm" className="bg-white border border-black/5 p-8 space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-va-off-white rounded-full flex items-center justify-center font-black text-[15px] ">
+            <ContainerInstrument className="flex justify-between items-center">
+              <ContainerInstrument className="flex items-center gap-3">
+                <ContainerInstrument className="w-8 h-8 bg-va-off-white rounded-full flex items-center justify-center font-black text-[15px] ">
                   {c.lang}
-                </div>
+                </ContainerInstrument>
                 <TextInstrument className="text-[15px] text-va-black/30 font-light"><VoiceglotText translationKey="admin.voiceglot.coverage" defaultText="Coverage" /></TextInstrument>
-              </div>
+              </ContainerInstrument>
               <TextInstrument className="text-xl font-black">{c.percentage}%</TextInstrument>
-            </div>
-            <div className="w-full bg-va-off-white h-2 rounded-full overflow-hidden">
-              <div 
+            </ContainerInstrument>
+            <ContainerInstrument className="w-full bg-va-off-white h-2 rounded-full overflow-hidden">
+              <ContainerInstrument 
                 className="bg-primary h-full transition-all duration-1000" 
                 style={{ width: `${c.percentage}%` }}
               />
-            </div>
+            </ContainerInstrument>
             <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/20">
               {c.count} <VoiceglotText translationKey="admin.voiceglot.translated_count" defaultText="vertaalde strings" />
             </TextInstrument>
@@ -130,56 +130,56 @@ export default function VoiceglotAdminPage() {
       {/* Recent Strings & Health */}
       <BentoGrid columns={3}>
         <BentoCard span="lg" className="bg-white border border-black/5 p-10 space-y-8">
-          <div className="flex justify-between items-center">
+          <ContainerInstrument className="flex justify-between items-center">
             <HeadingInstrument level={3} className="text-2xl font-black tracking-tight"><VoiceglotText translationKey="admin.voiceglot.recent_title" defaultText="Recent Gedetecteerd" /></HeadingInstrument>
             <Languages size={20} className="text-va-black/10" />
-          </div>
-          <div className="space-y-4">
+          </ContainerInstrument>
+          <ContainerInstrument className="space-y-4">
             {stats?.recentStrings?.map((s: any) => (
-              <div key={s.id} className="p-4 bg-va-off-white/50 rounded-2xl flex justify-between items-center group hover:bg-va-off-white transition-all">
-                <div className="space-y-1">
+              <ContainerInstrument key={s.id} className="p-4 bg-va-off-white/50 rounded-2xl flex justify-between items-center group hover:bg-va-off-white transition-all">
+                <ContainerInstrument className="space-y-1">
                   <TextInstrument className="text-[15px] font-black text-primary tracking-widest">{s.registryKey}</TextInstrument>
                   <TextInstrument className="text-[15px] font-medium text-va-black/60 line-clamp-1">{s.sourceText}</TextInstrument>
-                </div>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                </ContainerInstrument>
+                <ContainerInstrument className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <ButtonInstrument className="p-2 hover:text-primary transition-colors"><Zap strokeWidth={1.5} size={14} /></ButtonInstrument>
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
             ))}
-          </div>
+          </ContainerInstrument>
         </BentoCard>
 
         <BentoCard span="sm" className="bg-primary text-white p-10 space-y-6 flex flex-col justify-between">
-          <div className="space-y-4">
+          <ContainerInstrument className="space-y-4">
             <ShieldCheck strokeWidth={1.5} size={40} />
             <HeadingInstrument level={3} className="text-3xl font-black tracking-tighter leading-none"><VoiceglotText translationKey="admin.voiceglot.seo_title" defaultText="AI SEO AUTOMATION" /><TextInstrument className="text-[15px] font-medium opacity-80"><VoiceglotText 
                 translationKey="admin.voiceglot.seo_text" 
                 defaultText="Alle slugs en meta-data worden automatisch gesynchroniseerd in 5 talen. Geen handmatige invoer nodig." 
               /></TextInstrument></HeadingInstrument>
-          </div>
-          <div className="p-4 bg-white/10 rounded-2xl border border-white/10">
-            <div className="flex justify-between items-center mb-2">
+          </ContainerInstrument>
+          <ContainerInstrument className="p-4 bg-white/10 rounded-2xl border border-white/10">
+            <ContainerInstrument className="flex justify-between items-center mb-2">
               <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText translationKey="admin.voiceglot.seo_status" defaultText="SEO Sync Status" /></TextInstrument>
               <TextInstrument className="text-[15px] font-black tracking-widest">100%</TextInstrument>
-            </div>
-            <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-              <div className="bg-white h-full w-full" />
-            </div>
-          </div>
+            </ContainerInstrument>
+            <ContainerInstrument className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+              <ContainerInstrument className="bg-white h-full w-full" />
+            </ContainerInstrument>
+          </ContainerInstrument>
         </BentoCard>
       </BentoGrid>
 
       {/* Warning / Info */}
       <ContainerInstrument className="p-8 bg-va-black text-white rounded-[32px] flex items-center gap-6">
-        <div className="w-16 h-16 bg-primary text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
+        <ContainerInstrument className="w-16 h-16 bg-primary text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
           <Zap strokeWidth={1.5} size={32} />
-        </div>
-        <div className="space-y-1">
+        </ContainerInstrument>
+        <ContainerInstrument className="space-y-1">
           <HeadingInstrument level={4} className="text-primary font-black tracking-tight"><VoiceglotText translationKey="admin.voiceglot.protocol_title" defaultText="VOICEGLOT PROTOCOL" /><TextInstrument className="text-[15px] opacity-60 font-medium"><VoiceglotText 
               translationKey="admin.voiceglot.protocol_text" 
               defaultText="De Freedom Machine spreekt elke taal. Zodra een nieuwe string wordt gedetecteerd in de UI, wordt deze binnen 60 seconden automatisch vertaald door de Intelligence Layer. Slugs worden automatisch 'slugified' per taal om SEO-waarde te maximaliseren." 
             /></TextInstrument></HeadingInstrument>
-        </div>
+        </ContainerInstrument>
       </ContainerInstrument>
 
       {/* 🧠 LLM CONTEXT (Compliance) */}

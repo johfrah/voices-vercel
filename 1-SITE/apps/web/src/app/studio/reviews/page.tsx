@@ -57,9 +57,9 @@ export default function StudioReviewsPage() {
 
   if (!isAdmin && !isLoading) return null;
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <ContainerInstrument className="min-h-screen flex items-center justify-center">
       <Loader2 className="animate-spin text-primary" size={40} />
-    </div>
+    </ContainerInstrument>
   );
 
   return (
@@ -75,7 +75,7 @@ export default function StudioReviewsPage() {
         </ContainerInstrument>
         
         <ContainerInstrument className="flex gap-4">
-          <div className="flex bg-white border border-black/5 rounded-2xl p-1">
+          <ContainerInstrument className="flex bg-white border border-black/5 rounded-2xl p-1">
             {(['all', 'pending', 'approved'] as const).map((f) => (
               <button
                 key={f}
@@ -87,7 +87,7 @@ export default function StudioReviewsPage() {
                 <VoiceglotText translationKey={`admin.reviews.filter.${f}`} defaultText={f} />
               </button>
             ))}
-          </div>
+          </ContainerInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
@@ -95,12 +95,12 @@ export default function StudioReviewsPage() {
       <BentoGrid columns={4}>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
           <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText translationKey="admin.reviews.stats.avg_score" defaultText="Gemiddelde Score" /></TextInstrument>
-          <div className="flex items-center gap-2">
+          <ContainerInstrument className="flex items-center gap-2">
             <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">4.9</HeadingInstrument>
-            <div className="flex text-primary">
+            <ContainerInstrument className="flex text-primary">
               {[...Array(5)].map((_, i) => <Star strokeWidth={1.5} key={i} size={16} fill="currentColor" />)}
-            </div>
-          </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
         </BentoCard>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
           <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText translationKey="admin.reviews.stats.total" defaultText="Totaal Reviews" /></TextInstrument>
@@ -120,37 +120,37 @@ export default function StudioReviewsPage() {
       <BentoGrid columns={3}>
         {filteredReviews.map((review) => (
           <BentoCard key={review.id} span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between group hover:shadow-aura transition-all">
-            <div className="space-y-6">
-              <div className="flex justify-between items-start">
-                <div className="flex text-primary">
+            <ContainerInstrument className="space-y-6">
+              <ContainerInstrument className="flex justify-between items-start">
+                <ContainerInstrument className="flex text-primary">
                   {[...Array(review.rating)].map((_, i) => <Star strokeWidth={1.5} key={i} size={12} fill="currentColor" />)}
-                </div>
-                <div className={`px-2 py-1 rounded text-[15px] font-black uppercase tracking-widest ${
+                </ContainerInstrument>
+                <ContainerInstrument className={`px-2 py-1 rounded text-[15px] font-black uppercase tracking-widest ${
                   review.status === 'approved' ? 'bg-green-500/10 text-green-600' : 'bg-orange-500/10 text-orange-600'
                 }`}>
                   {review.status}
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
 
-              <div className="relative">
+              <ContainerInstrument className="relative">
                 <Quote strokeWidth={1.5} className="absolute -left-4 -top-4 text-va-black/[0.03]" size={40} />
                 <TextInstrument className="text-[15px] font-medium italic leading-relaxed text-va-black/70 relative z-10">
                   &quot;{review.comment}&quot;
                 </TextInstrument>
-              </div>
+              </ContainerInstrument>
 
-              <div className="pt-4 border-t border-black/5 flex items-center gap-3">
-                <div className="w-8 h-8 bg-va-off-white rounded-full flex items-center justify-center font-black text-[15px] text-va-black/20 ">
+              <ContainerInstrument className="pt-4 border-t border-black/5 flex items-center gap-3">
+                <ContainerInstrument className="w-8 h-8 bg-va-off-white rounded-full flex items-center justify-center font-black text-[15px] text-va-black/20 ">
                   {review.userName?.charAt(0)}
-                </div>
-                <div>
+                </ContainerInstrument>
+                <ContainerInstrument>
                   <TextInstrument className="text-[15px] font-black tracking-tight">{review.userName}</TextInstrument>
                   <TextInstrument className="text-[15px] text-va-black/30 font-medium tracking-widest ">{review.actorName}</TextInstrument>
-                </div>
-              </div>
-            </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
 
-            <div className="mt-8 flex gap-2">
+            <ContainerInstrument className="mt-8 flex gap-2">
               {review.status === 'pending' && (
                 <ButtonInstrument className="va-btn-pro !py-3 flex-1">
                   <CheckCircle size={14} /> <VoiceglotText translationKey="admin.reviews.action.approve" defaultText="Goedkeuren" />
@@ -159,7 +159,7 @@ export default function StudioReviewsPage() {
               <ButtonInstrument className="va-btn-secondary !py-3 !px-4 !bg-va-off-white !text-va-black/20 hover:!text-red-500">
                 <XCircle size={14} />
               </ButtonInstrument>
-            </div>
+            </ContainerInstrument>
           </BentoCard>
         ))}
       </BentoGrid>

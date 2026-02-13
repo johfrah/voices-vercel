@@ -21,7 +21,7 @@ export default async function KalenderPage() {
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-32 pb-20 px-6">
       <SectionInstrument className="max-w-4xl mx-auto space-y-12">
-        <div className="text-center space-y-4">
+        <ContainerInstrument className="text-center space-y-4">
           <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
             <VoiceglotText translationKey="studio.kalender.title" defaultText="Workshop Kalender" />
           </HeadingInstrument>
@@ -31,7 +31,7 @@ export default async function KalenderPage() {
               defaultText="Bekijk alle geplande sessies en reserveer direct je plek in de studio." 
             />
           </TextInstrument>
-        </div>
+        </ContainerInstrument>
 
         <WorkshopCalendar workshops={upcomingWorkshops} />
       </SectionInstrument>

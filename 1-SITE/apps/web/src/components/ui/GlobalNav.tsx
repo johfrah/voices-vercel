@@ -167,7 +167,7 @@ const DropdownItem = ({
 
   return (
     <ButtonInstrument
-      onClick={() => { handleClick(); }}
+      onClick={handleClick}
       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${
         variant === 'danger' ? 'hover:bg-red-50 text-red-500' : 
         variant === 'primary' ? 'hover:bg-primary/10 text-primary' :

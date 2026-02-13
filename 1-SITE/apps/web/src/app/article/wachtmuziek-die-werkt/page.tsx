@@ -38,9 +38,9 @@ export default function MusicArticlePage() {
             span="full" 
             className="hmagic text-white p-16 flex flex-col md:flex-row items-center gap-12 !rounded-[20px]"
           >
-            <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center shrink-0 animate-pulse">
+            <ContainerInstrument className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center shrink-0 animate-pulse">
               <Music size={48} className="text-white" />
-            </div>
+            </ContainerInstrument>
             <ContainerInstrument className="space-y-6">
               <HeadingInstrument level={2} className="text-4xl font-light tracking-tight "><VoiceglotText translationKey="music.psychology.title" defaultText="De psychologie van het wachten" /><TextInstrument className="text-white/80 text-lg font-light leading-relaxed"><VoiceglotText 
                   translationKey="music.psychology.text" 

@@ -62,9 +62,9 @@ export default function AdminApprovalsPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <ContainerInstrument className="min-h-screen flex items-center justify-center">
       <Loader2 className="animate-spin text-primary" size={40} />
-    </div>
+    </ContainerInstrument>
   );
 
   return (
@@ -91,45 +91,45 @@ export default function AdminApprovalsPage() {
         <BentoGrid columns={3}>
           {pending.map((item) => (
             <BentoCard key={item.id} span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between group hover:shadow-aura transition-all">
-              <div className="space-y-6">
-                <div className="flex justify-between items-start">
-                  <div className={`px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
+              <ContainerInstrument className="space-y-6">
+                <ContainerInstrument className="flex justify-between items-start">
+                  <ContainerInstrument className={`px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
                     item.priority === 'nuclear' ? 'bg-red-500 text-white animate-pulse' : 'bg-va-off-white text-va-black/40'
                   }`}>
                     {item.type} • {item.priority}
-                  </div>
+                  </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-bold text-va-black/20">{new Date(item.createdAt).toLocaleString('nl-BE')}</TextInstrument>
-                </div>
+                </ContainerInstrument>
 
-                <div className="space-y-2">
+                <ContainerInstrument className="space-y-2">
                   <HeadingInstrument level={3} className="text-lg font-black tracking-tight leading-tight">
                     {item.payload?.subject || item.payload?.title || 'Geen onderwerp'}
                   </HeadingInstrument>
                   <TextInstrument className="text-[15px] text-va-black/40 font-medium line-clamp-3">
                     {item.reasoning}
                   </TextInstrument>
-                </div>
+                </ContainerInstrument>
 
                 {/* Nuclear Alerts */}
                 {(item.isValueSensitive || item.isBrandSensitive) && (
-                  <div className="space-y-2">
+                  <ContainerInstrument className="space-y-2">
                     {item.isValueSensitive && (
-                      <div className="flex items-center gap-2 p-2 bg-red-500/5 border border-red-500/10 rounded-[20px]">
+                      <ContainerInstrument className="flex items-center gap-2 p-2 bg-red-500/5 border border-red-500/10 rounded-[20px]">
                         <ShieldAlert size={12} className="text-red-500" />
-                        <span className="text-[15px] font-black text-red-500 tracking-widest"><VoiceglotText translationKey="auto.page.waarde_alarm__kortin.381129" defaultText="Waarde-Alarm (Korting)" /></span>
-                      </div>
+                        <TextInstrument className="text-[15px] font-black text-red-500 tracking-widest"><VoiceglotText translationKey="auto.page.waarde_alarm__kortin.381129" defaultText="Waarde-Alarm (Korting)" /></TextInstrument>
+                      </ContainerInstrument>
                     )}
                     {item.isBrandSensitive && (
-                      <div className="flex items-center gap-2 p-2 bg-primary/5 border border-primary/10 rounded-[20px]">
+                      <ContainerInstrument className="flex items-center gap-2 p-2 bg-primary/5 border border-primary/10 rounded-[20px]">
                         <Sparkles strokeWidth={1.5} size={12} className="text-primary" />
-                        <span className="text-[15px] font-black text-primary tracking-widest"><VoiceglotText translationKey="auto.page.fame_alarm__topmerk_.dc7782" defaultText="Fame-Alarm (Topmerk)" /></span>
-                      </div>
+                        <TextInstrument className="text-[15px] font-black text-primary tracking-widest"><VoiceglotText translationKey="auto.page.fame_alarm__topmerk_.dc7782" defaultText="Fame-Alarm (Topmerk)" /></TextInstrument>
+                      </ContainerInstrument>
                     )}
-                  </div>
+                  </ContainerInstrument>
                 )}
-              </div>
+              </ContainerInstrument>
 
-              <div className="mt-8 pt-6 border-t border-black/5 flex gap-2">
+              <ContainerInstrument className="mt-8 pt-6 border-t border-black/5 flex gap-2">
                 <ButtonInstrument 
                   onClick={() => handleAction(item.id, 'approve')}
                   className="flex-1 py-3 bg-green-500 text-white rounded-xl text-[15px] font-black tracking-widest hover:bg-green-600 transition-all flex items-center justify-center gap-2"
@@ -142,15 +142,15 @@ export default function AdminApprovalsPage() {
                 >
                   <X strokeWidth={1.5} size={14} />
                 </ButtonInstrument>
-              </div>
+              </ContainerInstrument>
             </BentoCard>
           ))}
         </BentoGrid>
       ) : (
         <ContainerInstrument className="bg-white border border-black/5 p-20 rounded-[40px] text-center space-y-4">
-          <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
+          <ContainerInstrument className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
             <Check strokeWidth={1.5} size={40} />
-          </div>
+          </ContainerInstrument>
           <HeadingInstrument level={2} className="text-2xl font-black tracking-tight"><VoiceglotText translationKey="auto.page.alles_clean.817d14" defaultText="Alles Clean" /><TextInstrument className="text-va-black/40 font-medium"><VoiceglotText translationKey="auto.page.er_zijn_momenteel_ge.56e606" defaultText="Er zijn momenteel geen acties die op goedkeuring wachten." /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
       )}

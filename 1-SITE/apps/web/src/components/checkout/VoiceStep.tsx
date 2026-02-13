@@ -4,7 +4,6 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { Actor } from '@/types';
-import { CheckCircle2, Loader2, Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { VoiceCard } from '../ui/VoiceCard';
 import { 
@@ -15,6 +14,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export const VoiceStep: React.FC = () => {
   const { state, selectActor, setStep } = useCheckout();
@@ -73,7 +73,7 @@ export const VoiceStep: React.FC = () => {
           placeholder="Zoek op naam..."
           className="w-full bg-va-off-white border-none rounded-[20px] py-5 pl-14 pr-8 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
         />
-        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={20} strokeWidth={1.5} />
+        <Image src="/assets/common/branding/icons/SEARCH.svg" width={20} height={20} alt="" className="absolute left-6 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
       </ContainerInstrument>
 
       {loading ? (
@@ -101,8 +101,8 @@ export const VoiceStep: React.FC = () => {
             >
                <VoiceCard voice={actor} />
               {state.selectedActor?.id === actor.id && (
-                <ContainerInstrument className="absolute top-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg z-20 animate-in zoom-in duration-300">
-                  <CheckCircle2 strokeWidth={1.5} size={20} />
+                <ContainerInstrument className="absolute top-6 right-6 bg-primary text-white p-3 rounded-[20px] shadow-lg z-20 animate-in zoom-in duration-300">
+                  <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="brightness-0 invert" />
                 </ContainerInstrument>
               )}
             </ContainerInstrument>

@@ -330,36 +330,36 @@ export default function PhotoMatcherPage() {
       <ContainerInstrument className="max-w-5xl mx-auto">
         {/* 📊 Nuclear Status Dashboard */}
         <ContainerInstrument className="mb-8 bg-va-black text-white rounded-[32px] p-6 shadow-aura flex items-center justify-between">
-          <div className="flex gap-10">
-            <div>
+          <ContainerInstrument className="flex gap-10">
+            <ContainerInstrument>
               <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText translationKey="auto.page.nuclear_progress.caae6d" defaultText="Nuclear Progress" /></TextInstrument>
-              <div className="flex items-center gap-3">
-                <div className="w-32 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-va-primary transition-all duration-500" style={{ width: `${progressPercentage}%` }} />
-                </div>
+              <ContainerInstrument className="flex items-center gap-3">
+                <ContainerInstrument className="w-32 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <ContainerInstrument className="h-full bg-va-primary transition-all duration-500" style={{ width: `${progressPercentage}%` }} />
+                </ContainerInstrument>
                 <TextInstrument className="text-[15px] font-light">{progressPercentage}%</TextInstrument>
-              </div>
-            </div>
-            <div>
+              </ContainerInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument>
               <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText translationKey="auto.page.space_saved.abd335" defaultText="Space Saved" /></TextInstrument>
               <TextInstrument className="text-[15px] font-light text-va-primary">{savedGB} GB</TextInstrument>
-            </div>
-            <div>
+            </ContainerInstrument>
+            <ContainerInstrument>
               <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText translationKey="auto.page.shortcuts.29e9d8" defaultText="Shortcuts" /></TextInstrument>
               <TextInstrument className="text-[15px] font-light text-white/60">
-                <span className="text-white bg-white/10 px-1.5 py-0.5 rounded mr-1">A</span> Archive 
-                <span className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3">M</span> Match 
-                <span className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3">S</span> Skip
+                <TextInstrument className="text-white bg-white/10 px-1.5 py-0.5 rounded mr-1 font-light">A</TextInstrument> Archive 
+                <TextInstrument className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3 font-light">M</TextInstrument> Match 
+                <TextInstrument className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3 font-light">S</TextInstrument> Skip
               </TextInstrument>
-            </div>
-          </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
           {scanning && (
-            <div className="flex items-center gap-3 bg-va-primary/20 px-4 py-2 rounded-full border border-va-primary/30">
-              <div className="w-2 h-2 bg-va-primary rounded-full animate-pulse" />
+            <ContainerInstrument className="flex items-center gap-3 bg-va-primary/20 px-4 py-2 rounded-full border border-va-primary/30">
+              <ContainerInstrument className="w-2 h-2 bg-va-primary rounded-full animate-pulse" />
               <TextInstrument className="text-[15px] font-light text-va-primary tracking-widest">
                 Scanning: {scanProgress}%
               </TextInstrument>
-            </div>
+            </ContainerInstrument>
           )}
         </ContainerInstrument>
 

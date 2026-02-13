@@ -17,15 +17,15 @@ export default function AudioReviewTestPage() {
     <main className="min-h-screen bg-[#FDFCFB]">
       <GlobalNav />
       
-      <div className="max-w-7xl mx-auto pt-32 pb-20 px-6">
-        <div className="mb-12">
+      <ContainerInstrument className="max-w-7xl mx-auto pt-32 pb-20 px-6">
+        <ContainerInstrument className="mb-12">
           <TextInstrument as="span" className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[15px] font-bold tracking-widest mb-4"><VoiceglotText translationKey="auto.page.spotlight_feature_pr.501ec9" defaultText="Spotlight Feature Preview" /></TextInstrument>
           <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter text-va-black mb-4">
             Audio Review <TextInstrument as="span" className="text-primary font-extralight"><VoiceglotText translationKey="auto.page.engine.7bfa30" defaultText="Engine" /></TextInstrument>
           </HeadingInstrument>
           <TextInstrument className="text-xl text-gray-500 max-w-2xl font-light"><VoiceglotText translationKey="auto.page.test_hier_de_interac.dd28cd" defaultText="Test hier de interactieve feedback loop. Pas de muziekbalans aan, 
             bekijk de geanimeerde waveform en simuleer de Dropbox-export." /></TextInstrument>
-        </div>
+        </ContainerInstrument>
 
         <AudioReviewDashboard 
           orderId="8842"
@@ -34,8 +34,8 @@ export default function AudioReviewTestPage() {
           musicUrl="/assets/temp/music-sample.mp3"
         />
 
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-gray-100 pt-12">
-          <div>
+        <ContainerInstrument className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-gray-100 pt-12">
+          <ContainerInstrument>
             <HeadingInstrument level={3} className="text-lg font-light text-va-black mb-4"><VoiceglotText translationKey="auto.page.hoe_werkt_dit_.8f1504" defaultText="Hoe werkt dit?" /></HeadingInstrument>
             <ul className="space-y-4 text-va-black/60 text-[15px]">
               <li className="flex gap-3">
@@ -51,13 +51,13 @@ export default function AudioReviewTestPage() {
                 <TextInstrument as="span">Bij <strong><VoiceglotText translationKey="auto.page.goedkeuring.d09d55" defaultText="Goedkeuring" /></strong><VoiceglotText translationKey="auto.page.wordt_de_finale_mast.ff3aab" defaultText="wordt de finale mastering chain toegepast en gesynct naar Dropbox." /></TextInstrument>
               </li>
             </ul>
-          </div>
-          <div className="bg-va-off-white p-8 rounded-[20px] border border-black/5">
+          </ContainerInstrument>
+          <ContainerInstrument className="bg-va-off-white p-8 rounded-[20px] border border-black/5">
             <HeadingInstrument level={3} className="text-lg font-light text-va-black mb-2"><VoiceglotText translationKey="auto.page.core_mandaat.834017" defaultText="Core Mandaat" /><TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText translationKey="auto.page.dit_is_een_100__next.743f24" defaultText="Dit is een 100% Next.js implementatie. Er wordt geen PHP gebruikt voor de rendering of de audio-logica. 
               De data-bridge communiceert direct met de Node.js services." /></TextInstrument></HeadingInstrument>
-          </div>
-        </div>
-      </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
 
       <GlobalFooter />
     </main>

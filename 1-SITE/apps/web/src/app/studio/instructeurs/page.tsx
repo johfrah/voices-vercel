@@ -32,7 +32,7 @@ export default async function InstructorsPage() {
             <ArrowLeft strokeWidth={1.5} size={14} /> 
             <VoiceglotText translationKey="studio.back_to_studio" defaultText="Terug naar Studio" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none"><VoiceglotText translationKey="studio.instructors.title" defaultText="Maak kennis met onze" /><br /><span className="text-primary"><VoiceglotText translationKey="auto.page.experts_.4d0ca8" defaultText="experts." /></span></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none"><VoiceglotText translationKey="studio.instructors.title" defaultText="Maak kennis met onze" /><br /><TextInstrument className="text-primary font-light"><VoiceglotText translationKey="auto.page.experts_.4d0ca8" defaultText="experts." /></TextInstrument></HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-medium text-xl max-w-2xl"><VoiceglotText 
               translationKey="studio.instructors.subtitle" 
               defaultText="Leren van de besten in het vak. Onze instructeurs zijn actieve professionals met jarenlange ervaring in de stemmenwereld." 
@@ -40,7 +40,7 @@ export default async function InstructorsPage() {
         </SectionInstrument>
 
         {/* GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {allInstructors.map((instructor) => (
             <ContainerInstrument key={instructor.id} className="group space-y-6">
               <Link href={`/studio/instructeurs/${instructor.slug || instructor.id}`} className="block">
@@ -80,7 +80,7 @@ export default async function InstructorsPage() {
               </ContainerInstrument>
             </ContainerInstrument>
           ))}
-        </div>
+        </ContainerInstrument>
 
       </ContainerInstrument>
     </PageWrapperInstrument>

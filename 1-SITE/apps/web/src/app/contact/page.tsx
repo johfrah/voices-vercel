@@ -101,10 +101,10 @@ export default function ContactPage() {
           {/* 📬 CONTACT FORM */}
           <BentoCard span="lg" className="bg-white shadow-aura p-12 relative overflow-hidden">
             {isSent ? (
-              <div className="h-full flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in duration-500">
-                <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center">
+              <ContainerInstrument className="h-full flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in duration-500">
+                <ContainerInstrument className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center">
                   <CheckCircle2 strokeWidth={1.5} size={40} />
-                </div>
+                </ContainerInstrument>
                 <HeadingInstrument level={2} className="text-3xl font-light tracking-tight">
                   <VoiceglotText translationKey="contact.success.title" defaultText="Bericht ontvangen" />
                 </HeadingInstrument>
@@ -117,7 +117,7 @@ export default function ContactPage() {
                 <ButtonInstrument onClick={() => setIsSent(false)} className="va-btn-secondary">
                   <VoiceglotText translationKey="contact.success.cta" defaultText="Nog een bericht sturen" />
                 </ButtonInstrument>
-              </div>
+              </ContainerInstrument>
             ) : (
               <>
                 <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-8">
@@ -125,7 +125,7 @@ export default function ContactPage() {
                 </HeadingInstrument>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {submitError && (
-                    <div
+                    <ContainerInstrument
                       className="flex items-start gap-3 p-4 rounded-[10px] bg-red-500/10 border border-red-500/20 text-red-600"
                       role="alert"
                     >
@@ -140,10 +140,10 @@ export default function ContactPage() {
                       >
                         <VoiceglotText translationKey="contact.error.dismiss" defaultText="Sluiten" />
                       </ButtonInstrument>
-                    </div>
+                    </ContainerInstrument>
                   )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-1">
+                  <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <ContainerInstrument className="space-y-1">
                       <LabelInstrument>
                         <VoiceglotText translationKey="contact.form.name" defaultText="Naam" />
                       </LabelInstrument>
@@ -154,8 +154,8 @@ export default function ContactPage() {
                         placeholder="Jouw naam"
                         className="w-full text-[15px] font-light"
                       />
-                    </div>
-                    <div className="space-y-1">
+                    </ContainerInstrument>
+                    <ContainerInstrument className="space-y-1">
                       <LabelInstrument>
                         <VoiceglotText translationKey="contact.form.email" defaultText="E-mail" />
                       </LabelInstrument>
@@ -167,9 +167,9 @@ export default function ContactPage() {
                         placeholder="naam@bedrijf.be"
                         className="w-full text-[15px] font-light"
                       />
-                    </div>
-                  </div>
-                  <div className="space-y-1">
+                    </ContainerInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="space-y-1">
                     <LabelInstrument>
                       <VoiceglotText translationKey="contact.form.subject" defaultText="Onderwerp" />
                     </LabelInstrument>
@@ -179,8 +179,8 @@ export default function ContactPage() {
                       placeholder="Waar gaat het over?"
                       className="w-full text-[15px] font-light"
                     />
-                  </div>
-                  <div className="space-y-1">
+                  </ContainerInstrument>
+                  <ContainerInstrument className="space-y-1">
                     <LabelInstrument>
                       <VoiceglotText translationKey="contact.form.message" defaultText="Bericht" />
                     </LabelInstrument>
@@ -191,7 +191,7 @@ export default function ContactPage() {
                       placeholder="Hoe kunnen we je helpen?"
                       className="bg-va-off-white border-none rounded-[10px] px-6 py-4 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20 w-full min-h-[150px] resize-none"
                     />
-                  </div>
+                  </ContainerInstrument>
                   <ButtonInstrument type="submit" disabled={isSubmitting} className="va-btn-pro w-full flex items-center justify-center gap-3">
                     {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Send strokeWidth={1.5} size={18} />}
                     <VoiceglotText translationKey="contact.form.submit" defaultText="Bericht verzenden" />

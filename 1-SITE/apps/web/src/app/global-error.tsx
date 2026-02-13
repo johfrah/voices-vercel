@@ -34,12 +34,12 @@ export default function GlobalError({
               <AlertCircle size={40} />
             </ContainerInstrument>
             
-            <div className="space-y-2">
+            <ContainerInstrument className="space-y-2">
               <HeadingInstrument level={1} className="text-3xl font-black tracking-tighter"><VoiceglotText translationKey="error.global.title" defaultText="Systeem Fout" /><TextInstrument className="text-va-black/40 font-medium leading-relaxed"><VoiceglotText 
                   translationKey="error.global.text" 
                   defaultText="Er ging iets mis bij het laden van de Freedom Machine. Onze excuses voor het ongemak." 
                 /></TextInstrument></HeadingInstrument>
-            </div>
+            </ContainerInstrument>
 
             <ButtonInstrument 
               onClick={reset}
