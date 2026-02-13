@@ -28,7 +28,7 @@ export default function MusicArticlePage() {
             href="/blog" 
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
-            <ArrowLeft strokeWidth={1.5} size={14} /> 
+            <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
           </Link>
           <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 ">
@@ -61,7 +61,7 @@ export default function MusicArticlePage() {
           </BentoCard>
 
           <BentoCard span="md" className="bg-white shadow-aura p-12 !rounded-[20px]">
-            <Zap strokeWidth={1.5} size={32} className="text-primary mb-6" />
+            <Zap size={32} className="text-primary mb-6" />
             <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-4 text-va-black ">
               <VoiceglotText translationKey="music.quality.title" defaultText="Geoptimaliseerd" />
             </HeadingInstrument>
@@ -71,7 +71,7 @@ export default function MusicArticlePage() {
           </BentoCard>
 
           <BentoCard span="md" className="bg-va-black text-white p-12 !rounded-[20px]">
-            <ShieldCheck strokeWidth={1.5} size={32} className="text-primary mb-6" />
+            <ShieldCheck size={32} className="text-primary mb-6" />
             <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-4 ">
               <VoiceglotText translationKey="music.rights.title" defaultText="Rechtenvrij" />
             </HeadingInstrument>

@@ -224,7 +224,7 @@ export default function BlogPage() {
         {/* Header */}
         <SectionInstrument className="mb-16">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-light tracking-widest border border-primary/10 mb-8 ">
-            <BookOpen strokeWidth={1.5} size={12} fill="currentColor" /> 
+            <BookOpen size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="blog.badge" defaultText="Kennis & Inspiratie" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none mb-6 text-va-black ">
@@ -252,7 +252,7 @@ export default function BlogPage() {
                       {theme}
                     </div>
                     <TextInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
-                      <Calendar strokeWidth={1.5} size={12} /> {new Date(article.createdAt).toLocaleDateString('nl-BE')}
+                      <Calendar size={12} /> {new Date(article.createdAt).toLocaleDateString('nl-BE')}
                     </TextInstrument>
                   </ContainerInstrument>
                   
@@ -265,7 +265,7 @@ export default function BlogPage() {
                   </TextInstrument>
                   
                   <div className="flex items-center gap-2 text-[15px] font-light tracking-widest text-primary group-hover:gap-4 transition-all ">
-                    <VoiceglotText translationKey="common.read_more" defaultText="Lees meer" /> <ArrowRight strokeWidth={1.5} size={14} />
+                    <VoiceglotText translationKey="common.read_more" defaultText="Lees meer" /> <ArrowRight size={14} />
                   </div>
                 </Link>
               </BentoCard>

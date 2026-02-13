@@ -64,7 +64,7 @@ export default function MusicExperiencePage() {
             span="md" 
             className="bg-white shadow-aura p-12"
           >
-            <Zap strokeWidth={1.5} size={32} className="text-primary mb-6" />
+            <Zap size={32} className="text-primary mb-6" />
             <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4">
               <VoiceglotText translationKey="music.quality.title" defaultText="Geoptimaliseerd" />
             </HeadingInstrument>
@@ -80,7 +80,7 @@ export default function MusicExperiencePage() {
             span="md" 
             className="bg-va-black text-white p-12"
           >
-            <ShieldCheck strokeWidth={1.5} size={32} className="text-primary mb-6" />
+            <ShieldCheck size={32} className="text-primary mb-6" />
             <HeadingInstrument level={3} className="text-2xl font-black tracking-tight mb-4">
               <VoiceglotText translationKey="music.rights.title" defaultText="Rechtenvrij" />
             </HeadingInstrument>

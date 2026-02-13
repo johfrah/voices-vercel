@@ -134,7 +134,7 @@ export default async function BackofficeDashboard() {
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-va-primary/10 text-va-primary rounded-2xl">
-                <Activity strokeWidth={1.5} size={24} />
+                <Activity size={24} />
               </ContainerInstrument>
               <TextInstrument as="span" className="text-[15px] font-black text-black/20 tracking-widest">
                 <VoiceglotText translationKey="admin.dashboard.card.ademing" defaultText="Ademing" />
@@ -166,7 +166,7 @@ export default async function BackofficeDashboard() {
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-blue-500/10 text-blue-600 rounded-2xl">
-                <User strokeWidth={1.5}s size={24} />
+                <Users size={24} />
               </ContainerInstrument>
               <TextInstrument as="span" className="text-[15px] font-black text-black/20 tracking-widest">
                 <VoiceglotText translationKey="admin.dashboard.card.users" defaultText="Gebruikers" />
@@ -196,7 +196,7 @@ export default async function BackofficeDashboard() {
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-orange-500/10 text-orange-600 rounded-2xl">
-                <Calendar strokeWidth={1.5} size={24} />
+                <Calendar size={24} />
               </ContainerInstrument>
               <TextInstrument as="span" className="text-[15px] font-black text-black/20 tracking-widest">
                 <VoiceglotText translationKey="admin.dashboard.card.studio" defaultText="Studio & Academy" />

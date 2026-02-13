@@ -71,7 +71,7 @@ export const TelephonySmartSuggestions: React.FC = () => {
     <div className="bg-va-off-white/50 rounded-[40px] p-8 border-none shadow-none space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-          <Sparkles strokeWidth={1.5} size={20} />
+          <Sparkles size={20} />
         </div>
         <div>
           <h3 className="text-sm font-black tracking-widest">
@@ -85,7 +85,7 @@ export const TelephonySmartSuggestions: React.FC = () => {
 
       <div className="space-y-4">
         <label className="flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/30">
-          <Building2 strokeWidth={1.5} size={12} /> <VoiceglotText translationKey="checkout.telephony.company_label" defaultText="Jouw Bedrijfsnaam" />
+          <Building2 size={12} /> <VoiceglotText translationKey="checkout.telephony.company_label" defaultText="Jouw Bedrijfsnaam" />
         </label>
         <input
           type="text"
@@ -113,7 +113,7 @@ export const TelephonySmartSuggestions: React.FC = () => {
             </div>
             <div className="ml-4">
               {copiedId === template.id ? (
-                <Check strokeWidth={1.5} size={16} className="text-green-500 group-hover:text-white" />
+                <Check size={16} className="text-green-500 group-hover:text-white" />
               ) : (
                 <Copy size={16} className="opacity-20 group-hover:opacity-100" />
               )}

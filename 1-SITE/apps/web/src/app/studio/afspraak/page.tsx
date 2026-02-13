@@ -54,7 +54,7 @@ function AfspraakContent() {
     return (
       <ContainerInstrument className="max-w-3xl mx-auto text-center space-y-8 py-20">
         <ContainerInstrument className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white mx-auto shadow-aura animate-in zoom-in duration-700">
-          <Check strokeWidth={1.5}Circle2 size={48} />
+          <CheckCircle2 size={48} />
         </ContainerInstrument>
         <ContainerInstrument className="space-y-4">
           <HeadingInstrument level={1} className="text-5xl font-black tracking-tighter">
@@ -91,7 +91,7 @@ function AfspraakContent() {
     return (
       <ContainerInstrument className="max-w-xl w-full bg-white p-12 md:p-16 rounded-[40px] shadow-aura text-center space-y-8 border border-black/5">
         <div className="w-20 h-20 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8">
-          <X strokeWidth={1.5}Circle size={40} />
+          <XCircle size={40} />
         </div>
         
         <div className="space-y-4">
@@ -123,7 +123,7 @@ function AfspraakContent() {
     return (
       <ContainerInstrument className="max-w-xl w-full bg-white p-12 md:p-16 rounded-[40px] shadow-aura text-center space-y-8 border border-black/5">
         <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-8">
-          <Calendar strokeWidth={1.5} size={40} />
+          <Calendar size={40} />
         </div>
         
         <div className="space-y-4">

@@ -28,7 +28,7 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
               {item.title}
             </HeadingInstrument>
             <div className={`p-2 rounded-full bg-va-black/5 transition-transform duration-500 ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
-              <ChevronDown strokeWidth={1.5} size={18} />
+              <ChevronDown size={18} />
             </div>
           </button>
           <div 

@@ -38,7 +38,7 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
-          <ArrowLeft strokeWidth={1.5} size={14} /> 
+          <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="agency.back_to_voices" defaultText="Terug naar alle stemmen" />
         </Link>
         <ContainerInstrument className="flex gap-4">
@@ -71,7 +71,7 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
                   <VoiceglotText translationKey="actor.badge.top_talent" defaultText="Top Talent" />
                 </ContainerInstrument>
                 <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[15px] font-bold tracking-widest">
-                  <Star strokeWidth={1.5} size={10} className="text-primary" fill="currentColor" /> 
+                  <Star size={10} className="text-primary" fill="currentColor" /> 
                   <VoiceglotText translationKey="actor.voice_score" defaultText={`${actor.voice_score} Voice Score`} />
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -155,7 +155,7 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
 
           <BentoCard span="sm" className="hred text-white p-8">
             <HeadingInstrument level={4} className="text-[15px] font-black tracking-widest text-white/40 mb-4 flex items-center gap-2">
-              <ShieldCheck strokeWidth={1.5} size={14} /> 
+              <ShieldCheck size={14} /> 
               <VoiceglotText translationKey="actor.guarantee.title" defaultText="Kwaliteitsgarantie" />
             </HeadingInstrument>
             <TextInstrument className="text-[15px] font-medium leading-relaxed">

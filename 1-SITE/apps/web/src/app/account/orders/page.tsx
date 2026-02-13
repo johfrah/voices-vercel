@@ -15,7 +15,7 @@ export default function OrdersPage() {
           href="/account" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-colors mb-8"
         >
-          <ArrowLeft strokeWidth={1.5} size={12} /> 
+          <ArrowLeft size={12} /> 
           <VoiceglotText translationKey="account.back_to_dashboard" defaultText="Terug naar Dashboard" />
         </Link>
         <ContainerInstrument className="space-y-4">

@@ -26,9 +26,9 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
 
   const stats = [
     { label: 'CVR (Klant-focus)', value: '4.2%', change: '+0.8%', icon: <TrendingUp size={14} /> },
-    { label: 'Sync Status', value: '100%', change: 'Stabiel', icon: <ShieldCheck strokeWidth={1.5} size={14} /> },
-    { label: 'AI Nauwkeurigheid', value: '92%', change: '+5%', icon: <Zap strokeWidth={1.5} size={14} /> },
-    { label: 'Actieve Sessies', value: '12', change: 'Live', icon: <Activity strokeWidth={1.5} size={14} /> },
+    { label: 'Sync Status', value: '100%', change: 'Stabiel', icon: <ShieldCheck size={14} /> },
+    { label: 'AI Nauwkeurigheid', value: '92%', change: '+5%', icon: <Zap size={14} /> },
+    { label: 'Actieve Sessies', value: '12', change: 'Live', icon: <Activity size={14} /> },
   ];
 
   const handleOptimize = () => {
@@ -107,7 +107,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                   <div className="bg-primary/10 border border-primary/20 p-6 rounded-2xl space-y-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 text-primary">
-                        <Sparkles strokeWidth={1.5} size={16} />
+                        <Sparkles size={16} />
                         <span className="text-[15px] font-black tracking-widest">Systeem Optimalisatie</span>
                       </div>
                       <div className="text-[15px] font-black text-white/40 tracking-widest">Gereed</div>
@@ -127,7 +127,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                         </>
                       ) : (
                         <>
-                          <Zap strokeWidth={1.5} size={14} fill="currentColor" />
+                          <Zap size={14} fill="currentColor" />
                           Optimalisaties toepassen
                         </>
                       )}

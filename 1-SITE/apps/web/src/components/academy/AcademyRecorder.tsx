@@ -173,7 +173,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
                 onClick={() => setShowTeleprompter(!showTeleprompter)}
                 className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[15px] font-black uppercase tracking-widest transition-all ${showTeleprompter ? 'bg-black text-white border-black' : 'bg-transparent text-black/30 border-black/10 hover:border-black/30'}`}
               >
-                <Monitor strokeWidth={1.5} size={10} />
+                <Monitor size={10} />
                 {showTeleprompter ? <VoiceglotText translationKey="academy.recorder.teleprompter.on" defaultText="Teleprompter AAN" /> : <VoiceglotText translationKey="academy.recorder.teleprompter.off" defaultText="Teleprompter UIT" />}
               </button>
             </div>
@@ -272,7 +272,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
               className="va-btn-pro !rounded-full !px-12 flex items-center gap-3"
               data-voices-sonic-dna="click-premium"
             >
-              <Check strokeWidth={1.5}Circle2 size={20} /> 
+              <CheckCircle2 size={20} /> 
               <VoiceglotText translationKey="academy.recorder.submit" defaultText="INLEVEREN VOOR FEEDBACK" />
             </button>
           </>

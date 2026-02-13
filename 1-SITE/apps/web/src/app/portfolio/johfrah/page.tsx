@@ -98,7 +98,7 @@ async function JohfrahContent() {
                 </ButtonInstrument>
                 <a href="#contact" className="text-[15px] font-black tracking-[0.2em] text-va-black/30 hover:text-primary transition-all duration-500 flex items-center gap-3 group">
                   <VoiceglotText translationKey="portfolio.johfrah.cta.contact" defaultText="Laten we praten" />
-                  <ArrowRight strokeWidth={1.5} size={14} className="group-hover:translate-x-2 transition-transform" />
+                  <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
                 </a>
               </div>
             </div>

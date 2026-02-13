@@ -70,7 +70,7 @@ export default function StudioReviewsPage() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -104,7 +104,7 @@ export default function StudioReviewsPage() {
           <div className="flex items-center gap-2">
             <HeadingInstrument level={3} className="text-4xl font-black tracking-tighter">4.9</HeadingInstrument>
             <div className="flex text-primary">
-              {[...Array(5)].map((_, i) => <Star strokeWidth={1.5} key={i} size={16} fill="currentColor" />)}
+              {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
             </div>
           </div>
         </BentoCard>
@@ -137,7 +137,7 @@ export default function StudioReviewsPage() {
             <div className="space-y-6">
               <div className="flex justify-between items-start">
                 <div className="flex text-primary">
-                  {[...Array(review.rating)].map((_, i) => <Star strokeWidth={1.5} key={i} size={12} fill="currentColor" />)}
+                  {[...Array(review.rating)].map((_, i) => <Star key={i} size={12} fill="currentColor" />)}
                 </div>
                 <div className={`px-2 py-1 rounded text-[15px] font-black uppercase tracking-widest ${
                   review.status === 'approved' ? 'bg-green-500/10 text-green-600' : 'bg-orange-500/10 text-orange-600'
@@ -147,7 +147,7 @@ export default function StudioReviewsPage() {
               </div>
 
               <div className="relative">
-                <Quote strokeWidth={1.5} className="absolute -left-4 -top-4 text-va-black/[0.03]" size={40} />
+                <Quote className="absolute -left-4 -top-4 text-va-black/[0.03]" size={40} />
                 <TextInstrument className="text-sm font-medium italic leading-relaxed text-va-black/70 relative z-10">
                   &quot;{review.comment}&quot;
                 </TextInstrument>
@@ -167,11 +167,11 @@ export default function StudioReviewsPage() {
             <div className="mt-8 flex gap-2">
               {review.status === 'pending' && (
                 <ButtonInstrument className="va-btn-pro !py-3 flex-1">
-                  <Check strokeWidth={1.5}Circle size={14} /> <VoiceglotText translationKey="admin.reviews.action.approve" defaultText="Goedkeuren" />
+                  <CheckCircle size={14} /> <VoiceglotText translationKey="admin.reviews.action.approve" defaultText="Goedkeuren" />
                 </ButtonInstrument>
               )}
               <ButtonInstrument className="va-btn-secondary !py-3 !px-4 !bg-va-off-white !text-va-black/20 hover:!text-red-500">
-                <X strokeWidth={1.5}Circle size={14} />
+                <XCircle size={14} />
               </ButtonInstrument>
             </div>
           </BentoCard>

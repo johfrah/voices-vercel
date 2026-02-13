@@ -340,7 +340,7 @@ export default function GlobalNav() {
             ) : (
               <div className="p-4 space-y-4 text-center">
                 <div className="w-12 h-12 bg-va-black/5 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <User strokeWidth={1.5} size={24} className="text-va-black/20" />
+                  <User size={24} className="text-va-black/20" />
                 </div>
                 <div>
                   <HeadingInstrument level={4} className="text-sm font-light tracking-tight mb-1 ">Welkom bij Voices</HeadingInstrument>

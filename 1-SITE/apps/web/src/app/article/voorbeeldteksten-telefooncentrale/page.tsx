@@ -50,7 +50,7 @@ export default function ScriptsArticlePage() {
             href="/blog" 
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
-            <ArrowLeft strokeWidth={1.5} size={14} /> 
+            <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="article.back" defaultText="Terug naar de etalage" />
           </Link>
           <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-primary mb-4 ">

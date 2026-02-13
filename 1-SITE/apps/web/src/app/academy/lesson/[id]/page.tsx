@@ -188,7 +188,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
             href="/academy" 
             className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
           >
-            <ArrowLeft strokeWidth={1.5} size={14} /> 
+            <ArrowLeft size={14} /> 
             <VoiceglotText translationKey="academy.back_to_overview" defaultText="Terug naar overzicht" />
           </Link>
           
@@ -202,7 +202,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         <BentoGrid>
           <BentoCard span="xl" className="hred p-16 text-white text-center space-y-8">
             <ContainerInstrument className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8">
-              {isLockedByDrip ? <Info size={48} className="text-white" /> : <ShieldCheck strokeWidth={1.5} size={48} className="text-white" />}
+              {isLockedByDrip ? <Info size={48} className="text-white" /> : <ShieldCheck size={48} className="text-white" />}
             </ContainerInstrument>
             <HeadingInstrument level={2} className="text-5xl font-black tracking-tighter leading-none">
               <VoiceglotText 
@@ -251,66 +251,92 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
       onContextMenu={(e) => !isAdmin && e.preventDefault()} 
       onCopy={(e) => !isAdmin && e.preventDefault()}
     >
-      {/* 🕸️ SUZY'S SCHEMA INJECTION: Course & VideoObject */}
+      {/* 🕸️ SUZY'S SCHEMA INJECTION: Course, VideoObject & Breadcrumbs */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Course",
-            "name": data.header.title,
-            "description": data.header.subtitle,
-            "provider": {
-              "@type": "Organization",
-              "name": "Voices Academy",
-              "url": "https://www.voices.be/academy"
-            },
-            "publisher": {
-              "@type": "Organization",
-              "name": "Voices",
-              "url": "https://www.voices.be"
-            },
-            "hasCourseInstance": {
-              "@type": "CourseInstance",
-              "courseMode": "online",
-              "educationalLevel": "Professional",
-              "instructor": {
-                "@type": "Person",
-                "name": "Johfrah Lefebvre",
-                "url": "https://www.voices.be/voice/johfrah-lefebvre"
-              }
-            },
-            "video": videoUrl ? {
-              "@type": "VideoObject",
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "Course",
               "name": data.header.title,
               "description": data.header.subtitle,
-              "thumbnailUrl": `https://www.voices.be/api/academy/thumbnail/${params.id}`,
-              "uploadDate": new Date().toISOString(),
-              "contentUrl": videoUrl,
-              "transcript": data.exercise, // Gebruik exercise als basis voor transcript
-              "duration": "PT10M", // Placeholder, idealiter dynamisch
-              "hasPart": [
+              "provider": {
+                "@type": "Organization",
+                "name": "Voices Academy",
+                "url": "https://www.voices.be/academy"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Voices",
+                "url": "https://www.voices.be"
+              },
+              "hasCourseInstance": {
+                "@type": "CourseInstance",
+                "courseMode": "online",
+                "educationalLevel": "Professional",
+                "instructor": {
+                  "@type": "Person",
+                  "name": "Johfrah Lefebvre",
+                  "url": "https://www.voices.be/voice/johfrah-lefebvre"
+                }
+              },
+              "video": videoUrl ? {
+                "@type": "VideoObject",
+                "name": data.header.title,
+                "description": data.header.subtitle,
+                "thumbnailUrl": `https://www.voices.be/api/academy/thumbnail/${params.id}`,
+                "uploadDate": new Date().toISOString(),
+                "contentUrl": videoUrl,
+                "transcript": data.exercise, // Gebruik exercise als basis voor transcript
+                "duration": "PT10M", // Placeholder, idealiter dynamisch
+                "hasPart": [
+                  {
+                    "@type": "Clip",
+                    "name": "Introductie",
+                    "startOffset": "PT0S",
+                    "endOffset": "PT2M"
+                  },
+                  {
+                    "@type": "Clip",
+                    "name": "Kern van de les",
+                    "startOffset": "PT2M",
+                    "endOffset": "PT8M"
+                  },
+                  {
+                    "@type": "Clip",
+                    "name": "Oefening & Afronding",
+                    "startOffset": "PT8M",
+                    "endOffset": "PT10M"
+                  }
+                ]
+              } : undefined
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
                 {
-                  "@type": "Clip",
-                  "name": "Introductie",
-                  "startOffset": "PT0S",
-                  "endOffset": "PT2M"
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.voices.be"
                 },
                 {
-                  "@type": "Clip",
-                  "name": "Kern van de les",
-                  "startOffset": "PT2M",
-                  "endOffset": "PT8M"
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Academy",
+                  "item": "https://www.voices.be/academy"
                 },
                 {
-                  "@type": "Clip",
-                  "name": "Oefening & Afronding",
-                  "startOffset": "PT8M",
-                  "endOffset": "PT10M"
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": data.header.title,
+                  "item": `https://www.voices.be/academy/lesson/${params.id}`
                 }
               ]
-            } : undefined
-          })
+            }
+          ])
         }}
       />
       {/* 🛡️ ANTI-SCREENSHOT OVERLAY (Only for non-admins) */}
@@ -363,7 +389,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           href="/academy" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
-          <ArrowLeft strokeWidth={1.5} size={14} /> 
+          <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="academy.back_to_overview" defaultText="Terug naar overzicht" />
         </Link>
         
@@ -499,19 +525,19 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
             </HeadingInstrument>
             <ContainerInstrument as="ul" className="space-y-4 text-[15px] font-medium">
               <ContainerInstrument as="li" className="flex gap-3">
-                <Check strokeWidth={1.5}Circle2 size={16} className="shrink-0 text-white" />
+                <CheckCircle2 size={16} className="shrink-0 text-white" />
                 <TextInstrument as="span">
                   <VoiceglotText translationKey="academy.lesson.briefing_1" defaultText="Gebruik oortjes of een koptelefoon." />
                 </TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument as="li" className="flex gap-3">
-                <Check strokeWidth={1.5}Circle2 size={16} className="shrink-0 text-white" />
+                <CheckCircle2 size={16} className="shrink-0 text-white" />
                 <TextInstrument as="span">
                   <VoiceglotText translationKey="academy.lesson.briefing_2" defaultText="Zet je camera aan (optioneel)." />
                 </TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument as="li" className="flex gap-3">
-                <Check strokeWidth={1.5}Circle2 size={16} className="shrink-0 text-white" />
+                <CheckCircle2 size={16} className="shrink-0 text-white" />
                 <TextInstrument as="span">
                   <VoiceglotText translationKey="academy.lesson.briefing_3" defaultText="Geef browser toegang tot microfoon." />
                 </TextInstrument>

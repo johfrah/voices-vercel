@@ -74,7 +74,7 @@ export default function FaqPage() {
         {/* Header */}
         <SectionInstrument className="mb-16 text-center">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-black tracking-widest border border-primary/10 mb-8">
-            <HelpCircle strokeWidth={1.5} size={12} fill="currentColor" /> 
+            <HelpCircle size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="faq.badge" defaultText="Kennisbank" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter leading-none mb-6">
@@ -102,7 +102,7 @@ export default function FaqPage() {
                 <HeadingInstrument level={3} className="text-xl font-black tracking-tight group-hover:text-primary transition-colors">
                   <VoiceglotText translationKey={faq.key} defaultText={faq.q} />
                 </HeadingInstrument>
-                {openIndex === i ? <ChevronUp className="text-primary" /> : <ChevronDown strokeWidth={1.5} className="text-va-black/20" />}
+                {openIndex === i ? <ChevronUp className="text-primary" /> : <ChevronDown className="text-va-black/20" />}
               </button>
               {openIndex === i && (
                 <div className="px-10 pb-10 animate-in slide-in-from-top-4 duration-300">
@@ -132,7 +132,7 @@ export default function FaqPage() {
             onClick={openVoicy}
             className="relative z-10 va-btn-pro !bg-primary !text-va-black !px-12 !py-6 !text-lg"
           >
-            <VoiceglotText translationKey="faq.voicy.cta" defaultText="Vraag het aan Voicy" /> <Sparkles strokeWidth={1.5} size={20} />
+            <VoiceglotText translationKey="faq.voicy.cta" defaultText="Vraag het aan Voicy" /> <Sparkles size={20} />
           </ButtonInstrument>
           <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
         </ContainerInstrument>

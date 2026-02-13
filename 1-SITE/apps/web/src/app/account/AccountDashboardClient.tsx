@@ -75,7 +75,7 @@ export default function AccountDashboardClient() {
             >
               <ContainerInstrument className="space-y-4">
                 <ContainerInstrument className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-8 bg-blue-500 shadow-lg shadow-blue-500/20">
-                  <Mail strokeWidth={1.5} size={24} className="text-white" />
+                  <Mail size={24} className="text-white" />
                 </ContainerInstrument>
                 <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4">
                   <VoiceglotText translationKey="account.card.mailbox.title" defaultText="Mailbox" />
@@ -85,7 +85,7 @@ export default function AccountDashboardClient() {
                 </TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-blue-500 ">
-                <VoiceglotText translationKey="account.card.mailbox.cta" defaultText="Open Inbox" /> <ArrowRight strokeWidth={1.5} size={14} />
+                <VoiceglotText translationKey="account.card.mailbox.cta" defaultText="Open Inbox" /> <ArrowRight size={14} />
               </ContainerInstrument>
             </BentoCard>
           )}
@@ -108,7 +108,7 @@ export default function AccountDashboardClient() {
               </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-white ">
-              <VoiceglotText translationKey="account.card.orders.cta" defaultText="Bekijk Orders" /> <ArrowRight strokeWidth={1.5} size={14} />
+              <VoiceglotText translationKey="account.card.orders.cta" defaultText="Bekijk Orders" /> <ArrowRight size={14} />
             </ContainerInstrument>
           </BentoCard>
 
@@ -130,7 +130,7 @@ export default function AccountDashboardClient() {
               </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-primary ">
-              <VoiceglotText translationKey="account.card.settings.cta" defaultText="Aanpassen" /> <ArrowRight strokeWidth={1.5} size={14} />
+              <VoiceglotText translationKey="account.card.settings.cta" defaultText="Aanpassen" /> <ArrowRight size={14} />
             </ContainerInstrument>
           </BentoCard>
 
@@ -142,7 +142,7 @@ export default function AccountDashboardClient() {
           >
             <ContainerInstrument className="space-y-4">
               <ContainerInstrument className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-8 bg-primary shadow-lg shadow-primary/20">
-                <Zap strokeWidth={1.5} size={24} className="text-white" />
+                <Zap size={24} className="text-white" />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-4">
                 <VoiceglotText translationKey="account.card.partner.title" defaultText="Partner" />
@@ -152,7 +152,7 @@ export default function AccountDashboardClient() {
               </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2 font-light tracking-widest text-[15px] mt-8 transition-all text-primary ">
-              <VoiceglotText translationKey="account.card.partner.cta" defaultText="Open" /> <ArrowRight strokeWidth={1.5} size={14} />
+              <VoiceglotText translationKey="account.card.partner.cta" defaultText="Open" /> <ArrowRight size={14} />
             </ContainerInstrument>
           </BentoCard>
 
@@ -169,7 +169,7 @@ export default function AccountDashboardClient() {
               <ContainerInstrument>
                 <div className="flex justify-between items-start mb-8">
                   <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
-                    <Activity strokeWidth={1.5} size={24} />
+                    <Activity size={24} />
                   </div>
                   <ContainerInstrument className={`px-3 py-1 rounded-full text-[15px] font-light uppercase tracking-widest ${
                     customerDNA.intelligence.leadVibe === 'burning' ? 'bg-red-500 text-white' :
@@ -241,7 +241,7 @@ export default function AccountDashboardClient() {
           <ContainerInstrument className="flex flex-col md:flex-row gap-12">
             <ContainerInstrument className="flex-1 space-y-6">
               <ContainerInstrument className="flex items-center gap-3 text-primary">
-                <ShieldCheck strokeWidth={1.5} className="text-primary" size={32} />
+                <ShieldCheck className="text-primary" size={32} />
                 <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter">
                   <VoiceglotText translationKey="account.security.title" defaultText="Beveiliging & Privacy" />
                 </HeadingInstrument>

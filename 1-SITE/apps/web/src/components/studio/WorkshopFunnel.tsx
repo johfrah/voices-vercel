@@ -55,7 +55,7 @@ export const WorkshopFunnel: React.FC<{ data: any }> = ({ data }) => {
           label={t('studio.funnel.upcoming', 'Aankomend')} 
           value={stats.upcoming_workshops || 0} 
           subLabel={t('studio.funnel.upcoming_sub', "In de pijplijn")}
-          icon={<User strokeWidth={1.5}Plus size={18} />}
+          icon={<UserPlus size={18} />}
           color="bg-primary"
           onClick={() => handleStepClick('Aankomend')}
         />
@@ -63,7 +63,7 @@ export const WorkshopFunnel: React.FC<{ data: any }> = ({ data }) => {
           label={t('studio.funnel.completed', 'Voltooid')} 
           value={stats.completed_workshops || 0} 
           subLabel={t('studio.funnel.completed_sub', "Succesvol afgerond")}
-          icon={<User strokeWidth={1.5}Check size={18} />}
+          icon={<UserCheck size={18} />}
           color="bg-green-500"
           onClick={() => handleStepClick('Voltooid')}
         />

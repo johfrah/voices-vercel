@@ -200,7 +200,7 @@ export class DirectMailService {
     });
   }
 
-  async fetchInbox(limit: number = 20, folder: string = 'INBOX', user?: string, pass?: string, host?: string): Promise<Mail strokeWidth={1.5}Header[]> {
+  async fetchInbox(limit: number = 20, folder: string = 'INBOX', user?: string, pass?: string, host?: string): Promise<MailHeader[]> {
     console.log(`📬 DirectMailService: Fetching folder ${folder} for ${user || this.config.user}...`);
     const config = await this.getImapConfig(user, pass, host);
     
@@ -271,7 +271,7 @@ export class DirectMailService {
     });
   }
 
-  async fetchMessageBody(uid: number, folder: string = 'INBOX', user?: string, pass?: string, host?: string): Promise<Mail strokeWidth={1.5}FullContent> {
+  async fetchMessageBody(uid: number, folder: string = 'INBOX', user?: string, pass?: string, host?: string): Promise<MailFullContent> {
     const config = await this.getImapConfig(user, pass, host);
     return new Promise((resolve, reject) => {
       const imap = new Imap(config);

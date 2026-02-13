@@ -54,43 +54,69 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-20 relative z-10">
-      {/* 🕸️ SUZY'S SCHEMA INJECTION: VoiceActor Entity */}
+      {/* 🕸️ SUZY'S SCHEMA INJECTION: VoiceActor Entity & Breadcrumbs */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Person",
-            "name": actor.display_name,
-            "description": actor.description,
-            "image": actor.photo_url,
-            "jobTitle": "Voice-over Artist",
-            "gender": actor.gender,
-            "url": `https://www.voices.be/voice/${actor.slug}`,
-            "knowsAbout": actor.languages?.map((l: any) => l.name) || ["Nederlands"],
-            "memberOf": {
-              "@type": "Organization",
-              "name": "Voices",
-              "url": "https://www.voices.be"
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "Person",
+              "name": actor.display_name,
+              "description": actor.description,
+              "image": actor.photo_url,
+              "jobTitle": "Voice-over Artist",
+              "gender": actor.gender,
+              "url": `https://www.voices.be/voice/${actor.slug}`,
+              "knowsAbout": actor.languages?.map((l: any) => l.name) || ["Nederlands"],
+              "memberOf": {
+                "@type": "Organization",
+                "name": "Voices",
+                "url": "https://www.voices.be"
+              },
+              "worksFor": {
+                "@type": "Organization",
+                "name": "Voices",
+                "url": "https://www.voices.be"
+              },
+              "sameAs": [
+                actor.website_url,
+                actor.linkedin_url,
+                actor.instagram_url
+              ].filter(Boolean),
+              "aggregateRating": actor.voice_score ? {
+                "@type": "AggregateRating",
+                "ratingValue": actor.voice_score,
+                "bestRating": "5",
+                "worstRating": "1",
+                "ratingCount": actor.reviews?.length || "10"
+              } : undefined
             },
-            "worksFor": {
-              "@type": "Organization",
-              "name": "Voices",
-              "url": "https://www.voices.be"
-            },
-            "sameAs": [
-              actor.website_url,
-              actor.linkedin_url,
-              actor.instagram_url
-            ].filter(Boolean),
-            "aggregateRating": actor.voice_score ? {
-              "@type": "AggregateRating",
-              "ratingValue": actor.voice_score,
-              "bestRating": "5",
-              "worstRating": "1",
-              "ratingCount": actor.reviews?.length || "10"
-            } : undefined
-          })
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.voices.be"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Agency",
+                  "item": "https://www.voices.be/agency"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": actor.display_name,
+                  "item": `https://www.voices.be/voice/${actor.slug}`
+                }
+              ]
+            }
+          ])
         }}
       />
       <SectionInstrument className="mb-12 flex items-center justify-between">
@@ -98,7 +124,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
-          <ArrowLeft strokeWidth={1.5} size={14} /> 
+          <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="artist.back_to_artists" defaultText="Terug naar alle stemmen" />
         </Link>
         <ContainerInstrument className="flex gap-4">
@@ -134,7 +160,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
                   <VoiceglotText translationKey="common.craftsman" defaultText="Vakman" />
                 </ContainerInstrument>
                 <ContainerInstrument className="flex items-center gap-1 text-white/60 text-[15px] font-bold tracking-widest">
-                  <Star strokeWidth={1.5} size={10} className="text-primary" fill="currentColor" /> 
+                  <Star size={10} className="text-primary" fill="currentColor" /> 
                   {actor.voice_score}
                 </ContainerInstrument>
               </ContainerInstrument>

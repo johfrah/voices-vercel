@@ -153,7 +153,7 @@ export const TeleprompterRecorderInstrument: React.FC<TeleprompterRecorderProps>
                   )}
                 >
                   <span className="text-[15px] font-medium tracking-widest">{format}</span>
-                  {exportFormat === format && <Check strokeWidth={1.5} size={14} className="text-primary" />}
+                  {exportFormat === format && <Check size={14} className="text-primary" />}
                 </button>
               ))}
             </div>

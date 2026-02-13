@@ -39,7 +39,7 @@ export default function CookiesPage() {
         <div className="bg-white shadow-aura rounded-[40px] p-12 space-y-12">
           <section className="space-y-4">
             <div className="flex items-center gap-3 text-primary mb-4">
-              <Shield strokeWidth={1.5} size={20} />
+              <Shield size={20} />
               <HeadingInstrument level={2} className="text-xl font-black tracking-tight">Functionele Cookies</HeadingInstrument>
             </div>
             <TextInstrument className="text-va-black/60 leading-relaxed font-light">

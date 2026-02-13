@@ -145,7 +145,7 @@ export async function onBeforeCheckout(context) {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
-            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <ArrowLeft size={12} /> 
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
@@ -180,7 +180,7 @@ export async function onBeforeCheckout(context) {
                 onClick={handleStopPreview}
                 className="va-btn-pro !bg-red-500 !text-white flex items-center gap-2 shadow-lg shadow-red-500/20"
               >
-                <X strokeWidth={1.5} size={16} /> <VoiceglotText translationKey="admin.vibecode.stop_preview" defaultText="Stop Preview" />
+                <X size={16} /> <VoiceglotText translationKey="admin.vibecode.stop_preview" defaultText="Stop Preview" />
               </ButtonInstrument>
             ) : (
               <ButtonInstrument 
@@ -203,7 +203,7 @@ export async function onBeforeCheckout(context) {
               disabled={isExecuting || gitStatus !== 'staged'}
               className={`va-btn-pro flex items-center gap-2 transition-all ${gitStatus === 'staged' ? '!bg-primary !text-white shadow-lg shadow-primary/20' : '!bg-va-black !text-white opacity-50'}`}
             >
-              {isExecuting ? <Loader2 className="animate-spin" size={16} /> : <Zap strokeWidth={1.5} size={16} />}
+              {isExecuting ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} />}
               <VoiceglotText translationKey="admin.vibecode.push_live" defaultText="Push to Live" />
             </ButtonInstrument>
           </div>
@@ -307,7 +307,7 @@ export async function onBeforeCheckout(context) {
           {activeTab === 'assistant' && (
             <div className="p-10 flex flex-col items-center justify-center h-full space-y-8">
               <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center text-primary animate-pulse">
-                <Sparkles strokeWidth={1.5} size={48} />
+                <Sparkles size={48} />
               </div>
               <div className="max-w-md text-center space-y-4">
                 <HeadingInstrument level={3} className="text-white text-2xl font-black ">
@@ -331,7 +331,7 @@ export async function onBeforeCheckout(context) {
           <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 text-primary rounded-lg">
-                <Zap strokeWidth={1.5} size={20} />
+                <Zap size={20} />
               </div>
               <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">
                 <VoiceglotText translationKey="admin.vibecode.vibe_strength" defaultText="Vibe Strength" />
@@ -349,7 +349,7 @@ export async function onBeforeCheckout(context) {
               {['Musical Confidant', 'Nuclear Architect', 'Voice Over Pro'].map(p => (
                 <div key={p} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
                   <TextInstrument className="text-[15px] font-bold tracking-tight">{p}</TextInstrument>
-                  <Sparkles strokeWidth={1.5} size={12} className="text-primary" />
+                  <Sparkles size={12} className="text-primary" />
                 </div>
               ))}
             </div>
@@ -371,7 +371,7 @@ export async function onBeforeCheckout(context) {
       {/* Warning */}
       <ContainerInstrument className="p-8 bg-va-black text-white rounded-[32px] flex items-center gap-6">
         <div className="w-16 h-16 bg-primary text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
-          <Shield strokeWidth={1.5}Alert size={32} />
+          <ShieldAlert size={32} />
         </div>
         <div className="space-y-1">
           <HeadingInstrument level={4} className="text-primary font-black tracking-tight">

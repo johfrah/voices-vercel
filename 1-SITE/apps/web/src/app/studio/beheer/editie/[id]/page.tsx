@@ -36,7 +36,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
         href="/studio/beheer" 
         className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
       >
-        <ArrowLeft strokeWidth={1.5} size={14} className="group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
         <VoiceglotText translationKey="studio.beheer.back" defaultText="TERUG NAAR COCKPIT" />
       </Link>
 
@@ -54,7 +54,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
         <BentoCard span="lg" className="bg-white shadow-aura border border-black/5 overflow-hidden">
           <div className="p-8 border-b border-black/5 bg-va-off-white/50 flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <User strokeWidth={1.5}s size={20} className="text-primary" />
+              <Users size={20} className="text-primary" />
               <span className="text-sm font-black tracking-tight">
                 {participants.length} Deelnemers bevestigd
               </span>
@@ -82,10 +82,10 @@ export default async function EditionParticipantsPage({ params }: { params: { id
                         </div>
                         <div className="flex gap-4 mt-1">
                           <div className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
-                            <Briefcase strokeWidth={1.5} size={10} /> {dna.profession || 'Niet opgegeven'}
+                            <Briefcase size={10} /> {dna.profession || 'Niet opgegeven'}
                           </div>
                           <div className="flex items-center gap-1 text-[15px] font-bold text-black/30 tracking-widest">
-                            <Calendar strokeWidth={1.5} size={10} /> {dna.age || '?'} jaar
+                            <Calendar size={10} /> {dna.age || '?'} jaar
                           </div>
                         </div>
                       </div>
@@ -130,7 +130,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
         {/* SIDEBAR: INSTRUCTOR INFO & TIPS */}
         <div className="space-y-8">
           <BentoCard span="sm" className="bg-va-black text-white p-10">
-            <Star strokeWidth={1.5} className="text-primary mb-6" size={24} />
+            <Star className="text-primary mb-6" size={24} />
             <HeadingInstrument level={3} className="text-xl font-black tracking-tighter mb-4">
               <VoiceglotText translationKey="studio.beheer.prepare_title" defaultText="Bereid je voor" />
             </HeadingInstrument>

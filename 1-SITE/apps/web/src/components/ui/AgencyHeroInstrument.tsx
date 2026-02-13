@@ -39,7 +39,7 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
           {/* Badge */}
           <div className="va-badge-container">
             <div className="va-badge">
-              <Sparkles strokeWidth={1.5} size={12} className="va-icon-primary" fill="currentColor" /> 
+              <Sparkles size={12} className="va-icon-primary" fill="currentColor" /> 
               <VoiceglotText 
                 translationKey="agency.hero.badge" 
                 defaultText={market === 'BE' ? 'De beste Vlaamse en internationale stemmen' : 'De beste Nederlandse en internationale stemmen'} 

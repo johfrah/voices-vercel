@@ -20,7 +20,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-va-black text-white flex items-center justify-center shadow-lg group-hover/calendar:bg-primary transition-all duration-500">
-            <Calendar strokeWidth={1.5}Icon size={24} />
+            <CalendarIcon size={24} />
           </div>
           <div>
             <h3 className="text-2xl font-black tracking-tight text-va-black">
@@ -106,7 +106,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <User strokeWidth={1.5}s size={12} className="text-va-black/20" />
+              <Users size={12} className="text-va-black/20" />
               <span className="text-[15px] font-black text-va-black/40 tracking-widest">6/8</span>
             </div>
           </div>

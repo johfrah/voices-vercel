@@ -76,7 +76,7 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
     <div className="space-y-4 w-full">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2">
-          <Sparkles strokeWidth={1.5} size={14} className="text-primary" />
+          <Sparkles size={14} className="text-primary" />
           <span className="text-[15px] font-black tracking-widest text-va-black/40">
             Live Actor Feed • {filter}
           </span>
@@ -105,7 +105,7 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
               <span className="text-[15px] font-black text-primary tracking-widest">{actor.nativeLang}</span>
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <Star strokeWidth={1.5} key={i} size={6} fill={i < 4 ? "currentColor" : "none"} className="text-yellow-500" />
+                  <Star key={i} size={6} fill={i < 4 ? "currentColor" : "none"} className="text-yellow-500" />
                 ))}
               </div>
             </div>

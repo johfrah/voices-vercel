@@ -84,13 +84,29 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
       {/* LLM Context Layer */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "WebApplication",
+        "@type": "Organization",
         "name": "Voices",
+        "url": "https://www.voices.be",
+        "logo": "https://www.voices.be/assets/common/logo-voices-be.png",
         "description": "Castingbureau voor stemacteurs en voice-overs.",
-        "applicationCategory": "BusinessApplication",
-        "operatingSystem": "Web",
-        "data-voices-context": "Agency",
-        "data-voices-intent": "Landing",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "1250",
+          "bestRating": "5",
+          "worstRating": "1"
+        },
+        "review": reviews.slice(0, 3).map(r => ({
+          "@type": "Review",
+          "author": { "@type": "Person", "name": r.authorName },
+          "reviewRating": { "@type": "Rating", "ratingValue": r.rating },
+          "reviewBody": r.textNl || r.textFr || r.textEn
+        })),
+        "founder": {
+          "@type": "Person",
+          "name": "Johfrah Lefebvre",
+          "sameAs": "https://www.johfrah.be"
+        },
         "_llm_context": {
           "intent": "explore_platform",
           "persona": "visitor",

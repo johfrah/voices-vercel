@@ -29,10 +29,10 @@ export const HitlActionCardInstrument = ({
 }) => {
   const getIcon = () => {
     switch (type) {
-      case 'reorder': return <Zap strokeWidth={1.5} size={14} className="text-yellow-500" />;
-      case 'offer': return <Zap strokeWidth={1.5} size={14} className="text-green-500" />;
-      case 'bridge': return <Zap strokeWidth={1.5} size={14} className="text-blue-500" />;
-      default: return <Zap strokeWidth={1.5} size={14} className="text-primary" />;
+      case 'reorder': return <Zap size={14} className="text-yellow-500" />;
+      case 'offer': return <Zap size={14} className="text-green-500" />;
+      case 'bridge': return <Zap size={14} className="text-blue-500" />;
+      default: return <Zap size={14} className="text-primary" />;
     }
   };
 
@@ -49,7 +49,7 @@ export const HitlActionCardInstrument = ({
           </HeadingInstrument>
         </ContainerInstrument>
         <ButtonInstrument onClick={onDismiss} className="text-white/20 hover:text-white transition-colors">
-          <X strokeWidth={1.5} size={12} />
+          <X size={12} />
         </ButtonInstrument>
       </ContainerInstrument>
 
@@ -66,7 +66,7 @@ export const HitlActionCardInstrument = ({
           className="w-full py-2 bg-white text-va-black rounded-xl text-[15px] font-medium tracking-widest flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all"
         >
           <VoiceglotText translationKey="common.approve" defaultText="Goedkeuren & Versturen" />
-          <ArrowRight strokeWidth={1.5} size={12} />
+          <ArrowRight size={12} />
         </ButtonInstrument>
       </ContainerInstrument>
     </ContainerInstrument>

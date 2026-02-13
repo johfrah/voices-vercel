@@ -65,8 +65,8 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
 
     const getIcon = (cat: string) => {
       const c = cat.toLowerCase();
-      if (c.includes('kwaliteit') || c.includes('veiligheid')) return <ShieldCheck strokeWidth={1.5} className="text-primary/40" size={40} />;
-      if (c.includes('levering') || c.includes('annulering')) return <Zap strokeWidth={1.5} className="text-primary/40" size={40} />;
+      if (c.includes('kwaliteit') || c.includes('veiligheid')) return <ShieldCheck className="text-primary/40" size={40} />;
+      if (c.includes('levering') || c.includes('annulering')) return <Zap className="text-primary/40" size={40} />;
       if (c.includes('betaling') || c.includes('inschrijving')) return <CreditCard className="text-primary/40" size={40} />;
       return <Info className="text-primary/40" size={40} />;
     };
@@ -108,7 +108,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
             <section key={block.id} className="py-48 bg-va-off-white border border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32 rounded-[100px] shadow-aura relative overflow-hidden group animate-in fade-in duration-1000 fill-mode-both">
               <div className="relative z-10">
                 <div className="flex items-center gap-6 mb-20">
-                  <Star strokeWidth={1.5} className="text-primary/40 fill-primary/10" size={32} />
+                  <Star className="text-primary/40 fill-primary/10" size={32} />
                   <HeadingInstrument level={2} className="text-5xl font-light tracking-tight text-va-black">{title || 'Onze Partners'}</HeadingInstrument>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -295,6 +295,38 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
               {page.blocks.map((block: any, index: number) => renderBlock(block, index))}
             </div>
 
+            {/* 🕸️ SUZY'S SCHEMA INJECTION: CMS Article Authority */}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": page.type === 'Blog' ? 'BlogPosting' : 'Article',
+                  "headline": page.title,
+                  "description": page.description,
+                  "datePublished": page.createdAt,
+                  "dateModified": page.updatedAt || page.createdAt,
+                  "author": {
+                    "@type": "Person",
+                    "name": (page.iapContext as any)?.author || "Johfrah Lefebvre",
+                    "url": "https://www.voices.be/voice/johfrah-lefebvre"
+                  },
+                  "publisher": {
+                    "@type": "Organization",
+                    "name": "Voices",
+                    "logo": {
+                      "@type": "ImageObject",
+                      "url": "https://www.voices.be/assets/common/logo-voices-be.png"
+                    }
+                  },
+                  "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": `https://www.voices.be/${slug}`
+                  }
+                })
+              }}
+            />
+
             {/* 🏁 GLOBAL SIGNATURE CTA MANDATE */}
             <footer className="mt-80 text-center">
               <div className="bg-va-black text-white p-32 rounded-[100px] shadow-aura-lg relative overflow-hidden group">
@@ -310,7 +342,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                       <VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" />
                     </Link>
                     <Link href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-tight flex items-center gap-4 group transition-all duration-700">
-                      <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" /> <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
+                      <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" /> <ArrowRight size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
                     </Link>
                   </div>
                 </div>

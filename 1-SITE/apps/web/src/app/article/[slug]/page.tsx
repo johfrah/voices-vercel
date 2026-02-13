@@ -44,7 +44,7 @@ async function ArticleContent({ slug }: { slug: string }) {
           href="/agency" 
           className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all "
         >
-          <ArrowLeft strokeWidth={1.5} size={14} /> 
+          <ArrowLeft size={14} /> 
           <VoiceglotText translationKey="article.back_to_overview" defaultText="Terug" />
         </Link>
         <ContainerInstrument className="flex gap-4">
@@ -65,7 +65,7 @@ async function ArticleContent({ slug }: { slug: string }) {
               <VoiceglotText translationKey={`journey.${article.meta?.llm_context?.journey?.[0]?.toLowerCase() || 'inspiration'}`} defaultText={article.meta?.llm_context?.journey?.[0] || 'Inspiratie'} />
             </ContainerInstrument>
             <TextInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
-              <Calendar strokeWidth={1.5} size={12} /> {new Date(article.date).toLocaleDateString('nl-BE')}
+              <Calendar size={12} /> {new Date(article.date).toLocaleDateString('nl-BE')}
             </TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-8 leading-[0.9] text-va-black ">
@@ -105,6 +105,38 @@ async function ArticleContent({ slug }: { slug: string }) {
           </Link>
         </BentoCard>
       </BentoGrid>
+
+      {/* 🕸️ SUZY'S SCHEMA INJECTION: Article Authority */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": article.title,
+            "description": article.description,
+            "datePublished": article.date,
+            "dateModified": article.updatedAt || article.date,
+            "author": {
+              "@type": "Person",
+              "name": article.meta?.llm_context?.author || "Johfrah Lefebvre",
+              "url": "https://www.voices.be/voice/johfrah-lefebvre"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Voices",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.voices.be/assets/common/logo-voices-be.png"
+              }
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://www.voices.be/article/${slug}`
+            }
+          })
+        }}
+      />
 
       {/* LLM Context Layer (Invisible) */}
       <script 
