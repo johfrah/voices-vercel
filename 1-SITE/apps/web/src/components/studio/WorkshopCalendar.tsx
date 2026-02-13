@@ -32,7 +32,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
             <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-va-black">
               <VoiceglotText translationKey="studio.calendar.title" defaultText="Workshop Kalender" />
             </HeadingInstrument>
-            <TextInstrument className="text-[12px] font-light tracking-widest text-va-black/30 mt-1 uppercase">
+            <TextInstrument className="text-[12px] font-light tracking-widest text-va-black/30 mt-1 ">
               <VoiceglotText translationKey="studio.calendar.month" defaultText="Februari 2026" />
             </TextInstrument>
           </ContainerInstrument>
@@ -56,7 +56,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
       {/* Mini Calendar Grid */}
       <ContainerInstrument className="grid grid-cols-7 gap-2 mb-8">
         {days.map(day => (
-          <TextInstrument key={day} className="text-center text-[12px] font-light tracking-widest text-va-black/20 py-2 uppercase">
+          <TextInstrument key={day} className="text-center text-[12px] font-light tracking-widest text-va-black/20 py-2 ">
             <VoiceglotText translationKey={`common.day.${day.toLowerCase()}`} defaultText={day} />
           </TextInstrument>
         ))}
@@ -82,7 +82,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
 
       {/* Upcoming List */}
       <ContainerInstrument className="space-y-4">
-        <HeadingInstrument level={4} className="text-[12px] font-light tracking-widest text-va-black/40 mb-4 uppercase">
+        <HeadingInstrument level={4} className="text-[12px] font-light tracking-widest text-va-black/40 mb-4 ">
           <VoiceglotText translationKey="studio.calendar.upcoming" defaultText="Eerstvolgende Sessies" />
         </HeadingInstrument>
         {workshops.slice(0, 2).map((workshop, i) => (
@@ -93,7 +93,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
           >
             <ContainerInstrument className="flex items-center gap-4">
               <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-va-off-white flex flex-col items-center justify-center group-hover:bg-primary/10 transition-all">
-                <TextInstrument className="text-[10px] font-bold text-va-black/30 group-hover:text-primary transition-all uppercase">
+                <TextInstrument className="text-[10px] font-bold text-va-black/30 group-hover:text-primary transition-all ">
                   <VoiceglotText translationKey="common.month.feb.short" defaultText="FEB" />
                 </TextInstrument>
                 <TextInstrument className="text-[15px] font-medium text-va-black group-hover:text-primary transition-all">12</TextInstrument>
@@ -103,10 +103,10 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
                   <VoiceglotText translationKey={`workshop.${workshop.id}.title`} defaultText={workshop.title} noTranslate={true} />
                 </HeadingInstrument>
                 <ContainerInstrument className="flex items-center gap-3 mt-1">
-                  <ContainerInstrument className="flex items-center gap-1 text-[12px] font-light text-va-black/30 tracking-widest uppercase">
+                  <ContainerInstrument className="flex items-center gap-1 text-[12px] font-light text-va-black/30 tracking-widest ">
                     <Clock size={10} strokeWidth={1.5} /> 10:00 - 17:00
                   </ContainerInstrument>
-                  <ContainerInstrument className="flex items-center gap-1 text-[12px] font-light text-va-black/30 tracking-widest uppercase">
+                  <ContainerInstrument className="flex items-center gap-1 text-[12px] font-light text-va-black/30 tracking-widest ">
                     <MapPin size={10} strokeWidth={1.5} /> 
                     <VoiceglotText translationKey="common.location.brussels" defaultText="Studio Brussel" />
                   </ContainerInstrument>
@@ -115,7 +115,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-2">
               <Users size={12} className="text-va-black/20" strokeWidth={1.5} />
-              <TextInstrument className="text-[12px] font-light text-va-black/40 tracking-widest uppercase">6/8</TextInstrument>
+              <TextInstrument className="text-[12px] font-light text-va-black/40 tracking-widest ">6/8</TextInstrument>
             </ContainerInstrument>
           </ButtonInstrument>
         ))}

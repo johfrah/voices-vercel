@@ -1,7 +1,7 @@
 /**
  * ⚡ PRICING ENGINE (2026)
  * 
- * Centraliseert alle prijsberekeningen voor de Voices Schouwburg.
+ * Centraliseert alle prijsberekeningen voor Voices.
  * Doel: Single Source of Truth voor zowel frontend (100ms feedback) als backend (Mollie/Yuki).
  * 
  * @author Kelly (Transaction Guardian)

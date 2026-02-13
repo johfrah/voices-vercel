@@ -70,7 +70,7 @@ export const PricingSummary: React.FC = () => {
                 <HeadingInstrument level={4} className="font-light text-lg tracking-tight text-white">
                   Johfrai {state.plan}
                 </HeadingInstrument>
-                <TextInstrument className="text-[12px] tracking-widest text-white/40 font-light uppercase">
+                <TextInstrument className="text-[12px] tracking-widest text-white/40 font-light ">
                   <VoiceglotText translationKey="checkout.summary.subscription_desc" defaultText="Jaarabonnement • Direct Actief" />
                 </TextInstrument>
               </ContainerInstrument>
@@ -84,7 +84,7 @@ export const PricingSummary: React.FC = () => {
               >
                 €{state.pricing.total.toFixed(2)}
               </motion.span>
-              <TextInstrument className="text-[12px] tracking-widest text-white/20 font-light uppercase">
+              <TextInstrument className="text-[12px] tracking-widest text-white/20 font-light ">
                 <VoiceglotText translationKey="common.per_month" defaultText="per maand" />
               </TextInstrument>
             </ContainerInstrument>
@@ -106,7 +106,7 @@ export const PricingSummary: React.FC = () => {
                 <HeadingInstrument level={4} className="font-light text-[15px] text-va-black">
                   <VoiceglotText translationKey={`actor.${state.selectedActor.id}.name`} defaultText={state.selectedActor.display_name} noTranslate={true} />
                 </HeadingInstrument>
-                <TextInstrument className="text-[12px] tracking-widest text-va-black/40 font-light uppercase">
+                <TextInstrument className="text-[12px] tracking-widest text-va-black/40 font-light ">
                   <VoiceglotText translationKey="common.voice_actor" defaultText="Stemacteur" />
                 </TextInstrument>
               </ContainerInstrument>
@@ -125,7 +125,7 @@ export const PricingSummary: React.FC = () => {
                 <HeadingInstrument level={4} className="font-light text-[15px] text-va-black">
                   <VoiceglotText translationKey="checkout.summary.script_title" defaultText="Script & Briefing" />
                 </HeadingInstrument>
-                <TextInstrument className="text-[12px] tracking-widest text-va-black/40 font-light uppercase">
+                <TextInstrument className="text-[12px] tracking-widest text-va-black/40 font-light ">
                   {state.usage === 'telefonie' ? (
                     <VoiceglotText translationKey="checkout.summary.prompts_count" defaultText={`${state.prompts} prompts gedetecteerd`} />
                   ) : (
@@ -148,7 +148,7 @@ export const PricingSummary: React.FC = () => {
                 <HeadingInstrument level={4} className="font-light text-[15px] text-va-black">
                   <VoiceglotText translationKey="checkout.summary.music_title" defaultText="Muzieklicentie" />
                 </HeadingInstrument>
-                <TextInstrument className="text-[12px] tracking-widest text-va-black/40 font-light uppercase">
+                <TextInstrument className="text-[12px] tracking-widest text-va-black/40 font-light ">
                   {state.music.asBackground && state.music.asHoldMusic ? (
                     <VoiceglotText translationKey="checkout.summary.music_both" defaultText="Achtergrond + Wachtmuziek" />
                   ) : state.music.asBackground ? (
@@ -167,7 +167,7 @@ export const PricingSummary: React.FC = () => {
           <ContainerInstrument className="p-6 bg-primary/5 border border-primary/10 rounded-[20px] space-y-3 animate-in fade-in slide-in-from-right-4 duration-500">
             <ContainerInstrument className="flex items-center gap-2 text-primary">
               <ShieldCheck strokeWidth={1.5} size={16} />
-              <TextInstrument className="text-[12px] font-light tracking-widest uppercase">
+              <TextInstrument className="text-[12px] font-light tracking-widest ">
                 <VoiceglotText translationKey="common.human_guarantee" defaultText="De Menselijke Garantie" />
               </TextInstrument>
             </ContainerInstrument>
@@ -190,7 +190,7 @@ export const PricingSummary: React.FC = () => {
           <ContainerInstrument key={item.key} className="flex justify-between items-center p-4 bg-white rounded-[20px] border border-va-black/5 shadow-aura">
             <ContainerInstrument>
               <HeadingInstrument level={4} className="font-light text-[15px] text-va-black">{item.name}</HeadingInstrument>
-              <TextInstrument className="text-[12px] tracking-widest text-va-black/40 font-light uppercase">
+              <TextInstrument className="text-[12px] tracking-widest text-va-black/40 font-light ">
                 {item.quantity}x • {item.meta?.style || 'Standaard'}
               </TextInstrument>
             </ContainerInstrument>
@@ -201,19 +201,19 @@ export const PricingSummary: React.FC = () => {
 
       <ContainerInstrument className="space-y-3 pt-6 border-t border-va-black/5">
         <ContainerInstrument className="flex justify-between text-[15px]">
-          <TextInstrument className="text-va-black/40 font-light tracking-widest text-[12px] uppercase">
+          <TextInstrument className="text-va-black/40 font-light tracking-widest text-[12px] ">
             <VoiceglotText translationKey="common.subtotal" defaultText="Subtotaal" />
           </TextInstrument>
           <TextInstrument className="font-light text-va-black">€{subtotal.toFixed(2)}</TextInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="flex justify-between text-[15px]">
-          <TextInstrument className="text-va-black/40 font-light tracking-widest text-[12px] uppercase">
+          <TextInstrument className="text-va-black/40 font-light tracking-widest text-[12px] ">
             <VoiceglotText translationKey="common.vat" defaultText="BTW (21%)" />
           </TextInstrument>
           <TextInstrument className="font-light text-va-black">€{tax.toFixed(2)}</TextInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="pt-4 border-t border-va-black/5 flex justify-between items-center">
-          <TextInstrument className="text-[12px] font-light tracking-widest text-va-black uppercase">
+          <TextInstrument className="text-[12px] font-light tracking-widest text-va-black ">
             <VoiceglotText translationKey="common.total" defaultText="Totaal" />
           </TextInstrument>
           <motion.span 

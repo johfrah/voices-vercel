@@ -48,7 +48,7 @@ export const AgencyFilterSheet: React.FC<{
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={() => { onClose(); }}
             className="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
           />
           <ContainerInstrument
@@ -73,7 +73,7 @@ export const AgencyFilterSheet: React.FC<{
                     <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText translationKey="auto.agencyfiltersheet.vind_de_perfecte_ste.1bb911" defaultText="Vind de perfecte stem" /></TextInstrument>
                   </ContainerInstrument>
                   <ButtonInstrument 
-                    onClick={() => onUpdate({ language: undefined, gender: undefined, style: undefined, search: undefined })}
+                    onClick={() => { onUpdate({ language: undefined, gender: undefined, style: undefined, search: undefined }); }}
                     className="text-[15px] font-light tracking-widest text-primary"
                   >
                     <VoiceglotText translationKey="auto.agencyfiltersheet.wis_alles.07cfca" defaultText="Wis alles" />
@@ -92,7 +92,7 @@ export const AgencyFilterSheet: React.FC<{
                         key={lang} 
                         label={lang} 
                         selected={activeParams.language === lang} 
-                        onClick={() => handleSelect('language', lang)} 
+                        onClick={() => { handleSelect('language', lang); }} 
                       />
                     ))}
                   </ContainerInstrument>
@@ -110,7 +110,7 @@ export const AgencyFilterSheet: React.FC<{
                         key={gender} 
                         label={gender} 
                         selected={activeParams.gender === gender} 
-                        onClick={() => handleSelect('gender', gender)} 
+                        onClick={() => { handleSelect('gender', gender); }} 
                       />
                     ))}
                   </ContainerInstrument>
@@ -128,7 +128,7 @@ export const AgencyFilterSheet: React.FC<{
                         key={style} 
                         label={style} 
                         selected={activeParams.style?.toLowerCase() === style.toLowerCase()} 
-                        onClick={() => handleSelect('style', style)} 
+                        onClick={() => { handleSelect('style', style); }} 
                       />
                     ))}
                   </ContainerInstrument>
@@ -139,7 +139,7 @@ export const AgencyFilterSheet: React.FC<{
             {/* Sticky Apply Button */}
             <ContainerInstrument className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-va-off-white via-va-off-white to-transparent">
               <ButtonInstrument 
-                onClick={onClose}
+                onClick={() => { onClose(); }}
                 className="w-full py-6 bg-va-black text-white rounded-[24px] font-black tracking-widest text-[15px] shadow-aura active:scale-95 transition-all"
               >
                 <VoiceglotText translationKey="auto.agencyfiltersheet.toon_resultaten.bf117d" defaultText="Toon Resultaten" />
@@ -158,7 +158,7 @@ const FilterChip = ({ label, selected, onClick }: { label: string, selected: boo
 
   return (
     <ButtonInstrument
-      onClick={onClick}
+      onClick={() => { onClick(); }}
       className={cn(
         "px-6 py-4 rounded-2xl text-[15px] font-light tracking-widest border-2 transition-all flex items-center justify-between group",
         selected 

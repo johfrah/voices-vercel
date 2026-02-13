@@ -147,7 +147,7 @@ export default async function ActorAssignmentCockpit() {
                     <VoiceglotText translationKey={`common.status.${item.deliveryStatus}`} defaultText={item.deliveryStatus || ''} />
                   </ContainerInstrument>
                   {item.isOverdue && (
-                    <ContainerInstrument className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2 uppercase">
+                    <ContainerInstrument className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[15px] font-light tracking-widest flex items-center gap-2 ">
                       <AlertCircle size={12} /> <VoiceglotText translationKey="common.overdue" defaultText="Overdue" />
                     </ContainerInstrument>
                   )}

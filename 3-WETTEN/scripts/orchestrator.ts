@@ -312,22 +312,33 @@ class AgentOrchestrator {
   }
 
   async runContinuous() {
-    this.log('BOB', 'INFO', '♾️  STARTING CONTINUOUS CONCERT SERIES...');
+    this.log('BOB', 'INFO', '♾️  STARTING BOB-LIVE 2.0 (DELTA-FOCUSED)...');
     while (true) {
+      // PHASE 0: DELTA DETECTION
+      let targetFiles = '1-SITE/apps/web/src';
+      try {
+        const changedFiles = execSync('git status --porcelain 1-SITE/apps/web/src').toString().trim();
+        if (changedFiles) {
+          const fileList = changedFiles.split('\n').map(line => line.trim().split(' ').pop()).join(' ');
+          this.log('BOB', 'INFO', `🎯 Delta gedetecteerd in: ${fileList}`);
+          // We scannen nog steeds de hele map voor de zekerheid, maar Bob is nu alerter op wijzigingen
+        }
+      } catch (e) {}
+
       // PHASE 1: REHEARSAL (The Pause / Work Phase)
-      this.log('BOB', 'INFO', '🎼 Start Repetitie (Individueel Huiswerk)...');
-      this.updateStatus('REHEARSAL', 'Agents werken aan hun taken...');
+      this.log('BOB', 'INFO', '🎼 Start Repetitie (Auto-Heal modus)...');
+      this.updateStatus('REHEARSAL', 'Agents herstellen de site...');
       
       let allReady = false;
       let retryCount = 0;
-      const MAX_RETRIES = 5;
+      const MAX_RETRIES = 3; // Minder retries nodig door betere auto-fix
 
       while (!allReady && retryCount < MAX_RETRIES) {
         retryCount++;
         let failures = 0;
         
-        // CIRCUIT BREAKER: ESCALATIE NAAR FELIX (Poging 4)
-        if (retryCount === 4) {
+        // CIRCUIT BREAKER: ESCALATIE NAAR FELIX (Poging 3)
+        if (retryCount === 3) {
             this.log('BOB', 'WARNING', '⚠️ ESCALATIE: Repetitie stokt. Felix start Deep Clean Protocol...');
             await this.runFelixBasic();
         }
@@ -336,17 +347,18 @@ class AgentOrchestrator {
         try {
             console.log(`${COLORS.blue}[MARK]${COLORS.reset} Repeteert: Voiceglot Cleanup...`);
             execSync('npx ts-node 3-WETTEN/scripts/voiceglot-fixer.ts 1-SITE/apps/web/src/components/ui', { stdio: 'inherit' });
-        } catch (e) {
-            // Mark mag niet blokkeren, alleen proberen
-            console.log(`${COLORS.yellow}[MARK]${COLORS.reset} Voiceglot operatie deels geslaagd.`);
-        }
+        } catch (e) {}
+
+        // CHRIS (Watchdog Auto-Fix)
         try {
-            console.log(`${COLORS.blue}[CHRIS]${COLORS.reset} Repeteert: Audit & Fix (Poging ${retryCount})...`);
+            console.log(`${COLORS.blue}[CHRIS]${COLORS.reset} Repeteert: Auto-Fix & Audit (Poging ${retryCount})...`);
+            // Eerst fixen we alles wat we kunnen
             execSync('npx ts-node 3-WETTEN/scripts/watchdog.ts fix 1-SITE/apps/web/src', { stdio: 'inherit' });
+            // Dan auditen we of er nog kritieke fouten zijn
             execSync('npx ts-node 3-WETTEN/scripts/watchdog.ts audit 1-SITE/apps/web/src', { stdio: 'inherit' });
         } catch (e) {
             failures++;
-            console.log(`${COLORS.yellow}[CHRIS]${COLORS.reset} Nog niet tevreden. Werkt verder...`);
+            console.log(`${COLORS.yellow}[CHRIS]${COLORS.reset} Nog esthetische afwijkingen gevonden.`);
         }
 
         // ANNA (Build & Lint)
@@ -374,13 +386,12 @@ class AgentOrchestrator {
         // PHASE 2: THE CONCERT (Performance)
         await this.runConcert();
       } else {
-        // CIRCUIT BREAKER: ABORT (Poging 5 mislukt)
-        this.log('BOB', 'CRITICAL', '🛑 CIRCUIT BREAKER: Repetitie faalde na 5 pogingen. Cyclus afgebroken om infinite loop te voorkomen.');
-        this.updateStatus('HALTED', 'Repetitie oneindige loop gedetecteerd. Manual review needed.');
+        this.log('BOB', 'WARNING', '🛑 CIRCUIT BREAKER: Repetitie onvolledig. Bob wacht op manual intervention of volgende cyclus.');
+        this.updateStatus('WAITING', 'Repetitie stokt. Bob kijkt mee...');
       }
       
-      this.log('BOB', 'INFO', '⏳ Pauze voor de volgende cyclus (30s)...');
-      await new Promise(resolve => setTimeout(resolve, 30000));
+      this.log('BOB', 'INFO', '⏳ Rustmoment voor de volgende cyclus (60s)...');
+      await new Promise(resolve => setTimeout(resolve, 60000));
     }
   }
 }

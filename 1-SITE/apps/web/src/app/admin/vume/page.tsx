@@ -19,7 +19,7 @@ const TEMPLATES = [
     id: 'magic-link',
     name: 'Magic Link',
     journey: 'auth',
-    icon: <ShieldCheck size={20} />,
+    icon: <ShieldCheck strokeWidth={1.5} size={20} />,
     description: 'Inloglink voor gebruikers.',
     previewSubject: 'Inloggen op Voices.be',
     context: { name: 'Johfrah', link: 'https://voices.be/auth/callback?token=test' }
@@ -28,7 +28,7 @@ const TEMPLATES = [
     id: 'studio-experience',
     name: 'Studio Experience',
     journey: 'studio',
-    icon: <Sparkles size={20} />,
+    icon: <Sparkles strokeWidth={1.5} size={20} />,
     description: 'Bevestiging voor workshops en masterclasses.',
     previewSubject: 'Je plek in de studio is gereserveerd',
     context: { 
@@ -108,7 +108,7 @@ export default function VumeAdminPage() {
               <ArrowLeft strokeWidth={1.5} size={14} /> Terug naar Dashboard
             </ButtonInstrument>
             <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter flex items-center gap-4">
-              VUME <TextInstrument as="span" className="text-va-black/20">Unified Mail Engine</TextInstrument>
+              VUME <TextInstrument as="span" className="text-va-black/20 font-light">Unified Mail Engine</TextInstrument>
             </HeadingInstrument>
           </ContainerInstrument>
 
@@ -118,7 +118,7 @@ export default function VumeAdminPage() {
               disabled={isSending}
               className="bg-va-black text-white px-8 py-4 rounded-[10px] text-[15px] font-light tracking-widest flex items-center gap-3 hover:bg-primary transition-all disabled:opacity-50"
             >
-              <Send size={16} className={isSending ? 'animate-pulse' : ''} />
+              <Send strokeWidth={1.5} size={16} className={isSending ? 'animate-pulse' : ''} />
               {isSending ? 'Verzenden...' : 'Stuur Test naar Johfrah'}
             </ButtonInstrument>
           </ContainerInstrument>
@@ -128,7 +128,7 @@ export default function VumeAdminPage() {
           
           {/* LEFT: TEMPLATE LIST */}
           <ContainerInstrument className="col-span-3 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-            <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40 px-2 uppercase">Templates</TextInstrument>
+            <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40 px-2 ">Templates</TextInstrument>
             {TEMPLATES.map((t) => (
               <ButtonInstrument 
                 key={t.id}
@@ -141,10 +141,10 @@ export default function VumeAdminPage() {
                   </ContainerInstrument>
                   <ContainerInstrument>
                     <TextInstrument className="font-bold text-[15px]">{t.name}</TextInstrument>
-                    <TextInstrument className="text-[13px] opacity-40 uppercase tracking-widest">{t.journey}</TextInstrument>
+                    <TextInstrument className="text-[13px] opacity-40 tracking-widest font-light">{t.journey}</TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
-                <TextInstrument className="text-[14px] text-va-black/60 leading-relaxed">{t.description}</TextInstrument>
+                <TextInstrument className="text-[14px] text-va-black/60 leading-relaxed font-light">{t.description}</TextInstrument>
               </ButtonInstrument>
             ))}
           </ContainerInstrument>
@@ -175,7 +175,7 @@ export default function VumeAdminPage() {
                   />
                 ) : (
                   <ContainerInstrument className="h-[600px] flex items-center justify-center">
-                    <Zap className="animate-pulse text-primary/20" size={48} />
+                    <Zap strokeWidth={1.5} className="animate-pulse text-primary/20" size={48} />
                   </ContainerInstrument>
                 )}
               </div>
@@ -186,9 +186,9 @@ export default function VumeAdminPage() {
           <ContainerInstrument className="col-span-3 flex flex-col gap-6">
             <ContainerInstrument className="bg-va-black text-white p-8 rounded-[30px] shadow-aura space-y-6">
               <HeadingInstrument level={3} className="text-2xl font-light flex items-center gap-3">
-                <MessageSquare className="text-primary" /> Feedback
+                <MessageSquare strokeWidth={1.5} className="text-primary" /> Feedback
               </HeadingInstrument>
-              <TextInstrument className="text-white/60 text-[15px] leading-relaxed">
+              <TextInstrument className="text-white/60 text-[15px] leading-relaxed font-light">
                 Klik op een template om de live preview te zien. Geef hieronder je feedback voor Mark & Laya.
               </TextInstrument>
               <textarea 
@@ -204,19 +204,19 @@ export default function VumeAdminPage() {
                 }}
                 className="w-full bg-primary text-white py-4 rounded-[10px] text-[15px] font-light tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] transition-all"
               >
-                <Zap size={16} /> Update via AI
+                <Zap strokeWidth={1.5} size={16} /> Update via AI
               </ButtonInstrument>
             </ContainerInstrument>
 
             <ContainerInstrument className="bg-white p-8 rounded-[30px] border border-black/[0.03] shadow-aura flex-grow">
-              <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-6 uppercase">IAP Context</HeadingInstrument>
+              <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-6 ">IAP Context</HeadingInstrument>
               <ContainerInstrument className="space-y-4">
                 <div className="p-4 bg-va-off-white rounded-xl space-y-1">
-                  <TextInstrument className="text-[12px] uppercase tracking-widest text-va-black/30">Journey</TextInstrument>
+                  <TextInstrument className="text-[12px] tracking-widest text-va-black/30 font-light">Journey</TextInstrument>
                   <TextInstrument className="font-bold text-[15px] capitalize">{selectedTemplate.journey}</TextInstrument>
                 </div>
                 <div className="p-4 bg-va-off-white rounded-xl space-y-1">
-                  <TextInstrument className="text-[12px] uppercase tracking-widest text-va-black/30">Persona</TextInstrument>
+                  <TextInstrument className="text-[12px] tracking-widest text-va-black/30 font-light">Persona</TextInstrument>
                   <TextInstrument className="font-bold text-[15px]">Professional Voice-over</TextInstrument>
                 </div>
               </ContainerInstrument>

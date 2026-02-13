@@ -41,7 +41,7 @@ export const CustomerInstrument: React.FC<CustomerInstrumentProps> = ({
       </ContainerInstrument>
       <ContainerInstrument className="mt-4 grid grid-cols-2 gap-4 text-[15px]">
         <ContainerInstrument className="p-3 bg-va-off-white rounded-[20px]">
-          <TextInstrument className="text-va-black/20 text-[15px] font-light tracking-widest uppercase">
+          <TextInstrument className="text-va-black/20 text-[15px] font-light tracking-widest ">
             <VoiceglotText translationKey="order.customer.company" defaultText="Bedrijf" />
           </TextInstrument>
           <TextInstrument className="font-light">
@@ -49,7 +49,7 @@ export const CustomerInstrument: React.FC<CustomerInstrumentProps> = ({
           </TextInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="p-3 bg-va-off-white rounded-[20px]">
-          <TextInstrument className="text-va-black/20 text-[15px] font-light tracking-widest uppercase">
+          <TextInstrument className="text-va-black/20 text-[15px] font-light tracking-widest ">
             <VoiceglotText translationKey="order.customer.total_spent" defaultText="Total Spent" />
           </TextInstrument>
           <TextInstrument className="font-light">€{totalSpent}</TextInstrument>

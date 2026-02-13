@@ -27,7 +27,7 @@ export default function AboutPage() {
       
       <SectionInstrument className="max-w-7xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="text-center mb-20 space-y-6">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest shadow-sm border border-black/5 uppercase">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest shadow-sm border border-black/5 ">
             <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> 
             <VoiceglotText translationKey="about.badge" defaultText="Ons Verhaal" />
           </ContainerInstrument>
@@ -76,15 +76,15 @@ export default function AboutPage() {
             <ContainerInstrument className="space-y-4">
               <ContainerInstrument className="flex items-center gap-3">
                 <Zap strokeWidth={1.5} size={16} className="text-primary" />
-                <TextInstrument className="text-[15px] font-light tracking-widest uppercase"><VoiceglotText translationKey="about.value1" defaultText="Snelheid" /></TextInstrument>
+                <TextInstrument className="text-[15px] font-light tracking-widest "><VoiceglotText translationKey="about.value1" defaultText="Snelheid" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex items-center gap-3">
                 <ShieldCheck strokeWidth={1.5} size={16} className="text-primary" />
-                <TextInstrument className="text-[15px] font-light tracking-widest uppercase"><VoiceglotText translationKey="about.value2" defaultText="Kwaliteit" /></TextInstrument>
+                <TextInstrument className="text-[15px] font-light tracking-widest "><VoiceglotText translationKey="about.value2" defaultText="Kwaliteit" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex items-center gap-3">
                 <Heart strokeWidth={1.5} size={16} className="text-primary" />
-                <TextInstrument className="text-[15px] font-light tracking-widest uppercase"><VoiceglotText translationKey="about.value3" defaultText="Vriendelijkheid" /></TextInstrument>
+                <TextInstrument className="text-[15px] font-light tracking-widest "><VoiceglotText translationKey="about.value3" defaultText="Vriendelijkheid" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </BentoCard>
@@ -104,7 +104,7 @@ export default function AboutPage() {
                 </TextInstrument>
               </HeadingInstrument>
             </ContainerInstrument>
-            <ContainerInstrument className="va-btn-pro !bg-white !text-va-black px-10 py-5 !rounded-[10px] font-light tracking-widest uppercase"><VoiceglotText translationKey="about.cta.button" defaultText="Ontdek de Stemmen" /></ContainerInstrument>
+            <ContainerInstrument className="va-btn-pro !bg-white !text-va-black px-10 py-5 !rounded-[10px] font-light tracking-widest "><VoiceglotText translationKey="about.cta.button" defaultText="Ontdek de Stemmen" /></ContainerInstrument>
           </BentoCard>
         </BentoGrid>
       </SectionInstrument>

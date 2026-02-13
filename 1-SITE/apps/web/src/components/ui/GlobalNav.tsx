@@ -69,14 +69,14 @@ const HeaderIcon = ({
   };
 
   const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => setIsOpen(false), 300);
+    timeoutRef.current = setTimeout(() => { setIsOpen(false); }, 300);
   };
 
   const content = (
     <ContainerInstrument 
       className="relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => { handleMouseEnter(); }}
+      onMouseLeave={() => { handleMouseLeave(); }}
     >
       <ContainerInstrument 
         onClick={() => {
@@ -167,7 +167,7 @@ const DropdownItem = ({
 
   return (
     <ButtonInstrument
-      onClick={handleClick}
+      onClick={() => { handleClick(); }}
       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${
         variant === 'danger' ? 'hover:bg-red-50 text-red-500' : 
         variant === 'primary' ? 'hover:bg-primary/10 text-primary' :
@@ -284,8 +284,8 @@ export default function GlobalNav() {
         as={Link}
         href="/" 
         className="flex items-center gap-2 md:gap-3 group"
-        onClick={() => playClick('soft')}
-        onMouseEnter={() => playSwell()}
+        onClick={() => { playClick('soft'); }}
+        onMouseEnter={() => { playSwell(); }}
       >
         {market.market_code === 'JOHFRAH' || (typeof window !== 'undefined' && window.location.host.includes('johfrah.be')) ? (
           <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap"><VoiceglotText translationKey="auto.globalnav.johfrah_lefebvre.95a724" defaultText="JOHFRAH LEFEBVRE" /></TextInstrument>
@@ -320,7 +320,7 @@ export default function GlobalNav() {
                 }
                 playClick('soft');
               }}
-              onMouseEnter={() => playSwell()}
+              onMouseEnter={() => { playSwell(); }}
               className={`relative text-[15px] font-light tracking-widest transition-all duration-500 ${
                 isActive ? 'text-primary' : 'text-va-black/30 hover:text-va-black'
               }`}
@@ -379,7 +379,7 @@ export default function GlobalNav() {
                 <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText translationKey="nav.notifications_title" defaultText="Notificaties" /></TextInstrument>
                 {notificationsCount > 0 && (
                   <ButtonInstrument 
-                    onClick={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
+                    onClick={() => { setNotifications(prev => prev.map(n => ({ ...n, read: true }))); }}
                     className="text-[15px] font-light text-primary hover:underline"
                   >
                     <VoiceglotText translationKey="nav.notifications_clear" defaultText="Wis alles" />
@@ -392,7 +392,7 @@ export default function GlobalNav() {
                   notifications.map((n) => (
                     <ButtonInstrument
                       key={n.id}
-                      onClick={() => markAsRead(n.id)}
+                      onClick={() => { markAsRead(n.id); }}
                       className={`w-full text-left p-4 rounded-xl transition-all duration-300 group mb-1 last:mb-0 flex gap-4 ${
                         n.read ? 'opacity-50 hover:bg-va-black/5' : 'bg-primary/5 hover:bg-primary/10'
                       }`}
@@ -461,7 +461,7 @@ export default function GlobalNav() {
                 <DropdownItem 
                   icon={LogOut} 
                   label={<VoiceglotText translationKey="nav.logout" defaultText="Uitloggen" />} 
-                  onClick={() => auth.logout()} 
+                  onClick={() => { auth.logout(); }} 
                   variant="danger" 
                 />
               </>

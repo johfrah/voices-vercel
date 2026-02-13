@@ -88,6 +88,33 @@ export function useSonicDNA() {
       gain.gain.linearRampToValueAtTime(0, now + 0.3);
       osc.start(now);
       osc.stop(now + 0.3);
+    } else if (type === 'startup') {
+      // ✨ STARTUP CHIME: Bright, welcoming rising sequence
+      const osc2 = audioCtx.current.createOscillator();
+      const gain2 = audioCtx.current.createGain();
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.current.destination);
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, now); // A4
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.5); // A5
+
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(554.37, now + 0.1); // C#5
+      osc2.frequency.exponentialRampToValueAtTime(1108.73, now + 0.6); // C#6
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.03, now + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+      gain2.gain.setValueAtTime(0, now + 0.1);
+      gain2.gain.linearRampToValueAtTime(0.02, now + 0.2);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+
+      osc.start(now);
+      osc.stop(now + 0.8);
+      osc2.start(now + 0.1);
+      osc2.stop(now + 0.9);
     }
   };
 
@@ -100,6 +127,13 @@ export function SonicDNAHandler() {
   const { playClick } = useSonicDNA();
 
   useEffect(() => {
+    // ✨ STARTUP CHIME: Play when the engine is ready
+    const handleFirstInteraction = () => {
+      playClick('startup');
+    };
+
+    window.addEventListener('click', handleFirstInteraction, { once: true });
+    
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const sonicType = target.closest('[data-voices-sonic-dna]')?.getAttribute('data-voices-sonic-dna');

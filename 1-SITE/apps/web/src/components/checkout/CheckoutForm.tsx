@@ -272,14 +272,14 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               {vatStatus.validating ? <Loader2 className="animate-spin text-primary" size={18} strokeWidth={1.5} /> : 
                vatStatus.valid ? (
                  <ContainerInstrument className="flex items-center gap-2 text-green-600 animate-fade-in">
-                   <TextInstrument className="text-[13px] font-light tracking-widest uppercase">
+                   <TextInstrument className="text-[13px] font-light tracking-widest ">
                      <VoiceglotText translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" />
                    </TextInstrument>
                    <CheckCircle2 strokeWidth={1.5} size={18} />
                  </ContainerInstrument>
                ) : vatStatus.valid === false ? (
                  <ContainerInstrument className="flex items-center gap-2 text-red-500 animate-shake">
-                   <TextInstrument className="text-[13px] font-light tracking-widest uppercase">
+                   <TextInstrument className="text-[13px] font-light tracking-widest ">
                      <VoiceglotText translationKey="checkout.form.vat_invalid" defaultText="Ongeldig" />
                    </TextInstrument>
                    <AlertCircle size={18} strokeWidth={1.5} />
@@ -363,7 +363,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                     : "bg-va-off-white text-va-black/40 border-transparent hover:border-va-black/10"
                 )}
               >
-                <TextInstrument className="text-2xl">{gateway.icon}</TextInstrument>
+                <TextInstrument className="text-2xl font-light">{gateway.icon}</TextInstrument>
                 <TextInstrument className="font-light tracking-tight">{gateway.name}</TextInstrument>
               </ButtonInstrument>
             ))}
@@ -389,7 +389,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                       height={32} 
                       className="h-8 object-contain" 
                     />
-                    <TextInstrument className="font-light tracking-widest text-[12px] text-va-black/60 uppercase">
+                    <TextInstrument className="font-light tracking-widest text-[12px] text-va-black/60 ">
                       <VoiceglotText translationKey={`checkout.method.${method.id}`} defaultText={method.description} />
                     </TextInstrument>
                   </ButtonInstrument>
@@ -460,7 +460,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             </>
           )}
         </ButtonInstrument>
-        <TextInstrument className="text-center text-[13px] font-light tracking-widest text-va-black/20 mt-6 uppercase">
+        <TextInstrument className="text-center text-[13px] font-light tracking-widest text-va-black/20 mt-6 ">
           <VoiceglotText translationKey="checkout.terms_agreement" defaultText="Door af te ronden ga je akkoord met onze algemene voorwaarden." />
         </TextInstrument>
       </ContainerInstrument>

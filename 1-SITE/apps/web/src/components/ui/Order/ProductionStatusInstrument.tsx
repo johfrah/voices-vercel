@@ -37,14 +37,14 @@ export const ProductionStatusInstrument: React.FC<ProductionStatusInstrumentProp
               </ContainerInstrument>
               <ContainerInstrument>
                 <TextInstrument className="font-medium text-va-black">{item.name}</TextInstrument>
-                <TextInstrument className="text-[13px] text-va-black/40 tracking-widest uppercase font-light">
+                <TextInstrument className="text-[13px] text-va-black/40 tracking-widest font-light">
                   {item.meta_data?.usage || <VoiceglotText translationKey="order.item.no_usage" defaultText="No usage defined" />}
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-6">
               <ContainerInstrument className="text-right">
-                <TextInstrument className="text-[12px] text-va-black/20 font-bold tracking-widest uppercase">
+                <TextInstrument className="text-[12px] text-va-black/20 font-bold tracking-widest ">
                   <VoiceglotText translationKey="order.item.deadline" defaultText="Deadline" />
                 </TextInstrument>
                 <TextInstrument className="font-light text-[15px] flex items-center gap-1">

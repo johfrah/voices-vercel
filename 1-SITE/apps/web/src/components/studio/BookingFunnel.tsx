@@ -85,7 +85,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       <ContainerInstrument className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <ButtonInstrument 
           onClick={() => setShowInterestForm(false)}
-          className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-va-black transition-colors flex items-center gap-2 p-0 bg-transparent uppercase"
+          className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-va-black transition-colors flex items-center gap-2 p-0 bg-transparent "
         >
           <ArrowLeft strokeWidth={1.5} size={12} /> 
           <VoiceglotText translationKey="common.back_to_overview" defaultText="Terug naar overzicht" />
@@ -106,7 +106,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
               placeholder={t('common.placeholder.email', 'Jouw e-mailadres')} 
               className="w-full p-4 !rounded-[10px] border border-va-black/10 text-[15px] outline-none transition-all"
             />
-            <ButtonInstrument className="w-full py-4 bg-va-black text-white rounded-[10px] font-medium tracking-widest text-[13px] hover:bg-primary transition-all uppercase">
+            <ButtonInstrument className="w-full py-4 bg-va-black text-white rounded-[10px] font-medium tracking-widest text-[13px] hover:bg-primary transition-all ">
               <VoiceglotText translationKey="common.send" defaultText="VERZENDEN" />
             </ButtonInstrument>
           </form>
@@ -146,7 +146,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
         <AnimatePresence>
           {foundVoices.length > 0 && (
             <ContainerInstrument className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
-              <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 px-2 uppercase">
+              <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 px-2 ">
                 <VoiceglotText translationKey="studio.booking.found_voices" defaultText="Gevonden Stemmen" />
               </TextInstrument>
               {foundVoices.map((voice) => (
@@ -166,10 +166,10 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       {/* DATE SELECTOR */}
       <ContainerInstrument className="space-y-4">
         <ContainerInstrument className="flex items-center justify-between">
-          <HeadingInstrument level={4} className="text-[13px] font-light tracking-widest text-va-black/40 uppercase">
+          <HeadingInstrument level={4} className="text-[13px] font-light tracking-widest text-va-black/40 ">
             <VoiceglotText translationKey="studio.booking.available_dates" defaultText="Beschikbare Data" />
           </HeadingInstrument>
-          <TextInstrument className="text-[13px] font-light text-primary tracking-widest flex items-center gap-1 uppercase">
+          <TextInstrument className="text-[13px] font-light text-primary tracking-widest flex items-center gap-1 ">
             <Info size={12} strokeWidth={1.5} /> 
             <VoiceglotText translationKey="studio.booking.limited_spots" defaultText="Slechts enkele plaatsen" />
           </TextInstrument>
@@ -203,7 +203,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                 </ContainerInstrument>
                 <ContainerInstrument className="text-left">
                   <TextInstrument className="text-[15px] font-medium tracking-tight">{date.date_raw}</TextInstrument>
-                  <TextInstrument className="text-[12px] font-light opacity-40 tracking-widest flex items-center gap-2 mt-0.5 uppercase">
+                  <TextInstrument className="text-[12px] font-light opacity-40 tracking-widest flex items-center gap-2 mt-0.5 ">
                     <MapPin size={10} strokeWidth={1.5} /> {date.location}
                   </TextInstrument>
                 </ContainerInstrument>
@@ -214,12 +214,12 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
             </ButtonInstrument>
           )) : (
             <ContainerInstrument className="p-8 rounded-[20px] bg-va-off-white border border-dashed border-va-black/10 text-center">
-              <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 uppercase">
+              <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 ">
                 <VoiceglotText translationKey="studio.booking.no_dates" defaultText="Geen data gepland" />
               </TextInstrument>
               <ButtonInstrument 
                 onClick={() => setShowInterestForm(true)}
-                className="text-[13px] font-light tracking-widest text-primary mt-2 hover:underline p-0 bg-transparent uppercase"
+                className="text-[13px] font-light tracking-widest text-primary mt-2 hover:underline p-0 bg-transparent "
               >
                 <VoiceglotText translationKey="studio.booking.notify_me.cta" defaultText="Houd me op de hoogte" />
               </ButtonInstrument>
@@ -232,17 +232,17 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       <ContainerInstrument className="pt-8 border-t border-va-black/5 space-y-6">
         <ContainerInstrument className="flex justify-between items-end">
           <ContainerInstrument>
-            <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 mb-1 uppercase">
+            <TextInstrument className="text-[13px] font-light tracking-widest text-va-black/30 mb-1 ">
               <VoiceglotText translationKey="studio.booking.total_investment" defaultText="Totaal Investering" />
             </TextInstrument>
             <TextInstrument className="text-4xl font-light tracking-tighter">€{priceExclVatValue}</TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="text-right">
-            <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light text-emerald-500 tracking-widest mb-1 uppercase">
+            <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light text-emerald-500 tracking-widest mb-1 ">
               <CheckCircle2 strokeWidth={1.5} size={12} /> 
               <VoiceglotText translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
             </ContainerInstrument>
-            <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light text-emerald-500 tracking-widest uppercase">
+            <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light text-emerald-500 tracking-widest ">
               <CheckCircle2 strokeWidth={1.5} size={12} /> 
               <VoiceglotText translationKey="studio.booking.certificate" defaultText="Certificaat" />
             </ContainerInstrument>
@@ -270,7 +270,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           )}
         </ButtonInstrument>
         
-        <TextInstrument className="text-[12px] text-center text-va-black/30 font-light tracking-widest uppercase">
+        <TextInstrument className="text-[12px] text-center text-va-black/30 font-light tracking-widest ">
           <VoiceglotText translationKey="studio.booking.security_info" defaultText="Veilig betalen via Mollie • Directe bevestiging" />
         </TextInstrument>
       </ContainerInstrument>

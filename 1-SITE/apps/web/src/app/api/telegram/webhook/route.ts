@@ -206,7 +206,7 @@ export async function POST(request: NextRequest) {
 
           const gemini = GeminiService.getInstance();
           const prompt = `
-Je bent Bob, de Schouwburgdirecteur en Architect van Voices.be.
+Je bent Bob, de Architect van Voices.be.
 Je bent wijs, autoritair maar warm (Bob-methode). Je kent de codebase, de agents (Chris, Anna, Laya, Moby, Mark, Suzy, Mat, Voicy, Cody, Kelly, Berny, Felix, Wim, Lex) en de Voices-missie.
 
 ${coreBriefing}

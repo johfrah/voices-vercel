@@ -37,7 +37,7 @@ export const BriefingStep: React.FC = () => {
         state.usage === 'telefonie' ? 'lg:col-span-2' : ''
       )}>
         <ContainerInstrument className="space-y-6">
-          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 uppercase">
+          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 ">
             <VoiceglotText translationKey="checkout.briefing.step1" defaultText="1. Wat is het script?" />
           </LabelInstrument>
           <textarea
@@ -46,7 +46,7 @@ export const BriefingStep: React.FC = () => {
             placeholder="Plak hier je tekst..."
             className="w-full h-64 bg-va-off-white border-none rounded-[20px] p-8 text-lg font-light focus:ring-2 focus:ring-primary/20 transition-all resize-none"
           />
-          <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light tracking-widest text-va-black/20 uppercase">
+          <ContainerInstrument className="flex items-center gap-2 text-[13px] font-light tracking-widest text-va-black/20 ">
             <Info size={14} strokeWidth={1.5} />
             {state.usage === 'telefonie' ? (
               <TextInstrument>
@@ -67,7 +67,7 @@ export const BriefingStep: React.FC = () => {
         </ContainerInstrument>
 
         <ContainerInstrument className="space-y-6">
-          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 uppercase">
+          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 ">
             <VoiceglotText translationKey="checkout.briefing.step2" defaultText="2. Uitspraak instructies (optioneel)" />
           </LabelInstrument>
           <input
@@ -80,7 +80,7 @@ export const BriefingStep: React.FC = () => {
         </ContainerInstrument>
 
         <ContainerInstrument className="space-y-6">
-          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 uppercase">
+          <LabelInstrument className="block text-[13px] font-light tracking-widest text-va-black/30 ">
             <VoiceglotText translationKey="checkout.briefing.step3" defaultText="3. Hoe wordt de opname gebruikt?" />
           </LabelInstrument>
           <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-3 gap-4">

@@ -143,7 +143,7 @@ export async function onBeforeCheckout(context) {
             <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-black tracking-tighter ">
-            Cody <TextInstrument className="text-primary inline"><VoiceglotText translationKey="auto.page.engine.7bfa30" defaultText="Engine" /></TextInstrument>
+            Cody <TextInstrument className="text-primary inline font-light"><VoiceglotText translationKey="auto.page.engine.7bfa30" defaultText="Engine" /></TextInstrument>
           </HeadingInstrument>
         </ContainerInstrument>
         

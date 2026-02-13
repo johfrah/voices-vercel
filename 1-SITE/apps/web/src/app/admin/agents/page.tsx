@@ -28,6 +28,7 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { cn } from '@/lib/utils';
 
 const AGENTS = [
     { id: 'bob', name: 'Bob', role: 'Architect', avatar: '/assets/bob-avatar-voicy.png', color: '#FFBE00', icon: Zap, description: 'Bewaakt de antifragile architectuur en de Bob-methode.' },
@@ -114,17 +115,17 @@ export default function AgentCommandCenter() {
                         <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">
                             <VoiceglotText translationKey="admin.agents.title" defaultText="Agent Command Center" />
                         </HeadingInstrument>
-                        <TextInstrument className="text-lg text-va-black/40 font-medium">
-                            <VoiceglotText translationKey="admin.agents.subtitle" defaultText="Stuur je team van AI-specialisten aan en bewaak de Schouwburg." />
+                        <TextInstrument className="text-lg text-va-black/40 font-light">
+                            <VoiceglotText translationKey="admin.agents.subtitle" defaultText="Stuur je team van AI-specialisten aan en bewaak Voices." />
                         </TextInstrument>
                     </ContainerInstrument>
                     <ContainerInstrument className="flex items-center gap-4 bg-white p-4 rounded-[20px] shadow-aura">
                         <Activity strokeWidth={1.5} className="text-primary animate-pulse" size={20} />
                         <ContainerInstrument className="text-right">
-                            <TextInstrument className="text-[15px] font-black tracking-widest block">
+                            <TextInstrument className="text-[15px] font-light tracking-widest block ">
                                 <VoiceglotText translationKey="admin.agents.system_status" defaultText="SYSTEM STATUS" />
                             </TextInstrument>
-                            <TextInstrument className="text-[15px] font-medium text-green-500 ">
+                            <TextInstrument className="text-[15px] font-light text-green-500 ">
                                 <VoiceglotText translationKey="admin.agents.all_online" defaultText="All Agents Online" />
                             </TextInstrument>
                         </ContainerInstrument>
@@ -134,7 +135,7 @@ export default function AgentCommandCenter() {
                 <SectionInstrument className="grid grid-cols-12 gap-8">
                     {/* Agent Sidebar */}
                     <ContainerInstrument className="col-span-3 space-y-4">
-                        <HeadingInstrument level={4} className="text-[15px] font-black tracking-widest text-va-black/20 mb-6 ">
+                        <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/20 mb-6 ">
                             <VoiceglotText translationKey="admin.agents.orchestra" defaultText="Het Orkest" />
                         </HeadingInstrument>
                         {AGENTS.map((agent) => (
@@ -144,17 +145,17 @@ export default function AgentCommandCenter() {
                                 className={cn(
                                     "w-full p-4 rounded-[20px] transition-all flex items-center gap-4 text-left group",
                                     selectedAgent.id === agent.id 
-                                        ? 'bg-va-black text-white shadow-xl scale-105' 
-                                        : 'bg-white text-va-black hover:bg-gray-50'
+                                        ? 'bg-va-black text-white shadow-aura-lg scale-105' 
+                                        : 'bg-white text-va-black hover:bg-va-off-white'
                                 )}
                             >
                                 <ContainerInstrument className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary/20 transition-all">
                                     <Image src={agent.avatar} alt={agent.name} fill className="object-cover" />
                                 </ContainerInstrument>
                                 <ContainerInstrument>
-                                    <TextInstrument className="text-[15px] font-bold block">{agent.name}</TextInstrument>
+                                    <TextInstrument className="text-[15px] font-light block">{agent.name}</TextInstrument>
                                     <TextInstrument className={cn(
-                                        "text-[15px] font-medium opacity-40",
+                                        "text-[12px] font-light opacity-40 uppercase tracking-widest",
                                         selectedAgent.id === agent.id ? 'text-white' : ''
                                     )}>
                                         {agent.role}
@@ -171,14 +172,14 @@ export default function AgentCommandCenter() {
                     <ContainerInstrument className="col-span-6 flex flex-col h-[700px] bg-white rounded-[20px] shadow-aura overflow-hidden border border-black/5">
                         {/* Agent Header */}
                         <ContainerInstrument className="p-8 border-b border-black/5 flex items-center gap-6 bg-va-off-white/30">
-                            <ContainerInstrument className="w-16 h-16 rounded-full overflow-hidden shadow-lg relative">
+                            <ContainerInstrument className="w-16 h-16 rounded-full overflow-hidden shadow-aura relative">
                                 <Image src={selectedAgent.avatar} alt={selectedAgent.name} width={64} height={64} className="object-cover" />
                             </ContainerInstrument>
                             <ContainerInstrument>
                                 <HeadingInstrument level={2} className="text-2xl font-light tracking-tighter">
-                                    {selectedAgent.name} <TextInstrument className="text-va-black/20 inline">/</TextInstrument> {selectedAgent.role}
+                                    {selectedAgent.name} <TextInstrument className="text-va-black/20 inline font-light">/</TextInstrument> {selectedAgent.role}
                                 </HeadingInstrument>
-                                <TextInstrument className="text-[15px] font-medium text-va-black/40">
+                                <TextInstrument className="text-[15px] font-light text-va-black/40">
                                     {selectedAgent.description}
                                 </TextInstrument>
                             </ContainerInstrument>
@@ -189,7 +190,7 @@ export default function AgentCommandCenter() {
                             {messages.length === 0 ? (
                                 <ContainerInstrument className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-20">
                                     <selectedAgent.icon size={48} strokeWidth={1.5} />
-                                    <TextInstrument className="text-lg font-medium">
+                                    <TextInstrument className="text-lg font-light">
                                         <VoiceglotText 
                                             translationKey="admin.agents.command_prompt" 
                                             defaultText={`Geef ${selectedAgent.name} een opdracht...`} 
@@ -200,14 +201,14 @@ export default function AgentCommandCenter() {
                                 messages.map((msg, i) => (
                                     <ContainerInstrument key={i} className={cn("flex", msg.role === 'user' ? 'justify-end' : 'justify-start')}>
                                         <ContainerInstrument className={cn(
-                                            "max-w-[80%] p-5 rounded-[20px] text-[15px] font-medium leading-relaxed shadow-sm",
+                                            "max-w-[80%] p-5 rounded-[20px] text-[15px] font-light leading-relaxed shadow-sm",
                                             msg.role === 'user' 
                                                 ? 'bg-va-black text-white rounded-tr-none' 
                                                 : 'bg-va-off-white text-va-black rounded-tl-none'
                                         )}>
                                             <TextInstrument>{msg.content}</TextInstrument>
                                             <TextInstrument className={cn(
-                                                "text-[15px] mt-2 opacity-30",
+                                                "text-[12px] mt-2 opacity-30 font-light uppercase tracking-widest",
                                                 msg.role === 'user' ? 'text-right' : 'text-left'
                                             )}>
                                                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -237,7 +238,7 @@ export default function AgentCommandCenter() {
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     placeholder={`Vraag ${selectedAgent.name} om een taak uit te voeren...`}
-                                    className="w-full bg-white border-none rounded-[10px] py-5 px-8 pr-16 text-[15px] font-medium shadow-aura focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                    className="w-full bg-white border-none rounded-[10px] py-5 px-8 pr-16 text-[15px] font-light shadow-aura focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                                 />
                                 <ButtonInstrument
                                     type="submit"
@@ -253,17 +254,17 @@ export default function AgentCommandCenter() {
                     {/* Task Monitor */}
                     <ContainerInstrument className="col-span-3 space-y-8">
                         <ContainerInstrument>
-                            <HeadingInstrument level={4} className="text-[15px] font-black tracking-widest text-va-black/20 mb-6 ">
+                            <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/20 mb-6 ">
                                 <VoiceglotText translationKey="admin.agents.task_monitor" defaultText="Task Monitor" />
                             </HeadingInstrument>
                             <ContainerInstrument className="bg-white rounded-[20px] p-6 shadow-aura border border-black/5 space-y-4">
                                 {tasks.length === 0 ? (
-                                    <TextInstrument className="text-[15px] font-medium text-va-black/30 text-center py-8 block">
+                                    <TextInstrument className="text-[15px] font-light text-va-black/30 text-center py-8 block">
                                         <VoiceglotText translationKey="admin.agents.no_tasks" defaultText="Geen actieve taken." />
                                     </TextInstrument>
                                 ) : (
                                     tasks.map((task) => (
-                                        <ContainerInstrument key={task.id} className="p-4 rounded-[15px] bg-va-off-white/50 flex items-center gap-4">
+                                        <ContainerInstrument key={task.id} className="p-4 rounded-[10px] bg-va-off-white/50 flex items-center gap-4">
                                             {task.status === 'running' ? (
                                                 <Clock className="text-primary animate-spin" size={18} strokeWidth={1.5} />
                                             ) : task.status === 'completed' ? (
@@ -272,8 +273,8 @@ export default function AgentCommandCenter() {
                                                 <AlertCircle className="text-red-500" size={18} strokeWidth={1.5} />
                                             )}
                                             <ContainerInstrument className="flex-1 min-w-0">
-                                                <TextInstrument className="text-[15px] font-bold block truncate">{task.name}</TextInstrument>
-                                                <TextInstrument className="text-[15px] font-medium opacity-40 tracking-widest">
+                                                <TextInstrument className="text-[15px] font-light block truncate">{task.name}</TextInstrument>
+                                                <TextInstrument className="text-[12px] font-light opacity-40 tracking-widest ">
                                                     {task.status} • {task.time}
                                                 </TextInstrument>
                                             </ContainerInstrument>
@@ -283,19 +284,19 @@ export default function AgentCommandCenter() {
                             </ContainerInstrument>
                         </ContainerInstrument>
 
-                        <ContainerInstrument className="bg-va-black text-white rounded-[20px] p-8 shadow-2xl relative overflow-hidden">
-                            <HeadingInstrument level={4} className="text-[15px] font-black tracking-widest opacity-40 mb-4 ">
+                        <ContainerInstrument className="bg-va-black text-white rounded-[20px] p-8 shadow-aura-lg relative overflow-hidden">
+                            <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest opacity-40 mb-4 ">
                                 <VoiceglotText translationKey="admin.agents.quick_stats" defaultText="Quick Stats" />
                             </HeadingInstrument>
                             <ContainerInstrument className="space-y-4 relative z-10">
                                 <ContainerInstrument className="flex justify-between items-end">
-                                    <TextInstrument className="text-[15px] font-medium opacity-60">
+                                    <TextInstrument className="text-[15px] font-light opacity-60 tracking-widest">
                                         <VoiceglotText translationKey="admin.agents.uptime" defaultText="Uptime" />
                                     </TextInstrument>
                                     <TextInstrument className="text-2xl font-light">99.9%</TextInstrument>
                                 </ContainerInstrument>
                                 <ContainerInstrument className="flex justify-between items-end">
-                                    <TextInstrument className="text-[15px] font-medium opacity-60">
+                                    <TextInstrument className="text-[15px] font-light opacity-60 tracking-widest">
                                         <VoiceglotText translationKey="admin.agents.tasks_today" defaultText="Tasks Today" />
                                     </TextInstrument>
                                     <TextInstrument className="text-2xl font-light">{tasks.length + 12}</TextInstrument>

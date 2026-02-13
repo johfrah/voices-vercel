@@ -32,7 +32,7 @@ export const WorkshopPlanningInstrument: React.FC<WorkshopPlanningInstrumentProp
       >
         <ContainerInstrument className="mt-4 flex gap-6">
           <ContainerInstrument className="flex-1 p-6 bg-primary/5 rounded-[20px] border border-primary/10">
-            <TextInstrument className="text-primary/40 text-[15px] font-light tracking-widest uppercase">
+            <TextInstrument className="text-primary/40 text-[15px] font-light tracking-widest ">
               <VoiceglotText translationKey="order.workshop.date_time" defaultText="Datum & Tijd" />
             </TextInstrument>
             <TextInstrument className="text-2xl font-light text-va-black mt-1">
@@ -47,7 +47,7 @@ export const WorkshopPlanningInstrument: React.FC<WorkshopPlanningInstrumentProp
             </ButtonInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="flex-1 space-y-3">
-            <TextInstrument className="text-va-black/20 text-[15px] font-light tracking-widest uppercase">
+            <TextInstrument className="text-va-black/20 text-[15px] font-light tracking-widest ">
               <VoiceglotText translationKey="order.workshop.details" defaultText="Details" />
             </TextInstrument>
             <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light">

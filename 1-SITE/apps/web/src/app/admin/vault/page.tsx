@@ -72,7 +72,7 @@ export default function VaultBrowserPage() {
                   <TextInstrument as="span" className="text-primary text-2xl ml-2 font-extralight"><VoiceglotText translationKey="admin.vault.subtitle" defaultText="Kluis" /></TextInstrument>
                 </HeadingInstrument>
               </ContainerInstrument>
-              <TextInstrument className="text-va-black/40 tracking-widest text-[15px] font-light flex items-center gap-2 uppercase">
+              <TextInstrument className="text-va-black/40 tracking-widest text-[15px] font-light flex items-center gap-2 ">
                 <Shield strokeWidth={1.5} size={12} />
                 <VoiceglotText translationKey="admin.vault.description" defaultText="Beveiligde Documenten & Inbound Assets" />
               </TextInstrument>
@@ -114,7 +114,7 @@ export default function VaultBrowserPage() {
             </SelectInstrument>
             <ButtonInstrument 
               onClick={fetchFiles}
-              className="bg-va-black text-white rounded-[10px] font-light tracking-widest text-[15px] hover:bg-primary transition-all uppercase"
+              className="bg-va-black text-white rounded-[10px] font-light tracking-widest text-[15px] hover:bg-primary transition-all "
             >
               <VoiceglotText translationKey="admin.vault.filter.btn" defaultText="Filteren" />
             </ButtonInstrument>
@@ -147,7 +147,7 @@ export default function VaultBrowserPage() {
                   </HeadingInstrument>
                   
                   <ContainerInstrument className="space-y-2">
-                    <ContainerInstrument className="flex items-center gap-2 text-[15px] text-va-black/20 font-light tracking-widest uppercase">
+                    <ContainerInstrument className="flex items-center gap-2 text-[15px] text-va-black/20 font-light tracking-widest ">
                       <Calendar strokeWidth={1.5} size={10} />
                       {format(new Date(file.createdAt), 'dd MMM yyyy', { locale: nl })}
                     </ContainerInstrument>
@@ -160,7 +160,7 @@ export default function VaultBrowserPage() {
                     )}
 
                     {file.project && (
-                      <ContainerInstrument className="inline-block px-2 py-1 bg-primary/5 text-primary rounded-[20px] text-[15px] font-light tracking-widest uppercase">
+                      <ContainerInstrument className="inline-block px-2 py-1 bg-primary/5 text-primary rounded-[20px] text-[15px] font-light tracking-widest ">
                         <VoiceglotText translationKey="admin.vault.project_id" defaultText="Project" /> #{file.project.wpOrderId}
                       </ContainerInstrument>
                     )}

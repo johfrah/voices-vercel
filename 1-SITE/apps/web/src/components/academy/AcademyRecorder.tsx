@@ -6,11 +6,19 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { MobileBridge } from '@/lib/mobile-bridge';
 import { CheckCircle2, Mic, Monitor, RotateCcw, Sliders, Square } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { 
+  ContainerInstrument, 
+  TextInstrument,
+  ButtonInstrument,
+  HeadingInstrument,
+  InputInstrument
+} from '@/components/ui/LayoutInstruments';
+import { cn } from '@/lib/utils';
 
 /**
  * ACADEMY RECORDER (GOD MODE 2026)
  * Persona: 'Praktische Mentor'
- * UI: Growth-Focused Recording Tool
+ * UI: Growth-Focused Recording Tool for Voices
  */
 
 interface AcademyRecorderProps {
@@ -33,7 +41,6 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
   const chunksRef = useRef<Blob[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Clean HTML for teleprompter
   const cleanText = useMemo(() => {
     if (typeof window === 'undefined') return initialText;
     const div = document.createElement("div");
@@ -41,7 +48,6 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
     return div.textContent || div.innerText || "";
   }, [initialText]);
 
-  // Teleprompter Scroll Logic
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isRecording && showTeleprompter && scrollRef.current) {
@@ -95,7 +101,6 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
     if (MobileBridge.isNative()) {
       const result = await MobileBridge.recorder.stop();
       if (result) {
-        // Convert base64 to blob
         const res = await fetch(`data:audio/webm;base64,${result.recordDataBase64}`);
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
@@ -148,18 +153,21 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
   };
 
   return (
-    <div className="bg-white rounded-[40px] p-12 border border-black/5 shadow-aura">
-      <div className="flex items-center justify-between mb-12">
-        <div className="flex items-center gap-4">
-          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl transition-all ${isRecording ? 'bg-red-500 animate-pulse text-white' : 'bg-black text-white'}`}>
-            <Mic size={28} />
-          </div>
-          <div>
-            <h3 className="text-3xl font-black tracking-tighter ">
+    <ContainerInstrument className="bg-white rounded-[20px] p-12 border border-va-black/5 shadow-aura">
+      <ContainerInstrument className="flex items-center justify-between mb-12">
+        <ContainerInstrument className="flex items-center gap-4">
+          <ContainerInstrument className={cn(
+            "w-14 h-14 rounded-[10px] flex items-center justify-center shadow-aura transition-all",
+            isRecording ? 'bg-red-500 animate-pulse text-white' : 'bg-va-black text-white'
+          )}>
+            <Mic size={28} strokeWidth={1.5} />
+          </ContainerInstrument>
+          <ContainerInstrument>
+            <HeadingInstrument level={3} className="text-3xl font-light tracking-tight">
               <VoiceglotText translationKey="academy.recorder.title" defaultText="Jouw Opname" />
-            </h3>
-            <div className="flex items-center gap-4 mt-1">
-              <p className="text-[15px] font-black tracking-widest text-black/30">
+            </HeadingInstrument>
+            <ContainerInstrument className="flex items-center gap-4 mt-1">
+              <TextInstrument className="text-[12px] font-light tracking-widest text-va-black/30 ">
                 {isRecording ? (
                   <VoiceglotText translationKey="academy.recorder.recording" defaultText="Nu aan het opnemen..." />
                 ) : audioBlob ? (
@@ -167,45 +175,49 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
                 ) : (
                   <VoiceglotText translationKey="academy.recorder.ready" defaultText="Klaar voor opname" />
                 )}
-              </p>
-              <button 
+              </TextInstrument>
+              <ButtonInstrument 
                 onClick={() => setShowTeleprompter(!showTeleprompter)}
-                className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[15px] font-black uppercase tracking-widest transition-all ${showTeleprompter ? 'bg-black text-white border-black' : 'bg-transparent text-black/30 border-black/10 hover:border-black/30'}`}
+                className={cn(
+                  "flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-light uppercase tracking-widest transition-all",
+                  showTeleprompter ? 'bg-va-black text-white border-va-black' : 'bg-transparent text-va-black/30 border-va-black/10 hover:border-va-black/30'
+                )}
               >
                 <Monitor strokeWidth={1.5} size={10} />
                 {showTeleprompter ? <VoiceglotText translationKey="academy.recorder.teleprompter.on" defaultText="Teleprompter AAN" /> : <VoiceglotText translationKey="academy.recorder.teleprompter.off" defaultText="Teleprompter UIT" />}
-              </button>
-            </div>
-          </div>
-        </div>
+              </ButtonInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
         {isRecording && (
-          <div className="text-3xl font-black tracking-tighter text-black tabular-nums">
+          <TextInstrument className="text-3xl font-light tracking-tighter text-va-black tabular-nums">
             {formatTime(recordingTime)}
-          </div>
+          </TextInstrument>
         )}
-      </div>
+      </ContainerInstrument>
       
-      <div className={`rounded-2xl mb-12 flex flex-col items-center justify-center relative overflow-hidden group transition-all ${showTeleprompter ? 'h-96 bg-va-black' : 'h-40 bg-black/5'}`}>
+      <ContainerInstrument className={cn(
+        "rounded-[10px] mb-12 flex flex-col items-center justify-center relative overflow-hidden group transition-all",
+        showTeleprompter ? 'h-96 bg-va-black' : 'h-40 bg-va-black/5'
+      )}>
         {showTeleprompter ? (
-          <div className="w-full h-full relative flex flex-col">
-            <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-va-black to-transparent z-20 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-va-black to-transparent z-20 pointer-events-none" />
+          <ContainerInstrument className="w-full h-full relative flex flex-col">
+            <ContainerInstrument className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-va-black to-transparent z-20 pointer-events-none" />
+            <ContainerInstrument className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-va-black to-transparent z-20 pointer-events-none" />
             
-            {/* Reading Line Indicator */}
-            <div className="absolute top-1/2 left-0 right-0 h-12 border-y border-primary/20 bg-primary/5 -translate-y-1/2 z-10 pointer-events-none" />
+            <ContainerInstrument className="absolute top-1/2 left-0 right-0 h-12 border-y border-primary/20 bg-primary/5 -translate-y-1/2 z-10 pointer-events-none" />
 
-            <div 
+            <ContainerInstrument 
               ref={scrollRef}
               className="flex-1 overflow-y-auto p-8 pt-32 pb-32 text-center scroll-smooth no-scrollbar"
             >
-              <p className="text-xl md:text-2xl font-bold text-white/90 leading-relaxed">
+              <TextInstrument className="text-xl md:text-2xl font-light text-white/90 leading-relaxed">
                 {cleanText}
-              </p>
-            </div>
+              </TextInstrument>
+            </ContainerInstrument>
 
-            {/* Speed Control Overlay */}
-            <div className="absolute bottom-4 right-4 z-30 flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-              <Sliders size={12} className="text-white/40" />
+            <ContainerInstrument className="absolute bottom-4 right-4 z-30 flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
+              <Sliders size={12} className="text-white/40" strokeWidth={1.5} />
               <input 
                 type="range" 
                 min="1" 
@@ -214,69 +226,69 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
                 onChange={(e) => setScrollSpeed(parseInt(e.target.value))}
                 className="w-16 accent-primary"
               />
-              <span className="text-[15px] font-black text-white tracking-widest">
+              <TextInstrument className="text-[12px] font-light text-white tracking-widest ">
                 <VoiceglotText translationKey="academy.recorder.tempo" defaultText="Tempo" />
-              </span>
-            </div>
-          </div>
+              </TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
         ) : (
           <>
             {!audioBlob && !isRecording && (
-              <div className="text-black/10 font-black tracking-[0.2em] text-[15px]">
+              <TextInstrument className="text-va-black/10 font-light tracking-[0.2em] text-[12px] ">
                 <VoiceglotText translationKey="academy.recorder.input_ready" defaultText="Microphone Input Ready" />
-              </div>
+              </TextInstrument>
             )}
             {isRecording && (
-              <div className="flex items-center gap-1">
+              <ContainerInstrument className="flex items-center gap-1">
                 {[...Array(32)].map((_, i) => (
-                  <div 
+                  <ContainerInstrument 
                     key={i} 
-                    className="w-1 bg-black rounded-full" 
+                    className="w-1 bg-va-black rounded-full" 
                     style={{ 
                       height: `${Math.random() * 60 + 20}%`,
                       transition: 'height 0.1s ease'
                     }} 
                   />
                 ))}
-              </div>
+              </ContainerInstrument>
             )}
             {audioUrl && (
-              <audio src={audioUrl} controls className="w-full max-w-md accent-black" />
+              <audio src={audioUrl} controls className="w-full max-w-md accent-va-black" />
             )}
           </>
         )}
-      </div>
+      </ContainerInstrument>
 
-      <div className="flex items-center justify-center gap-8">
+      <ContainerInstrument className="flex items-center justify-center gap-8">
         {!audioBlob ? (
-          <button 
+          <ButtonInstrument 
             onClick={isRecording ? stopRecording : startRecording}
-            className={`w-24 h-24 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-95 ${
-              isRecording ? 'bg-black text-white' : 'bg-black text-white'
-            }`}
+            className="w-24 h-24 rounded-full flex items-center justify-center shadow-aura transition-all hover:scale-110 active:scale-95 bg-va-black text-white"
             data-voices-sonic-dna="click-premium"
           >
-            {isRecording ? <Square size={32} fill="currentColor" /> : <Mic size={32} fill="currentColor" />}
-          </button>
+            {isRecording ? <Square size={32} fill="currentColor" strokeWidth={1.5} /> : <Mic size={32} fill="currentColor" strokeWidth={1.5} />}
+          </ButtonInstrument>
         ) : (
           <>
-            <button 
+            <ButtonInstrument 
               onClick={resetRecording}
-              className="w-16 h-16 rounded-full bg-black/5 text-black/40 flex items-center justify-center hover:bg-black/10 hover:text-black transition-all"
+              className="w-16 h-16 rounded-full bg-va-black/5 text-va-black/40 flex items-center justify-center hover:bg-va-black/10 hover:text-va-black transition-all"
             >
-              <RotateCcw size={24} />
-            </button>
-            <button 
+              <RotateCcw size={24} strokeWidth={1.5} />
+            </ButtonInstrument>
+            <ButtonInstrument 
               onClick={handleSubmit}
               className="va-btn-pro !rounded-full !px-12 flex items-center gap-3"
               data-voices-sonic-dna="click-premium"
             >
               <CheckCircle2 strokeWidth={1.5} size={20} /> 
-              <VoiceglotText translationKey="academy.recorder.submit" defaultText="INLEVEREN VOOR FEEDBACK" />
-            </button>
+              <TextInstrument className="font-light tracking-widest text-[13px] ">
+                <VoiceglotText translationKey="academy.recorder.submit" defaultText="INLEVEREN VOOR FEEDBACK" />
+              </TextInstrument>
+            </ButtonInstrument>
           </>
         )}
-      </div>
-    </div>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 };

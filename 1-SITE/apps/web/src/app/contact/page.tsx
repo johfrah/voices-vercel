@@ -81,7 +81,7 @@ export default function ContactPage() {
         
         {/* Header */}
         <SectionInstrument className="mb-16 text-center">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest border border-black/5 mb-8 uppercase">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest border border-black/5 mb-8 ">
             <Sparkles strokeWidth={1.5} size={12} fill="currentColor" /> 
             <VoiceglotText translationKey="contact.badge" defaultText="Altijd Bereikbaar" />
           </ContainerInstrument>
@@ -233,7 +233,7 @@ export default function ContactPage() {
                 <Phone strokeWidth={1.5} size={20} />
               </ContainerInstrument>
               <ContainerInstrument>
-                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light uppercase"><VoiceglotText translationKey="contact.info.phone_label" defaultText="Bel ons" /></TextInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText translationKey="contact.info.phone_label" defaultText="Bel ons" /></TextInstrument>
                 <TextInstrument className="text-lg font-light">+32 (0)2 793 19 91</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -242,7 +242,7 @@ export default function ContactPage() {
                 <Mail strokeWidth={1.5} size={20} />
               </ContainerInstrument>
               <ContainerInstrument>
-                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light uppercase"><VoiceglotText translationKey="contact.info.email_label" defaultText="E-mail ons" /></TextInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText translationKey="contact.info.email_label" defaultText="E-mail ons" /></TextInstrument>
                 <TextInstrument className="text-lg font-light"><VoiceglotText translationKey="auto.page.hello_voices_be.b689c1" defaultText="hello@voices.be" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -251,7 +251,7 @@ export default function ContactPage() {
                 <MapPin size={20} />
               </ContainerInstrument>
               <ContainerInstrument>
-                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light uppercase"><VoiceglotText translationKey="contact.info.address_label" defaultText="Bezoek ons" /></TextInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText translationKey="contact.info.address_label" defaultText="Bezoek ons" /></TextInstrument>
                 <TextInstrument className="text-lg font-light"><VoiceglotText translationKey="contact.info.address_value" defaultText="Gent, België" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

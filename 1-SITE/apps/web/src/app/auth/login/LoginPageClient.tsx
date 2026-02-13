@@ -143,7 +143,7 @@ export function LoginPageClient() {
 
       <ContainerInstrument className="w-full max-w-xl relative z-10">
         <ContainerInstrument className="text-center mb-12 space-y-4">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest shadow-sm border border-gray-100/50 uppercase">
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest shadow-sm border border-gray-100/50 ">
             <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText translationKey="auth.login.secure_access" defaultText="Toegang" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
@@ -208,7 +208,7 @@ export function LoginPageClient() {
                       setShowPassword(false);
                       setPassword('');
                     }}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-[15px] font-light tracking-widest text-primary hover:opacity-70 transition-opacity uppercase"
+                    className="absolute right-6 top-1/2 -translate-y-1/2 text-[15px] font-light tracking-widest text-primary hover:opacity-70 transition-opacity "
                   >
                     <VoiceglotText translationKey="auto.loginpageclient.gebruik_magic_link.e10a3c" defaultText="Gebruik Magic Link" />
                   </ButtonInstrument>
@@ -217,7 +217,7 @@ export function LoginPageClient() {
                 <ContainerInstrument className="flex justify-center">
                   <ButtonInstrument 
                     onClick={() => setShowPassword(true)}
-                    className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors uppercase"
+                    className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors "
                   >
                     Ik wil inloggen met een wachtwoord
                   </ButtonInstrument>
@@ -252,7 +252,7 @@ export function LoginPageClient() {
         <ContainerInstrument className="mt-12 text-center">
           <ContainerInstrument className="flex items-center justify-center gap-2 text-primary">
             <Star strokeWidth={1.5} size={12} fill="currentColor" />
-            <TextInstrument as="span" className="text-[15px] font-light tracking-widest uppercase">
+            <TextInstrument as="span" className="text-[15px] font-light tracking-widest ">
               <VoiceglotText translationKey="auth.login.footer" defaultText="Voices" />
             </TextInstrument>
           </ContainerInstrument>

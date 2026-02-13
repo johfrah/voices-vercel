@@ -87,14 +87,14 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                             type="file" 
                             className="hidden" 
                             accept="audio/*" 
-                            onChange={(e) => e.target.files?.[0] && handleAuditionUpload(track.id, e.target.files[0])}
+                            onChange={(e) => { if (e.target.files?.[0]) handleAuditionUpload(track.id, e.target.files[0]); }}
                           />
                         </LabelInstrument>
                       )}
 
                       {track.status === 'ready' ? (
                         <ButtonInstrument 
-                          onClick={() => setActiveTrack(activeTrack === track.id ? null : track.id)}
+                          onClick={() => { setActiveTrack(activeTrack === track.id ? null : track.id); }}
                           className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-va-black text-white flex items-center justify-center hover:scale-105 active:scale-90 transition-transform"
                         >
                           {activeTrack === track.id ? <LucidePause size={18} strokeWidth={1.5} /> : <LucidePlay size={18} strokeWidth={1.5} className="ml-1" />}
@@ -209,7 +209,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                 </ContainerInstrument>
                 <ButtonInstrument 
                   className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-[10px] font-medium flex items-center justify-center gap-2 active:scale-95"
-                  onClick={() => window.location.href = `/checkout?session=${activeTrack}`}
+                  onClick={() => { window.location.href = `/checkout?session=${activeTrack}`; }}
                 >
                   <LucideCheckCircle size={18} strokeWidth={1.5} />
                   <TextInstrument>

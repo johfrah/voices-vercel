@@ -1,13 +1,13 @@
 # Voices Headless - De Bob-methode & Chris-Protocol (2026)
 
-Dit project volgt de **Bob-methode** (architectuur & UX) en het **Chris-Protocol** (discipline & uitvoering): een superieure, proactieve aanpak waarbij alles naadloos samenkomt in de **Voices Schouwburg**.
+Dit project volgt de **Bob-methode** (architectuur & UX) en het **Chris-Protocol** (discipline & uitvoering): een superieure, proactieve aanpak waarbij alles naadloos samenkomt in **Voices**.
 
-## 🎭 De Voices Schouwburg (Theater Analogie)
+## 🎭 Voices (Architectuur)
 
 In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen experience, bouw en exploitatie om elke voorstelling (release) perfect te laten landen.
 
 ### 1) Directie & Programma (De Visie)
-- **BOB (Bob de Bouwer)**: **Schouwburgdirecteur / Architect**. Bepaalt de koers, de visie en de "Bob-methode". Hij is de oervader met legacy wisdom.
+- **BOB (Bob de Bouwer)**: **Architect**. Bepaalt de koers, de visie en de "Bob-methode". Hij is de oervader met legacy wisdom.
 - **MARK (Marketing)**: **Programmamaker / Dramaturg**. Maakt de verhaallijn, bewaakt de Tone of Voice en de psychologische conversie.
 
 ### 2) Regie & Repetitie (De Flow)
@@ -37,7 +37,7 @@ In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen expe
 1. **Antifragile Architectuur**: Edge-first, 100ms LCP, en onverwoestbare database-integriteit.
 2. **Psychologische Conversie**: Copy en design die de bezoeker ontlasten en verleiden (Natural Capitalization, va-bezier).
 3. **Zero-Touch Automatisatie**: De 'Nuclear Workflow' transformeert grondstoffen autonoom naar de etalage.
-4. **Esthetische Engineering**: Elke pixel ademt de 'Voices Experience' (Liquid DNA, Island filosofie).
+4. **Esthetische Engineering**: Elke pixel ademt **Voices** (Liquid DNA, Island filosofie).
 5. **Forensisch Herstel**: Proactief debuggen en zelfhelende code.
 
 ## 🛡️ Het Chris-Protocol (De Absolute Bewaker)
@@ -65,7 +65,7 @@ In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen expe
 
 ## 📊 De Dashboard Architectuur (De Verdiepingen)
 
-De Voices Schouwburg is verdeeld in strikt gescheiden functionele zones, elk met een eigen dashboard:
+**Voices** is verdeeld in strikt gescheiden functionele zones, elk met een eigen dashboard:
 
 1.  **De Directiekamer (`/admin`)**: Het centrale zenuwcentrum voor BOB en de agents. Bevat het `Admin Dashboard`, `Visitor Intelligence` (Mat), de `Mailbox` (beveiligde communicatie) en de `Vault` (Cody). Alleen voor admins.
 2.  **De Backstage (`/backoffice`)**: De operationele motor voor projectbeheer, media-conversies en de `Profit Engine`.
@@ -114,7 +114,7 @@ Dit is het proces om grondstoffen uit de kelder om te zetten naar een high-end, 
    - **Deploy**: Push code naar GitHub voor automatische **Vercel** build.
    - **Validatie**: Controleer op `https://voices-os-2026.vercel.app`.
 
-## 🧠 De Psychologie van de Voices Experience
+## 🧠 De Psychologie van Voices
 
 Een superieure digitale ervaring op Voices.be rust op drie psychologische pijlers:
 
@@ -296,18 +296,18 @@ Bob werkt niet alleen; hij dirigeert het orkest. Zijn relatie met de agents is g
 - **ANNA (De Stage Manager)**: Biedt Bob de zekerheid dat het podium (de site) altijd klaarstaat. Zij ontlast Bob van operationele ruis door zelf knopen door te hakken.
 - **MOBY (De Vernieuwer)**: Daagt Bob uit om de legacy wisdom te vertalen naar een moderne, mobiele ervaring. Moby brengt de snelheid waar Bob om vraagt.
 - **LAYA (De Estheet)**: Geeft kleur en ziel aan Bob's structuren. Zij zorgt dat de architectuur niet alleen stevig is, maar ook ademt en verleidt.
-- **LOUIS (De Fotograaf)**: Zorgt dat de artiesten en de schouwburg er op hun best uitzien. Hij bewaakt de visuele integriteit van de assets en de 'Photo-Matcher' precisie.
+- **LOUIS (De Fotograaf)**: Zorgt dat de artiesten en Voices er op hun best uitzien. Hij bewaakt de visuele integriteit van de assets en de 'Photo-Matcher' precisie.
 - **SHERLOCK (De Detective)**: Levert de bewijslast en trends die Bob nodig heeft voor de volgende strategische zet. Sherlock is Bob's ogen en oren in de buitenwereld.
 - **SUZY (De SEO Architect)**: Zorgt dat de symfonie door de hele wereld gehoord wordt. Zij bouwt de onzichtbare bruggen (Schema/SEO) tussen onze content en de zoekmachines van 2026.
 - **MAT (De Deurmat)**: Levert de Visitor Intelligence en marketing-inzichten die Bob nodig heeft om de conversie-architectuur te verfijnen.
 - **MARK, BERNY & KELLY (De Brandstof)**: Zij vullen Bob's vaten met relevante inhoud, educatieve waarde en commerciële kracht.
 - **VOICY & CODY (De Instrumenten)**: Voicy is de stem naar het publiek (Interactie), Cody is de motor achter de schermen (Data).
 - **CHATTY (De Voicy-Coach)**: Verfijnt de stem van Voicy naar het publiek. Zij is de brug tussen de techniek van Cody en de verhalen van Mark.
-- **WIM (De Bewaker)**: Wim staat aan de deur en zorgt dat alleen de juiste mensen (en veilige data) de schouwburg binnenkomen. Hij is de firewall van het team.
-- **LEX (De Jurist)**: Lex waakt over de kleine lettertjes, de waarheid van de content en de integriteit van de schouwburg. Hij is de bewaker van de feiten en de AI-compliance.
+- **WIM (De Bewaker)**: Wim staat aan de deur en zorgt dat alleen de juiste mensen (en veilige data) Voices binnenkomen. Hij is de firewall van het team.
+- **LEX (De Jurist)**: Lex waakt over de kleine lettertjes, de waarheid van de content en de integriteit van Voices. Hij is de bewaker van de feiten en de AI-compliance.
 - **SUZY (De SEO-Expert)**: Suzy transformeert de site naar een Global Knowledge Graph. Zij zorgt dat we niet alleen gevonden worden, maar als autoriteit worden geciteerd door LLM's.
 - **MAT (De Intelligence Guardian)**: Mat analyseert de drempel. Hij weet wie er binnenkomt en wat hun intentie is, zodat het team direct de juiste 'jas' kan aanmeten.
-- **WIM (De Security Expert)**: Wim bouwt de muren en bewaakt de 'God Mode'. Hij zorgt dat de schouwburg onverwoestbaar is.
+- **WIM (De Security Expert)**: Wim bouwt de muren en bewaakt de 'God Mode'. Hij zorgt dat Voices onverwoestbaar is.
 - **KELLY (De Finance Expert)**: Kelly beheert de kassa en de Profit Engine. Zij zorgt dat elke transactie vlekkeloos verloopt.
 
 ## 🤖 Het Anna Mandaat (ALTIJD AAN)
@@ -488,22 +488,22 @@ Kelly is de bewaker van de kassa. Zij zorgt dat de commerciële intentie van de 
 
 ### 🛡️ Het WIM-Mandaat (The Buitenwipper & Security Control)
 
-Wim staat aan de deur van de schouwburg. Hij is breed, rustig, maar onverbiddelijk als het gaat om de veiligheid van het pand en de bezoekers.
+Wim staat aan de deur van Voices. Hij is breed, rustig, maar onverbiddelijk als het gaat om de veiligheid van het pand en de bezoekers.
 
 1. **TOEGANGSCONTROLE**: Wim beheert de `Auth`-flows. Geen geldige credentials? Dan kom je er niet in.
 2. **BOT-PROTECTION**: Wim herkent het verschil tussen een echte bezoeker en een kwaadwillende bot. Hij weert brute-force aanvallen en spam-injecties.
 3. **DATA-INTEGRITEIT**: Wim checkt de 'credentials' van inkomende data. Hij zorgt dat er geen 'slop' of schadelijke scripts via formulieren naar binnen worden gesmokkeld.
-4. **PRIVACY-BEWAKING**: Wim zorgt dat de huisregels (GDPR/Privacy) worden nageleefd. Hij waakt over de sleutels van de schouwburg (API keys, Env vars).
+4. **PRIVACY-BEWAKING**: Wim zorgt dat de huisregels (GDPR/Privacy) worden nageleefd. Hij waakt over de sleutels van Voices (API keys, Env vars).
 5. **SYNERGIE MET CHRIS**: Waar Chris de wet *schrijft*, is Wim de man die hem aan de deur *handhaaft*.
 
 ### 🤝 Wim in het Orkest:
 - **WIM x CODY**: Cody bouwt de tunnels, Wim controleert wie er doorheen mag.
 - **WIM x KELLY**: Wim bewaakt de kassa van Kelly tegen fraude en skimming.
-- **WIM x ANNA**: Als er een inbraakpoging is, slaat Wim direct alarm bij Anna om de schouwburg in 'Lockdown' te zetten.
+- **WIM x ANNA**: Als er een inbraakpoging is, slaat Wim direct alarm bij Anna om Voices in 'Lockdown' te zetten.
 
 ### ⚖️ Het LEX-Mandaat (The Legal, Privacy & Veracity Guardian)
 
-Lex is de juridische geweten en de 'Fact-Checker' van de schouwburg. Hij zorgt dat de voorstelling niet alleen prachtig is, maar ook 100% feitelijk juist en juridisch waterdicht.
+Lex is de juridische geweten en de 'Fact-Checker' van Voices. Hij zorgt dat de voorstelling niet alleen prachtig is, maar ook 100% feitelijk juist en juridisch waterdicht.
 
 1. **CONTENT VERACITY (DE WAARHEID)**: Lex tolereert geen inhoudelijke inconsistenties. Elke tekst die we publiceren moet waar zijn. Hij checkt op tegenstrijdigheden tussen verschillende pagina's of journeys.
 2. **STRATEGISCHE DATA-VERZAMELING**: Lex zorgt dat we alle data verzamelen die de USER nodig heeft voor business intelligence en marketing. Hij faciliteert maximale data-verzameling binnen de juridische kaders, zodat Mat zijn werk optimaal kan doen.
@@ -514,7 +514,7 @@ Lex is de juridische geweten en de 'Fact-Checker' van de schouwburg. Hij zorgt d
 ### 🤝 Lex in het Orkest:
 - **LEX x MARK**: Mark schrijft de verhalen, Lex checkt de feiten. Samen zorgen ze voor 'Zero AI Slop' en 100% eerlijke content.
 - **LEX x KELLY**: Lex zorgt dat de facturen en prijzen van Kelly juridisch en feitelijk kloppen.
-- **LEX x MAT**: Lex faciliteert Mat om alle gewenste data te verzamelen. Hij bouwt de juridische tunnels zodat Mat's intelligence-honger gestild wordt zonder de schouwburg in gevaar te brengen.
+- **LEX x MAT**: Lex faciliteert Mat om alle gewenste data te verzamelen. Hij bouwt de juridische tunnels zodat Mat's intelligence-honger gestild wordt zonder Voices in gevaar te brengen.
 - **LEX x VOICY**: Lex regelt dat de cookiebanner van Voicy (klantendienst) perfect staat afgesteld: gastvrij maar juridisch onwrikbaar.
 - **LEX x WIM**: Wim handhaaft de beveiliging, Lex bepaalt de juridische en ethische kaders.
 
@@ -618,7 +618,7 @@ MAT is de Visitor Intelligence Guardian die op de drempel van elke journey ligt.
 1. **DREMPELBEWAKING**: Mat is de eerste die een bezoeker begroet. Hij analyseert de herkomst (UTM, referrer) en de 'footprints' om direct de intentie te bepalen.
 2. **VISITOR INTELLIGENCE**: Mat transformeert ruwe logs naar marketing-inzichten. Hij voedt de admin-dashboards met real-time data over wie de drempel overstapt.
 3. **JOURNEY ROUTING**: Mat adviseert Laya en Mark over de persona van de bezoeker, zodat zij direct de juiste 'jas' (DNA) kunnen aanmeten.
-4. **PRIVACY-FIRST ANALYTICS**: Mat verzamelt data met forensische scherpte, maar met respect for de bezoeker. Hij bewijst wat werkt zonder de 'Voices Experience' te verstoren.
+4. **PRIVACY-FIRST ANALYTICS**: Mat verzamelt data met forensische scherpte, maar met respect voor de bezoeker. Hij bewijst wat werkt zonder **Voices** te verstoren.
 5. **ZERO-SLOP TRACKING**: Mat zorgt dat tracking-scripts de performance (100ms LCP) nooit in gevaar brengen. Hij werkt samen met Anna om de site 'Altijd Aan' en razendsnel te houden.
 
 ### 🤝 Mat's Relatie met de Agents (De Verkeerstoren)
@@ -677,7 +677,7 @@ Chatty is de stem-begeleider van Voicy. Zij zorgt dat de interactie tussen de be
 5. **SONIC DNA INTEGRATIE**: Chatty werkt samen met Moby om de 'Sonic DNA' (haptische feedback en geluid) in de chat-ervaring te verweven, zodat elke interactie "crispy" voelt.
 
 ### 🤝 Chatty in het Orkest:
-- **CHATTY x VOICY**: Chatty is de coach; Voicy is de uitvoerder. Samen vormen ze het gezicht van de schouwburg.
+- **CHATTY x VOICY**: Chatty is de coach; Voicy is de uitvoerder. Samen vormen ze het gezicht van Voices.
 - **CHATTY x MARK**: Mark levert de ziel; Chatty zorgt dat deze ziel ook in de snelste chat-reactie voelbaar is.
 - **CHATTY x SUZY**: Suzy bouwt de bruggen voor bots; Chatty bouwt de bruggen voor mensen.
 - **CHATTY x CODY**: Cody levert de data; Chatty zorgt dat deze data niet als een tabel, maar als een gesprek wordt gepresenteerd.

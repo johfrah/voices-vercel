@@ -238,6 +238,34 @@ class ChrisWatchdog {
         }
     });
 
+    // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix Leesbaarheid (text-sm -> text-[15px])
+    content = content.replace(/className="([^"]*)\b(text-(xs|sm|\[(1[0-4]|[0-9])px\]))\b([^"]*)"/g, (match, p1, p2, p3, p4, p5) => {
+      console.log(`   ✅ [FIX] ${path.basename(filePath)}: Opgeschaald naar text-[15px]`);
+      return `className="${p1}text-[15px]${p5}"`.replace(/\s\s+/g, ' ');
+    });
+
+    // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix HTML naar Instruments (div -> ContainerInstrument)
+    // Alleen als het bestand al LayoutInstruments importeert om import-chaos te voorkomen
+    if (content.includes('LayoutInstruments')) {
+      content = content.replace(/<div([^>]*)>/g, (match, p1) => {
+        if (p1.includes('className')) {
+          console.log(`   ✅ [FIX] ${path.basename(filePath)}: <div> -> <ContainerInstrument>`);
+          return `<ContainerInstrument${p1}>`;
+        }
+        return match;
+      });
+      content = content.replace(/<\/div>/g, '<\/ContainerInstrument>');
+      
+      content = content.replace(/<span([^>]*)>/g, (match, p1) => {
+        if (p1.includes('className')) {
+          console.log(`   ✅ [FIX] ${path.basename(filePath)}: <span> -> <TextInstrument>`);
+          return `<TextInstrument${p1}>`;
+        }
+        return match;
+      });
+      content = content.replace(/<\/span>/g, '<\/TextInstrument>');
+    }
+
     if (content !== originalContent) {
       fs.writeFileSync(filePath, content);
     }

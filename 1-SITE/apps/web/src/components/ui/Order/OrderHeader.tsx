@@ -36,7 +36,7 @@ export const OrderHeader: React.FC<OrderHeaderProps> = ({ id, date, journey, sta
         )}>
           <VoiceglotText translationKey={`journey.${journey}`} defaultText={journey} />
         </ContainerInstrument>
-        <ContainerInstrument className="px-4 py-1.5 rounded-full bg-va-black text-white text-[12px] font-light uppercase tracking-widest">
+        <ContainerInstrument className="px-4 py-1.5 rounded-full bg-va-black text-white text-[12px] font-light tracking-widest">
           <VoiceglotText translationKey={`order.status.${status}`} defaultText={status} />
         </ContainerInstrument>
       </ContainerInstrument>

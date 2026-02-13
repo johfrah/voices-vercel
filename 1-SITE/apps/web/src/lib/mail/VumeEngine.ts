@@ -6,7 +6,7 @@ import { VumeInvoiceReplyTemplate } from './templates/VumeInvoiceReplyTemplate';
 /**
  * 🚀 VUME ENGINE (2026)
  * 
- * Het centrale zenuwcentrum voor alle e-mails uit de Schouwburg.
+ * Het centrale zenuwcentrum voor alle e-mails uit Voices.
  */
 
 interface SendOptions {

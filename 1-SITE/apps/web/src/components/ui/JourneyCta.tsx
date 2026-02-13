@@ -49,18 +49,18 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
   const Icon = config.icon;
 
   return (
-    <div className={cn("rounded-[40px] p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 my-12 relative overflow-hidden shadow-2xl", config.color)}>
+    <div className={cn("rounded-[20px] p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 my-12 relative overflow-hidden shadow-aura-lg", config.color)}>
       <div className="relative z-10 space-y-4 text-center md:text-left">
-        <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mx-auto md:mx-0">
+        <div className="w-12 h-12 rounded-[10px] bg-white/10 flex items-center justify-center mx-auto md:mx-0">
           <Icon size={24} />
         </div>
-        <h3 className="text-3xl font-black tracking-tighter leading-none">{config.title}</h3>
-        <p className="text-white/70 text-[15px] font-medium max-w-md">{config.text}</p>
+        <h3 className="text-3xl font-light tracking-tighter leading-none">{config.title}</h3>
+        <p className="text-white/70 text-[15px] font-light max-w-md">{config.text}</p>
       </div>
       
       <Link 
         href={config.href}
-        className="relative z-10 px-10 py-5 bg-white text-va-black rounded-full font-black tracking-widest text-[15px] hover:scale-105 transition-all flex items-center gap-3 shadow-xl"
+        className="relative z-10 px-10 py-5 bg-white text-va-black rounded-[10px] font-light tracking-widest text-[15px] hover:scale-105 transition-all flex items-center gap-3 shadow-xl "
       >
         {config.cta} <ArrowRight strokeWidth={1.5} size={16} />
       </Link>

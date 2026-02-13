@@ -38,21 +38,15 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
   };
 
   // 🌍 MARKET-BASED LANGUAGE LOGIC
-  // We sorteren de talen op basis van de huidige markt (BE/NL)
   const sortedLanguages = React.useMemo(() => {
     const market = combinedParams.market || 'BE';
     const primaryLang = market === 'BE' ? 'Vlaams' : 'Nederlands';
     const secondaryLang = market === 'BE' ? 'Nederlands' : 'Vlaams';
     
     const baseLangs = [...filters.languages];
-    
-    // Verwijder de primaire en secundaire talen uit de lijst om ze bovenaan te zetten
     const filteredLangs = baseLangs.filter(l => l !== primaryLang && l !== secondaryLang);
-    
-    // Sorteer de rest alfabetisch
     filteredLangs.sort((a, b) => a.localeCompare(b));
     
-    // Bouw de nieuwe lijst: Primair -> Secundair -> De rest
     const result = [];
     if (baseLangs.includes(primaryLang)) result.push(primaryLang);
     if (baseLangs.includes(secondaryLang)) result.push(secondaryLang);
@@ -92,7 +86,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
             <SelectInstrument 
               className="w-full bg-va-off-white border-none rounded-[24px] py-5 px-8 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
               value={combinedParams.language || ''}
-              onChange={(e) => updateQuery({ language: e.target.value || undefined })}
+              onChange={(e) => { updateQuery({ language: e.target.value || undefined }); }}
             >
               <OptionInstrument value=""><VoiceglotText translationKey="agency.filter.all_languages" defaultText="Alle Talen" /></OptionInstrument>
               {sortedLanguages.map(lang => (
@@ -114,7 +108,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
             <SelectInstrument 
               className="w-full bg-va-off-white border-none rounded-[24px] py-5 px-8 text-[15px] font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
               value={combinedParams.gender || ''}
-              onChange={(e) => updateQuery({ gender: e.target.value || undefined })}
+              onChange={(e) => { updateQuery({ gender: e.target.value || undefined }); }}
             >
               <OptionInstrument value=""><VoiceglotText translationKey="agency.filter.gender" defaultText="Geslacht" /></OptionInstrument>
               {filters.genders.map(g => (
@@ -133,7 +127,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
           </ContainerInstrument>
 
           <ButtonInstrument 
-            onClick={() => setIsSheetOpen(true)}
+            onClick={() => { setIsSheetOpen(true); }}
             className="w-16 h-16 rounded-[24px] bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all duration-500 shadow-lg active:scale-95"
           >
             <SlidersHorizontal size={20} />
@@ -145,19 +139,19 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
       {(combinedParams.search || combinedParams.gender || combinedParams.style || combinedParams.language) && (
         <ContainerInstrument className="flex flex-wrap gap-2 px-4">
           {combinedParams.search && (
-            <Chip label={`${t('common.search', 'Zoek')}: ${combinedParams.search}`} onRemove={() => updateQuery({ search: undefined })} />
+            <Chip label={`${t('common.search', 'Zoek')}: ${combinedParams.search}`} onRemove={() => { updateQuery({ search: undefined }); }} />
           )}
           {combinedParams.language && (
-            <Chip label={`${t('common.language', 'Taal')}: ${combinedParams.language}`} onRemove={() => updateQuery({ language: undefined })} />
+            <Chip label={`${t('common.language', 'Taal')}: ${combinedParams.language}`} onRemove={() => { updateQuery({ language: undefined }); }} />
           )}
           {combinedParams.gender && (
-            <Chip label={`${t('common.gender', 'Geslacht')}: ${combinedParams.gender}`} onRemove={() => updateQuery({ gender: undefined })} />
+            <Chip label={`${t('common.gender', 'Geslacht')}: ${combinedParams.gender}`} onRemove={() => { updateQuery({ gender: undefined }); }} />
           )}
           {combinedParams.style && (
-            <Chip label={`${t('common.style', 'Stijl')}: ${combinedParams.style}`} onRemove={() => updateQuery({ style: undefined })} />
+            <Chip label={`${t('common.style', 'Stijl')}: ${combinedParams.style}`} onRemove={() => { updateQuery({ style: undefined }); }} />
           )}
           <ButtonInstrument 
-            onClick={() => updateQuery({ search: undefined, gender: undefined, style: undefined, language: undefined })}
+            onClick={() => { updateQuery({ search: undefined, gender: undefined, style: undefined, language: undefined }); }}
             className="text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-colors ml-2"
           >
             <VoiceglotText translationKey="agency.filter.clear_all" defaultText="Wis alles" />
@@ -171,7 +165,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
         activeParams={combinedParams} 
         onUpdate={updateQuery}
         isOpen={isSheetOpen}
-        onClose={() => setIsSheetOpen(false)}
+        onClose={() => { setIsSheetOpen(false); }}
       />
     </ContainerInstrument>
   );
@@ -180,7 +174,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => (
   <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-full text-[15px] font-black tracking-widest shadow-sm">
     <TextInstrument>{label}</TextInstrument>
-    <ButtonInstrument onClick={onRemove} className="hover:text-primary transition-colors">
+    <ButtonInstrument onClick={() => { onRemove(); }} className="hover:text-primary transition-colors">
       <X strokeWidth={1.5} size={12} />
     </ButtonInstrument>
   </ContainerInstrument>

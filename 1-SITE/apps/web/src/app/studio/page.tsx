@@ -92,7 +92,7 @@ export default async function StudioPage() {
               </div>
               <div className="relative z-10">
                 <Link href="/studio/quiz">
-                  <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group !rounded-[10px] font-light tracking-widest uppercase"><VoiceglotText translationKey="studio.bento.guide.cta" defaultText="DOE DE QUIZ" /><ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform" /></ButtonInstrument>
+                  <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group !rounded-[10px] font-light tracking-widest "><VoiceglotText translationKey="studio.bento.guide.cta" defaultText="DOE DE QUIZ" /><ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform" /></ButtonInstrument>
                 </Link>
               </div>
               <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
@@ -109,7 +109,7 @@ export default async function StudioPage() {
                   </TextInstrument>
                 </HeadingInstrument>
               </ContainerInstrument>
-              <ButtonInstrument as={Link} href="/studio/afspraak" className="w-full py-6 rounded-[10px] bg-white/5 border border-white/10 text-white font-light tracking-widest text-[15px] hover:bg-primary hover:border-primary transition-all duration-500 flex items-center justify-center uppercase">
+              <ButtonInstrument as={Link} href="/studio/afspraak" className="w-full py-6 rounded-[10px] bg-white/5 border border-white/10 text-white font-light tracking-widest text-[15px] hover:bg-primary hover:border-primary transition-all duration-500 flex items-center justify-center ">
                 <VoiceglotText translationKey="studio.bento.appointment.cta" defaultText="AGENDA BEKIJKEN" />
               </ButtonInstrument>
             </BentoCard>
@@ -234,7 +234,7 @@ export default async function StudioPage() {
                         className="object-cover group-hover:scale-105 transition-transform duration-1000"
                       />
                       <div className="absolute bottom-8 left-8 right-8">
-                        <p className="text-white/60 text-[15px] font-light tracking-widest mb-2 uppercase">
+                        <p className="text-white/60 text-[15px] font-light tracking-widest mb-2 ">
                           <VoiceglotText translationKey={`studio.instructor.${t.id}.tagline`} defaultText={t.tagline || 'Workshopgever'} />
                         </p>
                         <HeadingInstrument level={4} className="text-3xl font-light text-white tracking-tighter leading-none"><VoiceglotText translationKey={`studio.instructor.${t.id}.name`} defaultText={t.name} /></HeadingInstrument>
