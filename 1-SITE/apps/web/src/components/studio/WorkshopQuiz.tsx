@@ -79,6 +79,8 @@ export const WorkshopQuiz: React.FC = () => {
   const [currentStepId, setCurrentStepId] = useState('welkom');
   const [isLoading, setIsLoading] = useState(true);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const currentStep = QUIZ_DATA.find(s => s.id === currentStepId) || QUIZ_DATA[0];
@@ -96,21 +98,25 @@ export const WorkshopQuiz: React.FC = () => {
   };
 
   useEffect(() => {
-    // Initial loading state
-    const timer = setTimeout(() => setIsLoading(false), 800);
+    setIsMounted(true);
+    // Forceer skeleton uit na 1.5 seconden
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  // 🛡️ CHRIS-PROTOCOL: Deterministic Skeleton
-  if (isLoading) {
+  // 🛡️ CHRIS-PROTOCOL: Deterministic Skeleton (Server-side safe)
+  if (!isMounted || isLoading) {
     return (
-      <div className="relative w-full max-w-md mx-auto aspect-[9/16] bg-va-off-white rounded-[2rem] overflow-hidden shadow-aura border border-black/5 animate-pulse">
+      <div className="relative w-full max-w-md mx-auto aspect-[9/16] bg-va-off-white rounded-[2rem] overflow-hidden shadow-aura border border-black/5">
         <div className="absolute inset-0 flex items-center justify-center">
           <Loader2 className="w-8 h-8 text-va-black/10 animate-spin" />
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
-          <div className="h-8 bg-va-black/5 rounded-lg w-3/4" />
-          <div className="h-12 bg-va-black/5 rounded-xl w-full" />
+          <div className="h-8 bg-va-black/5 rounded-lg w-3/4 animate-pulse" />
+          <div className="h-12 bg-va-black/5 rounded-xl w-full animate-pulse" />
+          <div className="h-12 bg-va-black/5 rounded-xl w-full animate-pulse" />
         </div>
       </div>
     );
@@ -131,20 +137,37 @@ export const WorkshopQuiz: React.FC = () => {
         key={currentStep.video}
         className={cn(
           "absolute inset-0 w-full h-full object-cover transition-opacity duration-700",
-          isVideoLoaded ? "opacity-60 group-hover:opacity-80" : "opacity-0"
+          (isVideoLoaded || hasError) ? "opacity-60 group-hover:opacity-80" : "opacity-0"
         )}
         playsInline
         muted
         autoPlay
         loop
-        onLoadedData={() => setIsVideoLoaded(true)}
+        onLoadedData={() => {
+          console.log('Video loaded:', currentStep.video);
+          setIsVideoLoaded(true);
+        }}
+        onError={(e) => {
+          console.error('Video error:', currentStep.video, e);
+          setHasError(true);
+        }}
         src={currentStep.video}
       />
+
+      {/* Fallback Background if video fails */}
+      {hasError && (
+        <div className="absolute inset-0 bg-va-black flex items-center justify-center">
+          <div className="text-white/20 text-xs text-center p-4">
+            Video tijdelijk niet beschikbaar<br/>
+            {currentStep.video}
+          </div>
+        </div>
+      )}
 
       {/* Glass Overlay Content */}
       <div className="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-va-black/90 via-va-black/20 to-transparent z-30">
         <AnimatePresence mode="wait">
-          {isVideoLoaded && (
+          {(isVideoLoaded || hasError) && (
             <motion.div
               key={currentStep.id}
               initial={{ opacity: 0, y: 20 }}

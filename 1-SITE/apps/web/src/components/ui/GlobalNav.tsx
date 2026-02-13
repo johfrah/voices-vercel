@@ -79,7 +79,7 @@ const HeaderIcon = ({
           playClick('soft');
           if (onClick) onClick();
         }}
-        className={`p-2 rounded-xl transition-all duration-500 cursor-pointer group/icon flex items-center justify-center min-w-[40px] h-[40px] ${
+        className={`p-2 rounded-[10px] transition-all duration-500 cursor-pointer group/icon flex items-center justify-center min-w-[40px] h-[40px] ${
           isActive ? 'bg-primary/10 text-primary' : 'hover:bg-va-black/5 text-va-black'
         }`}
       >
@@ -87,13 +87,13 @@ const HeaderIcon = ({
           <VoiceglotImage  
             src={src} 
             alt={alt} 
-            width={24}
-            height={24}
-            className="w-6 h-6 transition-transform duration-500 group-hover/icon:scale-110" 
+            width={22}
+            height={22}
+            className="w-[22px] h-[22px] transition-transform duration-500 group-hover/icon:scale-110" 
             style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
           />
         ) : Icon ? (
-          <Icon strokeWidth={1.5} size={22} className="text-primary transition-transform duration-500 group-hover/icon:scale-110" />
+          <Icon strokeWidth={1.5} size={20} className="text-primary transition-transform duration-500 group-hover/icon:scale-110" />
         ) : null}
 
         {(badge !== undefined && badge > 0) || badgeText ? (
@@ -101,7 +101,7 @@ const HeaderIcon = ({
             as={motion.span}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[15px] font-light rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
+            className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 uppercase"
           >
             {badgeText || badge}
           </TextInstrument>

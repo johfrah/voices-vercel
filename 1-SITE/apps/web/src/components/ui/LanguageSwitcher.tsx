@@ -81,7 +81,7 @@ export const LanguageSwitcher: React.FC = () => {
           playClick('soft');
           setIsOpen(!isOpen);
         }}
-        className="relative p-2 rounded-xl transition-all duration-500 cursor-pointer group flex items-center justify-center min-w-[40px] h-[40px] hover:bg-va-black/5"
+        className="relative p-2 rounded-[10px] transition-all duration-500 cursor-pointer group flex items-center justify-center min-w-[40px] h-[40px] hover:bg-va-black/5"
       >
         <Image  
           src="/assets/common/branding/icons/LANGUAGEa.svg" 
@@ -91,7 +91,7 @@ export const LanguageSwitcher: React.FC = () => {
           className="w-5.5 h-5.5 transition-transform duration-500 group-hover:scale-110" 
           style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
         />
-        <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-primary text-white text-[15px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 ">
+        <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 uppercase">
           {currentLang}
         </span>
       </button>

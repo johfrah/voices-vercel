@@ -42,7 +42,7 @@ export default async function StudioFaqPage() {
 
         <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           {/* 🎯 LINKS: VIDEO QUIZ (5 Kolommen) */}
-          <ContainerInstrument className="lg:col-span-5 sticky top-40">
+          <ContainerInstrument className="lg:col-span-5 lg:sticky lg:top-40 z-20">
             <WorkshopQuiz />
           </ContainerInstrument>
 
