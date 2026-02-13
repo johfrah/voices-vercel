@@ -1,15 +1,14 @@
-import React from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument 
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import {
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
-import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { Quote, ArrowLeft } from "lucide-react";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { ArrowLeft, Quote } from "lucide-react";
 import Link from "next/link";
 
 /**
@@ -24,7 +23,7 @@ export default function SkyggeArticlePage() {
       <SectionInstrument className="max-w-5xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-12">
           <Link 
-            href="/blog" 
+            href="/nieuws" 
             className="inline-flex items-center gap-2 text-[15px] font-light tracking-[0.2em] text-va-black/40 hover:text-primary transition-all mb-8 "
           >
             <ArrowLeft size={14} /> 

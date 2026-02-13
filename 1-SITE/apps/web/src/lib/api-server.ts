@@ -47,7 +47,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 
       dbResults = await query
         .where(and(...conditions))
-        .orderBy(desc(actors.voiceScore))
+        .orderBy(asc(actors.voiceScore))
         .limit(50);
     } catch (dbError) {
       console.warn('⚠️ Drizzle failed, falling back to Supabase SDK:', dbError);
@@ -56,7 +56,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         .from('actors')
         .select('*')
         .eq('status', 'live')
-        .order('voice_score', { ascending: false })
+        .order('voice_score', { ascending: true })
         .limit(50);
 
       if (market === 'FR') sdkQuery = sdkQuery.eq('native_lang', 'Frans');

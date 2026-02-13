@@ -74,11 +74,22 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           
           if (data.valid && data.companyName) {
             playClick('pro');
-            const updates: any = { company: data.companyName };
+            const updates: any = { 
+              company: data.companyName,
+              country: formData.vat_number.substring(0, 2) // Auto-detect country from VAT
+            };
             if (data.address) {
               const addressParts = data.address.split('\n');
               if (addressParts.length > 0) {
                 updates.address_street = addressParts[0].trim();
+              }
+              // Try to extract city and zip if possible (simple heuristic)
+              if (addressParts.length > 1) {
+                const cityParts = addressParts[1].trim().split(' ');
+                if (cityParts.length >= 2) {
+                  updates.postal_code = cityParts[0];
+                  updates.city = cityParts.slice(1).join(' ');
+                }
               }
             }
             setFormData(prev => ({ ...prev, ...updates }));
@@ -115,8 +126,13 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           ...formData,
           quoteMessage,
           payment_method: selectedMethod,
-          market: 'BE',
-          music: state.music 
+          country: formData.country || 'BE',
+          music: state.music,
+          metadata: {
+            ...state.metadata,
+            words: state.briefing.trim().split(/\s+/).filter(Boolean).length,
+            prompts: state.prompts
+          }
         }),
       });
 

@@ -89,6 +89,11 @@ export default function CreoStoryPage() {
               src="/assets/content/blog/videos/peter-van-creo.mp4" 
               aspectRatio="portrait"
               className="w-full h-full"
+              subtitles={[
+                { src: '/assets/content/blog/videos/peter-van-creo-nl.vtt', label: 'Nederlands', srcLang: 'nl' },
+                { src: '/assets/content/blog/videos/peter-van-creo-fr.vtt', label: 'Français', srcLang: 'fr' },
+                { src: '/assets/content/blog/videos/peter-van-creo-en.vtt', label: 'English', srcLang: 'en' }
+              ]}
             />
           </BentoCard>
         </BentoGrid>

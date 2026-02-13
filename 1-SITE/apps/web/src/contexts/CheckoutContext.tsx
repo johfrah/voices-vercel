@@ -38,6 +38,7 @@ interface CheckoutState {
     country: string;
   };
   items: any[];
+  isLocked: boolean;
   pricing: {
     base: number;
     wordSurcharge: number;
@@ -59,6 +60,9 @@ interface CheckoutContextType {
   selectActor: (actor: Actor | null) => void;
   updateCustomer: (customer: Partial<CheckoutState['customer']>) => void;
   calculatePricing: () => void;
+  lockPrice: () => void;
+  unlockPrice: () => void;
+  isVatExempt: boolean;
 }
 
 const initialState: CheckoutState = {
@@ -94,6 +98,7 @@ const initialState: CheckoutState = {
     country: 'BE',
   },
   items: [],
+  isLocked: false,
   pricing: {
     base: 0,
     wordSurcharge: 0,
@@ -136,7 +141,12 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const updateCustomer = (customer: Partial<CheckoutState['customer']>) => 
     setState(prev => ({ ...prev, customer: { ...prev.customer, ...customer } }));
 
+  const lockPrice = () => setState(prev => ({ ...prev, isLocked: true }));
+  const unlockPrice = () => setState(prev => ({ ...prev, isLocked: false }));
+
   const calculatePricing = useCallback(() => {
+    if (state.isLocked) return; // 🛡️ KELLY'S LOCK: No recalculation if price is frozen
+
     // Academy pricing logic
     if (state.journey === 'academy') {
       let total = 149;
@@ -159,39 +169,32 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const wordCount = state.briefing.trim().split(/\s+/).filter(Boolean).length;
     const promptCount = state.briefing.trim().split(/\n+/).filter(Boolean).length;
 
-    const result = PricingEngine.calculatePrice(
-      state.selectedActor ? {
-        first_name: state.selectedActor.first_name,
-        ai_enabled: state.selectedActor.ai_enabled,
-        rates: state.selectedActor.rates_raw || {}
-      } : { first_name: 'johfrah', ai_enabled: true },
-      {
-        usage: state.usage,
-        plan: state.plan,
-        media: [state.media],
-        words: wordCount,
-        prompts: promptCount,
-        countries: [state.country],
-        musicMix: state.music.asBackground || state.music.asHoldMusic
-      }
-    );
+    const result = PricingEngine.calculate({
+      usage: state.usage,
+      plan: state.plan,
+      words: wordCount,
+      prompts: promptCount,
+      music: state.music,
+      isVatExempt: !!state.customer.vat_number && state.customer.country !== 'BE'
+    });
 
     // Liquid price animation in context
-    const targetPrice = result.price;
     setState(prev => ({
       ...prev,
       prompts: promptCount,
       pricing: {
-        base: targetPrice - (result.breakdown?.word_surcharge || 0),
-        wordSurcharge: result.breakdown?.word_surcharge || 0,
-        total: targetPrice,
+        base: result.base,
+        wordSurcharge: result.wordSurcharge,
+        total: result.subtotal, // We store subtotal in pricing.total for historical reasons, UI adds VAT
       }
     }));
-  }, [state.briefing, state.usage, state.plan, state.selectedActor, state.media, state.country, state.journey, state.upsells, state.music.asBackground, state.music.asHoldMusic]);
+  }, [state.briefing, state.usage, state.plan, state.selectedActor, state.media, state.country, state.journey, state.upsells, state.music, state.customer.vat_number, state.customer.country]);
 
   useEffect(() => {
     calculatePricing();
   }, [calculatePricing]);
+
+  const isVatExempt = !!state.customer.vat_number && state.customer.country !== 'BE';
 
   return (
     <CheckoutContext.Provider value={{ 
@@ -207,7 +210,10 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       updateMusic,
       selectActor, 
       updateCustomer,
-      calculatePricing
+      calculatePricing,
+      lockPrice,
+      unlockPrice,
+      isVatExempt
     }}>
       {children}
     </CheckoutContext.Provider>

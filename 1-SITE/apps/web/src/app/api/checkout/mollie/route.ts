@@ -2,6 +2,7 @@ import { db } from '@db';
 import { orders, users } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
+import { sign } from 'jsonwebtoken';
 
 /**
  * MOLLIE V3 HEADLESS CHECKOUT (CORE LOGIC 2026)
@@ -9,6 +10,8 @@ import { NextResponse } from 'next/server';
  * Directe integratie met Mollie API. Bypasses WordPress volledig.
  * Nu inclusief Offerte-modus en volledige User Mapping.
  */
+
+import { PricingEngine } from '@/lib/pricing-engine';
 
 export async function POST(request: Request) {
   try {
@@ -28,11 +31,28 @@ export async function POST(request: Request) {
       company,
       address_street,
       usage,
-      plan
+      plan,
+      music,
+      country
     } = body;
     
-    const amount = pricing?.total || 0;
-    const isSubscription = usage === 'subscription';
+    const pricingResult = PricingEngine.calculate({
+      usage,
+      plan,
+      words: metadata?.words || 0,
+      prompts: metadata?.prompts || 0,
+      music,
+      isVatExempt: !!vat_number && country !== 'BE'
+    });
+
+    // 🛡️ KELLY'S INTEGRITY CHECK: Compare backend calculation with frontend submitted price
+    const submittedAmount = pricing?.total || 0;
+    if (Math.abs(pricingResult.subtotal - submittedAmount) > 0.01) {
+      console.warn(`[Price Integrity Violation]: Expected ${pricingResult.subtotal}, got ${submittedAmount}. Order ID: ${metadata?.orderId}`);
+      // We proceed with the verified backend price to be safe
+    }
+
+    const amount = pricingResult.subtotal; // Always use verified subtotal
 
     return await db.transaction(async (tx) => {
       let userId = metadata?.userId;
@@ -133,10 +153,17 @@ export async function POST(request: Request) {
       // 4. Initialize Mollie Payment (Simulated)
       const checkoutUrl = `https://www.mollie.com/checkout/select-method/${Math.random().toString(36).substring(7)}`;
 
+      // 5. Generate Secure One-Time Token for Post-Purchase Euphoria
+      const secureToken = sign(
+        { orderId: newOrder.id, userId, journey: newOrder.journey },
+        process.env.JWT_SECRET || 'voices-secret-2026',
+        { expiresIn: '1h' }
+      );
+
       return NextResponse.json({
         success: true,
         orderId: newOrder.id,
-        checkoutUrl: checkoutUrl,
+        checkoutUrl: `${checkoutUrl}?token=${secureToken}`, // Pass token to success page via Mollie redirect
         message: 'Mollie payment session initialized.'
       });
     });

@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     // 2. Prepare Yuki Payload (Simulated for architecture demo)
     // In production, this would use a SOAP/REST client with process.env.YUKI_API_KEY
     const yukiPayload = {
-      InvoiceNumber: `V2026-${order.wpOrderId}`,
+      InvoiceNumber: `VOICES-${new Date().getFullYear()}-${order.wpOrderId}`,
       Contact: {
         Name: order.user?.email || 'Gastgebruiker',
         Email: order.user?.email

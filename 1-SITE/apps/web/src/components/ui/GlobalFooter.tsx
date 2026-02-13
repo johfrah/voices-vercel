@@ -235,4 +235,4 @@ export default function GlobalFooter() {
       </ContainerInstrument>
     </ContainerInstrument>
   );
-};
+}

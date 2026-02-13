@@ -89,6 +89,11 @@ export default function JokershopStoryPage() {
               src="/assets/content/blog/videos/review-jokershopbe.mp4" 
               aspectRatio="portrait"
               className="w-full h-full"
+              subtitles={[
+                { src: '/assets/content/blog/videos/review-jokershopbe-nl.vtt', label: 'Nederlands', srcLang: 'nl' },
+                { src: '/assets/content/blog/videos/review-jokershopbe-fr.vtt', label: 'Français', srcLang: 'fr' },
+                { src: '/assets/content/blog/videos/review-jokershopbe-en.vtt', label: 'English', srcLang: 'en' }
+              ]}
             />
           </BentoCard>
         </BentoGrid>

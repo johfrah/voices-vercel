@@ -92,6 +92,11 @@ export default function SkyggeArticlePage() {
               src="/assets/content/blog/videos/voor-ons-was-dit-een-no-brainer.mp4" 
               aspectRatio="portrait"
               className="w-full h-full"
+              subtitles={[
+                { src: '/assets/content/blog/videos/voor-ons-was-dit-een-no-brainer-nl.vtt', label: 'Nederlands', srcLang: 'nl' },
+                { src: '/assets/content/blog/videos/voor-ons-was-dit-een-no-brainer-fr.vtt', label: 'Français', srcLang: 'fr' },
+                { src: '/assets/content/blog/videos/voor-ons-was-dit-een-no-brainer-en.vtt', label: 'English', srcLang: 'en' }
+              ]}
             />
           </BentoCard>
         </BentoGrid>

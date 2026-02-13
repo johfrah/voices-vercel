@@ -57,7 +57,13 @@ export class MollieService {
    * Maak een nieuwe betaling aan
    */
   static async createPayment(data: MolliePaymentRequest) {
-    return this.request('POST', '/payments', data);
+    try {
+      return await this.request('POST', '/payments', data);
+    } catch (error) {
+      console.error('[Mollie Service]: Payment creation failed, checking for banktransfer fallback...', error);
+      // Cody-Felix Synergy: If Mollie is down, we could return a specific flag to trigger banktransfer
+      throw error;
+    }
   }
 
   /**

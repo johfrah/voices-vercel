@@ -28,6 +28,7 @@ export default function SuccessPageClient() {
   const router = useRouter();
   const { playClick } = useSonicDNA();
   const orderId = searchParams.get('orderId');
+  const secureToken = searchParams.get('token');
   const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
@@ -107,10 +108,22 @@ export default function SuccessPageClient() {
               <VoiceglotText translationKey="checkout.success.next.title" defaultText="Volgende Stap" />
             </HeadingInstrument>
             <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed relative z-10">
-              <VoiceglotText translationKey="checkout.success.next.text" defaultText="Wil je alvast een volgend project voorbereiden of je stem-techniek aanscherpen in de Academy?" />
+              <VoiceglotText 
+                translationKey="checkout.success.next.text" 
+                defaultText={secureToken 
+                  ? "Je hebt direct toegang tot je nieuwe project. Klik hieronder om meteen te starten." 
+                  : "Wil je alvast een volgend project voorbereiden of je stem-techniek aanscherpen in de Academy?"
+                } 
+              />
             </TextInstrument>
-            <Link href="/academy" className="va-btn-pro !bg-primary !py-3 w-full text-center relative z-10">
-              <VoiceglotText translationKey="checkout.success.next.cta" defaultText="Naar de Academy" />
+            <Link 
+              href={secureToken ? `/api/auth/magic-login?token=${secureToken}&redirect=/cockpit` : "/academy"} 
+              className="va-btn-pro !bg-primary !py-3 w-full text-center relative z-10"
+            >
+              <VoiceglotText 
+                translationKey="checkout.success.next.cta" 
+                defaultText={secureToken ? "Direct naar Cockpit" : "Naar de Academy"} 
+              />
             </Link>
             <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
           </BentoCard>

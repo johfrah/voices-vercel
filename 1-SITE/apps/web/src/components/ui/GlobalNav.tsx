@@ -20,7 +20,12 @@ import {
   Settings, 
   LayoutDashboard,
   ChevronRight,
-  Globe
+  Globe,
+  Monitor,
+  Radio,
+  Mic2,
+  Phone,
+  Building2
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -103,21 +108,21 @@ const HeaderIcon = ({
         )}
       </div>
 
-      <AnimatePresence>
-        {isOpen && children && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-full right-0 mt-2 w-80 bg-white/80 backdrop-blur-2xl rounded-[24px] shadow-aura border border-black/5 overflow-hidden z-50"
-          >
-            <div className="p-2">
-              {children}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <AnimatePresence>
+              {isOpen && children && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute top-full right-0 mt-2 w-[400px] bg-white rounded-[24px] shadow-aura border border-black/5 overflow-hidden z-50"
+                >
+                  <div className="p-2">
+                    {children}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
     </div>
   );
 
@@ -190,9 +195,18 @@ export default function GlobalNav() {
   const [mounted, setMounted] = useState(false);
   const [links, setLinks] = useState<any[]>([
     { name: 'Onze Stemmen', href: '/agency', key: 'nav.my_voice' },
-    { name: 'Werkwijze', href: '/#how-it-works', key: 'nav.how_it_works' },
+    { name: 'Werkwijze', href: '/over-ons', key: 'nav.how_it_works' },
     { name: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
-    { name: 'Contact', href: '/contact', key: 'nav.contact' }
+    { name: 'Contact', href: '#', onClick: () => {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('voicy:suggestion', { 
+          detail: { 
+            tab: 'chat',
+            content: 'Hallo! 👋 Je wilde contact opnemen? Ik ben Voicy, hoe kan ik je helpen?' 
+          } 
+        }));
+      }
+    }, key: 'nav.contact' }
   ]);
 
   useEffect(() => {
@@ -208,14 +222,32 @@ export default function GlobalNav() {
         { name: 'Mijn Stem', href: '/#demos', key: 'nav.my_voice' },
         { name: 'Host & Reporter', href: '/host', key: 'nav.host' },
         { name: 'Over Johfrah', href: '/over-mij', key: 'nav.about' },
-        { name: 'Contact', href: '/contact', key: 'nav.contact' }
+        { name: 'Contact', href: '#', onClick: () => {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('voicy:suggestion', { 
+              detail: { 
+                tab: 'chat',
+                content: 'Hallo! 👋 Je wilde contact opnemen? Ik ben Voicy, hoe kan ik je helpen?' 
+              } 
+            }));
+          }
+        }, key: 'nav.contact' }
       ]);
     } else if (market.market_code === 'YOUSSEF') {
       setLinks([
         { name: 'The Story', href: '/#story', key: 'nav.artist_story' },
         { name: 'Music', href: '/#music', key: 'nav.artist_music' },
         { name: 'Support', href: '/#support', key: 'nav.artist_support' },
-        { name: 'Contact', href: '/contact', key: 'nav.contact' }
+        { name: 'Contact', href: '#', onClick: () => {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('voicy:suggestion', { 
+              detail: { 
+                tab: 'chat',
+                content: 'Hallo! 👋 Je wilde contact opnemen? Ik ben Voicy, hoe kan ik je helpen?' 
+              } 
+            }));
+          }
+        }, key: 'nav.contact' }
       ]);
     }
   }, [market.market_code]);
@@ -256,19 +288,42 @@ export default function GlobalNav() {
       </Link>
 
       <div className="hidden md:flex gap-8">
-        {links.map((link) => (
-          <Link 
-            key={link.href} 
-            href={link.href}
-            onClick={() => playClick('soft')}
-            onMouseEnter={() => playSwell()}
-            className={`text-[15px] font-medium tracking-widest transition-all duration-500 uppercase ${
-              pathname.startsWith(link.href) ? 'text-primary' : 'text-va-black/30 hover:text-va-black'
-            }`}
-          >
-            <VoiceglotText translationKey={link.key || `nav.${(link.name || '').toLowerCase()}`} defaultText={link.name || ''} />
-          </Link>
-        ))}
+        {links.map((link) => {
+          const isActive = pathname.startsWith(link.href) && link.href !== '#';
+          return (
+            <Link 
+              key={link.name} 
+              href={link.href}
+              onClick={(e) => {
+                if (link.onClick) {
+                  e.preventDefault();
+                  link.onClick();
+                }
+                playClick('soft');
+              }}
+              onMouseEnter={() => playSwell()}
+              className={`relative text-[15px] font-medium tracking-widest transition-all duration-500 uppercase ${
+                isActive ? 'text-primary' : 'text-va-black/30 hover:text-va-black'
+              }`}
+            >
+              <VoiceglotText translationKey={link.key || `nav.${(link.name || '').toLowerCase()}`} defaultText={link.name || ''} />
+              
+              {isActive && (
+                <motion.div
+                  layoutId="nav-indicator"
+                  className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary rounded-full"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 380, 
+                    damping: 30 
+                  }}
+                />
+              )}
+            </Link>
+          );
+        })}
       </div>
 
       <div className="flex gap-2 items-center">
@@ -283,12 +338,80 @@ export default function GlobalNav() {
             </div>
             {links.map((link) => (
               <DropdownItem 
-                key={link.href}
+                key={link.name}
                 icon={ChevronRight} 
                 label={link.name} 
-                href={link.href}
+                href={link.href !== '#' ? link.href : undefined}
+                onClick={link.onClick}
               />
             ))}
+            
+            <div className="mt-4 px-4 py-3 border-t border-black/5">
+              <TextInstrument className="text-[15px] font-medium text-va-black/30 tracking-[0.2em] mb-4 uppercase">
+                <VoiceglotText translationKey="nav.menu.proefopname_title" defaultText="Direct naar Proefopname" />
+              </TextInstrument>
+              <div className="grid grid-cols-2 gap-2 mb-6">
+                {[
+                  { label: 'TV Spot', icon: Monitor, href: '/agency?category=tv', key: 'category.tv' },
+                  { label: 'Radio', icon: Radio, href: '/agency?category=radio', key: 'category.radio' },
+                  { label: 'Online', icon: Globe, href: '/agency?category=online', key: 'category.online' },
+                  { label: 'Podcast', icon: Mic2, href: '/agency?category=podcast', key: 'category.podcast' },
+                  { label: 'Telefonie', icon: Phone, href: '/agency?category=telefoon', key: 'category.telefoon' },
+                  { label: 'Corporate', icon: Building2, href: '/agency?category=corporate', key: 'category.corporate' }
+                ].map((cat) => (
+                  <Link 
+                    key={cat.label} 
+                    href={cat.href}
+                    className="flex items-center gap-2 p-3 rounded-xl bg-va-off-white hover:bg-primary/5 hover:text-primary transition-all group"
+                  >
+                    <cat.icon size={14} strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
+                    <span className="text-[15px] font-medium whitespace-nowrap">
+                      <VoiceglotText translationKey={cat.key} defaultText={cat.label} />
+                    </span>
+                  </Link>
+                ))}
+              </div>
+
+              <TextInstrument className="text-[15px] font-medium text-va-black/30 tracking-[0.2em] mb-4 uppercase">
+                <VoiceglotText translationKey="nav.menu.recommended_title" defaultText="Aanbevolen Stemmen" />
+              </TextInstrument>
+              <div className="space-y-2 mb-6">
+                {[
+                  { name: 'Johfrah', type: 'Mannelijk', slug: 'johfrah', typeKey: 'gender.male' },
+                  { name: 'Birgit', type: 'Vrouwelijk', slug: 'birgit', typeKey: 'gender.female' },
+                  { name: 'Korneel', type: 'Mannelijk', slug: 'korneel', typeKey: 'gender.male' },
+                  { name: 'Annelies', type: 'Vrouwelijk', slug: 'annelies-1', typeKey: 'gender.female' }
+                ].map((voice) => (
+                  <div key={voice.slug} className="flex items-center justify-between p-2 rounded-xl hover:bg-va-black/5 transition-all group">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center overflow-hidden">
+                        <User size={20} className="text-va-black/20" />
+                      </div>
+                      <div>
+                        <div className="text-[15px] font-medium text-va-black">{voice.name}</div>
+                        <div className="text-[13px] text-va-black/40">
+                          <VoiceglotText translationKey={voice.typeKey} defaultText={voice.type} />
+                        </div>
+                      </div>
+                    </div>
+                    <Link 
+                      href={`/artist/${voice.slug}`}
+                      className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-[13px] font-medium opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white"
+                    >
+                      <VoiceglotText translationKey="action.proefopname" defaultText="Proefopname" />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+              
+              <Link 
+                href="/agency"
+                className="flex items-center justify-center gap-2 w-full py-4 bg-va-black text-white rounded-2xl text-[15px] font-medium tracking-widest hover:bg-primary transition-all shadow-lg"
+              >
+                <VoiceglotText translationKey="nav.menu.discover_all" defaultText="Ontdek Alle Stemmen" /> <ChevronRight size={14} />
+              </Link>
+            </div>
+
             <div className="mt-2 pt-2 border-t border-black/5">
               <DropdownItem 
                 icon={Mail} 

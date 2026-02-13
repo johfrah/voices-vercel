@@ -23,6 +23,23 @@ export class PontoBridge {
   private static CLIENT_SECRET = process.env.PONTO_CLIENT_SECRET;
 
   /**
+   * 🏦 BANK RECONCILIATION: Haalt banktransacties op via Ponto
+   * voor automatische aflettering in Yuki.
+   */
+  static async getTransactions(accountId: string, fromDate: string) {
+    const token = await this.getAccessToken();
+    const response = await fetch(`${this.API_BASE}/accounts/${accountId}/transactions?filter[createdAt][from]=${fromDate}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch Ponto transactions');
+    return await response.json();
+  }
+
+  /**
    * 🛡️ ATOMIC HITL: Stelt een betaling voor aan de Approval Queue.
    * Voicy doet het voorwerk, jij doet de regie.
    */

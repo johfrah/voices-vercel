@@ -103,9 +103,9 @@ export const LanguageSwitcher: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-full right-0 mt-2 w-80 bg-white/80 backdrop-blur-2xl rounded-[24px] shadow-aura border border-black/5 overflow-hidden z-50"
+            className="absolute top-full right-0 mt-2 w-80 bg-white rounded-[24px] shadow-aura border border-black/5 overflow-hidden z-50"
           >
-            <div className="p-2 bg-va-off-white/50">
+            <div className="p-2">
               {languages.map((lang) => {
                 const isActive = lang.code === currentLang;
                 return (
