@@ -173,39 +173,33 @@ export async function POST(request: NextRequest) {
         // CHATTY: Warm welcome from Bob for new users or /start
         replyText = BOB_WELCOME_MESSAGE;
         console.log('[Telegram-Bob] Welcome sent to chat', chatId);
-      } else if (routing?.useVoicy && routing.payload) {
-        // VOICY: Chatty domain — voices, pricing, studio (Ademing vibe)
+      } else {
+        // 🚀 DUAL AGENT ORCHESTRATION: Both Bob and Voicy can answer
         try {
           const { KnowledgeService } = await import('@/services/KnowledgeService');
           const knowledge = KnowledgeService.getInstance();
           const coreBriefing = await knowledge.getCoreBriefing();
           const journeyBriefing = await knowledge.getJourneyContext('agency');
           const isAdmin = senderId !== undefined && isAllowedUser(senderId);
-
-          const prompt = buildVoicyTelegramPrompt({
-            userMessage: routing.payload,
-            coreBriefing,
-            journeyBriefing,
-            isAdmin,
-          });
           const gemini = GeminiService.getInstance();
-          replyText = await gemini.generateText(prompt);
-          replyText = replyText.trim().slice(0, 4096);
-          console.log('[Telegram-Voicy] Response sent to chat', chatId);
-        } catch (aiErr) {
-          console.error('📱 Telegram-Voicy Gemini failed:', aiErr);
-          replyText = 'Even nadenken — probeer het straks opnieuw of stel je vraag anders.';
-        }
-      } else {
-        // BOB: AI-powered response via Gemini
-        const payload = routing?.payload ?? text;
-        try {
-          const { KnowledgeService } = await import('@/services/KnowledgeService');
-          const knowledge = KnowledgeService.getInstance();
-          const coreBriefing = await knowledge.getCoreBriefing();
 
-          const gemini = GeminiService.getInstance();
-          const prompt = `
+          // Determine if we should use Voicy (mode or /voicy prefix)
+          const useVoicy = routing?.useVoicy ?? false;
+          const payload = routing?.payload ?? text;
+
+          if (useVoicy) {
+            // VOICY: Chatty domain — voices, pricing, studio (Ademing vibe)
+            const prompt = buildVoicyTelegramPrompt({
+              userMessage: payload,
+              coreBriefing,
+              journeyBriefing,
+              isAdmin,
+            });
+            replyText = await gemini.generateText(prompt);
+            console.log('[Telegram-Voicy] Response generated for chat', chatId);
+          } else {
+            // BOB: AI-powered response via Gemini
+            const prompt = `
 Je bent Bob, de Architect van Voices.be.
 Je bent wijs, autoritair maar warm (Bob-methode). Je kent de codebase, de agents en de Voices-missie.
 
@@ -224,12 +218,15 @@ STRIKE PROTOCOL:
 Bericht van de gebruiker: "${payload.replace(/"/g, '\\"')}"
 
 Antwoord als de behulpzame, operationele Bob:
-          `;
-          replyText = await gemini.generateText(prompt);
-          replyText = replyText.trim().slice(0, 4096); // Telegram max
+            `;
+            replyText = await gemini.generateText(prompt);
+            console.log('[Telegram-Bob] Response generated for chat', chatId);
+          }
+          
+          replyText = replyText.trim().slice(0, 4096);
         } catch (aiErr) {
-          console.error('📱 Telegram-Bob Gemini failed:', aiErr);
-          replyText = 'Ik heb je bericht ontvangen. Even nadenken — probeer het straks opnieuw of stel je vraag anders.';
+          console.error('📱 Telegram AI generation failed:', aiErr);
+          replyText = 'Even nadenken — probeer het straks opnieuw of stel je vraag anders.';
         }
       }
 
