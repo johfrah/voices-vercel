@@ -87,13 +87,13 @@ const HeaderIcon = ({
           <VoiceglotImage  
             src={src} 
             alt={alt} 
-            width={22}
-            height={22}
-            className="w-[22px] h-[22px] transition-transform duration-500 group-hover/icon:scale-110" 
+            width={24}
+            height={24}
+            className="w-[24px] h-[24px] transition-transform duration-500 group-hover/icon:scale-110" 
             style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
           />
         ) : Icon ? (
-          <Icon strokeWidth={1.5} size={20} className="text-primary transition-transform duration-500 group-hover/icon:scale-110" />
+          <Icon strokeWidth={1.5} size={22} className="text-primary transition-transform duration-500 group-hover/icon:scale-110" />
         ) : null}
 
         {(badge !== undefined && badge > 0) || badgeText ? (
@@ -101,7 +101,7 @@ const HeaderIcon = ({
             as={motion.span}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 uppercase"
+            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 uppercase"
           >
             {badgeText || badge}
           </TextInstrument>
@@ -284,7 +284,7 @@ export default function GlobalNav() {
   const isStudioJourney = pathname.startsWith('/studio') || pathname.startsWith('/academy');
 
   return (
-    <ContainerInstrument as="nav" className="fixed top-0 left-0 right-0 z-40 px-4 md:px-6 py-4 md:py-6 flex justify-between items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve">
+    <ContainerInstrument as="nav" className="fixed top-0 left-0 right-0 z-40 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve">
       <ButtonInstrument 
         as={Link}
         href="/" 
