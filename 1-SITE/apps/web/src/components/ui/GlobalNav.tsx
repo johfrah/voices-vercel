@@ -398,7 +398,6 @@ export default function GlobalNav() {
       </div>
     </nav>
   );
-  );
 }
 
 function HeadingInstrument({ level, className, children }: { level: number, className?: string, children: React.ReactNode }) {

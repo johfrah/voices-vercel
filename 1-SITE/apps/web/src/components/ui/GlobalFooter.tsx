@@ -232,8 +232,7 @@ export default function GlobalFooter() {
             </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
-        </ContainerInstrument>
       </ContainerInstrument>
     </ContainerInstrument>
   );
-};
+}

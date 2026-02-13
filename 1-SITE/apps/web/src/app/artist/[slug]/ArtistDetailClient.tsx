@@ -219,5 +219,4 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
       />
     </PageWrapperInstrument>
   );
-  );
 }
