@@ -351,6 +351,7 @@ async function injectMarkMobyContent() {
     console.log("✅ MARK & MOBY: Alles is nu live in de database met de juiste thema-tags.");
   } catch (error) {
     console.error("❌ MARK: Injectie mislukt:", error);
+    process.exit(1);
   }
 }
 
