@@ -41,18 +41,18 @@ export function VumeMagicLinkTemplate(options: MagicLinkOptions) {
   }[language as 'nl' | 'fr' | 'en'] || content.nl;
 
   const html = `
-    <p style="margin: 0 0 20px 0;">${content.greeting}</p>
-    <p style="margin: 0 0 32px 0;">${content.body}</p>
+    <p style="margin: 0 0 20px 0; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif;">${content.greeting}</p>
+    <p style="margin: 0 0 32px 0; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif;">${content.body}</p>
     
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
       <tr>
         <td align="center" style="padding: 10px 0 20px 0;">
-          <a href="${link}" style="display: inline-block; padding: 18px 36px; background-color: #000000; color: #FFFFFF; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 14px; letter-spacing: 0.05em;">${content.button}</a>
+          <a href="${link}" style="display: inline-block; padding: 18px 36px; background-color: #000000; color: #FFFFFF; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 14px; letter-spacing: 0.05em; font-family: 'Raleway', sans-serif;">${content.button}</a>
         </td>
       </tr>
     </table>
     
-    <p style="margin: 40px 0 0 0; font-size: 13px; opacity: 0.6; line-height: 1.6;">${content.footer}</p>
+    <p style="margin: 40px 0 0 0; font-size: 13px; opacity: 0.6; line-height: 1.6; font-family: 'Raleway', sans-serif;">${content.footer}</p>
   `;
 
   return VumeMasterWrapper(html, {

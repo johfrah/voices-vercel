@@ -58,7 +58,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
             <img src="https://www.voices.be/wp-content/uploads/2024/07/johfrah.png" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
           </a>
         </td>
-        <td style="vertical-align: middle; padding-left: 31px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">
+        <td style="vertical-align: middle; padding-left: 31px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">
           <span style="font-weight: 700; color: ${isDark ? '#FFFFFF' : '#1A1A1A'};">Johfrah Lefebvre</span><br />
           <a href="mailto:johfrah@voices.be" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">johfrah@voices.be</a><br />
           <a href="tel:+3227931991" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">+3227931991</a><br />
@@ -76,7 +76,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <title>${title}</title>
     </head>
-    <body style="margin: 0; padding: 0; background-color: #FAFAFA; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <body style="margin: 0; padding: 0; background-color: #FAFAFA; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
       ${previewText ? `<div style="display:none; max-height:0px; max-width:0px; opacity:0; overflow:hidden;">${previewText}</div>` : ''}
       
       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #FAFAFA; padding-bottom: 60px;">
@@ -98,7 +98,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
 
                     <!-- CONTENT -->
                     <tr>
-                      <td style="padding: 50px; color: #333333; font-size: 16px; line-height: 1.6; font-weight: 400;">
+                      <td style="padding: 50px; color: #333333; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; font-weight: 400;">
                         ${content}
                         ${signatureHtml}
                       </td>
