@@ -204,7 +204,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                   
                   <ContainerInstrument className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {message.attachments.map((att) => (
-                      <div 
+                      <ContainerInstrument 
                         key={att.id} 
                         onMouseEnter={() => setFocusedAttachmentId(att.id)}
                         onMouseLeave={() => setFocusedAttachmentId(null)}
@@ -216,8 +216,8 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
                             {isPdf(att.filename) ? <FileText strokeWidth={1.5} size={24} /> : isAudio(att.filename) ? <Mic strokeWidth={1.5} size={24} /> : isVideo(att.filename) ? <Play strokeWidth={1.5} size={24} /> : <ImageIcon    size={24} />}
                           </ContainerInstrument>
                           <ContainerInstrument className="text-center px-2">
-                            <p className="text-[15px] font-light text-gray-900 truncate w-full max-w-[100px]">{att.filename}</p>
-                            <p className="text-[15px] font-light text-gray-400 ">{(att.size / 1024).toFixed(0)} KB</p>
+                            <TextInstrument as="p" className="text-[15px] font-light text-gray-900 truncate w-full max-w-[100px]">{att.filename}</TextInstrument>
+                            <TextInstrument as="p" className="text-[15px] font-light text-gray-400 ">{(att.size / 1024).toFixed(0)} KB</TextInstrument>
                           </ContainerInstrument>
                           
                           {/* Hover Actions */}

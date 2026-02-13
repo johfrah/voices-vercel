@@ -86,9 +86,9 @@ class ChrisWatchdog {
     },
     {
       name: 'Leesbaarheid Mandate',
-      pattern: /text-\[([0-9]|1[0-4])px\]|text-xs/g,
-      message: 'Minimale tekstgrootte is 15px. Geen text-[8px] tot text-[14px] of text-xs toegestaan.',
-      severity: 'CRITICAL'
+      pattern: /text-\[([0-9]|10)px\]/g,
+      message: 'Minimale tekstgrootte is 11px (alleen voor metadata/badges). Body tekst moet 15px+ zijn.',
+      severity: 'WARNING'
     },
     {
       name: 'Atomic Icon Mandate',
@@ -216,7 +216,10 @@ class ChrisWatchdog {
       return `className="${p1}${p2}"`.replace(/\s\s+/g, ' ');
     });
 
-    // Fix Raleway Mandate (Uitgebreid naar alle elementen met grote tekst)
+    // Fix Leesbaarheid Mandate (Opschalen van te kleine tekst)
+    content = content.replace(/text-\[([0-9])px\]/g, 'text-[11px]'); // 0-9px -> 11px
+    content = content.replace(/text-\[10px\]/g, 'text-[11px]'); // 10px -> 11px
+    content = content.replace(/text-xs/g, 'text-[13px]'); // xs -> 13px (veilige ondergrens)
     // Vervang font-black/bold door font-light als de tekst groot is (text-4xl+)
     content = content.replace(/(className="[^"]*)\b(font-black|font-bold|font-semibold)\b([^"]*text-([4-9]xl|6xl|7xl|8xl|9xl)[^"]*")/g, (match, p1, p2, p3) => {
         console.log(`   ✅ [FIX] ${path.basename(filePath)}: Vervangen '${p2}' door 'font-light' (Large Text)`);

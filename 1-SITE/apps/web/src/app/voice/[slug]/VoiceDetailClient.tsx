@@ -1,10 +1,12 @@
 "use client";
 
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import { ArrowLeft, Mic } from "lucide-react";
 import {
     ButtonInstrument,
     ContainerInstrument,
     HeadingInstrument,
+    LabelInstrument,
     SectionInstrument,
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
@@ -13,7 +15,6 @@ import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useTranslation } from "@/contexts/TranslationContext";
-import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from 'react';

@@ -152,7 +152,7 @@ async function JohfrahContent() {
           </ContainerInstrument>
 
           <BentoCard id="rates" span="md" className="bg-white p-10 rounded-[20px] shadow-aura flex flex-col justify-between border border-black/[0.03]">
-            <div>
+            <ContainerInstrument>
               <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter text-va-black mb-10"><VoiceglotText  translationKey="portfolio.johfrah.rates.title" defaultText="Investering" /></HeadingInstrument>
               <ContainerInstrument className="space-y-8">
                 {data.rates.map((rate, i) => (
@@ -174,7 +174,7 @@ async function JohfrahContent() {
           </BentoCard>
 
           <ContainerInstrument className="md:col-span-3 pt-8">
-            <PricingCalculator  />
+            <PricingCalculator   />
           </ContainerInstrument>
 
           {/* 🎙️ DEMOS SECTIE (Overzichtelijk) */}
@@ -191,7 +191,7 @@ async function JohfrahContent() {
                   key={i}
                   className="group p-8 rounded-[20px] bg-va-off-white border border-black/[0.03] hover:border-primary/20 hover:bg-white hover:shadow-aura transition-all duration-700 va-bezier flex flex-col justify-between min-h-[200px] cursor-pointer"
                 >
-                  <div>
+                  <ContainerInstrument>
                     <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 group-hover:bg-primary group-hover:text-white transition-all duration-700 shadow-sm mb-6">
                       <Mic strokeWidth={1.5} size={20} />
                     </ContainerInstrument>

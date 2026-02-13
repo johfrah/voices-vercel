@@ -1,3 +1,6 @@
+import { 
+  ContainerInstrument 
+} from '@/components/ui/LayoutInstruments';
 import { WorkshopCalendar } from '@/components/studio/WorkshopCalendar';
 import {
     HeadingInstrument,

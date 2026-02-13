@@ -1,5 +1,13 @@
 "use client";
 
+import { 
+  RefreshCw, 
+  TrendingUp, 
+  Brain, 
+  MessageSquareQuote, 
+  X, 
+  Download 
+} from 'lucide-react';
 import { EmailComposerInstrument } from '@/components/mailbox/EmailComposerInstrument';
 import { EmailListItemInstrument } from '@/components/mailbox/EmailListItemInstrument';
 import { EmailThreadViewInstrument } from '@/components/mailbox/EmailThreadViewInstrument';

@@ -20,10 +20,15 @@ export default function JohfrahContactPage() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-32">
       <SectionInstrument>
         <ContainerInstrument className="max-w-4xl mx-auto px-6">
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-8"><VoiceglotText  translationKey="portfolio.johfrah.contact.title" defaultText="Laten we praten" /><TextInstrument className="text-[15px] text-va-black/60 mb-12 font-light"><VoiceglotText  
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-8">
+            <VoiceglotText  translationKey="portfolio.johfrah.contact.title" defaultText="Laten we praten" />
+          </HeadingInstrument>
+          <TextInstrument className="text-[15px] text-va-black/60 mb-12 font-light">
+            <VoiceglotText  
               translationKey="portfolio.johfrah.contact.intro" 
               defaultText="Heb je een project waar je mijn stem, regie of host-skills voor wilt inzetten? Ik hoor het graag." 
-            /></TextInstrument></HeadingInstrument>
+            />
+          </TextInstrument>
 
           <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Contact Info */}
@@ -32,7 +37,7 @@ export default function JohfrahContactPage() {
                 <ContainerInstrument className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                   <Mail strokeWidth={1.5} size={20} />
                 </ContainerInstrument>
-                <div>
+                <ContainerInstrument>
                   <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.email.ce8ae9" defaultText="Email" /></TextInstrument>
                   <a href="mailto:johfrah@johfrah.be" className="text-[15px] font-light hover:text-primary transition-colors"><VoiceglotText  translationKey="auto.page.johfrah_johfrah_be.3cb465" defaultText="johfrah@johfrah.be" /></a>
                 </ContainerInstrument>
@@ -42,7 +47,7 @@ export default function JohfrahContactPage() {
                 <ContainerInstrument className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                   <Phone strokeWidth={1.5} size={20} />
                 </ContainerInstrument>
-                <div>
+                <ContainerInstrument>
                   <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.telefoon.fe260f" defaultText="Telefoon" /></TextInstrument>
                   <a href="tel:+3227931991" className="text-[15px] font-light hover:text-primary transition-colors">+32 (0)2 793 19 91</a>
                 </ContainerInstrument>

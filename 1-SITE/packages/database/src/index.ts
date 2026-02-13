@@ -8,7 +8,7 @@ const getDb = () => {
   
   // Sherlock: Als we in een Edge of Node.js runtime van Next.js zitten (tijdens build/edge),
   // dan mogen we postgres.js niet laden omdat het 'net' en 'path' nodig heeft.
-  if (process.env.NEXT_RUNTIME === 'edge' || process.env.NEXT_RUNTIME === 'nodejs') {
+  if (process.env.NEXT_RUNTIME === 'edge') {
     return null;
   }
   

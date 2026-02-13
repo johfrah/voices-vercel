@@ -199,7 +199,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
               </ContainerInstrument>
             </ContainerInstrument>
             
-            <div>
+            <ContainerInstrument>
               <label className="text-[15px] font-black tracking-widest text-va-black/30 block mb-4"><VoiceglotText  translationKey="common.config_price" defaultText="2. Configuratie & Prijs" /></label>
               <PricingCalculator  mode="human" actor={actor} />
             </ContainerInstrument>

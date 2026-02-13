@@ -11,7 +11,6 @@ import {
     Building2,
     ChevronRight,
     Globe,
-    Heart,
     LayoutDashboard,
     LogOut,
     Mail,
@@ -19,11 +18,8 @@ import {
     Monitor,
     Phone,
     Radio,
-    Settings,
-    ShoppingBag,
-    User
+    ShoppingBag
 } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -132,7 +128,7 @@ const HeaderIcon = ({
   );
 
   if (href && !children) {
-    return <ButtonInstrument as={Link} href={href}>{content}</ButtonInstrument>;
+    return <ButtonInstrument as={Link} href={href || '#'}>{content}</ButtonInstrument>;
   }
 
   return content;
@@ -219,6 +215,7 @@ export default function GlobalNav() {
     { name: 'Onze Stemmen', href: '/agency', key: 'nav.my_voice' },
     { name: 'Werkwijze', href: '/over-ons', key: 'nav.how_it_works' },
     { name: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
+    { name: 'FAQ', href: '/studio/veelgestelde-vragen', key: 'nav.faq' },
     { name: 'Contact', href: '#', onClick: () => {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('voicy:suggestion', { 

@@ -221,9 +221,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               className="absolute -top-2 -left-2 bg-primary text-white text-[15px] font-bold px-2 py-1 rounded-full shadow-lg z-30 tracking-widest "
-                            >
-                              Match
-                            </motion.div>
+                            ><VoiceglotText translationKey="auto.studiolaunchpad.match.6da892" defaultText="Match" /></motion.div>
                           )}
                         </ContainerInstrument>
                       ))}

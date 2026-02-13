@@ -1,6 +1,6 @@
 "use client";
 
-import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { Check, Rocket, X } from 'lucide-react';
 import { useState } from 'react';
 

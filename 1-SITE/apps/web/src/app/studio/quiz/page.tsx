@@ -20,7 +20,7 @@ export default function QuizPage() {
         </ContainerInstrument>
 
         <ContainerInstrument className="flex justify-center">
-          <WorkshopQuiz  />
+          <WorkshopQuiz   />
         </ContainerInstrument>
       </ContainerInstrument>
     </main>

@@ -1,4 +1,7 @@
 import React from 'react';
+import { 
+  ContainerInstrument 
+} from '@/components/ui/LayoutInstruments';
 import { JitsiMeeting } from '@/components/studio/JitsiMeeting';
 import { 
   PageWrapperInstrument, 

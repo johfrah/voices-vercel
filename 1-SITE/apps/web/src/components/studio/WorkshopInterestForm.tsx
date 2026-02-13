@@ -2,8 +2,10 @@
 
 import {
     ButtonInstrument,
+    ContainerInstrument,
     HeadingInstrument,
     InputInstrument,
+    LabelInstrument,
     TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';

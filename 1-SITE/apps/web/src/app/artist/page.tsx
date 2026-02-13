@@ -42,11 +42,16 @@ async function PortfolioGrid() {
             <TextInstrument className="text-[15px] font-black text-orange-500 tracking-widest"><VoiceglotText  translationKey="artist.badge.sonic_talent" defaultText="Voices" /></TextInstrument>
           </ContainerInstrument>
 
-          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.8] mb-4 group-hover:text-orange-400 transition-colors relative z-10 "><VoiceglotText  
+          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.8] mb-4 group-hover:text-orange-400 transition-colors relative z-10 ">
+            <VoiceglotText  
               translationKey={`artist.${artist.id}.name`} 
               defaultText={`${artist.firstName} ${artist.lastName || ''}`} 
               noTranslate={true}
-            /><TextInstrument className="text-white/40 text-[15px] font-black tracking-[0.2em] mb-12 relative z-10"><VoiceglotText  translationKey={`artist.${artist.id}.tag`} defaultText={artist.aiTags?.split(',')[0] || 'Musical Artist'} /></TextInstrument></HeadingInstrument>
+            />
+            <TextInstrument className="text-white/40 text-[15px] font-light tracking-[0.2em] mb-12 relative z-10">
+              <VoiceglotText  translationKey={`artist.${artist.id}.tag`} defaultText={artist.aiTags?.split(',')[0] || 'Musical Artist'} />
+            </TextInstrument>
+          </HeadingInstrument>
           
           <ContainerInstrument className="mt-auto flex justify-between items-center relative z-10">
             <ButtonInstrument 

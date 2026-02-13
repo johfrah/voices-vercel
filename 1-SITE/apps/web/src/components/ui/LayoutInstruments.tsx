@@ -2,6 +2,7 @@
 
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 import React, { ButtonHTMLAttributes, ElementType, FormHTMLAttributes, forwardRef, HTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
 
 /**
@@ -209,7 +210,7 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
     <Component strokeWidth={1.5} 
       ref={ref}
       type={Component === 'button' ? type : undefined}
-      href={Component === 'a' ? href : undefined}
+      href={(Component === 'a' || Component === Link) ? href : undefined}
       className={cn(className, noTranslate && "notranslate", "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] font-light ease-va-bezier")}
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}

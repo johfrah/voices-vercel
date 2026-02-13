@@ -8,7 +8,7 @@ interface WorkshopHeroProps {
   journey: string;
 }
 
-export const WorkshopHero: React.FC<WorkshopHeroProps  & { workshopId?: number }> = ({ title, journey, workshopId }) => {
+export const WorkshopHero: React.FC<WorkshopHeroProps               & { workshopId?: number }> = ({ title, journey, workshopId }) => {
   return (
     <section className="mb-16">
       <div className="inline-block bg-black text-white text-[15px] font-black px-4 py-1.5 rounded-full mb-8 tracking-widest ">

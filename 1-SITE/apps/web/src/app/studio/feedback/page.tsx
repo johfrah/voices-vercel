@@ -5,6 +5,10 @@ import {
   SectionInstrument 
 } from '@/components/ui/LayoutInstruments';
 import { LiquidBackground } from '@/components/ui/LiquidBackground';
+import { 
+  ContainerInstrument, 
+  TextInstrument 
+} from '@/components/ui/LayoutInstruments';
 import { StudioFeedbackForm } from '@/components/studio/feedback/StudioFeedbackForm';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
@@ -19,7 +23,7 @@ export default function StudioFeedbackPage() {
             Voices Studio
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none mb-8">
-            Jouw <TextInstrument className="text-primary">Inzichten.</TextInstrument>
+            Jouw <TextInstrument className="text-primary font-light">Inzichten.</TextInstrument>
           </HeadingInstrument>
           <p className="text-va-black/40 text-xl font-light max-w-2xl mx-auto leading-relaxed">
             Bedankt voor je deelname aan onze workshop. Jouw feedback is essentieel voor het bewaken van onze Masterclass-kwaliteit.

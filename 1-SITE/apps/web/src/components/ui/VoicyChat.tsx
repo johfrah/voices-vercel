@@ -7,18 +7,14 @@ import { useSonicDNA } from '@/lib/sonic-dna';
 import { VOICES_CONFIG } from '@config/config';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-    Check,
-    ChevronRight,
-    HelpCircle,
-    Mail,
     Maximize2,
-    MessageSquare,
     Minimize2,
-    Phone,
-    Send,
-    Shield,
     X,
-    Zap
+    ChevronRight,
+    Check,
+    Mail,
+    Phone,
+    Send
 } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
@@ -37,6 +33,7 @@ export const VoicyChat: React.FC = () => {
   const [chatMode, setChatMode] = useState<'ask' | 'agent'>('ask');
   const [customer360, setCustomer360] = useState<any>(null);
   const [conversationId, setConversationId] = useState<number | null>(null);
+  const [clickedChips, setClickedChips] = useState<string[]>([]);
   const { state } = useCheckout();
   const { playClick } = useSonicDNA();
   const { user, isAuthenticated, isAdmin } = useAuth();
@@ -283,7 +280,7 @@ export const VoicyChat: React.FC = () => {
         { label: "Dashboard", action: "open_dashboard", src: "/assets/common/branding/icons/INFO.svg" },
         { label: "Mailbox", action: "open_mailbox", src: "/assets/common/branding/icons/ACCOUNT.svg" },
         { label: "Nieuwe Pagina", action: "create_page", src: "/assets/common/branding/icons/FORWARD.svg" }
-      ];
+      ].filter(chip => !clickedChips.includes(chip.label));
     }
 
     const chips = [];
@@ -307,14 +304,14 @@ export const VoicyChat: React.FC = () => {
     chips.push({ label: "Tarieven", action: "ask_pricing", src: "/assets/common/branding/icons/CART.svg" });
     chips.push({ label: "Hoe werkt het?", action: "ask_how_it_works", src: "/assets/common/branding/icons/INFO.svg" });
 
-    return chips;
+    return chips.filter(chip => !clickedChips.includes(chip.label));
   };
 
   return (
-    <ContainerInstrument plain className="fixed bottom-8 right-8 z-[100]">
+    <ContainerInstrument className="fixed bottom-8 right-8 z-[100]">
       {/* Smart Chips (Floating above toggle) */}
       {!isOpen && (
-        <ContainerInstrument plain className="absolute bottom-20 right-0 flex flex-col items-end gap-2 pointer-events-none">
+        <ContainerInstrument className="absolute bottom-20 right-0 flex flex-col items-end gap-2 pointer-events-none">
           <AnimatePresence>
             {getSmartChips().map((chip, i) => (
               <motion.button
@@ -325,6 +322,7 @@ export const VoicyChat: React.FC = () => {
                 transition={{ delay: i * 0.1 }}
                 onClick={(e) => {
                   e.stopPropagation();
+                  setClickedChips(prev => [...prev, chip.label]);
                   setIsOpen(true);
                   if (chip.action === 'toggle_edit_mode') toggleEditMode();
                   else handleSend(undefined, chip.label);
@@ -390,11 +388,11 @@ export const VoicyChat: React.FC = () => {
           : 'w-[400px] h-[600px]'
       }`}>
         {/* Header */}
-        <ContainerInstrument plain className="p-8 bg-va-black text-white flex justify-between items-center relative overflow-hidden">
+        <ContainerInstrument plain className="p-6 bg-va-black text-white flex justify-between items-center relative overflow-hidden">
           <ContainerInstrument plain className="relative z-10">
-            <HeadingInstrument level={3} className="text-xl font-light tracking-tighter"><VoiceglotText  translationKey="chat.title" defaultText="Voicy" /></HeadingInstrument>
-            <ContainerInstrument plain className="flex items-center gap-2 mt-1">
-              <TextInstrument as="span" className="w-2 h-2 rounded-full bg-green-500 animate-pulse font-light" />
+            <HeadingInstrument level={3} className="text-lg font-light tracking-tighter"><VoiceglotText  translationKey="chat.title" defaultText="Voicy" /></HeadingInstrument>
+            <ContainerInstrument plain className="flex items-center gap-2">
+              <TextInstrument as="span" className="w-1.5 h-1.2 rounded-full bg-green-500 animate-pulse font-light" />
               <TextInstrument as="span" className="text-[15px] font-light tracking-widest opacity-60"><VoiceglotText  translationKey="chat.status.online" defaultText="Online & Klaar" /></TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -404,7 +402,7 @@ export const VoicyChat: React.FC = () => {
               onClick={() => setIsFullMode(!isFullMode)}
               className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/60 hover:text-white"
             >
-              {isFullMode ? <Minimize2 strokeWidth={1.5} size={18} /> : <Maximize2 strokeWidth={1.5} size={18} />}
+              <Image src={isFullMode ? "/assets/common/branding/icons/BACK.svg" : "/assets/common/branding/icons/INFO.svg"} width={18} height={18} alt="" className="brightness-0 invert opacity-40" />
             </ButtonInstrument>
           </ContainerInstrument>
 
@@ -412,13 +410,13 @@ export const VoicyChat: React.FC = () => {
         </ContainerInstrument>
 
         {/* Tabs */}
-        <ContainerInstrument plain className="flex border-b border-black/5 p-4 gap-2">
+        <ContainerInstrument plain className="flex border-b border-black/5 p-2 gap-1 bg-va-off-white/30">
           {[
-            { id: 'chat', icon: MessageSquare, label: 'Chat', translationKey: 'chat.tabs.chat' },
-            { id: 'mail', icon: Mail, label: 'Mail', translationKey: 'chat.tabs.mail' },
-            { id: 'phone', icon: Phone, label: 'Bel', translationKey: 'chat.tabs.phone' },
-            { id: 'faq', icon: HelpCircle, label: 'FAQ', translationKey: 'chat.tabs.faq' },
-            ...(isAdmin ? [{ id: 'admin', icon: Shield, label: 'Admin', translationKey: 'chat.tabs.admin' }] : []),
+            { id: 'chat', icon: "/assets/common/branding/icons/INFO.svg", label: 'Chat', translationKey: 'chat.tabs.chat' },
+            { id: 'mail', icon: "/assets/common/branding/icons/ACCOUNT.svg", label: 'Mail', translationKey: 'chat.tabs.mail' },
+            { id: 'phone', icon: "/assets/common/branding/icons/INFO.svg", label: 'Bel', translationKey: 'chat.tabs.phone' },
+            { id: 'faq', icon: "/assets/common/branding/icons/INFO.svg", label: 'FAQ', translationKey: 'chat.tabs.faq' },
+            ...(isAdmin ? [{ id: 'admin', icon: "/assets/common/branding/icons/MENU.svg", label: 'Admin', translationKey: 'chat.tabs.admin' }] : []),
           ].map((tab) => (
             <ButtonInstrument
               key={tab.id}
@@ -426,11 +424,11 @@ export const VoicyChat: React.FC = () => {
                 playClick('light');
                 setActiveTab(tab.id as any);
               }}
-              className={`flex-1 flex flex-col items-center gap-2 py-3 rounded-2xl transition-all ${
-                activeTab === tab.id ? 'bg-primary/5 text-primary' : 'text-va-black/30 hover:bg-black/5'
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all ${
+                activeTab === tab.id ? 'bg-white text-primary shadow-sm ring-1 ring-black/5' : 'text-va-black/30 hover:bg-black/5'
               }`}
             >
-              <tab.icon size={18} />
+              <Image src={tab.icon} width={14} height={14} alt="" style={activeTab === tab.id ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' } : { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
               <TextInstrument as="span" className="text-[15px] font-light tracking-widest"><VoiceglotText  translationKey={tab.translationKey} defaultText={tab.label} /></TextInstrument>
             </ButtonInstrument>
           ))}
@@ -438,19 +436,19 @@ export const VoicyChat: React.FC = () => {
 
         {/* Mode Selector (Ask vs Agent) */}
         {activeTab === 'chat' && (
-          <ContainerInstrument plain className="px-8 py-4 bg-va-off-white/50 border-b border-black/5 flex justify-center">
-            <ContainerInstrument plain className="flex bg-white p-1.5 rounded-full border border-black/5 shadow-sm">
+          <ContainerInstrument plain className="px-6 py-3 bg-va-off-white/50 border-b border-black/5 flex justify-center">
+            <ContainerInstrument plain className="flex bg-white p-1 rounded-full border border-black/5 shadow-sm">
               <ButtonInstrument 
                 onClick={() => { setChatMode('ask'); playClick('light'); }}
-                className={`px-8 py-2.5 rounded-full text-[15px] font-light tracking-widest transition-all ${chatMode === 'ask' ? 'bg-va-black text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
+                className={`px-6 py-1.5 rounded-full text-[15px] font-light tracking-widest transition-all ${chatMode === 'ask' ? 'bg-va-black text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
               >
                 <VoiceglotText  translationKey="chat.mode.ask" defaultText="Ask" />
               </ButtonInstrument>
               <ButtonInstrument 
                 onClick={() => { setChatMode('agent'); playClick('pro'); }}
-                className={`px-8 py-2.5 rounded-full text-[15px] font-light tracking-widest transition-all flex items-center gap-2 ${chatMode === 'agent' ? 'bg-primary text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
+                className={`px-6 py-1.5 rounded-full text-[15px] font-light tracking-widest transition-all flex items-center gap-2 ${chatMode === 'agent' ? 'bg-primary text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
               >
-                {chatMode === 'agent' && <Zap strokeWidth={1.5} size={10} className="animate-pulse" />}
+                {chatMode === 'agent' && <Image src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" className="brightness-0 invert animate-pulse" />}
                 <VoiceglotText  translationKey="chat.mode.agent" defaultText="Agent" />
               </ButtonInstrument>
             </ContainerInstrument>
@@ -462,19 +460,32 @@ export const VoicyChat: React.FC = () => {
           {activeTab === 'chat' && (
             <ContainerInstrument plain className={`flex-1 overflow-hidden relative flex ${isFullMode ? 'flex-row' : 'flex-col'}`}>
               <ContainerInstrument plain className="flex-1 flex flex-col overflow-hidden border-r border-black/5">
-                <ContainerInstrument plain ref={scrollRef} className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar">
+                <ContainerInstrument plain ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 custom-scrollbar">
                   {messages.map((msg) => (
                     <ContainerInstrument
                       plain
                       key={msg.id}
                       className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                      <ContainerInstrument plain className={`max-w-[85%] p-4 md:p-6 rounded-[24px] text-[15px] font-light leading-relaxed ${
+                      <ContainerInstrument plain className={`max-w-[85%] p-4 rounded-[20px] text-[15px] font-light leading-relaxed ${
                         msg.role === 'user' 
                           ? 'bg-primary text-white rounded-tr-none shadow-lg shadow-primary/10' 
                           : 'bg-va-off-white text-va-black rounded-tl-none'
                       }`}>
-                        {msg.content}
+                        {msg.content.includes("Oeps, er ging iets mis") ? (
+                          <ContainerInstrument plain className="space-y-4">
+                            <ContainerInstrument plain className="flex items-center gap-3 text-red-500">
+                              <Image src="/assets/common/branding/icons/INFO.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                              <TextInstrument className="font-light">{msg.content}</TextInstrument>
+                            </ContainerInstrument>
+                            <ButtonInstrument 
+                              onClick={() => handleSend(undefined, messages[messages.length-2]?.content)}
+                              className="w-full py-2 bg-va-black/5 text-va-black rounded-xl text-[15px] font-light tracking-widest hover:bg-va-black/10 transition-all"
+                            >
+                              <VoiceglotText translationKey="auto.voicychat.opnieuw_proberen" defaultText="OPNIEUW PROBEREN" />
+                            </ButtonInstrument>
+                          </ContainerInstrument>
+                        ) : msg.content}
                         {msg.actions && msg.actions.length > 0 && (
                           <ContainerInstrument plain className="mt-4 flex flex-wrap gap-2">
                           {msg.actions.map((action: any, i: number) => (
@@ -564,20 +575,20 @@ export const VoicyChat: React.FC = () => {
                 </ContainerInstrument>
 
                 {/* Input Area */}
-                <ContainerInstrument plain className="p-6 md:p-8 border-t border-black/5 bg-white">
+                <ContainerInstrument plain className="p-4 md:p-6 border-t border-black/5 bg-white">
                   <FormInstrument onSubmit={handleSend} className="relative">
                     <InputInstrument
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder="Typ je bericht..."
-                      className="w-full bg-va-off-white border-none rounded-full py-4 md:py-5 pl-6 md:pl-8 pr-14 md:pr-16 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
+                      className="w-full bg-va-off-white border-none rounded-full py-3 md:py-4 pl-5 md:pl-6 pr-12 md:pr-14 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all"
                     />
                     <ButtonInstrument
                       type="submit"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-va-black text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-va-black text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
                     >
-                      <Send strokeWidth={1.5} size={18} />
+                      <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert" />
                     </ButtonInstrument>
                   </FormInstrument>
                 </ContainerInstrument>

@@ -3,6 +3,13 @@ import React from 'react';
 import { AudioReviewDashboard } from '@/components/audio/AudioReviewDashboard';
 import GlobalNav from '@/components/ui/GlobalNav';
 import GlobalFooter from '@/components/ui/GlobalFooter';
+import { 
+  ButtonInstrument, 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  SectionInstrument, 
+  TextInstrument 
+} from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 /**

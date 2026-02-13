@@ -4,6 +4,7 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { Actor } from '@/types';
+import { Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { VoiceCard } from '../ui/VoiceCard';
 import { 

@@ -233,7 +233,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
         case 'calculator':
           return (
             <section key={block.id} className="py-24 animate-in fade-in duration-1000 fill-mode-both">
-              <PricingCalculator  />
+              <PricingCalculator   />
             </section>
           );
 

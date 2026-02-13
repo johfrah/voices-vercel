@@ -24,7 +24,7 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
             onClick={() => setOpenId(openId === item.id ? null : item.id)}
             className="w-full px-10 py-8 flex items-center justify-between text-left group"
           >
-            <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/60 group-hover:text-va-black transition-colors">
+            <HeadingInstrument level={4} className="text-[17px] font-light tracking-wider text-va-black group-hover:text-primary transition-colors">
               {item.title}
             </HeadingInstrument>
             <ContainerInstrument className={`p-2 rounded-full bg-va-black/5 transition-all duration-500 flex items-center justify-center ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
@@ -42,7 +42,7 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
               openId === item.id ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
             }`}
           >
-            <ContainerInstrument className="px-10 pb-10 prose prose-lg text-va-black/40 font-light">
+            <ContainerInstrument className="px-10 pb-10 prose prose-lg text-va-black/70 font-light leading-relaxed">
               <ContainerInstrument dangerouslySetInnerHTML={{ __html: item.content }} />
             </ContainerInstrument>
           </ContainerInstrument>

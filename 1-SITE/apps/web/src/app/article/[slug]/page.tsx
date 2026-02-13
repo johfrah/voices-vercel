@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic';
 export default function ArticlePage({ params }: { params: { slug: string } }) {
   return (
     <PageWrapperInstrument>
-      <Suspense strokeWidth={1.5} fallback={<ArticleSkeleton  />}>
+      <Suspense  fallback={<ArticleSkeleton  />}>
         <ArticleContent strokeWidth={1.5} slug={params.slug} />
       </Suspense>
     </PageWrapperInstrument>

@@ -1,3 +1,4 @@
+import { ArrowLeft } from 'lucide-react';
 import {
     ContainerInstrument,
     HeadingInstrument,

@@ -1,5 +1,5 @@
 import { db } from "@db";
-import { actorDemos, actors, contentArticles, contentBlocks, lessons, media, reviews } from "@db/schema";
+import { actorDemos, actors, contentArticles, contentBlocks, faq, lessons, media, reviews } from "@db/schema";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, or, sql } from "drizzle-orm";
 import {
@@ -444,4 +444,33 @@ export async function getAcademyLesson(id: string): Promise<any> {
       percentage: 0
     }
   };
+}
+
+export async function getFaqs(category: string, limit: number = 5): Promise<any[]> {
+  console.log('🔍 getFaqs called with:', { category, limit });
+  let results: any[] = [];
+  try {
+    // 🛡️ CHRIS-PROTOCOL: We proberen eerst de SDK direct om Drizzle Proxy issues te vermijden op deze pagina
+    const { data, error } = await supabase
+      .from('faq')
+      .select('*')
+      .eq('category', category)
+      .eq('is_public', true)
+      .limit(limit);
+    
+    if (error) throw error;
+    
+    results = (data || []).map(f => ({
+      ...f,
+      id: f.id,
+      questionNl: f.question_nl,
+      answerNl: f.answer_nl,
+      isPublic: f.is_public
+    }));
+    console.log('✅ getFaqs SDK success:', { count: results.length });
+  } catch (err) {
+    console.error('❌ getFaqs FATAL ERROR:', err);
+    return [];
+  }
+  return results;
 }

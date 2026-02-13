@@ -10,6 +10,7 @@ import {
   TextInstrument,
   HeadingInstrument
 } from '@/components/ui/LayoutInstruments';
+import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const PricingSummary: React.FC = () => {

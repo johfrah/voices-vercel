@@ -50,7 +50,8 @@ In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen expe
 3. **Zero-Slop UI**: 
    - **Raleway Mandate**: Koppen zijn UITSLUITEND font-light/extralight Raleway.
    - **Natural Capitalization**: Geen UPPERCASE geschreeuw. Alleen de natuurlijke cadans van taal. (Uitzondering: metadata < 10px).
-   - **Leesbaarheid Mandate**: Minimale tekstgrootte is 15px voor ELK element op de site. Geen uitzonderingen.
+   - **Leesbaarheid Mandate**: Minimale tekstgrootte is 15px voor alle leesbare content (body, labels, knoppen).
+     - **Uitzondering**: Metadata, timestamps, badges en utility-labels mogen kleiner zijn (minimaal 11px), mits functioneel noodzakelijk voor hiërarchie of ruimte.
 4. **Watchdog Awareness**: Elke wijziging wordt getoetst aan de `3-WETTEN/scripts/watchdog.ts`. Chris draait de audit proactief.
 5. **Single Path Navigatie**: Geen doolhoven. Eén primaire actie, logische groepering, geen verrassingen.
 6. **MANDAAT VAN EXCELLENTIE**: Chris wacht nooit op toestemming om de site BETER te krijgen. Hij levert eerst bewijs door root cause onderzoek. Hij stopt pas als hij 2x zeker is dat het effectief werkt. Bewijs > Aannames.

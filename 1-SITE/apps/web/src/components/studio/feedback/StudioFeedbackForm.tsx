@@ -25,8 +25,11 @@ const RATINGS = [
 
 const OPTIONS = ["Uitstekend", "Goed", "Voldoende", "Onvoldoende"];
 
+import { useAuth } from '@/contexts/AuthContext';
+
 export const StudioFeedbackForm = () => {
   const { playClick } = useSonicDNA();
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [formData, setFormData] = useState({
@@ -52,7 +55,10 @@ export const StudioFeedbackForm = () => {
       const res = await fetch('/api/studio/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          user_email: user?.email
+        })
       });
 
       if (res.ok) {
