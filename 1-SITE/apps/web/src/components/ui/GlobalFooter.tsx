@@ -183,12 +183,6 @@ export default function GlobalFooter() {
         {!isSpecial && (
           <ContainerInstrument className="mb-24">
             <JourneyCta strokeWidth={1.5} journey={isStudio ? 'studio' as any : state.current_journey} />
-            <ContainerInstrument className="mt-12">
-              <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 mb-8 uppercase">
-                <VoiceglotText  translationKey="footer.journey_faq" defaultText={isStudio ? "Veelgestelde vragen over de Studio" : "Veelgestelde vragen voor deze journey"} />
-              </HeadingInstrument>
-              <JourneyFaq strokeWidth={1.5} journey={isStudio ? 'Workshops' : state.current_journey} limit={4} />
-            </ContainerInstrument>
           </ContainerInstrument>
         )}
 
