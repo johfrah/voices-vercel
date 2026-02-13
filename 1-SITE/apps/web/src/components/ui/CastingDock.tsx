@@ -61,7 +61,7 @@ export const CastingDock = () => {
                 <TextInstrument className="text-white font-medium leading-none text-sm md:text-base truncate">
                   {selectedActors.length} {selectedActors.length === 1 ? 'stem' : 'stemmen'}
                 </TextInstrument>
-                <TextInstrument className="text-white/40 text-[15px] md:text-[15px] mt-1 truncate">
+                <TextInstrument className="text-white/40 text-[15px] md:text-[15px] mt-1 truncate font-light">
                   Klaar voor jouw demo
                 </TextInstrument>
               </div>
@@ -72,7 +72,7 @@ export const CastingDock = () => {
               className="bg-primary hover:bg-primary/90 text-white px-4 md:px-6 py-3 rounded-[18px] flex items-center gap-2 whitespace-nowrap shrink-0 h-12 md:h-auto"
             >
               <LucideMic size={16} className="md:w-[18px] md:h-[18px]" />
-              <span className="text-sm md:text-base font-bold uppercase tracking-wider">Gratis Proefopname</span>
+              <span className="text-sm md:text-base font-bold tracking-wider">Gratis Proefopname</span>
               <LucideChevronRight size={16} className="md:w-[18px] md:h-[18px]" />
             </ButtonInstrument>
           </ContainerInstrument>

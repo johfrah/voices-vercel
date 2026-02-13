@@ -166,12 +166,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                 {isSelected ? (
                   <>
                     <Check size={12} strokeWidth={3} />
-                    <span className="text-[15px] font-bold tracking-widest uppercase">In Studio</span>
+                    <span className="text-[15px] font-bold tracking-widest ">In Studio</span>
                   </>
                 ) : (
                   <>
                     <Plus size={12} strokeWidth={3} />
-                    <span className="text-[15px] font-bold tracking-widest uppercase text-white/80">Gratis Demo</span>
+                    <span className="text-[15px] font-bold tracking-widest text-white/80">Gratis Demo</span>
                   </>
                 )}
               </button>

@@ -49,7 +49,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
       <ContainerInstrument className="bg-white border-b border-va-black/5 py-4 md:py-6 px-4 md:px-8 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3 md:gap-4 min-w-0">
-            <div className="bg-va-black text-white px-2 md:px-3 py-1 rounded-full text-[15px] md:text-[15px] font-bold tracking-widest uppercase shrink-0">
+            <div className="bg-va-black text-white px-2 md:px-3 py-1 rounded-full text-[15px] md:text-[15px] font-bold tracking-widest shrink-0">
               {mode === 'demo' ? (isMobile ? 'Demo' : 'Discovery Mode') : 'Production'}
             </div>
             <HeadingInstrument level={2} className="text-lg md:text-2xl font-light truncate">
@@ -173,7 +173,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                 <TextInstrument className="text-[15px] md:text-sm font-light leading-relaxed">
                   Hoi Thomas! Ik heb je briefing ontvangen. Ik ga direct aan de slag met de demo.
                 </TextInstrument>
-                <TextInstrument className="text-[15px] md:text-[15px] text-va-black/20 mt-2 uppercase tracking-widest">
+                <TextInstrument className="text-[15px] md:text-[15px] text-va-black/20 mt-2 tracking-widest font-light">
                   Stem 1 • 10:45
                 </TextInstrument>
               </div>
@@ -195,7 +195,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                 <HeadingInstrument level={3} className="text-xl md:text-2xl font-light">
                   De juiste match?
                 </HeadingInstrument>
-                <TextInstrument className="text-white/60 text-[15px] md:text-sm leading-relaxed">
+                <TextInstrument className="text-white/60 text-[15px] md:text-sm leading-relaxed font-light">
                   Zodra je de perfecte stem hebt gevonden, kun je direct de volledige productie starten.
                 </TextInstrument>
                 <ButtonInstrument className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-[15px] md:rounded-[20px] font-medium flex items-center justify-center gap-2 active:scale-95">

@@ -64,7 +64,7 @@ export const StudioLaunchpad = () => {
           <HeadingInstrument level={2} className="text-2xl font-light mb-4">
             Geen stemmen geselecteerd
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 mb-8">
+          <TextInstrument className="text-va-black/40 mb-8 font-light">
             Kies eerst de stemmen die je wilt horen voor jouw gratis proefopname.
           </TextInstrument>
           <ButtonInstrument 
@@ -200,7 +200,7 @@ export const StudioLaunchpad = () => {
                 </LabelInstrument>
                 <div className="space-y-8">
                   <div className="space-y-3">
-                    <LabelInstrument className="text-[15px] font-bold tracking-widest uppercase ml-0 opacity-40">YouTube of Vimeo link (optioneel)</LabelInstrument>
+                    <LabelInstrument className="text-[15px] font-bold tracking-widest ml-0 opacity-40">YouTube of Vimeo link (optioneel)</LabelInstrument>
                     <div className="relative">
                       <LucideLink className="absolute left-5 top-1/2 -translate-y-1/2 text-va-black/20" size={20} />
                       <InputInstrument 
@@ -236,7 +236,7 @@ export const StudioLaunchpad = () => {
                   </HeadingInstrument>
                 </div>
                 
-                <TextInstrument className="text-white/60 text-sm mb-8 leading-relaxed">
+                <TextInstrument className="text-white/60 text-sm mb-8 leading-relaxed font-light">
                   Moeilijke namen of een specifieke toon? Spreek het even in voor de stemacteur.
                 </TextInstrument>
 
@@ -255,7 +255,7 @@ export const StudioLaunchpad = () => {
                   )}>
                     <LucideMic size={32} />
                   </div>
-                  <span className="text-sm font-bold tracking-widest uppercase">
+                  <span className="text-sm font-bold tracking-widest ">
                     {isRecording ? "Stop opname" : "Spreek het in"}
                   </span>
                 </button>
@@ -268,7 +268,7 @@ export const StudioLaunchpad = () => {
                   <LucideCheckCircle size={24} />
                 </ButtonInstrument>
 
-                <TextInstrument className="text-center text-white/20 text-[15px] mt-6 leading-relaxed uppercase tracking-widest">
+                <TextInstrument className="text-center text-white/20 text-[15px] mt-6 leading-relaxed tracking-widest font-light">
                   Je gegevens worden anoniem behandeld.
                 </TextInstrument>
               </ContainerInstrument>
