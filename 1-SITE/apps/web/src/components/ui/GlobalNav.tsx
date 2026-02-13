@@ -279,7 +279,7 @@ export default function GlobalNav() {
   const isSpecialJourney = market.market_code === 'JOHFRAH' || market.market_code === 'YOUSSEF' || market.market_code === 'ADEMING';
 
   return (
-    <ContainerInstrument as="nav" className="fixed top-0 left-0 right-0 z-40 px-4 md:px-6 py-3 md:py-6 flex justify-between items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve">
+    <ContainerInstrument as="nav" className="fixed top-0 left-0 right-0 z-40 px-4 md:px-6 py-4 md:py-6 flex justify-between items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve">
       <ButtonInstrument 
         as={Link}
         href="/" 
@@ -288,9 +288,9 @@ export default function GlobalNav() {
         onMouseEnter={() => { playSwell(); }}
       >
         {market.market_code === 'JOHFRAH' || (typeof window !== 'undefined' && window.location.host.includes('johfrah.be')) ? (
-          <TextInstrument className="text-lg md:text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap"><VoiceglotText translationKey="auto.globalnav.johfrah_lefebvre.95a724" defaultText="JOHFRAH LEFEBVRE" /></TextInstrument>
+          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap"><VoiceglotText  translationKey="auto.globalnav.johfrah_lefebvre.95a724" defaultText="JOHFRAH LEFEBVRE" /></TextInstrument>
         ) : market.market_code === 'YOUSSEF' ? (
-          <TextInstrument className="text-lg md:text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap"><VoiceglotText translationKey="auto.globalnav.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" /></TextInstrument>
+          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap"><VoiceglotText  translationKey="auto.globalnav.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" /></TextInstrument>
         ) : (
           <VoiceglotImage  
             src={market.logo_url} 
@@ -300,7 +300,7 @@ export default function GlobalNav() {
             priority={true}
             journey="common"
             category="branding"
-            className="h-8 md:h-12 w-auto transition-transform duration-500 group-hover:scale-105"
+            className="h-10 md:h-12 w-auto transition-transform duration-500 group-hover:scale-105"
           />
         )}
       </ButtonInstrument>
@@ -325,7 +325,7 @@ export default function GlobalNav() {
                 isActive ? 'text-primary' : 'text-va-black/30 hover:text-va-black'
               }`}
             >
-              <VoiceglotText translationKey={link.key || `nav.${(link.name || '').toLowerCase()}`} defaultText={link.name || ''} />
+              <VoiceglotText  translationKey={link.key || `nav.${(link.name || '').toLowerCase()}`} defaultText={link.name || ''} />
               
               {isActive && (
                 <ContainerInstrument
@@ -349,18 +349,22 @@ export default function GlobalNav() {
       <ContainerInstrument className="flex gap-4 items-center ml-auto">
         {/* ❤️ FAVORITES ICON */}
         {!isSpecialJourney && (
-          <HeaderIcon strokeWidth={1.5} src="/assets/common/branding/icons/FAVORITES.svg" 
+          <HeaderIcon strokeWidth={1.5} 
+            src="/assets/common/branding/icons/FAVORITES.svg" 
             alt="Favorieten"
             badge={favoritesCount}
-            href="/account/favorites" />
+            href="/account/favorites"
+          />
         )}
 
         {/* 🛍️ CART ICON */}
         {!isSpecialJourney && (
-          <HeaderIcon strokeWidth={1.5} src="/assets/common/branding/icons/CART.svg" 
+          <HeaderIcon strokeWidth={1.5} 
+            src="/assets/common/branding/icons/CART.svg" 
             alt="Winkelmandje" 
             badge={cartCount}
-            href="/checkout" />
+            href="/checkout"
+          />
         )}
 
         {/* 🔔 NOTIFICATIONS ICON */}
@@ -372,13 +376,13 @@ export default function GlobalNav() {
           >
             <ContainerInstrument className="p-2 space-y-1">
               <ContainerInstrument className="px-4 py-3 border-b border-black/5 mb-2 flex justify-between items-center">
-                <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText translationKey="nav.notifications_title" defaultText="Notificaties" /></TextInstrument>
+                <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText  translationKey="nav.notifications_title" defaultText="Notificaties" /></TextInstrument>
                 {notificationsCount > 0 && (
                   <ButtonInstrument 
                     onClick={() => { setNotifications(prev => prev.map(n => ({ ...n, read: true }))); }}
                     className="text-[15px] font-light text-primary hover:underline"
                   >
-                    <VoiceglotText translationKey="nav.notifications_clear" defaultText="Wis alles" />
+                    <VoiceglotText  translationKey="nav.notifications_clear" defaultText="Wis alles" />
                   </ButtonInstrument>
                 )}
               </ContainerInstrument>
@@ -417,7 +421,7 @@ export default function GlobalNav() {
                 ) : (
                   <ContainerInstrument className="p-8 text-center">
                     <Bell strokeWidth={1.5} size={32} className="text-va-black/10 mx-auto mb-3" />
-                    <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="nav.notifications_empty" defaultText="Geen nieuwe meldingen." /></TextInstrument>
+                    <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="nav.notifications_empty" defaultText="Geen nieuwe meldingen." /></TextInstrument>
                   </ContainerInstrument>
                 )}
               </ContainerInstrument>
@@ -426,7 +430,7 @@ export default function GlobalNav() {
         )}
 
         {/* 🌐 LANGUAGE ICON */}
-        <LanguageSwitcher strokeWidth={1.5}  />
+        <LanguageSwitcher strokeWidth={1.5} />
 
         {/* 👤 ACCOUNT ICON */}
         {!isSpecialJourney && (
@@ -438,22 +442,25 @@ export default function GlobalNav() {
             {auth.isAuthenticated ? (
               <>
                 <ContainerInstrument className="px-4 py-4 border-b border-black/5 mb-2">
-                  <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-1 "><VoiceglotText translationKey="nav.logged_in_as" defaultText="Ingelogd als" /></TextInstrument>
+                  <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-1 "><VoiceglotText  translationKey="nav.logged_in_as" defaultText="Ingelogd als" /></TextInstrument>
                   <TextInstrument className="text-[15px] font-light text-va-black truncate">{auth.user?.email}</TextInstrument>
                 </ContainerInstrument>
                 {isAdmin && (
-                  <DropdownItem strokeWidth={1.5} icon={LayoutDashboard} 
+                  <DropdownItem strokeWidth={1.5} 
+                    icon={LayoutDashboard} 
                     label="Admin Dashboard" 
                     href="/admin/dashboard" 
                     variant="primary" 
-                    badge="God Mode" />
+                    badge="God Mode"
+                  />
                 )}
                 <DropdownItem strokeWidth={1.5} icon={() => <VoiceglotImage  src="/assets/common/branding/icons/ACCOUNT.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Mijn profiel" href="/account" />
                 <DropdownItem strokeWidth={1.5} icon={() => <VoiceglotImage  src="/assets/common/branding/icons/CART.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Bestellingen" href="/account/orders" />
                 <DropdownItem strokeWidth={1.5} icon={() => <VoiceglotImage  src="/assets/common/branding/icons/FAVORITES.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Favorieten" href="/account/favorites" badge={favoritesCount > 0 ? favoritesCount : undefined} />
                 <DropdownItem strokeWidth={1.5} icon={() => <VoiceglotImage  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Instellingen" href="/account/settings" />
-                <DropdownItem strokeWidth={1.5} icon={LogOut} 
-                  label={<VoiceglotText translationKey="nav.logout" defaultText="Uitloggen" />} 
+                <DropdownItem strokeWidth={1.5} 
+                  icon={LogOut} 
+                  label={<VoiceglotText  translationKey="nav.logout" defaultText="Uitloggen" />} 
                   onClick={() => { auth.logout(); }} 
                   variant="danger" 
                 />
@@ -464,7 +471,7 @@ export default function GlobalNav() {
                   <VoiceglotImage  src="/assets/common/branding/icons/ACCOUNT.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
                 </ContainerInstrument>
                 <ContainerInstrument>
-                  <HeadingInstrument level={4} className="text-xl font-light tracking-tight mb-1 "><VoiceglotText translationKey="nav.welcome_title" defaultText="Welkom bij Voices" /><TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText translationKey="nav.welcome_text" defaultText="Log in om je favoriete stemmen op te slaan en bestellingen te beheren." /></TextInstrument></HeadingInstrument>
+                  <HeadingInstrument level={4} className="text-xl font-light tracking-tight mb-1 "><VoiceglotText  translationKey="nav.welcome_title" defaultText="Welkom bij Voices" /><TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="nav.welcome_text" defaultText="Log in om je favoriete stemmen op te slaan en bestellingen te beheren." /></TextInstrument></HeadingInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="space-y-2">
                   <ButtonInstrument 
@@ -472,14 +479,14 @@ export default function GlobalNav() {
                     href="/auth/login" 
                     className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all "
                   >
-                    <VoiceglotText translationKey="nav.login_cta" defaultText="Inloggen" />
+                    <VoiceglotText  translationKey="nav.login_cta" defaultText="Inloggen" />
                   </ButtonInstrument>
                   <ButtonInstrument 
                     as={Link}
                     href="/auth/register" 
                     className="block w-full py-3 border border-black/10 text-va-black rounded-[10px] text-[15px] font-light tracking-widest hover:bg-va-black/5 transition-all "
                   >
-                    <VoiceglotText translationKey="nav.register_cta" defaultText="Account aanmaken" />
+                    <VoiceglotText  translationKey="nav.register_cta" defaultText="Account aanmaken" />
                   </ButtonInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -494,18 +501,20 @@ export default function GlobalNav() {
         >
           <ContainerInstrument className="p-2 space-y-1">
             <ContainerInstrument className="px-4 py-3 border-b border-black/5 mb-2">
-              <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText translationKey="nav.navigation_label" defaultText="Navigatie" /></TextInstrument>
+              <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText  translationKey="nav.navigation_label" defaultText="Navigatie" /></TextInstrument>
             </ContainerInstrument>
             {links.map((link) => (
-              <DropdownItem strokeWidth={1.5} key={link.name}
+              <DropdownItem strokeWidth={1.5} 
+                key={link.name}
                 icon={ChevronRight} 
                 label={link.name} 
                 href={link.href !== '#' ? link.href : undefined}
-                onClick={link.onClick} />
+                onClick={link.onClick}
+              />
             ))}
             
             <ContainerInstrument className="mt-4 px-4 py-3 border-t border-black/5">
-              <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] mb-4 "><VoiceglotText translationKey="nav.menu.proefopname_title" defaultText="Direct naar proefopname" /></TextInstrument>
+              <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] mb-4 "><VoiceglotText  translationKey="nav.menu.proefopname_title" defaultText="Direct naar proefopname" /></TextInstrument>
               <ContainerInstrument className="grid grid-cols-2 gap-2 mb-6">
                 {[
                   { label: 'TV Spot', icon: Monitor, href: '/agency?category=tv', key: 'category.tv' },
@@ -523,13 +532,13 @@ export default function GlobalNav() {
                   >
                     <cat.icon size={14} strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
                     <TextInstrument className="text-[15px] font-light whitespace-nowrap">
-                      <VoiceglotText translationKey={cat.key} defaultText={cat.label} />
+                      <VoiceglotText  translationKey={cat.key} defaultText={cat.label} />
                     </TextInstrument>
                   </ButtonInstrument>
                 ))}
               </ContainerInstrument>
 
-              <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] mb-4 "><VoiceglotText translationKey="nav.menu.recommended_title" defaultText="Aanbevolen stemmen" /></TextInstrument>
+              <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] mb-4 "><VoiceglotText  translationKey="nav.menu.recommended_title" defaultText="Aanbevolen stemmen" /></TextInstrument>
               <ContainerInstrument className="space-y-2 mb-6">
                 {[
                   { name: 'Johfrah', type: 'Mannelijk', slug: 'johfrah', typeKey: 'gender.male' },
@@ -545,7 +554,7 @@ export default function GlobalNav() {
                       <ContainerInstrument>
                         <TextInstrument className="text-[15px] font-light text-va-black">{voice.name}</TextInstrument>
                         <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                          <VoiceglotText translationKey={voice.typeKey} defaultText={voice.type} />
+                          <VoiceglotText  translationKey={voice.typeKey} defaultText={voice.type} />
                         </TextInstrument>
                       </ContainerInstrument>
                     </ContainerInstrument>
@@ -553,7 +562,7 @@ export default function GlobalNav() {
                       as={Link}
                       href={`/artist/${voice.slug}`}
                       className="px-3 py-1.5 bg-primary/10 text-primary rounded-[20px] text-[15px] font-light opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white"
-                    ><VoiceglotText translationKey="action.proefopname" defaultText="Proefopname" /></ButtonInstrument>
+                    ><VoiceglotText  translationKey="action.proefopname" defaultText="Proefopname" /></ButtonInstrument>
                   </ContainerInstrument>
                 ))}
               </ContainerInstrument>
@@ -563,13 +572,14 @@ export default function GlobalNav() {
                 href="/agency"
                 className="flex items-center justify-center gap-2 w-full py-4 bg-va-black text-white rounded-2xl text-[15px] font-light tracking-widest hover:bg-primary transition-all shadow-lg"
               >
-                <VoiceglotText translationKey="nav.menu.discover_all" defaultText="Ontdek alle stemmen" />
+                <VoiceglotText  translationKey="nav.menu.discover_all" defaultText="Ontdek alle stemmen" />
               </ButtonInstrument>
             </ContainerInstrument>
 
             <ContainerInstrument className="mt-2 pt-2 border-t border-black/5">
-              <DropdownItem strokeWidth={1.5} icon={Mail} 
-                label={<VoiceglotText translationKey="nav.support" defaultText="Support" />} 
+              <DropdownItem strokeWidth={1.5} 
+                icon={Mail} 
+                label={<VoiceglotText  translationKey="nav.support" defaultText="Support" />} 
                 href="/contact" 
               />
             </ContainerInstrument>

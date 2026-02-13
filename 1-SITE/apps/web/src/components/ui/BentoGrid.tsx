@@ -30,8 +30,8 @@ export function BentoGrid({ children, className, columns = 3, id }: BentoGridPro
 
   return (
     <ContainerInstrument className={cn(
-      "grid gap-4 md:gap-8",
-      isEditMode && "edit-mode-section p-6 md:p-8 rounded-va-lg bg-va-black/[0.02]",
+      "grid gap-6 md:gap-8",
+      isEditMode && "edit-mode-section p-8 rounded-va-lg bg-va-black/[0.02]",
       gridCols[columns as keyof typeof gridCols] || 'grid-cols-1 md:grid-cols-3',
       className
     )}>
@@ -170,10 +170,10 @@ export function BentoCard({
         <ContainerInstrument className="absolute inset-0 bg-primary/5 pointer-events-none border-2 border-primary/20 rounded-[32px]" />
       )}
       {isEditMode && (
-        <ContainerInstrument className="absolute bottom-4 left-4 md:left-8 z-20 bg-va-black/80 backdrop-blur-md text-[15px] font-black text-white px-2 py-1 rounded-md tracking-widest opacity-0 group-hover/card:opacity-100 transition-opacity"><VoiceglotText  translationKey="auto.bentogrid.cvr__4_2____beheer__.aa342c" defaultText="CVR: 4.2% • Beheer: Kwaliteit" /></ContainerInstrument>
+        <ContainerInstrument className="absolute bottom-4 left-8 z-20 bg-va-black/80 backdrop-blur-md text-[15px] font-black text-white px-2 py-1 rounded-md tracking-widest opacity-0 group-hover/card:opacity-100 transition-opacity"><VoiceglotText  translationKey="auto.bentogrid.cvr__4_2____beheer__.aa342c" defaultText="CVR: 4.2% • Beheer: Kwaliteit" /></ContainerInstrument>
       )}
       {(title || icon) && (
-        <ContainerInstrument className="px-6 py-6 md:px-8 md:pt-8 flex items-center gap-3">
+        <ContainerInstrument className="px-8 pt-8 flex items-center gap-3">
           {icon && <ContainerInstrument className="text-primary">{icon}</ContainerInstrument>}
           {title && <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest opacity-30">{title}</HeadingInstrument>}
         </ContainerInstrument>

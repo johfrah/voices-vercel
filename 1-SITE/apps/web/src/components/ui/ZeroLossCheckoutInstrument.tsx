@@ -155,18 +155,18 @@ export const ZeroLossCheckoutInstrument = ({
                   <TextInstrument className="text-[15px] font-medium text-va-black/20 ml-4 tracking-widest"><VoiceglotText  translationKey="auto.zerolosscheckoutinstrument.we_valideren_dit_dir.fd2fff" defaultText="We valideren dit direct voor een factuur zonder BTW (indien van toepassing)." /></TextInstrument>
                 </ContainerInstrument>
 
-                <ContainerInstrument className="flex gap-3 md:gap-4">
+                <ContainerInstrument className="flex gap-4">
                   <ButtonInstrument 
                     onClick={() => { setStep(1); }}
-                    className="flex-1 py-4 md:py-6 rounded-[20px] md:rounded-[24px] bg-va-off-white text-va-black/40 text-[15px] md:text-[15px] font-light tracking-widest hover:bg-va-black hover:text-white transition-all "
+                    className="flex-1 py-6 rounded-[24px] bg-va-off-white text-va-black/40 text-[15px] font-light tracking-widest hover:bg-va-black hover:text-white transition-all"
                   >
                     <VoiceglotText  translationKey="auto.zerolosscheckoutinstrument.terug____.211082" defaultText="Terug" />
                   </ButtonInstrument>
                   <ButtonInstrument 
                     type="submit"
-                    className="flex-[2] py-4 md:py-6 rounded-[20px] md:rounded-[24px] bg-primary text-white text-[15px] md:text-[15px] font-light tracking-widest hover:bg-va-black transition-all flex items-center justify-center gap-2 group "
+                    className="flex-[2] py-6 rounded-[24px] bg-primary text-white text-[15px] font-light tracking-widest hover:bg-va-black transition-all flex items-center justify-center gap-2 group"
                   >
-                    <VoiceglotText translationKey="common.complete_payment" defaultText="Betaling afronden" /> <ArrowRight strokeWidth={1.5} size={16} className="group-hover:translate-x-1 transition-transform" />
+                    Betaling afronden <ArrowRight strokeWidth={1.5} size={16} className="group-hover:translate-x-1 transition-transform" />
                   </ButtonInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
@@ -176,54 +176,54 @@ export const ZeroLossCheckoutInstrument = ({
       </ContainerInstrument>
 
       {/* Right: Summary Card */}
-      <ContainerInstrument className="space-y-6 md:space-y-8 sticky top-24 md:top-32">
+      <ContainerInstrument className="space-y-6 md:space-y-8 sticky top-32">
         <BentoCard span="sm" className="bg-va-black text-white p-6 md:p-10 shadow-aura-lg">
-          <HeadingInstrument level={4} className="text-[15px] md:text-[15px] font-medium tracking-widest text-white/20 mb-6 md:mb-8 "><VoiceglotText  translationKey="auto.zerolosscheckoutinstrument.jouw_investering.810725" defaultText="Jouw Investering" /></HeadingInstrument>
+          <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-white/20 mb-6 md:mb-8"><VoiceglotText  translationKey="auto.zerolosscheckoutinstrument.jouw_investering.810725" defaultText="Jouw Investering" /></HeadingInstrument>
           
-          <ContainerInstrument className="space-y-4 md:space-y-6">
-            <ContainerInstrument className="pb-4 md:pb-6 border-b border-white/5">
-              <TextInstrument className="text-lg md:text-xl font-light tracking-tight leading-tight mb-2">
+          <ContainerInstrument className="space-y-6">
+            <ContainerInstrument className="pb-6 border-b border-white/5">
+              <TextInstrument className="text-xl font-light tracking-tight leading-tight mb-2">
                 {item.name}
               </TextInstrument>
               {item.date && (
-                <TextInstrument className="text-[15px] md:text-[15px] font-light text-primary tracking-widest ">
+                <TextInstrument className="text-[15px] font-light text-primary tracking-widest">
                   {item.date}
                 </TextInstrument>
               )}
             </ContainerInstrument>
 
-            <ContainerInstrument className="space-y-2 md:space-y-3">
-              <ContainerInstrument className="flex justify-between items-center text-[15px] md:text-[15px] font-light">
-                <TextInstrument as="span" className="text-white/40 flex items-center font-light ">
-                  <VoiceglotText translationKey="common.base_amount" defaultText="Basisbedrag" />
+            <ContainerInstrument className="space-y-3">
+              <ContainerInstrument className="flex justify-between items-center text-[15px] font-light">
+                <TextInstrument as="span" className="text-white/40 flex items-center font-light">
+                  Basisbedrag
                   <PricingTooltipInstrument pricingKey="checkout_base" isUnpaid={true} />
                 </TextInstrument>
                 <TextInstrument as="span">€ {item.price.toFixed(2)}</TextInstrument>
               </ContainerInstrument>
-              <ContainerInstrument className="flex justify-between items-center text-[15px] md:text-[15px] font-light">
-                <TextInstrument as="span" className="text-white/40 font-light "><VoiceglotText translationKey="common.vat" defaultText="BTW" /> (21%)</TextInstrument>
+              <ContainerInstrument className="flex justify-between items-center text-[15px] font-light">
+                <TextInstrument as="span" className="text-white/40 font-light">BTW (21%)</TextInstrument>
                 <TextInstrument as="span">€ {vatAmount.toFixed(2)}</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
 
-            <ContainerInstrument className="pt-4 md:pt-6 border-t border-white/10 flex justify-between items-end">
-              <TextInstrument as="span" className="text-[15px] md:text-[15px] font-light tracking-widest text-white/20 "><VoiceglotText  translationKey="auto.zerolosscheckoutinstrument.totaal.e28895" defaultText="Totaal" /></TextInstrument>
-              <TextInstrument as="span" className="text-3xl md:text-4xl font-light tracking-tighter text-primary">
+            <ContainerInstrument className="pt-6 border-t border-white/10 flex justify-between items-end">
+              <TextInstrument as="span" className="text-[15px] font-light tracking-widest text-white/20"><VoiceglotText  translationKey="auto.zerolosscheckoutinstrument.totaal.e28895" defaultText="Totaal" /></TextInstrument>
+              <TextInstrument as="span" className="text-4xl font-light tracking-tighter text-primary">
                 € {totalAmount.toFixed(2)}
               </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </BentoCard>
 
-        <ContainerInstrument className="px-4 space-y-3 md:space-y-4">
+        <ContainerInstrument className="px-4 space-y-4">
           {[
-            { label: "Directe bevestiging via e-mail", key: "checkout.usp.email" },
-            { label: "Factuur Peppol-ready (Yuki)", key: "checkout.usp.invoice" },
-            { label: "Beveiligde betaling via Mollie", key: "checkout.usp.payment" }
+            "Directe bevestiging via e-mail",
+            "Factuur Peppol-ready (Yuki)",
+            "Beveiligde betaling via Mollie"
           ].map((usp, i) => (
-            <ContainerInstrument key={i} className="flex items-center gap-3 text-[15px] md:text-[15px] font-light tracking-tight text-va-black/30 ">
+            <ContainerInstrument key={i} className="flex items-center gap-3 text-[15px] font-light tracking-tight text-va-black/30">
               <CheckCircle2 strokeWidth={1.5} size={14} className="text-primary" />
-              <VoiceglotText translationKey={usp.key} defaultText={usp.label} />
+              {usp}
             </ContainerInstrument>
           ))}
         </ContainerInstrument>

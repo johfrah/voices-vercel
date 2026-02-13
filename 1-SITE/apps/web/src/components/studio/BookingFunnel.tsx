@@ -82,7 +82,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
 
   if (showInterestForm) {
     return (
-      <ContainerInstrument className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <ContainerInstrument className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <ButtonInstrument 
           onClick={() => setShowInterestForm(false)}
           className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-va-black transition-colors flex items-center gap-2 p-0 bg-transparent "
@@ -90,23 +90,23 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           <Image  src="/assets/common/branding/icons/BACK.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 
           <VoiceglotText  translationKey="common.back_to_overview" defaultText="Terug naar overzicht" />
         </ButtonInstrument>
-        <ContainerInstrument className="p-6 md:p-8 bg-va-off-white rounded-[20px] border border-va-black/5">
+        <ContainerInstrument className="p-8 bg-va-off-white rounded-[20px] border border-va-black/5">
           <HeadingInstrument level={4} className="text-xl font-light tracking-tight mb-4 text-va-black">
             <VoiceglotText  translationKey="studio.booking.notify_me.title" defaultText="Houd me op de hoogte" />
           </HeadingInstrument>
-          <TextInstrument className="text-[15px] text-va-black/60 mb-6 md:mb-8 leading-relaxed font-light">
+          <TextInstrument className="text-[15px] text-va-black/60 mb-8 leading-relaxed font-light">
             <VoiceglotText  
               translationKey="studio.booking.notify_me.text" 
               defaultText="Er zijn momenteel geen data gepland voor deze workshop. Laat je gegevens achter en we laten je als eerste weten wanneer er nieuwe edities beschikbaar zijn." 
             />
           </TextInstrument>
-          <form className="space-y-3 md:space-y-4">
+          <form className="space-y-4">
             <InputInstrument 
               type="email" 
               placeholder={t('common.placeholder.email', 'Jouw e-mailadres')} 
-              className="w-full p-3 md:p-4 !rounded-[10px] border border-va-black/10 text-[15px] outline-none transition-all"
+              className="w-full p-4 !rounded-[10px] border border-va-black/10 text-[15px] outline-none transition-all"
             />
-            <ButtonInstrument className="w-full py-3 md:py-4 bg-va-black text-white rounded-[10px] font-light tracking-widest text-[15px] hover:bg-primary transition-all ">
+            <ButtonInstrument className="w-full py-4 bg-va-black text-white rounded-[10px] font-light tracking-widest text-[15px] hover:bg-primary transition-all ">
               <VoiceglotText  translationKey="common.send" defaultText="Verzenden" />
             </ButtonInstrument>
           </form>
@@ -126,16 +126,16 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   };
 
   return (
-    <ContainerInstrument className="space-y-6 md:space-y-8">
+    <ContainerInstrument className="space-y-8">
       {/* 🔍 VOICE SEARCH */}
-      <ContainerInstrument className="space-y-3 md:space-y-4">
+      <ContainerInstrument className="space-y-4">
         <ContainerInstrument className="relative group">
             <InputInstrument 
               type="text"
               value={searchQuery}
-              onChange={(e: any) => setSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('studio.booking.search_voice', "Zoek een stem (bijv. 'johfra')...")}
-              className="w-full bg-va-off-white border border-va-black/5 rounded-[20px] py-3 px-4 md:py-4 md:pl-12 md:pr-4 pl-10 text-[15px] font-light focus:ring-2 focus:ring-primary/20 outline-none transition-all group-hover:border-va-black/10"
+              className="w-full bg-va-off-white border border-va-black/5 rounded-[20px] py-4 pl-12 pr-4 text-[15px] font-light focus:ring-2 focus:ring-primary/20 outline-none transition-all group-hover:border-va-black/10"
             />
             <Image  src="/assets/common/branding/icons/SEARCH.svg" width={16} height={16} alt="" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             {isSearching && (
@@ -145,12 +145,12 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
 
         <AnimatePresence>
           {foundVoices.length > 0 && (
-            <ContainerInstrument className="grid grid-cols-1 gap-3 md:gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
+            <ContainerInstrument className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 px-2 ">
                 <VoiceglotText  translationKey="studio.booking.found_voices" defaultText="Gevonden Stemmen" />
               </TextInstrument>
               {foundVoices.map((voice) => (
-                <ContainerInstrument key={voice.id} className="scale-90 origin-top-left -mb-8 md:-mb-10 last:mb-0">
+                <ContainerInstrument key={voice.id} className="scale-90 origin-top-left -mb-10 last:mb-0">
                   <VoiceCard voice={voice} onSelect={() => {
                     playClick('pro');
                     window.location.href = `/checkout?usage=telefonie&voice=${voice.id}`;
@@ -164,7 +164,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       </ContainerInstrument>
 
       {/* DATE SELECTOR */}
-      <ContainerInstrument className="space-y-3 md:space-y-4">
+      <ContainerInstrument className="space-y-4">
         <ContainerInstrument className="flex items-center justify-between">
           <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 ">
             <VoiceglotText  translationKey="studio.booking.available_dates" defaultText="Beschikbare Data" />
@@ -175,7 +175,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           </TextInstrument>
         </ContainerInstrument>
         
-        <ContainerInstrument className="grid gap-2 md:gap-3">
+        <ContainerInstrument className="grid gap-3">
           {dates.length > 0 ? dates.map((date, index) => (
             <ButtonInstrument
               key={index}
@@ -188,13 +188,13 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                 }
               }}
               className={cn(
-                "w-full p-4 md:p-5 rounded-[20px] border transition-all duration-500 flex items-center justify-between group",
+                "w-full p-5 rounded-[20px] border transition-all duration-500 flex items-center justify-between group",
                 selectedDateIndex === index 
                   ? "bg-va-black border-va-black text-white shadow-aura scale-[1.02]" 
                   : "bg-va-off-white border-va-black/5 text-va-black/60 hover:border-va-black/20 hover:bg-white"
               )}
             >
-              <ContainerInstrument className="flex items-center gap-3 md:gap-4">
+              <ContainerInstrument className="flex items-center gap-4">
                 <ContainerInstrument className={cn(
                   "w-10 h-10 rounded-[10px] flex flex-col items-center justify-center transition-colors",
                   selectedDateIndex === index ? "bg-white/10" : "bg-va-black/5"
@@ -213,7 +213,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
               </ContainerInstrument>
             </ButtonInstrument>
           )) : (
-            <ContainerInstrument className="p-6 md:p-8 rounded-[20px] bg-va-off-white border border-dashed border-va-black/10 text-center">
+            <ContainerInstrument className="p-8 rounded-[20px] bg-va-off-white border border-dashed border-va-black/10 text-center">
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 ">
                 <VoiceglotText  translationKey="studio.booking.no_dates" defaultText="Geen data gepland" />
               </TextInstrument>
@@ -229,13 +229,13 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       </ContainerInstrument>
 
       {/* SUMMARY & ACTION */}
-      <ContainerInstrument className="pt-6 md:pt-8 border-t border-va-black/5 space-y-4 md:space-y-6">
+      <ContainerInstrument className="pt-8 border-t border-va-black/5 space-y-6">
         <ContainerInstrument className="flex justify-between items-end">
           <ContainerInstrument>
             <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 mb-1 ">
               <VoiceglotText  translationKey="studio.booking.total_investment" defaultText="Totaal Investering" />
             </TextInstrument>
-            <TextInstrument className="text-3xl md:text-4xl font-light tracking-tighter">€{priceExclVatValue}</TextInstrument>
+            <TextInstrument className="text-4xl font-light tracking-tighter">€{priceExclVatValue}</TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="text-right">
             <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light text-emerald-500 tracking-widest mb-1 ">
@@ -253,7 +253,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           onClick={handleBooking}
           disabled={isBooking || dates.length === 0}
           className={cn(
-            "w-full py-4 md:py-6 rounded-[10px] font-light tracking-widest text-[15px] transition-all duration-500 shadow-aura flex items-center justify-center gap-3 group relative overflow-hidden",
+            "w-full py-6 rounded-[10px] font-light tracking-widest text-[15px] transition-all duration-500 shadow-aura flex items-center justify-center gap-3 group relative overflow-hidden",
             isBooking ? "bg-va-black/80 cursor-wait" : "bg-va-black text-white hover:bg-primary active:scale-95"
           )}
         >

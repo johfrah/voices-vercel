@@ -25,55 +25,39 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
  * Bevat alle database-interacties die alleen op de server mogen draaien.
  */
 
-// Helper om te checken of we Drizzle kunnen gebruiken
-const canUseDrizzle = () => {
-  return typeof process !== 'undefined' && 
-         process.env.DATABASE_URL && 
-         process.env.NEXT_RUNTIME !== 'edge' &&
-         process.env.NEXT_RUNTIME !== 'nodejs'; // Ook niet tijdens build/edge runtime
-};
-
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
   const { language, search, gender, style, market } = params;
   
   try {
-    console.log('🔍 ATTEMPTING DB SELECT FROM actors', { params, runtime: process.env.NEXT_RUNTIME });
+    console.log('🔍 ATTEMPTING DB SELECT FROM actors', { params });
     
-    // We proberen eerst Drizzle (direct connect) - ALLEEN als we niet in Edge zitten
+    // We proberen eerst Drizzle (direct connect)
     let dbResults: any[] = [];
-    let usedDrizzle = false;
+    try {
+      let query = db.select().from(actors).$dynamic();
+      const conditions = [eq(actors.status, 'live')];
 
-    if (canUseDrizzle()) {
-      try {
-        let query = db.select().from(actors).$dynamic();
-        const conditions = [eq(actors.status, 'live')];
+      if (market === 'FR') conditions.push(eq(actors.nativeLang, 'Frans'));
+      else if (market === 'DE') conditions.push(eq(actors.nativeLang, 'Duits'));
 
-        if (market === 'FR') conditions.push(eq(actors.nativeLang, 'Frans'));
-        else if (market === 'DE') conditions.push(eq(actors.nativeLang, 'Duits'));
-
-        if (search) {
-          conditions.push(or(
-            sql`LOWER(${actors.firstName}) LIKE ${`%${search.toLowerCase()}%`}`,
-            sql`LOWER(${actors.lastName}) LIKE ${`%${search.toLowerCase()}%`}`,
-            sql`LOWER(${actors.aiTags}) LIKE ${`%${search.toLowerCase()}%`}`,
-            sql`LOWER(${actors.bio}) LIKE ${`%${search.toLowerCase()}%`}`
-          )!);
-        }
-        if (language) conditions.push(eq(actors.nativeLang, language));
-        if (gender) conditions.push(eq(actors.gender, gender));
-
-        dbResults = await query
-          .where(and(...conditions))
-          .orderBy(asc(actors.voiceScore))
-          .limit(50);
-        usedDrizzle = true;
-      } catch (dbError) {
-        console.warn('⚠️ Drizzle failed, falling back to Supabase SDK:', dbError);
+      if (search) {
+        conditions.push(or(
+          sql`LOWER(${actors.firstName}) LIKE ${`%${search.toLowerCase()}%`}`,
+          sql`LOWER(${actors.lastName}) LIKE ${`%${search.toLowerCase()}%`}`,
+          sql`LOWER(${actors.aiTags}) LIKE ${`%${search.toLowerCase()}%`}`,
+          sql`LOWER(${actors.bio}) LIKE ${`%${search.toLowerCase()}%`}`
+        )!);
       }
-    }
+      if (language) conditions.push(eq(actors.nativeLang, language));
+      if (gender) conditions.push(eq(actors.gender, gender));
 
-    if (!usedDrizzle) {
-      console.log('🛡️ Using Supabase SDK (Edge or Drizzle failed)');
+      dbResults = await query
+        .where(and(...conditions))
+        .orderBy(asc(actors.voiceScore))
+        .limit(50);
+    } catch (dbError) {
+      console.warn('⚠️ Drizzle failed, falling back to Supabase SDK:', dbError);
+      
       let sdkQuery = supabase
         .from('actors')
         .select('*')
@@ -121,31 +105,23 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     let mediaResults: any[] = [];
     let translationMap: Record<string, string> = {};
 
-    let usedDrizzleForRelations = false;
-
-    if (canUseDrizzle()) {
-      try {
-        const [demosRes, reviewsRes, transRes, mediaRes] = await Promise.all([
-          actorIds.length > 0 
-            ? db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN (${sql.join(actorIds, sql`, `)})`)
-            : Promise.resolve([]),
-          db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(10),
-          VoiceglotBridge.translateBatch(dbResults.map(a => a.bio || '').filter(Boolean), lang),
-          photoIds.length > 0
-            ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`)
-            : Promise.resolve([])
-        ]);
-        demos = demosRes;
-        dbReviews = reviewsRes;
-        translationMap = transRes;
-        mediaResults = mediaRes;
-        usedDrizzleForRelations = true;
-      } catch (relError) {
-        console.warn('⚠️ Drizzle relation fetch failed, falling back to SDK');
-      }
-    }
-
-    if (!usedDrizzleForRelations) {
+    try {
+      const [demosRes, reviewsRes, transRes, mediaRes] = await Promise.all([
+        actorIds.length > 0 
+          ? db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN (${sql.join(actorIds, sql`, `)})`)
+          : Promise.resolve([]),
+        db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(10),
+        VoiceglotBridge.translateBatch(dbResults.map(a => a.bio || '').filter(Boolean), lang),
+        photoIds.length > 0
+          ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`)
+          : Promise.resolve([])
+      ]);
+      demos = demosRes;
+      dbReviews = reviewsRes;
+      translationMap = transRes;
+      mediaResults = mediaRes;
+    } catch (relError) {
+      console.warn('⚠️ Drizzle relation fetch failed, falling back to SDK');
       const [demosRes, reviewsRes, transRes, mediaRes] = await Promise.all([
         actorIds.length > 0 
           ? supabase.from('actor_demos').select('*').in('actor_id', actorIds)
@@ -224,19 +200,10 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 
     // Get unique languages for filters
     let uniqueLangs: string[] = [];
-    let usedDrizzleForLangs = false;
-
-    if (canUseDrizzle()) {
-      try {
-        const langs = await db.select({ lang: actors.nativeLang }).from(actors).where(eq(actors.status, 'live')).groupBy(actors.nativeLang);
-        uniqueLangs = Array.from(new Set(langs.map(l => l.lang))).filter((l): l is string => l !== null).sort();
-        usedDrizzleForLangs = true;
-      } catch (langError) {
-        console.warn('⚠️ uniqueLangs Drizzle failed, falling back to SDK');
-      }
-    }
-
-    if (!usedDrizzleForLangs) {
+    try {
+      const langs = await db.select({ lang: actors.nativeLang }).from(actors).where(eq(actors.status, 'live')).groupBy(actors.nativeLang);
+      uniqueLangs = Array.from(new Set(langs.map(l => l.lang))).filter((l): l is string => l !== null).sort();
+    } catch (langError) {
       const { data } = await supabase.from('actors').select('native_lang').eq('status', 'live');
       uniqueLangs = Array.from(new Set((data || []).map(l => l.native_lang))).filter((l): l is string => l !== null).sort();
     }
@@ -266,18 +233,10 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 
 export async function getArticle(slug: string, lang: string = 'nl'): Promise<any> {
   let article: any = null;
-  let usedDrizzle = false;
-
-  if (canUseDrizzle()) {
-    try {
-      [article] = await db.select().from(contentArticles).where(eq(contentArticles.slug, slug)).limit(1);
-      usedDrizzle = true;
-    } catch (dbError) {
-      console.warn('⚠️ getArticle Drizzle failed, falling back to SDK');
-    }
-  }
-
-  if (!usedDrizzle) {
+  try {
+    [article] = await db.select().from(contentArticles).where(eq(contentArticles.slug, slug)).limit(1);
+  } catch (dbError) {
+    console.warn('⚠️ getArticle Drizzle failed, falling back to SDK');
     const { data } = await supabase.from('content_articles').select('*').eq('slug', slug).single();
     article = data;
   }
@@ -287,18 +246,10 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
   const translatedTitle = await VoiceglotBridge.t(`page.${slug}.title`, lang, true);
   
   let blocks: any[] = [];
-  let usedDrizzleForBlocks = false;
-
-  if (canUseDrizzle()) {
-    try {
-      blocks = await db.select().from(contentBlocks).where(eq(contentBlocks.articleId, article.id)).orderBy(asc(contentBlocks.displayOrder));
-      usedDrizzleForBlocks = true;
-    } catch (blockError) {
-      console.warn('⚠️ getArticle blocks Drizzle failed, falling back to SDK');
-    }
-  }
-
-  if (!usedDrizzleForBlocks) {
+  try {
+    blocks = await db.select().from(contentBlocks).where(eq(contentBlocks.articleId, article.id)).orderBy(asc(contentBlocks.displayOrder));
+  } catch (blockError) {
+    console.warn('⚠️ getArticle blocks Drizzle failed, falling back to SDK');
     const { data } = await supabase.from('content_blocks').select('*').eq('article_id', article.id).order('display_order', { ascending: true });
     blocks = (data || []).map(b => ({ ...b, articleId: b.article_id, displayOrder: b.display_order }));
   }
@@ -312,18 +263,10 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
   let actor: any = null;
-  let usedDrizzle = false;
-
-  if (canUseDrizzle()) {
-    try {
-      [actor] = await db.select().from(actors).where(eq(actors.firstName, slug)).limit(1);
-      usedDrizzle = true;
-    } catch (dbError) {
-      console.warn('⚠️ getActor Drizzle failed, falling back to SDK');
-    }
-  }
-
-  if (!usedDrizzle) {
+  try {
+    [actor] = await db.select().from(actors).where(eq(actors.firstName, slug)).limit(1);
+  } catch (dbError) {
+    console.warn('⚠️ getActor Drizzle failed, falling back to SDK');
     const { data } = await supabase.from('actors').select('*').eq('first_name', slug).single();
     if (data) {
       actor = {
@@ -354,25 +297,18 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
   let demos: any[] = [];
   let dbReviews: any[] = [];
   let mediaItem: { filePath: string } | null = null;
-  let usedDrizzleForRelations = false;
 
-  if (canUseDrizzle()) {
-    try {
-      const [demosRes, reviewsRes, mediaRes] = await Promise.all([
-        db.select().from(actorDemos).where(eq(actorDemos.actorId, actor.id)),
-        db.select().from(reviews).where(sql`${reviews.iapContext}->>'actorId' = ${actor.id.toString()}`).limit(3),
-        actor.photoId ? db.select().from(media).where(eq(media.id, actor.photoId)).limit(1) : Promise.resolve([])
-      ]);
-      demos = demosRes;
-      dbReviews = reviewsRes;
-      mediaItem = mediaRes[0] || null;
-      usedDrizzleForRelations = true;
-    } catch (relError) {
-      console.warn('⚠️ getActor relations Drizzle failed, falling back to SDK');
-    }
-  }
-
-  if (!usedDrizzleForRelations) {
+  try {
+    const [demosRes, reviewsRes, mediaRes] = await Promise.all([
+      db.select().from(actorDemos).where(eq(actorDemos.actorId, actor.id)),
+      db.select().from(reviews).where(sql`${reviews.iapContext}->>'actorId' = ${actor.id.toString()}`).limit(3),
+      actor.photoId ? db.select().from(media).where(eq(media.id, actor.photoId)).limit(1) : Promise.resolve([])
+    ]);
+    demos = demosRes;
+    dbReviews = reviewsRes;
+    mediaItem = mediaRes[0] || null;
+  } catch (relError) {
+    console.warn('⚠️ getActor relations Drizzle failed, falling back to SDK');
     const [demosRes, reviewsRes] = await Promise.all([
       supabase.from('actor_demos').select('*').eq('actor_id', actor.id),
       supabase.from('reviews').select('*').contains('iap_context', { actorId: actor.id }).limit(3)
@@ -450,18 +386,10 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
 
 export async function getMusicLibrary(category: string = 'music'): Promise<any[]> {
   let results: any[] = [];
-  let usedDrizzle = false;
-
-  if (canUseDrizzle()) {
-    try {
-      results = await db.select().from(media).where(eq(media.category, category)).orderBy(media.fileName);
-      usedDrizzle = true;
-    } catch (dbError) {
-      console.warn('⚠️ getMusicLibrary Drizzle failed, falling back to SDK');
-    }
-  }
-
-  if (!usedDrizzle) {
+  try {
+    results = await db.select().from(media).where(eq(media.category, category)).orderBy(media.fileName);
+  } catch (dbError) {
+    console.warn('⚠️ getMusicLibrary Drizzle failed, falling back to SDK');
     const { data } = await supabase.from('media').select('*').eq('category', category).order('file_name');
     results = (data || []).map(m => ({
       ...m,
@@ -484,18 +412,10 @@ export async function getAcademyLesson(id: string): Promise<any> {
   if (isNaN(lessonOrder)) return null;
 
   let lesson: any = null;
-  let usedDrizzle = false;
-
-  if (canUseDrizzle()) {
-    try {
-      [lesson] = await db.select().from(lessons).where(eq(lessons.displayOrder, lessonOrder)).limit(1);
-      usedDrizzle = true;
-    } catch (dbError) {
-      console.warn('⚠️ getAcademyLesson Drizzle failed, falling back to SDK');
-    }
-  }
-
-  if (!usedDrizzle) {
+  try {
+    [lesson] = await db.select().from(lessons).where(eq(lessons.displayOrder, lessonOrder)).limit(1);
+  } catch (dbError) {
+    console.warn('⚠️ getAcademyLesson Drizzle failed, falling back to SDK');
     const { data } = await supabase.from('lessons').select('*').eq('display_order', lessonOrder).single();
     if (data) {
       lesson = {

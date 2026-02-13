@@ -6,14 +6,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { VoiceglotText } from './VoiceglotText';
 
-import { 
-  ButtonInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  SectionInstrument, 
-  TextInstrument 
-} from './LayoutInstruments';
-
 interface ArtistHeroInstrumentProps {
   name: string;
   bio: string;
@@ -34,79 +26,73 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
   image 
 }) => {
   return (
-    <SectionInstrument as="header" className="va-artist-hero">
-      <ContainerInstrument as="nav" className="va-artist-nav py-4 md:py-6 border-b border-white/5">
-        <ContainerInstrument className="va-container va-artist-nav-content flex items-center justify-between">
-          <ContainerInstrument className="va-artist-nav-left flex items-center gap-6 md:gap-8">
-            <Link  href="/agency" className="va-artist-back-link flex items-center gap-2 text-white/60 hover:text-white transition-colors">
-              <ContainerInstrument className="va-artist-back-icon w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+    <header className="va-artist-hero">
+      <nav className="va-artist-nav">
+        <div className="va-container va-artist-nav-content">
+          <div className="va-artist-nav-left">
+            <Link  href="/agency" className="va-artist-back-link">
+              <div className="va-artist-back-icon">
                 <ArrowLeft strokeWidth={1.5} size={18} />
-              </ContainerInstrument>
-              <TextInstrument as="span" className="va-artist-back-text font-light tracking-widest text-[15px]"><VoiceglotText  translationKey="auto.artistheroinstrument.agency.75ec3e" defaultText="Agency" /></TextInstrument>
+              </div>
+              <span className="va-artist-back-text"><VoiceglotText  translationKey="auto.artistheroinstrument.agency.75ec3e" defaultText="Agency" /></span>
             </Link>
             
-            <ContainerInstrument className="va-artist-nav-links hidden md:flex items-center gap-6">
+            <div className="va-artist-nav-links">
               {['demos', 'tarieven', 'studio', 'contact'].map((item) => (
-                <a key={item} href={`#${item}`} className="va-artist-nav-link text-[15px] font-light tracking-widest text-white/40 hover:text-white transition-all relative group">
+                <a key={item} href={`#${item}`} className="va-artist-nav-link">
                   {item}
-                  <TextInstrument as="span" className="va-artist-nav-link-indicator absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full font-light"></TextInstrument>
+                  <span className="va-artist-nav-link-indicator"></span>
                 </a>
               ))}
-            </ContainerInstrument>
-          </ContainerInstrument>
+            </div>
+          </div>
 
-          <ContainerInstrument className="va-artist-nav-right">
-            <ButtonInstrument className="va-btn-pro py-3 px-6 !rounded-full"><VoiceglotText  translationKey="artist.hero.cta_book" defaultText="Direct Boeken" /></ButtonInstrument>
-          </ContainerInstrument>
-        </ContainerInstrument>
-      </ContainerInstrument>
+          <div className="va-artist-nav-right">
+            <button className="va-btn-pro"><VoiceglotText  translationKey="artist.hero.cta_book" defaultText="Direct Boeken" /></button>
+          </div>
+        </div>
+      </nav>
 
-      <SectionInstrument id="hero" className="va-artist-hero-section py-16 md:py-32">
-        <ContainerInstrument className="va-container va-artist-hero-grid grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-24 items-center">
-          <ContainerInstrument className="va-artist-hero-content space-y-6 md:space-y-8">
-            <ContainerInstrument className="va-artist-badge inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 w-fit">
-              <TextInstrument as="span" className="va-artist-badge-dot w-2 h-2 rounded-full bg-primary animate-pulse font-light"></TextInstrument> 
-              <TextInstrument className="text-[15px] font-light tracking-widest text-white/60">
-                <VoiceglotText  translationKey="artist.hero.badge" defaultText="Official Voice Portfolio" />
-              </TextInstrument>
-            </ContainerInstrument>
-            <HeadingInstrument level={1} className="va-artist-title font-light text-5xl md:text-8xl tracking-tighter leading-tight text-white">
+      <section id="hero" className="va-artist-hero-section">
+        <div className="va-container va-artist-hero-grid">
+          <div className="va-artist-hero-content">
+            <div className="va-artist-badge">
+              <span className="va-artist-badge-dot"></span> 
+              <VoiceglotText  translationKey="artist.hero.badge" defaultText="Official Voice Portfolio" />
+            </div>
+            <h1 className="va-artist-title font-light">
               {name.split(' ')[0]} <br />
-              <TextInstrument as="span" className="va-hmagic-text text-primary font-light">
-                {name.split(' ').slice(1).join(' ')}
-              </TextInstrument>
-            </HeadingInstrument>
-            <TextInstrument className="va-artist-bio text-lg md:text-xl text-white/60 font-light leading-relaxed max-w-xl">
+              <span className="va-hmagic-text">{name.split(' ').slice(1).join(' ')}</span>
+            </h1>
+            <p className="va-artist-bio">
               {bio}
-            </TextInstrument>
+            </p>
             
-            <ContainerInstrument className="va-artist-hero-actions flex flex-wrap items-center gap-4 md:gap-6">
-              <a href="#demos">
-                <ButtonInstrument className="va-btn-pro py-4 px-8 !rounded-full">
-                  <VoiceglotText  translationKey="artist.hero.cta_demos" defaultText="Beluister Demo's" />
-                </ButtonInstrument>
+            <div className="va-artist-hero-actions">
+              <a href="#demos" className="va-btn-pro">
+                <VoiceglotText  translationKey="artist.hero.cta_demos" defaultText="Beluister Demo's" />
               </a>
-              <a href="#tarieven" className="va-artist-btn-secondary text-white/40 hover:text-white transition-colors font-light tracking-widest text-[15px]">
+              <a href="#tarieven" className="va-artist-btn-secondary">
                 <VoiceglotText  translationKey="artist.hero.cta_rates" defaultText="Bekijk Tarieven" />
               </a>
-            </ContainerInstrument>
-          </ContainerInstrument>
+            </div>
+          </div>
           
-          <ContainerInstrument className="va-artist-hero-visual relative">
-            <ContainerInstrument className="va-artist-image-wrapper aspect-[4/5] rounded-[40px] overflow-hidden relative shadow-2xl border border-white/10">
+          <div className="va-artist-hero-visual">
+            <div className="va-artist-image-wrapper">
               <Image  
                 src={image} 
                 alt={name} 
                 fill
-                className="va-artist-image object-cover"
+                className="va-artist-image"
               />
-              <ContainerInstrument className="va-artist-image-overlay absolute inset-0 bg-gradient-to-t from-va-black via-transparent to-transparent opacity-40"></ContainerInstrument>
-            </ContainerInstrument>
-            <ContainerInstrument className="va-artist-aura-primary absolute -top-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-[100px]"></ContainerInstrument>
-            <ContainerInstrument className="va-artist-aura-secondary absolute -bottom-20 -left-20 w-64 h-64 bg-secondary/20 rounded-full blur-[100px]"></ContainerInstrument>
-          </ContainerInstrument>
-        </ContainerInstrument>
-      </SectionInstrument>
-    </SectionInstrument>
+              <div className="va-artist-image-overlay"></div>
+            </div>
+            <div className="va-artist-aura-primary"></div>
+            <div className="va-artist-aura-secondary"></div>
+          </div>
+        </div>
+      </section>
+    </header>
   );
 };

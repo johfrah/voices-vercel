@@ -67,26 +67,21 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handleAudioError = (e: any) => {
-    const error = e.currentTarget.error;
-    console.error("❌ MediaMaster: Audio playback error", {
-      code: error?.code,
-      message: error?.message,
-      src: demo.audio_url
-    });
+  const handleAudioError = () => {
+    console.error("Audio playback error");
     setIsPlaying(false);
   };
 
   return (
     <ContainerInstrument className="fixed bottom-0 inset-x-0 z-[100] p-4 md:p-8 pointer-events-none">
-      <ContainerInstrument className="max-w-6xl mx-auto bg-va-black/95 backdrop-blur-3xl rounded-[24px] md:rounded-[40px] p-4 md:p-6 shadow-[0_32px_128px_rgba(0,0,0,0.8)] border border-white/10 pointer-events-auto relative overflow-hidden group/master">
+      <ContainerInstrument className="max-w-6xl mx-auto bg-va-black/95 backdrop-blur-3xl rounded-[32px] md:rounded-[40px] p-4 md:p-6 shadow-[0_32px_128px_rgba(0,0,0,0.8)] border border-white/10 pointer-events-auto relative overflow-hidden group/master">
         {/* Liquid Progress Background */}
         <ContainerInstrument 
           className="absolute inset-0 bg-primary/5 transition-all duration-300 ease-out pointer-events-none" 
           style={{ width: `${progress}%` }}
         />
 
-        <ContainerInstrument as="audio"
+        <audio 
           ref={audioRef} 
           src={demo.audio_url}
           onTimeUpdate={handleTimeUpdate} 
@@ -97,8 +92,8 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
         
         <ContainerInstrument className="flex flex-col md:flex-row items-center gap-4 md:gap-6 relative z-10">
           {/* Demo Info (Sherlock: Beautiful Titles & Actor Photo) */}
-          <ContainerInstrument className="flex items-center gap-3 md:gap-4 min-w-0 w-full md:w-auto flex-1">
-            <ContainerInstrument className="relative w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl overflow-hidden shrink-0 shadow-2xl border border-white/10 group/photo">
+          <ContainerInstrument className="flex items-center gap-4 min-w-0 w-full md:w-auto flex-1">
+            <ContainerInstrument className="relative w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden shrink-0 shadow-2xl border border-white/10 group/photo">
               {demo.actor_photo ? (
                 <VoiceglotImage  
                   src={demo.actor_photo} 
@@ -107,24 +102,24 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
                 />
               ) : (
                 <ContainerInstrument className="w-full h-full bg-primary flex items-center justify-center text-white animate-pulse">
-                  <Volume2 strokeWidth={1.5} size={20} />
+                  <Volume2 strokeWidth={1.5} size={24} />
                 </ContainerInstrument>
               )}
               {/* Live Indicator Overlay */}
-              <ContainerInstrument className="absolute bottom-1 right-1 w-2.5 h-2.5 md:w-3 md:h-3 bg-primary rounded-full border-2 border-va-black animate-pulse" />
+              <ContainerInstrument className="absolute bottom-1 right-1 w-3 h-3 bg-primary rounded-full border-2 border-va-black animate-pulse" />
             </ContainerInstrument>
             
             <ContainerInstrument className="min-w-0 flex-1">
               <ContainerInstrument className="flex flex-col">
-                <HeadingInstrument level={4} className="text-white font-light tracking-tighter text-base md:text-xl truncate leading-tight ">
+                <HeadingInstrument level={4} className="text-white font-light tracking-tighter text-lg md:text-xl truncate leading-tight">
                   {demo.actor_name || 'Stemacteur'}
                 </HeadingInstrument>
-                <ContainerInstrument className="flex items-center gap-1.5 md:gap-2">
-                  <TextInstrument className="text-white/40 text-[15px] md:text-[15px] font-light tracking-[0.2em] truncate ">
+                <ContainerInstrument className="flex items-center gap-2">
+                  <TextInstrument className="text-white/40 text-[15px] font-light tracking-[0.2em] truncate">
                     {demo.title}
                   </TextInstrument>
                   <ContainerInstrument className="w-1 h-1 rounded-full bg-primary/40 shrink-0" />
-                  <TextInstrument className="text-primary text-[15px] md:text-[15px] font-light tracking-widest shrink-0 ">
+                  <TextInstrument className="text-primary text-[15px] font-light tracking-widest shrink-0">
                     <VoiceglotText  translationKey="media.live_preview" defaultText="Live" />
                   </TextInstrument>
                 </ContainerInstrument>
@@ -133,39 +128,39 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
             
             {/* Mobile Time Display */}
             <ContainerInstrument className="md:hidden text-right tabular-nums">
-              <TextInstrument className="text-white font-light text-[15px] md:text-[15px]">{formatTime(audioRef.current?.currentTime || 0)}</TextInstrument>
-              <TextInstrument className="text-white/20 text-[15px] md:text-[15px] font-light">{formatTime(duration)}</TextInstrument>
+              <TextInstrument className="text-white font-light text-[15px]">{formatTime(audioRef.current?.currentTime || 0)}</TextInstrument>
+              <TextInstrument className="text-white/20 text-[15px] font-light">{formatTime(duration)}</TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
 
           {/* Controls */}
-          <ContainerInstrument className="flex items-center justify-center gap-4 md:gap-6 w-full md:w-auto">
+          <ContainerInstrument className="flex items-center justify-center gap-6 w-full md:w-auto">
             <ButtonInstrument 
               onClick={() => {
                 if (audioRef.current) audioRef.current.currentTime -= 5;
                 playClick('soft');
               }}
-              className="text-white/30 hover:text-white transition-all active:scale-90 p-0 bg-transparent"
+              className="text-white/30 hover:text-white transition-all active:scale-90"
             >
-              <SkipBack strokeWidth={1.5} size={20} fill="currentColor" />
+              <SkipBack strokeWidth={1.5} size={24} fill="currentColor" />
             </ButtonInstrument>
             <ButtonInstrument 
               onClick={() => {
                 togglePlay();
                 playClick(isPlaying ? 'soft' : 'pro');
               }}
-              className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-105 active:scale-90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] p-0"
+              className="w-16 h-16 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-105 active:scale-90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
             >
-              {isPlaying ? <Pause strokeWidth={1.5} size={24} fill="currentColor" /> : <Play strokeWidth={1.5} size={24} fill="currentColor" className="ml-1" />}
+              {isPlaying ? <Pause strokeWidth={1.5} size={32} fill="currentColor" /> : <Play strokeWidth={1.5} size={32} fill="currentColor" className="ml-1" />}
             </ButtonInstrument>
             <ButtonInstrument 
               onClick={() => {
                 if (audioRef.current) audioRef.current.currentTime += 5;
                 playClick('soft');
               }}
-              className="text-white/30 hover:text-white transition-all active:scale-90 p-0 bg-transparent"
+              className="text-white/30 hover:text-white transition-all active:scale-90"
             >
-              <SkipForward strokeWidth={1.5} size={20} fill="currentColor" />
+              <SkipForward strokeWidth={1.5} size={24} fill="currentColor" />
             </ButtonInstrument>
           </ContainerInstrument>
 
@@ -180,24 +175,24 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
                 playClick('soft');
                 onClose?.();
               }}
-              className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all p-0"
+              className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"
             >
-              <X strokeWidth={1.5} size={18} />
+              <X strokeWidth={1.5} size={20} />
             </ButtonInstrument>
           </ContainerInstrument>
           
           {/* Mobile Close */}
           <ButtonInstrument 
             onClick={onClose}
-            className="md:hidden absolute -top-2 -right-2 w-7 h-7 md:w-8 md:h-8 rounded-full bg-va-black border border-white/10 flex items-center justify-center text-white/40 shadow-xl p-0"
+            className="md:hidden absolute -top-2 -right-2 w-8 h-8 rounded-full bg-va-black border border-white/10 flex items-center justify-center text-white/40 shadow-xl"
           >
-            <X strokeWidth={1.5} size={12} />
+            <X strokeWidth={1.5} size={14} />
           </ButtonInstrument>
         </ContainerInstrument>
 
         {/* Progress Bar */}
         <ContainerInstrument 
-          className="mt-4 md:mt-6 h-1.5 md:h-2 w-full bg-white/5 rounded-full overflow-hidden cursor-pointer group relative"
+          className="mt-4 md:mt-6 h-2 w-full bg-white/5 rounded-full overflow-hidden cursor-pointer group relative"
           onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const x = e.clientX - rect.left;

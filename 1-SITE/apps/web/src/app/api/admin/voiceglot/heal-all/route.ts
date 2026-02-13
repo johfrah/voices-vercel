@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
           subject: `🚀 Nuclear Heal-All LIVE: ${totalHealed} vertalingen toegevoegd`,
           html: `
             <div style="font-family: sans-serif; padding: 40px; background: #000; color: #fff; border-radius: 24px;">
-              <h2 className="font-light" style="letter-spacing: -0.02em; color: #ff4f00;">🚀 Nuclear Heal-All Live</h2>
+              <h2 style="letter-spacing: -0.02em; color: #ff4f00;">🚀 Nuclear Heal-All Live</h2>
               <p>De Freedom Machine heeft een volledige scan uitgevoerd en alle vertalingen direct geactiveerd.</p>
               <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;" />
               <p style="font-size: 24px; font-weight: bold;">${totalHealed} strings zijn nu live.</p>

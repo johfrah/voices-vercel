@@ -13,23 +13,7 @@ import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useTranslation } from "@/contexts/TranslationContext";
-import { 
-  Loader2, 
-  Mic,
-  ArrowLeft,
-  Play,
-  X,
-  Plus,
-  ArrowRight,
-  ChevronLeft,
-  Clock,
-  TrendingUp,
-  Brain,
-  MessageSquare,
-  Sparkles,
-  Search,
-  LabelInstrument
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from 'react';

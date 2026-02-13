@@ -5,8 +5,6 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { ContainerInstrument } from './LayoutInstruments';
-
 /**
  * 🌊 LIQUID TRANSITION OVERLAY
  * 
@@ -32,16 +30,16 @@ export function LiquidTransitionOverlay() {
   }, [pathname]);
 
   return (
-    <ContainerInstrument 
+    <div 
       className={cn(
         "fixed inset-0 z-[9999] pointer-events-none transition-all duration-700 ease-va-bezier",
         isTransitioning ? "bg-va-off-white opacity-100" : "bg-va-off-white opacity-0"
       )}
     >
-      <ContainerInstrument className={cn(
+      <div className={cn(
         "absolute inset-0 hmagic opacity-10 transition-transform duration-1000 ease-va-bezier",
         isTransitioning ? "scale-110 rotate-3" : "scale-100 rotate-0"
       )} />
-    </ContainerInstrument>
+    </div>
   );
 }

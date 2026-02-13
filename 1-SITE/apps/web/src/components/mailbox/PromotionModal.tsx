@@ -1,16 +1,8 @@
 "use client";
 
-import { 
-  ButtonInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  InputInstrument, 
-  LabelInstrument,
-  TextInstrument 
-} from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { Check, Rocket, X } from 'lucide-react';
 import { useState } from 'react';
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 interface PromotionModalProps {
   file: {
@@ -60,60 +52,54 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
   return (
     <ContainerInstrument className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-va-black/40 backdrop-blur-sm">
       <ContainerInstrument className="w-full max-w-md bg-white rounded-[32px] shadow-2xl overflow-hidden border border-gray-100">
-        <ContainerInstrument className="p-6 md:p-8">
-          <ContainerInstrument className="flex justify-between items-start mb-4 md:mb-6">
+        <ContainerInstrument className="p-8">
+          <ContainerInstrument className="flex justify-between items-start mb-6">
             <ContainerInstrument className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center">
               <Rocket strokeWidth={1.5} size={24} />
             </ContainerInstrument>
-            <ButtonInstrument onClick={onClose} className="p-2 hover:bg-gray-50 rounded-xl transition-colors bg-transparent">
+            <ButtonInstrument onClick={onClose} className="p-2 hover:bg-gray-50 rounded-xl transition-colors">
               <X strokeWidth={1.5} size={20} className="text-gray-400" />
             </ButtonInstrument>
           </ContainerInstrument>
 
-          <HeadingInstrument level={3} className="text-xl md:text-2xl font-light tracking-tight text-gray-900 mb-2">
-            <VoiceglotText  translationKey="mailbox.promote_title" defaultText="Promoot naar Profiel" />
+          <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-gray-900 mb-2">
+            Promoot naar Profiel
           </HeadingInstrument>
-          <TextInstrument className="text-gray-500 text-[15px] mb-6 md:mb-8 font-light">
-            <VoiceglotText  translationKey="mailbox.promote_desc" defaultText="Verplaats deze demo van de privé kluis naar het publieke profiel van de stem." />
+          <TextInstrument className="text-gray-500 text-[15px] mb-8 font-light">
+            Verplaats deze demo van de privé kluis naar het publieke profiel van de stem.
           </TextInstrument>
 
           {isSuccess ? (
-            <ContainerInstrument className="py-8 md:py-12 text-center space-y-3 md:space-y-4">
+            <ContainerInstrument className="py-12 text-center space-y-4">
               <ContainerInstrument className="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto animate-bounce">
                 <Check strokeWidth={1.5} size={32} />
               </ContainerInstrument>
-              <TextInstrument className="font-bold text-green-600">
-                <VoiceglotText  translationKey="mailbox.promote_success" defaultText="Succesvol gepromoveerd!" />
-              </TextInstrument>
+              <TextInstrument className="font-bold text-green-600">Succesvol gepromoveerd!</TextInstrument>
             </ContainerInstrument>
           ) : (
-            <ContainerInstrument className="space-y-4 md:space-y-6">
-                <ContainerInstrument className="flex flex-col">
-                  <LabelInstrument className="text-[15px] font-black tracking-widest text-gray-400 mb-2 block">
-                    <VoiceglotText  translationKey="mailbox.demo_name" defaultText="Demo Naam" />
-                  </LabelInstrument>
-                  <InputInstrument 
-                    value={demoName}
-                    onChange={(e: any) => setDemoName(e.target.value)}
-                    className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-[15px] font-bold"
-                  />
-                </ContainerInstrument>
+            <ContainerInstrument className="space-y-6">
+              <ContainerInstrument>
+                <LabelInstrument className="text-[15px] font-black tracking-widest text-gray-400 mb-2 block">Demo Naam</LabelInstrument>
+                <InputInstrument 
+                  value={demoName}
+                  onChange={(e) => setDemoName(e.target.value)}
+                  className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-[15px] font-bold"
+                />
+              </ContainerInstrument>
 
-                <ContainerInstrument className="flex flex-col">
-                  <LabelInstrument className="text-[15px] font-black tracking-widest text-gray-400 mb-2 block">
-                    <VoiceglotText  translationKey="mailbox.demo_type" defaultText="Type" />
-                  </LabelInstrument>
-                  <select 
-                    value={demoType}
-                    onChange={(e: any) => setDemoType(e.target.value)}
-                    className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-[15px] font-bold appearance-none cursor-pointer"
-                  >
-                    <option value="demo">Algemene Demo</option>
-                    <option value="commercial">Commercial</option>
-                    <option value="corporate">Corporate</option>
-                    <option value="telephony">Telephony</option>
-                  </select>
-                </ContainerInstrument>
+              <ContainerInstrument>
+                <LabelInstrument className="text-[15px] font-black tracking-widest text-gray-400 mb-2 block">Type</LabelInstrument>
+                <select 
+                  value={demoType}
+                  onChange={(e) => setDemoType(e.target.value)}
+                  className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-[15px] font-bold appearance-none cursor-pointer"
+                >
+                  <option value="demo">Algemene Demo</option>
+                  <option value="commercial">Commercial</option>
+                  <option value="corporate">Corporate</option>
+                  <option value="telephony">Telephony</option>
+                </select>
+              </ContainerInstrument>
 
               <ContainerInstrument className="pt-4">
                 <ButtonInstrument 
@@ -121,19 +107,15 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
                   disabled={isPromoting || !actorId}
                   className="w-full bg-va-black text-white rounded-2xl py-4 font-black tracking-widest text-[15px] flex items-center justify-center gap-2 hover:scale-[1.02] transition-all disabled:opacity-50"
                 >
-                  {isPromoting ? (
-                    <VoiceglotText  translationKey="common.processing" defaultText="Bezig..." />
-                  ) : (
+                  {isPromoting ? 'Bezig...' : (
                     <>
                       <Rocket strokeWidth={1.5} size={16} />
-                      <VoiceglotText  translationKey="mailbox.promote_now" defaultText="Nu Promoveren" />
+                      Nu Promoveren
                     </>
                   )}
                 </ButtonInstrument>
                 {!actorId && (
-                  <TextInstrument className="text-[15px] text-red-500 mt-2 text-center font-bold">
-                    <VoiceglotText  translationKey="mailbox.no_actor_linked" defaultText="⚠️ Geen acteur gekoppeld aan deze mail." />
-                  </TextInstrument>
+                  <TextInstrument className="text-[15px] text-red-500 mt-2 text-center font-bold">⚠️ Geen acteur gekoppeld aan deze mail.</TextInstrument>
                 )}
               </ContainerInstrument>
             </ContainerInstrument>

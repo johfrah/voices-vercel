@@ -5,7 +5,6 @@ import {
     ButtonInstrument,
     ContainerInstrument,
     HeadingInstrument,
-    InputInstrument,
     PageWrapperInstrument,
     SectionInstrument,
     TextInstrument
@@ -68,7 +67,7 @@ export default function AdminUsersPage() {
         <ContainerInstrument className="flex gap-4">
           <ContainerInstrument className="relative group">
             <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} />
-            <InputInstrument 
+            <input 
               type="text" 
               placeholder="Zoek op naam of email..." 
               value={searchQuery}
@@ -149,15 +148,15 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="p-6">
                   <ContainerInstrument className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ButtonInstrument className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
+                    <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
                       <Edit3 strokeWidth={1.5} size={14} />
-                    </ButtonInstrument>
-                    <ButtonInstrument className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
+                    </button>
+                    <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
                       <Mail strokeWidth={1.5} size={14} />
-                    </ButtonInstrument>
-                    <ButtonInstrument className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
+                    </button>
+                    <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
                       <MoreHorizontal strokeWidth={1.5} size={14} />
-                    </ButtonInstrument>
+                    </button>
                   </ContainerInstrument>
                 </td>
               </tr>

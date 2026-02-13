@@ -8,16 +8,11 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Helper om te checken of we Drizzle kunnen gebruiken
-const canUseDrizzle = () => {
-  return typeof process !== 'undefined' && 
-         process.env.DATABASE_URL && 
-         process.env.NEXT_RUNTIME !== 'edge' &&
-         process.env.NEXT_RUNTIME !== 'nodejs';
-};
-
 /**
  * NUCLEAR VOICEGLOT BRIDGE - 2026 EDITION
+ * 
+ * Deze service vervangt de PHP voices_t() API volledig.
+ * Het haalt real-time vertalingen uit de Supabase 'translations' tabel.
  */
 
 export class VoiceglotBridge {
@@ -38,27 +33,19 @@ export class VoiceglotBridge {
         : eq(translations.originalText, textOrKey);
 
       let result: any = null;
-      let usedDrizzle = false;
-
-      if (canUseDrizzle()) {
-        try {
-          const [dbResult] = await db.select()
-            .from(translations)
-            .where(
-              and(
-                condition,
-                eq(translations.lang, lang)
-              )
+      try {
+        const [dbResult] = await db.select()
+          .from(translations)
+          .where(
+            and(
+              condition,
+              eq(translations.lang, lang)
             )
-            .limit(1);
-          result = dbResult;
-          usedDrizzle = true;
-        } catch (dbError) {
-          console.warn('⚠️ Voiceglot Drizzle failed, falling back to SDK');
-        }
-      }
-
-      if (!usedDrizzle) {
+          )
+          .limit(1);
+        result = dbResult;
+      } catch (dbError) {
+        console.warn('⚠️ Voiceglot Drizzle failed, falling back to SDK');
         const query = supabase.from('translations').select('*').eq('lang', lang);
         if (isKey) query.eq('translation_key', textOrKey);
         else query.eq('original_text', textOrKey);
@@ -94,20 +81,12 @@ export class VoiceglotBridge {
 
     try {
       let results: any[] = [];
-      let usedDrizzle = false;
-
-      if (canUseDrizzle()) {
-        try {
-          results = await db.select()
-            .from(translations)
-            .where(eq(translations.lang, lang));
-          usedDrizzle = true;
-        } catch (dbError) {
-          console.warn('⚠️ Voiceglot Batch Drizzle failed, falling back to SDK');
-        }
-      }
-
-      if (!usedDrizzle) {
+      try {
+        results = await db.select()
+          .from(translations)
+          .where(eq(translations.lang, lang));
+      } catch (dbError) {
+        console.warn('⚠️ Voiceglot Batch Drizzle failed, falling back to SDK');
         const { data } = await supabase.from('translations').select('*').eq('lang', lang);
         results = (data || []).map(r => ({
           ...r,

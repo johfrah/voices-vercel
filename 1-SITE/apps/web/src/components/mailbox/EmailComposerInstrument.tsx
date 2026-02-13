@@ -43,12 +43,12 @@ export const EmailComposerInstrument = ({
         </ContainerInstrument>
 
         {/* Body */}
-        <ContainerInstrument className="va-composer-body space-y-4 md:space-y-6">
+        <ContainerInstrument className="va-composer-body">
           <ContainerInstrument className="va-composer-field">
             <TextInstrument as="label" className="va-composer-label font-light"><VoiceglotText  translationKey="mailbox.to" defaultText="Aan" /></TextInstrument>
             <InputInstrument 
               value={to}
-              onChange={(e: any) => setTo(e.target.value)}
+              onChange={(e) => setTo(e.target.value)}
               placeholder="ontvanger@email.com"
               className="va-composer-input"
             />
@@ -58,7 +58,7 @@ export const EmailComposerInstrument = ({
             <TextInstrument as="label" className="va-composer-label font-light"><VoiceglotText  translationKey="mailbox.subject" defaultText="Onderwerp" /></TextInstrument>
             <InputInstrument 
               value={subject}
-              onChange={(e: any) => setSubject(e.target.value)}
+              onChange={(e) => setSubject(e.target.value)}
               placeholder="Onderwerp van je bericht..."
               className="va-composer-input"
             />
@@ -69,7 +69,7 @@ export const EmailComposerInstrument = ({
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="Schrijf je bericht..."
-              className="va-composer-textarea min-h-[200px] p-3 md:p-4 rounded-xl border border-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px]"
+              className="va-composer-textarea"
             />
           </ContainerInstrument>
         </ContainerInstrument>

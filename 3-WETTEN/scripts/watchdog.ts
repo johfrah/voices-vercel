@@ -335,8 +335,8 @@ class ChrisWatchdog {
         return match;
     });
 
-    // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix Leesbaarheid (text-sm -> text-[15px])
-    content = content.replace(/text-(xs|sm|\[(1[0-4]|[0-9])px\])/g, (match, p1, p2) => {
+    // 🚀 CHRIS-PROTOCOL 2.0: Auto-fix Leesbaarheid (Alleen tekst < 15px opschalen naar 15px)
+    content = content.replace(/text-(xs|sm|\[([0-9]|1[0-4])px\])/g, (match) => {
       console.log(`   ✅ [FIX] ${path.basename(filePath)}: Opgeschaald naar text-[15px] (${match})`);
       return 'text-[15px]';
     });

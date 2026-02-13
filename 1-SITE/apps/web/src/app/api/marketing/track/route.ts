@@ -20,10 +20,7 @@ export async function POST(request: NextRequest) {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1'
 
     if (!visitorHash) {
-      // 🕵️ MAT: Als er geen hash is, genereren we er een of we negeren het event voor nu
-      // In plaats van een 400 error, geven we een 200 met een waarschuwing om de frontend niet te laten crashen
-      console.warn('🕵️ MAT: Tracking overgeslagen, geen visitor hash gevonden.');
-      return NextResponse.json({ success: false, message: 'Missing visitor hash' });
+      return new NextResponse('Missing visitor hash', { status: 400 })
     }
 
     const supabase = createClient(
@@ -62,10 +59,7 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
-    if (visitorError) {
-      console.error('❌ MAT: Visitor upsert error:', visitorError);
-      // We gaan door met loggen, zelfs als de upsert faalt
-    }
+    if (visitorError) throw visitorError
 
     // 2. Log het event
     const { error: logError } = await supabase
@@ -81,10 +75,7 @@ export async function POST(request: NextRequest) {
         iap_context: iapContext
       })
 
-    if (logError) {
-      console.error('❌ MAT: Event log error:', logError);
-      throw logError;
-    }
+    if (logError) throw logError
 
     return NextResponse.json({ success: true })
     } catch (err: any) {

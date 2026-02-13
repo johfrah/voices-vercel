@@ -2,13 +2,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument,
-  ButtonInstrument
-} from '@/components/ui/LayoutInstruments';
-import { VoiceglotText } from '../ui/VoiceglotText';
 
 interface QuizOption {
   text: string;
@@ -112,7 +105,7 @@ export const WorkshopQuiz: React.FC = () => {
   }, [currentStepId]);
 
   return (
-    <ContainerInstrument className="relative w-full max-w-md mx-auto aspect-[9/16] bg-black rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
+    <div className="relative w-full max-w-md mx-auto aspect-[9/16] bg-black rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
       {/* Video Background */}
       <video
         ref={videoRef}
@@ -126,7 +119,7 @@ export const WorkshopQuiz: React.FC = () => {
       </video>
 
       {/* Glass Overlay Content */}
-      <ContainerInstrument className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
+      <div className="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
         <AnimatePresence  mode="wait">
           <motion.div
             key={currentStep.id}
@@ -134,32 +127,32 @@ export const WorkshopQuiz: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
-            className="space-y-4 md:space-y-6"
+            className="space-y-6"
           >
-            <HeadingInstrument level={3} className="text-xl md:text-2xl font-light text-white leading-tight drop-shadow-lg">
-              <VoiceglotText  translationKey={`studio.quiz.step.${currentStep.id}.question`} defaultText={currentStep.question} />
-            </HeadingInstrument>
+            <h3 className="text-2xl font-light text-white leading-tight drop-shadow-lg">
+              {currentStep.question}
+            </h3>
 
-            <ContainerInstrument className="space-y-2 md:space-y-3">
+            <div className="space-y-3">
               {currentStep.choices.map((choice, idx) => (
-                <ButtonInstrument
+                <button
                   key={idx}
                   onClick={() => handleChoice(choice)}
-                  className="w-full py-3 px-4 md:py-4 md:px-6 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-xl text-white font-medium text-left flex items-center justify-between group/btn transition-all active:scale-[0.98]"
+                  className="w-full py-4 px-6 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-xl text-white font-medium text-left flex items-center justify-between group/btn transition-all active:scale-[0.98]"
                 >
-                  <TextInstrument as="span"><VoiceglotText  translationKey={`studio.quiz.step.${currentStep.id}.choice.${idx}`} defaultText={choice.text} /></TextInstrument>
+                  <span>{choice.text}</span>
                   <ArrowRight strokeWidth={1.5} size={18} className="opacity-0 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all" />
-                </ButtonInstrument>
+                </button>
               ))}
-            </ContainerInstrument>
+            </div>
           </motion.div>
         </AnimatePresence>
-      </ContainerInstrument>
+      </div>
 
       {/* Progress Bar */}
-      <ContainerInstrument className="absolute top-4 left-4 right-4 flex gap-1">
+      <div className="absolute top-4 left-4 right-4 flex gap-1">
         {QUIZ_DATA.filter(s => !s.id.startsWith('resultaat')).map((s, idx) => (
-          <ContainerInstrument 
+          <div 
             key={s.id} 
             className={`h-1 flex-1 rounded-full transition-all duration-500 ${
               QUIZ_DATA.findIndex(step => step.id === currentStepId) >= idx 
@@ -168,7 +161,7 @@ export const WorkshopQuiz: React.FC = () => {
             }`}
           />
         ))}
-      </ContainerInstrument>
-    </ContainerInstrument>
+      </div>
+    </div>
   );
 };

@@ -5,9 +5,7 @@ import {
   SectionInstrument, 
   ContainerInstrument, 
   HeadingInstrument, 
-  TextInstrument,
-  ButtonInstrument,
-  LabelInstrument
+  TextInstrument 
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { Music, Play, Pause, Loader2, ArrowRight, Check, Info } from "lucide-react";
@@ -171,7 +169,7 @@ export default function MusicLibraryPage() {
                               <ContainerInstrument className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center", options.asBackground ? "bg-primary border-primary text-white" : "border-white/20")}>
                                 {options.asBackground && <Check strokeWidth={1.5} size={12} />}
                               </ContainerInstrument>
-                            <ContainerInstrument className="flex flex-col">
+                              <div>
                                 <p className="text-[15px] font-black tracking-tight"><VoiceglotText  translationKey="auto.page.achtergrondmuziek.bb0154" defaultText="Achtergrondmuziek" /></p>
                                 <p className="text-[15px] font-medium text-white/40"><VoiceglotText  translationKey="auto.page.gemixt_onder_de_stem.5c81ba" defaultText="Gemixt onder de stem." /></p>
                               </ContainerInstrument>
@@ -187,7 +185,7 @@ export default function MusicLibraryPage() {
                               <ContainerInstrument className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center", options.asHoldMusic ? "bg-primary border-primary text-white" : "border-white/20")}>
                                 {options.asHoldMusic && <Check strokeWidth={1.5} size={12} />}
                               </ContainerInstrument>
-                            <ContainerInstrument className="flex flex-col">
+                              <div>
                                 <p className="text-[15px] font-black tracking-tight"><VoiceglotText  translationKey="auto.page.wachtmuziek.57fcdd" defaultText="Wachtmuziek" /></p>
                                 <p className="text-[15px] font-medium text-white/40"><VoiceglotText  translationKey="auto.page.als_apart_bestand_.63bd38" defaultText="Als apart bestand." /></p>
                               </ContainerInstrument>

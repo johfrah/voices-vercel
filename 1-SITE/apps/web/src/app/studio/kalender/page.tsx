@@ -1,6 +1,5 @@
 import { WorkshopCalendar } from '@/components/studio/WorkshopCalendar';
 import {
-    ContainerInstrument,
     HeadingInstrument,
     PageWrapperInstrument,
     SectionInstrument,

@@ -152,13 +152,13 @@ async function JohfrahContent() {
           </ContainerInstrument>
 
           <BentoCard id="rates" span="md" className="bg-white p-10 rounded-[20px] shadow-aura flex flex-col justify-between border border-black/[0.03]">
-            <ContainerInstrument>
+            <div>
               <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter text-va-black mb-10"><VoiceglotText  translationKey="portfolio.johfrah.rates.title" defaultText="Investering" /></HeadingInstrument>
               <ContainerInstrument className="space-y-8">
                 {data.rates.map((rate, i) => (
                   <ContainerInstrument key={i} className="group">
-                    <ContainerInstrument className="flex flex-col">
-                      <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey={`portfolio.johfrah.rates.${i}.label`} defaultText={rate.label} /></TextInstrument>
+                    <ContainerInstrument className="flex justify-between items-end mb-2">
+                      <TextInstrument as="span" className="font-bold text-[15px] tracking-[0.2em] text-va-black/20 group-hover:text-primary transition-colors"><VoiceglotText  translationKey={`portfolio.johfrah.rates.${i}.label`} defaultText={rate.label} /></TextInstrument>
                       <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black">€{rate.price}</TextInstrument>
                     </ContainerInstrument>
                     <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText  translationKey={`portfolio.johfrah.rates.${i}.desc`} defaultText={rate.desc} /></TextInstrument>
@@ -174,7 +174,7 @@ async function JohfrahContent() {
           </BentoCard>
 
           <ContainerInstrument className="md:col-span-3 pt-8">
-            <PricingCalculator   />
+            <PricingCalculator  />
           </ContainerInstrument>
 
           {/* 🎙️ DEMOS SECTIE (Overzichtelijk) */}
@@ -191,7 +191,10 @@ async function JohfrahContent() {
                   key={i}
                   className="group p-8 rounded-[20px] bg-va-off-white border border-black/[0.03] hover:border-primary/20 hover:bg-white hover:shadow-aura transition-all duration-700 va-bezier flex flex-col justify-between min-h-[200px] cursor-pointer"
                 >
-                  <ContainerInstrument className="flex flex-col">
+                  <div>
+                    <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 group-hover:bg-primary group-hover:text-white transition-all duration-700 shadow-sm mb-6">
+                      <Mic strokeWidth={1.5} size={20} />
+                    </ContainerInstrument>
                     <TextInstrument className="font-bold tracking-widest text-[15px] text-va-black/30 group-hover:text-primary transition-colors mb-2"><VoiceglotText  translationKey={`portfolio.johfrah.demo.${i}.category`} defaultText={demo.category} /></TextInstrument>
                     <HeadingInstrument level={3} className="text-lg font-light tracking-tight text-va-black"><VoiceglotText  translationKey={`portfolio.johfrah.demo.${i}.title`} defaultText={demo.title} /></HeadingInstrument>
                   </ContainerInstrument>

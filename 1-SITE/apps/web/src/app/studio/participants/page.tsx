@@ -20,7 +20,7 @@ export default function ParticipantsPage() {
   return (
     <PageWrapperInstrument>
       <Suspense  fallback={<LoadingScreenInstrument />}>
-        <ParticipantsContent   />
+        <ParticipantsContent  />
       </Suspense>
     </PageWrapperInstrument>
   );

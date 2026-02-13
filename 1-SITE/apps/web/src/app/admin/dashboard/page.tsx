@@ -1,6 +1,5 @@
 "use client";
 
-import Image from 'next/image';
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
 import {
     ButtonInstrument,

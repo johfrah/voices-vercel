@@ -15,11 +15,11 @@ export default function StudioFeedbackPage() {
       
       <ContainerInstrument className="relative z-10">
         <SectionInstrument className="mb-20 text-center">
-          <ContainerInstrument className="inline-block bg-va-black text-white text-[13px] font-light px-4 py-1 rounded-full mb-6 tracking-[0.2em] uppercase">
+          <ContainerInstrument className="inline-block bg-va-black text-white text-[15px] font-light px-4 py-1 rounded-full mb-6 tracking-[0.2em] ">
             Voices Studio
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none mb-8">
-            Jouw <span className="text-primary">Inzichten.</span>
+            Jouw <TextInstrument className="text-primary">Inzichten.</TextInstrument>
           </HeadingInstrument>
           <p className="text-va-black/40 text-xl font-light max-w-2xl mx-auto leading-relaxed">
             Bedankt voor je deelname aan onze workshop. Jouw feedback is essentieel voor het bewaken van onze Masterclass-kwaliteit.

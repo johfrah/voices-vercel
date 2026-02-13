@@ -5,13 +5,6 @@ import Image from 'next/image';
 import { LogOut } from 'lucide-react';
 import { VoiceglotText } from './VoiceglotText';
 
-import { 
-  ButtonInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument 
-} from './LayoutInstruments';
-
 interface AccountHeroInstrumentProps {
   userEmail?: string;
   onLogout: () => void;
@@ -32,9 +25,9 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
   const userName = userEmail?.split('@')[0] || 'User';
 
   return (
-    <ContainerInstrument className="va-account-hero p-6 md:p-12">
-      <ContainerInstrument className="va-account-hero-content space-y-4 md:space-y-6">
-        <ContainerInstrument className="va-account-badge flex items-center gap-2 p-2 rounded-full bg-va-black/5 w-fit">
+    <div className="va-account-hero">
+      <div className="va-account-hero-content">
+        <div className="va-account-badge">
           <Image  
             src="/assets/common/branding/icons/ACCOUNT.svg" 
             alt="User" 
@@ -47,24 +40,24 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
             translationKey="account.hero.welcome" 
             defaultText={`Welkom terug, ${userName}`} 
           />
-        </ContainerInstrument>
-        <HeadingInstrument level={1} className="va-account-title font-light text-4xl md:text-6xl">
+        </div>
+        <h1 className="va-account-title font-light">
           <VoiceglotText  translationKey="account.hero.title_part1" defaultText="Mijn " />
-          <TextInstrument as="span" className="va-text-primary font-light">
+          <span className="va-text-primary">
             <VoiceglotText  translationKey="account.hero.title_part2" defaultText="Voices" />
-          </TextInstrument>
-        </HeadingInstrument>
-        <TextInstrument className="va-account-subtitle text-lg md:text-xl text-va-black/40 font-light">
+          </span>
+        </h1>
+        <p className="va-account-subtitle">
           <VoiceglotText  
             translationKey="account.hero.subtitle" 
             defaultText="Beheer je bestellingen, cursussen en instellingen." 
           />
-        </TextInstrument>
-      </ContainerInstrument>
-      <ButtonInstrument onClick={onLogout} className="va-account-logout-btn mt-6 md:mt-8 flex items-center gap-2 px-6 py-3 rounded-xl bg-va-black text-white hover:bg-primary transition-all">
+        </p>
+      </div>
+      <button onClick={onLogout} className="va-account-logout-btn">
         <LogOut strokeWidth={1.5} size={16} /> 
         <VoiceglotText  translationKey="common.logout" defaultText="Uitloggen" />
-      </ButtonInstrument>
-    </ContainerInstrument>
+      </button>
+    </div>
   );
 };

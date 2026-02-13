@@ -2,25 +2,6 @@ import { db } from "@db";
 import { instructors, orderItems, orders, reviews, workshopInterest, workshops, workshopEditions, workshopGallery } from "@db/schema";
 import { and, count, desc, eq, sql } from "drizzle-orm";
 import { StudioDashboardData, Workshop } from "./api";
-import { 
-  Check, 
-  Play, 
-  Pause, 
-  Loader2, 
-  ArrowRight, 
-  ChevronLeft, 
-  Clock, 
-  TrendingUp, 
-  Brain, 
-  MessageSquare, 
-  Sparkles, 
-  Search, 
-  ChevronDown, 
-  X, 
-  Plus, 
-  ChevronRight, 
-  AlertCircle 
-} from 'lucide-react';
 
 /**
  * ☢️ NUCLEAR DATA BRIDGE - STUDIO JOURNEY (FULL NATIVE)
@@ -159,7 +140,7 @@ export class StudioDataBridge {
    * Haalt de volledige dashboard configuratie op (100% Native)
    * 🛡️ VOICES OS: WordPress-vrij
    */
-  static async getDashboardData(tab: string = 'funnel'): Promise<StudioDashboardData    & { _nuclear: boolean }> {
+  static async getDashboardData(tab: string = 'funnel'): Promise<StudioDashboardData  & { _nuclear: boolean }> {
     try {
       // 1. Haal workshops op uit de database
       const dbWorkshops = await db.select().from(workshops).orderBy(desc(workshops.date)).limit(20);

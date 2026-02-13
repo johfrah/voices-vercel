@@ -38,7 +38,7 @@ export const CastingDock = () => {
           exit={{ y: 100, opacity: 0 }}
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-2xl"
         >
-          <ContainerInstrument className="bg-va-black text-white rounded-[25px] p-2 md:p-4 shadow-aura-lg flex items-center justify-between gap-2 md:gap-3 border border-white/10 backdrop-blur-md bg-va-black/90">
+          <ContainerInstrument className="bg-va-black text-white rounded-[25px] p-3 md:p-4 shadow-aura-lg flex items-center justify-between gap-3 border border-white/10 backdrop-blur-md bg-va-black/90">
             <ContainerInstrument className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 flex-1">
               <ContainerInstrument className="flex -space-x-3 mr-1 shrink-0">
                 {selectedActors.map((actor) => (
@@ -46,7 +46,7 @@ export const CastingDock = () => {
                     key={actor.id}
                     className="relative group"
                   >
-                    <ContainerInstrument className="relative w-8 h-8 md:w-12 md:h-12 rounded-full border-2 border-va-black bg-va-off-white overflow-hidden">
+                    <ContainerInstrument className="relative w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-va-black bg-va-off-white overflow-hidden">
                       {actor.photoUrl ? (
                         <Image  src={actor.photoUrl} alt={actor.firstName} fill className="object-cover" />
                       ) : (
@@ -68,17 +68,17 @@ export const CastingDock = () => {
 
             <ButtonInstrument 
               onClick={startCasting}
-              className="bg-primary hover:bg-primary/90 text-white px-3 md:px-6 py-2 md:py-3 rounded-[18px] flex items-center gap-1.5 md:gap-2 whitespace-nowrap shrink-0 h-10 md:h-auto"
+              className="bg-primary hover:bg-primary/90 text-white px-4 md:px-6 py-3 rounded-[18px] flex items-center gap-2 whitespace-nowrap shrink-0 h-12 md:h-auto"
             >
               <Image  
                 src="/assets/common/branding/icons/MIC.svg" 
                 alt="Mic" 
-                width={16} 
-                height={16} 
-                className="brightness-0 invert md:w-[18px] md:h-[18px]"
+                width={18} 
+                height={18} 
+                className="brightness-0 invert"
               />
               <TextInstrument className="text-[15px] md:text-base font-light tracking-wider"><VoiceglotText  translationKey="auto.castingdock.gratis_proefopname.5a39e6" defaultText="Gratis proefopname" /></TextInstrument>
-              <LucideChevronRight strokeWidth={1.5} size={14} className="md:w-[18px] md:h-[18px]" />
+              <LucideChevronRight strokeWidth={1.5} size={16} className="md:w-[18px] md:h-[18px]" />
             </ButtonInstrument>
           </ContainerInstrument>
         </motion.div>

@@ -22,7 +22,7 @@ export default function TarievenPage() {
         </header>
 
         <SectionInstrument className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-          <PricingCalculator   />
+          <PricingCalculator  />
         </SectionInstrument>
 
         <footer className="mt-48 max-w-3xl">

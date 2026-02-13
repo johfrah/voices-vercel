@@ -4,10 +4,8 @@ import React, { useState, useRef } from 'react';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
-import { Image as ImageIcon, Upload, Loader2 } from 'lucide-react';
+import { Image as ImageIcon, Upload, Loader2, X } from 'lucide-react';
 import Image, { ImageProps } from 'next/image';
-import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
-import { VoiceglotText } from './VoiceglotText';
 
 interface VoiceglotImageProps extends Omit<ImageProps, 'src'> {
   src: string;
@@ -78,7 +76,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   };
 
   return (
-    <ContainerInstrument className={cn("relative group/image-edit", isEditMode && "cursor-pointer")}>
+    <div className={cn("relative group/image-edit", isEditMode && "cursor-pointer")}>
       <Image  
         src={currentSrc} 
         alt={alt}
@@ -91,22 +89,22 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
 
       {isEditMode && (
         <>
-          <ContainerInstrument 
+          <div 
             onClick={triggerUpload}
             onMouseEnter={() => playSwell()}
             className="absolute inset-0 bg-primary/20 opacity-0 group-hover/image-edit:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px] rounded-[inherit]"
           >
-            <ContainerInstrument className="bg-va-black text-white px-3 md:px-4 py-1.5 md:py-2 rounded-full flex items-center gap-2 shadow-xl scale-90 group-hover/image-edit:scale-100 transition-transform">
+            <div className="bg-va-black text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-xl scale-90 group-hover/image-edit:scale-100 transition-transform">
               {isUploading ? (
                 <Loader2 strokeWidth={1.5} size={14} className="animate-spin text-primary" />
               ) : (
                 <Upload strokeWidth={1.5} size={14} className="text-primary" />
               )}
-              <TextInstrument as="span" className="text-[15px] md:text-[15px] font-black tracking-widest ">
-                {isUploading ? <VoiceglotText translationKey="common.uploading" defaultText="Uploaden..." /> : <VoiceglotText translationKey="common.replace_image" defaultText="Vervang afbeelding" />}
-              </TextInstrument>
-            </ContainerInstrument>
-          </ContainerInstrument>
+              <span className="text-[15px] font-black tracking-widest">
+                {isUploading ? 'Uploaden...' : 'Vervang afbeelding'}
+              </span>
+            </div>
+          </div>
 
           <input 
             type="file" 
@@ -116,12 +114,12 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
             className="hidden"
           />
 
-          <ContainerInstrument className="absolute -top-6 right-0 opacity-0 group-hover/image-edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[15px] md:text-[15px] font-black tracking-widest pointer-events-none z-50 shadow-lg ">
-            <ImageIcon size={8} className="text-primary" />
-            <VoiceglotText translationKey="common.media" defaultText="Media" />: {category}
-          </ContainerInstrument>
+          <div className="absolute -top-6 right-0 opacity-0 group-hover/image-edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[15px] font-black tracking-widest pointer-events-none z-50 shadow-lg">
+            <ImageIcon    size={8} className="text-primary" />
+            Media: {category}
+          </div>
         </>
       )}
-    </ContainerInstrument>
+    </div>
   );
 };

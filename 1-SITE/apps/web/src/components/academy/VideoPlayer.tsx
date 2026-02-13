@@ -7,7 +7,6 @@ interface VideoPlayerProps {
   url: string;
   poster?: string;
   title?: React.ReactNode;
-  slug?: string; // Added for tracking
   subtitles?: {
     src: string;
     lang: string;
@@ -15,43 +14,21 @@ interface VideoPlayerProps {
   }[];
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, slug, subtitles }) => {
+export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, subtitles }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // 📊 MAT TRACKING: Log interactions
-  const trackEvent = (event: string, data: any = {}) => {
-    if (typeof window !== 'undefined' && (window as any).va) {
-      (window as any).va('event', {
-        name: `video_${event}`,
-        data: {
-          video_url: url,
-          video_slug: slug,
-          video_title: typeof title === 'string' ? title : slug,
-          ...data
-        }
-      });
-    }
-  };
-
   const togglePlay = () => {
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
-        trackEvent('pause', { timestamp: videoRef.current.currentTime });
       } else {
         videoRef.current.play();
-        trackEvent('play', { timestamp: videoRef.current.currentTime });
       }
       setIsPlaying(!isPlaying);
     }
-  };
-
-  const handleEnded = () => {
-    setIsPlaying(false);
-    trackEvent('complete');
   };
 
   const handleTimeUpdate = () => {
@@ -81,7 +58,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, poster, title, sl
         className="w-full h-full object-cover"
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onEnded={handleEnded}
         onClick={togglePlay}
         crossOrigin="anonymous"
       >

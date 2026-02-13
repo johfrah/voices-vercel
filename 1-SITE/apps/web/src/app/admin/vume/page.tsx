@@ -1,6 +1,6 @@
 "use client";
 
-import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument, ButtonInstrument, LoadingScreenInstrument, TextareaInstrument } from '@/components/ui/LayoutInstruments';
+import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument, ButtonInstrument, LoadingScreenInstrument } from '@/components/ui/LayoutInstruments';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Mail, Eye, Send, MessageSquare, Sparkles, Zap, ShieldCheck, ShoppingCart } from 'lucide-react';
@@ -191,7 +191,7 @@ export default function VumeAdminPage() {
               <TextInstrument className="text-white/60 text-[15px] leading-relaxed font-light">
                 Klik op een template om de live preview te zien. Geef hieronder je feedback voor Mark & Laya.
               </TextInstrument>
-              <TextareaInstrument 
+              <textarea 
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 placeholder="Vb: 'Maak de knop groter' of 'De tekst mag warmer'..."

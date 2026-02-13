@@ -157,17 +157,17 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
     <BentoCard span="full" className="overflow-hidden !p-0">
       <ContainerInstrument className="flex flex-col lg:flex-row">
         {/* Main Config */}
-        <ContainerInstrument className="flex-1 p-6 md:p-8 lg:p-12 space-y-8 md:space-y-10">
+        <ContainerInstrument className="flex-1 p-8 lg:p-12 space-y-10">
           <ContainerInstrument>
-            <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-4 md:mb-6">
+            <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-6">
               <VoiceglotText  translationKey="pricing.step1.title" defaultText="1. Kies je projecttype" />
             </HeadingInstrument>
-            <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+            <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {usageTypes.map((type) => (
                 <ButtonInstrument
                   key={type.id}
                   onClick={() => handleUsageChange(type.id as any)}
-                  className={`flex flex-col items-center gap-3 md:gap-4 p-4 md:p-6 rounded-[32px] border-2 transition-all ${
+                  className={`flex flex-col items-center gap-4 p-6 rounded-[32px] border-2 transition-all ${
                     state.usage === type.id 
                       ? 'border-primary bg-primary/5 text-primary' 
                       : 'border-black/5 hover:border-black/10 text-va-black/40'
@@ -182,15 +182,15 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
             </ContainerInstrument>
           </ContainerInstrument>
 
-          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <ContainerInstrument>
-              <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-4 md:mb-6">
+              <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-6">
                 <VoiceglotText  translationKey="pricing.step2.language" defaultText="2. Taal van de productie" />
               </HeadingInstrument>
               <SelectInstrument 
-                className="w-full bg-va-off-white border-none rounded-[20px] py-4 md:py-5 px-4 md:px-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+                className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
                 value={language}
-                onChange={(e: any) => setLanguage(e.target.value)}
+                onChange={(e) => setLanguage(e.target.value)}
               >
                 <OptionInstrument value="nl-BE"><VoiceglotText  translationKey="auto.pricingcalculator.vlaams__nl_be_.c0d770" defaultText="Vlaams (NL-BE)" /></OptionInstrument>
                 <OptionInstrument value="nl-NL"><VoiceglotText  translationKey="auto.pricingcalculator.nederlands__nl_nl_.6f41f1" defaultText="Nederlands (NL-NL)" /></OptionInstrument>
@@ -204,13 +204,13 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
 
             {state.usage === 'paid' && (
               <ContainerInstrument className="animate-in fade-in slide-in-from-top-4 duration-700">
-                <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-4 md:mb-6">
+                <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-6">
                   <VoiceglotText  translationKey="pricing.step2.country" defaultText="3. Land van uitzending" />
                 </HeadingInstrument>
                 <SelectInstrument 
-                  className="w-full bg-va-off-white border-none rounded-[20px] py-4 md:py-5 px-4 md:px-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+                  className="w-full bg-va-off-white border-none rounded-[20px] py-5 px-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
                   value={country}
-                  onChange={(e: any) => setCountry(e.target.value)}
+                  onChange={(e) => setCountry(e.target.value)}
                 >
                   <OptionInstrument value="BE"><VoiceglotText  translationKey="common.country.be" defaultText="België" /></OptionInstrument>
                   <OptionInstrument value="NL"><VoiceglotText  translationKey="common.country.nl" defaultText="Nederland" /></OptionInstrument>
@@ -223,8 +223,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
           </ContainerInstrument>
 
           {state.usage === 'paid' ? (
-            <ContainerInstrument className="space-y-8 md:space-y-10 animate-in fade-in slide-in-from-top-4 duration-700">
-              <ContainerInstrument className="space-y-4 md:space-y-6">
+            <ContainerInstrument className="space-y-10 animate-in fade-in slide-in-from-top-4 duration-700">
+              <ContainerInstrument className="space-y-6">
                 <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30">
                   <VoiceglotText  translationKey="pricing.media_buyout" defaultText="4. Media & Buyout" />
                 </HeadingInstrument>
@@ -239,7 +239,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                           setMedia([...media, m as any]);
                         }
                       }}
-                      className={`px-4 md:px-6 py-2 md:py-3 rounded-full text-[15px] md:text-[15px] font-medium border-2 transition-all ${
+                      className={`px-6 py-3 rounded-full text-[15px] font-medium border-2 transition-all ${
                         media.includes(m as any) ? 'bg-primary border-primary text-white' : 'bg-white border-black/5 text-va-black/40'
                       }`}
                     >
@@ -248,42 +248,42 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   ))}
                 </ContainerInstrument>
                 
-                <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                  <ContainerInstrument className="space-y-3 md:space-y-4">
-                    <TextInstrument className="text-[15px] md:text-[15px] font-medium text-va-black/30 tracking-widest">
+                <ContainerInstrument className="grid grid-cols-2 gap-8">
+                  <ContainerInstrument className="space-y-4">
+                    <TextInstrument className="text-[15px] font-medium text-va-black/30 tracking-widest">
                       <VoiceglotText  translationKey="pricing.spots_count" defaultText="Aantal Spots" />
                     </TextInstrument>
-                    <ContainerInstrument className="flex items-center gap-3 md:gap-4">
+                    <ContainerInstrument className="flex items-center gap-4">
                       <InputInstrument 
                         type="range" min="1" max="10" value={spots} 
-                        onChange={(e: any) => setSpots(parseInt(e.target.value))}
+                        onChange={(e) => setSpots(parseInt(e.target.value))}
                         className="flex-1 h-2 bg-black/5 rounded-[20px] appearance-none cursor-pointer accent-primary"
                       />
-                      <TextInstrument className="text-lg md:text-xl font-light text-primary w-8">{spots}</TextInstrument>
+                      <TextInstrument className="text-xl font-light text-primary w-8">{spots}</TextInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>
-                  <ContainerInstrument className="space-y-3 md:space-y-4">
-                    <TextInstrument className="text-[15px] md:text-[15px] font-medium text-va-black/30 tracking-widest">
+                  <ContainerInstrument className="space-y-4">
+                    <TextInstrument className="text-[15px] font-medium text-va-black/30 tracking-widest">
                       <VoiceglotText  translationKey="pricing.duration_years" defaultText="Looptijd (Jaar)" />
                     </TextInstrument>
-                    <ContainerInstrument className="flex items-center gap-3 md:gap-4">
+                    <ContainerInstrument className="flex items-center gap-4">
                       <InputInstrument 
                         type="range" min="1" max="5" value={years} 
-                        onChange={(e: any) => setYears(parseInt(e.target.value))}
+                        onChange={(e) => setYears(parseInt(e.target.value))}
                         className="flex-1 h-2 bg-black/5 rounded-[20px] appearance-none cursor-pointer accent-primary"
                       />
-                      <TextInstrument className="text-lg md:text-xl font-light text-primary w-8">{years}</TextInstrument>
+                      <TextInstrument className="text-xl font-light text-primary w-8">{years}</TextInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
 
               {/* 🎙️ Sherlock: Universele VoiceCards in Pricing voor directe vergelijking */}
-              <ContainerInstrument className="pt-8 md:pt-10 border-t border-black/5">
-                <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-6 md:mb-8">
+              <ContainerInstrument className="pt-10 border-t border-black/5">
+                <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-8">
                   <VoiceglotText  translationKey="pricing.matching_voices" defaultText="Direct vergelijken & boeken" />
                 </HeadingInstrument>
-                <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredActors.map((a) => (
                     <VoiceCard 
                       key={a.id} 
@@ -299,55 +299,55 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
             </ContainerInstrument>
           ) : (
             <ContainerInstrument>
-            <ContainerInstrument className="flex justify-between items-center mb-4 md:mb-6">
+            <ContainerInstrument className="flex justify-between items-center mb-6">
                 <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30">
                   4. <VoiceglotText  translationKey="pricing.step3.words" defaultText="Aantal woorden" />
                 </HeadingInstrument>
               </ContainerInstrument>
-              <ContainerInstrument className="flex items-center gap-3 md:gap-4 mb-4">
+              <ContainerInstrument className="flex items-center gap-4 mb-4">
                 <InputInstrument 
                   type="range" 
                   min="1" 
                   max={state.usage === 'telefonie' ? 500 : 5000} 
                   value={words} 
-                  onChange={(e: any) => setWords(parseInt(e.target.value))}
+                  onChange={(e) => setWords(parseInt(e.target.value))}
                   className="flex-1 h-2 bg-black/5 rounded-[20px] appearance-none cursor-pointer accent-primary"
                 />
                 <ContainerInstrument className="relative">
                   <InputInstrument 
                     type="number" 
                     value={words} 
-                    onChange={(e: any) => setWords(Math.max(1, parseInt(e.target.value) || 0))}
-                    className="w-20 md:w-24 bg-va-off-white border-2 border-primary/20 rounded-xl py-2 md:py-3 px-3 md:px-4 text-[15px] md:text-[15px] font-medium text-primary text-center focus:border-primary focus:ring-0 outline-none transition-all"
+                    onChange={(e) => setWords(Math.max(1, parseInt(e.target.value) || 0))}
+                    className="w-24 bg-va-off-white border-2 border-primary/20 rounded-xl py-3 px-4 text-[15px] font-medium text-primary text-center focus:border-primary focus:ring-0 outline-none transition-all"
                   />
-                  <TextInstrument className="absolute -top-2 -right-2 bg-primary text-white text-[15px] md:text-[15px] font-medium px-1 md:px-1.5 py-0.5 rounded-md shadow-lg">
+                  <TextInstrument className="absolute -top-2 -right-2 bg-primary text-white text-[15px] font-medium px-1.5 py-0.5 rounded-md shadow-lg">
                     <VoiceglotText  translationKey="common.fill_in" defaultText="Vul in" />
                   </TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex justify-between items-center">
-                <TextInstrument className="text-[15px] md:text-[15px] font-medium text-va-black/20">
+                <TextInstrument className="text-[15px] font-medium text-va-black/20">
                   1 <VoiceglotText  translationKey="pricing.unit.word" defaultText="woord" />
                 </TextInstrument>
-                <TextInstrument className="text-lg md:text-xl font-light tracking-tighter text-primary">
+                <TextInstrument className="text-xl font-light tracking-tighter text-primary">
                   {words} <VoiceglotText  translationKey="pricing.unit.words" defaultText="woorden" />
                 </TextInstrument>
                 <ContainerInstrument className="flex flex-col items-end">
-                  <TextInstrument className="text-[15px] md:text-[15px] font-medium text-va-black/20">
+                  <TextInstrument className="text-[15px] font-medium text-va-black/20">
                     {state.usage === 'telefonie' ? '500+' : '5000+'}
                   </TextInstrument>
-                  <TextInstrument className="text-[15px] md:text-[15px] font-medium text-primary/40 tracking-tighter">
+                  <TextInstrument className="text-[15px] font-medium text-primary/40 tracking-tighter">
                     ± {Math.floor(words / 160)}:{(Math.round((words % 160) / 160 * 60)).toString().padStart(2, '0')} min (160 wpm)
                   </TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
 
               {/* 🎙️ Sherlock: Universele VoiceCards in Pricing voor directe vergelijking */}
-              <ContainerInstrument className="pt-8 md:pt-10 border-t border-black/5">
-                <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-6 md:mb-8">
+              <ContainerInstrument className="pt-10 border-t border-black/5">
+                <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-8">
                   <VoiceglotText  translationKey="pricing.matching_voices" defaultText="Direct vergelijken & boeken" />
                 </HeadingInstrument>
-                <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredActors.map((a) => (
                     <VoiceCard 
                       key={a.id} 
@@ -365,33 +365,33 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
 
           {state.usage === 'telefonie' && (
             <ContainerInstrument className="pt-6 border-t border-black/5 animate-in fade-in duration-500">
-              <ContainerInstrument className="flex items-center justify-between mb-4 md:mb-6">
-                <ContainerInstrument className="flex items-center gap-2 md:gap-3">
+              <ContainerInstrument className="flex items-center justify-between mb-6">
+                <ContainerInstrument className="flex items-center gap-3">
                   <ContainerInstrument className={cn(
-                    "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all",
+                    "w-10 h-10 rounded-full flex items-center justify-center transition-all",
                     (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary/10 text-primary" : "bg-va-black/5 text-va-black/20"
                   )}>
-                    <Music strokeWidth={1.5} size={18} />
+                    <Music strokeWidth={1.5} size={20} />
                   </ContainerInstrument>
                   <ContainerInstrument>
-                    <HeadingInstrument level={3} className="text-[15px] md:text-[15px] font-medium tracking-tight">
+                    <HeadingInstrument level={3} className="text-[15px] font-medium tracking-tight">
                       <VoiceglotText  translationKey="pricing.music.title" defaultText="Wachtmuziek toevoegen" />
                     </HeadingInstrument>
-                    <TextInstrument className="text-[15px] md:text-[15px] text-va-black/40 font-light">
+                    <TextInstrument className="text-[15px] text-va-black/40 font-light">
                       <VoiceglotText  translationKey="pricing.music.subtitle" defaultText="Kies een track uit onze rechtenvrije bibliotheek." />
                     </TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="text-right">
-                  <TextInstrument className="text-base md:text-lg font-light text-va-black">€59</TextInstrument>
+                  <TextInstrument className="text-lg font-light text-va-black">€59</TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
 
-              <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+              <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ButtonInstrument 
                   onClick={() => updateMusic({ asBackground: !state.music.asBackground, trackId: state.music.trackId || 'corporate-growth' })}
                   className={cn(
-                    "flex items-center gap-3 p-3 md:p-4 rounded-xl border-2 transition-all text-left",
+                    "flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left",
                     state.music.asBackground ? "border-primary bg-primary/5" : "border-black/5 bg-va-off-white/30 hover:border-black/10"
                   )}
                 >
@@ -399,15 +399,15 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     {state.music.asBackground && <Check strokeWidth={1.5} size={12} />}
                   </ContainerInstrument>
                   <ContainerInstrument>
-                    <TextInstrument className="text-[15px] md:text-[15px] font-medium tracking-tight"><VoiceglotText  translationKey="auto.pricingcalculator.achtergrondmuziek.bb0154" defaultText="Achtergrondmuziek" /></TextInstrument>
-                    <TextInstrument className="text-[15px] md:text-[15px] font-light text-va-black/40"><VoiceglotText  translationKey="auto.pricingcalculator.gemixt_onder_de_stem.5c81ba" defaultText="Gemixt onder de stem." /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-medium tracking-tight"><VoiceglotText  translationKey="auto.pricingcalculator.achtergrondmuziek.bb0154" defaultText="Achtergrondmuziek" /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-light text-va-black/40"><VoiceglotText  translationKey="auto.pricingcalculator.gemixt_onder_de_stem.5c81ba" defaultText="Gemixt onder de stem." /></TextInstrument>
                   </ContainerInstrument>
                 </ButtonInstrument>
 
                 <ButtonInstrument 
                   onClick={() => updateMusic({ asHoldMusic: !state.music.asHoldMusic, trackId: state.music.trackId || 'corporate-growth' })}
                   className={cn(
-                    "flex items-center gap-3 p-3 md:p-4 rounded-xl border-2 transition-all text-left",
+                    "flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left",
                     state.music.asHoldMusic ? "border-primary bg-primary/5" : "border-black/5 bg-va-off-white/30 hover:border-black/10"
                   )}
                 >
@@ -415,8 +415,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     {state.music.asHoldMusic && <Check strokeWidth={1.5} size={12} />}
                   </ContainerInstrument>
                   <ContainerInstrument>
-                    <TextInstrument className="text-[15px] md:text-[15px] font-medium tracking-tight"><VoiceglotText  translationKey="auto.pricingcalculator.wachtmuziek.57fcdd" defaultText="Wachtmuziek" /></TextInstrument>
-                    <TextInstrument className="text-[15px] md:text-[15px] font-light text-va-black/40"><VoiceglotText  translationKey="auto.pricingcalculator.als_apart_audiobesta.ce73d8" defaultText="Als apart audiobestand." /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-medium tracking-tight"><VoiceglotText  translationKey="auto.pricingcalculator.wachtmuziek.57fcdd" defaultText="Wachtmuziek" /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-light text-va-black/40"><VoiceglotText  translationKey="auto.pricingcalculator.als_apart_audiobesta.ce73d8" defaultText="Als apart audiobestand." /></TextInstrument>
                   </ContainerInstrument>
                 </ButtonInstrument>
               </ContainerInstrument>
@@ -425,36 +425,36 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
         </ContainerInstrument>
 
         {/* Result Sidebar */}
-        <ContainerInstrument className="w-full lg:w-[380px] bg-va-black text-white p-8 md:p-10 lg:p-12 flex flex-col justify-center text-center relative overflow-hidden">
-          <ContainerInstrument className="relative z-10 space-y-6 md:space-y-8">
+        <ContainerInstrument className="lg:w-[380px] bg-va-black text-white p-8 lg:p-12 flex flex-col justify-center text-center relative overflow-hidden">
+          <ContainerInstrument className="relative z-10 space-y-8">
             
             <ContainerInstrument className="space-y-2">
-              <TextInstrument className="text-4xl md:text-6xl font-light tracking-tighter text-primary">
+              <TextInstrument className="text-6xl font-light tracking-tighter text-primary">
                 {pricing.formatted}
               </TextInstrument>
               <ContainerInstrument className="space-y-1">
-                <TextInstrument className="text-[15px] md:text-[15px] font-medium text-white/20">
+                <TextInstrument className="text-[15px] font-medium text-white/20">
                   <VoiceglotText  translationKey="common.excl_vat" defaultText="Exclusief BTW" />
                 </TextInstrument>
-                <TextInstrument className="text-[15px] md:text-[15px] font-medium text-white/40 tracking-widest">
+                <TextInstrument className="text-[15px] font-medium text-white/40 tracking-widest">
                   <VoiceglotText  translationKey="pricing.inclusive_label" defaultText="(Inclusief)" />
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
 
-            <ContainerInstrument className="pt-6 md:pt-8 space-y-3 md:space-y-4">
+            <ContainerInstrument className="pt-8 space-y-4">
               <ButtonInstrument 
                 onClick={handleBookNow}
-                className="va-btn-pro w-full !bg-primary flex items-center justify-center gap-2 group py-3 md:py-4"
+                className="va-btn-pro w-full !bg-primary flex items-center justify-center gap-2 group"
               >
                 <VoiceglotText  translationKey="pricing.cta" defaultText="Kies je stem" />
                 <ChevronRight strokeWidth={1.5} size={18} className="group-hover:translate-x-1 transition-transform" />
               </ButtonInstrument>
               <ContainerInstrument className="space-y-2 opacity-0">
-                <TextInstrument className="text-[15px] md:text-[15px] font-medium text-primary animate-pulse">
+                <TextInstrument className="text-[15px] font-medium text-primary animate-pulse">
                   <VoiceglotText  translationKey="pricing.final_price" defaultText="Finale prijs voor deze opdracht" />
                 </TextInstrument>
-                <TextInstrument className="text-[15px] md:text-[15px] font-light text-white/40 leading-relaxed">
+                <TextInstrument className="text-[15px] font-light text-white/40 leading-relaxed">
                   {mode === 'ai' ? (
                     <VoiceglotText  
                       translationKey="pricing.disclaimer.ai" 
@@ -472,7 +472,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
           </ContainerInstrument>
 
           {/* Decorative Background */}
-          <ContainerInstrument className="absolute -bottom-20 -right-20 w-48 md:w-64 h-48 md:h-64 bg-primary/10 rounded-full blur-[80px] md:blur-[100px]" />
+          <ContainerInstrument className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[100px]" />
         </ContainerInstrument>
       </ContainerInstrument>
     </BentoCard>

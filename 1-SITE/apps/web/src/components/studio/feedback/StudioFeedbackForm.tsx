@@ -75,7 +75,7 @@ export const StudioFeedbackForm = () => {
         <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">
           Bedankt voor je feedback!
         </HeadingInstrument>
-        <TextInstrument className="text-va-black/40 max-w-md mx-auto">
+        <TextInstrument className="text-va-black/40 max-w-md mx-auto font-light">
           Jouw inzichten helpen ons (en Bernadette) om de Voices Experience continu te verbeteren.
         </TextInstrument>
         <ButtonInstrument onClick={() => window.location.href = '/studio'} className="va-btn-pro">
@@ -104,11 +104,11 @@ export const StudioFeedbackForm = () => {
         <HeadingInstrument level={3} className="text-2xl font-light border-b border-black/5 pb-4">
           Hoe beoordeel je de volgende punten?
         </HeadingInstrument>
-        <div className="grid gap-8">
+        <ContainerInstrument className="grid gap-8">
           {RATINGS.map(r => (
-            <div key={r.id} className="space-y-4">
+            <ContainerInstrument key={r.id} className="space-y-4">
               <LabelInstrument className="text-[15px] font-medium text-va-black/60">{r.label}</LabelInstrument>
-              <div className="flex flex-wrap gap-3">
+              <ContainerInstrument className="flex flex-wrap gap-3">
                 {OPTIONS.map(opt => (
                   <button
                     key={opt}
@@ -121,7 +121,7 @@ export const StudioFeedbackForm = () => {
                       });
                     }}
                     className={cn(
-                      "px-6 py-2 rounded-full border text-[13px] tracking-widest transition-all",
+                      "px-6 py-2 rounded-full border text-[15px] tracking-widest transition-all",
                       formData.ratings[r.id as keyof typeof formData.ratings] === opt
                         ? "bg-va-black text-white border-va-black shadow-lg"
                         : "bg-white text-va-black/40 border-black/5 hover:border-black/20"
@@ -130,10 +130,10 @@ export const StudioFeedbackForm = () => {
                     {opt.toUpperCase()}
                   </button>
                 ))}
-              </div>
-            </div>
+              </ContainerInstrument>
+            </ContainerInstrument>
           ))}
-        </div>
+        </ContainerInstrument>
       </SectionInstrument>
 
       {/* Open Questions */}
@@ -142,7 +142,7 @@ export const StudioFeedbackForm = () => {
           Jouw ervaring in detail
         </HeadingInstrument>
         
-        <div className="space-y-4">
+        <ContainerInstrument className="space-y-4">
           <LabelInstrument>Wat vond je het meest waardevol aan deze dag?</LabelInstrument>
           <textarea 
             required
@@ -151,9 +151,9 @@ export const StudioFeedbackForm = () => {
             value={formData.text_most_valuable}
             onChange={e => setFormData({...formData, text_most_valuable: e.target.value})}
           />
-        </div>
+        </ContainerInstrument>
 
-        <div className="space-y-4">
+        <ContainerInstrument className="space-y-4">
           <LabelInstrument>Heb je suggesties voor verbetering?</LabelInstrument>
           <textarea 
             className="w-full bg-va-off-white rounded-[20px] p-6 min-h-[120px] focus:ring-2 focus:ring-primary/20 transition-all border-none text-[15px] font-light"
@@ -161,9 +161,9 @@ export const StudioFeedbackForm = () => {
             value={formData.text_improvement}
             onChange={e => setFormData({...formData, text_improvement: e.target.value})}
           />
-        </div>
+        </ContainerInstrument>
 
-        <div className="space-y-4">
+        <ContainerInstrument className="space-y-4">
           <LabelInstrument>Zou je de workshop aanbevelen? (En waarom?)</LabelInstrument>
           <textarea 
             required
@@ -172,7 +172,7 @@ export const StudioFeedbackForm = () => {
             value={formData.text_recommendation}
             onChange={e => setFormData({...formData, text_recommendation: e.target.value})}
           />
-        </div>
+        </ContainerInstrument>
       </SectionInstrument>
 
       <ButtonInstrument 
@@ -180,7 +180,7 @@ export const StudioFeedbackForm = () => {
         disabled={isSubmitting}
         className="w-full va-btn-pro py-6 text-xl flex items-center justify-center gap-4"
       >
-        {isSubmitting ? <Loader2 className="animate-spin" /> : <Send size={20} />}
+        {isSubmitting ? <Loader2 strokeWidth={1.5} className="animate-spin" /> : <Send strokeWidth={1.5} size={20} />}
         FEEDBACK VERZENDEN
       </ButtonInstrument>
     </form>

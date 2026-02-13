@@ -3,20 +3,12 @@
 import { EmailComposerInstrument } from '@/components/mailbox/EmailComposerInstrument';
 import { EmailListItemInstrument } from '@/components/mailbox/EmailListItemInstrument';
 import { EmailThreadViewInstrument } from '@/components/mailbox/EmailThreadViewInstrument';
-import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, LoadingScreenInstrument, SectionInstrument, TextInstrument, SelectInstrument, OptionInstrument, LabelInstrument, FormInstrument, TextareaInstrument } from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, LoadingScreenInstrument, SectionInstrument, TextInstrument, SelectInstrument, OptionInstrument, LabelInstrument, FormInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useHotkeys } from '@/hooks/useHotkeys';
 import { AnimatePresence, motion } from 'framer-motion';
-import { 
-  RefreshCw, 
-  TrendingUp, 
-  Brain, 
-  MessageSquareQuote, 
-  X, 
-  Download 
-} from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';

@@ -9,8 +9,7 @@ import {
   TextInstrument, 
   ButtonInstrument, 
   InputInstrument,
-  LabelInstrument,
-  TextareaInstrument
+  LabelInstrument
 } from '@/components/ui/LayoutInstruments';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
@@ -358,7 +357,7 @@ export default function AdminSettingsPage() {
             <ContainerInstrument className="space-y-6">
               <ContainerInstrument className="space-y-1">
                 <LabelInstrument className="text-white/30"><VoiceglotText  translationKey="auto.page.bericht__nl_.88db3f" defaultText="Bericht (NL)" /></LabelInstrument>
-                <TextareaInstrument 
+                <textarea 
                   value={configs.vacation_rules.message_nl} 
                   onChange={(e) => updateConfig('vacation_rules', 'message_nl', e.target.value)}
                   disabled={!isEditMode}

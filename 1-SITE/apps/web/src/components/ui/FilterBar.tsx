@@ -1,6 +1,5 @@
 "use client";
 
-import Image from 'next/image';
 import React, { useState } from 'react';
 import { SearchFilters } from '@/types';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
@@ -16,7 +15,6 @@ import {
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { Search, ChevronDown, X } from 'lucide-react';
 
 interface FilterBarProps {
   filters: SearchFilters;

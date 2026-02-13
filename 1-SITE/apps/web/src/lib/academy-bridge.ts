@@ -2,25 +2,6 @@ import { AcademyDashboardData, Lesson } from "./api";
 import { db } from "@db";
 import { lessons, courseProgress, courseSubmissions } from "@db/schema";
 import { eq, sql, and, count, asc } from "drizzle-orm";
-import { 
-  Check, 
-  Play, 
-  Pause, 
-  Loader2, 
-  ArrowRight, 
-  ChevronLeft, 
-  Clock, 
-  TrendingUp, 
-  Brain, 
-  MessageSquare, 
-  Sparkles, 
-  Search, 
-  ChevronDown, 
-  X, 
-  Plus, 
-  ChevronRight, 
-  AlertCircle 
-} from 'lucide-react';
 
 /**
  * ☢️ NUCLEAR DATA BRIDGE - ACADEMY JOURNEY (FULL NATIVE)
@@ -54,7 +35,7 @@ export class AcademyDataBridge {
   /**
    * Haalt de volledige Academy dashboard configuratie op (100% Native)
    */
-  static async getDashboardData(userId: number): Promise<AcademyDashboardData    & { _nuclear: boolean }> {
+  static async getDashboardData(userId: number): Promise<AcademyDashboardData  & { _nuclear: boolean }> {
     try {
       // 1. Haal alle lessen op
       const allLessons = await db.select().from(lessons).orderBy(asc(lessons.displayOrder));

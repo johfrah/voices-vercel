@@ -6,12 +6,6 @@ import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Briefcase, Copy, Heart, Pause, Play, Sparkles } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument,
-  ButtonInstrument
-} from '@/components/ui/LayoutInstruments';
 
 interface Demo {
   id: number;
@@ -85,43 +79,43 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
   };
 
   return (
-    <ContainerInstrument className="space-y-6 md:space-y-8">
+    <div className="space-y-8">
       {/* 🏷️ SECTOR SELECTOR */}
-      <ContainerInstrument className="space-y-3 md:space-y-4">
-        <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
+      <div className="space-y-4">
+        <h3 className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
           <Briefcase strokeWidth={1.5} size={14} /> 
           <VoiceglotText  translationKey="johfrai.explorer.sectors" defaultText="Kies je sector" />
-        </HeadingInstrument>
-        <ContainerInstrument className="flex flex-wrap gap-2 md:gap-3">
+        </h3>
+        <div className="flex flex-wrap gap-3">
           {SECTORS.map((sector) => (
-            <ButtonInstrument
+            <button
               key={sector.id}
               onClick={() => setSelectedSector(selectedSector === sector.id ? null : sector.id)}
               className={cn(
-                "px-3 py-2 md:px-4 md:py-3 rounded-2xl flex items-center gap-2 md:gap-3 transition-all border-2",
+                "px-4 py-3 rounded-2xl flex items-center gap-3 transition-all border-2",
                 selectedSector === sector.id 
                   ? "bg-va-black border-va-black text-white shadow-lg scale-105" 
                   : "bg-white border-va-black/5 text-va-black/60 hover:border-va-black/20"
               )}
             >
-              <ContainerInstrument className={cn("p-1.5 md:p-2 rounded-lg", selectedSector === sector.id ? "bg-white/20" : sector.color + " text-white")}>
+              <div className={cn("p-2 rounded-lg", selectedSector === sector.id ? "bg-white/20" : sector.color + " text-white")}>
                 <sector.icon size={16} />
-              </ContainerInstrument>
-              <TextInstrument as="span" className="font-bold text-[15px]">{sector.label}</TextInstrument>
-            </ButtonInstrument>
+              </div>
+              <span className="font-bold text-[15px]">{sector.label}</span>
+            </button>
           ))}
-        </ContainerInstrument>
-      </ContainerInstrument>
+        </div>
+      </div>
 
       {/* 🎭 VIBE SELECTOR */}
-      <ContainerInstrument className="space-y-3 md:space-y-4">
-        <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
+      <div className="space-y-4">
+        <h3 className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
           <Sparkles strokeWidth={1.5} size={14} /> 
           <VoiceglotText  translationKey="johfrai.explorer.vibes" defaultText="Kies de vibe" />
-        </HeadingInstrument>
-        <ContainerInstrument className="flex flex-wrap gap-2">
+        </h3>
+        <div className="flex flex-wrap gap-2">
           {VIBES.map((vibe) => (
-            <ButtonInstrument
+            <button
               key={vibe.id}
               onClick={() => setSelectedVibe(selectedVibe === vibe.id ? null : vibe.id)}
               className={cn(
@@ -132,33 +126,33 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
               )}
             >
               {vibe.label}
-            </ButtonInstrument>
+            </button>
           ))}
-        </ContainerInstrument>
-      </ContainerInstrument>
+        </div>
+      </div>
 
       {/* 🎙️ DEMO LIST */}
-      <ContainerInstrument className="space-y-3 md:space-y-4">
-        <ContainerInstrument className="flex items-center justify-between">
-          <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-va-black/40">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-[15px] font-light tracking-widest text-va-black/40">
             <VoiceglotText  translationKey="johfrai.explorer.results" defaultText="Gevonden voorbeelden" />
-          </HeadingInstrument>
-          <TextInstrument as="span" className="text-[15px] font-bold text-va-black/20 bg-va-black/5 px-2 py-1 rounded-md">
+          </h3>
+          <span className="text-[15px] font-bold text-va-black/20 bg-va-black/5 px-2 py-1 rounded-md">
             {demos.length} {demos.length === 1 
               ? <VoiceglotText  translationKey="johfrai.explorer.result" defaultText="resultaat" /> 
               : <VoiceglotText  translationKey="johfrai.explorer.results_count" defaultText="resultaten" />}
-          </TextInstrument>
-        </ContainerInstrument>
+          </span>
+        </div>
 
-        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <AnimatePresence  mode="popLayout">
             {isLoading ? (
-              <ContainerInstrument className="col-span-full py-8 md:py-12 flex flex-col items-center justify-center text-va-black/20 space-y-3 md:space-y-4">
-                <ContainerInstrument className="w-8 h-8 border-4 border-va-black/10 border-t-primary rounded-full animate-spin" />
-                <TextInstrument className="text-[15px] font-bold tracking-widest">
+              <div className="col-span-full py-12 flex flex-col items-center justify-center text-va-black/20 space-y-4">
+                <div className="w-8 h-8 border-4 border-va-black/10 border-t-primary rounded-full animate-spin" />
+                <p className="text-[15px] font-bold tracking-widest">
                   <VoiceglotText  translationKey="johfrai.explorer.loading" defaultText="Demos laden..." />
-                </TextInstrument>
-              </ContainerInstrument>
+                </p>
+              </div>
             ) : demos.length > 0 ? (
               demos.map((demo) => (
                 <motion.div
@@ -167,10 +161,10 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   key={demo.id}
-                  className="bg-white p-3 md:p-4 rounded-3xl border border-va-black/5 hover:border-primary/20 transition-all group shadow-sm hover:shadow-xl"
+                  className="bg-white p-4 rounded-3xl border border-va-black/5 hover:border-primary/20 transition-all group shadow-sm hover:shadow-xl"
                 >
-                  <ContainerInstrument className="flex items-center gap-3 md:gap-4">
-                    <ButtonInstrument
+                  <div className="flex items-center gap-4">
+                    <button
                       onClick={() => togglePlay(demo)}
                       className={cn(
                         "w-12 h-12 rounded-2xl flex items-center justify-center transition-all",
@@ -178,41 +172,41 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
                       )}
                     >
                       {playingId === demo.id ? <Pause strokeWidth={1.5} size={20} fill="currentColor" /> : <Play strokeWidth={1.5} size={20} fill="currentColor" className="ml-1" />}
-                    </ButtonInstrument>
-                    <ContainerInstrument className="flex-1 min-w-0">
-                      <HeadingInstrument level={4} className="font-light text-[15px] truncate">{demo.title}</HeadingInstrument>
-                      <TextInstrument className="text-[15px] text-va-black/40 font-bold tracking-wider">
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-light text-[15px] truncate">{demo.title}</h4>
+                      <p className="text-[15px] text-va-black/40 font-bold tracking-wider">
                         {demo.category}
-                      </TextInstrument>
-                    </ContainerInstrument>
+                      </p>
+                    </div>
                     {demo.script && (
-                      <ButtonInstrument
+                      <button
                         onClick={() => onAdoptScript(demo.script!)}
-                        className="p-2 md:p-3 rounded-xl bg-va-black/5 text-va-black/40 hover:bg-primary hover:text-white transition-all group/btn"
+                        className="p-3 rounded-xl bg-va-black/5 text-va-black/40 hover:bg-primary hover:text-white transition-all group/btn"
                         title={isAdmin ? "Adopteer Script (Admin)" : "Gebruik dit script"}
                       >
                         <Copy strokeWidth={1.5} size={16} className="group-hover/btn:scale-110 transition-transform" />
-                      </ButtonInstrument>
+                      </button>
                     )}
-                  </ContainerInstrument>
+                  </div>
                 </motion.div>
               ))
             ) : (
-              <ContainerInstrument className="col-span-full py-8 md:py-12 flex flex-col items-center justify-center text-va-black/20 space-y-3 md:space-y-4 bg-va-black/5 rounded-[32px] border-2 border-dashed border-va-black/10">
+              <div className="col-span-full py-12 flex flex-col items-center justify-center text-va-black/20 space-y-4 bg-va-black/5 rounded-[32px] border-2 border-dashed border-va-black/10">
                 <Sparkles strokeWidth={1.5} size={32} />
-                <ContainerInstrument className="text-center">
-                  <TextInstrument className="text-[15px] font-black tracking-widest">
+                <div className="text-center">
+                  <p className="text-[15px] font-black tracking-widest">
                     <VoiceglotText  translationKey="johfrai.explorer.no_match" defaultText="Geen specifieke match gevonden" />
-                  </TextInstrument>
-                  <TextInstrument className="text-[15px] font-medium mt-1">
+                  </p>
+                  <p className="text-[15px] font-medium mt-1">
                     <VoiceglotText  translationKey="johfrai.explorer.try_other" defaultText="Probeer een andere sector of vibe." />
-                  </TextInstrument>
-                </ContainerInstrument>
-              </ContainerInstrument>
+                  </p>
+                </div>
+              </div>
             )}
           </AnimatePresence>
-        </ContainerInstrument>
-      </ContainerInstrument>
-    </ContainerInstrument>
+        </div>
+      </div>
+    </div>
   );
 };

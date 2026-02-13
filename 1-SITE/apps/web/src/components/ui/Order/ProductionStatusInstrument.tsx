@@ -28,31 +28,31 @@ export const ProductionStatusInstrument: React.FC<ProductionStatusInstrumentProp
       icon={<Mic className="w-5 h-5" strokeWidth={1.5} />}
       className="col-span-3"
     >
-      <ContainerInstrument className="space-y-3 md:space-y-4 mt-4">
+      <ContainerInstrument className="space-y-4 mt-4">
         {items.map((item) => (
-          <ContainerInstrument key={item.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 md:p-6 bg-va-off-white rounded-[20px] border border-va-black/5 gap-4 md:gap-0">
-            <ContainerInstrument className="flex items-center gap-3 md:gap-4">
-              <ContainerInstrument className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+          <ContainerInstrument key={item.id} className="flex items-center justify-between p-4 bg-va-off-white rounded-[20px] border border-va-black/5">
+            <ContainerInstrument className="flex items-center gap-4">
+              <ContainerInstrument className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Mic className="w-5 h-5 text-primary" strokeWidth={1.5} />
               </ContainerInstrument>
               <ContainerInstrument>
-                <TextInstrument className="font-medium text-va-black text-base md:text-lg">{item.name}</TextInstrument>
-                <TextInstrument className="text-[15px] md:text-[15px] text-va-black/40 tracking-widest font-light">
+                <TextInstrument className="font-medium text-va-black">{item.name}</TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 tracking-widest font-light">
                   {item.meta_data?.usage || <VoiceglotText  translationKey="order.item.no_usage" defaultText="No usage defined" />}
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <ContainerInstrument className="flex items-center justify-between w-full md:w-auto gap-4 md:gap-6">
-              <ContainerInstrument className="text-left md:text-right">
-                <TextInstrument className="text-[15px] md:text-[15px] text-va-black/20 font-bold tracking-widest ">
+            <ContainerInstrument className="flex items-center gap-6">
+              <ContainerInstrument className="text-right">
+                <TextInstrument className="text-[15px] text-va-black/20 font-bold tracking-widest ">
                   <VoiceglotText  translationKey="order.item.deadline" defaultText="Deadline" />
                 </TextInstrument>
-                <TextInstrument className="font-light text-[15px] md:text-[15px] flex items-center gap-1">
+                <TextInstrument className="font-light text-[15px] flex items-center gap-1">
                   <Clock className="w-3 h-3" strokeWidth={1.5} /> 24h
                 </TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className={cn(
-                "px-3 py-1 rounded-full text-[15px] md:text-[15px] font-light uppercase tracking-widest",
+                "px-3 py-1 rounded-full text-[15px] font-light uppercase tracking-widest",
                 item.delivery_status === 'approved' ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
               )}>
                 <VoiceglotText  translationKey={`order.delivery_status.${item.delivery_status}`} defaultText={item.delivery_status} />

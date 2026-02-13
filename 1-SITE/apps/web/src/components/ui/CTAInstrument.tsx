@@ -28,17 +28,17 @@ export const CTAInstrument: React.FC = () => {
   };
 
   return (
-    <BentoCard span="full" className="bg-va-black text-white p-10 md:p-20 text-center relative overflow-hidden group mb-12 md:mb-20 hmagic">
+    <BentoCard span="full" className="bg-va-black text-white p-20 text-center relative overflow-hidden group mb-20 hmagic">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ContainerInstrument className="relative z-10 space-y-6 md:space-y-8">
-        <HeadingInstrument level={2} className="text-4xl md:text-8xl font-light tracking-tighter leading-none"><VoiceglotText  translationKey="home.cta.title_part1" defaultText="Jouw verhaal verdient " /><br /><TextInstrument as="span" className="text-white font-light italic"><VoiceglotText  translationKey="home.cta.title_highlight" defaultText="de beste" /></TextInstrument><VoiceglotText  translationKey="home.cta.title_part2" defaultText=" stem." /></HeadingInstrument>
-        <TextInstrument className="text-lg md:text-xl text-white/40 max-w-2xl mx-auto font-medium"><VoiceglotText  translationKey="home.cta.subtitle" defaultText="Sluit je aan bij honderden bedrijven die hun merk versterken met Voices.be." /></TextInstrument>
-        <ContainerInstrument className="flex flex-col md:flex-row justify-center gap-4 md:gap-6 pt-4">
-          <Link  href="/agency" className="va-btn-pro !px-8 md:!px-12 !py-4 md:!py-6 text-lg !bg-primary"><VoiceglotText  translationKey="home.cta.primary" defaultText="Vind jouw stem" /></Link>
-          <Link  href="/contact" className="px-8 md:px-12 py-4 md:py-6 rounded-va-lg font-medium tracking-widest text-[15px] border-2 border-white/10 hover:border-primary transition-all bg-white/5 backdrop-blur-sm"><VoiceglotText  translationKey="home.cta.secondary" defaultText="Neem contact op" /></Link>
+      <ContainerInstrument className="relative z-10 space-y-8">
+        <HeadingInstrument level={2} className="text-6xl md:text-8xl font-light tracking-tighter leading-none"><VoiceglotText  translationKey="home.cta.title_part1" defaultText="Jouw verhaal verdient " /><br /><TextInstrument as="span" className="text-white font-light italic"><VoiceglotText  translationKey="home.cta.title_highlight" defaultText="de beste" /></TextInstrument><VoiceglotText  translationKey="home.cta.title_part2" defaultText=" stem." /></HeadingInstrument>
+        <TextInstrument className="text-xl text-white/40 max-w-2xl mx-auto font-medium"><VoiceglotText  translationKey="home.cta.subtitle" defaultText="Sluit je aan bij honderden bedrijven die hun merk versterken met Voices.be." /></TextInstrument>
+        <ContainerInstrument className="flex justify-center gap-6 pt-4">
+          <Link  href="/agency" className="va-btn-pro !px-12 !py-6 text-lg !bg-primary"><VoiceglotText  translationKey="home.cta.primary" defaultText="Vind jouw stem" /></Link>
+          <Link  href="/contact" className="px-12 py-6 rounded-va-lg font-medium tracking-widest text-[15px] border-2 border-white/10 hover:border-primary transition-all bg-white/5 backdrop-blur-sm"><VoiceglotText  translationKey="home.cta.secondary" defaultText="Neem contact op" /></Link>
         </ContainerInstrument>
       </ContainerInstrument>
       <ContainerInstrument className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">

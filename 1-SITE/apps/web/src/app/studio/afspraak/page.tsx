@@ -183,7 +183,7 @@ export default function AfspraakPage() {
           <VoiceglotText  translationKey="common.loading" defaultText="Laden..." />
         </ContainerInstrument>
       }>
-        <AfspraakContent   />
+        <AfspraakContent  />
       </Suspense>
     </PageWrapperInstrument>
   );

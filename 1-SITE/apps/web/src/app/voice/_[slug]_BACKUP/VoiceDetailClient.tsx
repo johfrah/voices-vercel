@@ -10,41 +10,9 @@ import {
 } from "@/components/ui/LayoutInstruments";
 import { PricingCalculator } from "@/components/ui/PricingCalculator";
 import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
-import {
-    ButtonInstrument,
-    ContainerInstrument,
-    HeadingInstrument,
-    LabelInstrument,
-    LoadingScreenInstrument,
-    PageWrapperInstrument,
-    SectionInstrument,
-    TextInstrument
-} from "@/components/ui/LayoutInstruments";
-import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { PricingCalculator } from "@/components/ui/PricingCalculator";
-import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useCheckout } from "@/contexts/CheckoutContext";
-import { 
-  ArrowLeft, 
-  Heart, 
-  Mic, 
-  Music, 
-  Play, 
-  Share2, 
-  Star, 
-  Video as VideoIcon,
-  X,
-  Plus,
-  ArrowRight,
-  ChevronLeft,
-  Clock,
-  TrendingUp,
-  Brain,
-  MessageSquare,
-  Sparkles,
-  Search
-} from "lucide-react";
+import { ArrowLeft, Heart, Mic, Music, Play, Share2, Star, Video as VideoIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from 'react';
@@ -231,8 +199,8 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
               </ContainerInstrument>
             </ContainerInstrument>
             
-            <ContainerInstrument>
-              <LabelInstrument className="text-[15px] font-black tracking-widest text-va-black/30 block mb-4"><VoiceglotText  translationKey="common.config_price" defaultText="2. Configuratie & Prijs" /></LabelInstrument>
+            <div>
+              <label className="text-[15px] font-black tracking-widest text-va-black/30 block mb-4"><VoiceglotText  translationKey="common.config_price" defaultText="2. Configuratie & Prijs" /></label>
               <PricingCalculator  mode="human" actor={actor} />
             </ContainerInstrument>
           </ContainerInstrument>

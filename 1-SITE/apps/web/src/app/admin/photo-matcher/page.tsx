@@ -177,7 +177,7 @@ export default function PhotoMatcherPage() {
 
   // 🧹 Bulk Cleanup
   const bulkCleanup = async () => {
-    if (typeof window !== 'undefined' && window.confirm(`Weet je zeker dat je ${slopItems.length} redundante foto's wilt verplaatsen naar /ARCHIVE/ op de server?`)) {
+    if (confirm(`Weet je zeker dat je ${slopItems.length} redundante foto's wilt verplaatsen naar /ARCHIVE/ op de server?`)) {
       for (const item of slopItems) {
         await handleAction('archive', item.path);
       }

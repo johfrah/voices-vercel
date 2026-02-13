@@ -6,9 +6,7 @@ import {
   PageWrapperInstrument, 
   TextInstrument,
   ButtonInstrument,
-  SectionInstrument,
-  FormInstrument,
-  InputInstrument
+  SectionInstrument
 } from '@/components/ui/LayoutInstruments';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -234,8 +232,8 @@ export default function AgentCommandCenter() {
 
                         {/* Input */}
                         <ContainerInstrument className="p-8 bg-va-off-white/30 border-t border-black/5">
-                            <FormInstrument onSubmit={handleSendMessage} className="relative">
-                                <InputInstrument
+                            <form onSubmit={handleSendMessage} className="relative">
+                                <input
                                     type="text"
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
@@ -249,7 +247,7 @@ export default function AgentCommandCenter() {
                                 >
                                     <Send strokeWidth={1.5} size={20} />
                                 </ButtonInstrument>
-                            </FormInstrument>
+                            </form>
                         </ContainerInstrument>
                     </ContainerInstrument>
 

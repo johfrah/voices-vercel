@@ -96,9 +96,9 @@ export const EmailListItemInstrument = ({
         onDragEnd={handleDragEnd}
         style={{ x }}
         onClick={onClick}
-        className={`relative z-10 bg-white py-3 px-4 md:py-4 md:px-6 transition-colors cursor-pointer active:bg-gray-50 ${isUnread ? 'bg-blue-50/30' : ''} ${isSelected ? 'bg-gray-50' : ''}`}
+        className={`relative z-10 bg-white py-3 px-4 transition-colors cursor-pointer active:bg-gray-50 ${isUnread ? 'bg-blue-50/30' : ''} ${isSelected ? 'bg-gray-50' : ''}`}
       >
-        <ContainerInstrument className="flex items-center gap-3 md:gap-4">
+        <ContainerInstrument className="flex items-center gap-4">
           <ContainerInstrument className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-[15px] font-light relative shadow-sm overflow-hidden ${isSemanticResult ? 'bg-va-black text-white' : 'bg-gray-100 text-gray-500'}`}>
             {avatarUrl ? (
               <Image  src={avatarUrl} alt="Avatar" width={40} height={40} className="w-full h-full object-cover" />

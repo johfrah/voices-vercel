@@ -5,11 +5,6 @@ import { CheckCircle2 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import { BentoCard } from '../BentoGrid';
-import { 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument 
-} from '../LayoutInstruments';
 
 interface WorkshopProgramProps {
   dagindeling?: string;
@@ -18,39 +13,39 @@ interface WorkshopProgramProps {
 
 export const WorkshopProgram: React.FC<WorkshopProgramProps> = ({ dagindeling, image }) => {
   return (
-    <BentoCard span="lg" className="bg-va-off-white p-8 md:p-12">
-      <HeadingInstrument level={3} className="text-2xl md:text-3xl font-light tracking-tight mb-8 md:mb-10">
+    <BentoCard span="lg" className="bg-va-off-white p-12">
+      <h3 className="text-3xl font-light tracking-tight mb-10">
         <VoiceglotText  translationKey="workshop.program.title" defaultText="Programma van de dag" />
-      </HeadingInstrument>
-      <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-        <ContainerInstrument className="prose prose-sm prose-black max-w-none text-black/60 font-medium leading-relaxed">
+      </h3>
+      <div className="grid md:grid-cols-2 gap-12">
+        <div className="prose prose-sm prose-black max-w-none text-black/60 font-medium leading-relaxed">
           {dagindeling ? (
-            <ContainerInstrument dangerouslySetInnerHTML={{ __html: dagindeling }} />
+            <div dangerouslySetInnerHTML={{ __html: dagindeling }} />
           ) : (
-            <ContainerInstrument as="ul" className="space-y-3 md:space-y-4 list-none p-0">
+            <ul className="space-y-4 list-none p-0">
               {[1, 2, 3, 4, 5].map((i) => (
-                <ContainerInstrument as="li" key={i} className="flex gap-3 md:gap-4">
+                <li key={i} className="flex gap-4">
                   <CheckCircle2 strokeWidth={1.5} className="text-primary shrink-0" size={20} />
-                  <TextInstrument as="span">
+                  <span>
                     <VoiceglotText  
                       translationKey={`workshop.program.step${i}`} 
                       defaultText={`Programma stap ${i}...`} 
                     />
-                  </TextInstrument>
-                </ContainerInstrument>
+                  </span>
+                </li>
               ))}
-            </ContainerInstrument>
+            </ul>
           )}
-        </ContainerInstrument>
-        <ContainerInstrument className="relative rounded-[24px] md:rounded-[32px] overflow-hidden aspect-square md:aspect-auto">
+        </div>
+        <div className="relative rounded-[32px] overflow-hidden aspect-square md:aspect-auto">
           <Image  
             src={image || "/assets/studio/programma.jpg"} 
             alt="Programma"
             fill
             className="object-cover grayscale"
           />
-        </ContainerInstrument>
-      </ContainerInstrument>
+        </div>
+      </div>
     </BentoCard>
   );
 };

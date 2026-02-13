@@ -4,14 +4,8 @@ import {
   PageWrapperInstrument, 
   SectionInstrument, 
   HeadingInstrument,
-  TextInstrument,
-  ContainerInstrument,
-  ButtonInstrument,
-  LoadingScreenInstrument,
-  LabelInstrument,
-  InputInstrument
+  TextInstrument
 } from '@/components/ui/LayoutInstruments';
-import { ArrowLeft } from "lucide-react";
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 export const dynamic = 'force-dynamic';

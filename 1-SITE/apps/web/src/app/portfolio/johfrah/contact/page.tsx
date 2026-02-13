@@ -32,7 +32,7 @@ export default function JohfrahContactPage() {
                 <ContainerInstrument className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                   <Mail strokeWidth={1.5} size={20} />
                 </ContainerInstrument>
-                <ContainerInstrument className="flex flex-col">
+                <div>
                   <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.email.ce8ae9" defaultText="Email" /></TextInstrument>
                   <a href="mailto:johfrah@johfrah.be" className="text-[15px] font-light hover:text-primary transition-colors"><VoiceglotText  translationKey="auto.page.johfrah_johfrah_be.3cb465" defaultText="johfrah@johfrah.be" /></a>
                 </ContainerInstrument>
@@ -42,7 +42,7 @@ export default function JohfrahContactPage() {
                 <ContainerInstrument className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                   <Phone strokeWidth={1.5} size={20} />
                 </ContainerInstrument>
-                <ContainerInstrument className="flex flex-col">
+                <div>
                   <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.telefoon.fe260f" defaultText="Telefoon" /></TextInstrument>
                   <a href="tel:+3227931991" className="text-[15px] font-light hover:text-primary transition-colors">+32 (0)2 793 19 91</a>
                 </ContainerInstrument>

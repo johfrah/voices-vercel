@@ -5,7 +5,6 @@ import {
     ButtonInstrument,
     ContainerInstrument,
     HeadingInstrument,
-    InputInstrument,
     PageWrapperInstrument,
     SectionInstrument,
     TextInstrument
@@ -62,7 +61,7 @@ export default function AdminDatabasePage() {
         <ContainerInstrument className="flex gap-4">
           <ContainerInstrument className="relative group">
             <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} />
-            <InputInstrument 
+            <input 
               type="text" 
               placeholder="Zoek tabel..." 
               value={searchQuery}

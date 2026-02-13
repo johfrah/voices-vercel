@@ -176,7 +176,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           <ContainerInstrument className="mb-8 p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-between">
             <ContainerInstrument className="flex items-center gap-3">
               <EyeOff strokeWidth={1.5} size={20} className="text-primary" />
-              <TextInstrument className="text-[15px] font-light tracking-tight text-primary"><VoiceglotText  translationKey="auto.page.student_preview_modu.c2e4cb" defaultText="Student Preview Modus" /></TextInstrument>
+              <TextInstrument className="text-[15px] font-black tracking-tight text-primary"><VoiceglotText  translationKey="auto.page.student_preview_modu.c2e4cb" defaultText="Student Preview Modus" /></TextInstrument>
             </ContainerInstrument>
             <Link  href={`/academy/lesson/${params.id}`} className="va-btn-pro !py-2 !px-4 !text-[15px]"><VoiceglotText  translationKey="auto.page.terug_naar_admin_mod.f246ba" defaultText="Terug naar Admin Mode" /></Link>
           </ContainerInstrument>
@@ -184,7 +184,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         <SectionInstrument className="mb-12 space-y-6">
           <Link  
             href="/academy" 
-            className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-all"
+            className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
           >
             <ArrowLeft strokeWidth={1.5} size={14} /> 
             <VoiceglotText  translationKey="academy.back_to_overview" defaultText="Terug naar overzicht" />
@@ -351,7 +351,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         <ContainerInstrument className="mb-8 p-4 bg-va-black rounded-2xl flex items-center justify-between shadow-xl border border-white/5">
           <ContainerInstrument className="flex items-center gap-3 text-white">
             <Eye strokeWidth={1.5} size={20} className="text-primary" />
-            <TextInstrument className="text-[15px] font-light tracking-tight"><VoiceglotText  translationKey="auto.page.admin_mode_actief.f3753b" defaultText="Admin Mode Actief" /></TextInstrument>
+            <TextInstrument className="text-[15px] font-black tracking-tight"><VoiceglotText  translationKey="auto.page.admin_mode_actief.f3753b" defaultText="Admin Mode Actief" /></TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="flex gap-4">
             {!isPreviewMode ? (
@@ -374,7 +374,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
       <SectionInstrument className="mb-12 space-y-6">
         <Link  
           href="/academy" 
-          className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-all"
+          className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-va-black/40 hover:text-primary transition-all"
         >
           <ArrowLeft strokeWidth={1.5} size={14} /> 
           <VoiceglotText  translationKey="academy.back_to_overview" defaultText="Terug naar overzicht" />
@@ -425,17 +425,17 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
                   /></TextInstrument>
                 <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <ContainerInstrument className="space-y-4">
-                    <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-light">1</ContainerInstrument>
+                    <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">1</ContainerInstrument>
                     <TextInstrument className="font-bold text-[15px] tracking-widest"><VoiceglotText  translationKey="academy.lesson1.q1" defaultText="Geloof je jezelf?" /></TextInstrument>
                     <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText  translationKey="academy.lesson1.q1.desc" defaultText="Hoor je iemand die een tekst voorleest, of hoor je iemand die een verhaal vertelt aan een vriend?" /></TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="space-y-4">
-                    <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-light">2</ContainerInstrument>
+                    <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">2</ContainerInstrument>
                     <TextInstrument className="font-bold text-[15px] tracking-widest"><VoiceglotText  translationKey="academy.lesson1.q2" defaultText="Hoor je de adem?" /></TextInstrument>
                     <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText  translationKey="academy.lesson1.q2.desc" defaultText="Zit er rust in je klank, of hoor je de inspanning en de nood om de zin af te maken?" /></TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="space-y-4">
-                    <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-light">3</ContainerInstrument>
+                    <ContainerInstrument className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-black">3</ContainerInstrument>
                     <TextInstrument className="font-bold text-[15px] tracking-widest"><VoiceglotText  translationKey="academy.lesson1.q3" defaultText="De Glimlach?" /></TextInstrument>
                     <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText  translationKey="academy.lesson1.q3.desc" defaultText="Kun je horen dat je plezier hebt in wat je vertelt, of klinkt het als een verplichte opdracht?" /></TextInstrument>
                   </ContainerInstrument>
@@ -505,7 +505,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           {/* Progress Widget */}
           <BentoCard span="sm" className="bg-va-black text-white">
             <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-white/40 mb-4"><VoiceglotText  translationKey="academy.lesson.progress_label" defaultText="Voortgang" /></HeadingInstrument>
-            <ContainerInstrument className="text-4xl font-light tracking-tighter text-primary mb-4">{progress.percentage}%</ContainerInstrument>
+            <ContainerInstrument className="text-4xl font-black tracking-tighter text-primary mb-4">{progress.percentage}%</ContainerInstrument>
             <ContainerInstrument className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mb-6">
               <ContainerInstrument className="h-full bg-primary" {...({ style: { width: `${progress.percentage}%` } } as any)} />
             </ContainerInstrument>

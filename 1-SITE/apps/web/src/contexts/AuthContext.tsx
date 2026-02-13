@@ -5,10 +5,6 @@ import { User } from '@supabase/supabase-js';
 import { ShieldCheck } from 'lucide-react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { 
-  ContainerInstrument 
-} from '@/components/ui/LayoutInstruments';
-
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
@@ -102,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logout,
       resetPassword
     }}>
-      <ContainerInstrument className="hidden"><ShieldCheck strokeWidth={1.5} /></ContainerInstrument>
+      <div className="hidden"><ShieldCheck strokeWidth={1.5} /></div>
       {children}
     </AuthContext.Provider>
   );

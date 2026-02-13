@@ -35,15 +35,10 @@ export default function GlobalError({
             </ContainerInstrument>
             
             <ContainerInstrument className="space-y-2">
-              <HeadingInstrument level={1} className="text-3xl font-light tracking-tighter">
-                <VoiceglotText translationKey="error.global.title" defaultText="Systeem Fout" />
-              </HeadingInstrument>
-              <TextInstrument className="text-va-black/40 font-medium leading-relaxed">
-                <VoiceglotText 
+              <HeadingInstrument level={1} className="text-3xl font-light tracking-tighter"><VoiceglotText  translationKey="error.global.title" defaultText="Systeem Fout" /><TextInstrument className="text-va-black/40 font-medium leading-relaxed"><VoiceglotText  
                   translationKey="error.global.text" 
                   defaultText="Er ging iets mis bij het laden van de Freedom Machine. Onze excuses voor het ongemak." 
-                />
-              </TextInstrument>
+                /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>
 
             <ButtonInstrument 
@@ -51,7 +46,7 @@ export default function GlobalError({
               className="va-btn-pro w-full !py-6"
             >
               <RefreshCw strokeWidth={1.5} size={18} />
-              <VoiceglotText translationKey="error.global.cta" defaultText="Pagina Herstellen" />
+              <VoiceglotText  translationKey="error.global.cta" defaultText="Pagina Herstellen" />
             </ButtonInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

@@ -14,7 +14,7 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <ContainerInstrument className="w-full space-y-3 md:space-y-4">
+    <ContainerInstrument className="w-full space-y-4">
       {items.map((item) => (
         <ContainerInstrument 
           key={item.id} 
@@ -22,12 +22,12 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
         >
           <button
             onClick={() => setOpenId(openId === item.id ? null : item.id)}
-            className="w-full px-6 py-6 md:px-10 md:py-8 flex items-center justify-between text-left group"
+            className="w-full px-10 py-8 flex items-center justify-between text-left group"
           >
             <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/60 group-hover:text-va-black transition-colors">
               {item.title}
             </HeadingInstrument>
-            <ContainerInstrument className={`p-1.5 md:p-2 rounded-full bg-va-black/5 transition-all duration-500 flex items-center justify-center ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
+            <ContainerInstrument className={`p-2 rounded-full bg-va-black/5 transition-all duration-500 flex items-center justify-center ${openId === item.id ? 'rotate-180 bg-primary text-va-black' : ''}`}>
               <Image  
                 src="/assets/common/branding/icons/DOWN.svg" 
                 alt="Toggle" 
@@ -42,7 +42,7 @@ export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ item
               openId === item.id ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
             }`}
           >
-            <ContainerInstrument className="px-6 pb-6 md:px-10 md:pb-10 prose prose-lg text-va-black/40 font-light">
+            <ContainerInstrument className="px-10 pb-10 prose prose-lg text-va-black/40 font-light">
               <ContainerInstrument dangerouslySetInnerHTML={{ __html: item.content }} />
             </ContainerInstrument>
           </ContainerInstrument>

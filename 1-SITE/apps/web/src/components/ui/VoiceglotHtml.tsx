@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
-import { ContainerInstrument } from './LayoutInstruments';
 
 interface VoiceglotHtmlProps {
   translationKey: string;
@@ -28,7 +27,7 @@ export const VoiceglotHtml: React.FC<VoiceglotHtmlProps> = ({
   }, [translationKey, defaultHtml, t]);
 
   return (
-    <ContainerInstrument 
+    <div 
       className={cn("voiceglot-html", className)}
       dangerouslySetInnerHTML={{ __html: content }}
     />

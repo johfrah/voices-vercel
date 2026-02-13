@@ -10,19 +10,6 @@ import {
   TextInstrument,
   HeadingInstrument
 } from '@/components/ui/LayoutInstruments';
-import { 
-  Loader2,
-  Image as ImageIcon,
-  Info,
-  Check,
-  ArrowRight,
-  ChevronLeft,
-  Play,
-  Pause,
-  Clock,
-  ChevronDown,
-  X
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const PricingSummary: React.FC = () => {
@@ -54,7 +41,7 @@ export const PricingSummary: React.FC = () => {
   
   if (loading && !hasContextData) {
     return (
-      <ContainerInstrument className="flex items-center justify-center py-8 md:py-12">
+      <ContainerInstrument className="flex items-center justify-center py-12">
         <Loader2 className="animate-spin text-primary" size={24} strokeWidth={1.5} />
       </ContainerInstrument>
     );
@@ -65,13 +52,13 @@ export const PricingSummary: React.FC = () => {
   const total = subtotal + tax;
 
   return (
-    <ContainerInstrument className="space-y-4 md:space-y-6">
-      <ContainerInstrument className="space-y-3 md:space-y-4">
+    <ContainerInstrument className="space-y-6">
+      <ContainerInstrument className="space-y-4">
         {isSubscription && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex justify-between items-center p-4 md:p-6 bg-va-black text-white rounded-[20px] shadow-aura-lg border-b-4 border-primary relative overflow-hidden group"
+            className="flex justify-between items-center p-6 bg-va-black text-white rounded-[20px] shadow-aura-lg border-b-4 border-primary relative overflow-hidden group"
           >
             <ContainerInstrument className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <ContainerInstrument className="flex items-center gap-4 relative z-10">
@@ -176,7 +163,7 @@ export const PricingSummary: React.FC = () => {
         )}
 
         {isJohfrai && (
-          <ContainerInstrument className="p-4 md:p-6 bg-primary/5 border border-primary/10 rounded-[20px] space-y-2 md:space-y-3 animate-in fade-in slide-in-from-right-4 duration-500">
+          <ContainerInstrument className="p-6 bg-primary/5 border border-primary/10 rounded-[20px] space-y-3 animate-in fade-in slide-in-from-right-4 duration-500">
             <ContainerInstrument className="flex items-center gap-2 text-primary">
               <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
               <TextInstrument className="text-[15px] font-light tracking-widest ">
@@ -188,7 +175,7 @@ export const PricingSummary: React.FC = () => {
                 <VoiceglotText  
                   translationKey={`checkout.summary.guarantee.${state.plan}`} 
                   defaultText={`Inbegrepen in je ${state.plan} plan: ${state.plan === 'pro' ? '1× per kwartaal' : state.plan === 'studio' ? '1× per maand' : 'Upgrade mogelijk naar'} een menselijke fix door Johfrah zelf.`} 
-                  /> :
+                /> :
                 <VoiceglotText  
                   translationKey="checkout.summary.guarantee.ai" 
                   defaultText="Start vandaag met Johfrai. Niet 100% tevreden? Upgrade later naar een menselijke opname door Johfrah zelf. We verrekenen je huidige betaling volledig." 
@@ -211,7 +198,7 @@ export const PricingSummary: React.FC = () => {
         ))}
       </ContainerInstrument>
 
-      <ContainerInstrument className="space-y-2 md:space-y-3 pt-4 md:pt-6 border-t border-va-black/5">
+      <ContainerInstrument className="space-y-3 pt-6 border-t border-va-black/5">
         <ContainerInstrument className="flex justify-between text-[15px]">
           <TextInstrument className="text-va-black/40 font-light tracking-widest text-[15px] ">
             <VoiceglotText  translationKey="common.subtotal" defaultText="Subtotaal" />

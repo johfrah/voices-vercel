@@ -13,19 +13,6 @@ import {
   InputInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
-import { 
-  Loader2,
-  Image as ImageIcon,
-  Search,
-  Check,
-  ArrowRight,
-  ChevronLeft,
-  Play,
-  Pause,
-  Info,
-  ChevronDown,
-  X
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
@@ -77,24 +64,24 @@ export const VoiceStep: React.FC = () => {
   );
 
   return (
-    <ContainerInstrument className="space-y-6 md:space-y-10">
+    <ContainerInstrument className="space-y-10">
       <ContainerInstrument className="relative">
         <InputInstrument
           type="text"
           value={search}
-          onChange={(e: any) => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
           placeholder="Zoek op naam..."
-          className="w-full bg-va-off-white border-none rounded-[20px] py-4 pl-12 pr-6 md:py-5 md:pl-14 md:pr-8 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
+          className="w-full bg-va-off-white border-none rounded-[20px] py-5 pl-14 pr-8 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
         />
         <Image  src="/assets/common/branding/icons/SEARCH.svg" width={20} height={20} alt="" className="absolute left-6 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
       </ContainerInstrument>
 
       {loading ? (
-        <ContainerInstrument className="py-12 md:py-20 flex items-center justify-center">
+        <ContainerInstrument className="py-20 flex items-center justify-center">
           <Loader2 className="animate-spin text-primary" size={40} strokeWidth={1.5} />
         </ContainerInstrument>
       ) : (
-        <ContainerInstrument className="grid grid-cols-1 gap-4 md:gap-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+        <ContainerInstrument className="grid grid-cols-1 gap-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
           {filteredActors.map((actor) => (
             <ContainerInstrument 
               key={actor.id}
@@ -114,7 +101,7 @@ export const VoiceStep: React.FC = () => {
             >
                <VoiceCard voice={actor} />
               {state.selectedActor?.id === actor.id && (
-                <ContainerInstrument className="absolute top-4 right-4 md:top-6 md:right-6 bg-primary text-white p-2 md:p-3 rounded-[20px] shadow-lg z-20 animate-in zoom-in duration-300">
+                <ContainerInstrument className="absolute top-6 right-6 bg-primary text-white p-3 rounded-[20px] shadow-lg z-20 animate-in zoom-in duration-300">
                   <Image  src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" className="brightness-0 invert" />
                 </ContainerInstrument>
               )}
@@ -123,16 +110,16 @@ export const VoiceStep: React.FC = () => {
         </ContainerInstrument>
       )}
 
-      <ContainerInstrument className="flex gap-3 md:gap-4">
+      <ContainerInstrument className="flex gap-4">
         <ButtonInstrument 
           onClick={() => setStep('briefing')} 
-          className="flex-1 py-4 md:py-6 rounded-[10px] bg-va-black/5 text-va-black font-medium tracking-widest text-[15px] hover:bg-va-black/10 transition-all"
+          className="flex-1 py-6 rounded-[10px] bg-va-black/5 text-va-black font-medium tracking-widest text-[15px] hover:bg-va-black/10 transition-all"
         >
           <VoiceglotText  translationKey="common.back" defaultText="Terug" />
         </ButtonInstrument>
         <ButtonInstrument 
           onClick={handleNext} 
-          className="flex-[2] va-btn-pro py-4 md:py-6 !rounded-[10px]"
+          className="flex-[2] va-btn-pro py-6 !rounded-[10px]"
         >
           <VoiceglotText  translationKey="checkout.voice.next" defaultText="Volgende: Gegevens" />
         </ButtonInstrument>

@@ -29,8 +29,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       openGraph: {
         title,
         description,
-        type: 'article',
-        url: `https://www.voices.be/article/${slug}`,
+        type: 'website',
       },
       twitter: {
         card: 'summary_large_image',
@@ -38,7 +37,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         description,
       },
       alternates: {
-        canonical: `https://www.voices.be/article/${slug}`,
+        canonical: `https://www.voices.be/${slug}`,
       }
     };
   } catch (e) {
@@ -61,25 +60,8 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
 
     if (!page) notFound();
 
-    const iapContext = page.iapContext as { journey?: string; lang?: string; author?: string } | null;
+    const iapContext = page.iapContext as { journey?: string; lang?: string } | null;
     const journey = iapContext?.journey || 'agency';
-    const currentLang = iapContext?.lang || 'nl';
-
-    // 🕸️ SUZY'S KNOWLEDGE GRAPH: Collect all videos for Schema
-    const videos: any[] = [];
-    page.blocks.forEach((block: any) => {
-      if (block.type === 'lifestyle-overlay' || block.type === 'lifestyle') {
-        const url = block.settings?.video_url;
-        if (url) videos.push({ url, title: block.title || page.title });
-      }
-      if (block.type === 'bento') {
-        const items = (block.content || '').split('\n\n');
-        items.forEach((item: string) => {
-          const videoMatch = item.match(/video:\s*([^\n]+)/);
-          if (videoMatch) videos.push({ url: videoMatch[1].trim(), title: page.title });
-        });
-      }
-    });
 
     const getIcon = (cat: string) => {
       const c = cat.toLowerCase();
@@ -156,6 +138,8 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                   const isLarge = i === 0;
                   
                   // 🌍 Intelligent Market-Aware Subtitle Logic
+                  // We bepalen de taal op basis van de IAP context van de pagina
+                  const currentLang = (page.iapContext as { lang?: string } | null)?.lang || 'nl';
                   const subtitleUrl = videoUrl ? videoUrl.replace('.mp4', `-${currentLang}.vtt`) : null;
                   
                   return (
@@ -170,7 +154,6 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                           <VideoPlayer strokeWidth={1.5} 
                             url={videoUrl} 
                             title={itemTitle}
-                            slug={page.slug}
                             subtitles={subtitleUrl ? [{
                               src: subtitleUrl,
                               lang: currentLang,
@@ -204,35 +187,13 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
             </section>
           );
 
-        case 'lifestyle-overlay':
         case 'lifestyle':
           // Airbnb-style Overlay Island (Contextuele Beleving)
-          const videoUrl = block.settings?.video_url;
-          const useOwnPlayer = block.settings?.use_own_player;
-          const subtitleUrl = videoUrl ? videoUrl.replace('.mp4', `-${currentLang}.vtt`) : null;
-
           return (
             <section key={block.id} className="py-32 relative min-h-[80vh] flex items-center animate-in fade-in duration-1000 fill-mode-both">
               <ContainerInstrument className="absolute inset-0 bg-va-black rounded-[20px] overflow-hidden shadow-aura-lg grayscale-[0.5] hover:grayscale-0 transition-all duration-1000 group/lifestyle">
-                {videoUrl && useOwnPlayer ? (
-                  <VideoPlayer 
-                    url={videoUrl} 
-                    title={title}
-                    slug={page.slug}
-                    subtitles={subtitleUrl ? [{
-                      src: subtitleUrl,
-                      lang: currentLang,
-                      label: currentLang.toUpperCase()
-                    }] : []}
-                  />
-                ) : (
-                  <>
-                    <ContainerInstrument className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60" />
-                    <TextInstrument className="absolute inset-0 flex items-center justify-center text-white/5 font-black text-[20vw] rotate-12 tracking-tighter pointer-events-none ">
-                      <VoiceglotText translationKey="auto.page.voices.92ff10" defaultText="VOICES" />
-                    </TextInstrument>
-                  </>
-                )}
+                <ContainerInstrument className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60" />
+                <TextInstrument className="absolute inset-0 flex items-center justify-center text-white/5 font-black text-[20vw] rotate-12 tracking-tighter pointer-events-none "><VoiceglotText  translationKey="auto.page.voices.92ff10" defaultText="VOICES" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="relative z-10 max-w-xl ml-12 lg:ml-24 p-16 bg-white/90 backdrop-blur-xl rounded-[20px] shadow-aura-lg border border-white/20">
                 {title && <HeadingInstrument level={2} className="text-5xl font-light mb-8 tracking-tight text-va-black leading-none">{title}</HeadingInstrument>}
@@ -272,7 +233,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
         case 'calculator':
           return (
             <section key={block.id} className="py-24 animate-in fade-in duration-1000 fill-mode-both">
-              <PricingCalculator   />
+              <PricingCalculator  />
             </section>
           );
 
@@ -332,55 +293,34 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
               {page.blocks.map((block: any, index: number) => renderBlock(block, index))}
             </ContainerInstrument>
 
-            {/* 🕸️ SUZY'S SCHEMA INJECTION: CMS Article Authority & Video Knowledge Graph */}
+            {/* 🕸️ SUZY'S SCHEMA INJECTION: CMS Article Authority */}
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
                 __html: JSON.stringify({
                   "@context": "https://schema.org",
-                  "@graph": [
-                    {
-                      "@type": page.type === 'Blog' ? 'BlogPosting' : 'Article',
-                      "headline": page.title,
-                      "description": page.description,
-                      "datePublished": page.createdAt,
-                      "dateModified": page.updatedAt || page.createdAt,
-                      "author": {
-                        "@type": "Person",
-                        "name": (page.iapContext as any)?.author || "Johfrah Lefebvre",
-                        "url": "https://www.voices.be/voice/johfrah-lefebvre"
-                      },
-                      "publisher": {
-                        "@type": "Organization",
-                        "name": "Voices",
-                        "logo": {
-                          "@type": "ImageObject",
-                          "url": "https://www.voices.be/assets/common/logo-voices-be.png"
-                        }
-                      },
-                      "mainEntityOfPage": {
-                        "@type": "WebPage",
-                        "@id": `https://www.voices.be/article/${slug}`
-                      }
-                    },
-                    ...videos.map(v => ({
-                      "@type": "VideoObject",
-                      "name": v.title,
-                      "description": page.description || v.title,
-                      "thumbnailUrl": `https://www.voices.be/assets/content/blog/thumbnails/${page.slug}.jpg`,
-                      "uploadDate": page.createdAt,
-                      "contentUrl": `https://www.voices.be${v.url}`,
-                      "embedUrl": `https://www.voices.be${v.url}`,
-                      "publisher": {
-                        "@type": "Organization",
-                        "name": "Voices",
-                        "logo": {
-                          "@type": "ImageObject",
-                          "url": "https://www.voices.be/assets/common/logo-voices-be.png"
-                        }
-                      }
-                    }))
-                  ]
+                  "@type": page.type === 'Blog' ? 'BlogPosting' : 'Article',
+                  "headline": page.title,
+                  "description": page.description,
+                  "datePublished": page.createdAt,
+                  "dateModified": page.updatedAt || page.createdAt,
+                  "author": {
+                    "@type": "Person",
+                    "name": (page.iapContext as any)?.author || "Johfrah Lefebvre",
+                    "url": "https://www.voices.be/voice/johfrah-lefebvre"
+                  },
+                  "publisher": {
+                    "@type": "Organization",
+                    "name": "Voices",
+                    "logo": {
+                      "@type": "ImageObject",
+                      "url": "https://www.voices.be/assets/common/logo-voices-be.png"
+                    }
+                  },
+                  "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": `https://www.voices.be/${slug}`
+                  }
                 })
               }}
             />
