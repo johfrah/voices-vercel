@@ -13,6 +13,7 @@ const TranslationContext = createContext<TranslationContextType | undefined>(und
 export const TranslationProvider: React.FC<{ children: ReactNode; lang?: string }> = ({ children, lang = 'nl' }) => {
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const healingKeys = React.useRef<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchTranslations = async () => {
@@ -38,13 +39,17 @@ export const TranslationProvider: React.FC<{ children: ReactNode; lang?: string 
     // 🛡️ STABILITEIT: Als de vertaling ontbreekt of leeg is, gebruik de defaultText (NL)
     if (!translation || translation.trim() === '') {
       // 🏥 SELF-HEALING TRIGGER (Silent)
-      // We triggeren de healing alleen als we niet al aan het healen zijn
-      if (typeof window !== 'undefined' && !isHealing) {
+      // We triggeren de healing alleen als we niet al aan het healen zijn voor deze specifieke key
+      if (typeof window !== 'undefined' && !healingKeys.current.has(key)) {
+        healingKeys.current.add(key);
         fetch('/api/translations/heal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ key, originalText: defaultText, currentLang: lang })
-        }).catch(() => {}); // Silent failure
+        }).catch(() => {
+          // Bij error, verwijder uit set zodat we het later opnieuw kunnen proberen
+          healingKeys.current.delete(key);
+        }); 
       }
       return defaultText;
     }
