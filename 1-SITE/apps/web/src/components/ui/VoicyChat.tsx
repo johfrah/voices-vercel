@@ -453,14 +453,14 @@ export const VoicyChat: React.FC = () => {
           {activeTab === 'chat' && (
             <ContainerInstrument plain className={`flex-1 overflow-hidden relative flex ${isFullMode ? 'flex-row' : 'flex-col'}`}>
               <ContainerInstrument plain className="flex-1 flex flex-col overflow-hidden border-r border-black/5">
-                <ContainerInstrument plain ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                <ContainerInstrument plain ref={scrollRef} className="flex-1 overflow-y-auto p-3 md:p-4 space-y-4 custom-scrollbar">
                   {messages.map((msg) => (
                     <ContainerInstrument
                       plain
                       key={msg.id}
                       className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                      <ContainerInstrument plain className={`max-w-[80%] p-4 rounded-[24px] text-sm font-medium leading-relaxed ${
+                      <ContainerInstrument plain className={`max-w-[85%] p-3 md:p-4 rounded-[24px] text-[15px] font-medium leading-relaxed ${
                         msg.role === 'user' 
                           ? 'bg-primary text-white rounded-tr-none shadow-lg shadow-primary/10' 
                           : 'bg-va-off-white text-va-black rounded-tl-none'
@@ -555,14 +555,14 @@ export const VoicyChat: React.FC = () => {
                 </ContainerInstrument>
 
                 {/* Input Area */}
-                <ContainerInstrument plain className="p-6 border-t border-black/5 bg-white">
+                <ContainerInstrument plain className="p-3 md:p-4 border-t border-black/5 bg-white">
                   <FormInstrument onSubmit={handleSend} className="relative">
                     <InputInstrument
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder="Typ je bericht..."
-                      className="w-full bg-va-off-white border-none rounded-full py-4 pl-6 pr-14 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all"
+                      className="w-full bg-va-off-white border-none rounded-full py-3 md:py-4 pl-5 md:pl-6 pr-12 md:pr-14 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
                     />
                     <ButtonInstrument
                       type="submit"
