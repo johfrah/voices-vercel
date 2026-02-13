@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, ChevronRight, Briefcase, Heart, Sparkles, Check, Copy } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useEditMode } from '@/contexts/EditModeContext';
+import { cn } from '@/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Briefcase, Copy, Heart, Pause, Play, Sparkles } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface Demo {
   id: number;

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { ArrowUpRight, TrendingUp, Zap } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { BentoCard } from '../ui/BentoGrid';
-import { TrendingUp, TrendingDown, Euro, Zap, ArrowUpRight } from 'lucide-react';
 
 /**
  * ⚡ PROFIT ENGINE WIDGET (2026)

@@ -1,6 +1,5 @@
-import { cn } from '@/lib/utils';
 import { ButtonInstrument, ContainerInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
-import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface MailItem {
   id: number;

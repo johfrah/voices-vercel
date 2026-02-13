@@ -1,9 +1,9 @@
 "use client";
 
-import React from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, MapPin, Users } from 'lucide-react';
-import { useSonicDNA } from '@/lib/sonic-dna';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useSonicDNA } from '@/lib/sonic-dna';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, MapPin, Users } from 'lucide-react';
+import React from 'react';
 
 export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) => {
   const { playClick } = useSonicDNA();

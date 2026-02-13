@@ -1,9 +1,9 @@
 "use client";
 
-import React from 'react';
-import { useCheckout } from '@/contexts/CheckoutContext';
-import { Sparkles, Home, Check } from 'lucide-react';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useCheckout } from '@/contexts/CheckoutContext';
+import { Check, Home, Sparkles } from 'lucide-react';
+import React from 'react';
 
 export const AcademyUpsellSection: React.FC = () => {
   const { state, toggleUpsell } = useCheckout();

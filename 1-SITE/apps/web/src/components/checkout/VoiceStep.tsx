@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { Actor } from '@/types';
+import { CheckCircle2, Loader2, Search } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { VoiceCard } from '../ui/VoiceCard';
-import { Search, Loader2, CheckCircle2 } from 'lucide-react';
 
 export const VoiceStep: React.FC = () => {
   const { state, selectActor, setStep } = useCheckout();

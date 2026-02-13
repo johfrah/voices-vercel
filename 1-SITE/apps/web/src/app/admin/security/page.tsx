@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument 
+import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { ShieldAlert, Lock, Fingerprint, Key, Smartphone, ArrowLeft, Loader2, CheckCircle2, ShieldCheck, Zap, History } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Fingerprint, History, Loader2, Lock, ShieldAlert, ShieldCheck, Smartphone, Zap } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 /**

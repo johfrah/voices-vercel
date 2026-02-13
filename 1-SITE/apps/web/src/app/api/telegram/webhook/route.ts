@@ -23,8 +23,8 @@
  * Body: url=<BASE_URL>/api/telegram/webhook&secret_token=<TELEGRAM_WEBHOOK_SECRET>
  */
 
-import { NextRequest, NextResponse } from 'next/server';
 import { GeminiService } from '@/services/GeminiService';
+import { NextRequest, NextResponse } from 'next/server';
 import { BOB_WELCOME_MESSAGE } from '../bob-welcome';
 import { buildVoicyTelegramPrompt } from '../voicy-telegram-prompt';
 

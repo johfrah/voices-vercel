@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument 
+import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { Globe, Zap, ShieldCheck, AlertCircle, RefreshCw, ArrowLeft, Loader2, Languages, Search, Sparkles } from 'lucide-react';
+import { ArrowLeft, Globe, Languages, Loader2, RefreshCw, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 /**
  * 🌍 VOICEGLOT ADMIN DASHBOARD (NUCLEAR 2026)

@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { X, Trash2, Loader2 } from 'lucide-react';
-import Link from 'next/link';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { Loader2, Trash2, X } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 
 interface CartItem {
   key: string;

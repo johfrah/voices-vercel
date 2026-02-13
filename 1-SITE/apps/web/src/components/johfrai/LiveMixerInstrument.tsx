@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import WaveSurfer from 'wavesurfer.js';
-import { Play, Pause, Volume2, Music, Mic, Trash2, Sliders } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { Mic, Music, Pause, Play, Sliders, Trash2 } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import WaveSurfer from 'wavesurfer.js';
 import { VoiceglotText } from '../ui/VoiceglotText';
 
 interface LiveMixerInstrumentProps {

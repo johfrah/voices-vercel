@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import {
     Activity,
@@ -37,7 +38,6 @@ import {
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { VoiceglotText } from './VoiceglotText';
-import { useTranslation } from '@/contexts/TranslationContext';
 
 interface MenuItem {
   title: string;

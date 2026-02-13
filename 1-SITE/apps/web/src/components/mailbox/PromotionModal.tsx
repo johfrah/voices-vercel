@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
-import { Rocket, X, Mic, Check } from 'lucide-react';
+import { Check, Rocket, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface PromotionModalProps {
   file: {

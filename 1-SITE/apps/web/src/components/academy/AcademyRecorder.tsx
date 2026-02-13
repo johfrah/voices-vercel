@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Mic, Square, Play, RotateCcw, CheckCircle2, Monitor, Sliders } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { MobileBridge } from '@/lib/mobile-bridge';
-import { useMemo } from 'react';
+import { CheckCircle2, Mic, Monitor, RotateCcw, Sliders, Square } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 /**
  * ACADEMY RECORDER (GOD MODE 2026)

@@ -1,18 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument, 
-  ButtonInstrument 
+import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
+import {
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { BookOpen, Calendar, ArrowRight, Loader2, Tag, Quote, Music, FileText, Lightbulb, Heart, Zap, Play, Recycle, Users, ShoppingBag, Radio, Mic2, Home, Globe, Ticket } from 'lucide-react';
+import { ArrowRight, BookOpen, Calendar, FileText, Globe, Heart, Home, Lightbulb, Loader2, Mic2, Music, Play, Quote, Radio, Recycle, ShoppingBag, Tag, Ticket, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 /**
  * 📰 CENTRAL ARTICLE HUB (NUCLEAR 2026)

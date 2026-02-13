@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { Lightbulb, Car, Coffee, Target, ArrowRight } from 'lucide-react';
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { ArrowRight, Car, Coffee, Lightbulb, Target } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface Tip {
   id: number;

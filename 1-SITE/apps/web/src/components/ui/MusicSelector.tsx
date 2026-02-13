@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Play, Pause, Check, Music, Loader2, Info } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { getMusicLibrary } from '@/lib/api';
 import { useCheckout } from '@/contexts/CheckoutContext';
+import { getMusicLibrary } from '@/lib/api';
+import { cn } from '@/lib/utils';
+import { Check, Info, Loader2, Music, Pause, Play } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { VoiceglotText } from './VoiceglotText';
 
 export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {

@@ -10,7 +10,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
-import { ArrowRight, AlertCircle, CheckCircle2, Send, Star } from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2, Send, Star } from 'lucide-react';
 import React, { useState } from 'react';
 
 const WORKSHOPS = [

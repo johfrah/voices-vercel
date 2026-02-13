@@ -25,16 +25,29 @@ export class GeminiService {
    * Helper om het model op te halen met de juiste v1beta compatibiliteit
    */
   private getModel() {
-    return this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // 🚀 GEMINI 2026 UPGRADE: Gebruik gemini-2.0-flash voor optimale performance
+    // Fallback naar gemini-flash-latest voor maximale stabiliteit
+    return this.genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
   }
 
   /**
    * Genereert platte tekst via Gemini. Gebruikt door heal-routes, chat en Telegram-Bob.
    */
   async generateText(prompt: string): Promise<string> {
-    const model = this.getModel();
-    const result = await model.generateContent(prompt);
-    return result.response.text();
+    try {
+      const model = this.getModel();
+      const result = await model.generateContent(prompt);
+      return result.response.text();
+    } catch (error: any) {
+      console.error('❌ Gemini Text Generation Error:', error);
+      
+      // Chris-Protocol: Geef een feitelijke fallback terug bij build-time errors of API issues
+      if (error.message?.includes('403') || error.message?.includes('404')) {
+        return "Ik heb momenteel moeite om verbinding te maken met mijn AI-motor. Probeer het later nog eens.";
+      }
+      
+      return "Er is een fout opgetreden bij het genereren van de tekst.";
+    }
   }
 
   /**

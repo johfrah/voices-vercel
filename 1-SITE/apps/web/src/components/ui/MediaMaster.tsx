@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, SkipBack, SkipForward, X } from 'lucide-react';
-import { Demo } from '@/types';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { 
-  ContainerInstrument, 
-  ButtonInstrument, 
-  TextInstrument, 
-  HeadingInstrument 
+import { Demo } from '@/types';
+import { Pause, Play, SkipBack, SkipForward, Volume2, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    TextInstrument
 } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';

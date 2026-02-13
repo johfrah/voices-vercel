@@ -1,9 +1,9 @@
 "use client";
 
-import React from 'react';
-import { ArrowRight, Zap, Phone, Video, Megaphone } from 'lucide-react';
-import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { ArrowRight, Megaphone, Phone, Video, Zap } from 'lucide-react';
+import Link from 'next/link';
+import React from 'react';
 
 interface JourneyCtaProps {
   journey: 'telephony' | 'video' | 'commercial' | 'general';

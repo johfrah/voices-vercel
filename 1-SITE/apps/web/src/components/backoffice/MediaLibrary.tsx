@@ -1,14 +1,27 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { 
-  Upload, FileText, Music, Image as ImageIcon, Trash2, 
-  Search, Filter, Plus, CheckSquare, Square, Tag, 
-  ArrowUpDown, MoreVertical, X, Download, Eye, EyeOff, AlertCircle, Link as LinkIcon,
-  Youtube, User, ChevronRight, RefreshCw, Play
-} from 'lucide-react';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import {
+    AlertCircle,
+    CheckSquare,
+    ChevronRight,
+    Eye, EyeOff,
+    FileText,
+    Image as ImageIcon,
+    Music,
+    Play,
+    Plus,
+    RefreshCw,
+    Search,
+    Square,
+    Trash2,
+    Upload,
+    User,
+    X,
+    Youtube
+} from 'lucide-react';
 import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
 
 interface MediaItem {
   id: number;

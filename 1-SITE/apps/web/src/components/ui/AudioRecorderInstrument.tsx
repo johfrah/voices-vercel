@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { Mic, Square, Play, Trash2, CheckCircle2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CheckCircle2, Loader2, Mic, Square, Trash2 } from 'lucide-react';
+import React, { useRef, useState } from 'react';
 
 /**
  * 🎙️ AUDIO RECORDER INSTRUMENT (2026)

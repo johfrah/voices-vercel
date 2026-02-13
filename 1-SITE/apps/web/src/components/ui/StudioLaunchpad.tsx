@@ -1,33 +1,31 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import { cn } from '@/lib/utils';
-import { 
-  ContainerInstrument, 
-  ButtonInstrument, 
-  TextInstrument, 
-  HeadingInstrument,
-  PageWrapperInstrument,
-  SectionInstrument,
-  InputInstrument,
-  LabelInstrument
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    InputInstrument,
+    LabelInstrument,
+    PageWrapperInstrument,
+    SectionInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { 
-  LucideTrash2, 
-  LucideMic, 
-  LucideChevronRight, 
-  LucideArrowLeft, 
-  LucideUpload,
-  LucideFileText,
-  LucideLink,
-  LucideCheckCircle,
-  LucideX
+import { cn } from '@/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+    LucideArrowLeft,
+    LucideCheckCircle,
+    LucideFileText,
+    LucideMic,
+    LucideTrash2,
+    LucideUpload,
+    LucideX
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import React, { useRef, useState } from 'react';
 
 import { VoiceCard } from '@/components/ui/VoiceCard';
 
