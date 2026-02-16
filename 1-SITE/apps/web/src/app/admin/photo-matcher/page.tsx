@@ -1,9 +1,12 @@
 'use client';
 
-import { ButtonInstrument, ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
+import { LiquidBackground } from '@/components/ui/LiquidBackground';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
+import { Archive, ArrowRight, Check, ChevronRight, Search, Star, Tag } from 'lucide-react';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 interface Suggestion {
   id: string;
@@ -22,28 +25,247 @@ interface PhotoItem {
   processed?: boolean;
   uploadDate?: string;
   legacyContext?: any;
+  finderTags?: string[];
   analysis?: {
     description: string;
     labels: string[];
     vibe: string;
     loading?: boolean;
+    authenticity?: string;
+    suggested_alt?: string;
   };
 }
 
+// 🛒 Picnic-style Swipe Card Component (Voices Hero Left Style)
+const SwipeCard = ({ 
+  item, 
+  groupName, 
+  onAction, 
+  onAnalyze, 
+  actors,
+  processingId 
+}: { 
+  item: PhotoItem, 
+  groupName: string, 
+  onAction: (action: 'match' | 'ignore' | 'archive', path: string, actorId?: string, category?: string) => void,
+  onAnalyze: (item: PhotoItem) => void,
+  actors: any[],
+  processingId: string | null
+}) => {
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-15, 15]);
+  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+  const archiveOpacity = useTransform(x, [-150, -50], [1, 0]);
+  const matchOpacity = useTransform(x, [50, 150], [0, 1]);
+  const [searchQuery, setSearchValue] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+
+  const isFeatured = item.fileName.includes('featured') || item.fileName.includes('photo') || item.fileName.includes('avatar');
+  const isSvg = item.fileName.endsWith('.svg');
+  const needsVision = !isFeatured && !isSvg;
+
+  const handleDragEnd = (event: any, info: any) => {
+    if (info.offset.x < -50) {
+      onAction('archive', item.path);
+    } else if (info.offset.x > 50) {
+      if (item.suggestions?.length > 0) {
+        onAction('match', item.path, item.suggestions[0].id);
+      } else {
+        onAction('match', item.path, undefined, 'general');
+      }
+    }
+  };
+
+  const filteredActors = searchQuery.length > 1 
+    ? actors.filter(a => a.name.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
+    : [];
+
+  return (
+    <motion.div
+      key={item.path}
+      initial={{ opacity: 0, x: 50, filter: 'blur(10px)' }}
+      animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, x: -50, filter: 'blur(10px)' }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      style={{ x, rotate }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      onDragEnd={handleDragEnd}
+      className={`relative bg-white rounded-[40px] p-12 shadow-aura border border-black/[0.03] w-full max-w-6xl transition-all hover:shadow-aura-lg ${processingId === item.path ? 'opacity-50 pointer-events-none' : ''}`}
+    >
+      {/* Swipe Indicators */}
+      <motion.div style={{ opacity: archiveOpacity }} className="absolute inset-0 bg-red-500 rounded-[40px] z-20 flex items-center justify-center pointer-events-none">
+        <Archive strokeWidth={1.5} size={64} className="text-white" />
+      </motion.div>
+      <motion.div style={{ opacity: matchOpacity }} className="absolute inset-0 bg-green-500 rounded-[40px] z-20 flex items-center justify-center pointer-events-none">
+        <Check strokeWidth={1.5} size={64} className="text-white" />
+      </motion.div>
+
+      <ContainerInstrument plain className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        {/* LINKS: Info & Meta (voices-hero-left) */}
+        <ContainerInstrument plain className="voices-hero-left !space-y-8">
+          <ContainerInstrument plain>
+            <ContainerInstrument plain className="voices-hero-badge mb-4">
+              <TextInstrument className="w-1.5 h-1.5 rounded-full bg-va-primary/40 animate-pulse font-light" />
+              <TextInstrument as="span" className="text-[15px] font-bold tracking-wider text-va-black/40">
+                {item.source || 'Auto'} • {groupName}
+              </TextInstrument>
+            </ContainerInstrument>
+            
+            <HeadingInstrument level={2} className="text-3xl md:text-4xl font-light tracking-tighter text-va-black mb-2 break-all">
+              {item.fileName}
+            </HeadingInstrument>
+            <TextInstrument className="text-[15px] font-mono text-va-black/20 truncate">
+              {item.path}
+            </TextInstrument>
+          </ContainerInstrument>
+
+          {/* Quick Actions & Categories */}
+          <ContainerInstrument className="space-y-4">
+            <TextInstrument className="text-[15px] font-bold tracking-widest text-va-black/30">Quick Categorize</TextInstrument>
+            <ContainerInstrument className="flex flex-wrap gap-2">
+              {[
+                { id: 'brand', label: 'Brand Image', icon: Tag },
+                { id: 'logo', label: 'Logo / Icon', icon: Star },
+                { id: 'featured', label: 'Featured Content', icon: Check }
+              ].map(cat => {
+                const Icon = cat.icon;
+                return (
+                  <ButtonInstrument 
+                    key={cat.id}
+                    onClick={() => onAction('match', item.path, undefined, cat.id)}
+                    className="px-6 py-3 bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-medium flex items-center gap-2 transition-all"
+                  >
+                    {Icon && (typeof Icon === 'function' || (typeof Icon === 'object' && (Icon as any).$$typeof)) ? <Icon strokeWidth={1.5} size={14} /> : Icon} {cat.label}
+                  </ButtonInstrument>
+                );
+              })}
+            </ContainerInstrument>
+          </ContainerInstrument>
+
+          {/* Search & Suggestions */}
+          <ContainerInstrument className="space-y-4">
+            <TextInstrument className="text-[15px] font-bold tracking-widest text-va-black/30">Match Voice Actor</TextInstrument>
+            
+            {!showSearch ? (
+              <ContainerInstrument className="space-y-2">
+                {item.suggestions?.length > 0 ? (
+                  item.suggestions.map((s: any) => (
+                    <ButtonInstrument
+                      key={s.id}
+                      onClick={() => onAction('match', item.path, s.id)}
+                      className={`w-full px-6 py-4 rounded-2xl border text-left transition-all flex items-center justify-between group ${
+                        s.confidence === 'verified' ? 'bg-va-primary/5 border-va-primary/20' : 'bg-white border-black/[0.05] hover:border-va-primary'
+                      }`}
+                    >
+                      <ContainerInstrument>
+                        <TextInstrument className="text-[15px] font-medium text-black">{s.name}</TextInstrument>
+                        <TextInstrument className="text-[15px] text-gray-400 font-bold tracking-tighter">
+                          {s.confidence === 'verified' ? '✓ Verified Match' : `${s.confidence} confidence`}
+                        </TextInstrument>
+                      </ContainerInstrument>
+                      <ChevronRight strokeWidth={1.5} size={18} className="text-va-primary/40 group-hover:translate-x-1 transition-transform" />
+                    </ButtonInstrument>
+                  ))
+                ) : (
+                  <ButtonInstrument 
+                    onClick={() => setShowSearch(true)}
+                    className="w-full px-6 py-4 border border-dashed border-black/10 hover:border-va-primary hover:bg-va-primary/5 rounded-2xl text-[15px] text-va-black/40 flex items-center justify-center gap-2 transition-all"
+                  >
+                    <Search strokeWidth={1.5} size={16} /> Find Voice Actor...
+                  </ButtonInstrument>
+                )}
+              </ContainerInstrument>
+            ) : (
+              <ContainerInstrument className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <ContainerInstrument className="relative">
+                  <InputInstrument 
+                    autoFocus
+                    value={searchQuery}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    placeholder="Type name..."
+                    className="w-full pl-12 pr-4 py-4 bg-va-off-white border-none rounded-2xl text-[15px]"
+                  />
+                  <Search strokeWidth={1.5} size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" />
+                  <ButtonInstrument 
+                    onClick={() => setShowSearch(false)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[15px] font-bold text-va-primary"
+                  >
+                    ESC
+                  </ButtonInstrument>
+                </ContainerInstrument>
+                
+                <ContainerInstrument className="space-y-1 max-h-[200px] overflow-y-auto custom-scrollbar bg-va-off-white/50 rounded-2xl p-2">
+                  {filteredActors.map(actor => (
+                    <ButtonInstrument
+                      key={actor.id}
+                      onClick={() => onAction('match', item.path, actor.id)}
+                      className="w-full px-4 py-3 hover:bg-white rounded-xl text-left flex items-center justify-between group shadow-sm transition-all"
+                    >
+                      <TextInstrument className="text-[15px] font-medium">{actor.name}</TextInstrument>
+                      <ChevronRight strokeWidth={1.5} size={14} className="text-va-primary opacity-0 group-hover:opacity-100 transition-all" />
+                    </ButtonInstrument>
+                  ))}
+                  {searchQuery.length > 1 && filteredActors.length === 0 && (
+                    <TextInstrument className="text-[15px] text-gray-400 italic p-4 text-center font-light">No actors found...</TextInstrument>
+                  )}
+                </ContainerInstrument>
+              </ContainerInstrument>
+            )}
+          </ContainerInstrument>
+
+          {/* Bottom Actions */}
+          <ContainerInstrument className="flex gap-4 pt-4 border-t border-black/[0.03]">
+            <ButtonInstrument 
+              onClick={() => onAction('archive', item.path)}
+              className="flex-1 py-4 bg-va-off-white text-va-black/40 hover:bg-red-500 hover:text-white rounded-2xl text-[15px] font-bold tracking-widest transition-all"
+            >
+              Archive (Left)
+            </ButtonInstrument>
+            <ButtonInstrument 
+              onClick={() => onAction('ignore', item.path)}
+              className="px-8 py-4 border border-black/5 text-va-black/20 hover:border-va-black hover:text-va-black rounded-2xl text-[15px] font-bold tracking-widest transition-all"
+            >
+              Skip
+            </ButtonInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+
+        {/* RECHTS: De Foto (voices-hero-right) */}
+        <ContainerInstrument plain className="voices-hero-right">
+          <ContainerInstrument plain className="relative aspect-[4/5] w-full rounded-[32px] overflow-hidden shadow-aura-lg border border-black/5 bg-va-black group touch-none">
+            <Image  
+              src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(item.path)}`}
+              alt={item.fileName}
+              fill
+              className="object-cover"
+              unoptimized
+              priority
+            />
+            
+            {/* Overlay indicators for swipe direction */}
+            <ContainerInstrument className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-transparent to-green-500/0 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity" />
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
+    </motion.div>
+  );
+};
+
 export default function PhotoMatcherPage() {
   const [manifest, setManifest] = useState<PhotoItem[]>([]);
+  const [actors, setActors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [showAutoMatched, setShowAutoMatched] = useState(false);
   const [autoMatchedItems, setAutoMatchedItems] = useState<any[]>([]);
   const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
+  const [undoStack, setUndoStack] = useState<{ path: string, action: string }[]>([]);
+  const [filterTagged, setFilterTagged] = useState(false);
   
-  // 📄 Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 200;
+  const itemsPerPage = 48;
 
-  // 🧹 Deduplication & Filter Logic
   const wpThumbnailPattern = /-\d+x\d+(\.(jpg|jpeg|png|webp))$/i;
   const wpScaledPattern = /-(scaled|-1)(\.(jpg|jpeg|png|webp))$/i;
   
@@ -55,147 +277,91 @@ export default function PhotoMatcherPage() {
 
   const allActiveItems = manifest.filter(item => !item.processed);
   
-  // 💎 Gold Items (unieke bronbestanden)
   const goldItems = allActiveItems.filter(item => {
     const isWpThumbnail = wpThumbnailPattern.test(item.fileName);
     const isWpScaled = wpScaledPattern.test(item.fileName);
     const baseName = getBaseName(item.fileName);
-    
     const hasOriginal = allActiveItems.some(other => 
       other.path !== item.path && 
       (other.fileName === baseName || 
        (!wpThumbnailPattern.test(other.fileName) && !wpScaledPattern.test(other.fileName) && getBaseName(other.fileName) === baseName))
     );
-    
     return !isWpThumbnail && !isWpScaled && !hasOriginal;
   });
 
-  // 📊 Nuclear Stats
-  const totalInitialItems = 59436; // Uit de manifest read
+  const totalInitialItems = 59436;
   const processedCount = manifest.filter(i => i.processed).length;
   const progressPercentage = Math.round((processedCount / totalInitialItems) * 100);
   
-  // 🧹 Slop Items (thumbnails en redundante kopieën)
   const slopItems = allActiveItems.filter(item => {
     const isWpThumbnail = wpThumbnailPattern.test(item.fileName);
     const isWpScaled = wpScaledPattern.test(item.fileName);
     const baseName = getBaseName(item.fileName);
-    
     const hasOriginal = allActiveItems.some(other => 
       other.path !== item.path && 
       (other.fileName === baseName || 
        (!wpThumbnailPattern.test(other.fileName) && !wpScaledPattern.test(other.fileName) && getBaseName(other.fileName) === baseName))
     );
-    
     return isWpThumbnail || isWpScaled || hasOriginal;
   });
 
-  const savedGB = (slopItems.length * 0.5 / 1024).toFixed(2); // Schatting 500KB per thumbnail
+  const savedGB = (slopItems.length * 0.5 / 1024).toFixed(2);
 
-  // 📄 Pagination Logic
   const totalItems = showAutoMatched ? autoMatchedItems.length : goldItems.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedItems = showAutoMatched 
-    ? autoMatchedItems.slice(startIndex, startIndex + itemsPerPage)
-    : goldItems.slice(startIndex, startIndex + itemsPerPage);
+  const unprocessedItems = showAutoMatched 
+    ? autoMatchedItems.filter(i => !i.processed)
+    : goldItems.filter(i => !i.processed);
+  
+  const filteredUnprocessedItems = filterTagged 
+    ? unprocessedItems.filter(i => i.finderTags?.includes('Behouden'))
+    : unprocessedItems;
 
-  // 🧠 Visual Grouping Logic
-  const groupedItems = paginatedItems.reduce((groups: { [key: string]: PhotoItem[] }, item) => {
-    const context = item.legacyContext?.post_title || item.legacyContext?.parent_id || 'Geen Context';
-    if (!groups[context]) groups[context] = [];
-    groups[context].push(item);
-    return groups;
-  }, {});
+  const currentItem = filteredUnprocessedItems[0];
+  const nextItem = filteredUnprocessedItems[1];
 
-  // 🧠 Bulk Vision Scanner
-  const scanPage = async () => {
-    if (scanning) return;
-    
-    const itemsToScan = paginatedItems.filter(item => {
-      const isFeatured = item.fileName.includes('featured') || item.fileName.includes('photo') || item.fileName.includes('avatar');
-      const isSvg = item.fileName.endsWith('.svg');
-      return !isFeatured && !isSvg && !item.analysis;
-    });
-
-    console.log('✨ Bulk Scan gestart voor', itemsToScan.length, 'items');
-    if (itemsToScan.length === 0) {
-      alert('Geen items op deze pagina die een Vision scan nodig hebben.');
-      return;
-    }
-
-    setScanning(true);
-    setScanProgress(0);
-
-    let completed = 0;
-    const concurrency = 5;
-    
-    const queue = [...itemsToScan];
-    const workers = Array(concurrency).fill(null).map(async () => {
-      while (queue.length > 0) {
-        const item = queue.shift();
-        if (!item) break;
-        console.log('🚀 Scannen van:', item.fileName);
-        await analyzeImage(item);
-        completed++;
-        setScanProgress(Math.round((completed / itemsToScan.length) * 100));
-      }
-    });
-
-    await Promise.all(workers);
-    setScanning(false);
-    console.log('✅ Bulk Scan voltooid');
-  };
-
-  // ⌨️ Keyboard Shortcuts
+  // 🧠 Pre-load next images (aggressive)
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      
-      const key = e.key.toLowerCase();
-      if (['a', 'm', 's'].includes(key)) {
-        // Pak het eerste onverwerkte item op de pagina
-        const firstItem = paginatedItems.find(i => !i.processed);
-        if (!firstItem) return;
-
-        if (key === 'a') handleAction('archive', firstItem.path);
-        if (key === 's') handleAction('ignore', firstItem.path);
-        if (key === 'm') {
-          const firstSuggestion = firstItem.suggestions?.[0];
-          if (firstSuggestion) {
-            handleAction('match', firstItem.path, firstSuggestion.id, firstItem.analysis);
-          } else if (firstItem.analysis && !firstItem.analysis.loading) {
-            handleAction('match', firstItem.path, undefined, firstItem.analysis);
-          }
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [paginatedItems]);
-
-  // 🧹 Bulk Cleanup
-  const bulkCleanup = async () => {
-    if (confirm(`Weet je zeker dat je ${slopItems.length} redundante foto's wilt verplaatsen naar /ARCHIVE/ op de server?`)) {
-      for (const item of slopItems) {
-        await handleAction('archive', item.path);
-      }
-      alert('Opschonen voltooid. De bestanden zijn verplaatst naar het archief.');
+    if (filteredUnprocessedItems.length > 1) {
+      // Pre-load de volgende 5 images
+      filteredUnprocessedItems.slice(1, 6).forEach(item => {
+        const img = new (window as any).Image();
+        img.src = `/api/admin/photo-matcher/serve?path=${encodeURIComponent(item.path)}`;
+      });
     }
-  };
+  }, [filteredUnprocessedItems]);
+
+  const fetchActors = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/actors'); // Gebruik de bestaande API
+      if (res.ok) {
+        const data = await res.json();
+        // Map de data naar een simpel formaat voor de search
+        setActors(data.map((a: any) => ({
+          id: a.id,
+          name: `${a.first_name} ${a.last_name || ''}`.trim(),
+          slug: a.slug
+        })));
+      }
+    } catch (err) {
+      console.error('error fetching actors:', err);
+    }
+  }, []);
 
   const fetchManifest = useCallback(() => {
-    console.log('🔄 laden van manifest...');
-    setLoading(true);
+    // Check local storage first for faster initial load
+    const cached = localStorage.getItem('photo-manifest-cache');
+    if (cached) {
+      try {
+        setManifest(JSON.parse(cached));
+        setLoading(false);
+      } catch (e) {}
+    }
+
     fetch('/photo-manifest.json')
-      .then(res => {
-        console.log('📡 manifest response status:', res.status);
-        return res.json();
-      })
+      .then(res => res.json())
       .then((data: PhotoItem[]) => {
-        console.log('✅ manifest geladen:', data.length, 'items');
         setManifest(data);
+        localStorage.setItem('photo-manifest-cache', JSON.stringify(data));
         setLoading(false);
       })
       .catch(err => {
@@ -219,374 +385,195 @@ export default function PhotoMatcherPage() {
   useEffect(() => {
     fetchManifest();
     fetchAutoMatched();
-  }, [fetchManifest, fetchAutoMatched]);
+    fetchActors();
+  }, [fetchManifest, fetchAutoMatched, fetchActors]);
 
-  // 🧠 Vision Analysis Trigger
   const analyzeImage = async (item: PhotoItem) => {
     setManifest(prev => prev.map(i => 
       i.path === item.path ? { ...i, analysis: { description: '', labels: [], vibe: '', loading: true } } : i
     ));
 
     try {
-      const context = {
-        fileName: item.fileName,
-        path: item.path,
-        legacyContext: item.legacyContext,
-        source: item.source
-      };
-      
+      const context = { fileName: item.fileName, path: item.path, legacyContext: item.legacyContext, source: item.source };
       const res = await fetch(`/api/admin/photo-matcher/analyze?path=${encodeURIComponent(item.path)}&context=${encodeURIComponent(JSON.stringify(context))}`);
       if (res.ok) {
         const analysis = await res.json();
-        setManifest(prev => prev.map(i => 
-          i.path === item.path ? { ...i, analysis: { ...analysis, loading: false } } : i
-        ));
+        setManifest(prev => prev.map(i => i.path === item.path ? { ...i, analysis: { ...analysis, loading: false } } : i));
       }
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        console.warn('Vision analysis aborted for:', item.fileName);
-      } else {
-        console.error('vision analysis failed:', err);
-      }
-      setManifest(prev => prev.map(i => 
-        i.path === item.path ? { ...i, analysis: undefined } : i
-      ));
+    } catch (err) {
+      setManifest(prev => prev.map(i => i.path === item.path ? { ...i, analysis: undefined } : i));
     }
   };
 
-  const handleAction = async (action: 'match' | 'ignore' | 'archive', photoPath: string, actorId?: string, analysisData?: any) => {
-    setProcessingId(photoPath);
-    
-    if (action === 'match') {
-      try {
-        const res = await fetch('/api/admin/photo-matcher/match', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            photoPath: photoPath,
-            actorId: actorId,
-            analysis: analysisData
-          })
-        });
-        if (!res.ok) throw new Error('match failed');
-      } catch (err) {
-        console.error(err);
-        alert('fout bij het matchen of verplaatsen van de foto.');
-        setProcessingId(null);
+  const scanPage = async () => {
+    if (scanning) return;
+    const itemsToScan = paginatedItems.filter(item => !item.analysis);
+    if (itemsToScan.length === 0) return;
+    setScanning(true);
+    setScanProgress(0);
+    let completed = 0;
+    for (const item of itemsToScan) {
+      await analyzeImage(item);
+      completed++;
+      setScanProgress(Math.round((completed / itemsToScan.length) * 100));
+    }
+    setScanning(false);
+  };
+
+  // ⌨️ Keyboard Speed Workflow
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      
+      if (e.key === 'Escape') {
+        handleUndo();
         return;
       }
-    }
 
-    if (action === 'archive') {
-      try {
-        const res = await fetch('/api/admin/photo-matcher/archive', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ photoPath: photoPath })
-        });
-        if (!res.ok) throw new Error('archive failed');
-      } catch (err) {
-        console.error(err);
-        alert('fout bij het archiveren van de foto.');
-        setProcessingId(null);
-        return;
+      if (!currentItem) return;
+
+      if (e.key === 'ArrowLeft') {
+        handleAction('archive', currentItem.path);
+      } else if (e.key === 'ArrowRight') {
+        if (currentItem.suggestions?.length > 0) {
+          handleAction('match', currentItem.path, currentItem.suggestions[0].id);
+        } else {
+          // Force match to general if no suggestion
+          handleAction('match', currentItem.path, undefined, 'general');
+        }
+      } else if (e.key === 'ArrowDown') {
+        handleAction('ignore', currentItem.path);
       }
-    }
+    };
 
-    // Markeer als verwerkt in de lokale state
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentItem, handleAction, handleUndo]);
+
+  const handleUndo = useCallback(() => {
+    if (undoStack.length === 0) return;
+
+    const lastAction = undoStack[undoStack.length - 1];
+    setUndoStack(prev => prev.slice(0, -1));
+
+    // Markeer weer als onverwerkt in de lokale state
     setManifest(prev => prev.map(item => 
-      item.path === photoPath ? { ...item, processed: true } : item
+      item.path === lastAction.path ? { ...item, processed: false } : item
     ));
-    setProcessingId(null);
-  };
+
+    console.log('🔄 Undo performed for:', lastAction.path);
+  }, [undoStack]);
+
+  const handleAction = useCallback(async (action: 'match' | 'ignore' | 'archive', photoPath: string, actorId?: string, category?: string) => {
+    // Voeg toe aan undo stack (max 5)
+    setUndoStack(prev => [...prev.slice(-4), { path: photoPath, action }]);
+
+    // Optimistic UI: Markeer direct als verwerkt
+    setManifest(prev => prev.map(item => item.path === photoPath ? { ...item, processed: true } : item));
+    
+    try {
+      if (action === 'match') {
+        fetch('/api/admin/photo-matcher/match', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ photoPath, actorId, category })
+        });
+      }
+
+      if (action === 'archive') {
+        fetch('/api/admin/photo-matcher/archive', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ photoPath })
+        });
+      }
+    } catch (err) {
+      console.error('Background action failed:', err);
+    }
+  }, []);
 
   if (loading) return (
     <ContainerInstrument className="p-10 text-center">
-      <TextInstrument><VoiceglotText  translationKey="admin.photo_matcher.loading" defaultText="laden van foto's..." /></TextInstrument>
+      <TextInstrument><VoiceglotText  translationKey="admin.photo_matcher.loading" defaultText="Loading photos..." /></TextInstrument>
     </ContainerInstrument>
   );
 
-  if (goldItems.length === 0 && !loading && !showAutoMatched) {
-    return (
-      <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 font-sans pt-32">
-        <ContainerInstrument className="max-w-5xl mx-auto">
-          <ContainerInstrument className="py-20 text-center">
-            <TextInstrument as="span" className="text-6xl block mb-4 font-light">🎉</TextInstrument>
-            <HeadingInstrument level={2} className="text-2xl font-light text-gray-900"><VoiceglotText  translationKey="admin.photo_matcher.done_title" defaultText="alles is verwerkt!" /><TextInstrument className="text-gray-500 font-light"><VoiceglotText  translationKey="admin.photo_matcher.done_text" defaultText="lekker gewerkt, de database is weer een stukje schoner." /></TextInstrument></HeadingInstrument>
-            {slopItems.length > 0 && (
-              <ButtonInstrument onClick={bulkCleanup} className="mt-8 px-6 py-2 bg-orange-500 text-white rounded-full text-[15px] font-light"><VoiceglotText  translationKey="admin.photo_matcher.cleanup_slop" defaultText={`🧹 ruim nog ${slopItems.length} thumbnails op`} /></ButtonInstrument>
-            )}
-            <ButtonInstrument onClick={() => window.location.reload()} className="mt-4 px-6 py-2 bg-va-black text-white rounded-full text-[15px] font-light block mx-auto">
-              refresh lijst
-            </ButtonInstrument>
-          </ContainerInstrument>
-        </ContainerInstrument>
-      </PageWrapperInstrument>
-    );
-  }
-
   return (
-    <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 font-sans pt-32">
-      <ContainerInstrument className="max-w-5xl mx-auto">
-        {/* 📊 Nuclear Status Dashboard */}
-        <ContainerInstrument className="mb-8 bg-va-black text-white rounded-[32px] p-6 shadow-aura flex items-center justify-between">
-          <ContainerInstrument className="flex gap-10">
-            <ContainerInstrument>
-              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText  translationKey="auto.page.nuclear_progress.caae6d" defaultText="Nuclear Progress" /></TextInstrument>
-              <ContainerInstrument className="flex items-center gap-3">
-                <ContainerInstrument className="w-32 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <ContainerInstrument className="h-full bg-va-primary transition-all duration-500" style={{ width: `${progressPercentage}%` }} />
-                </ContainerInstrument>
-                <TextInstrument className="text-[15px] font-light">{progressPercentage}%</TextInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
-            <ContainerInstrument>
-              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText  translationKey="auto.page.space_saved.abd335" defaultText="Space Saved" /></TextInstrument>
-              <TextInstrument className="text-[15px] font-light text-va-primary">{savedGB} GB</TextInstrument>
-            </ContainerInstrument>
-            <ContainerInstrument>
-              <TextInstrument className="text-[15px] text-white/40 tracking-widest mb-1 font-light"><VoiceglotText  translationKey="auto.page.shortcuts.29e9d8" defaultText="Shortcuts" /></TextInstrument>
-              <TextInstrument className="text-[15px] font-light text-white/60">
-                <TextInstrument className="text-white bg-white/10 px-1.5 py-0.5 rounded mr-1 font-light">A</TextInstrument> Archive 
-                <TextInstrument className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3 font-light">M</TextInstrument> Match 
-                <TextInstrument className="text-white bg-white/10 px-1.5 py-0.5 rounded mx-1 ml-3 font-light">S</TextInstrument> Skip
-              </TextInstrument>
-            </ContainerInstrument>
+    <PageWrapperInstrument className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white overflow-x-hidden">
+      <LiquidBackground />
+      
+      {/* 📊 Minimal Floating Stats Overlay */}
+      <ContainerInstrument className="fixed top-8 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-xl rounded-full px-8 py-4 shadow-aura border border-black/5 flex items-center gap-12 pointer-events-none">
+        <ContainerInstrument className="flex items-center gap-4">
+          <TextInstrument className="text-[15px] text-va-black/40 tracking-[0.2em] font-bold">Progress</TextInstrument>
+          <ContainerInstrument className="w-32 h-1.5 bg-va-black/5 rounded-full overflow-hidden">
+            <motion.div 
+              className="h-full bg-va-primary" 
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercentage}%` }}
+              transition={{ duration: 1 }}
+            />
           </ContainerInstrument>
-          {scanning && (
-            <ContainerInstrument className="flex items-center gap-3 bg-va-primary/20 px-4 py-2 rounded-full border border-va-primary/30">
-              <ContainerInstrument className="w-2 h-2 bg-va-primary rounded-full animate-pulse" />
-              <TextInstrument className="text-[15px] font-light text-va-primary tracking-widest">
-                Scanning: {scanProgress}%
-              </TextInstrument>
-            </ContainerInstrument>
-          )}
+          <TextInstrument className="text-[15px] font-medium text-va-black">{progressPercentage}%</TextInstrument>
         </ContainerInstrument>
 
-        <ContainerInstrument className="mb-12 flex justify-between items-end border-b border-black/[0.03] pb-8">
-          <ContainerInstrument>
-            <HeadingInstrument level={1} className="text-4xl font-light tracking-tight text-black mb-2"><VoiceglotText  translationKey="admin.photo_matcher.title" defaultText="photo matcher" /></HeadingInstrument>
-            <TextInstrument className="text-gray-400 tracking-widest text-[15px] font-light">
-              {totalItems} <VoiceglotText  translationKey="admin.photo_matcher.to_process" defaultText={showAutoMatched ? "automatisch gematchte foto's (ter controle)" : "foto's te verwerken"} />
-              {totalPages > 1 && ` • pagina ${currentPage} van ${totalPages}`}
+        <ContainerInstrument className="flex items-center gap-4">
+          <TextInstrument className="text-[15px] text-va-black/40 tracking-[0.2em] font-bold">Savings</TextInstrument>
+          <TextInstrument className="text-[15px] font-medium text-va-primary">{savedGB} GB</TextInstrument>
+        </ContainerInstrument>
+
+        <ContainerInstrument className="flex items-center gap-4">
+          <TextInstrument className="text-[15px] text-va-black/40 tracking-[0.2em] font-bold">Remaining</TextInstrument>
+          <TextInstrument className="text-[15px] font-medium text-va-black">{totalItems}</TextInstrument>
+        </ContainerInstrument>
+
+        <ContainerInstrument className="h-8 w-px bg-va-black/5" />
+
+        <ButtonInstrument 
+          onClick={() => setFilterTagged(!filterTagged)}
+          className={`px-6 py-2 rounded-full text-[13px] font-bold transition-all flex items-center gap-2 pointer-events-auto ${
+            filterTagged 
+              ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' 
+              : 'bg-va-off-white text-va-black/40 hover:bg-va-black hover:text-white'
+          }`}
+        >
+          <Tag size={14} fill={filterTagged ? 'currentColor' : 'none'} />
+          {filterTagged ? 'Alleen Behouden' : 'Toon alles'}
+        </ButtonInstrument>
+
+        {undoStack.length > 0 && (
+          <ContainerInstrument className="flex items-center gap-2 px-4 py-1.5 bg-va-primary/10 rounded-full border border-va-primary/20 animate-in fade-in zoom-in duration-300">
+            <TextInstrument className="text-[15px] text-va-primary font-bold tracking-widest">
+              ESC to Undo ({undoStack.length})
             </TextInstrument>
           </ContainerInstrument>
-          <ContainerInstrument className="flex gap-4">
-             <ButtonInstrument 
-                onClick={scanPage}
-                disabled={scanning}
-                className={`px-6 py-2 rounded-full text-[15px] font-light transition-all ${
-                  scanning ? 'bg-va-primary/10 text-va-primary/40 cursor-not-allowed' : 'bg-va-primary text-white hover:shadow-aura-lg'
-                }`}
-              >
-                {scanning ? '✨ scannen...' : '✨ scan pagina'}
-              </ButtonInstrument>
-             <ButtonInstrument 
-                onClick={bulkCleanup}
-                className="px-6 py-2 bg-va-off-white border border-orange-200 text-orange-600 hover:bg-orange-50 transition-all rounded-full text-[15px] font-light"
-              ><VoiceglotText  translationKey="auto.page.___bulk_cleanup.6d4c5c" defaultText="🧹 bulk cleanup" /></ButtonInstrument>
-             <ButtonInstrument 
-                onClick={() => { setShowAutoMatched(!showAutoMatched); setCurrentPage(1); }}
-                className={`px-6 py-2 rounded-full text-[15px] font-light transition-all ${
-                  showAutoMatched 
-                    ? 'bg-va-primary text-white' 
-                    : 'bg-white border border-black/5 text-black hover:border-black'
-                }`}
-              >
-                {showAutoMatched ? 'toon onverwerkt' : `toon auto-matched (${autoMatchedItems.length})`}
-              </ButtonInstrument>
-             <ButtonInstrument 
-                onClick={() => window.location.reload()}
-                className="px-6 py-2 bg-white border border-black/5 text-black hover:border-black transition-all rounded-full text-[15px] font-light"
-              >
-                refresh lijst
-              </ButtonInstrument>
-          </ContainerInstrument>
-        </ContainerInstrument>
-
-        {/* 📄 Pagination Controls Top */}
-        {totalPages > 1 && (
-          <ContainerInstrument className="mb-8 flex justify-center gap-2">
-            {Array.from({ length: Math.min(10, totalPages) }, (_, i) => (
-              <ButtonInstrument
-                key={i + 1}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`w-10 h-10 rounded-full text-[15px] font-light transition-all ${
-                  currentPage === i + 1 ? 'bg-va-primary text-white' : 'bg-white border border-black/5 text-gray-400 hover:border-black'
-                }`}
-              >
-                {i + 1}
-              </ButtonInstrument>
-            ))}
-          </ContainerInstrument>
         )}
+      </ContainerInstrument>
 
-        <ContainerInstrument className="space-y-12">
-          {Object.entries(groupedItems).map(([groupName, items]) => (
-              <ContainerInstrument key={groupName} className="space-y-4">
-                <ContainerInstrument className="flex items-center gap-4 px-4">
-                  <ContainerInstrument className="h-px flex-grow bg-black/[0.05]" />
-                  <TextInstrument className="text-[15px] font-light text-black/20 tracking-[0.3em]">
-                    {groupName}
-                  </TextInstrument>
-                  <ContainerInstrument className="h-px flex-grow bg-black/[0.05]" />
-                </ContainerInstrument>
-                
-                <ContainerInstrument className="space-y-6">
-                  {items.map((item: any) => {
-                    // 🤖 Vision Logic: Alleen voor beelden die we echt willen houden
-                    const isFeatured = item.fileName.includes('featured') || item.fileName.includes('photo') || item.fileName.includes('avatar');
-                    const isSvg = item.fileName.endsWith('.svg');
-                    const needsVision = !isFeatured && !isSvg;
-
-                    return (
-                      <ContainerInstrument 
-                        key={item.path || item.id} 
-                        className={`bg-white rounded-[40px] p-8 shadow-aura border border-black/[0.03] flex gap-10 items-start transition-all hover:shadow-aura-lg ${processingId === item.path ? 'opacity-50 pointer-events-none' : ''} ${item.processed ? 'hidden' : ''}`}
-                      >
-                        {/* Foto Preview */}
-                        <ContainerInstrument className="w-56 h-56 flex-shrink-0 relative rounded-[32px] overflow-hidden bg-va-off-white border border-black/[0.03]">
-                          <Image  
-                            src={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(item.path || item.filePath)}`}
-                            alt={item.fileName}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                          />
-                          {(item.source === 'Combell Uploads' || item.id) && (
-                            <ContainerInstrument className="absolute top-4 right-4 bg-va-primary w-3 h-3 rounded-full border-2 border-white shadow-sm" />
-                          )}
-                          {item.analysis?.authenticity && (
-                            <ContainerInstrument className={`absolute top-4 left-4 px-2 py-0.5 rounded-full text-[15px] font-bold uppercase tracking-tighter ${
-                              item.analysis.authenticity === 'real' ? 'bg-green-500 text-white' : 
-                              item.analysis.authenticity === 'stock' ? 'bg-orange-500 text-white' : 
-                              'bg-red-500 text-white'
-                            }`}>
-                              {item.analysis.authenticity}
-                            </ContainerInstrument>
-                          )}
-                        </ContainerInstrument>
-
-                        {/* Info & Suggestions */}
-                        <ContainerInstrument className="flex-grow space-y-6 pt-2">
-                          <ContainerInstrument>
-                            <ContainerInstrument className="flex items-center gap-3 mb-2">
-                              <TextInstrument as="span" className="text-[15px] font-light tracking-[0.2em] text-va-primary/60">
-                                {item.source || 'automatisch'}
-                              </TextInstrument>
-                              <TextInstrument className="text-[15px] font-mono text-gray-300 break-all">{item.path || item.filePath}</TextInstrument>
-                            </ContainerInstrument>
-                            <HeadingInstrument level={3} className="text-xl font-light text-gray-900">{item.fileName}</HeadingInstrument>
-                          </ContainerInstrument>
-
-                          {/* 🧠 Vision Analysis Section */}
-                          {needsVision && (
-                            <ContainerInstrument className="p-6 bg-va-off-white rounded-[24px] border border-black/[0.02]">
-                              {item.analysis ? (
-                                item.analysis.loading ? (
-                                  <TextInstrument className="text-[15px] text-va-primary/40 animate-pulse font-light italic"><VoiceglotText  translationKey="auto.page.vision_analyseert___.062171" defaultText="vision analyseert..." /></TextInstrument>
-                                ) : (
-                                  <ContainerInstrument className="space-y-3">
-                                    <TextInstrument className="text-[15px] text-va-black/60 leading-relaxed font-light">
-                                      &ldquo;{item.analysis.description}&rdquo;
-                                    </TextInstrument>
-                                    <ContainerInstrument className="flex flex-wrap gap-2 items-center">
-                                      {item.analysis.labels.map((l: string) => (
-                                        <TextInstrument as="span" key={l} className="px-3 py-1 bg-white rounded-full text-[15px] font-light text-gray-400 border border-black/[0.03]">{l}</TextInstrument>
-                                      ))}
-                                      <TextInstrument as="span" className="px-3 py-1 bg-va-primary/5 text-va-primary rounded-full text-[15px] font-light italic">{item.analysis.vibe}</TextInstrument>
-                                      
-                                      {item.analysis.suggested_alt && (
-                                        <TextInstrument className="w-full text-[15px] text-gray-400 font-light italic mt-2">
-                                          Alt: {item.analysis.suggested_alt}
-                                        </TextInstrument>
-                                      )}
-                                      
-                                      <ButtonInstrument 
-                                        onClick={() => handleAction('match', item.path, undefined, item.analysis)}
-                                        className="ml-auto px-4 py-2 bg-va-black text-white rounded-xl text-[15px] font-light tracking-widest hover:bg-va-primary transition-all"
-                                      >
-                                        verplaats naar assets
-                                      </ButtonInstrument>
-                                    </ContainerInstrument>
-                                  </ContainerInstrument>
-                                )
-                              ) : (
-                                <ButtonInstrument 
-                                  onClick={() => analyzeImage(item)}
-                                  className="text-[15px] font-light text-va-primary/60 hover:text-va-primary transition-colors flex items-center gap-2"
-                                >
-                                  ✨ vision beschrijving genereren
-                                </ButtonInstrument>
-                              )}
-                            </ContainerInstrument>
-                          )}
-
-                          <ContainerInstrument className="flex flex-wrap gap-3">
-                            {item.suggestions?.length > 0 ? (
-                              item.suggestions.map((s: any) => (
-                                <ButtonInstrument
-                                  key={s.id}
-                                  onClick={() => handleAction('match', item.path, s.id, item.analysis)}
-                                  className={`px-5 py-4 rounded-2xl border text-left transition-all group flex items-center gap-4 ${
-                                    s.confidence === 'verified'
-                                      ? 'bg-va-off-white border-va-primary/20'
-                                      : 'bg-white border-black/[0.05] hover:border-va-primary'
-                                  }`}
-                                >
-                                  <ContainerInstrument>
-                                    <TextInstrument className="text-[15px] font-light text-black">{s.name}</TextInstrument>
-                                    <TextInstrument className="text-[15px] text-gray-400 font-light">
-                                      {s.confidence === 'verified' ? '✓ geverifieerd' : s.confidence}
-                                    </TextInstrument>
-                                  </ContainerInstrument>
-                                </ButtonInstrument>
-                              ))
-                            ) : !showAutoMatched && (
-                              <TextInstrument className="text-[15px] text-gray-300 italic font-light"><VoiceglotText  translationKey="auto.page.geen_automatische_ma.4df367" defaultText="geen automatische match gevonden" /></TextInstrument>
-                            )}
-                          </ContainerInstrument>
-
-                        {/* Quick Actions */}
-                        <ContainerInstrument className="flex flex-col gap-3 w-36 pt-2">
-                          <ButtonInstrument 
-                            onClick={() => handleAction('ignore', item.path)}
-                            className="w-full py-3 px-4 border border-black/5 text-gray-400 hover:border-black hover:text-black rounded-2xl text-[15px] font-light tracking-widest transition-all bg-white"
-                          >
-                            overslaan
-                          </ButtonInstrument>
-                          <ButtonInstrument 
-                            onClick={() => handleAction('archive', item.path)}
-                            className="w-full py-3 px-4 bg-va-off-white text-gray-400 hover:text-gray-600 rounded-2xl text-[15px] font-light tracking-widest transition-all"
-                          >
-                            archiveren
-                          </ButtonInstrument>
-                        </ContainerInstrument>
-                        </ContainerInstrument>
-                      </ContainerInstrument>
-                    );
-                  })}
-                </ContainerInstrument>
-              </ContainerInstrument>
-          ))}
-        </ContainerInstrument>
-
-        {/* 📄 Pagination Controls Bottom */}
-        {totalPages > 1 && (
-          <ContainerInstrument className="mt-16 flex justify-center gap-2 pb-20">
-            {Array.from({ length: Math.min(10, totalPages) }, (_, i) => (
-              <ButtonInstrument
-                key={i + 1}
-                onClick={() => { setCurrentPage(i + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                className={`w-12 h-12 rounded-full text-[15px] font-light transition-all ${
-                  currentPage === i + 1 ? 'bg-va-primary text-white' : 'bg-white border border-black/5 text-gray-400 hover:border-black'
-                }`}
-              >
-                {i + 1}
-              </ButtonInstrument>
-            ))}
-          </ContainerInstrument>
-        )}
+      <ContainerInstrument className="max-w-6xl mx-auto pt-32 pb-32 px-4 h-screen flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          {currentItem ? (
+            <SwipeCard 
+              key={currentItem.path} 
+              item={currentItem} 
+              groupName={currentItem.legacyContext?.post_title || currentItem.legacyContext?.parent_id || 'Uncategorized'} 
+              onAction={handleAction} 
+              onAnalyze={analyzeImage}
+              actors={actors}
+              processingId={processingId}
+            />
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center space-y-6"
+            >
+              <TextInstrument className="text-6xl font-light">🎉</TextInstrument>
+              <HeadingInstrument level={2} className="text-3xl font-light">Alles verwerkt!</HeadingInstrument>
+              <ButtonInstrument onClick={() => window.location.reload()} className="va-btn-pro px-8 py-4">Herladen</ButtonInstrument>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </ContainerInstrument>
     </PageWrapperInstrument>
   );

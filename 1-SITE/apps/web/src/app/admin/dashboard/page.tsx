@@ -15,6 +15,7 @@ import {
     ArrowRight,
     Bell,
     Brain,
+    Calendar,
     Clock,
     Database,
     Layout,
@@ -23,6 +24,7 @@ import {
     Settings,
     ShieldCheck,
     Sparkles,
+    TrendingUp,
     Users,
     Zap
 } from 'lucide-react';
@@ -45,6 +47,8 @@ export default function AdminDashboard() {
   const stats = [
     { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '12', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },
     { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Approval Queue" />, value: '5', icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
+    { label: <VoiceglotText  translationKey="admin.stats.finance" defaultText="Financieel" />, value: 'Cockpit', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: 'Journeys', color: 'text-green-500', href: '/admin/finance' },
+    { label: <VoiceglotText  translationKey="admin.stats.workshops" defaultText="Workshops" />, value: '114', icon: <Calendar strokeWidth={1.5} size={20} />, trend: 'Studio', color: 'text-purple-500', href: '/admin/studio/workshops' },
     { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Actieve Stemmen" />, value: '142', icon: <Mic strokeWidth={1.5} size={20} />, trend: '+12%', color: 'text-va-black/40' },
     { label: <VoiceglotText  translationKey="admin.stats.ai_status" defaultText="AI Sync Status" />, value: 'Live', icon: <Activity strokeWidth={1.5} size={20} />, trend: '100%', color: 'text-green-500' },
   ];
@@ -168,13 +172,14 @@ export default function AdminDashboard() {
       {/* Main Control Grid */}
       <BentoGrid strokeWidth={1.5} columns={3}>
         {/* Database Management */}
-        <BentoCard span="lg" className="bg-va-black text-white p-12 h-[400px] flex flex-col justify-between relative overflow-hidden group">
+        <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between h-[400px] group relative overflow-hidden rounded-[20px]">
           <ContainerInstrument className="relative z-10">
-            <Database strokeWidth={1.5} className="text-primary mb-8" size={40} />
-            <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-4"><VoiceglotText  translationKey="admin.database.title" defaultText="Database Manager" /><TextInstrument className="text-white/40 max-w-sm text-[15px] font-medium leading-relaxed"><VoiceglotText  translationKey="admin.database.text" defaultText="Beheer alle records (Stemmen, Reviews, Workshops) direct in de cloud. 100% visuele interface." /></TextInstrument></HeadingInstrument>
+            <Calendar strokeWidth={1.5} className="text-primary mb-8" size={32} />
+            <HeadingInstrument level={2} className="text-2xl font-light tracking-tighter mb-4">Workshop Cockpit</HeadingInstrument>
+            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">Beheer edities, deelnemers en bezettingsgraad voor de Studio-tak.</TextInstrument>
           </ContainerInstrument>
-          <Link  href="/admin/database" className="relative z-10 va-btn-pro !bg-primary w-fit"><VoiceglotText  translationKey="admin.database.cta" defaultText="Open Database" /></Link>
-          <ContainerInstrument className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-[80px] group-hover:bg-primary/20 transition-all duration-1000" />
+          <Link href="/admin/studio/workshops" className="relative z-10 va-btn-pro !bg-primary w-fit">Open Cockpit</Link>
+          <ContainerInstrument className="absolute -bottom-20 -right-20 w-60 h-60 bg-primary/10 rounded-full blur-[60px]" />
         </BentoCard>
 
         {/* System Settings */}

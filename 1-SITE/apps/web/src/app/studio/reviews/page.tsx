@@ -92,7 +92,7 @@ export default function StudioReviewsPage() {
       </SectionInstrument>
 
       {/* Stats */}
-      <BentoGrid strokeWidth={1.5} columns={4}>
+      <BentoGrid columns={4}>
         <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
           <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light"><VoiceglotText  translationKey="admin.reviews.stats.avg_score" defaultText="Gemiddelde Score" /></TextInstrument>
           <ContainerInstrument className="flex items-center gap-2">
@@ -117,7 +117,7 @@ export default function StudioReviewsPage() {
       </BentoGrid>
 
       {/* Review Grid */}
-      <BentoGrid strokeWidth={1.5} columns={3}>
+      <BentoGrid columns={3}>
         {filteredReviews.map((review) => (
           <BentoCard key={review.id} span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between group hover:shadow-aura transition-all">
             <ContainerInstrument className="space-y-6">

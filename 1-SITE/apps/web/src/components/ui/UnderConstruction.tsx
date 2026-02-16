@@ -60,8 +60,9 @@ export default function UnderConstruction() {
           <Image  
             src={market.logo_url} 
             alt={market.name} 
-            width={240}
+            width={240} 
             height={96}
+            priority
             className="h-16 md:h-24 w-auto drop-shadow-aura"
           />
         </div>

@@ -39,13 +39,7 @@ export class GeminiService {
       return result.response.text();
     } catch (error: any) {
       console.error('❌ Gemini Text Generation Error:', error);
-      
-      // Chris-Protocol: Geef een feitelijke fallback terug bij build-time errors of API issues
-      if (error.message?.includes('403') || error.message?.includes('404')) {
-        return "Ik heb momenteel moeite om verbinding te maken met mijn AI-motor. Probeer het later nog eens.";
-      }
-      
-      return "Er is een fout opgetreden bij het genereren van de tekst.";
+      throw error; // Throw error so caller can handle fallback/retry
     }
   }
 

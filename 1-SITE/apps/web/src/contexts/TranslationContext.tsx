@@ -10,18 +10,29 @@ interface TranslationContextType {
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
-export const TranslationProvider: React.FC<{ children: ReactNode; lang?: string }> = ({ children, lang = 'nl' }) => {
-  const [translations, setTranslations] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
+export const TranslationProvider: React.FC<{ 
+  children: ReactNode; 
+  lang?: string;
+  initialTranslations?: Record<string, string>;
+}> = ({ children, lang = 'nl', initialTranslations = {} }) => {
+  const [translations, setTranslations] = useState<Record<string, string>>(initialTranslations);
+  const [loading, setLoading] = useState(Object.keys(initialTranslations).length === 0 && lang !== 'nl');
   const healingKeys = React.useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    // Als we al initialTranslations hebben, hoeven we niet direct opnieuw te laden
+    // tenzij de taal verandert.
     const fetchTranslations = async () => {
+      if (lang === 'nl') {
+        setLoading(false);
+        return;
+      }
+      
       setLoading(true);
       try {
         const res = await fetch(`/api/translations/?lang=${lang}`);
         const data = await res.json();
-        setTranslations(data.translations || {});
+        setTranslations(prev => ({ ...prev, ...(data.translations || {}) }));
       } catch (e) {
         console.error("Failed to fetch translations", e);
       } finally {
@@ -33,7 +44,7 @@ export const TranslationProvider: React.FC<{ children: ReactNode; lang?: string 
   }, [lang]);
 
   const t = (key: string, defaultText: string): string => {
-    if (lang === 'nl') return defaultText;
+    if (lang === 'nl' || key.startsWith('admin.') || key.startsWith('command.')) return defaultText;
     const translation = translations[key];
     
     // 🛡️ STABILITEIT: Als de vertaling ontbreekt of leeg is, gebruik de defaultText (NL)

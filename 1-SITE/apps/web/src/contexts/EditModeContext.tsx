@@ -22,11 +22,24 @@ export const EditModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [isAdmin]);
 
-  const toggleEditMode = () => {
+  const toggleEditMode = React.useCallback(() => {
     if (isAdmin) {
-      setIsEditMode(!isEditMode);
+      setIsEditMode(prev => !prev);
     }
-  };
+  }, [isAdmin]);
+
+  // SHORTCUT MANDATE: Cmd+Shift+B toggles Edit Mode
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleEditMode();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [toggleEditMode]);
 
   return (
     <EditModeContext.Provider value={{ 

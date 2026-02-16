@@ -725,13 +725,32 @@ export const instructors = pgTable("instructors", {
 	id: serial().primaryKey().notNull(),
 	wpId: integer("wp_id"),
 	name: text().notNull(),
+	firstName: text("first_name"),
+	lastName: text("last_name"),
 	tagline: text(),
 	bio: text(),
 	photoId: integer("photo_id"),
+	vatNumber: text("vat_number"),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
 }, (table) => [
 	unique("instructors_wp_id_key").on(table.wpId),
 ]);
+
+export const locations = pgTable("locations", {
+	id: serial().primaryKey().notNull(),
+	name: text().notNull(),
+	slug: text().notNull(),
+	address: text(),
+	city: text(),
+	zip: text(),
+	country: text().default('BE'),
+	description: text(),
+	photoId: integer("photo_id"),
+	mapUrl: text("map_url"),
+	vatNumber: text("vat_number"),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
+});
 
 export const actors = pgTable("actors", {
 	id: serial().primaryKey().notNull(),

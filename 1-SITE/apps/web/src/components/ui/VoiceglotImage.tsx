@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
-import { Image as ImageIcon, Upload, Loader2, X } from 'lucide-react';
+import { Image as ImageIcon, Loader2, Upload } from 'lucide-react';
 import Image, { ImageProps } from 'next/image';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface VoiceglotImageProps extends Omit<ImageProps, 'src'> {
   src: string;
@@ -33,7 +33,39 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   const { playClick, playSwell } = useSonicDNA();
   const [isUploading, setIsUploading] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(src);
+  const [error, setError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setCurrentSrc(src);
+    setError(false);
+  }, [src]);
+
+  const handleError = () => {
+    if (error) return; // Prevent infinite loop
+    setError(true);
+    
+    // 🛡️ CHRIS-PROTOCOL: Fallback logic for actor photos
+    // If a path contains 'visuals/active/voicecards' or 'visuals/active/photos' or 'agency/voices', it might be a missing photo
+    if (currentSrc.includes('visuals/active/voicecards') || 
+        currentSrc.includes('visuals/active/photos') || 
+        currentSrc.includes('agency/voices')) {
+      
+      // If we are in the new structure but it failed, try the ID-based fallback if we can extract it
+      const idMatch = currentSrc.match(/(\d+)-/);
+      if (idMatch && !currentSrc.includes('placeholder')) {
+        const actorId = idMatch[1];
+        // Try a simpler path or different extension as a last resort before placeholder
+        if (currentSrc.endsWith('.jpg')) {
+          setCurrentSrc(currentSrc.replace('.jpg', '.webp'));
+          return;
+        }
+      }
+
+      // Final fallback to a generic placeholder
+      setCurrentSrc('/assets/common/branding/voicy/voicy-avatar.png');
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -75,12 +107,23 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     fileInputRef.current?.click();
   };
 
+  const isFill = !!props.fill;
+  const isProxied = currentSrc?.includes('/api/proxy');
+
   return (
-    <div className={cn("relative group/image-edit", isEditMode && "cursor-pointer")}>
+    <div className={cn(
+      "relative group/image-edit", 
+      isEditMode && "cursor-pointer",
+      isFill && "w-full h-full"
+    )}>
       {currentSrc ? (
         <Image  
           src={currentSrc} 
           alt={alt}
+          onError={handleError}
+          width={!isFill ? (props.width || 500) : undefined}
+          height={!isFill ? (props.height || 500) : undefined}
+          unoptimized={isProxied}
           className={cn(
             className,
             isEditMode && "ring-2 ring-primary/0 hover:ring-primary/50 transition-all duration-300"

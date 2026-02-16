@@ -1,7 +1,6 @@
-import { NextResponse } from 'next/server';
 import { db } from '@db';
 import { chatMessages } from '@db/schema';
-import { eq, gt, and, asc } from 'drizzle-orm';
+import { and, asc, eq, gt } from 'drizzle-orm';
 
 /**
  * ⚡ REAL-TIME CHAT SSE (2026)
@@ -13,7 +12,12 @@ import { eq, gt, and, asc } from 'drizzle-orm';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const conversationId = parseInt(searchParams.get('conversationId') || '0');
-  const lastMessageId = parseInt(searchParams.get('lastMessageId') || '0');
+  let lastMessageId = parseInt(searchParams.get('lastMessageId') || '0');
+  
+  // 🛡️ CHRIS-PROTOCOL: Prevent Postgres integer out-of-range error
+  if (isNaN(lastMessageId) || lastMessageId > 2147483647) {
+    lastMessageId = 0;
+  }
 
   if (!conversationId) {
     return new Response('Missing conversationId', { status: 400 });

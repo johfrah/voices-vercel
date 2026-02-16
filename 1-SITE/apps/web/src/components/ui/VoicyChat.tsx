@@ -4,19 +4,29 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { VOICES_CONFIG } from '@config/config';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-    Maximize2,
-    Minimize2,
-    X,
-    ChevronRight,
+  import {
+    Calendar,
     Check,
+    ChevronRight,
+    HelpCircle,
+    Info,
+    LayoutDashboard,
     Mail,
+    MapPin,
+    MessageCircle,
     Phone,
-    Send
+    PlayCircle,
+    Search,
+    Send,
+    Shield,
+    ShoppingCart,
+    User,
+    X,
+    Zap
 } from 'lucide-react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
@@ -25,6 +35,7 @@ export const VoicyChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const [mailForm, setMailForm] = useState({ email: '', message: '' });
   const [isSendingMail, setIsSendingMail] = useState(false);
   const [mailSent, setMailSent] = useState(false);
@@ -33,12 +44,53 @@ export const VoicyChat: React.FC = () => {
   const [chatMode, setChatMode] = useState<'ask' | 'agent'>('ask');
   const [customer360, setCustomer360] = useState<any>(null);
   const [conversationId, setConversationId] = useState<number | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
   const [clickedChips, setClickedChips] = useState<string[]>([]);
+  const [isHoveringVoicy, setIsHoveringVoicy] = useState(false);
+  const [showChips, setShowChips] = useState(false);
+  const chipsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { state } = useCheckout();
   const { playClick } = useSonicDNA();
   const { user, isAuthenticated, isAdmin } = useAuth();
   const { isEditMode, toggleEditMode } = useEditMode();
+  const pathname = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // 🧠 Persist Conversation ID and Load History
+  useEffect(() => {
+    const savedId = localStorage.getItem('voicy_conversation_id');
+    if (savedId) {
+      const parsedId = parseInt(savedId);
+      setConversationId(parsedId);
+      loadHistory(parsedId);
+    }
+  }, []);
+
+  const loadHistory = async (id: number) => {
+    setIsInitialLoading(true);
+    try {
+      const res = await fetch('/api/chat/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'history', conversationId: id })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.messages.length > 0) {
+          setMessages(data.messages);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load history", e);
+    } finally {
+      setIsInitialLoading(false);
+    }
+  };
+
+  // 🧠 Determine Journey
+  const isAcademyJourney = pathname?.includes('/academy');
+  const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
+  const isAgencyJourney = !isStudioJourney && !isAcademyJourney;
 
   // 🌐 Get current language
   const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';
@@ -100,8 +152,20 @@ export const VoicyChat: React.FC = () => {
   useEffect(() => {
     if (!isOpen || !conversationId) return;
 
-    const lastId = messages.length > 0 ? messages[messages.length - 1].id : 0;
-    const eventSource = new EventSource(`/api/chat/sse?conversationId=${conversationId}&lastMessageId=${lastId}`);
+    // 🛡️ CHRIS-PROTOCOL: Ensure lastId is a valid integer for the DB (max 2^31-1)
+    // We only want real database IDs, not 'temp-', 'suggestion-', 'welcome' or 'proactive-' IDs.
+    const lastDbMsg = [...messages].reverse().find(m => {
+      const idStr = m.id.toString();
+      return !isNaN(parseInt(idStr)) && 
+             !idStr.startsWith('temp-') && 
+             !idStr.startsWith('suggestion-') && 
+             !idStr.startsWith('welcome') && 
+             !idStr.startsWith('proactive-') &&
+             parseInt(idStr) < 2147483647; // Max Postgres integer
+    });
+    const lastId = lastDbMsg ? parseInt(lastDbMsg.id) : 0;
+    
+    const eventSource = new EventSource(`/api/chat/sse/?conversationId=${conversationId}&lastMessageId=${lastId}`);
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -123,7 +187,7 @@ export const VoicyChat: React.FC = () => {
   }, [isOpen, conversationId, messages, playClick]);
 
   useEffect(() => {
-    if (messages.length === 0) {
+    if (!isInitialLoading && messages.length === 0) {
       setMessages([
         {
           id: 'welcome',
@@ -133,13 +197,39 @@ export const VoicyChat: React.FC = () => {
         }
       ]);
     }
-  }, [messages.length]);
+  }, [messages.length, isInitialLoading]);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
+
+  useEffect(() => {
+    // 🚀 AUTO-SHOW CHIPS (CHRIS-PROTOCOL: Proactieve interactie)
+    if (!isOpen) {
+      const timer = setTimeout(() => {
+        setShowChips(true);
+        // Verberg ze weer na 8 seconden als er geen interactie is
+        if (chipsTimeoutRef.current) clearTimeout(chipsTimeoutRef.current);
+        chipsTimeoutRef.current = setTimeout(() => {
+          setShowChips(false);
+        }, 8000);
+      }, 2000);
+      return () => {
+        clearTimeout(timer);
+        if (chipsTimeoutRef.current) clearTimeout(chipsTimeoutRef.current);
+      };
+    } else {
+      setShowChips(false);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isHoveringVoicy && !isOpen) {
+      setShowChips(true);
+    }
+  }, [isHoveringVoicy, isOpen]);
 
   const toggleChat = () => {
     playClick(isOpen ? 'light' : 'deep');
@@ -152,7 +242,7 @@ export const VoicyChat: React.FC = () => {
     if (!messageToSend.trim()) return;
 
     const userMessage = {
-      id: Date.now().toString(),
+      id: `temp-${Date.now()}`,
       role: 'user',
       content: messageToSend,
       timestamp: new Date().toISOString()
@@ -160,13 +250,14 @@ export const VoicyChat: React.FC = () => {
 
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
+    setIsTyping(true);
     playClick('light');
 
     try {
       // 🧪 Check for active Cody Preview Logic
       const previewLogic = typeof window !== 'undefined' ? sessionStorage.getItem('cody_preview_logic') : null;
 
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/chat/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -176,6 +267,7 @@ export const VoicyChat: React.FC = () => {
           mode: chatMode,
           previewLogic: previewLogic, // 🧪 Stuur preview code mee naar de API
           context: {
+            journey: isAcademyJourney ? 'academy' : isStudioJourney ? 'studio' : 'agency',
             briefing: state.briefing,
             isAuthenticated,
             user: user?.email,
@@ -190,15 +282,17 @@ export const VoicyChat: React.FC = () => {
 
       if (data.conversationId) {
         setConversationId(data.conversationId);
+        localStorage.setItem('voicy_conversation_id', data.conversationId.toString());
       }
       
       const aiResponse = {
-        id: (Date.now() + 1).toString(),
+        id: `temp-ai-${Date.now()}`,
         role: 'assistant',
-        content: data.message || data.content || "Ik ben even de verbinding kwijt, maar ik ben er nog!",
+        content: data.content || data.message || "Ik ben even de verbinding kwijt, maar ik ben er nog!",
         timestamp: new Date().toISOString(),
         actions: data.actions || [],
-        media: data.media || []
+        media: data.media || [],
+        isDbError: !!data._db_error
       };
 
       // 🌐 VOICEGLOT: Ensure AI content is translated if needed
@@ -224,15 +318,25 @@ export const VoicyChat: React.FC = () => {
 
       setMessages(prev => [...prev, aiResponse]);
       playClick('deep');
-    } catch (error) {
+    } catch (error: any) {
       console.error("Chat API error:", error);
+      
+      // 🛡️ CHRIS-PROTOCOL: Extract details if available
+      let errorMessage = "Oeps, er ging iets mis bij het verwerken van je bericht. Probeer het later nog eens!";
+      if (error.message?.includes('Network response was not ok')) {
+        // Try to get more details from the response if possible
+        console.warn("Network error details might be available in the console.");
+      }
+
       const errorResponse = {
-        id: (Date.now() + 1).toString(),
+        id: `error-${Date.now()}`,
         role: 'assistant',
-        content: "Oeps, er ging iets mis bij het verwerken van je bericht. Probeer het later nog eens!",
+        content: errorMessage,
         timestamp: new Date().toISOString()
       };
       setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -280,37 +384,52 @@ export const VoicyChat: React.FC = () => {
 
     const chips = [];
     
-    // Context-based chips
-    if (state.selectedActor) {
-      chips.push({ label: `Prijs voor ${state.selectedActor.first_name}`, action: "calculate_price", src: "/assets/common/branding/icons/INFO.svg" });
-      chips.push({ label: "Direct Boeken", action: "check", src: "/assets/common/branding/icons/RIGHT.svg" });
-    } else {
-      chips.push({ label: "Stemmen Zoeken", action: "browse_voices", src: "/assets/common/branding/icons/SEARCH.svg" });
+    // 🧠 Context-based chips (Journey Aware)
+    if (isAgencyJourney) {
+      if (state.selectedActor) {
+        chips.push({ label: `Prijs voor ${state.selectedActor.first_name}`, action: "calculate_price", icon: Info });
+        chips.push({ label: "Direct Boeken", action: "check", icon: Check });
+      } else {
+        chips.push({ label: "Stemmen Zoeken", action: "browse_voices", icon: Search });
+      }
+
+      if (state.vat_number) {
+        chips.push({ label: "Check BTW Status", action: "check_vat", icon: Shield });
+      }
+
+      chips.push({ label: "Tarieven", action: "ask_pricing", icon: ShoppingCart });
     }
 
-    if (state.vat_number) {
-      chips.push({ label: "Check BTW Status", action: "check_vat", src: "/assets/common/branding/icons/INFO.svg" });
+    if (isStudioJourney) {
+      chips.push({ label: "Workshop Data", action: "ask_workshop_dates", icon: Calendar });
+      chips.push({ label: "Locatie & Studio", action: "ask_location", icon: MapPin });
+      chips.push({ label: "Aan de slag", action: "ask_enrollment", icon: Zap });
     }
 
-    if (state.briefing.length > 0) {
-      chips.push({ label: "Woorden Tellen", src: "/assets/common/branding/icons/INFO.svg" });
+    if (isAcademyJourney) {
+      chips.push({ label: "Cursus Aanbod", action: "browse_courses", icon: Info });
+      chips.push({ label: "Gratis Proefles", action: "start_free_lesson", icon: PlayCircle });
+      chips.push({ label: "Hoe werkt de Academy?", action: "ask_how_it_works", icon: HelpCircle });
     }
 
-    chips.push({ label: "Tarieven", action: "ask_pricing", src: "/assets/common/branding/icons/CART.svg" });
-    chips.push({ label: "Hoe werkt het?", action: "ask_how_it_works", src: "/assets/common/branding/icons/INFO.svg" });
+    chips.push({ label: "Hoe werkt het?", action: "ask_how_it_works", icon: HelpCircle });
 
     return chips.filter(chip => !clickedChips.includes(chip.label));
   };
 
   return (
-    <ContainerInstrument className="fixed bottom-8 right-8 z-[100]">
+    <ContainerInstrument 
+      className="fixed bottom-8 right-8 z-[100] touch-manipulation"
+      onMouseEnter={() => setIsHoveringVoicy(true)}
+      onMouseLeave={() => setIsHoveringVoicy(false)}
+    >
       {/* Smart Chips (Floating above toggle) */}
-      {!isOpen && (
+      {!isOpen && showChips && (
         <ContainerInstrument className="absolute bottom-20 right-0 flex flex-col items-end gap-2 pointer-events-none">
           <AnimatePresence>
             {getSmartChips().map((chip, i) => (
               <motion.button
-                key={chip.label}
+                key={`${chip.label}-${i}`}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
@@ -322,27 +441,15 @@ export const VoicyChat: React.FC = () => {
                   if (chip.action === 'toggle_edit_mode') toggleEditMode();
                   else handleSend(undefined, chip.label);
                 }}
-                className="pointer-events-auto bg-white/90 backdrop-blur-md border border-black/5 px-4 py-2 rounded-full shadow-aura flex items-center gap-2 group hover:bg-primary hover:text-white transition-all"
+                className="pointer-events-auto bg-white/95 backdrop-blur-md border border-black/5 px-4 py-2 rounded-full shadow-aura flex items-center gap-2 group hover:bg-primary hover:text-white transition-all"
               >
-                {chip.src ? (
-                  <ContainerInstrument plain className="w-5 h-5 flex items-center justify-center">
-                    <Image  
-                      src={chip.src} 
-                      alt={chip.label} 
-                      width={20} 
-                      height={20} 
-                      className="w-full h-full group-hover:invert group-hover:brightness-0 transition-all"
-                      style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                    />
-                  </ContainerInstrument>
-                ) : (
-                  <ContainerInstrument plain className="w-5 h-5 flex items-center justify-center">
-                    {(() => {
-                      const Icon = (chip as any).icon;
-                      return Icon ? <Icon strokeWidth={1.5} size={16} className="text-primary group-hover:text-white transition-colors" /> : null;
-                    })()}
-                  </ContainerInstrument>
-                )}
+                <div className="w-5 h-5 flex items-center justify-center">
+                  {(() => {
+                    const Icon = (chip as any).icon;
+                    if (!Icon) return null;
+                    return <Icon strokeWidth={1.5} size={18} className="text-primary group-hover:text-white transition-colors" />;
+                  })()}
+                </div>
                 <TextInstrument className="text-[15px] font-light tracking-widest whitespace-nowrap">
                   {chip.label}
                 </TextInstrument>
@@ -355,22 +462,15 @@ export const VoicyChat: React.FC = () => {
       {/* Chat Toggle Button */}
       <ButtonInstrument
         onClick={toggleChat}
-        className={`w-16 h-16 rounded-full shadow-aura flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 group relative ${
-          isOpen ? 'bg-va-black text-white rotate-90' : 'bg-transparent text-va-black'
+        className={`w-16 h-16 rounded-full shadow-aura flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 group relative touch-manipulation ${
+          isOpen ? 'bg-va-black text-white rotate-90' : 'bg-primary text-white'
         }`}
       >
         {isOpen ? <X strokeWidth={1.5} size={28} /> : (
-          <ContainerInstrument plain className="relative w-full h-full rounded-full overflow-hidden">
-            <Image  
-              src={VOICES_CONFIG.assets.placeholders.voicy} 
-              alt="Voicy" 
-              fill
-              className="object-contain p-1"
-            />
-          </ContainerInstrument>
+          <MessageCircle strokeWidth={1.5} size={32} className="relative z-10" />
         )}
         {!isOpen && (
-          <ContainerInstrument plain className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
+          <ContainerInstrument plain className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
         )}
       </ButtonInstrument>
 
@@ -397,7 +497,7 @@ export const VoicyChat: React.FC = () => {
               onClick={() => setIsFullMode(!isFullMode)}
               className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/60 hover:text-white"
             >
-              <Image src={isFullMode ? "/assets/common/branding/icons/BACK.svg" : "/assets/common/branding/icons/INFO.svg"} width={18} height={18} alt="" className="brightness-0 invert opacity-40" />
+              {isFullMode ? <ChevronRight strokeWidth={1.5} size={18} className="rotate-180 opacity-40" /> : <Info strokeWidth={1.5} size={18} className="opacity-40" />}
             </ButtonInstrument>
           </ContainerInstrument>
 
@@ -407,26 +507,29 @@ export const VoicyChat: React.FC = () => {
         {/* Tabs */}
         <ContainerInstrument plain className="flex border-b border-black/5 p-2 gap-1 bg-va-off-white/30">
           {[
-            { id: 'chat', icon: "/assets/common/branding/icons/INFO.svg", label: 'Chat', translationKey: 'chat.tabs.chat' },
-            { id: 'mail', icon: "/assets/common/branding/icons/ACCOUNT.svg", label: 'Mail', translationKey: 'chat.tabs.mail' },
-            { id: 'phone', icon: "/assets/common/branding/icons/INFO.svg", label: 'Bel', translationKey: 'chat.tabs.phone' },
-            { id: 'faq', icon: "/assets/common/branding/icons/INFO.svg", label: 'FAQ', translationKey: 'chat.tabs.faq' },
-            ...(isAdmin ? [{ id: 'admin', icon: "/assets/common/branding/icons/MENU.svg", label: 'Admin', translationKey: 'chat.tabs.admin' }] : []),
-          ].map((tab) => (
-            <ButtonInstrument
-              key={tab.id}
-              onClick={() => {
-                playClick('light');
-                setActiveTab(tab.id as any);
-              }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all ${
-                activeTab === tab.id ? 'bg-white text-primary shadow-sm ring-1 ring-black/5' : 'text-va-black/30 hover:bg-black/5'
-              }`}
-            >
-              <Image src={tab.icon} width={14} height={14} alt="" style={activeTab === tab.id ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' } : { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
-              <TextInstrument as="span" className="text-[15px] font-light tracking-widest"><VoiceglotText  translationKey={tab.translationKey} defaultText={tab.label} /></TextInstrument>
-            </ButtonInstrument>
-          ))}
+            { id: 'chat', icon: MessageCircle, label: 'Chat', translationKey: 'chat.tabs.chat' },
+            { id: 'mail', icon: Mail, label: 'Mail', translationKey: 'chat.tabs.mail' },
+            { id: 'phone', icon: Phone, label: 'Bel', translationKey: 'chat.tabs.phone' },
+            { id: 'faq', icon: HelpCircle, label: 'FAQ', translationKey: 'chat.tabs.faq' },
+            ...(isAdmin ? [{ id: 'admin', icon: Shield, label: 'Admin', translationKey: 'chat.tabs.admin' }] : []),
+          ].map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <ButtonInstrument
+                key={tab.id}
+                onClick={() => {
+                  playClick('light');
+                  setActiveTab(tab.id as any);
+                }}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all ${
+                  activeTab === tab.id ? 'bg-white text-primary shadow-sm ring-1 ring-black/5' : 'text-va-black/30 hover:bg-black/5'
+                }`}
+              >
+                <Icon size={14} strokeWidth={1.5} className={activeTab === tab.id ? 'text-primary' : 'text-va-black/20'} />
+                <TextInstrument as="span" className="text-[15px] font-light tracking-widest"><VoiceglotText  translationKey={tab.translationKey} defaultText={tab.label} /></TextInstrument>
+              </ButtonInstrument>
+            );
+          })}
         </ContainerInstrument>
 
         {/* Mode Selector (Ask vs Agent) */}
@@ -443,7 +546,7 @@ export const VoicyChat: React.FC = () => {
                 onClick={() => { setChatMode('agent'); playClick('pro'); }}
                 className={`px-6 py-1.5 rounded-full text-[15px] font-light tracking-widest transition-all flex items-center gap-2 ${chatMode === 'agent' ? 'bg-primary text-white shadow-md' : 'text-va-black/30 hover:text-va-black'}`}
               >
-                {chatMode === 'agent' && <Image src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" className="brightness-0 invert animate-pulse" />}
+                {chatMode === 'agent' && <Zap size={10} className="brightness-0 invert animate-pulse" />}
                 <VoiceglotText  translationKey="chat.mode.agent" defaultText="Agent" />
               </ButtonInstrument>
             </ContainerInstrument>
@@ -456,117 +559,186 @@ export const VoicyChat: React.FC = () => {
             <ContainerInstrument plain className={`flex-1 overflow-hidden relative flex ${isFullMode ? 'flex-row' : 'flex-col'}`}>
               <ContainerInstrument plain className="flex-1 flex flex-col overflow-hidden border-r border-black/5">
                 <ContainerInstrument plain ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 custom-scrollbar">
-                  {messages.map((msg) => (
-                    <ContainerInstrument
-                      plain
-                      key={msg.id}
-                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <ContainerInstrument plain className={`max-w-[85%] p-4 rounded-[20px] text-[15px] font-light leading-relaxed ${
-                        msg.role === 'user' 
-                          ? 'bg-primary text-white rounded-tr-none shadow-lg shadow-primary/10' 
-                          : 'bg-va-off-white text-va-black rounded-tl-none'
-                      }`}>
-                        {msg.content.includes("Oeps, er ging iets mis") ? (
-                          <ContainerInstrument plain className="space-y-4">
-                            <ContainerInstrument plain className="flex items-center gap-3 text-red-500">
-                              <Image src="/assets/common/branding/icons/INFO.svg" width={18} height={18} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-                              <TextInstrument className="font-light">{msg.content}</TextInstrument>
-                            </ContainerInstrument>
-                            <ButtonInstrument 
-                              onClick={() => handleSend(undefined, messages[messages.length-2]?.content)}
-                              className="w-full py-2 bg-va-black/5 text-va-black rounded-xl text-[15px] font-light tracking-widest hover:bg-va-black/10 transition-all"
-                            >
-                              <VoiceglotText translationKey="auto.voicychat.opnieuw_proberen" defaultText="OPNIEUW PROBEREN" />
-                            </ButtonInstrument>
-                          </ContainerInstrument>
-                        ) : msg.content}
-                        {msg.actions && msg.actions.length > 0 && (
-                          <ContainerInstrument plain className="mt-4 flex flex-wrap gap-2">
-                          {msg.actions.map((action: any, i: number) => (
-                            <ButtonInstrument
-                              key={i}
-                              onClick={() => {
-                                if (action.action === 'toggle_edit_mode') {
-                                  toggleEditMode();
-                                  setMessages(prev => [...prev, {
-                                    id: Date.now().toString(),
-                                    role: 'assistant',
-                                    content: `Edit Mode is nu ${!isEditMode ? 'ingeschakeld' : 'uitgeschakeld'}.`,
-                                    timestamp: new Date().toISOString()
-                                  }]);
-                                  return;
-                                }
-                                if (action.action === 'create_page') {
-                                  window.location.href = '/admin/pages/new';
-                                  return;
-                                }
-                                if (action.action === 'manage_layouts') {
-                                  window.location.href = '/admin/pages';
-                                  return;
-                                }
-                                if (action.action === 'open_dashboard') {
-                                  window.location.href = '/admin/dashboard';
-                                  return;
-                                }
-                                if (action.action === 'draft_from_vault') {
-                                  window.location.href = '/admin/vault';
-                                  return;
-                                }
-                                if (action.action === 'open_approvals') {
-                                  window.location.href = '/admin/approvals';
-                                  return;
-                                }
-                                if (action.action === 'create_project_quote') {
-                                  window.location.href = '/agency';
-                                  return;
-                                }
-
-                                // 🌐 Handle dynamic language-aware links
-                                if (typeof action.action === 'string' && action.action.startsWith('/')) {
-                                  window.location.href = action.action;
-                                  return;
-                                }
-
-                                const result = typeof action.action === 'function' ? action.action() : `Actie uitgevoerd: ${action.label}`;
-                                setMessages(prev => [...prev, {
-                                  id: Date.now().toString(),
-                                  role: 'assistant',
-                                  content: result,
-                                  timestamp: new Date().toISOString()
-                                }]);
-                              }}
-                              className="px-4 py-2 bg-white text-primary rounded-full text-[15px] font-light tracking-widest hover:scale-105 transition-all shadow-sm"
-                            >
-                              <VoiceglotText  translationKey={`chat.action.${action.label.toLowerCase().replace(/\s+/g, '_')}`} defaultText={action.label} />
-                            </ButtonInstrument>
-                          ))}
-                        </ContainerInstrument>
-                        )}
-
-                        {msg.media && msg.media.length > 0 && (
-                          <ContainerInstrument plain className="mt-4 space-y-3">
-                            {msg.media.map((item: any, i: number) => (
-                              <ContainerInstrument plain key={i} className="bg-white/10 rounded-2xl p-3 backdrop-blur-sm">
-                                <TextInstrument className="text-[15px] font-black tracking-widest mb-2 opacity-60">
-                                  {item.title}
-                                </TextInstrument>
-                                {item.type === 'audio' ? (
-                                  <audio controls className="w-full h-8 accent-primary">
-                                    <source src={item.url} type="audio/mpeg" />
-                                  </audio>
-                                ) : (
-                                  <video controls className="w-full rounded-xl shadow-lg">
-                                    <source src={item.url} type="video/mp4" />
-                                  </video>
-                                )}
-                              </ContainerInstrument>
-                            ))}
-                          </ContainerInstrument>
-                        )}
-                      </ContainerInstrument>
+                  {isInitialLoading ? (
+                    <ContainerInstrument plain className="h-full flex items-center justify-center">
+                      <TextInstrument className="text-[13px] tracking-widest opacity-40 animate-pulse">GESCHIEDENIS LADEN...</TextInstrument>
                     </ContainerInstrument>
-                  ))}
+                  ) : (
+                    <>
+                      {messages.map((msg) => (
+                        <ContainerInstrument
+                          plain
+                          key={msg.id}
+                          className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <ContainerInstrument plain className={`max-w-[85%] p-4 rounded-[20px] text-[15px] font-light leading-relaxed ${
+                            msg.role === 'user' 
+                              ? 'bg-primary text-white rounded-tr-none shadow-lg shadow-primary/10' 
+                              : 'bg-va-off-white text-va-black rounded-tl-none'
+                          }`}>
+                            {msg.isDbError && (
+                              <ContainerInstrument plain className="text-[15px] tracking-widest opacity-40 mb-1 flex items-center gap-1">
+                                <Shield strokeWidth={1.5} size={10} /> Offline Mode
+                              </ContainerInstrument>
+                            )}
+                            {msg.content.includes("Oeps, er ging iets mis") ? (
+                              <ContainerInstrument plain className="space-y-4">
+                                <ContainerInstrument plain className="flex items-center gap-3 text-red-500">
+                                  <Info strokeWidth={1.5} size={18} className="text-primary" />
+                                  <TextInstrument className="font-light">{msg.content}</TextInstrument>
+                                </ContainerInstrument>
+                                <ButtonInstrument 
+                                  onClick={() => handleSend(undefined, messages[messages.length-2]?.content)}
+                                  className="w-full py-2 bg-va-black/5 text-va-black rounded-xl text-[15px] font-light tracking-widest hover:bg-va-black/10 transition-all"
+                                >
+                                  <VoiceglotText translationKey="auto.voicychat.opnieuw_proberen" defaultText="OPNIEUW PROBEREN" />
+                                </ButtonInstrument>
+                              </ContainerInstrument>
+                            ) : msg.content}
+                            {msg.actions && msg.actions.length > 0 && (
+                              <ContainerInstrument plain className="mt-4 flex flex-wrap gap-2">
+                              {msg.actions.map((action: any, i: number) => (
+                                <ButtonInstrument
+                                  key={i}
+                                  onClick={() => {
+                                    if (action.action === 'toggle_edit_mode') {
+                                      toggleEditMode();
+                                      setMessages(prev => [...prev, {
+                                        id: Date.now().toString(),
+                                        role: 'assistant',
+                                        content: `Edit Mode is nu ${!isEditMode ? 'ingeschakeld' : 'uitgeschakeld'}.`,
+                                        timestamp: new Date().toISOString()
+                                      }]);
+                                      return;
+                                    }
+                                    if (action.action === 'create_page') {
+                                      window.location.href = '/admin/pages/new';
+                                      return;
+                                    }
+                                    if (action.action === 'manage_layouts') {
+                                      window.location.href = '/admin/pages';
+                                      return;
+                                    }
+                                    if (action.action === 'open_dashboard') {
+                                      window.location.href = '/admin/dashboard';
+                                      return;
+                                    }
+                                    if (action.action === 'draft_from_vault') {
+                                      window.location.href = '/admin/vault';
+                                      return;
+                                    }
+                                    if (action.action === 'open_approvals') {
+                                      window.location.href = '/admin/approvals';
+                                      return;
+                                    }
+                                    if (action.action === 'create_project_quote') {
+                                      window.location.href = '/agency';
+                                      return;
+                                    }
+                                    if (action.action === 'browse_workshops') {
+                                      window.location.href = '/studio';
+                                      return;
+                                    }
+                                    if (action.action === 'book_session') {
+                                      window.location.href = '/studio/book';
+                                      return;
+                                    }
+                                    if (action.action === 'browse_courses') {
+                                      window.location.href = '/academy';
+                                      return;
+                                    }
+                                    if (action.action === 'start_free_lesson') {
+                                      window.location.href = '/academy';
+                                      return;
+                                    }
+                                    if (action.action === 'quote') {
+                                      window.location.href = '/agency';
+                                      return;
+                                    }
+                                    if (action.action === 'browse_voices') {
+                                      window.location.href = '/artist';
+                                      return;
+                                    }
+
+                                    // 🌐 Handle dynamic language-aware links
+                                    if (typeof action.action === 'string' && action.action.startsWith('/')) {
+                                      window.location.href = action.action;
+                                      return;
+                                    }
+
+                                    const result = typeof action.action === 'function' ? action.action() : `Actie uitgevoerd: ${action.label}`;
+                                    setMessages(prev => [...prev, {
+                                      id: Date.now().toString(),
+                                      role: 'assistant',
+                                      content: result,
+                                      timestamp: new Date().toISOString()
+                                    }]);
+                                  }}
+                                  className="px-4 py-2 bg-white text-primary rounded-full text-[15px] font-light tracking-widest hover:scale-105 transition-all shadow-sm"
+                                >
+                                  <VoiceglotText  translationKey={`chat.action.${action.label.toLowerCase().replace(/\s+/g, '_').replace(/[^\w]/g, '')}`} defaultText={action.label} />
+                                </ButtonInstrument>
+                              ))}
+                            </ContainerInstrument>
+                            )}
+
+                            {msg.media && msg.media.length > 0 && (
+                              <ContainerInstrument plain className="mt-4 space-y-3">
+                                {msg.media.map((item: any, i: number) => (
+                                  <ContainerInstrument plain key={i} className="bg-white/10 rounded-2xl p-3 backdrop-blur-sm">
+                                    <TextInstrument className="text-[15px] font-black tracking-widest mb-2 opacity-60">
+                                      {item.title}
+                                    </TextInstrument>
+                                    {item.type === 'audio' ? (
+                                      <audio controls className="w-full h-8 accent-primary">
+                                        <source src={item.url} type="audio/mpeg" />
+                                      </audio>
+                                    ) : (
+                                      <video controls className="w-full rounded-xl shadow-lg">
+                                        <source src={item.url} type="video/mp4" />
+                                      </video>
+                                    )}
+                                  </ContainerInstrument>
+                                ))}
+                              </ContainerInstrument>
+                            )}
+                          </ContainerInstrument>
+                        </ContainerInstrument>
+                      ))}
+
+                      {/* 🧠 TYPING INDICATOR (CHRIS-PROTOCOL: 100ms Feedback) */}
+                      {isTyping && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex justify-start"
+                        >
+                          <ContainerInstrument plain className="bg-va-off-white text-va-black p-4 rounded-[20px] rounded-tl-none flex items-center gap-2">
+                            <div className="flex gap-1">
+                              <motion.span 
+                                animate={{ opacity: [0.3, 1, 0.3] }}
+                                transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
+                                className="w-1.5 h-1.5 bg-primary rounded-full" 
+                              />
+                              <motion.span 
+                                animate={{ opacity: [0.3, 1, 0.3] }}
+                                transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
+                                className="w-1.5 h-1.5 bg-primary rounded-full" 
+                              />
+                              <motion.span 
+                                animate={{ opacity: [0.3, 1, 0.3] }}
+                                transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
+                                className="w-1.5 h-1.5 bg-primary rounded-full" 
+                              />
+                            </div>
+                            <TextInstrument className="text-[13px] tracking-widest opacity-40 font-light">
+                              <VoiceglotText translationKey="chat.status.typing" defaultText="VOICY DENKT NA..." />
+                            </TextInstrument>
+                          </ContainerInstrument>
+                        </motion.div>
+                      )}
+                    </>
+                  )}
                 </ContainerInstrument>
 
                 {/* Input Area */}
@@ -583,7 +755,7 @@ export const VoicyChat: React.FC = () => {
                       type="submit"
                       className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-va-black text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
                     >
-                      <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert" />
+                      <ChevronRight strokeWidth={1.5} size={18} className="text-white" />
                     </ButtonInstrument>
                   </FormInstrument>
                 </ContainerInstrument>
@@ -652,10 +824,10 @@ export const VoicyChat: React.FC = () => {
                     </ContainerInstrument>
                     <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
                       <VoiceglotText  translationKey="chat.mail.sent.title" defaultText="Bericht verzonden!" />
-                      <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                        <VoiceglotText  translationKey="chat.mail.sent.text" defaultText="Bedankt! We hebben je bericht ontvangen en reageren zo snel mogelijk." />
-                      </TextInstrument>
                     </HeadingInstrument>
+                    <TextInstrument className="text-[15px] text-va-black/40 font-light">
+                      <VoiceglotText  translationKey="chat.mail.sent.text" defaultText="Bedankt! We hebben je bericht ontvangen en reageren zo snel mogelijk." />
+                    </TextInstrument>
                     <ButtonInstrument 
                       onClick={() => setMailSent(false)}
                       className="va-btn-pro px-8 py-3 text-[15px]"
@@ -675,10 +847,10 @@ export const VoicyChat: React.FC = () => {
                       </ContainerInstrument>
                       <HeadingInstrument level={4} className="text-lg font-light tracking-tighter">
                         <VoiceglotText  translationKey="chat.mail.title" defaultText="Stuur ons een bericht" />
-                        <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                          <VoiceglotText  translationKey="chat.mail.subtitle" defaultText="We reageren meestal binnen het uur." />
-                        </TextInstrument>
                       </HeadingInstrument>
+                      <TextInstrument className="text-[15px] text-va-black/40 font-light">
+                        <VoiceglotText  translationKey="chat.mail.subtitle" defaultText="We reageren meestal binnen het uur." />
+                      </TextInstrument>
                     </ContainerInstrument>
 
                     <FormInstrument onSubmit={handleMailSubmit} className="space-y-4">
@@ -735,10 +907,10 @@ export const VoicyChat: React.FC = () => {
               <ContainerInstrument plain className="space-y-2">
                 <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
                   <VoiceglotText  translationKey="chat.phone.title" defaultText="Bel de studio" />
-                  <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                    <VoiceglotText  translationKey="chat.phone.subtitle" defaultText="Direct contact met onze regisseurs." />
-                  </TextInstrument>
                 </HeadingInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light">
+                  <VoiceglotText  translationKey="chat.phone.subtitle" defaultText="Direct contact met onze regisseurs." />
+                </TextInstrument>
               </ContainerInstrument>
               <ButtonInstrument as="a" href="tel:+3227931991" className="va-btn-pro w-full">+32 (0)2 793 19 91</ButtonInstrument>
             </ContainerInstrument>
@@ -784,14 +956,7 @@ export const VoicyChat: React.FC = () => {
                 >
                   <ContainerInstrument plain className="flex items-center gap-4">
                     <ContainerInstrument plain className={`w-10 h-10 rounded-full flex items-center justify-center ${isEditMode ? 'bg-white/20' : 'bg-va-black/5'}`}>
-                      <Image  
-                        src="/assets/common/branding/icons/MENU.svg" 
-                        alt="Edit Mode" 
-                        width={20} 
-                        height={20} 
-                        className={isEditMode ? 'brightness-0 invert' : ''}
-                        style={!isEditMode ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' } : {}}
-                      />
+                      <Zap strokeWidth={1.5} size={20} className={isEditMode ? 'text-white' : 'text-primary'} />
                     </ContainerInstrument>
                     <ContainerInstrument plain className="text-left">
                       <TextInstrument className="text-[15px] font-light tracking-tight"><VoiceglotText  translationKey="admin.edit_mode.title" defaultText="Edit Mode" /></TextInstrument>
@@ -812,14 +977,7 @@ export const VoicyChat: React.FC = () => {
                     className="p-4 rounded-2xl bg-va-off-white hover:bg-black/5 transition-all text-left space-y-1"
                   >
                     <ContainerInstrument plain className="w-4 h-4 mb-1">
-                      <Image  
-                        src="/assets/common/branding/icons/INFO.svg" 
-                        alt="Dashboard" 
-                        width={16} 
-                        height={16} 
-                        className="opacity-40"
-                        style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                      />
+                      <LayoutDashboard strokeWidth={1.5} size={16} className="text-primary/40" />
                     </ContainerInstrument>
                     <TextInstrument className="text-[15px] font-light tracking-widest block"><VoiceglotText  translationKey="nav.dashboard" defaultText="Dashboard" /></TextInstrument>
                   </ButtonInstrument>
@@ -829,14 +987,7 @@ export const VoicyChat: React.FC = () => {
                     className="p-4 rounded-2xl bg-va-off-white hover:bg-black/5 transition-all text-left space-y-1"
                   >
                     <ContainerInstrument plain className="w-4 h-4 mb-1">
-                      <Image  
-                        src="/assets/common/branding/icons/ACCOUNT.svg" 
-                        alt="Mailbox" 
-                        width={16} 
-                        height={16} 
-                        className="opacity-40"
-                        style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                      />
+                      <Mail strokeWidth={1.5} size={16} className="text-primary/40" />
                     </ContainerInstrument>
                     <TextInstrument className="text-[15px] font-light tracking-widest block"><VoiceglotText  translationKey="nav.mailbox" defaultText="Mailbox" /></TextInstrument>
                   </ButtonInstrument>

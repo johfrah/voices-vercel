@@ -1,8 +1,9 @@
+import { GeminiService } from '@/services/GeminiService';
+import { KnowledgeService } from '@/services/KnowledgeService';
 import { db } from '@db';
 import { chatConversations, chatMessages, faq } from '@db/schema';
 import { desc, eq, ilike, or } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
-import { GeminiService } from '@/services/GeminiService';
 
 /**
  * ⚡ CHAT & VOICY API (2026) - CORE EDITION
@@ -13,16 +14,18 @@ export async function POST(request: NextRequest) {
     console.log('[Voicy API] Incoming request:', { action: body.action, message: body.message });
     const { action, ...params } = body;
 
-  switch (action) {
-    case 'send':
-      return handleSendMessage(params);
-    case 'faq':
-      return handleFaqSearch(params);
-    case 'conversations':
-      return handleGetConversations(params);
-    default:
-      return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
-  }
+    switch (action) {
+      case 'send':
+        return handleSendMessage(params);
+      case 'faq':
+        return handleFaqSearch(params);
+      case 'conversations':
+        return handleGetConversations(params);
+      case 'history':
+        return handleGetHistory(params);
+      default:
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    }
   } catch (error: any) {
     console.error('[Voicy API Error]:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -70,20 +73,74 @@ async function handleFaqSearch(params: any) {
 async function handleSendMessage(params: any) {
   const { conversationId, message, senderType = 'user', senderId, context, language = 'nl', mode = 'ask', previewLogic = null } = params;
 
+  console.log('[Voicy API] handleSendMessage started:', { conversationId, messageLength: message?.length, mode });
+
   try {
-    // 🧠 AI RESPONSE LOGIC (2026)
-    if (!conversationId) {
-      // 🌐 LANGUAGE ADAPTATION: Voicy past haar taal aan aan de gebruiker
-      const isEnglish = language === 'en' || /hello|hi|price|how|can you/i.test(message);
-      
-      // 🧠 NUCLEAR BRAIN: Gebruik Gemini voor complexe vragen als FAQ niet volstaat
-      let aiContent = "";
-      let actions: any[] = [
+    // 🌐 LANGUAGE ADAPTATION: Voicy past haar taal aan aan de gebruiker
+    const isEnglish = language === 'en' || /hello|hi|price|how|can you/i.test(message);
+    const journey = context?.journey || 'agency';
+    
+    // 🧠 NUCLEAR BRAIN: Gebruik Gemini voor complexe vragen als FAQ niet volstaat
+    let aiContent = "";
+    let actions: any[] = [];
+
+    // 🎯 JOURNEY-AWARE ACTIONS
+    if (journey === 'studio') {
+      actions = [
+        { label: isEnglish ? "View Workshops" : "Bekijk Workshops", action: "browse_workshops" },
+        { label: isEnglish ? "Get Started" : "Aan de slag", action: "book_session" }
+      ];
+    } else if (journey === 'academy') {
+      actions = [
+        { label: isEnglish ? "View Courses" : "Bekijk Cursussen", action: "browse_courses" },
+        { label: isEnglish ? "Start Free Lesson" : "Start Gratis Les", action: "start_free_lesson" }
+      ];
+    } else {
+      actions = [
         { label: isEnglish ? "Request Quote" : "Offerte aanvragen", action: "quote" },
         { label: isEnglish ? "Browse Voices" : "Stemmen bekijken", action: "browse_voices" }
       ];
+    }
 
-      // 1. Check FAQ eerst (snelste)
+    // 📅 STUDIO JOURNEY ENRICHMENT: Fetch upcoming workshop dates
+    let workshopContext = "";
+    if (journey === 'studio') {
+      try {
+        const { workshopEditions, workshops } = await import('@db/schema');
+        const upcomingEditions = await db.select({
+          id: workshopEditions.id,
+          date: workshopEditions.date,
+          title: workshopEditions.title,
+          workshopTitle: workshops.title,
+          workshopId: workshops.id
+        })
+        .from(workshopEditions)
+        .innerJoin(workshops, eq(workshopEditions.workshopId, workshops.id))
+        .where(eq(workshopEditions.status, 'upcoming'))
+        .limit(5);
+
+        if (upcomingEditions.length > 0) {
+          workshopContext = "\n\nBeschikbare workshop data:\n" + upcomingEditions.map(e => 
+            `- ID: ${e.id} | Datum: ${new Date(e.date).toLocaleDateString('nl-BE')} : ${e.workshopTitle}${e.title ? ` (${e.title})` : ''}`
+          ).join('\n');
+          
+          // 🪄 MAGIC LINK: If there's a clear match, add it to actions
+          if (upcomingEditions.length === 1 || /wanneer|datum|volgende/i.test(message)) {
+            const bestMatch = upcomingEditions[0];
+            actions.push({ 
+              label: isEnglish ? `Join ${new Date(bestMatch.date).toLocaleDateString('en-GB')}` : `Start op ${new Date(bestMatch.date).toLocaleDateString('nl-BE')}`, 
+              action: `/checkout?editionId=${bestMatch.id}&journey=studio` 
+            });
+          }
+        }
+      } catch (e) {
+        console.error('[Voicy API] Failed to fetch workshop dates:', e);
+      }
+    }
+
+    // 1. Check FAQ eerst (snelste)
+    try {
+      console.log('[Voicy API] Checking FAQ...');
       const faqResults = await db.select().from(faq).where(
         or(
           ilike(faq.questionNl, `%${message}%`),
@@ -94,29 +151,32 @@ async function handleSendMessage(params: any) {
       if (faqResults.length > 0) {
         aiContent = (isEnglish ? faqResults[0].answerEn : faqResults[0].answerNl) || "";
         console.log('[Voicy API] FAQ Match found:', aiContent.substring(0, 50));
+      } else {
+        console.log('[Voicy API] No FAQ match found.');
       }
+    } catch (e: any) {
+      console.warn('[Voicy API] FAQ Check failed (DB issue):', e.message);
+    }
 
-      // 2. Als FAQ niets vindt of het is een complexe vraag -> Trigger Gemini Brain
-      if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic) {
-        console.log('[Voicy API] Triggering Gemini Brain...', { mode, hasPreviewLogic: !!previewLogic });
-        // 🛡️ MODERATION GUARD: Blokkeer misbruik of off-topic vragen
-        const forbiddenPatterns = /hack|exploit|password|admin|discount|free|gratis|korting|system|internal/i;
-        if (forbiddenPatterns.test(message) && senderType !== 'admin') {
-          return NextResponse.json({
-            success: true,
-            content: isEnglish 
-              ? "I'm sorry, I can only help you with questions related to voice-overs, prices, and our services. How can I assist you with your project?"
-              : "Excuses, ik kan je alleen helpen met vragen over voice-overs, prijzen en onze diensten. Hoe kan ik je helpen met je project?",
-            actions: actions
-          });
-        }
-
+    // 2. Als FAQ niets vindt of het is een complexe vraag -> Trigger Gemini Brain
+    if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic) {
+      console.log('[Voicy API] Triggering Gemini Brain...', { mode, hasPreviewLogic: !!previewLogic });
+      
+      // 🛡️ MODERATION GUARD: Blokkeer misbruik of off-topic vragen
+      const forbiddenPatterns = /hack|exploit|password|admin|discount|free|gratis|korting|system|internal/i;
+      if (forbiddenPatterns.test(message) && senderType !== 'admin') {
+        console.log('[Voicy API] Moderation guard triggered.');
+        aiContent = isEnglish 
+          ? "I'm sorry, I can only help you with questions related to voice-overs, prices, and our services. How can I assist you with your project?"
+          : "Excuses, ik kan je alleen helpen met vragen over voice-overs, prijzen en onze diensten. Hoe kan ik je helpen met je project?";
+      } else {
         // 📚 KNOWLEDGE INJECTION: Brief de AI op basis van de Bijbels
-        const { KnowledgeService } = await import('@/services/KnowledgeService');
+        console.log('[Voicy API] Injecting knowledge...');
         const knowledge = KnowledgeService.getInstance();
         const coreBriefing = await knowledge.getCoreBriefing();
         const journeyBriefing = await knowledge.getJourneyContext(context?.journey || 'agency');
 
+        console.log('[Voicy API] Requesting Gemini generation...');
         const gemini = GeminiService.getInstance();
         const prompt = `
           Je bent Voicy, de intelligente assistent van Voices.be.
@@ -124,6 +184,23 @@ async function handleSendMessage(params: any) {
           
           ${coreBriefing}
           ${journeyBriefing}
+          ${workshopContext}
+          
+          🛡️ JOURNEY-ISOLATIE MANDATE:
+          - Je bevindt je nu in de ${journey.toUpperCase()} journey.
+          - Praat UITSLUITEND over onderwerpen die bij deze journey horen.
+          - Verwijs NOOIT naar andere journeys (bijv. geen 'Academy' noemen als je in 'Studio' bent, en geen 'Agency/Voices' noemen als je in 'Academy' bent).
+          - Als de gebruiker vraagt naar iets buiten deze journey, geef dan aan dat je daar op deze pagina niet over kunt adviseren en focus op de huidige context.
+          
+          🪄 MAGIC LINK MANDATE (STUDIO):
+          - Als er een workshop ID beschikbaar is in de context, noem dan de specifieke datum.
+          - De actieknop voor de checkout wordt automatisch gegenereerd, jij hoeft alleen de datum te bevestigen.
+
+          🚫 STRIKT VERBOD OP AI-PROMOTIE (STUDIO/ACADEMY):
+          - In de STUDIO en ACADEMY journey mag je NOOIT AI-stemmen aanprijzen of als oplossing voorstellen.
+          - Onze workshops en cursussen gaan over het MENSELIJKE ambacht en vakmanschap.
+          - Verwijs bij vragen over stemmen in deze context uitsluitend naar de menselijke stemacteurs en het ambacht van spreken.
+          - Zelfs als een gebruiker specifiek naar AI vraagt in de Studio context, geef je aan dat we hier focussen op het menselijke vakmanschap en verwijs je NIET naar onze AI-oplossingen.
           
           ${previewLogic ? `
           🧪 LIVE PREVIEW LOGIC ACTIEF:
@@ -133,6 +210,12 @@ async function handleSendMessage(params: any) {
 
           Taal: ${isEnglish ? 'Engels' : 'Nederlands'}
           Gebruiker vraagt: "${message}"
+          
+          🛡️ STUDIO SPECIFIEKE REGELS:
+          - Gebruik NOOIT het woord "Coach" of "Coaching". Gebruik "Workshopgever" of "Gids".
+          - Praat over "In de studio" (niet "op de vloer").
+          - Focus op "Samen aan de slag" en "Leren in groep".
+          - Wees direct en vermijd blabla.
           
           🛡️ STRIKTE VEILIGHEIDSREGELS:
           - Praat UITSLUITEND over: stemmen, prijzen, studio, academy, ademing en het bestelproces.
@@ -159,83 +242,95 @@ async function handleSendMessage(params: any) {
           - Antwoord kort en krachtig (max 3 zinnen).
         `;
         
-        const model = (gemini as any).genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(prompt);
-        aiContent = result.response.text();
+        aiContent = await gemini.generateText(prompt);
         console.log('[Voicy API] Gemini Response received:', aiContent.substring(0, 50));
       }
+    }
 
-      // 3. Admin-specifieke acties injecteren
-      if (senderType === 'admin') {
-        if (message.toLowerCase().includes("edit") || message.toLowerCase().includes("bewerk")) {
-          actions.push({ label: "Edit Mode Inschakelen", action: "toggle_edit_mode" });
-        }
-        if (message.toLowerCase().includes("offerte") || message.toLowerCase().includes("quote")) {
-          actions.push({ label: "Approval Queue", action: "open_approvals" });
-        }
+    // 🛡️ SELF-HEALING: If no content and it's a workshop question, capture interest
+    if (!aiContent && journey === 'studio' && /workshop|sessie|les|leren|inschrijven/i.test(message)) {
+      aiContent = isEnglish 
+        ? "I couldn't find a specific date for that workshop right now. Shall I notify you as soon as a new spot opens up?"
+        : "Ik kon voor die specifieke workshop even geen datum vinden. Zal ik je een seintje geven zodra er een plekje vrijkomt?";
+      
+      actions.push({ 
+        label: isEnglish ? "Keep me informed" : "Houd me op de hoogte", 
+        action: "/studio/doe-je-mee" 
+      });
+    }
+
+    // 3. Admin-specifieke acties injecteren
+    if (senderType === 'admin') {
+      if (message.toLowerCase().includes("edit") || message.toLowerCase().includes("bewerk")) {
+        actions.push({ label: "Edit Mode Inschakelen", action: "toggle_edit_mode" });
       }
+      if (message.toLowerCase().includes("offerte") || message.toLowerCase().includes("quote")) {
+        actions.push({ label: "Approval Queue", action: "open_approvals" });
+      }
+    }
 
+    // 4. Sla op in DB indien mogelijk
+    try {
+      console.log('[Voicy API] Attempting to save to DB...');
+      const result = await db.transaction(async (tx) => {
+        let convId = conversationId;
+        if (!convId) {
+          const [newConv] = await tx.insert(chatConversations).values({
+            userId: senderType === 'user' ? senderId : null,
+            status: 'open',
+            iapContext: params.iapContext || {}
+          }).returning({ id: chatConversations.id });
+          convId = newConv.id;
+        }
+
+        const [newMessage] = await tx.insert(chatMessages).values({
+          conversationId: convId,
+          senderId: senderId,
+          senderType: senderType,
+          message: message,
+          createdAt: new Date()
+        }).returning();
+
+        await tx.update(chatConversations)
+          .set({ updatedAt: new Date() })
+          .where(eq(chatConversations.id, convId));
+
+        if (!conversationId || message.toLowerCase().includes("prijs") || message.toLowerCase().includes("offerte")) {
+          try {
+            const { SelfHealingService } = await import('@/lib/system/self-healing-service');
+            await SelfHealingService.reportDataAnomaly('chat_activity', convId, `Klant interactie gedetecteerd: "${message.substring(0, 50)}..."`);
+          } catch (e) {
+            console.error("Notification failed", e);
+          }
+        }
+
+        return { messageId: newMessage.id, conversationId: convId };
+      });
+
+      console.log('[Voicy API] DB save successful.');
       return NextResponse.json({
         success: true,
         content: aiContent,
-        actions: actions
+        actions: actions,
+        ...result
       });
-    }
-
-    return await db.transaction(async (tx) => {
-      // 1. Zorg dat de conversatie bestaat of maak een nieuwe
-      let convId = conversationId;
-      if (!convId) {
-        const [newConv] = await tx.insert(chatConversations).values({
-          userId: senderType === 'user' ? senderId : null,
-          status: 'open',
-          iapContext: params.iapContext || {}
-        }).returning({ id: chatConversations.id });
-        convId = newConv.id;
-      }
-
-      // 2. Voeg het bericht toe
-      const [newMessage] = await tx.insert(chatMessages).values({
-        conversationId: convId,
-        senderId: senderId,
-        senderType: senderType,
-        message: message,
-        createdAt: new Date()
-      }).returning();
-
-      // 3. Update conversation updatedAt
-      await tx.update(chatConversations)
-        .set({ updatedAt: new Date() })
-        .where(eq(chatConversations.id, convId));
-
-      // 📧 NOTIFICATION MANDATE: Notify admin of new conversation or high-value activity
-      if (!conversationId || message.toLowerCase().includes("prijs") || message.toLowerCase().includes("offerte")) {
-        try {
-          console.log(`[NUCLEAR NOTIFY] Nieuw gesprek gestart of prijsvraag van klant. ConvID: ${convId}, Bericht: ${message}`);
-          const { SelfHealingService } = await import('@/lib/system/self-healing-service');
-          await SelfHealingService.reportDataAnomaly('chat_activity', convId, `Klant interactie gedetecteerd: "${message.substring(0, 50)}..."`);
-        } catch (e) {
-          console.error("Notification failed", e);
-        }
-      }
-
+    } catch (dbError: any) {
+      console.error('[Voicy API DB Error]:', dbError);
+      // Fallback to AI-only response if DB fails
       return NextResponse.json({
         success: true,
-        messageId: newMessage.id,
-        conversationId: convId
+        content: aiContent,
+        actions: actions,
+        _db_error: true
       });
-    });
+    }
   } catch (error: any) {
     console.error('[Core Chat Send Error]:', error);
-    // 🛡️ CHRIS-PROTOCOL: Detect specific Gemini errors
-    if (error.message?.includes('403 Forbidden')) {
-      console.error('🚨 GEMINI AUTH ERROR: GOOGLE_API_KEY is likely invalid or missing.');
-    }
-    // 🛡️ Graceful Fallback for Chat: Allow AI to respond even if DB write fails
-    if (!params.conversationId) {
-      return handleSendMessage({ ...params, mode: 'ask', _db_fallback: true });
-    }
-    return NextResponse.json({ error: 'Message delivery failed' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Message delivery failed',
+      details: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    }, { status: 500 });
   }
 }
 
@@ -256,5 +351,35 @@ async function handleGetConversations(params: any) {
     return NextResponse.json(results);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 });
+  }
+}
+
+/**
+ * Haal berichtgeschiedenis op voor een specifieke conversatie
+ */
+async function handleGetHistory(params: any) {
+  const { conversationId } = params;
+  if (!conversationId) return NextResponse.json({ error: 'Missing conversationId' }, { status: 400 });
+
+  try {
+    const { asc } = await import('drizzle-orm');
+    const results = await db
+      .select()
+      .from(chatMessages)
+      .where(eq(chatMessages.conversationId, conversationId))
+      .orderBy(asc(chatMessages.id));
+
+    return NextResponse.json({
+      success: true,
+      messages: results.map(m => ({
+        id: m.id.toString(),
+        role: m.senderType === 'ai' ? 'assistant' : m.senderType,
+        content: m.message,
+        timestamp: m.createdAt
+      }))
+    });
+  } catch (error) {
+    console.error('[Chat History Error]:', error);
+    return NextResponse.json({ error: 'Failed to fetch history' }, { status: 500 });
   }
 }

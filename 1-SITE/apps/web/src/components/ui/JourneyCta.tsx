@@ -41,7 +41,7 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       cta: 'Bereken tarief',
       href: '/price',
       icon: Zap,
-      color: 'bg-va-black'
+      color: 'bg-primary'
     },
     studio: {
       title: 'Klaar om je stem te laten horen?',

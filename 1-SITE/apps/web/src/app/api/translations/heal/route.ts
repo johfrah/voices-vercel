@@ -1,4 +1,4 @@
-import { GeminiService } from '@/services/GeminiService';
+import { OpenAIService } from '@/services/OpenAIService';
 import { MarketManager } from '@config/market-manager';
 import { db } from '@db';
 import { translations } from '@db/schema';
@@ -10,6 +10,8 @@ import { NextRequest, NextResponse } from 'next/server';
  * 
  * Doel: Automatisch ontbrekende vertalingen registreren, vertalen via AI,
  * en de admin notificeren.
+ * 
+ * 🚀 UPDATE: Switched to OpenAI (GPT-4o mini) for higher rate limits and stability.
  */
 
 export const dynamic = 'force-dynamic';
@@ -43,37 +45,49 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Already exists', text: existing.translatedText });
     }
 
-    console.log(`🩹 SELF-HEALING: New key detected [${key}] for lang [${currentLang}]`);
+    console.log(`🩹 SELF-HEALING (OpenAI): New key detected [${key}] for lang [${currentLang}]`);
 
-    // 2. Live AI Vertaling via Voicy (Gemini)
-    const prompt = `
-      Vertaal de volgende tekst van het Nederlands naar het ${currentLang}.
-      Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
-      Geen AI-bingo woorden, geen em-dashes, max 15 woorden.
-      
-      Tekst: "${originalText}"
-      Vertaling:
-    `;
+    // 2. Live AI Vertaling via OpenAI
+    let cleanTranslation = '';
+    try {
+      const prompt = `
+        Vertaal de volgende tekst van het Nederlands naar het ${currentLang}.
+        Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
+        Geen AI-bingo woorden, geen em-dashes, max 15 woorden.
+        
+        Tekst: "${originalText}"
+        Vertaling:
+      `;
 
-    const translatedText = await GeminiService.generateText(prompt);
-    const cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
+      cleanTranslation = await OpenAIService.generateText(prompt);
+      cleanTranslation = cleanTranslation.trim().replace(/^"|"$/g, '');
+    } catch (aiErr: any) {
+      console.error('❌ OpenAI Self-Heal Error:', aiErr.message);
+      return NextResponse.json({ 
+        success: false, 
+        message: 'AI engine error',
+        text: originalText 
+      }, { status: 500 });
+    }
 
     // 3. Opslaan in de database (DIRECT LIVE - User Mandate)
-    await db.insert(translations).values({
-      translationKey: key,
-      lang: currentLang,
-      originalText: originalText,
-      translatedText: cleanTranslation,
-      status: 'active',
-      isManuallyEdited: false,
-      updatedAt: new Date()
-    }).onConflictDoUpdate({
-      target: [translations.translationKey, translations.lang],
-      set: {
+    if (cleanTranslation) {
+      await db.insert(translations).values({
+        translationKey: key,
+        lang: currentLang,
+        originalText: originalText,
         translatedText: cleanTranslation,
+        status: 'active',
+        isManuallyEdited: false,
         updatedAt: new Date()
-      }
-    });
+      }).onConflictDoUpdate({
+        target: [translations.translationKey, translations.lang],
+        set: {
+          translatedText: cleanTranslation,
+          updatedAt: new Date()
+        }
+      });
+    }
 
     // 4. Notificatie naar Admin (Post-Action Info)
     try {

@@ -2,22 +2,22 @@
 
 import {
     ButtonInstrument,
+    ContainerInstrument,
     HeadingInstrument,
     InputInstrument,
     LabelInstrument,
-    ContainerInstrument,
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useSonicDNA } from "@/lib/sonic-dna";
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { CheckCircle2, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { AcademyUpsellSection } from './AcademyUpsellSection';
 import { EmailPreviewModal } from './EmailPreviewModal';
-import { cn } from '@/lib/utils';
 
 export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const { playClick } = useSonicDNA();
@@ -27,8 +27,15 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const [formData, setFormData] = useState({
     ...state.customer,
     gateway: 'mollie',
-    isQuote: false
+    isQuote: state.isQuoteRequest || false
   });
+
+  // 🛡️ SYNC QUOTE MODE: Als de context zegt dat het een offerte-aanvraag is, dwingen we dit af
+  useEffect(() => {
+    if (state.isQuoteRequest) {
+      setFormData(prev => ({ ...prev, isQuote: true }));
+    }
+  }, [state.isQuoteRequest]);
 
   const [vatStatus, setVatStatus] = useState<{ validating: boolean; valid: boolean | null }>({
     validating: false,

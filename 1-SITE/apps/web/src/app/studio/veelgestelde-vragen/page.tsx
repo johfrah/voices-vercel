@@ -25,7 +25,7 @@ export default async function StudioFaqPage() {
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-48 pb-40 bg-va-off-white">
-      <LiquidBackground strokeWidth={1.5} />
+      <LiquidBackground />
       
       <ContainerInstrument className="relative z-10 max-w-6xl mx-auto px-6">
         <SectionInstrument className="mb-24 text-center">
@@ -33,21 +33,21 @@ export default async function StudioFaqPage() {
             VOICES STUDIO
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-tight mb-8">
-            Hulp & <span className="text-primary">Inzichten.</span>
+            Hulp & <TextInstrument className="text-primary font-light">Inzichten.</TextInstrument>
           </HeadingInstrument>
           <TextInstrument className="text-va-black text-xl md:text-2xl font-light max-w-2xl mx-auto leading-relaxed opacity-80">
             Ontdek welk traject bij je past via de quiz of bekijk de meest gestelde vragen over onze workshops.
           </TextInstrument>
         </SectionInstrument>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           {/* 🎯 LINKS: VIDEO QUIZ (5 Kolommen) */}
-          <div className="lg:col-span-5 lg:sticky lg:top-40 z-20 w-full min-h-[600px] flex flex-col items-center">
-            <WorkshopQuiz />
-          </div>
+          <ContainerInstrument className="lg:col-span-5 lg:sticky lg:top-40 z-20 w-full min-h-[600px] flex flex-col items-center">
+            <WorkshopQuiz   />
+          </ContainerInstrument>
 
           {/* 🎙️ RECHTS: FAQ VRAGEN (7 Kolommen) */}
-          <div className="lg:col-span-7 space-y-12">
+          <ContainerInstrument className="lg:col-span-7 space-y-12">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tight mb-8 border-b border-black/10 pb-6 text-va-black">
               Veelgestelde vragen
             </HeadingInstrument>
@@ -55,14 +55,14 @@ export default async function StudioFaqPage() {
             <AccordionInstrument items={accordionItems} />
             
             {/* 🏁 MINI CTA */}
-            <div className="pt-12 p-10 bg-white/40 backdrop-blur-xl rounded-[32px] border border-black/5 shadow-aura">
+            <ContainerInstrument className="pt-12 p-10 bg-white/40 backdrop-blur-xl rounded-[32px] border border-black/5 shadow-aura">
               <TextInstrument className="text-va-black text-lg font-light tracking-wide mb-6 opacity-60">
                 Staat je vraag er niet tussen? Onze AI-gids Voicy kent alle details van de workshops.
               </TextInstrument>
               <VoicyFaqButton />
-            </div>
-          </div>
-        </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
       </ContainerInstrument>
 
       {/* 🧠 LLM CONTEXT */}

@@ -25,10 +25,15 @@ export default function BookMeetingPage() {
             <CheckCircle2 strokeWidth={1.5} size={48} />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-4">
-            <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter"><VoiceglotText  translationKey="studio.meeting.success.title" defaultText="Afspraak staat!" /><TextInstrument className="text-va-black/50 font-light text-[15px]"><VoiceglotText  
+            <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
+              <VoiceglotText  translationKey="studio.meeting.success.title" defaultText="Afspraak staat!" />
+            </HeadingInstrument>
+            <TextInstrument className="text-va-black/50 font-light text-[15px]">
+              <VoiceglotText  
                 translationKey="studio.meeting.success.subtitle" 
                 defaultText="Je ontvangt direct een bevestiging met de meeting link in je mailbox. Tot snel in de studio!" 
-              /></TextInstrument></HeadingInstrument>
+              />
+            </TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="pt-8">
             <Link  href="/studio" className="va-btn-pro"><VoiceglotText  translationKey="common.back_to_home" defaultText="Terug naar home" /></Link>
@@ -42,10 +47,15 @@ export default function BookMeetingPage() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-32 pb-20">
       <ContainerInstrument className="max-w-4xl mx-auto px-6">
         <SectionInstrument className="mb-16 text-center space-y-4">
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter"><VoiceglotText  translationKey="studio.meeting.title" defaultText="Kennismaken" /><TextInstrument className="text-va-black/40 font-light max-w-xl mx-auto text-[15px]"><VoiceglotText  
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
+            <VoiceglotText  translationKey="studio.meeting.title" defaultText="Kennismaken" />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/40 font-light max-w-xl mx-auto text-[15px]">
+            <VoiceglotText  
               translationKey="studio.meeting.subtitle" 
               defaultText="Plan een moment in met Johfrah om je potentieel te bespreken. De koffie staat klaar (virtueel of fysiek)." 
-            /></TextInstrument></HeadingInstrument>
+            />
+          </TextInstrument>
         </SectionInstrument>
 
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">

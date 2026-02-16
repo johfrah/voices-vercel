@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
 
     const execSSH = (cmd: string) => execSync(`ssh voices-prod "${cmd}"`).toString();
-    const ext = path.extname(photoPath);
+    const ext = path.extname(photoPath).toLowerCase();
     const randomHash = Math.random().toString(36).substring(2, 8);
     const fileName = path.basename(photoPath, ext);
     const targetFileName = actor ? `${actor.slug}-photo-${randomHash}${ext}` : `${fileName}-${randomHash}${ext}`;
@@ -52,10 +52,13 @@ export async function POST(request: Request) {
     // 2. Verplaatsen en opschonen op de server
     execSSH(`mkdir -p "${targetSubDir}" && cp "${photoPath}" "${targetPath}"`);
     
-    try {
-      execSSH(`mogrify -strip "${targetPath}"`);
-    } catch (e) {
-      console.warn('Metadata strip failed');
+    // 🛡️ CHRIS-PROTOCOL: Alleen strippen als het geen transparante PNG is om corruptie te voorkomen
+    if (ext !== '.png') {
+      try {
+        execSSH(`mogrify -strip "${targetPath}"`);
+      } catch (e) {
+        console.warn('Metadata strip failed');
+      }
     }
 
     // 3. Metadata uitlezen
@@ -67,7 +70,7 @@ export async function POST(request: Request) {
     const [newMedia] = await db.insert(media).values({
       fileName: targetFileName,
       filePath: targetPath.replace('./wp-core/wp-content/uploads/', ''),
-      fileType: ext === '.png' ? 'image/png' : 'image/jpeg',
+      fileType: ext === '.png' ? 'image/png' : (ext === '.webp' ? 'image/webp' : 'image/jpeg'),
       fileSize: parseInt(execSSH(`stat -c%s "${targetPath}"`)),
       labels: analysis?.labels || [],
       altText: analysis?.suggested_alt || '',

@@ -193,7 +193,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                 <AnimatedPrice strokeWidth={1.5} value={total} label="Incl. BTW" />
 
                 <div className="mt-4 pt-4 border-t border-white/5 flex justify-between text-[15px] font-bold text-white/40 tracking-widest">
-                  <span>Excl. BTW</span>
+                  <span><VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" /></span>
                   <motion.span
                     key={subtotal}
                     initial={{ opacity: 0 }}

@@ -11,16 +11,22 @@ import {
     Building2,
     ChevronRight,
     Globe,
+    Heart,
     LayoutDashboard,
     LogOut,
     Mail,
+    Menu,
     Mic2,
     Monitor,
     Phone,
     Radio,
-    ShoppingBag
+    ShoppingBag,
+    ShoppingCart,
+    User,
+    Info
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
@@ -28,6 +34,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
+import { NavConfig } from '@/lib/config-bridge';
 
 /**
  * 💎 HEADER ICON INSTRUMENT
@@ -70,30 +77,34 @@ const HeaderIcon = ({
 
   const content = (
     <ContainerInstrument 
+      plain
       className="relative"
       onMouseEnter={() => { handleMouseEnter(); }}
       onMouseLeave={() => { handleMouseLeave(); }}
     >
-      <ContainerInstrument 
+      <ButtonInstrument 
+        variant="plain"
+        size="none"
+        as={href && !children ? Link : 'button'}
+        href={href && !children ? href : undefined}
         onClick={() => {
           playClick('soft');
           if (onClick) onClick();
         }}
-        className={`p-2 rounded-[10px] transition-all duration-500 cursor-pointer group/icon flex items-center justify-center min-w-[40px] h-[40px] ${
+        className={`p-1 rounded-[8px] transition-all duration-500 cursor-pointer group/icon flex items-center justify-center min-w-[32px] h-[32px] ${
           isActive ? 'bg-primary/10 text-primary' : 'hover:bg-va-black/5 text-va-black'
         }`}
       >
         {src ? (
-          <VoiceglotImage  
+          <Image  
             src={src} 
             alt={alt} 
-            width={24}
-            height={24}
-            className="w-[24px] h-[24px] transition-transform duration-500 group-hover/icon:scale-110" 
-            style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+            width={18}
+            height={18}
+            className="w-4.5 h-4.5 transition-transform duration-500 group-hover/icon:scale-110" 
           />
         ) : Icon ? (
-          <Icon strokeWidth={1.5} size={22} className="text-primary transition-transform duration-500 group-hover/icon:scale-110" />
+          <Icon strokeWidth={1.5} size={18} className="text-primary transition-transform duration-500 group-hover/icon:scale-110" />
         ) : null}
 
         {(badge !== undefined && badge > 0) || badgeText ? (
@@ -101,34 +112,35 @@ const HeaderIcon = ({
             as={motion.span}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10 uppercase"
+            className="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg border border-white leading-none z-10 "
           >
             {badgeText || badge}
           </TextInstrument>
         ) : null}
-      </ContainerInstrument>
+      </ButtonInstrument>
 
-            <AnimatePresence>
-              {isOpen && children && (
-                <ContainerInstrument
-                  as={motion.div}
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute top-full right-0 mt-2 w-[400px] bg-white rounded-[24px] shadow-aura border border-black/5 overflow-hidden z-50"
-                >
-                  <ContainerInstrument className="p-2">
-                    {children}
-                  </ContainerInstrument>
-                </ContainerInstrument>
-              )}
-            </AnimatePresence>
+      <AnimatePresence>
+        {isOpen && children && (
+          <ContainerInstrument
+            as={motion.div}
+            plain
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-full right-0 mt-1 w-[320px] bg-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-[210]"
+          >
+            <ContainerInstrument plain className="p-1">
+              {children}
+            </ContainerInstrument>
+          </ContainerInstrument>
+        )}
+      </AnimatePresence>
     </ContainerInstrument>
   );
 
   if (href && !children) {
-    return <ButtonInstrument as={Link} href={href || '#'}>{content}</ButtonInstrument>;
+    return content; // Link logic is handled by HeaderIcon wrapper or internal ButtonInstrument
   }
 
   return content;
@@ -164,23 +176,25 @@ const DropdownItem = ({
   return (
     <ButtonInstrument
       onClick={handleClick}
-      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${
-        variant === 'danger' ? 'hover:bg-red-50 text-red-500' : 
-        variant === 'primary' ? 'hover:bg-primary/10 text-primary' :
-        'hover:bg-va-black/5 text-va-black/60 hover:text-va-black'
+      variant="plain"
+      size="none"
+      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl transition-all duration-300 group ${
+        variant === 'danger' ? 'text-red-500 hover:bg-red-50' : 
+        variant === 'primary' ? 'text-primary hover:bg-primary/5' :
+        'text-va-black/60 hover:text-va-black hover:bg-va-black/5'
       }`}
     >
-      <ContainerInstrument className="flex items-center gap-3">
-        {typeof Icon === 'function' ? <Icon size={16} strokeWidth={1.5} /> : Icon}
-        <TextInstrument className="text-[15px] font-light tracking-widest">{label}</TextInstrument>
+      <ContainerInstrument plain className="flex items-center gap-2.5">
+        {Icon ? (typeof Icon === 'function' || (typeof Icon === 'object' && Icon.$$typeof)) ? <Icon size={14} strokeWidth={1.5} /> : Icon : null}
+        <TextInstrument className="text-[13px] font-light tracking-widest">{label}</TextInstrument>
       </ContainerInstrument>
-      <ContainerInstrument className="flex items-center gap-2">
+      <ContainerInstrument plain className="flex items-center gap-2">
         {badge && (
-          <TextInstrument className="px-1.5 py-0.5 bg-primary/10 text-primary text-[15px] font-light rounded-md">
+          <TextInstrument className="px-1.5 py-0.5 bg-primary/10 text-primary text-[10px] font-light rounded-md">
             {badge}
           </TextInstrument>
         )}
-        <ChevronRight strokeWidth={1.5} size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+        <ChevronRight strokeWidth={1.5} size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
       </ContainerInstrument>
     </ButtonInstrument>
   );
@@ -211,71 +225,45 @@ export default function GlobalNav() {
   const markAsRead = (id: number) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
   };
-  const [links, setLinks] = useState<any[]>([
-    { name: 'Onze Stemmen', href: '/agency', key: 'nav.my_voice' },
-    { name: 'Werkwijze', href: '/over-ons', key: 'nav.how_it_works' },
-    { name: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
-    { name: 'FAQ', href: '/studio/veelgestelde-vragen', key: 'nav.faq' },
-    { name: 'Contact', href: '#', onClick: () => {
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('voicy:suggestion', { 
-          detail: { 
-            tab: 'chat',
-            content: 'Hallo! 👋 Je wilde contact opnemen? Ik ben Voicy, hoe kan ik je helpen?' 
-          } 
-        }));
-      }
-    }, key: 'nav.contact' }
-  ]);
+  
+  const [navConfig, setNavConfig] = useState<NavConfig | null>(null);
+  const [links, setLinks] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
-    if (market.market_code === 'ADEMING') {
-      setLinks([
-        { name: 'Meditaties', href: '/ademing', key: 'nav.meditations' },
-        { name: 'Mijn Rust', href: '/account/ademing', key: 'nav.my_rest' },
-        { name: 'Voices', href: 'https://voices.be', key: 'nav.voices_back' }
-      ]);
-    } else if (market.market_code === 'JOHFRAH') {
-      setLinks([
-        { name: 'Mijn Stem', href: '/#demos', key: 'nav.my_voice' },
-        { name: 'Host & Reporter', href: '/host', key: 'nav.host' },
-        { name: 'Over Johfrah', href: '/over-mij', key: 'nav.about' },
-        { name: 'Contact', href: '#', onClick: () => {
-          if (typeof window !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('voicy:suggestion', { 
-              detail: { 
-                tab: 'chat',
-                content: 'Hallo! 👋 Je wilde contact opnemen? Ik ben Voicy, hoe kan ik je helpen?' 
-              } 
-            }));
-          }
-        }, key: 'nav.contact' }
-      ]);
-    } else if (market.market_code === 'YOUSSEF') {
-      setLinks([
-        { name: 'The Story', href: '/#story', key: 'nav.artist_story' },
-        { name: 'Music', href: '/#music', key: 'nav.artist_music' },
-        { name: 'Support', href: '/#support', key: 'nav.artist_support' },
-        { name: 'Contact', href: '#', onClick: () => {
-          if (typeof window !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('voicy:suggestion', { 
-              detail: { 
-                tab: 'chat',
-                content: 'Hallo! 👋 Je wilde contact opnemen? Ik ben Voicy, hoe kan ik je helpen?' 
-              } 
-            }));
-          }
-        }, key: 'nav.contact' }
-      ]);
-    } else if (pathname.startsWith('/studio')) {
-      setLinks([
-        { name: 'Workshops', href: '/studio', key: 'nav.studio_workshops' },
-        { name: 'Academy', href: '/academy', key: 'nav.studio_academy' },
-        { name: 'FAQ', href: '/studio/veelgestelde-vragen', key: 'nav.studio_faq' },
-        { name: 'Contact', href: '/contact', key: 'nav.contact' }
-      ]);
-    }
+    
+    // 🎯 BEPAAL JOURNEY KEY
+    let journeyKey = 'agency';
+    if (market.market_code === 'ADEMING') journeyKey = 'ademing';
+    else if (market.market_code === 'JOHFRAH') journeyKey = 'johfrah';
+    else if (market.market_code === 'YOUSSEF') journeyKey = 'youssef';
+    else if (pathname.startsWith('/studio')) journeyKey = 'studio';
+    else if (pathname.startsWith('/academy')) journeyKey = 'academy';
+
+    const fetchNavConfig = async () => {
+      try {
+        const res = await fetch(`/api/admin/navigation/${journeyKey}`);
+        const data = await res.json();
+        if (data && data.links) {
+          setNavConfig(data);
+          setLinks(data.links);
+        } else {
+          // Fallback naar defaults als er geen database config is
+          const defaultLinks = [
+            { name: 'Onze Stemmen', href: '/agency', key: 'nav.my_voice' },
+            { name: 'Werkwijze', href: '/over-ons', key: 'nav.how_it_works' },
+            { name: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
+            { name: 'FAQ', href: '/studio/veelgestelde-vragen', key: 'nav.faq' },
+            { name: 'Contact', href: '/contact', key: 'nav.contact' }
+          ];
+          setLinks(defaultLinks);
+        }
+      } catch (error) {
+        console.error('Failed to fetch nav config:', error);
+      }
+    };
+
+    fetchNavConfig();
   }, [market.market_code, pathname]);
 
   if (!mounted) return null;
@@ -283,50 +271,71 @@ export default function GlobalNav() {
   const isSpecialJourney = market.market_code === 'JOHFRAH' || market.market_code === 'YOUSSEF' || market.market_code === 'ADEMING';
   const isStudioJourney = pathname.startsWith('/studio') || pathname.startsWith('/academy');
 
+  // 🛡️ ICON VISIBILITY LOGIC
+  const showFavorites = navConfig?.icons?.favorites ?? (!isSpecialJourney && !isStudioJourney);
+  const showCart = navConfig?.icons?.cart ?? (!isSpecialJourney && !isStudioJourney);
+  const showNotifications = navConfig?.icons?.notifications ?? !isSpecialJourney;
+  const showLanguage = navConfig?.icons?.language ?? true;
+  const showAccount = navConfig?.icons?.account ?? !isSpecialJourney;
+  const showMenu = navConfig?.icons?.menu ?? true;
+
   return (
-    <ContainerInstrument as="nav" className="fixed top-0 left-0 right-0 z-40 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve">
-      <ButtonInstrument 
-        as={Link}
-        href="/" 
-        className="flex items-center gap-2 md:gap-3 group"
-        onClick={() => { playClick('soft'); }}
-        onMouseEnter={() => { playSwell(); }}
-      >
-        {market.market_code === 'JOHFRAH' || (typeof window !== 'undefined' && window.location.host.includes('johfrah.be')) ? (
-          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap"><VoiceglotText  translationKey="auto.globalnav.johfrah_lefebvre.95a724" defaultText="JOHFRAH LEFEBVRE" /></TextInstrument>
+    <ContainerInstrument as="nav" className="absolute top-0 left-0 right-0 z-[200] px-4 md:px-6 py-1.5 md:py-2 flex items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve">
+      <ContainerInstrument plain className="flex-1 flex justify-start">
+        <ButtonInstrument 
+          as={Link}
+          href="/" 
+          variant="plain"
+          size="none"
+          className="flex items-center gap-2 md:gap-3 group"
+          onClick={() => { playClick('soft'); }}
+          onMouseEnter={() => { playSwell(); }}
+        >
+        {navConfig?.logo?.src ? (
+          <Image  
+            src={navConfig.logo.src} 
+            alt={navConfig.logo.alt || "Logo"} 
+            width={navConfig.logo.width || 200} 
+            height={navConfig.logo.height || 80}
+            priority
+            className="h-10 md:h-12 w-auto transition-transform duration-500 group-hover:scale-105 relative z-50"
+          />
+        ) : market.market_code === 'JOHFRAH' || (typeof window !== 'undefined' && window.location.host.includes('johfrah.be')) ? (
+          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="auto.globalnav.johfrah_lefebvre.95a724" defaultText="JOHFRAH LEFEBVRE" /></TextInstrument>
         ) : market.market_code === 'YOUSSEF' ? (
-          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap"><VoiceglotText  translationKey="auto.globalnav.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" /></TextInstrument>
+          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="auto.globalnav.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" /></TextInstrument>
         ) : isStudioJourney ? (
-          <VoiceglotImage  
-            src="/assets/studio/common/logo/Voices Studio Logo.webp" 
+          <Image  
+            src="/assets/studio/common/branding/VSTUDIO.webp" 
             alt="Voices Studio" 
             width={240} 
             height={80}
-            priority={true}
-            className="h-12 md:h-14 w-auto transition-transform duration-500 group-hover:scale-105"
+            priority
+            className="h-12 md:h-14 w-auto transition-transform duration-500 group-hover:scale-105 relative z-50"
           />
         ) : (
-          <VoiceglotImage  
+          <Image  
             src={market.logo_url} 
             alt={market.name} 
             width={200} 
             height={80}
-            priority={true}
-            journey="common"
-            category="branding"
-            className="h-10 md:h-12 w-auto transition-transform duration-500 group-hover:scale-105"
+            priority
+            className="h-10 md:h-12 w-auto transition-transform duration-500 group-hover:scale-105 relative z-50"
           />
         )}
-      </ButtonInstrument>
+        </ButtonInstrument>
+      </ContainerInstrument>
 
-      <ContainerInstrument className="hidden md:flex gap-8">
-        {links.map((link) => {
+      <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2">
+        {links.slice(0, 5).map((link) => {
           const isActive = pathname.startsWith(link.href) && link.href !== '#';
           return (
             <ButtonInstrument 
               as={Link}
               key={link.name} 
               href={link.href}
+              variant="plain"
+              size="none"
               onClick={(e) => {
                 if (link.onClick) {
                   e.preventDefault();
@@ -339,7 +348,7 @@ export default function GlobalNav() {
                 isActive ? 'text-primary' : 'text-va-black/30 hover:text-va-black'
               }`}
             >
-              <VoiceglotText  translationKey={link.key || `nav.${(link.name || '').toLowerCase()}`} defaultText={link.name || ''} />
+              <VoiceglotText  translationKey={link.key || `nav.${(link.name || '').toLowerCase().replace(/\s+/g, '_')}`} defaultText={link.name || ''} />
               
               {isActive && (
                 <ContainerInstrument
@@ -360,80 +369,80 @@ export default function GlobalNav() {
         })}
       </ContainerInstrument>
 
-      <ContainerInstrument className="flex gap-4 items-center ml-auto">
+      <ContainerInstrument plain className="flex-1 flex gap-4 items-center justify-end relative z-50">
         {/* ❤️ FAVORITES ICON */}
-        {!isSpecialJourney && !isStudioJourney && (
-          <HeaderIcon strokeWidth={1.5} 
-            src="/assets/common/branding/icons/FAVORITES.svg" 
+        {showFavorites && (
+          <HeaderIcon strokeWidth={1.5} icon={Heart} 
             alt="Favorieten"
             badge={favoritesCount}
-            href="/account/favorites"
-          />
+            href="/account/favorites" />
         )}
 
         {/* 🛍️ CART ICON */}
-        {!isSpecialJourney && !isStudioJourney && (
-          <HeaderIcon strokeWidth={1.5} 
-            src="/assets/common/branding/icons/CART.svg" 
+        {showCart && (
+          <HeaderIcon strokeWidth={1.5} icon={ShoppingCart} 
             alt="Winkelmandje" 
             badge={cartCount}
-            href="/checkout"
-          />
+            href="/checkout" />
         )}
 
         {/* 🔔 NOTIFICATIONS ICON */}
-        {!isSpecialJourney && (
+        {showNotifications && (
           <HeaderIcon strokeWidth={1.5} 
-            src="/assets/common/branding/icons/INFO.svg" 
+            icon={Bell} 
             alt="Notificaties"
             badge={notificationsCount}
           >
-            <ContainerInstrument className="p-2 space-y-1">
-              <ContainerInstrument className="px-4 py-3 border-b border-black/5 mb-2 flex justify-between items-center">
-                <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText  translationKey="nav.notifications_title" defaultText="Notificaties" /></TextInstrument>
+            <ContainerInstrument plain className="p-1 space-y-1">
+              <ContainerInstrument plain className="px-4 py-2 border-b border-black/5 mb-1 flex justify-between items-center">
+                <TextInstrument className="text-[13px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText  translationKey="nav.notifications_title" defaultText="Notificaties" /></TextInstrument>
                 {notificationsCount > 0 && (
                   <ButtonInstrument 
+                    variant="link"
+                    size="none"
                     onClick={() => { setNotifications(prev => prev.map(n => ({ ...n, read: true }))); }}
-                    className="text-[15px] font-light text-primary hover:underline"
+                    className="text-[13px] font-light text-primary hover:underline"
                   >
                     <VoiceglotText  translationKey="nav.notifications_clear" defaultText="Wis alles" />
                   </ButtonInstrument>
                 )}
               </ContainerInstrument>
               
-              <ContainerInstrument className="max-h-[400px] overflow-y-auto no-scrollbar">
+              <ContainerInstrument plain className="max-h-[320px] overflow-y-auto no-scrollbar px-1">
                 {notifications.length > 0 ? (
                   notifications.map((n) => (
                     <ButtonInstrument
                       key={n.id}
+                      variant="plain"
+                      size="none"
                       onClick={() => { markAsRead(n.id); }}
-                      className={`w-full text-left p-4 rounded-xl transition-all duration-300 group mb-1 last:mb-0 flex gap-4 ${
+                      className={`w-full text-left p-2 rounded-xl transition-all duration-300 group mb-1 last:mb-0 flex gap-3 ${
                         n.read ? 'opacity-50 hover:bg-va-black/5' : 'bg-primary/5 hover:bg-primary/10'
                       }`}
                     >
-                      <ContainerInstrument className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                      <ContainerInstrument plain className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                         n.type === 'voice' ? 'bg-blue-500/10 text-blue-500' :
                         n.type === 'order' ? 'bg-green-500/10 text-green-500' :
                         'bg-primary/10 text-primary'
                       }`}>
-                        {n.type === 'voice' ? <Mic2 strokeWidth={1.5} size={18} /> : 
-                         n.type === 'order' ? <ShoppingBag strokeWidth={1.5} size={18} /> : 
-                         <Bell strokeWidth={1.5} size={18} />}
+                        {n.type === 'voice' ? <Mic2 strokeWidth={1.5} size={14} /> : 
+                         n.type === 'order' ? <ShoppingBag strokeWidth={1.5} size={14} /> : 
+                         <Bell strokeWidth={1.5} size={14} />}
                       </ContainerInstrument>
-                      <ContainerInstrument className="flex-1 min-w-0">
-                        <ContainerInstrument className="flex justify-between items-start mb-1">
-                          <TextInstrument className="text-[15px] font-light text-va-black truncate pr-2">{n.title}</TextInstrument>
-                          <TextInstrument className="text-[15px] text-va-black/30 whitespace-nowrap font-light">{n.time}</TextInstrument>
+                      <ContainerInstrument plain className="flex-1 min-w-0">
+                        <ContainerInstrument plain className="flex justify-between items-start mb-0.5">
+                          <TextInstrument className="text-[13px] font-light text-va-black truncate pr-2">{n.title}</TextInstrument>
+                          <TextInstrument className="text-[11px] text-va-black/30 whitespace-nowrap font-light">{n.time}</TextInstrument>
                         </ContainerInstrument>
-                        <TextInstrument className="text-[15px] text-va-black/60 leading-relaxed line-clamp-2 font-light">{n.message}</TextInstrument>
+                        <TextInstrument className="text-[13px] text-va-black/60 leading-tight line-clamp-2 font-light">{n.message}</TextInstrument>
                       </ContainerInstrument>
                       {!n.read && (
-                        <ContainerInstrument className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                        <ContainerInstrument plain className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
                       )}
                     </ButtonInstrument>
                   ))
                 ) : (
-                  <ContainerInstrument className="p-8 text-center">
+                  <ContainerInstrument plain className="p-8 text-center">
                     <Bell strokeWidth={1.5} size={32} className="text-va-black/10 mx-auto mb-3" />
                     <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="nav.notifications_empty" defaultText="Geen nieuwe meldingen." /></TextInstrument>
                   </ContainerInstrument>
@@ -444,61 +453,67 @@ export default function GlobalNav() {
         )}
 
         {/* 🌐 LANGUAGE ICON */}
-        <LanguageSwitcher strokeWidth={1.5} />
+        {showLanguage && (
+          <LanguageSwitcher strokeWidth={1.5}  />
+        )}
 
         {/* 👤 ACCOUNT ICON */}
-        {!isSpecialJourney && (
+        {showAccount && (
           <HeaderIcon strokeWidth={1.5} 
-            src="/assets/common/branding/icons/ACCOUNT.svg" 
+            icon={User} 
             alt="Account"
             isActive={auth.isAuthenticated}
           >
             {auth.isAuthenticated ? (
-              <>
-                <ContainerInstrument className="px-4 py-4 border-b border-black/5 mb-2">
-                  <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-1 "><VoiceglotText  translationKey="nav.logged_in_as" defaultText="Ingelogd als" /></TextInstrument>
-                  <TextInstrument className="text-[15px] font-light text-va-black truncate">{auth.user?.email}</TextInstrument>
+              <ContainerInstrument plain className="p-1 space-y-0.5">
+                <ContainerInstrument plain className="px-3 py-2 border-b border-black/5 mb-1">
+                  <TextInstrument className="text-[11px] font-light text-va-black/30 tracking-widest mb-0.5 "><VoiceglotText  translationKey="nav.logged_in_as" defaultText="Ingelogd als" /></TextInstrument>
+                  <TextInstrument className="text-[13px] font-light text-va-black truncate">{auth.user?.email}</TextInstrument>
                 </ContainerInstrument>
                 {isAdmin && (
-                  <DropdownItem strokeWidth={1.5} 
-                    icon={LayoutDashboard} 
+                  <DropdownItem strokeWidth={1.5} icon={LayoutDashboard} 
                     label="Admin Dashboard" 
                     href="/admin/dashboard" 
                     variant="primary" 
-                    badge="God Mode"
-                  />
+                    badge="God Mode" />
                 )}
-                <DropdownItem strokeWidth={1.5} icon={() => <VoiceglotImage  src="/assets/common/branding/icons/ACCOUNT.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Mijn profiel" href="/account" />
-                <DropdownItem strokeWidth={1.5} icon={() => <VoiceglotImage  src="/assets/common/branding/icons/CART.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Bestellingen" href="/account/orders" />
-                <DropdownItem strokeWidth={1.5} icon={() => <VoiceglotImage  src="/assets/common/branding/icons/FAVORITES.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Favorieten" href="/account/favorites" badge={favoritesCount > 0 ? favoritesCount : undefined} />
-                <DropdownItem strokeWidth={1.5} icon={() => <VoiceglotImage  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />} label="Instellingen" href="/account/settings" />
-                <DropdownItem strokeWidth={1.5} 
-                  icon={LogOut} 
+                <DropdownItem strokeWidth={1.5} icon={User} label="Mijn profiel" href="/account" />
+                <DropdownItem strokeWidth={1.5} icon={ShoppingBag} label="Bestellingen" href="/account/orders" />
+                <DropdownItem strokeWidth={1.5} icon={Heart} label="Favorieten" href="/account/favorites" badge={favoritesCount > 0 ? favoritesCount : undefined} />
+                <DropdownItem strokeWidth={1.5} icon={Info} label="Instellingen" href="/account/settings" />
+                <DropdownItem strokeWidth={1.5} icon={LogOut} 
                   label={<VoiceglotText  translationKey="nav.logout" defaultText="Uitloggen" />} 
                   onClick={() => { auth.logout(); }} 
                   variant="danger" 
                 />
-              </>
+              </ContainerInstrument>
             ) : (
-              <ContainerInstrument className="p-4 space-y-4 text-center">
-                <ContainerInstrument className="w-12 h-12 bg-va-black/5 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <VoiceglotImage  src="/assets/common/branding/icons/ACCOUNT.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
+              <ContainerInstrument plain className="p-1 space-y-2 text-center">
+                <ContainerInstrument className="w-8 h-8 bg-va-black/5 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <User strokeWidth={1.5} size={16} className="text-va-black/20" />
                 </ContainerInstrument>
-                <ContainerInstrument>
-                  <HeadingInstrument level={4} className="text-xl font-light tracking-tight mb-1 "><VoiceglotText  translationKey="nav.welcome_title" defaultText="Welkom bij Voices" /><TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="nav.welcome_text" defaultText="Log in om je favoriete stemmen op te slaan en bestellingen te beheren." /></TextInstrument></HeadingInstrument>
+                <ContainerInstrument plain className="px-3">
+                  <HeadingInstrument level={4} className="text-base font-light tracking-tight mb-0.5 ">
+                    <VoiceglotText  translationKey="nav.welcome_title" defaultText="Welkom bij Voices" />
+                  </HeadingInstrument>
+                  <TextInstrument className="text-[11px] text-va-black/40 font-light leading-snug">
+                    <VoiceglotText  translationKey="nav.welcome_text" defaultText="Log in om je favoriete stemmen op te slaan en bestellingen te beheren." />
+                  </TextInstrument>
                 </ContainerInstrument>
-                <ContainerInstrument className="space-y-2">
+                <ContainerInstrument plain className="space-y-1 px-1.5 pb-1.5">
                   <ButtonInstrument 
                     as={Link}
                     href="/auth/login" 
-                    className="block w-full py-3 bg-va-black text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all "
+                    variant="default"
+                    className="block w-full py-2 bg-va-black text-white rounded-[10px] text-[11px] font-light tracking-widest hover:bg-primary transition-all "
                   >
                     <VoiceglotText  translationKey="nav.login_cta" defaultText="Inloggen" />
                   </ButtonInstrument>
                   <ButtonInstrument 
                     as={Link}
                     href="/auth/register" 
-                    className="block w-full py-3 border border-black/10 text-va-black rounded-[10px] text-[15px] font-light tracking-widest hover:bg-va-black/5 transition-all "
+                    variant="outline"
+                    className="block w-full py-2 border border-black/10 text-va-black rounded-[10px] text-[11px] font-light tracking-widest hover:bg-va-black/5 transition-all "
                   >
                     <VoiceglotText  translationKey="nav.register_cta" defaultText="Account aanmaken" />
                   </ButtonInstrument>
@@ -509,96 +524,100 @@ export default function GlobalNav() {
         )}
 
         {/* 🍔 MENU ICON */}
-        <HeaderIcon strokeWidth={1.5} 
-          src="/assets/common/branding/icons/MENU.svg" 
-          alt="Menu"
-        >
-          <ContainerInstrument className="p-2 space-y-1">
-            <ContainerInstrument className="px-4 py-3 border-b border-black/5 mb-2">
-              <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText  translationKey="nav.navigation_label" defaultText="Navigatie" /></TextInstrument>
-            </ContainerInstrument>
-            {links.map((link) => (
-              <DropdownItem strokeWidth={1.5} 
-                key={link.name}
-                icon={ChevronRight} 
-                label={link.name} 
-                href={link.href !== '#' ? link.href : undefined}
-                onClick={link.onClick}
-              />
-            ))}
-            
-            <ContainerInstrument className="mt-4 px-4 py-3 border-t border-black/5">
-              <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] mb-4 "><VoiceglotText  translationKey="nav.menu.proefopname_title" defaultText="Direct naar proefopname" /></TextInstrument>
-              <ContainerInstrument className="grid grid-cols-2 gap-2 mb-6">
-                {[
-                  { label: 'TV Spot', icon: Monitor, href: '/agency?category=tv', key: 'category.tv' },
-                  { label: 'Radio', icon: Radio, href: '/agency?category=radio', key: 'category.radio' },
-                  { label: 'Online', icon: Globe, href: '/agency?category=online', key: 'category.online' },
-                  { label: 'Podcast', icon: Mic2, href: '/agency?category=podcast', key: 'category.podcast' },
-                  { label: 'Telefonie', icon: Phone, href: '/agency?category=telefoon', key: 'category.telefoon' },
-                  { label: 'Corporate', icon: Building2, href: '/agency?category=corporate', key: 'category.corporate' }
-                ].map((cat) => (
-                  <ButtonInstrument 
-                    as={Link}
-                    key={cat.label} 
-                    href={cat.href}
-                    className="flex items-center gap-2 p-3 rounded-xl bg-va-off-white hover:bg-primary/5 hover:text-primary transition-all group"
-                  >
-                    <cat.icon size={14} strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
-                    <TextInstrument className="text-[15px] font-light whitespace-nowrap">
-                      <VoiceglotText  translationKey={cat.key} defaultText={cat.label} />
-                    </TextInstrument>
-                  </ButtonInstrument>
-                ))}
+        {showMenu && (
+          <HeaderIcon strokeWidth={1.5} 
+            icon={Menu} 
+            alt="Menu"
+          >
+            <ContainerInstrument plain className="p-1 space-y-1">
+              <ContainerInstrument plain className="px-4 py-2 border-b border-black/5 mb-1">
+                <TextInstrument className="text-[13px] font-light text-va-black/30 tracking-[0.2em] "><VoiceglotText  translationKey="nav.navigation_label" defaultText="Navigatie" /></TextInstrument>
               </ContainerInstrument>
-
-              <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] mb-4 "><VoiceglotText  translationKey="nav.menu.recommended_title" defaultText="Aanbevolen stemmen" /></TextInstrument>
-              <ContainerInstrument className="space-y-2 mb-6">
-                {[
-                  { name: 'Johfrah', type: 'Mannelijk', slug: 'johfrah', typeKey: 'gender.male' },
-                  { name: 'Birgit', type: 'Vrouwelijk', slug: 'birgit', typeKey: 'gender.female' },
-                  { name: 'Korneel', type: 'Mannelijk', slug: 'korneel', typeKey: 'gender.male' },
-                  { name: 'Annelies', type: 'Vrouwelijk', slug: 'annelies-1', typeKey: 'gender.female' }
-                ].map((voice) => (
-                  <ContainerInstrument key={voice.slug} className="flex items-center justify-between p-2 rounded-xl hover:bg-va-black/5 transition-all group">
-                    <ContainerInstrument className="flex items-center gap-3">
-                      <ContainerInstrument className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center overflow-hidden">
-                        <VoiceglotImage  src="/assets/common/branding/icons/ACCOUNT.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
-                      </ContainerInstrument>
-                      <ContainerInstrument>
-                        <TextInstrument className="text-[15px] font-light text-va-black">{voice.name}</TextInstrument>
-                        <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                          <VoiceglotText  translationKey={voice.typeKey} defaultText={voice.type} />
-                        </TextInstrument>
-                      </ContainerInstrument>
-                    </ContainerInstrument>
+              {links.map((link) => (
+                <DropdownItem strokeWidth={1.5} key={link.name}
+                  icon={ChevronRight} 
+                  label={link.name} 
+                  href={link.href !== '#' ? link.href : undefined}
+                  onClick={link.onClick} />
+              ))}
+              
+              <ContainerInstrument plain className="mt-1.5 px-3 py-1.5 border-t border-black/5">
+                <TextInstrument className="text-[11px] font-light text-va-black/30 tracking-[0.2em] mb-2 "><VoiceglotText  translationKey="nav.menu.proefopname_title" defaultText="Direct naar proefopname" /></TextInstrument>
+                <ContainerInstrument plain className="grid grid-cols-2 gap-1.5 mb-3">
+                  {[
+                    { label: 'TV Spot', icon: Monitor, href: '/agency?category=tv', key: 'category.tv' },
+                    { label: 'Radio', icon: Radio, href: '/agency?category=radio', key: 'category.radio' },
+                    { label: 'Online', icon: Globe, href: '/agency?category=online', key: 'category.online' },
+                    { label: 'Podcast', icon: Mic2, href: '/agency?category=podcast', key: 'category.podcast' },
+                    { label: 'Telefonie', icon: Phone, href: '/agency?category=telefoon', key: 'category.telefoon' },
+                    { label: 'Corporate', icon: Building2, href: '/agency?category=corporate', key: 'category.corporate' }
+                  ].map((cat) => (
                     <ButtonInstrument 
                       as={Link}
-                      href={`/artist/${voice.slug}`}
-                      className="px-3 py-1.5 bg-primary/10 text-primary rounded-[20px] text-[15px] font-light opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white"
-                    ><VoiceglotText  translationKey="action.proefopname" defaultText="Proefopname" /></ButtonInstrument>
-                  </ContainerInstrument>
-                ))}
-              </ContainerInstrument>
-              
-              <ButtonInstrument 
-                as={Link}
-                href="/agency"
-                className="flex items-center justify-center gap-2 w-full py-4 bg-va-black text-white rounded-2xl text-[15px] font-light tracking-widest hover:bg-primary transition-all shadow-lg"
-              >
-                <VoiceglotText  translationKey="nav.menu.discover_all" defaultText="Ontdek alle stemmen" />
-              </ButtonInstrument>
-            </ContainerInstrument>
+                      key={cat.label} 
+                      href={cat.href}
+                      variant="plain"
+                      size="none"
+                      className="flex items-center gap-2 p-2 rounded-xl bg-va-off-white hover:bg-primary/5 hover:text-primary transition-all group"
+                    >
+                      <cat.icon size={12} strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
+                      <TextInstrument className="text-[11px] font-light whitespace-nowrap">
+                        <VoiceglotText  translationKey={cat.key} defaultText={cat.label} />
+                      </TextInstrument>
+                    </ButtonInstrument>
+                  ))}
+                </ContainerInstrument>
 
-            <ContainerInstrument className="mt-2 pt-2 border-t border-black/5">
-              <DropdownItem strokeWidth={1.5} 
-                icon={Mail} 
-                label={<VoiceglotText  translationKey="nav.support" defaultText="Support" />} 
-                href="/contact" 
-              />
+                <TextInstrument className="text-[11px] font-light text-va-black/30 tracking-[0.2em] mb-2 "><VoiceglotText  translationKey="nav.menu.recommended_title" defaultText="Aanbevolen stemmen" /></TextInstrument>
+                <ContainerInstrument plain className="space-y-1 mb-3">
+                  {[
+                    { name: 'Johfrah', type: 'Mannelijk', slug: 'johfrah', typeKey: 'gender.male' },
+                    { name: 'Birgit', type: 'Vrouwelijk', slug: 'birgit', typeKey: 'gender.female' },
+                    { name: 'Korneel', type: 'Mannelijk', slug: 'korneel', typeKey: 'gender.male' },
+                    { name: 'Annelies', type: 'Vrouwelijk', slug: 'annelies-1', typeKey: 'gender.female' }
+                  ].map((voice) => (
+                    <ContainerInstrument plain key={voice.slug} className="flex items-center justify-between p-1 rounded-xl hover:bg-va-black/5 transition-all group">
+                      <ContainerInstrument plain className="flex items-center gap-2.5">
+                        <ContainerInstrument plain className="w-7 h-7 rounded-full bg-va-black/5 flex items-center justify-center overflow-hidden">
+                          <User strokeWidth={1.5} size={14} className="text-va-black/20" />
+                        </ContainerInstrument>
+                        <ContainerInstrument plain>
+                          <TextInstrument className="text-[12px] font-light text-va-black">{voice.name}</TextInstrument>
+                          <TextInstrument className="text-[10px] text-va-black/40 font-light">
+                            <VoiceglotText  translationKey={voice.typeKey} defaultText={voice.type} />
+                          </TextInstrument>
+                        </ContainerInstrument>
+                      </ContainerInstrument>
+                      <ButtonInstrument 
+                        as={Link}
+                        href={`/artist/${voice.slug}`}
+                        variant="plain"
+                        size="none"
+                        className="px-2 py-0.5 bg-primary/10 text-primary rounded-[20px] text-[10px] font-light opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white"
+                      ><VoiceglotText  translationKey="action.proefopname" defaultText="Proefopname" /></ButtonInstrument>
+                    </ContainerInstrument>
+                  ))}
+                </ContainerInstrument>
+                
+                <ButtonInstrument 
+                  as={Link}
+                  href="/agency"
+                  variant="default"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 bg-va-black text-white rounded-xl text-[11px] font-light tracking-widest hover:bg-primary transition-all shadow-lg"
+                >
+                  <VoiceglotText  translationKey="nav.menu.discover_all" defaultText="Ontdek alle stemmen" />
+                </ButtonInstrument>
+              </ContainerInstrument>
+
+              <ContainerInstrument plain className="mt-2 pt-2 border-t border-black/5">
+                <DropdownItem strokeWidth={1.5} icon={Mail} 
+                  label={<VoiceglotText  translationKey="nav.support" defaultText="Support" />} 
+                  href="/contact" 
+                />
+              </ContainerInstrument>
             </ContainerInstrument>
-          </ContainerInstrument>
-        </HeaderIcon>
+          </HeaderIcon>
+        )}
       </ContainerInstrument>
     </ContainerInstrument>
   );

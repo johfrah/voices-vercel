@@ -1,17 +1,17 @@
 "use client";
 
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { cn } from '@/lib/utils';
 import { Demo } from '@/types';
-import { Pause, Play, SkipBack, SkipForward, Volume2, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Pause, Play, Volume2, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import {
     ButtonInstrument,
     ContainerInstrument,
-    HeadingInstrument,
     TextInstrument
 } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
-import { VoiceglotText } from './VoiceglotText';
 
 interface MediaMasterProps {
   demo: Demo;
@@ -25,21 +25,47 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // 🛡️ CHRIS-PROTOCOL: Clean demo titles for display
+  const cleanDemoTitle = (title: string) => {
+    if (!title) return '';
+    let clean = title.replace(/\.(mp3|wav|ogg|m4a)$/i, '');
+    clean = clean.replace(/^[a-z]+-A-\d+-/i, '');
+    clean = clean.replace(/-(flemish|dutch|french|english|german|voiceover|demo|voices)/gi, ' ');
+    clean = clean.replace(/-/g, ' ');
+    clean = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+    return clean.trim();
+  };
+
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.play().catch(() => setIsPlaying(false));
-      setIsPlaying(true);
+      const audio = audioRef.current;
+      setIsPlaying(false);
+      setProgress(0);
+      
+      const playAudio = () => {
+        audio.play()
+          .then(() => setIsPlaying(true))
+          .catch((err) => {
+            console.error("Autoplay failed:", err);
+            setIsPlaying(false);
+          });
+      };
+
+      const timer = setTimeout(playAudio, 100);
+      return () => clearTimeout(timer);
     }
-  }, [demo]);
+  }, [demo.audio_url]);
 
   const togglePlay = () => {
     if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
+      if (audioRef.current.paused) {
+        audioRef.current.play()
+          .then(() => setIsPlaying(true))
+          .catch(err => console.error("Playback failed:", err));
       } else {
-        audioRef.current.play();
+        audioRef.current.pause();
+        setIsPlaying(false);
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
@@ -47,10 +73,11 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     if (audioRef.current) {
       const current = audioRef.current.currentTime;
       const total = audioRef.current.duration;
-      setProgress((current / total) * 100);
-      
-      if (current > 0 && Math.floor(current) % 10 === 0) {
-        // trackPlayback(demo.id, Math.floor(current));
+      if (total > 0) {
+        setProgress((current / total) * 100);
+      }
+      if (audioRef.current.paused !== !isPlaying) {
+        setIsPlaying(!audioRef.current.paused);
       }
     }
   };
@@ -61,24 +88,23 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     }
   };
 
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const handleAudioError = () => {
-    console.error("Audio playback error");
-    setIsPlaying(false);
-  };
-
   return (
-    <ContainerInstrument className="fixed bottom-0 inset-x-0 z-[100] p-4 md:p-8 pointer-events-none">
-      <ContainerInstrument className="max-w-6xl mx-auto bg-va-black/95 backdrop-blur-3xl rounded-[32px] md:rounded-[40px] p-4 md:p-6 shadow-[0_32px_128px_rgba(0,0,0,0.8)] border border-white/10 pointer-events-auto relative overflow-hidden group/master">
-        {/* Liquid Progress Background */}
-        <ContainerInstrument 
-          className="absolute inset-0 bg-primary/5 transition-all duration-300 ease-out pointer-events-none" 
-          style={{ width: `${progress}%` }}
+    <motion.div 
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 100, opacity: 0 }}
+      className="fixed bottom-12 inset-x-0 z-[200] px-6 pointer-events-none"
+    >
+      <ContainerInstrument 
+        plain 
+        className="max-w-3xl mx-auto bg-va-black shadow-[0_32px_128px_rgba(0,0,0,0.8)] rounded-full p-2 border border-white/10 pointer-events-auto relative overflow-hidden flex items-center gap-4"
+      >
+        {/* 🌊 LIQUID PROGRESS BACKGROUND */}
+        <motion.div 
+          className="absolute inset-0 bg-primary/20 pointer-events-none origin-left"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: progress / 100 }}
+          transition={{ type: "spring", bounce: 0, duration: 0.1 }}
         />
 
         <audio 
@@ -87,112 +113,66 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           onTimeUpdate={handleTimeUpdate} 
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => setIsPlaying(false)}
-          onError={handleAudioError}
         />
         
-        <ContainerInstrument className="flex flex-col md:flex-row items-center gap-4 md:gap-6 relative z-10">
-          {/* Demo Info (Sherlock: Beautiful Titles & Actor Photo) */}
-          <ContainerInstrument className="flex items-center gap-4 min-w-0 w-full md:w-auto flex-1">
-            <ContainerInstrument className="relative w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden shrink-0 shadow-2xl border border-white/10 group/photo">
-              {demo.actor_photo ? (
-                <VoiceglotImage  
-                  src={demo.actor_photo} 
-                  alt={demo.actor_name} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover/photo:scale-110" 
-                />
-              ) : (
-                <ContainerInstrument className="w-full h-full bg-primary flex items-center justify-center text-white animate-pulse">
-                  <Volume2 strokeWidth={1.5} size={24} />
-                </ContainerInstrument>
-              )}
-              {/* Live Indicator Overlay */}
-              <ContainerInstrument className="absolute bottom-1 right-1 w-3 h-3 bg-primary rounded-full border-2 border-va-black animate-pulse" />
-            </ContainerInstrument>
-            
-            <ContainerInstrument className="min-w-0 flex-1">
-              <ContainerInstrument className="flex flex-col">
-                <HeadingInstrument level={4} className="text-white font-light tracking-tighter text-lg md:text-xl truncate leading-tight">
-                  {demo.actor_name || 'Stemacteur'}
-                </HeadingInstrument>
-                <ContainerInstrument className="flex items-center gap-2">
-                  <TextInstrument className="text-white/40 text-[15px] font-light tracking-[0.2em] truncate">
-                    {demo.title}
-                  </TextInstrument>
-                  <ContainerInstrument className="w-1 h-1 rounded-full bg-primary/40 shrink-0" />
-                  <TextInstrument className="text-primary text-[15px] font-light tracking-widest shrink-0">
-                    <VoiceglotText  translationKey="media.live_preview" defaultText="Live" />
-                  </TextInstrument>
-                </ContainerInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
-            
-            {/* Mobile Time Display */}
-            <ContainerInstrument className="md:hidden text-right tabular-nums">
-              <TextInstrument className="text-white font-light text-[15px]">{formatTime(audioRef.current?.currentTime || 0)}</TextInstrument>
-              <TextInstrument className="text-white/20 text-[15px] font-light">{formatTime(duration)}</TextInstrument>
-            </ContainerInstrument>
-          </ContainerInstrument>
+        {/* 📸 ACTOR PHOTO */}
+        <div className="relative w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-white/10 shadow-lg z-10 ml-1">
+          {demo.actor_photo ? (
+            <VoiceglotImage  
+              src={demo.actor_photo} 
+              alt={demo.actor_name} 
+              fill
+              className="object-cover" 
+            />
+          ) : (
+            <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary">
+              <Volume2 size={24} />
+            </div>
+          )}
+        </div>
 
-          {/* Controls */}
-          <ContainerInstrument className="flex items-center justify-center gap-6 w-full md:w-auto">
-            <ButtonInstrument 
-              onClick={() => {
-                if (audioRef.current) audioRef.current.currentTime -= 5;
-                playClick('soft');
-              }}
-              className="text-white/30 hover:text-white transition-all active:scale-90"
-            >
-              <SkipBack strokeWidth={1.5} size={24} fill="currentColor" />
-            </ButtonInstrument>
-            <ButtonInstrument 
-              onClick={() => {
-                togglePlay();
-                playClick(isPlaying ? 'soft' : 'pro');
-              }}
-              className="w-16 h-16 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-105 active:scale-90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
-            >
-              {isPlaying ? <Pause strokeWidth={1.5} size={32} fill="currentColor" /> : <Play strokeWidth={1.5} size={32} fill="currentColor" className="ml-1" />}
-            </ButtonInstrument>
-            <ButtonInstrument 
-              onClick={() => {
-                if (audioRef.current) audioRef.current.currentTime += 5;
-                playClick('soft');
-              }}
-              className="text-white/30 hover:text-white transition-all active:scale-90"
-            >
-              <SkipForward strokeWidth={1.5} size={24} fill="currentColor" />
-            </ButtonInstrument>
-          </ContainerInstrument>
+        {/* 📝 INFO BLOCK */}
+        <div className="flex-1 min-w-0 z-10 py-1">
+          <TextInstrument className="text-white font-light text-[18px] tracking-tight truncate leading-tight block">
+            {demo.actor_name || 'Stemacteur'}
+          </TextInstrument>
+          <TextInstrument className="text-white/40 text-[12px] font-bold tracking-[0.15em] uppercase truncate mt-0.5">
+            {cleanDemoTitle(demo.title)}
+          </TextInstrument>
+        </div>
 
-          {/* Desktop Time & Close */}
-          <ContainerInstrument className="hidden md:flex items-center gap-6">
-            <ContainerInstrument className="text-right tabular-nums">
-              <TextInstrument className="text-white font-light text-[15px]">{formatTime(audioRef.current?.currentTime || 0)}</TextInstrument>
-              <TextInstrument className="text-white/20 text-[15px] font-light">{formatTime(duration)}</TextInstrument>
-            </ContainerInstrument>
-            <ButtonInstrument 
-              onClick={() => {
-                playClick('soft');
-                onClose?.();
-              }}
-              className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"
-            >
-              <X strokeWidth={1.5} size={20} />
-            </ButtonInstrument>
-          </ContainerInstrument>
-          
-          {/* Mobile Close */}
-          <ButtonInstrument 
-            onClick={onClose}
-            className="md:hidden absolute -top-2 -right-2 w-8 h-8 rounded-full bg-va-black border border-white/10 flex items-center justify-center text-white/40 shadow-xl"
+        {/* 🕹️ CONTROLS */}
+        <div className="flex items-center gap-2 z-10 pr-2">
+          {/* PLAY/PAUSE */}
+          <button 
+            onClick={() => {
+              togglePlay();
+              playClick(isPlaying ? 'soft' : 'pro');
+            }}
+            className="w-14 h-14 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-xl group/play"
           >
-            <X strokeWidth={1.5} size={14} />
-          </ButtonInstrument>
-        </ContainerInstrument>
+            {isPlaying ? (
+              <Pause size={24} fill="currentColor" strokeWidth={0} />
+            ) : (
+              <Play size={24} fill="currentColor" strokeWidth={0} className="ml-1" />
+            )}
+          </button>
 
-        {/* Progress Bar */}
-        <ContainerInstrument 
-          className="mt-4 md:mt-6 h-2 w-full bg-white/5 rounded-full overflow-hidden cursor-pointer group relative"
+          {/* CLOSE */}
+          <button 
+            onClick={() => {
+              playClick('soft');
+              onClose?.();
+            }}
+            className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all ml-1"
+          >
+            <X size={20} strokeWidth={1.5} />
+          </button>
+        </div>
+
+        {/* 📏 INTERACTIVE PROGRESS OVERLAY */}
+        <div 
+          className="absolute inset-0 cursor-pointer opacity-0 hover:opacity-100 transition-opacity"
           onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -202,14 +182,8 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               playClick('soft');
             }
           }}
-        >
-          <ContainerInstrument 
-            className="absolute inset-0 bg-primary transition-all duration-100 ease-linear" 
-            style={{ width: `${progress}%` }}
-          />
-          <ContainerInstrument className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-        </ContainerInstrument>
+        />
       </ContainerInstrument>
-    </ContainerInstrument>
+    </motion.div>
   );
 };

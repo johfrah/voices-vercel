@@ -6,8 +6,10 @@ import {
   PageWrapperInstrument, 
   TextInstrument 
 } from "@/components/ui/LayoutInstruments";
+import { WorkshopEditionEditor } from "@/components/admin/WorkshopEditionEditor";
+import { CertificateTrigger } from "@/components/admin/CertificateTrigger";
 import { StudioDataBridge } from "@/lib/studio-bridge";
-import { ArrowLeft, CheckCircle2, DollarSign, FileAudio, Mail, Users } from "lucide-react";
+import { ArrowLeft, CheckCircle2, DollarSign, FileAudio, Mail, Users, Settings } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
@@ -42,6 +44,17 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
       </ContainerInstrument>
 
       <BentoGrid strokeWidth={1.5} columns={3} className="gap-8">
+        {/* 🛠️ EDITION EDITOR (Step 1) */}
+        <BentoCard span="full" className="bg-white shadow-aura border border-black/5 p-12">
+          <div className="flex items-center gap-3 mb-10">
+            <Settings strokeWidth={1.5} size={24} className="text-primary" />
+            <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter">
+              <VoiceglotText translationKey="admin.studio.edit_details" defaultText="Details Bewerken" />
+            </HeadingInstrument>
+          </div>
+          <WorkshopEditionEditor edition={edition} />
+        </BentoCard>
+
         {/* PARTICIPANTS & UPLOADS (Step 2) */}
         <BentoCard span="lg" className="bg-white shadow-aura border border-black/5 overflow-hidden">
           <ContainerInstrument className="p-8 border-b border-black/5 bg-va-off-white/50 flex justify-between items-center">
@@ -118,7 +131,13 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
             <Mail strokeWidth={1.5} className="text-primary mb-6" size={24} />
             <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-black/30 mb-6"><VoiceglotText  translationKey="auto.page.communicatie.637569" defaultText="Communicatie" /></HeadingInstrument>
             <ContainerInstrument className="space-y-3">
-              <ButtonInstrument className="w-full py-4 bg-white border border-black/5 text-[15px] font-light tracking-widest hover:bg-primary transition-all"><VoiceglotText  translationKey="auto.page.stuur_audio_link_mai.53457f" defaultText="Stuur Audio-Link Mail" /></ButtonInstrument><ButtonInstrument className="w-full py-4 bg-white border border-black/5 text-[15px] font-light tracking-widest hover:bg-primary transition-all"><VoiceglotText  translationKey="auto.page.vraag_om_review.c67197" defaultText="Vraag om Review" /></ButtonInstrument></ContainerInstrument>
+              <ButtonInstrument className="w-full py-4 bg-white border border-black/5 text-[15px] font-light tracking-widest hover:bg-primary transition-all"><VoiceglotText  translationKey="auto.page.stuur_audio_link_mai.53457f" defaultText="Stuur Audio-Link Mail" /></ButtonInstrument>
+              <ButtonInstrument className="w-full py-4 bg-white border border-black/5 text-[15px] font-light tracking-widest hover:bg-primary transition-all"><VoiceglotText  translationKey="auto.page.vraag_om_review.c67197" defaultText="Vraag om Review" /></ButtonInstrument>
+              
+              <div className="pt-4 border-t border-black/5 mt-4">
+                <CertificateTrigger editionId={editionId} participantCount={participants.length} />
+              </div>
+            </ContainerInstrument>
           </BentoCard>
         </ContainerInstrument>
       </BentoGrid>

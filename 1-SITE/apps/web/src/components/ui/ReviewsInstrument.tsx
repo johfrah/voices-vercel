@@ -13,8 +13,9 @@ export const ReviewsInstrument: React.FC<{
   reviews: any[], 
   title?: string, 
   subtitle?: string,
-  translationKeyPrefix?: string
-}> = ({ reviews, title, subtitle, translationKeyPrefix = "home.reviews" }) => {
+  translationKeyPrefix?: string,
+  hideHeader?: boolean
+}> = ({ reviews, title, subtitle, translationKeyPrefix = "home.reviews", hideHeader = false }) => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "AggregateRating",
@@ -54,21 +55,28 @@ export const ReviewsInstrument: React.FC<{
   if (reviews.length === 0) return null;
 
   return (
-    <ContainerInstrument className="mb-32">
+    <ContainerInstrument plain className="w-full">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ContainerInstrument className="mb-16 flex justify-between items-end">
-        <ContainerInstrument className="space-y-4">
-          <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter text-primary"><VoiceglotText  translationKey={`${translationKeyPrefix}.title`} defaultText={title || "Ervaringen"} /><TextInstrument className="text-xl text-black/40 font-medium leading-relaxed max-w-2xl"><VoiceglotText  translationKey={`${translationKeyPrefix}.subtitle`} defaultText={subtitle || "Waarom klanten kiezen voor de stemmen van Voices."} /></TextInstrument></HeadingInstrument>
+      {!hideHeader && (
+        <ContainerInstrument className="mb-16 flex justify-between items-end">
+          <ContainerInstrument className="space-y-4">
+            <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter text-primary">
+              <VoiceglotText  translationKey={`${translationKeyPrefix}.title`} defaultText={title || "Ervaringen"} />
+            </HeadingInstrument>
+            <TextInstrument className="text-xl text-black/40 font-medium leading-relaxed max-w-2xl">
+              <VoiceglotText  translationKey={`${translationKeyPrefix}.subtitle`} defaultText={subtitle || "Waarom klanten kiezen voor de stemmen van Voices."} />
+            </TextInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument className="flex gap-2">
+            <ContainerInstrument className="px-6 py-3 bg-va-off-white rounded-full text-[15px] font-medium tracking-widest border border-black/5"><VoiceglotText  translationKey={`${translationKeyPrefix}.score`} defaultText="4.9 / 5 Gemiddelde Score" /></ContainerInstrument>
+          </ContainerInstrument>
         </ContainerInstrument>
-        <ContainerInstrument className="flex gap-2">
-          <ContainerInstrument className="px-6 py-3 bg-va-off-white rounded-full text-[15px] font-medium tracking-widest border border-black/5"><VoiceglotText  translationKey={`${translationKeyPrefix}.score`} defaultText="4.9 / 5 Gemiddelde Score" /></ContainerInstrument>
-        </ContainerInstrument>
-      </ContainerInstrument>
+      )}
 
-      <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {reviews.slice(0, 3).map((review: any, i: number) => (
           <BentoCard key={i} span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between shadow-sm hover:shadow-aura transition-all">
             <ContainerInstrument className="space-y-6">

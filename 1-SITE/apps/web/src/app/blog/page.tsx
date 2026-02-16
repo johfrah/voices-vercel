@@ -226,10 +226,15 @@ export default function BlogPage() {
             <BookOpen strokeWidth={1.5} size={12} fill="currentColor" /> 
             <VoiceglotText  translationKey="blog.badge" defaultText="Kennis & Inspiratie" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none mb-6 text-va-black "><VoiceglotText  translationKey="blog.title" defaultText="De Etalage." /><TextInstrument className="text-va-black/40 font-light text-xl max-w-2xl leading-relaxed"><VoiceglotText  
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none mb-6 text-va-black ">
+            <VoiceglotText  translationKey="blog.title" defaultText="De Etalage." />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/40 font-light text-xl max-w-2xl leading-relaxed">
+            <VoiceglotText  
               translationKey="blog.subtitle" 
               defaultText="Ontdek onze verhalen, laat je inspireren door scripts of duik in de psychologie van audio." 
-            /></TextInstrument></HeadingInstrument>
+            />
+          </TextInstrument>
         </SectionInstrument>
 
         <BentoGrid strokeWidth={1.5} columns={3}>

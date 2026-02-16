@@ -127,7 +127,7 @@ export function BentoCard({
       }}
       {...(dangerouslySetInnerHTML ? { dangerouslySetInnerHTML } : {})}
       className={cn(
-        "rounded-[20px] overflow-hidden transition-all duration-500 relative group/card va-interactive",
+        "rounded-[20px] overflow-hidden transition-all duration-500 relative group/card va-interactive", // Verwijder p-0 hier, we regelen het in LayoutInstruments
         isEditMode && "ring-2 ring-primary/20 hover:ring-primary/50",
         spanClasses[span],
         className
@@ -173,8 +173,8 @@ export function BentoCard({
         <ContainerInstrument className="absolute bottom-4 left-8 z-20 bg-va-black/80 backdrop-blur-md text-[15px] font-black text-white px-2 py-1 rounded-md tracking-widest opacity-0 group-hover/card:opacity-100 transition-opacity"><VoiceglotText  translationKey="auto.bentogrid.cvr__4_2____beheer__.aa342c" defaultText="CVR: 4.2% • Beheer: Kwaliteit" /></ContainerInstrument>
       )}
       {(title || icon) && (
-        <ContainerInstrument className="px-8 pt-8 flex items-center gap-3">
-          {icon && <ContainerInstrument className="text-primary">{icon}</ContainerInstrument>}
+        <ContainerInstrument plain className="px-8 pt-8 flex items-center gap-3">
+          {icon && <ContainerInstrument plain className="text-primary">{icon}</ContainerInstrument>}
           {title && <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest opacity-30">{title}</HeadingInstrument>}
         </ContainerInstrument>
       )}

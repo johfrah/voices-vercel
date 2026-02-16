@@ -1,14 +1,18 @@
 "use client";
 
+import { useCheckout } from '@/contexts/CheckoutContext';
+import { useEditMode } from "@/contexts/EditModeContext";
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { calculateDeliveryDate } from '@/lib/delivery-logic';
+import { PricingEngine } from '@/lib/pricing-engine';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
-import { Check, Mic, Play, Plus, Star, Volume2 } from 'lucide-react';
-import React, { useMemo } from 'react';
-import { BentoCard } from './BentoGrid';
+import { ArrowRight, Check, Mic, Pause, Play, Plus, Settings } from 'lucide-react';
+import { useRouter } from "next/navigation";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
@@ -36,9 +40,19 @@ const CATEGORIES = [
 export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
   const { playClick, playSwell } = useSonicDNA();
   const { state, getPlaceholderValue, toggleActorSelection } = useVoicesState();
-  const { activeDemo, playDemo } = useGlobalAudio();
+  const { state: masterControlState } = useMasterControl();
+  const { state: checkoutState } = useCheckout();
+  const { activeDemo, playDemo, stopDemo } = useGlobalAudio();
+  const { isEditMode } = useEditMode();
+  const router = useRouter();
 
   const isSelected = state.selected_actors.some(a => a.id === voice.id);
+
+  const handleAdminClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    playClick('pro');
+    router.push(`/admin/voices/${voice.id}`);
+  };
 
   const handleStudioToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -52,16 +66,120 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
 
   const handleMouseEnter = () => {
     playSwell();
-    // Sherlock: Hover-to-Hear (Micro-Demo)
-    if (voice.demos && voice.demos.length > 0 && !activeDemo) {
-      const timer = setTimeout(() => {
-        playDemo({
-          ...voice.demos[0],
-          actor_name: voice.display_name,
-          actor_photo: voice.photo_url
-        });
-      }, 800); // Subtiele vertraging om onbedoeld afspelen te voorkomen
-      return () => clearTimeout(timer);
+    // 🛡️ CHRIS-PROTOCOL: No more autoplay on hover as per user mandate
+  };
+
+  const nextEdition = null; // Voicecards don't have editions like workshops
+  const videoPath = null; // Voicecards use photos, but we keep the naming consistent for the mandate
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [activeSubtitle, setActiveSubtitle] = useState<string | null>(null);
+
+  // 📝 SUBTITLE LOGIC (VOICES 2026) - For Voicecards (e.g. if they have a video demo)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleCueChange = (e: Event) => {
+      const track = e.target as TextTrack;
+      if (track.activeCues && track.activeCues.length > 0) {
+        const cue = track.activeCues[0] as VTTCue;
+        setActiveSubtitle(cue.text);
+      } else {
+        setActiveSubtitle(null);
+      }
+    };
+
+    const setupTracks = () => {
+      const tracks = video.textTracks;
+      if (tracks.length === 0) {
+        setTimeout(setupTracks, 500);
+        return;
+      }
+      for (let i = 0; i < tracks.length; i++) {
+        tracks[i].mode = 'hidden';
+        tracks[i].removeEventListener('cuechange', handleCueChange);
+        tracks[i].addEventListener('cuechange', handleCueChange);
+      }
+    };
+
+    video.addEventListener('loadedmetadata', setupTracks);
+    setupTracks();
+
+    return () => {
+      video.removeEventListener('loadedmetadata', setupTracks);
+      const tracks = video.textTracks;
+      for (let i = 0; i < tracks.length; i++) {
+        tracks[i].removeEventListener('cuechange', handleCueChange);
+      }
+    };
+  }, [voice.id]);
+
+  // 🛡️ CHRIS-PROTOCOL: Strip HTML and clean whitespace
+  const cleanDescription = (text: string) => {
+    if (!text) return '';
+    return text
+      .replace(/<[^>]*>?/gm, '') // Strip HTML tags
+      .replace(/\\r\\n/g, ' ')
+      .replace(/\r\n/g, ' ')
+      .replace(/\n/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
+  // 🔘 TOGGLE PLAY LOGIC (VOICES 2026)
+  const isCurrentlyPlaying = useMemo(() => {
+    if (voice.video_url) return isPlaying;
+    // Check if any demo of THIS voice is playing in the global audio orchestrator
+    return activeDemo?.actor_name === voice.display_name;
+  }, [voice.video_url, isPlaying, activeDemo, voice.display_name]);
+
+  // 🛡️ CHRIS-PROTOCOL: Clean demo titles for display
+  const cleanDemoTitle = (title: string) => {
+    if (!title) return '';
+    
+    // Remove file extensions
+    let clean = title.replace(/\.(mp3|wav|ogg|m4a)$/i, '');
+    
+    // Remove common technical prefixes/suffixes (e.g., product IDs, language codes)
+    clean = clean.replace(/^[a-z]+-A-\d+-/i, ''); // Remove "mona-A-258121-"
+    clean = clean.replace(/-(flemish|dutch|french|english|german|voiceover|demo|voices)/gi, ' ');
+    clean = clean.replace(/-/g, ' ');
+    
+    // Natural Capitalization
+    clean = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+    
+    return clean.trim();
+  };
+
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (voice.video_url) {
+      if (!videoRef.current) return;
+      if (isPlaying) {
+        videoRef.current.pause();
+        videoRef.current.muted = true;
+        setIsPlaying(false);
+        playClick('light');
+      } else {
+        videoRef.current.play();
+        videoRef.current.muted = false;
+        setIsPlaying(true);
+        playClick('pro');
+      }
+    } else {
+      // Audio Demo Logic
+      if (isCurrentlyPlaying) {
+        // If THIS voice is playing, stop it
+        stopDemo();
+        playClick('light');
+      } else {
+        // If not playing, start the first demo
+        if (voice.demos && voice.demos.length > 0) {
+          handleCategoryClick(e, voice.demos[0]);
+        }
+      }
     }
   };
 
@@ -110,17 +228,70 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
   };
 
   const displayPrice = useMemo(() => {
-    const base = parseFloat(voice.starting_price?.toString() || '0');
-    const ivr = parseFloat(voice.price_ivr?.toString() || '0');
-    const online = parseFloat(voice.price_online?.toString() || '0');
+    // 🛡️ CHRIS-PROTOCOL: Use PricingEngine for LIVE calculation based on current filters
+    const wordCount = checkoutState.briefing 
+      ? checkoutState.briefing.trim().split(/\s+/).filter(Boolean).length 
+      : (masterControlState.filters.words || 0);
 
-    switch (state.current_journey) {
-      case 'telephony': return ivr || base;
-      case 'commercial': return online || base;
-      case 'video': return base;
-      default: return base;
-    }
-  }, [voice, state.current_journey]);
+    // Construct spots/years map for commercial usage
+    const spotsMap = masterControlState.journey === 'commercial' && Array.isArray(masterControlState.filters.media)
+      ? masterControlState.filters.media.reduce((acc, m) => ({ 
+          ...acc, 
+          [m]: (masterControlState.filters.spotsDetail && masterControlState.filters.spotsDetail[m]) || masterControlState.filters.spots || 1 
+        }), {})
+      : undefined;
+
+    const yearsMap = masterControlState.journey === 'commercial' && Array.isArray(masterControlState.filters.media)
+      ? masterControlState.filters.media.reduce((acc, m) => ({ 
+          ...acc, 
+          [m]: (masterControlState.filters.yearsDetail && masterControlState.filters.yearsDetail[m]) || masterControlState.filters.years || 1 
+        }), {})
+      : undefined;
+
+    // Fallback for legacy actors without rates_raw
+    const legacyRates = {
+      price_ivr: voice.price_ivr || 89,
+      price_online: voice.price_online || 239,
+      price_tv_national: 500, // Default fallback
+      price_radio_national: 400,
+      price_tv_regional: 350,
+      price_radio_regional: 300,
+      price_tv_local: 300,
+      price_radio_local: 250,
+      price_podcast: 239,
+      price_social_media: 239,
+    };
+
+    const result = PricingEngine.calculate({
+      usage: masterControlState.usage,
+      plan: checkoutState.plan,
+      words: wordCount,
+      prompts: checkoutState.prompts,
+      mediaTypes: masterControlState.journey === 'commercial' ? (masterControlState.filters.media as any) : undefined,
+      country: masterControlState.filters.country,
+      spots: spotsMap,
+      years: yearsMap,
+      liveSession: masterControlState.filters.liveSession,
+      actorRates: voice.rates_raw || legacyRates, // Use specific rates or fallback
+      music: checkoutState.music,
+      isVatExempt: false // Always show incl/excl VAT based on B2C view (usually incl on cards for clarity, but engine returns ex VAT subtotal)
+    });
+
+    const status = PricingEngine.getAvailabilityStatus(
+      voice, 
+      masterControlState.journey === 'commercial' ? (masterControlState.filters.media as any) : [], 
+      masterControlState.filters.country
+    );
+
+    if (status === 'unavailable') return null;
+
+    return {
+      price: PricingEngine.format(result.subtotal).replace('€', '').trim(),
+      status
+    };
+  }, [voice, masterControlState.journey, masterControlState.usage, masterControlState.filters, checkoutState.briefing, checkoutState.plan, checkoutState.prompts, checkoutState.music]);
+
+  if (!displayPrice) return null; // 🛡️ HIDE VOICE IF UNAVAILABLE FOR SELECTION
 
   // Sector-specific demo text logic (Beheer-modus)
   const getSectorDemoText = () => {
@@ -142,239 +313,276 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
   const sectorDemo = getSectorDemoText();
 
   return (
-    <BentoCard 
-      span="md" 
-      className={cn(
-        "group cursor-pointer bg-white border rounded-[20px] p-8 transition-all duration-700 hover:shadow-aura hover:-translate-y-1 relative overflow-hidden va-interactive",
-        isSelected ? "border-primary ring-1 ring-primary/20" : "border-gray-100"
-      )}
+    <ContainerInstrument 
       onClick={() => {
+        if (isEditMode) return;
         playClick('soft');
         onSelect?.(voice);
       }}
+      plain
+      className={cn(
+        "group relative bg-white rounded-[20px] overflow-hidden shadow-aura hover:scale-[1.01] active:scale-[0.99] transition-all duration-500 border border-black/[0.02] flex flex-col cursor-pointer touch-manipulation h-full",
+        isSelected ? "ring-2 ring-primary" : "",
+        isEditMode && "ring-2 ring-primary ring-inset"
+      )}
       onMouseEnter={handleMouseEnter}
     >
-      {/* Liquid Aura (Tone of Voice - Sherlock: Liquid Haptics) */}
-      <ContainerInstrument 
-        className={cn(
-          "absolute -top-20 -right-20 w-64 h-64 rounded-full blur-[80px] transition-all duration-1000",
-          activeDemo?.actor_name === voice.display_name ? "bg-primary/20 scale-125" : "bg-primary/5 group-hover:bg-primary/10"
-        )}
-      ></ContainerInstrument>
+      {/* 🛠️ ADMIN EDIT BUTTON */}
+      {isEditMode && (
+        <button
+          onClick={handleAdminClick}
+          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all animate-in fade-in zoom-in duration-300"
+          title="Bewerk Stem"
+        >
+          <Settings size={20} strokeWidth={2} />
+        </button>
+      )}
 
-      <ContainerInstrument className="relative z-10 flex flex-col h-full justify-between">
-        <ContainerInstrument>
-          {/* Header: Photo & Identity */}
-          <ContainerInstrument className="flex items-start gap-5 mb-8">
-            <ContainerInstrument className="relative w-24 h-24 md:w-28 md:h-28 rounded-[32px] overflow-hidden shadow-2xl group-hover:scale-105 transition-transform duration-700 shrink-0">
-              {voice.photo_url ? (
-                <VoiceglotImage  
-                  src={voice.photo_url} 
-                  alt={voice.display_name} 
-                  fill
-                  className="object-cover" 
-                />
-              ) : (
-                <ContainerInstrument className="w-full h-full bg-va-off-white flex items-center justify-center">
-                  <Mic strokeWidth={1.5} size={32} className="text-va-black/20" />
-                </ContainerInstrument>
-              )}
-              
-              {/* Play Overlay (Sherlock: Speed-to-Sound) */}
-              <ContainerInstrument 
-                className={cn(
-                  "absolute inset-0 bg-va-black/40 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-                  activeDemo?.actor_name === voice.display_name && "opacity-100 bg-primary/20"
-                )}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (voice.demos && voice.demos.length > 0) {
-                    handleCategoryClick(e, voice.demos[0]);
-                  }
-                }}
-              >
-                <ContainerInstrument className="w-12 h-12 rounded-full bg-white text-va-black flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform duration-500">
-                  {activeDemo?.actor_name === voice.display_name ? <Volume2 strokeWidth={1.5} size={24} className="animate-pulse" /> : <Play strokeWidth={1.5} size={24} fill="currentColor" className="ml-1" />}
-                </ContainerInstrument>
-              </ContainerInstrument>
-
-              {/* Studio Toggle Overlay */}
-              <ButtonInstrument 
-                onClick={handleStudioToggle}
-                className={cn(
-                  "absolute top-2 right-2 p-2 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 z-20 border border-white/20",
-                  isSelected 
-                    ? "bg-primary text-white scale-105 shadow-lg" 
-                    : "bg-black/40 text-white/90 hover:bg-black/60 opacity-0 group-hover:opacity-100"
-                )}
-              >
-                {isSelected ? <Check size={14} strokeWidth={1.5} /> : <Plus size={14} strokeWidth={1.5} />}
-              </ButtonInstrument>
-            </ContainerInstrument>
-
-            <ContainerInstrument className="flex-1 min-w-0">
-              <ContainerInstrument className="flex flex-col gap-1 mb-3">
-                <HeadingInstrument level={3} className="text-2xl md:text-3xl font-light tracking-tighter text-va-black truncate">
-                  <VoiceglotText  
-                    translationKey={`actor.${voice.id}.name`} 
-                    defaultText={voice.display_name} 
-                    noTranslate={true} 
-                  />
-                </HeadingInstrument>
-                
-                <ContainerInstrument className="flex items-center gap-2">
-                  <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-[0.2em] ">
-                    <VoiceglotText  translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} defaultText={voice.native_lang || ''} />
-                  </TextInstrument>
-                  <ContainerInstrument className="w-1 h-1 rounded-full bg-va-black/10" />
-                  <TextInstrument className="text-[15px] font-light text-primary tracking-widest ">
-                    {deliveryInfo.formattedShort}
-                  </TextInstrument>
-                </ContainerInstrument>
-              </ContainerInstrument>
-
-              <ContainerInstrument className="flex items-center gap-3">
-                <TextInstrument className="text-2xl font-light tracking-tighter text-va-black">€{displayPrice}</TextInstrument>
-                {voice.voice_score > 90 && (
-                  <ContainerInstrument className="flex items-center gap-1 px-2 py-0.5 bg-yellow-400/10 text-yellow-600 rounded-full">
-                    <Star strokeWidth={1.5} size={10} fill="currentColor" />
-                    <TextInstrument className="text-[15px] font-bold tracking-widest ">Top</TextInstrument>
-                  </ContainerInstrument>
-                )}
-              </ContainerInstrument>
-            </ContainerInstrument>
+      {/* 📸 PHOTO PREVIEW (Mandate: Aspect Square) */}
+      <ContainerInstrument plain className="relative aspect-square w-full bg-va-black overflow-hidden">
+        {voice.video_url ? (
+          <video 
+            ref={videoRef}
+            src={`/assets/${voice.video_url}`}
+            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
+            muted
+            loop
+            playsInline
+            autoPlay
+            crossOrigin="anonymous"
+          >
+            <track 
+              label="Nederlands"
+              kind="subtitles"
+              srcLang="nl"
+              src={`/assets/studio/workshops/subtitles/${voice.video_url.split('/').pop().replace(/\.[^/.]+$/, "")}-nl.vtt`}
+              default
+            />
+          </video>
+        ) : voice.photo_url ? (
+          <VoiceglotImage  
+            src={voice.photo_url} 
+            alt={voice.display_name} 
+            fill
+            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" 
+          />
+        ) : (
+          <ContainerInstrument className="w-full h-full bg-va-off-white flex items-center justify-center">
+            <Mic strokeWidth={1.5} size={48} className="text-va-black/10" />
           </ContainerInstrument>
+        )}
 
-          {/* Category Selector (The Big 8 - Sherlock: Smart Category Highlighting) */}
-          <ContainerInstrument className="flex flex-wrap gap-2 mb-6">
+        {/* 🔘 COMPACT DEMO PLAYER OVERLAY (VOICES DNA 2026) */}
+        <ContainerInstrument 
+          plain 
+          className={cn(
+            "absolute inset-0 flex flex-col justify-between p-4 transition-opacity duration-500 z-10",
+            isCurrentlyPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          )}
+        >
+          {/* Top Row: Secondary Demos (Compact Glassy Chips) */}
+          <ContainerInstrument plain className="flex flex-wrap gap-2 max-w-full overflow-hidden">
             {CATEGORIES.map((cat) => {
               const demo = categorizedDemos[cat.id];
               if (!demo) return null;
               const isActive = activeDemo?.id === demo.id;
               
-              // Sherlock: Highlight op basis van journey context
-              const isContextMatch = 
-                (state.current_journey === 'telephony' && cat.id === 'telefonie') ||
-                (state.current_journey === 'commercial' && (cat.id === 'tv' || cat.id === 'radio' || cat.id === 'online')) ||
-                (state.current_journey === 'video' && (cat.id === 'online' || cat.id === 'corporate'));
-
               return (
-                <ButtonInstrument
+                <button
                   key={cat.id}
                   onClick={(e) => handleCategoryClick(e, demo)}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all duration-300",
+                    "px-2.5 py-1 rounded-full text-[10px] font-black tracking-widest backdrop-blur-md border transition-all duration-300",
                     isActive 
-                      ? "bg-primary border-primary text-va-black shadow-lg shadow-primary/20 scale-105" 
-                      : isContextMatch
-                        ? "bg-primary/5 border-primary/20 text-primary"
-                        : "bg-va-off-white border-black/5 text-va-black/40 hover:border-primary/30 hover:text-primary"
+                      ? "bg-primary border-primary text-white shadow-lg scale-105" 
+                      : "bg-black/20 border-white/10 text-white/70 hover:bg-black/40 hover:text-white"
                   )}
                 >
-                  <ContainerInstrument className="w-3 h-3 relative">
-                    <VoiceglotImage  
-                      src={cat.src} 
-                      alt={cat.label} 
-                      fill 
-                      className={cn("transition-all duration-300", isActive ? "brightness-0" : "opacity-60")}
-                      style={!isActive ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' } : {}}
-                    />
-                  </ContainerInstrument>
-                  <TextInstrument className="text-[15px] font-light tracking-widest">
-                    <VoiceglotText  translationKey={cat.key} defaultText={cat.label} />
-                  </TextInstrument>
-                </ButtonInstrument>
+                  {cat.label}
+                </button>
               );
             })}
           </ContainerInstrument>
 
-          {/* Sector Demo (Beheer-modus) */}
-          {sectorDemo ? (
-            <ContainerInstrument className="mb-6 p-5 bg-primary/5 rounded-3xl border border-primary/10 animate-in fade-in zoom-in-95 duration-700">
-              <ContainerInstrument className="flex items-center gap-2 mb-2 text-primary">
-                <VoiceglotImage  
-                  src="/assets/common/branding/icons/INFO.svg" 
-                  alt="Info" 
-                  width={12} 
-                  height={12} 
-                  style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                />
-                <TextInstrument className="text-[15px] font-light tracking-[0.2em]">
-                  <VoiceglotText  translationKey="common.for_your_sector" defaultText="Voor uw sector" />
+          {/* Center: Main Play Button */}
+          <ContainerInstrument 
+            plain 
+            onClick={togglePlay}
+            className="flex items-center justify-center flex-grow"
+          >
+            <ContainerInstrument 
+              plain 
+              className={cn(
+                "w-20 h-20 rounded-full bg-va-black/40 backdrop-blur-xl border border-white/20 flex items-center justify-center hover:scale-110 transition-all duration-500 shadow-2xl group/play",
+                isCurrentlyPlaying ? "opacity-100" : "opacity-100"
+              )}
+            >
+              {isCurrentlyPlaying ? (
+                <Pause strokeWidth={1.5} size={32} className="text-white" />
+              ) : (
+                <Play strokeWidth={1.5} size={32} className="text-white fill-white ml-1" />
+              )}
+            </ContainerInstrument>
+          </ContainerInstrument>
+
+          {/* Bottom Row: Active Demo Title (VOICES DNA 2026) */}
+          <div className="flex flex-col items-center gap-2 mb-4">
+            {isCurrentlyPlaying && activeDemo && (
+              <ContainerInstrument plain className="bg-va-black/40 backdrop-blur-md rounded-xl px-3 py-1.5 border border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <TextInstrument className="text-white text-[11px] font-black tracking-[0.2em] truncate max-w-[150px]">
+                  {cleanDemoTitle(activeDemo.title)}
                 </TextInstrument>
               </ContainerInstrument>
-              <TextInstrument className="text-[15px] font-light text-va-black/60 italic leading-relaxed">
-                &quot;{sectorDemo}&quot;
-              </TextInstrument>
-            </ContainerInstrument>
-          ) : (
-            <ContainerInstrument className="mb-8">
-              {(voice as any).bio ? (
-                <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed italic mb-4 line-clamp-2">
-                  &quot;<VoiceglotText  translationKey={`actor.${voice.id}.bio`} defaultText={(voice as any).bio} />&quot;
-                </TextInstrument>
-              ) : (
-                <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed italic mb-4">
-                  &quot;<VoiceglotText  translationKey="common.fallback_bio" defaultText="Professionele voice-over for al uw projecten. Van commercials tot luisterboeken." />&quot;
-                </TextInstrument>
-              )}
-              {voice.ai_tags && (
-                <ContainerInstrument className="flex flex-wrap gap-2">
-                  {(typeof voice.ai_tags === 'string' ? voice.ai_tags.split(',') : (Array.isArray(voice.ai_tags) ? voice.ai_tags : [])).map((tag: any, i: number) => {
-                    const tagStr = String(tag).trim();
-                    const isAi = tagStr.startsWith('ai:');
-                    const label = isAi ? tagStr.replace('ai:', '') : tagStr;
-                    return (
-                      <TextInstrument as="span" key={i} className="inline-flex items-center gap-1.5 px-3 py-1 bg-va-off-white rounded-full text-[15px] font-light tracking-widest text-va-black/40 border border-black/5">
-                        <VoiceglotText  translationKey={`common.tag.${label.toLowerCase()}`} defaultText={label} />
-                        {isAi && <TextInstrument as="span" className="text-[15px] bg-primary/10 text-primary px-1 rounded-sm font-light">AI</TextInstrument>}
-                      </TextInstrument>
-                    );
-                  })}
-                </ContainerInstrument>
-              )}
-            </ContainerInstrument>
-          )}
+            )}
+          </div>
         </ContainerInstrument>
 
-        {/* Footer: Price & Action */}
-        <ContainerInstrument className="pt-6 border-t border-black/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <ContainerInstrument>
-            <ContainerInstrument className="flex items-center gap-1.5 text-[15px] font-light text-va-black/30 tracking-widest mb-1">
-              <VoiceglotImage  
-                src="/assets/common/branding/icons/INFO.svg" 
-                alt="Delivery" 
-                width={10} 
-                height={10} 
-                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              />
-              <ContainerInstrument as="span">
-                <VoiceglotText  translationKey="common.ready" defaultText="Klaar" />: {deliveryInfo.formattedShort}
-              </ContainerInstrument>
+        {/* 📝 CUSTOM SUBTITLES (VOICES MIX) */}
+        {activeSubtitle && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[85%] z-20 pointer-events-none text-center">
+            <span className="inline-block px-4 py-2 bg-va-black/80 backdrop-blur-md rounded-[12px] text-white text-[14px] font-light leading-relaxed shadow-aura-lg border border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              {activeSubtitle}
+            </span>
+          </div>
+        )}
+
+        {/* Studio Toggle Overlay */}
+        <ButtonInstrument 
+          onClick={handleStudioToggle}
+          className={cn(
+            "absolute top-4 left-4 p-2.5 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 z-20 border border-white/20 shadow-lg",
+            isSelected 
+              ? "bg-primary text-white scale-105" 
+              : "bg-black/40 text-white/90 hover:bg-black/60 opacity-0 group-hover:opacity-100"
+          )}
+        >
+          {isSelected ? <Check size={16} strokeWidth={2} /> : <Plus size={16} strokeWidth={2} />}
+        </ButtonInstrument>
+
+        <ContainerInstrument plain className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+      </ContainerInstrument>
+
+      <ContainerInstrument plain className="p-0 flex flex-col h-full">
+        <ContainerInstrument plain className="flex flex-col gap-4 mb-4 px-8 pt-8 shrink-0">
+            <ContainerInstrument plain className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-va-off-white/50 px-2 py-1 rounded-full border border-black/[0.03]">
+                {voice.native_lang?.includes('BE') && (
+                  <div className="w-4 h-4 rounded-full overflow-hidden border border-black/5 shrink-0">
+                    <div className="flex h-full w-full">
+                      <div className="w-1/3 h-full bg-black" />
+                      <div className="w-1/3 h-full bg-[#FAE042]" />
+                      <div className="w-1/3 h-full bg-[#ED2939]" />
+                    </div>
+                  </div>
+                )}
+                {voice.native_lang?.includes('NL') && !voice.native_lang?.includes('BE') && (
+                  <div className="w-4 h-4 rounded-full overflow-hidden border border-black/5 shrink-0">
+                    <div className="flex flex-col h-full w-full">
+                      <div className="h-1/3 w-full bg-[#AE1C28]" />
+                      <div className="h-1/3 w-full bg-white" />
+                      <div className="h-1/3 w-full bg-[#21468B]" />
+                    </div>
+                  </div>
+                )}
+                {voice.native_lang?.includes('FR') && !voice.native_lang?.includes('BE') && (
+                  <div className="w-4 h-4 rounded-full overflow-hidden border border-black/5 shrink-0">
+                    <div className="flex h-full w-full">
+                      <div className="w-1/3 h-full bg-[#002395]" />
+                      <div className="w-1/3 h-full bg-white" />
+                      <div className="w-1/3 h-full bg-[#ED2939]" />
+                    </div>
+                  </div>
+                )}
+                <TextInstrument className="text-[13px] font-bold text-va-black/60 tracking-tight">
+                  <VoiceglotText 
+                    translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} 
+                    defaultText={
+                      voice.native_lang === 'nl-BE' ? 'Vlaams' : 
+                      voice.native_lang === 'nl-NL' ? 'Nederlands' : 
+                      voice.native_lang === 'fr-FR' ? 'Frans' : 
+                      voice.native_lang === 'fr-BE' ? 'Frans (BE)' :
+                      voice.native_lang || ''
+                    } 
+                  />
+                  {masterControlState.journey === 'telephony' && voice.extra_langs && (
+                    <span className="text-va-black/20 font-light ml-1">
+                      + {voice.extra_langs.split(',').length} talen
+                    </span>
+                  )}
+                </TextInstrument>
+              </div>
+              <TextInstrument className="text-[14px] font-medium text-primary tracking-tight flex items-center gap-1.5">
+                <span className="text-[10px] font-bold tracking-[0.1em] text-primary/40 uppercase">Levering:</span>
+                {deliveryInfo.formattedShort}
+              </TextInstrument>
             </ContainerInstrument>
-            <TextInstrument className="text-2xl font-light tracking-tighter text-va-black">€{displayPrice}</TextInstrument>
+        </ContainerInstrument>
+
+          <ContainerInstrument plain className="px-8 pb-8 flex flex-col flex-grow">
+            {console.log(`VoiceCard [${voice.display_name}] tone:`, voice.tone_of_voice)}
+            <div className="flex-grow">
+              {voice.tone_of_voice && (
+                <div className="flex flex-wrap gap-1.5 mb-3 animate-in fade-in slide-in-from-left-2 duration-500">
+                  {voice.tone_of_voice.split(',').slice(0, 3).map((tone, i) => (
+                    <span key={i} className="text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10">
+                      {tone.trim()}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-tight mb-1 group-hover:text-primary transition-colors truncate">
+                <VoiceglotText  
+                  translationKey={`actor.${voice.id}.name`} 
+                  defaultText={voice.display_name} 
+                  noTranslate={true} 
+                />
+              </HeadingInstrument>
+              
+              {voice.clients && (
+                <TextInstrument className="text-[11px] font-bold tracking-[0.1em] text-va-black/20 uppercase mb-6 truncate">
+                  {voice.clients.split(',').slice(0, 3).join(' • ')}
+                </TextInstrument>
+              )}
+              
+              <ContainerInstrument plain className="max-h-[80px] overflow-hidden mb-8">
+                <TextInstrument className="text-va-black/40 text-[16px] font-light leading-relaxed italic line-clamp-2">
+                  {sectorDemo ? (
+                    <>{sectorDemo}</>
+                  ) : (
+                    <VoiceglotText 
+                      translationKey={`actor.${voice.id}.bio`} 
+                      defaultText={cleanDescription(voice.tagline || (voice as any).tagline || voice.bio || (voice as any).description || 'Professionele voice-over voor al uw projecten.')} 
+                    />
+                  )}
+                </TextInstrument>
+              </ContainerInstrument>
+            </div>
+
+            <ContainerInstrument plain className="flex justify-between items-center pt-6 border-t border-black/[0.03] mt-auto">
+            <div className="flex flex-col">
+              <TextInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase mb-1">
+                Vanaf
+              </TextInstrument>
+              <TextInstrument className="text-3xl font-light tracking-tighter text-va-black leading-none">
+                €{displayPrice.price}
+              </TextInstrument>
+            </div>
+            <ButtonInstrument 
+              onClick={(e) => {
+                e.stopPropagation();
+                playClick('success');
+                if (typeof window !== 'undefined') {
+                  window.location.href = `/voice/${voice.slug}`;
+                }
+              }}
+              className="flex items-center justify-center gap-3 text-[14px] font-bold tracking-widest text-white group/btn h-[56px] px-6 bg-va-black hover:bg-primary rounded-[12px] transition-all shadow-[0_10px_30px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_rgba(233,30,99,0.3)]"
+            >
+              <VoiceglotText translationKey="common.order_fast" defaultText="Kies stem" />
+              <ArrowRight size={18} strokeWidth={2.5} className="group-hover/btn:translate-x-1.5 transition-transform" />
+            </ButtonInstrument>
           </ContainerInstrument>
-          <ButtonInstrument 
-            onClick={(e) => {
-              e.stopPropagation();
-              playClick('success');
-              if (typeof window !== 'undefined') {
-                window.location.href = `/voice/${voice.slug}`;
-              }
-            }}
-            className="w-full sm:w-auto bg-va-dark text-white px-6 py-4 rounded-[10px] text-[15px] font-light tracking-widest hover:bg-primary transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-xl shadow-black/5 flex items-center justify-center gap-2 "
-          >
-            <VoiceglotText  translationKey="common.order_fast" defaultText="Snel Bestellen" />
-            <VoiceglotImage  
-              src="/assets/common/branding/icons/FORWARD.svg" 
-              alt="Order" 
-              width={14} 
-              height={14} 
-              className="brightness-0 invert"
-            />
-          </ButtonInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
-    </BentoCard>
+    </ContainerInstrument>
   );
 };

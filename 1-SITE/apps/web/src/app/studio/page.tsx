@@ -1,4 +1,4 @@
-import { WorkshopGrid } from "@/components/studio/WorkshopGrid";
+import { WorkshopCalendar } from "@/components/studio/WorkshopCalendar";
 import { WorkshopCarousel } from "@/components/studio/WorkshopCarousel";
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
 import {
@@ -10,17 +10,14 @@ import {
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
+import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
+import { StudioVideoPlayer } from "@/components/ui/StudioVideoPlayer";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { db } from '@db';
-import { workshops } from '@db/schema';
-import { desc } from 'drizzle-orm';
+import { getWorkshops } from "@/lib/api-server";
+import { ArrowRight, BookOpen, MessageSquare, Mic } from 'lucide-react';
 import { Metadata } from 'next';
 import Image from "next/image";
 import Link from "next/link";
-import { WorkshopCalendar } from "@/components/studio/WorkshopCalendar";
-import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
-import { VideoPlayer } from "@/components/academy/VideoPlayer";
-import { Star, Mic, BookOpen, MessageSquare } from 'lucide-react';
 
 /**
  * STUDIO
@@ -43,80 +40,76 @@ export const metadata: Metadata = {
 };
 
 export default async function StudioPage() {
-  // 🎙️ Fetch Workshops
-  let activeWorkshops: any[] = [];
-  try {
-    activeWorkshops = await db.query.workshops.findMany({
-      limit: 10,
-      orderBy: [desc(workshops.date)],
-      with: {
-        media: true
-      }
-    }) || [];
-  } catch (error) {
-    console.warn('⚠️ Drizzle failed on StudioPage, falling back to empty list:', error);
-    activeWorkshops = [];
-  }
+  // 🎙️ Fetch Workshops with Fallback for DB errors
+  const activeWorkshops = await getWorkshops();
+
+  // 📅 VOLGORDE MANDATE: Eerstvolgende workshop eerst, daarna alfabetisch zonder datum
+  activeWorkshops.sort((a, b) => {
+    const nextA = a.editions?.[0]?.date;
+    const nextB = b.editions?.[0]?.date;
+
+    if (nextA && nextB) {
+      return new Date(nextA).getTime() - new Date(nextB).getTime();
+    }
+    if (nextA) return -1;
+    if (nextB) return 1;
+
+    // Beiden geen datum -> alfabetisch op titel
+    return (a.title || '').localeCompare(b.title || '');
+  });
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white">
-      <LiquidBackground strokeWidth={1.5} />
+      <LiquidBackground />
       
-      {/* 🚀 HERO SECTION WITH PROMOVIDEO */}
-      <SectionInstrument className="relative pt-48 pb-32 overflow-hidden">
-        <ContainerInstrument className="max-w-7xl">
-          <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
-            {/* LINKS: PROMOVIDEO */}
-            <ContainerInstrument className="lg:col-span-7 relative group">
-              <ContainerInstrument className="relative aspect-video rounded-[32px] overflow-hidden shadow-aura-lg border border-black/5 bg-va-black">
-                <VideoPlayer 
-                  url="/assets/studio/workshops/videos/workshop_beginners_aftermovie.mp4" 
-                  poster="/assets/studio/hero-poster.jpg"
+      {/* HERO SECTION WITH PROMOVIDEO */}
+      <SectionInstrument className="voices-hero">
+        <ContainerInstrument plain className="voices-video-hero-grid">
+          {/* LINKS: VERTICAL PROMOVIDEO (40%) */}
+            <ContainerInstrument plain className="voices-hero-right group lg:order-1">
+              <ContainerInstrument plain className="voices-hero-visual-container">
+                <StudioVideoPlayer 
+                  url="/assets/studio/workshops/videos/workshop_studio_teaser.mp4" 
+                  subtitles="/assets/studio/workshops/subtitles/workshop_studio_teaser-nl.vtt"
+                  poster="/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"
+                  aspect="portrait"
+                  className="shadow-aura-lg border-none w-full h-full"
                 />
               </ContainerInstrument>
-              <ContainerInstrument className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] -z-10 animate-pulse" />
+              {/* Decorative elements */}
+              <ContainerInstrument plain className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] -z-10 animate-pulse" />
+              <ContainerInstrument plain className="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-[60px] -z-10" />
             </ContainerInstrument>
 
-            {/* RECHTS: TITEL & INTRO */}
-            <ContainerInstrument className="lg:col-span-5 space-y-10">
-              <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-md rounded-[20px] shadow-sm border border-black/[0.03]">
-                <TextInstrument className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <TextInstrument className="text-[13px] font-light tracking-[0.2em] text-black/60">
-                  <VoiceglotText translationKey="studio.hero.badge" defaultText="Voices Studio" />
-                </TextInstrument>
-              </ContainerInstrument>
-              
-              <HeadingInstrument level={1} className="text-6xl md:text-7xl lg:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
-                <VoiceglotText translationKey="studio.hero.title" defaultText="Workshops voor professionele sprekers." />
+            {/* RECHTS: TITEL & INTRO (60%) */}
+            <ContainerInstrument plain className="voices-hero-left lg:order-2">
+              <HeadingInstrument level={1} className="voices-hero-title font-light">
+                <VoiceglotText translationKey="studio.hero.title_v2" defaultText="Workshops voor professionele sprekers." />
               </HeadingInstrument>
               
-              <TextInstrument className="text-xl md:text-2xl text-black/40 font-light leading-relaxed tracking-tight max-w-md">
+              <TextInstrument className="voices-hero-subtitle font-light">
                 <VoiceglotText  
                   translationKey="studio.hero.subtitle" 
                   defaultText="Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden." 
                 />
               </TextInstrument>
 
-              <ContainerInstrument className="pt-4 flex items-center gap-8">
+              <ContainerInstrument plain className="pt-4">
                 <Link href="#workshops">
-                  <ButtonInstrument className="va-btn-pro !bg-va-black !text-white px-10 py-5 !rounded-[10px] font-light tracking-widest hover:bg-primary transition-all duration-500">
-                    <VoiceglotText translationKey="studio.hero.cta" defaultText="Bekijk aanbod" />
+                  <ButtonInstrument className="!bg-va-black !text-white px-12 py-6 !rounded-[10px] font-light tracking-widest hover:bg-primary transition-all duration-500 flex items-center gap-3 shadow-aura-lg">
+                    <VoiceglotText translationKey="studio.hero.cta" defaultText="Bekijk workshops" />
+                    <ArrowRight size={18} strokeWidth={1.5} />
                   </ButtonInstrument>
-                </Link>
-                <Link href="/studio/quiz" className="text-[15px] font-light tracking-widest text-black/30 hover:text-primary transition-colors flex items-center gap-3 group">
-                  <VoiceglotText translationKey="studio.hero.secondary" defaultText="Doe de quiz" />
-                  <Image src="/assets/common/branding/icons/FORWARD.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.3 }} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
-        </ContainerInstrument>
       </SectionInstrument>
 
       {/* 🎙️ WORKSHOP UITLEG & CAROUSEL */}
-      <SectionInstrument id="workshops" className="py-40 bg-va-off-white/50 border-y border-black/[0.03]">
-        <ContainerInstrument className="max-w-7xl">
-          <ContainerInstrument className="max-w-3xl mb-24 space-y-8">
+      <SectionInstrument id="workshops" className="py-40 bg-white border-y border-black/[0.03]">
+        <ContainerInstrument plain className="max-w-6xl mx-auto px-4 md:px-6">
+          <ContainerInstrument plain className="max-w-3xl mb-24 space-y-8 mx-auto text-center">
             <HeadingInstrument level={2} className="text-5xl md:text-6xl font-light tracking-tighter leading-none text-va-black">
               <VoiceglotText translationKey="studio.workshops.title" defaultText="Leer professioneler spreken met Bernadette en Johfrah" />
             </HeadingInstrument>
@@ -132,11 +125,11 @@ export default async function StudioPage() {
 
       {/* 🧩 DRIE PIJLERS SECTIE */}
       <SectionInstrument className="py-40 bg-white">
-        <ContainerInstrument className="max-w-7xl">
-          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <ContainerInstrument className="max-w-[1140px]">
+          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {/* 1. UITSPRAAK */}
-            <ContainerInstrument className="p-12 rounded-[32px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
-              <ContainerInstrument className="w-16 h-16 rounded-[15px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+            <ContainerInstrument className="p-12 rounded-[20px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
+              <ContainerInstrument className="w-16 h-16 rounded-[10px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
                 <MessageSquare strokeWidth={1.5} className="text-primary" size={32} />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 text-va-black">
@@ -148,8 +141,8 @@ export default async function StudioPage() {
             </ContainerInstrument>
 
             {/* 2. VOICE-OVER */}
-            <ContainerInstrument className="p-12 rounded-[32px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
-              <ContainerInstrument className="w-16 h-16 rounded-[15px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+            <ContainerInstrument className="p-12 rounded-[20px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
+              <ContainerInstrument className="w-16 h-16 rounded-[10px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
                 <Mic strokeWidth={1.5} className="text-primary" size={32} />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 text-va-black">
@@ -161,8 +154,8 @@ export default async function StudioPage() {
             </ContainerInstrument>
 
             {/* 3. STORYTELLING */}
-            <ContainerInstrument className="p-12 rounded-[32px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
-              <ContainerInstrument className="w-16 h-16 rounded-[15px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+            <ContainerInstrument className="p-12 rounded-[20px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
+              <ContainerInstrument className="w-16 h-16 rounded-[10px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
                 <BookOpen strokeWidth={1.5} className="text-primary" size={32} />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 text-va-black">
@@ -178,13 +171,13 @@ export default async function StudioPage() {
 
       {/* 🎓 ONTMOET JE INSTRUCTEURS (Kennismaking) */}
       <SectionInstrument className="py-48 bg-va-off-white/30 relative overflow-hidden">
-        <ContainerInstrument className="max-w-7xl relative z-10">
+        <ContainerInstrument className="max-w-[1140px] relative z-10">
           <ContainerInstrument className="text-center max-w-3xl mx-auto mb-32 space-y-6">
             <TextInstrument className="text-[15px] font-light tracking-[0.3em] text-primary/60">
               <VoiceglotText translationKey="studio.instructors.label" defaultText="Wij staan klaar om je te coachen" />
             </TextInstrument>
             <HeadingInstrument level={2} className="text-6xl md:text-7xl font-light tracking-tighter leading-none text-va-black">
-              <VoiceglotText translationKey="studio.instructors.title" defaultText="Ontmoet je instructeurs." />
+              <VoiceglotText translationKey="studio.instructors.title" defaultText="Ontmeet je instructeurs." />
             </HeadingInstrument>
             <TextInstrument className="text-xl text-black/40 font-light leading-relaxed">
               <VoiceglotText translationKey="studio.instructors.intro" defaultText="Bernadette Timmermans en Johfrah Lefebvre bieden workshops aan voor iedereen die zijn spreekvaardigheden naar een hoger niveau wil tillen." />
@@ -194,16 +187,16 @@ export default async function StudioPage() {
           <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-32">
             {/* BERNADETTE */}
             <ContainerInstrument className="group space-y-12">
-              <ContainerInstrument className="relative aspect-[4/5] rounded-[32px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
+              <ContainerInstrument className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
                 <Image  
-                  src="/assets/common/coaches/bernadette.jpg" 
+                  src="/assets/visuals/branding/branding-branding-photo-horizontal-2.jpg" 
                   alt="Bernadette Timmermans"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-1000"
                 />
                 <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
                 <ContainerInstrument className="absolute bottom-10 left-10">
-                  <TextInstrument className="text-white/60 text-[15px] font-light tracking-widest mb-2">
+                  <TextInstrument className="text-white/60 text-[15px] font-light tracking-widest mb-2 ">
                     <VoiceglotText translationKey="studio.instructor.bernadette.tagline" defaultText="VRT Stemcoach & Auteur" />
                   </TextInstrument>
                   <HeadingInstrument level={3} className="text-4xl font-light text-white tracking-tighter">Bernadette Timmermans</HeadingInstrument>
@@ -227,16 +220,16 @@ export default async function StudioPage() {
 
             {/* JOHFRAH */}
             <ContainerInstrument className="group space-y-12 md:mt-24">
-              <ContainerInstrument className="relative aspect-[4/5] rounded-[32px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
+              <ContainerInstrument className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
                 <Image  
-                  src="/assets/common/founder/johfrah-avatar-be.png" 
+                  src="/assets/visuals/branding/branding-branding-photo-horizontal-3.jpg" 
                   alt="Johfrah Lefebvre"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-1000"
                 />
                 <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
                 <ContainerInstrument className="absolute bottom-10 left-10">
-                  <TextInstrument className="text-white/60 text-[15px] font-light tracking-widest mb-2">
+                  <TextInstrument className="text-white/60 text-[15px] font-light tracking-widest mb-2 ">
                     <VoiceglotText translationKey="studio.instructor.johfrah.tagline" defaultText="Founder & Stemacteur" />
                   </TextInstrument>
                   <HeadingInstrument level={3} className="text-4xl font-light text-white tracking-tighter">Johfrah Lefebvre</HeadingInstrument>
@@ -259,17 +252,18 @@ export default async function StudioPage() {
             </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
+        <ContainerInstrument className="absolute top-1/2 left-0 w-full h-px bg-black/[0.03] -z-10" />
       </SectionInstrument>
 
       {/* 📅 KALENDER BENTO */}
       <SectionInstrument className="py-40 bg-white">
-        <ContainerInstrument className="max-w-6xl">
-          <BentoGrid strokeWidth={1.5} columns={3}>
+        <ContainerInstrument className="max-w-[1140px]">
+          <BentoGrid columns={3}>
             <BentoCard span="lg" className="bg-va-off-white rounded-[20px] shadow-aura border border-black/[0.02] overflow-hidden">
               <ContainerInstrument className="p-12">
                 <ContainerInstrument className="flex items-center gap-4 mb-8">
                   <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-primary/10 flex items-center justify-center">
-                    <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
+                    <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ opacity: 0.4 }} />
                   </ContainerInstrument>
                   <ContainerInstrument>
                     <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter leading-none text-va-black">
@@ -304,7 +298,7 @@ export default async function StudioPage() {
                 <Link  href="/studio/quiz">
                   <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group !rounded-[10px] font-light tracking-widest ">
                     <VoiceglotText translationKey="studio.bento.guide.cta" defaultText="Doe de quiz" />
-                    <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="group-hover:translate-x-2 transition-transform" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                    <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="group-hover:translate-x-2 transition-transform" />
                   </ButtonInstrument>
                 </Link>
               </ContainerInstrument>
@@ -316,7 +310,7 @@ export default async function StudioPage() {
 
       {/* 🌟 REVIEWS BENTO */}
       <SectionInstrument className="py-48 bg-va-off-white border-t border-black/[0.03]">
-        <ContainerInstrument className="max-w-6xl">
+        <ContainerInstrument className="max-w-[1140px]">
           <BentoCard span="full" className="bg-white rounded-[20px] border border-black/[0.02] p-16 shadow-aura">
             <ContainerInstrument className="max-w-4xl mb-20">
               <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-black/30 mb-8">

@@ -3,6 +3,7 @@ import { db } from '@db';
 import { translations } from '@db/schema';
 import { eq, and } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { workshops } from '@db/schema';
 
 /**
  * 🚀 VOICEGLOT ADMIN API
@@ -17,6 +18,21 @@ export async function POST(req: Request) {
 
     if (!key || !text || !lang) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // 🎙️ WORKSHOP TITLE/DESC SYNC MANDATE
+    // Als de key begint met 'studio.workshop.', synchroniseren we direct naar de workshops tabel
+    if (key.startsWith('studio.workshop.')) {
+      const parts = key.split('.');
+      const workshopId = parseInt(parts[2]);
+      const field = parts[3]; // 'title' of 'description'
+
+      if (!isNaN(workshopId) && (field === 'title' || field === 'description')) {
+        console.log(`🛠️ SYNCING WORKSHOP ${workshopId} FIELD ${field} TO SUPABASE...`);
+        await db.update(workshops)
+          .set({ [field]: text })
+          .where(eq(workshops.id, workshopId));
+      }
     }
 
     // Check if translation exists

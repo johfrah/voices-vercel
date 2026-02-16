@@ -44,12 +44,14 @@ export const WorkshopCarousel: React.FC<WorkshopCarouselProps> = ({ workshops })
       {/* Carousel Container */}
       <ContainerInstrument 
         ref={scrollRef}
-        className="flex gap-8 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-12 -mx-4 px-4 lg:-mx-12 lg:px-12"
+        plain
+        className="flex gap-[30px] overflow-x-auto snap-x snap-mandatory no-scrollbar pb-12"
       >
         {workshops.map((workshop) => (
           <ContainerInstrument 
             key={workshop.id} 
-            className="min-w-[300px] md:min-w-[400px] snap-start"
+            plain
+            className="min-w-[300px] md:min-w-[400px] snap-start self-stretch"
           >
             <WorkshopCard workshop={workshop} />
           </ContainerInstrument>

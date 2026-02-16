@@ -5,27 +5,34 @@ import { cn } from '@/lib/utils';
 import { 
   ContainerInstrument, 
   ButtonInstrument, 
-  TextInstrument, 
-  HeadingInstrument 
+  TextInstrument 
 } from '@/components/ui/LayoutInstruments';
-import { LucideX, LucideChevronRight } from 'lucide-react';
+import { LucideX, LucideChevronRight, Mic2, Users } from 'lucide-react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useSonicDNA } from '@/lib/sonic-dna';
 
+/**
+ * PREMIUM CASTING DOCK (GOD MODE 2026)
+ * Focus: High-End Curation & Action
+ * Volgens Chris-Protocol: 100ms feedback, Liquid DNA
+ */
 export const CastingDock = () => {
   const { state, toggleActorSelection } = useVoicesState();
+  const { playClick } = useSonicDNA();
   const selectedActors = state.selected_actors;
   const isVisible = selectedActors.length > 0;
 
-  const removeActor = (id: number) => {
-    const actor = selectedActors.find(a => a.id === id);
-    if (actor) toggleActorSelection(actor);
+  const removeActor = (e: React.MouseEvent, actor: any) => {
+    e.stopPropagation();
+    playClick('soft');
+    toggleActorSelection(actor);
   };
 
   const startCasting = () => {
-    // Navigeer naar de geconsolideerde Casting Launchpad
+    playClick('pro');
     window.location.href = '/casting/launchpad/';
   };
 
@@ -33,53 +40,76 @@ export const CastingDock = () => {
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-2xl"
+          initial={{ y: 100, opacity: 0, scale: 0.9 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          exit={{ y: 100, opacity: 0, scale: 0.9 }}
+          transition={{ type: "spring", damping: 20, stiffness: 300 }}
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[150] w-full max-w-xl px-6 pointer-events-none"
         >
-          <ContainerInstrument className="bg-va-black text-white rounded-[25px] p-3 md:p-4 shadow-aura-lg flex items-center justify-between gap-3 border border-white/10 backdrop-blur-md bg-va-black/90">
-            <ContainerInstrument className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 flex-1">
-              <ContainerInstrument className="flex -space-x-3 mr-1 shrink-0">
-                {selectedActors.map((actor) => (
-                  <ContainerInstrument 
+          <ContainerInstrument 
+            plain
+            className="bg-va-black shadow-[0_32px_128px_rgba(0,0,0,0.8)] rounded-full p-2 border border-white/10 pointer-events-auto relative overflow-hidden flex items-center gap-4 backdrop-blur-2xl bg-va-black/90"
+          >
+            {/* 👥 ACTOR AVATARS (Liquid Stack) */}
+            <div className="flex items-center pl-2 shrink-0">
+              <div className="flex -space-x-3">
+                {selectedActors.slice(0, 5).map((actor, idx) => (
+                  <motion.div 
                     key={actor.id}
-                    className="relative group"
+                    layoutId={`avatar-${actor.id}`}
+                    className="relative w-12 h-14 rounded-full overflow-hidden border-2 border-va-black bg-va-off-white shadow-xl group cursor-pointer"
+                    onClick={(e) => removeActor(e, actor)}
                   >
-                    <ContainerInstrument className="relative w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-va-black bg-va-off-white overflow-hidden">
-                      {actor.photoUrl ? (
-                        <Image  src={actor.photoUrl} alt={actor.firstName} fill className="object-cover" />
-                      ) : (
-                        <ContainerInstrument className="w-full h-full flex items-center justify-center text-va-black font-light text-[15px] md:text-base">
-                          {actor.firstName[0]}
-                        </ContainerInstrument>
-                      )}
-                    </ContainerInstrument>
-                  </ContainerInstrument>
+                    {actor.photoUrl ? (
+                      <Image src={actor.photoUrl} alt={actor.firstName} fill className="object-cover transition-transform group-hover:scale-110" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-va-black font-bold text-sm">
+                        {actor.firstName[0]}
+                      </div>
+                    )}
+                    {/* Remove Overlay on Hover */}
+                    <div className="absolute inset-0 bg-primary/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <LucideX size={14} className="text-white" strokeWidth={3} />
+                    </div>
+                  </motion.div>
                 ))}
-              </ContainerInstrument>
-              <ContainerInstrument className="flex flex-col min-w-0">
-                <TextInstrument className="text-white font-light leading-none text-[15px] md:text-base truncate">
+                {selectedActors.length > 5 && (
+                  <div className="relative w-12 h-12 rounded-full bg-va-off-white border-2 border-va-black flex items-center justify-center text-va-black font-bold text-xs shadow-xl z-10">
+                    +{selectedActors.length - 5}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 📝 SELECTION INFO */}
+            <div className="flex-1 min-w-0 py-1">
+              <div className="flex items-center gap-2">
+                <Users size={14} className="text-primary" />
+                <TextInstrument className="text-white font-light text-[17px] tracking-tight truncate leading-tight block">
                   {selectedActors.length} {selectedActors.length === 1 ? 'stem' : 'stemmen'}
                 </TextInstrument>
-                <TextInstrument className="text-white/40 text-[15px] md:text-[15px] mt-1 truncate font-light"><VoiceglotText  translationKey="auto.castingdock.klaar_voor_jouw_demo.c40c51" defaultText="Klaar voor jouw demo" /></TextInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
+              </div>
+              <TextInstrument className="text-white/40 text-[11px] font-bold tracking-[0.1em] uppercase truncate mt-0.5 ml-5">
+                <VoiceglotText translationKey="auto.castingdock.jouw_selectie" defaultText="Jouw selectie" />
+              </TextInstrument>
+            </div>
 
-            <ButtonInstrument 
+            {/* 🕹️ ACTION BUTTON */}
+            <button 
               onClick={startCasting}
-              className="bg-primary hover:bg-primary/90 text-white px-4 md:px-6 py-3 rounded-[18px] flex items-center gap-2 whitespace-nowrap shrink-0 h-12 md:h-auto"
+              className="bg-primary hover:bg-primary/90 text-white h-14 px-6 rounded-full flex items-center gap-3 transition-all hover:scale-105 active:scale-95 shadow-xl group/btn shrink-0"
             >
-              <Image  
-                src="/assets/common/branding/icons/MIC.svg" 
-                alt="Mic" 
-                width={18} 
-                height={18} 
-                className="brightness-0 invert"
-              />
-              <TextInstrument className="text-[15px] md:text-base font-light tracking-wider"><VoiceglotText  translationKey="auto.castingdock.gratis_proefopname.5a39e6" defaultText="Gratis proefopname" /></TextInstrument>
-              <LucideChevronRight strokeWidth={1.5} size={16} className="md:w-[18px] md:h-[18px]" />
-            </ButtonInstrument>
+              <Mic2 size={20} strokeWidth={2} className="group-hover:animate-pulse" />
+              <div className="flex flex-col items-start">
+                <span className="text-[14px] font-bold tracking-widest uppercase leading-none">
+                  <VoiceglotText translationKey="auto.castingdock.casting" defaultText="Casting" />
+                </span>
+                <span className="text-[10px] font-medium opacity-70 leading-none mt-1">
+                  <VoiceglotText translationKey="auto.castingdock.proefopname" defaultText="Gratis proefopname" />
+                </span>
+              </div>
+              <LucideChevronRight size={18} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform" />
+            </button>
           </ContainerInstrument>
         </motion.div>
       )}

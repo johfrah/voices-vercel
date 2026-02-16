@@ -110,14 +110,27 @@ export class AgencyDataBridge {
 
     const mappedResults = results.map(actor => {
       // 🛡️ LOUIS: photoId (Supabase Storage) prioritized over dropboxUrl/legacy URLs.
+      // 🛡️ 2026 UPDATE: Check first for local optimized photos in visuals/active/voicecards/
       let photoUrl: string | null = null;
+      
+      // Try to find a local optimized version first based on actor ID
+      const actorId = actor.wpProductId || actor.id;
+      
+      // 🛡️ MOBY MANDATE: Use the new voicecards directory with strict naming convention
+      const localVoicecardPath = `/assets/visuals/active/voicecards/${actorId}-${actor.firstName?.toLowerCase()}-photo-square-1.jpg`;
+      
+      // Default fallback chain
+      photoUrl = localVoicecardPath; 
+
       if (actor.photoId) {
         const mediaItem = mediaResults.find(m => m.id === actor.photoId);
         if (mediaItem) {
-          photoUrl = mediaItem.filePath.startsWith('http') ? mediaItem.filePath : `${ASSET_BASE_URL.replace(/\/$/, '')}/${mediaItem.filePath.replace(/^\//, '')}`;
+          const resolvedPath = mediaItem.filePath.startsWith('http') ? mediaItem.filePath : `${ASSET_BASE_URL.replace(/\/$/, '')}/${mediaItem.filePath.replace(/^\//, '')}`;
+          // If we have a photoId, it's a strong manual link, but we still prefer the localVoicecardPath if it exists (checked on frontend)
+          if (!photoUrl) photoUrl = resolvedPath;
         }
       }
-      if (!photoUrl && actor.dropboxUrl) {
+      if ((!photoUrl || photoUrl === localVoicecardPath) && actor.dropboxUrl) {
         photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${ASSET_BASE_URL}${actor.dropboxUrl}`;
       }
 
@@ -129,6 +142,7 @@ export class AgencyDataBridge {
         native_lang: actor.nativeLang,
         country: actor.country,
         photo_url: photoUrl,
+        local_photo_path: localVoicecardPath, // Pass the path for fallback logic
         starting_price: parseFloat(actor.priceUnpaid || '0'),
         voice_score: actor.voiceScore,
         tagline: actor.tagline,
@@ -150,7 +164,7 @@ export class AgencyDataBridge {
       count: mappedResults.length,
       results: mappedResults as any,
       filters: {
-        genders: ['Mannelijke stem', 'Vrouwelijke stem'],
+        genders: ['Mannelijk', 'Vrouwelijk'],
         languages: ['Vlaams', 'Nederlands', 'Frans', 'Engels', 'Duits', 'Pools', 'Spaans', 'Italiaans', 'Portugees'],
         styles: ['Corporate', 'Commercial', 'Narrative', 'Energetic', 'Warm']
       },

@@ -102,8 +102,7 @@ export async function POST(request: NextRequest) {
   } catch (err: any) {
     console.error('❌ MAT TRACKING ERROR:', {
       message: err.message,
-      stack: err.stack,
-      body: body // body is defined in the outer scope now
+      stack: err.stack
     });
     return NextResponse.json({ success: false, error: err.message || 'Internal Server Error' }, { status: 500 });
   }

@@ -11,13 +11,12 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { db } from '@db';
 import { workshops } from '@db/schema';
-import { desc, gte } from 'drizzle-orm';
+import { desc } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
 export default async function KalenderPage() {
   const upcomingWorkshops = await db.select().from(workshops)
-    .where(gte(workshops.date, new Date()))
     .orderBy(desc(workshops.date))
     .limit(20);
 
@@ -36,7 +35,7 @@ export default async function KalenderPage() {
           </TextInstrument>
         </ContainerInstrument>
 
-        <WorkshopCalendar strokeWidth={1.5} workshops={upcomingWorkshops} />
+        <WorkshopCalendar workshops={upcomingWorkshops} />
       </SectionInstrument>
     </PageWrapperInstrument>
   );

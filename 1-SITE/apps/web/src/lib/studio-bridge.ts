@@ -1,5 +1,5 @@
 import { db } from "@db";
-import { instructors, orderItems, orders, reviews, workshopInterest, workshops, workshopEditions, workshopGallery } from "@db/schema";
+import { instructors, orderItems, orders, reviews, workshopInterest, workshops, workshopEditions, workshopGallery, costs } from "@db/schema";
 import { and, count, desc, eq, sql } from "drizzle-orm";
 import { StudioDashboardData, Workshop } from "./api";
 
@@ -19,9 +19,13 @@ export interface WorkshopCapacity {
 }
 
 export interface FinanceStats {
-  totalCosts: number;
   totalRevenue: number;
-  netRevenue: number;
+  pendingRevenue: number;
+  externalCosts: number;
+  partnerPayouts: number;
+  netProfit: number; // De "Pot"
+  partnerShare: number; // 50/50 split aandeel
+  forecastProfit?: number; // 📈 Prognose winst
   marginPercentage: number;
 }
 
@@ -50,6 +54,24 @@ export interface WorkshopDetail extends Workshop {
 
 export class StudioDataBridge {
   /**
+   * Haalt een specifieke workshop op basis van ID
+   */
+  static async getWorkshopById(id: number) {
+    try {
+      return await db.query.workshops.findFirst({
+        where: eq(workshops.id, id),
+        with: {
+          media: true,
+          instructor: true
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching workshop by id:', error);
+      return null;
+    }
+  }
+
+  /**
    * Haalt een specifieke workshop op basis van slug
    * 🛡️ VOICES OS: 100% Native Drizzle
    */
@@ -63,7 +85,10 @@ export class StudioDataBridge {
             orderBy: [workshopEditions.date],
             with: {
               location: true,
-              instructor: true
+              instructor: true,
+              participants: {
+                columns: { id: true }
+              }
             }
           },
           gallery: {
@@ -80,7 +105,12 @@ export class StudioDataBridge {
       // Haal instructeur op als die gekoppeld is
       let instructor = null;
       if (dbWorkshop.instructorId) {
-        const [dbInstructor] = await db.select().from(instructors).where(eq(instructors.id, dbWorkshop.instructorId)).limit(1);
+        const dbInstructor = await db.query.instructors.findFirst({
+          where: eq(instructors.id, dbWorkshop.instructorId),
+          with: {
+            photo: true
+          }
+        });
         instructor = dbInstructor;
       }
 
@@ -106,18 +136,22 @@ export class StudioDataBridge {
         // @ts-ignore - Voorbereid op schema uitbreidingen
         dates: dbWorkshop.editions?.map(e => ({
           date_raw: e.date.toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }),
-          time_start: e.date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }),
-          time_end: e.endDate ? e.endDate.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }) : null,
+          time: e.date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }) + (e.endDate ? ' - ' + e.endDate.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }) : ''),
           price: e.price || dbWorkshop.price || '0',
-          location: e.location?.name || 'Voices Studio Gent',
+          location: e.location?.name || 'Locatie volgt',
           location_address: e.location?.address,
           instructor: e.instructor?.name || instructor?.name,
           capacity: e.capacity || 8,
+          filled: e.participants?.length || 0, // 👥 Deelnemers koppelen voor de chip
+          includes_lunch: e.meta?.includes_lunch ?? true,
+          includes_certificate: e.meta?.includes_certificate ?? true,
           program: e.program || dbWorkshop.program // 👈 Gebruik editie-specifiek programma of fallback naar workshop default
         })) || [],
+        aftermovie_url: dbWorkshop.meta?.aftermovie_url,
+        aftermovie_description: dbWorkshop.meta?.aftermovie_beschrijving,
         instructeur: instructor?.name,
         about_me: instructor?.bio,
-        voice_header: null, // TODO: Link naar media via instructor.photoId
+        voice_header: instructor?.photo?.filePath ? `/assets/${instructor.photo.filePath}` : null,
         reviews: dbReviews.map(r => ({
           name: r.authorName,
           text: r.textNl || r.textEn,
@@ -140,7 +174,7 @@ export class StudioDataBridge {
    * Haalt de volledige dashboard configuratie op (100% Native)
    * 🛡️ VOICES OS: WordPress-vrij
    */
-  static async getDashboardData(tab: string = 'funnel'): Promise<StudioDashboardData               & { _nuclear: boolean }> {
+  static async getDashboardData(tab: string = 'funnel'): Promise<StudioDashboardData                 & { _nuclear: boolean }> {
     try {
       // 1. Haal workshops op uit de database
       const dbWorkshops = await db.select().from(workshops).orderBy(desc(workshops.date)).limit(20);
@@ -150,12 +184,19 @@ export class StudioDataBridge {
       const upcoming = dbWorkshops.filter(w => new Date(w.date) > new Date()).length;
       const completed = total - upcoming;
 
-      // 3. Haal omzet data op via orders
+      // 3. Haal omzet data op via orders (EXCL BTW)
       const studioOrders = await db.select()
         .from(orders)
-        .where(eq(orders.journey, 'studio'));
+        .where(and(
+          eq(orders.journey, 'studio'),
+          sql`${orders.status} IN ('completed', 'wc-completed', 'processing', 'wc-processing')`
+        ));
       
-      const totalRevenue = studioOrders.reduce((acc, order) => acc + parseFloat(order.total || '0'), 0);
+      const totalRevenue = studioOrders.reduce((acc, order) => {
+        const total = parseFloat(order.total || '0');
+        const tax = parseFloat((order.rawMeta as any)?._order_tax || '0');
+        return acc + (total - tax);
+      }, 0);
 
       return {
         header: {
@@ -222,20 +263,53 @@ export class StudioDataBridge {
 
   /**
    * Haalt financiële statistieken op (Native Logic)
+   * 🛡️ VOICES OS: Onderscheid tussen Externe Kosten en Partner Payouts.
    */
   static async getFinanceStats(): Promise<FinanceStats> {
     try {
-      const studioOrders = await db.select().from(orders).where(eq(orders.journey, 'studio'));
+      const studioOrders = await db.select().from(orders).where(and(
+        eq(orders.journey, 'studio'),
+        sql`${orders.status} IN ('completed', 'wc-completed', 'processing', 'wc-processing', 'wc-onbetaald')`
+      ));
+      const studioCosts = await db.select().from(costs).where(eq(costs.journey, 'studio'));
       
-      const totalRevenue = studioOrders.reduce((acc, o) => acc + parseFloat(o.total || '0'), 0);
-      const totalCosts = studioOrders.reduce((acc, o) => acc + parseFloat(o.totalCost || '0'), 0);
-      const netRevenue = totalRevenue - totalCosts;
-      const marginPercentage = totalRevenue > 0 ? (netRevenue / totalRevenue) * 100 : 0;
+      // Bereken omzet EXCL BTW
+      let totalRevenue = 0;
+      let pendingRevenue = 0;
 
-      return { totalCosts, totalRevenue, netRevenue, marginPercentage };
+      studioOrders.forEach(o => {
+        const total = parseFloat(o.total || '0');
+        const tax = parseFloat((o.rawMeta as any)?._order_tax || '0');
+        const net = total - tax;
+
+        if (o.status === 'wc-onbetaald') {
+          pendingRevenue += net;
+        } else {
+          totalRevenue += net;
+        }
+      });
+      
+      // Splits kosten in Externe Kosten en Partner Payouts
+      const externalCosts = studioCosts
+        .filter(c => !c.isPartnerPayout)
+        .reduce((acc, c) => acc + parseFloat(c.amount || '0'), 0);
+        
+      const partnerPayouts = studioCosts
+        .filter(c => c.isPartnerPayout)
+        .reduce((acc, c) => acc + parseFloat(c.amount || '0'), 0);
+
+      const netProfit = totalRevenue - externalCosts - partnerPayouts;
+      const partnerShare = netProfit / 2; // 🤝 De 50/50 split
+      
+      // 📈 Prognose: Gerealiseerd + Onbetaald
+      const forecastProfit = netProfit + pendingRevenue;
+      
+      const marginPercentage = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
+
+      return { totalRevenue, pendingRevenue, externalCosts, partnerPayouts, netProfit, partnerShare, forecastProfit, marginPercentage };
     } catch (error) {
       console.error("Core Logic Error (Finance):", error);
-      return { totalCosts: 0, totalRevenue: 0, netRevenue: 0, marginPercentage: 0 };
+      return { totalRevenue: 0, pendingRevenue: 0, externalCosts: 0, partnerPayouts: 0, netProfit: 0, marginPercentage: 0 };
     }
   }
 
@@ -469,6 +543,74 @@ export class StudioDataBridge {
   }
 
   /**
+   * Haalt ALLE edities op (zowel verleden als toekomst)
+   * 🛡️ VOICES OS: Voor Studio Admin
+   */
+  static async getAllEditions() {
+    try {
+      return await db.query.workshopEditions.findMany({
+        with: {
+          workshop: true,
+          location: true,
+          instructor: true
+        },
+        orderBy: [desc(workshopEditions.date)]
+      });
+    } catch (error) {
+      console.error('Error fetching all editions:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Haalt alle kosten op voor een specifieke workshop editie
+   */
+  static async getCostsByEditionId(editionId: number) {
+    try {
+      return await db.query.costs.findMany({
+        where: and(
+          eq(costs.workshopEditionId, editionId),
+          eq(costs.journey, 'studio')
+        ),
+        orderBy: [desc(costs.createdAt)]
+      });
+    } catch (error) {
+      console.error('Error fetching costs by editionId:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Haalt financiële statistieken op per journey
+   */
+  static async getFinancialStatsByJourney(journey: 'studio' | 'agency' | 'academy') {
+    try {
+      // 1. Haal alle orders op voor deze journey (EXCL BTW)
+      const journeyOrders = await db.select().from(orders).where(and(
+        eq(orders.journey, journey),
+        sql`${orders.status} IN ('completed', 'wc-completed', 'processing', 'wc-processing')`
+      ));
+      
+      // 2. Haal alle kosten op voor deze journey
+      const journeyCosts = await db.select().from(costs).where(eq(costs.journey, journey));
+
+      const totalRevenue = journeyOrders.reduce((acc, o) => {
+        const total = parseFloat(o.total || '0');
+        const tax = parseFloat((o.rawMeta as any)?._order_tax || '0');
+        return acc + (total - tax);
+      }, 0);
+      const totalCosts = journeyCosts.reduce((acc, c) => acc + parseFloat(c.amount || '0'), 0);
+      const netRevenue = totalRevenue - totalCosts;
+      const marginPercentage = totalRevenue > 0 ? (netRevenue / totalRevenue) * 100 : 0;
+
+      return { totalRevenue, totalCosts, netRevenue, marginPercentage };
+    } catch (error) {
+      console.error(`Error fetching financial stats for ${journey}:`, error);
+      return { totalRevenue: 0, totalCosts: 0, netRevenue: 0, marginPercentage: 0 };
+    }
+  }
+
+  /**
    * Haalt actieve chat-conversaties op voor een instructeur
    */
   static async getInstructorConversations(instructorId: number) {
@@ -485,4 +627,121 @@ export class StudioDataBridge {
       return [];
     }
   }
+
+  /**
+   * Haalt alle deelnemers op die geen editie hebben of bij een geannuleerde editie horen
+   */
+  static async getOrphanedParticipants() {
+    try {
+      return await db.query.orderItems.findMany({
+        where: (oi, { isNull, exists, eq, and, or }) => {
+          // Wees = geen editionId OF de gekoppelde editie is geannuleerd
+          return and(
+            eq(sql`(SELECT journey FROM orders WHERE id = ${oi.orderId})`, 'studio'),
+            or(
+              isNull(oi.editionId),
+              sql`EXISTS (SELECT 1 FROM workshop_editions WHERE id = ${oi.editionId} AND status = 'cancelled')`
+            )
+          );
+        },
+        with: {
+          order: true,
+          user: true
+        },
+        orderBy: [desc(sql`(SELECT created_at FROM orders WHERE id = ${orderItems.orderId})`)]
+      });
+    } catch (error) {
+      console.error('Error fetching orphaned participants:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Haalt alle hoofd-workshops op (voor dropdowns)
+   */
+  static async getWorkshops() {
+    try {
+      return await db.query.workshops.findMany({
+        orderBy: [workshops.title],
+        with: {
+          media: true,
+          instructor: true,
+          editions: {
+            where: eq(workshopEditions.status, 'upcoming'),
+            orderBy: [workshopEditions.date],
+            with: {
+              location: true,
+              participants: {
+                columns: { id: true }
+              }
+            }
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching workshops:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Maakt een nieuwe workshop editie aan
+   */
+  static async createEdition(data: any) {
+    try {
+      const [newEdition] = await db.insert(workshopEditions).values(data).returning();
+      return newEdition;
+    } catch (error) {
+      console.error('Error creating edition:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Verplaatst een deelnemer (order_item) naar een andere editie
+   */
+  static async moveParticipant(orderItemId: number, newEditionId: number) {
+    try {
+      const [updatedItem] = await db.update(orderItems)
+        .set({ editionId: newEditionId })
+        .where(eq(orderItems.id, orderItemId))
+        .returning();
+      return updatedItem;
+    } catch (error) {
+      console.error('Error moving participant:', error);
+      throw error;
+    }
+  }
+
+
+  /**
+   * Haalt alle locaties op
+   */
+  static async getLocations() {
+    try {
+      return await db.select().from(locations).orderBy(locations.name);
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Haalt alle instructeurs op (beheer)
+   */
+  static async getAllInstructors() {
+    try {
+      return await db.query.instructors.findMany({
+        with: {
+          photo: true,
+          user: true
+        },
+        orderBy: [instructors.name]
+      });
+    } catch (error) {
+      console.error('Error fetching all instructors:', error);
+      return [];
+    }
+  }
+
 }

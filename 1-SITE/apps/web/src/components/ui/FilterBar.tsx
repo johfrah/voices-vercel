@@ -2,20 +2,22 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { SearchFilters } from '@/types';
-import { useRouter, useSearchParams, useParams } from 'next/navigation';
-import { AgencyFilterSheet } from './AgencyFilterSheet';
-import { 
-  ButtonInstrument, 
-  ContainerInstrument, 
-  InputInstrument, 
-  OptionInstrument, 
-  SelectInstrument, 
-  TextInstrument 
-} from './LayoutInstruments';
-import { VoiceglotImage } from './VoiceglotImage';
-import { VoiceglotText } from './VoiceglotText';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { Phone, Video, Megaphone, Search, ChevronDown, Filter, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { ContainerInstrument, OptionInstrument, SelectInstrument, InputInstrument, ButtonInstrument, TextInstrument } from './LayoutInstruments';
+import { VoiceglotText } from './VoiceglotText';
+import { VoiceglotImage } from './VoiceglotImage';
+import { AgencyFilterSheet } from './AgencyFilterSheet';
+
+interface SearchFilters {
+  languages: string[];
+  genders: string[];
+  styles: string[];
+  categories: string[];
+}
 
 interface FilterBarProps {
   filters: SearchFilters;
@@ -25,8 +27,15 @@ interface FilterBarProps {
 export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedParams }) => {
   const router = useRouter();
   const { t } = useTranslation();
+  const { state, updateJourney } = useVoicesState();
   const searchParams = useSearchParams();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const journeys = [
+    { id: 'telephony', icon: Phone, label: 'Telefonie', key: 'journey.telephony' },
+    { id: 'video', icon: Video, label: 'Video', key: 'journey.video' },
+    { id: 'commercial', icon: Megaphone, label: 'Advertentie', key: 'journey.commercial' },
+  ] as const;
 
   const updateQuery = (newParams: Record<string, string | undefined>) => {
     const nextParams = new URLSearchParams(searchParams.toString());
@@ -55,104 +64,129 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
   }, [filters.languages, combinedParams.market]);
 
   return (
-    <ContainerInstrument className="space-y-6">
-      <ContainerInstrument className="bg-white/80 backdrop-blur-2xl border border-black/5 rounded-[20px] p-4 md:p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-4 group/search">
-        <ContainerInstrument className="flex-1 w-full relative group">
-          <ContainerInstrument className="absolute left-6 top-1/2 -translate-y-1/2">
-            <VoiceglotImage  
-              src="/assets/common/branding/icons/SEARCH.svg" 
-              alt="Search" 
-              width={20} 
-              height={20} 
-              className="opacity-20 group-focus-within:opacity-100 transition-opacity"
-              style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
+    <ContainerInstrument className="w-full max-w-5xl mx-auto">
+      <ContainerInstrument className="bg-white/80 backdrop-blur-2xl border border-black/5 rounded-[32px] p-2 shadow-aura flex flex-col gap-2">
+        
+        {/* Top Row: Journey Selector */}
+        <ContainerInstrument plain className="flex items-center justify-center p-1 bg-va-off-white/50 rounded-[26px]">
+          {journeys.map((j) => {
+            const isActive = state.current_journey === j.id;
+            const Icon = j.icon;
+
+            return (
+              <button
+                key={j.id}
+                onClick={() => updateJourney(j.id)}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-3 px-6 py-3 rounded-[22px] transition-all duration-500",
+                  isActive 
+                    ? "bg-va-black text-white shadow-lg scale-[1.02]" 
+                    : "text-va-black/40 hover:text-va-black hover:bg-white/50"
+                )}
+              >
+                <Icon size={16} strokeWidth={1.5} />
+                <span className="text-[13px] font-bold tracking-widest uppercase">
+                  <VoiceglotText translationKey={j.key} defaultText={j.label} />
+                </span>
+              </button>
+            );
+          })}
+        </ContainerInstrument>
+
+        {/* Bottom Row: Search & Filters */}
+        <ContainerInstrument plain className="flex flex-col md:flex-row items-center gap-2 p-1">
+          {/* Search */}
+          <ContainerInstrument plain className="flex-1 w-full relative group">
+            <Search size={18} strokeWidth={1.5} className="absolute left-5 top-1/2 -translate-y-1/2 text-primary/40 group-focus-within:text-primary transition-colors" />
+            <InputInstrument 
+              type="text" 
+              placeholder={t('agency.filter.search_placeholder', 'Zoek op naam, stijl of kenmerk...')}
+              className="w-full bg-white border-none rounded-[22px] py-4 pl-14 pr-6 text-[15px] font-light focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-va-black/20 shadow-sm"
+              defaultValue={combinedParams.search}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  updateQuery({ search: (e.target as HTMLInputElement).value });
+                }
+              }}
             />
           </ContainerInstrument>
-          <InputInstrument 
-            type="text" 
-            placeholder={t('agency.filter.search_placeholder', 'Zoek op naam, stijl of kenmerk...')}
-            className="w-full bg-va-off-white border-none rounded-[10px] py-5 pl-16 pr-6 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20"
-            defaultValue={combinedParams.search}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                updateQuery({ search: (e.target as HTMLInputElement).value });
-              }
-            }}
-          />
-        </ContainerInstrument>
-        
-        <ContainerInstrument className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-          <ContainerInstrument className="flex-1 lg:w-56 relative group/select">
+
+          {/* Language */}
+          <ContainerInstrument plain className="w-full md:w-48 relative group/select">
+            <ContainerInstrument className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+              <VoiceglotImage  
+                src="/assets/common/branding/icons/INFO.svg" 
+                alt="" 
+                width={14} 
+                height={14} 
+                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }}
+              />
+            </ContainerInstrument>
             <SelectInstrument 
-              className="w-full bg-va-off-white border-none rounded-[10px] py-5 px-8 text-[15px] font-light tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
+              className="w-full bg-white border-none rounded-[22px] py-4 pl-12 pr-10 text-[14px] font-light tracking-widest focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer appearance-none shadow-sm"
               value={combinedParams.language || ''}
               onChange={(e) => { updateQuery({ language: e.target.value || undefined }); }}
             >
-              <OptionInstrument value=""><VoiceglotText  translationKey="agency.filter.all_languages" defaultText="Alle talen" /></OptionInstrument>
+              <option value="">{t('agency.filter.all_languages', 'Talen')}</option>
               {sortedLanguages.map(lang => (
-                <OptionInstrument key={lang} value={lang}>{lang}</OptionInstrument>
+                <option key={lang} value={lang}>{lang}</option>
               ))}
             </SelectInstrument>
-            <ContainerInstrument className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-hover/select:opacity-100 transition-opacity">
-              <VoiceglotImage  
-                src="/assets/common/branding/icons/DOWN.svg" 
-                alt="Select" 
-                width={14} 
-                height={14} 
-                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              />
-            </ContainerInstrument>
+            <ChevronDown size={14} className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-hover/select:opacity-100 transition-opacity" />
           </ContainerInstrument>
 
-          <ContainerInstrument className="hidden md:block lg:w-44 relative group/select">
+          {/* Gender */}
+          <ContainerInstrument plain className="hidden md:block w-40 relative group/select">
+            <ContainerInstrument className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+              <VoiceglotImage  
+                src="/assets/common/branding/icons/INFO.svg" 
+                alt="" 
+                width={14} 
+                height={14} 
+                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }}
+              />
+            </ContainerInstrument>
             <SelectInstrument 
-              className="w-full bg-va-off-white border-none rounded-[10px] py-5 px-8 text-[15px] font-light tracking-widest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
+              className="w-full bg-white border-none rounded-[22px] py-4 pl-12 pr-10 text-[14px] font-light tracking-widest focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer appearance-none shadow-sm"
               value={combinedParams.gender || ''}
               onChange={(e) => { updateQuery({ gender: e.target.value || undefined }); }}
             >
-              <OptionInstrument value=""><VoiceglotText  translationKey="agency.filter.gender" defaultText="Geslacht" /></OptionInstrument>
+              <option value="">{t('agency.filter.gender', 'Geslacht')}</option>
               {filters.genders.map(g => (
-                <OptionInstrument key={g} value={g}>{g}</OptionInstrument>
+                <option key={g} value={g}>{g}</option>
               ))}
             </SelectInstrument>
-            <ContainerInstrument className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-hover/select:opacity-100 transition-opacity">
-              <VoiceglotImage  
-                src="/assets/common/branding/icons/DOWN.svg" 
-                alt="Select" 
-                width={14} 
-                height={14} 
-                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              />
-            </ContainerInstrument>
+            <ChevronDown size={14} className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-hover/select:opacity-100 transition-opacity" />
           </ContainerInstrument>
 
+          {/* Advanced / Menu */}
           <ButtonInstrument 
             onClick={() => { setIsSheetOpen(true); }}
-            className="w-16 h-16 rounded-[10px] bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all duration-500 shadow-lg active:scale-95"
+            className="w-14 h-14 rounded-[22px] bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all duration-500 shadow-lg active:scale-95 shrink-0"
           >
-            <VoiceglotImage  src="/assets/common/branding/icons/MENU.svg" width={20} height={20} alt="Filter" className="brightness-0 invert" />
+            <Filter size={20} strokeWidth={1.5} />
           </ButtonInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
 
       {/* Active Filters Chips */}
       {(combinedParams.search || combinedParams.gender || combinedParams.style || combinedParams.language) && (
-        <ContainerInstrument className="flex flex-wrap gap-2 px-4">
+        <ContainerInstrument className="flex flex-wrap gap-2 px-4 mt-4">
           {combinedParams.search && (
-            <Chip strokeWidth={1.5} label={`${t('common.search', 'Zoek')}: ${combinedParams.search}`} onRemove={() => { updateQuery({ search: undefined }); }} />
+            <Chip label={`${t('common.search', 'Zoek')}: ${combinedParams.search}`} onRemove={() => { updateQuery({ search: undefined }); }} />
           )}
           {combinedParams.language && (
-            <Chip strokeWidth={1.5} label={`${t('common.language', 'Taal')}: ${combinedParams.language}`} onRemove={() => { updateQuery({ language: undefined }); }} />
+            <Chip label={`${t('common.language', 'Taal')}: ${combinedParams.language}`} onRemove={() => { updateQuery({ language: undefined }); }} />
           )}
           {combinedParams.gender && (
-            <Chip strokeWidth={1.5} label={`${t('common.gender', 'Geslacht')}: ${combinedParams.gender}`} onRemove={() => { updateQuery({ gender: undefined }); }} />
+            <Chip label={`${t('common.gender', 'Geslacht')}: ${combinedParams.gender}`} onRemove={() => { updateQuery({ gender: undefined }); }} />
           )}
           {combinedParams.style && (
-            <Chip strokeWidth={1.5} label={`${t('common.style', 'Stijl')}: ${combinedParams.style}`} onRemove={() => { updateQuery({ style: undefined }); }} />
+            <Chip label={`${t('common.style', 'Stijl')}: ${combinedParams.style}`} onRemove={() => { updateQuery({ style: undefined }); }} />
           )}
           <ButtonInstrument 
             onClick={() => { updateQuery({ search: undefined, gender: undefined, style: undefined, language: undefined }); }}
-            className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors ml-2"
+            className="text-[13px] font-bold tracking-widest text-va-black/40 hover:text-primary transition-colors ml-2 uppercase"
           >
             <VoiceglotText  translationKey="agency.filter.clear_all" defaultText="Wis alles" />
           </ButtonInstrument>
@@ -160,7 +194,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
       )}
 
       {/* De Filter Sheet (Mobile & Advanced) */}
-      <AgencyFilterSheet strokeWidth={1.5} 
+      <AgencyFilterSheet 
         filters={filters} 
         activeParams={combinedParams} 
         onUpdate={updateQuery}

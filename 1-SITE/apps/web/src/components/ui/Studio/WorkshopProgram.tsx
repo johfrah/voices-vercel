@@ -1,6 +1,7 @@
 "use client";
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { cleanText } from '@/lib/utils';
 import { CheckCircle2 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
@@ -18,9 +19,11 @@ export const WorkshopProgram: React.FC<WorkshopProgramProps> = ({ dagindeling, i
         <VoiceglotText  translationKey="workshop.program.title" defaultText="Programma van de dag" />
       </h3>
       <div className="grid md:grid-cols-2 gap-12">
-        <div className="prose prose-sm prose-black max-w-none text-black/60 font-medium leading-relaxed">
+        <div className="prose prose-base prose-black max-w-none text-black/70 font-light leading-relaxed">
           {dagindeling ? (
-            <div dangerouslySetInnerHTML={{ __html: dagindeling }} />
+            <div className="whitespace-pre-line">
+              <VoiceglotText translationKey={`workshop.program.content.${dagindeling.substring(0, 20).replace(/[^a-z0-9]/gi, '_')}`} defaultText={cleanText(dagindeling)} />
+            </div>
           ) : (
             <ul className="space-y-4 list-none p-0">
               {[1, 2, 3, 4, 5].map((i) => (

@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import * as rrweb from 'rrweb';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * 🏺 VOICEJAR TRACKER - EXPERIENCE LAYER (2026)
@@ -13,11 +14,21 @@ import * as rrweb from 'rrweb';
 
 export const VoicejarTracker: React.FC = () => {
   const pathname = usePathname();
+  const { isAdmin, isLoading } = useAuth();
   const stopFnRef = useRef<(() => void) | null>(null);
   const eventsRef = useRef<any[]>([]);
   const visitorHashRef = useRef<string | null>(null);
 
   useEffect(() => {
+    // 🛡️ CHRIS-PROTOCOL: Wacht tot auth geladen is
+    if (isLoading) return;
+
+    // 🛡️ CHRIS-PROTOCOL: Disable Voicejar voor admins
+    if (isAdmin) {
+      console.log('🏺 Voicejar: Recording disabled for admin');
+      return;
+    }
+
     // 1. Genereer of haal visitor hash (simulatie van centrale state)
     let hash = localStorage.getItem('voices_visitor_hash');
     if (!hash) {
@@ -28,6 +39,12 @@ export const VoicejarTracker: React.FC = () => {
 
     // 2. Start recording
     const startRecording = () => {
+      // 🛡️ CHRIS-PROTOCOL: Disable Voicejar in development to save Disk IO budget
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🏺 Voicejar: Recording disabled in development');
+        return;
+      }
+
       if (stopFnRef.current) stopFnRef.current();
       
       eventsRef.current = [];
@@ -36,8 +53,8 @@ export const VoicejarTracker: React.FC = () => {
         emit(event) {
           eventsRef.current.push(event);
           
-          // Batch verzenden elke 10 events of bij belangrijke acties
-          if (eventsRef.current.length >= 10) {
+          // Batch verzenden elke 50 events (was 10) om Disk IO te sparen
+          if (eventsRef.current.length >= 50) {
             flushEvents();
           }
         },
@@ -86,7 +103,7 @@ export const VoicejarTracker: React.FC = () => {
       if (stopFnRef.current) stopFnRef.current();
       flushEvents();
     };
-  }, [pathname]);
+  }, [pathname, isAdmin, isLoading]);
 
   return null; // Onzichtbaar instrument
 };

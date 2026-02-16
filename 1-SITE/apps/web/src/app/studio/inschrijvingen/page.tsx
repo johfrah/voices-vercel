@@ -60,7 +60,15 @@ export default async function InstructorDashboardPage() {
       <ContainerInstrument className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <ContainerInstrument>
           <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2"><VoiceglotText  translationKey="studio.beheer.cockpit_badge" defaultText="Instructor Cockpit" /></TextInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter"><VoiceglotText  translationKey="studio.beheer.welcome" defaultText="Welkom," /> <TextInstrument className="text-primary font-light">{effectiveInstructor.name.split(' ')[0]}</TextInstrument>.</HeadingInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter inline-block">
+            <VoiceglotText  translationKey="studio.beheer.welcome" defaultText="Welkom," />
+          </HeadingInstrument>
+          <TextInstrument as="span" className="text-primary font-light text-5xl tracking-tighter ml-2">
+            {effectiveInstructor.name.split(' ')[0]}
+          </TextInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter inline-block">
+            .
+          </HeadingInstrument>
         </ContainerInstrument>
         
         <ButtonInstrument className="va-btn-pro">
@@ -68,7 +76,7 @@ export default async function InstructorDashboardPage() {
         </ButtonInstrument>
       </ContainerInstrument>
 
-      <BentoGrid strokeWidth={1.5} columns={3} className="gap-8">
+      <BentoGrid columns={3} className="gap-8">
         {/* STATS CARDS */}
         <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between">
           <ContainerInstrument>

@@ -223,7 +223,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
               >
                 <ContainerInstrument className="flex items-center gap-4">
                   <ContainerInstrument className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center text-va-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                    <Image  src="/assets/common/branding/icons/PLAY.svg" width={20} height={20} alt="" className="group-hover:brightness-0 group-hover:invert ml-1" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                    <Image  src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="group-hover:brightness-0 group-hover:invert ml-1" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
                   </ContainerInstrument>
                   <ContainerInstrument>
                     <HeadingInstrument level={4} className="font-light tracking-tight text-[15px]">

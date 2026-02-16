@@ -1,6 +1,7 @@
 import { CodyPreviewBanner } from "@/components/admin/CodyPreviewBanner";
 import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
 import { CommandPalette } from "@/components/ui/CommandPalette";
+import { SpotlightDashboard } from "@/components/ui/SpotlightDashboard";
 import FooterWrapper from "@/components/ui/FooterWrapper";
 import { GlobalAudioOrchestrator } from "@/components/ui/GlobalAudioOrchestrator";
 import GlobalNav from "@/components/ui/GlobalNav";
@@ -21,6 +22,7 @@ import { Suspense } from "react";
 import { Toaster } from 'react-hot-toast';
 import "../styles/globals.css";
 import { Providers } from "./Providers";
+import { getTranslationsServer } from "@/lib/api-server";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -100,7 +102,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -110,6 +112,9 @@ export default function RootLayout({
   const isUnderConstruction = headersList.get('x-voices-under-construction') === 'true' || headersList.get('x-voices-pathname') === '/under-construction';
   const market = getMarketSafe(host);
   const isAdeming = market.market_code === 'ADEMING';
+  
+  const lang = headersList.get('x-voices-lang') || market.language || 'nl';
+  const translations = await getTranslationsServer(lang);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -135,11 +140,11 @@ export default function RootLayout({
     }
   };
 
-  // 🚧 UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer
+  // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer
   if (isUnderConstruction) {
     return (
       <RootLayoutInstrument lang={market.language} className={`${raleway.className} theme-${market.theme} ${raleway.variable}`}>
-        <Providers>
+        <Providers initialTranslations={translations}>
           <SonicDNAHandler />
           <PageWrapperInstrument>
             {children}
@@ -155,7 +160,7 @@ export default function RootLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Providers>
+      <Providers initialTranslations={translations}>
         <EditModeOverlay>
           <LiquidTransitionOverlay />
           <CodyPreviewBanner />
@@ -164,15 +169,16 @@ export default function RootLayout({
           <MobileFloatingDock />
           <Analytics />
           <CommandPalette />
+          <SpotlightDashboard />
           <Toaster position="bottom-right" />
           <SonicDNAHandler />
           <GlobalAudioOrchestrator />
-          <Suspense  fallback={null}>
+          <Suspense fallback={null}>
             <VoicyBridge />
           </Suspense>
           <VoicyChat />
           <PageWrapperInstrument>
-            <Suspense  fallback={<LoadingScreenInstrument />}>
+            <Suspense fallback={<LoadingScreenInstrument />}>
               {children}
             </Suspense>
           </PageWrapperInstrument>

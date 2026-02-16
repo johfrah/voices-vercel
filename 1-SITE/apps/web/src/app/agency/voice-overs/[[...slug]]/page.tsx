@@ -1,10 +1,12 @@
 import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
-import { ContainerInstrument, PageWrapperInstrument, SectionInstrument, LoadingScreenInstrument } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument, LoadingScreenInstrument, PageWrapperInstrument, SectionInstrument } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { VoiceGrid } from "@/components/ui/VoiceGrid";
 import { getActors } from "@/lib/api-server";
-import { Suspense } from "react";
 import { headers } from "next/headers";
+import { Suspense } from "react";
+
+import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +41,8 @@ export default async function AgencyDynamicPage({
     native_lang: actor.native_lang,
     ai_tags: actor.ai_tags || [],
     slug: actor.slug,
-    demos: actor.demos || []
+    demos: actor.demos || [],
+    bio: actor.bio // 🛡️ CHRIS-PROTOCOL: Zorg dat de bio wordt doorgegeven voor de VoiceCard
   }));
 
   return (
@@ -51,11 +54,14 @@ export default async function AgencyDynamicPage({
         filters={searchResults.filters}
         searchParams={filters}
       />
-      <SectionInstrument>
-        <ContainerInstrument>
-          <Suspense  fallback={<LoadingScreenInstrument />}>
-            <VoiceGrid strokeWidth={1.5} actors={mappedActors as any} />
-          </Suspense>
+      <SectionInstrument className="!pt-0 -mt-24 relative z-40">
+        <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
+          <VoicesMasterControl filters={searchResults.filters} />
+          <div className="mt-12">
+            <Suspense  fallback={<LoadingScreenInstrument />}>
+              <VoiceGrid strokeWidth={1.5} actors={mappedActors as any} />
+            </Suspense>
+          </div>
         </ContainerInstrument>
       </SectionInstrument>
     </PageWrapperInstrument>

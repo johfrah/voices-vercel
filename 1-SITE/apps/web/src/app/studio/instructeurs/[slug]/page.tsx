@@ -31,13 +31,13 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
       {/* 🔙 BACK BUTTON */}
       <Link  
         href="/studio/instructeurs" 
-        className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
+        className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
       >
         <ArrowLeft strokeWidth={1.5} size={14} className="group-hover:-translate-x-1 transition-transform" />
-        <VoiceglotText  translationKey="common.back_to_instructors" defaultText="TERUG NAAR OVERZICHT" />
+        <VoiceglotText  translationKey="common.back_to_instructors" defaultText="Terug naar overzicht" />
       </Link>
 
-      <BentoGrid strokeWidth={1.5} columns={3} className="gap-8">
+      <BentoGrid columns={3} className="gap-8">
         {/* 👤 PROFILE CARD */}
         <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between">
           <ContainerInstrument>
@@ -52,7 +52,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
             <HeadingInstrument level={1} className="text-3xl font-light tracking-tighter text-center mb-2">
               {instructor.name}
             </HeadingInstrument>
-            <TextInstrument className="text-primary text-[15px] font-black tracking-widest text-center mb-8">
+            <TextInstrument className="text-primary text-[15px] font-light tracking-[0.2em] text-center mb-8">
               {instructor.tagline || "Studio Instructeur"}
             </TextInstrument>
 
@@ -75,14 +75,16 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
               )}
             </ContainerInstrument>
           </ContainerInstrument>
-          <ButtonInstrument className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl text-[15px] font-black tracking-widest transition-all mt-12"><VoiceglotText  translationKey="instructor.book_session" defaultText="PLAN EEN SESSIE" /></ButtonInstrument>
+          <ButtonInstrument className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl text-[15px] font-light tracking-widest transition-all mt-12">
+            <VoiceglotText translationKey="instructor.book_session" defaultText="Plan een sessie" />
+          </ButtonInstrument>
         </BentoCard>
 
         {/* 📝 BIO CARD */}
         <BentoCard span="lg" className="bg-white shadow-aura p-12 border border-black/5">
           <HeadingInstrument level={2} className="text-[15px] font-light tracking-widest text-black/30 mb-8"><VoiceglotText  translationKey="instructor.about_title" defaultText="Over de instructeur" /></HeadingInstrument>
           <ContainerInstrument className="prose prose-lg prose-black max-w-none">
-            <TextInstrument className="text-black/60 font-medium leading-relaxed whitespace-pre-wrap">
+            <TextInstrument className="text-black/60 font-light leading-relaxed whitespace-pre-wrap">
               {instructor.bio || "Geen bio beschikbaar."}
             </TextInstrument>
           </ContainerInstrument>
@@ -107,13 +109,13 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
                 </ContainerInstrument>
                 
                 <ContainerInstrument className="space-y-2">
-                  <ContainerInstrument className="flex items-center gap-2 text-[15px] font-bold text-black/40 tracking-widest">
+                  <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light text-black/40 tracking-widest">
                     <Calendar strokeWidth={1.5} size={12} /> 
                     {workshop.editions?.[0] 
                       ? new Date(workshop.editions[0].date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })
                       : "Binnenkort"}
                   </ContainerInstrument>
-                  <ContainerInstrument className="flex items-center gap-2 text-[15px] font-bold text-black/40 tracking-widest">
+                  <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light text-black/40 tracking-widest">
                     <MapPin strokeWidth={1.5} size={12} /> {workshop.editions?.[0]?.location || "Gent"}
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -132,7 +134,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
               translationKey="instructor.quote" 
               defaultText="De stem is het instrument van de ziel." 
             /></HeadingInstrument>
-          <TextInstrument className="text-[15px] font-black tracking-widest opacity-40">
+          <TextInstrument className="text-[15px] font-light tracking-widest opacity-40">
             — {instructor.name}
           </TextInstrument>
         </BentoCard>

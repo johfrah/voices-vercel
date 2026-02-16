@@ -33,9 +33,9 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
   subtitle
 }) => {
   return (
-    <header className="va-agency-hero">
+    <header className="va-agency-hero pb-0">
       <div className="va-container">
-        <div className="va-hero-content">
+        <div className="va-hero-content mb-12">
           {/* Badge */}
           <div className="va-badge-container">
             <div className="va-badge">
@@ -67,21 +67,9 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
               </>
             )}
           </h1>
-
-          {/* Description */}
-          <p className="va-hero-description">
-            {subtitle ? (
-              <VoiceglotText  translationKey={`agency.hero.subtitle.${market.toLowerCase()}`} defaultText={subtitle} />
-            ) : (
-              <VoiceglotText  
-                translationKey="agency.hero.description" 
-                defaultText="Luister naar de beste stemmen voor jouw project. Van verteller tot commercial. Wij vinden de juiste toon voor elk merk." 
-              />
-            )}
-          </p>
         </div>
 
-        {/* Filter Bar Integration */}
+        {/* Integrated Master Control (Journey + Search + Filters) */}
         {filters.languages.length > 0 && <FilterBar strokeWidth={1.5} filters={filters} params={{ ...searchParams, market }} />}
       </div>
     </header>
