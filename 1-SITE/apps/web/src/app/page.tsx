@@ -79,7 +79,9 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
         // Check if actor supports ALL selected languages
         return selectedLangs.every(lang => {
           const lowLang = lang.toLowerCase();
-          return actorLangs.some(al => al === lowLang || al?.includes(lowLang));
+          // Support both ISO codes (nl-BE) and short codes (nl) for extra languages
+          const shortLang = lowLang.split('-')[0];
+          return actorLangs.some(al => al === lowLang || al === shortLang || al?.includes(lowLang) || al?.includes(shortLang));
         });
       });
     }
@@ -89,6 +91,42 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
   }, [actors, masterControlState.journey, masterControlState.filters.media, masterControlState.filters.country, masterControlState.filters.languages]);
 
   const isTelephony = customerDNA?.intelligence?.lastIntent === 'telephony' || customerDNA?.intelligence?.detectedSector === 'it';
+
+  // 🛡️ POLYGLOT CHIPS LOGIC: Calculate available extra languages for the selected primary language
+  const availableExtraLangs = useMemo(() => {
+    if (masterControlState.journey !== 'telephony' || !masterControlState.filters.language) return [];
+    
+    const primaryLang = masterControlState.filters.language.toLowerCase();
+    const relevantActors = actors.filter(a => {
+      const actorNative = a.native_lang?.toLowerCase();
+      return actorNative === primaryLang || actorNative?.includes(primaryLang);
+    });
+
+    const extraLangsSet = new Set<string>();
+    relevantActors.forEach(a => {
+      if (a.extra_langs) {
+        a.extra_langs.split(',').forEach(l => {
+          const trimmed = l.trim();
+          if (trimmed && trimmed.toLowerCase() !== primaryLang) {
+            // 🛡️ CHRIS-PROTOCOL: Map extra language names to standard labels
+            const langMap: Record<string, string> = {
+              'frans': 'Frans',
+              'engels': 'Engels',
+              'duits': 'Duits',
+              'nederlands': 'Nederlands',
+              'italiaans': 'Italiaans',
+              'spaans': 'Spaans',
+              'vlaams': 'Vlaams'
+            };
+            const mapped = langMap[trimmed.toLowerCase()] || trimmed;
+            extraLangsSet.add(mapped);
+          }
+        });
+      }
+    });
+
+    return Array.from(extraLangsSet).sort();
+  }, [actors, masterControlState.journey, masterControlState.filters.language]);
 
   // Mock filters voor de homepage (of haal ze op via API indien nodig)
   const filters = {
@@ -119,7 +157,7 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
             </p>
           </div>
 
-          <VoicesMasterControl filters={filters} />
+          <VoicesMasterControl filters={filters} availableExtraLangs={availableExtraLangs} />
           
           <div className="mt-20">
             {filteredActors && filteredActors.length > 0 ? (
