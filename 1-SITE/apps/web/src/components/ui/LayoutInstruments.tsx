@@ -351,6 +351,128 @@ export const LabelInstrument = ({
 };
 
 /**
+ * 🛡️ CHRIS-PROTOCOL: Circular Flag Components (Centralized)
+ */
+export const FlagBE = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0">
+    <div className="flex h-full w-full">
+      <div className="w-1/3 h-full bg-black" />
+      <div className="w-1/3 h-full bg-[#FAE042]" />
+      <div className="w-1/3 h-full bg-[#ED2939]" />
+    </div>
+  </div>
+);
+
+export const FlagNL = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0">
+    <div className="flex flex-col h-full w-full">
+      <div className="h-1/3 w-full bg-[#AE1C28]" />
+      <div className="h-1/3 w-full bg-white" />
+      <div className="h-1/3 w-full bg-[#21468B]" />
+    </div>
+  </div>
+);
+
+export const FlagFR = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0">
+    <div className="flex h-full w-full">
+      <div className="w-1/3 h-full bg-[#002395]" />
+      <div className="w-1/3 h-full bg-white" />
+      <div className="w-1/3 h-full bg-[#ED2939]" />
+    </div>
+  </div>
+);
+
+export const FlagUK = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-[#00247D] relative">
+    <div className="absolute inset-0">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[15%] bg-white rotate-45" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[15%] bg-white -rotate-45" />
+    </div>
+    <div className="absolute inset-0">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[8%] bg-[#CF142B] rotate-45" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[8%] bg-[#CF142B] -rotate-45" />
+    </div>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-full h-[25%] bg-white" />
+      <div className="h-full w-[25%] bg-white" />
+    </div>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-full h-[15%] bg-[#CF142B]" />
+      <div className="h-full w-[15%] bg-[#CF142B]" />
+    </div>
+  </div>
+);
+
+export const FlagUS = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-white relative flex flex-col">
+    {[...Array(7)].map((_, i) => (
+      <div key={i} className={cn("h-[14%] w-full", i % 2 === 0 ? "bg-[#B22234]" : "bg-white")} />
+    ))}
+    <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-[#3C3B6E] flex flex-wrap p-0.5 gap-0.5 items-start content-start">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="w-[20%] h-[20%] bg-white rounded-full shrink-0" />
+      ))}
+    </div>
+  </div>
+);
+
+export const FlagDE = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0">
+    <div className="flex flex-col h-full w-full">
+      <div className="h-1/3 w-full bg-black" />
+      <div className="h-1/3 w-full bg-[#FF0000]" />
+      <div className="h-1/3 w-full bg-[#FFCC00]" />
+    </div>
+  </div>
+);
+
+export const FlagES = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0">
+    <div className="flex flex-col h-full w-full">
+      <div className="h-1/4 w-full bg-[#AA151B]" />
+      <div className="h-2/4 w-full bg-[#F1BF00]" />
+      <div className="h-1/4 w-full bg-[#AA151B]" />
+    </div>
+  </div>
+);
+
+export const FlagIT = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0">
+    <div className="flex h-full w-full">
+      <div className="w-1/3 h-full bg-[#009246]" />
+      <div className="w-1/3 h-full bg-white" />
+      <div className="w-1/3 h-full bg-[#CE2B37]" />
+    </div>
+  </div>
+);
+
+export const FlagPL = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0">
+    <div className="flex flex-col h-full w-full">
+      <div className="h-1/2 w-full bg-white" />
+      <div className="h-1/2 w-full bg-[#DC143C]" />
+    </div>
+  </div>
+);
+
+export const FlagDK = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-[#C60C30] relative">
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-full h-[10%] bg-white" />
+      <div className="h-full w-[10%] bg-white" style={{ marginLeft: '-20%' }} />
+    </div>
+  </div>
+);
+
+export const FlagPT = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 relative flex">
+    <div className="w-[40%] h-full bg-[#006600]" />
+    <div className="w-[60%] h-full bg-[#FF0000]" />
+  </div>
+);
+
+/**
  * LOADING SCREEN INSTRUMENT
  */
 export const LoadingScreenInstrument = ({ 

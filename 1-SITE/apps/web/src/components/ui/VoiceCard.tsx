@@ -13,7 +13,7 @@ import { Actor, Demo } from '@/types';
 import { ArrowRight, Check, Mic, Pause, Play, Plus, Settings } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 
@@ -21,6 +21,28 @@ interface VoiceCardProps {
   voice: Actor;
   onSelect?: (voice: Actor) => void;
 }
+
+/**
+ * 🛡️ CHRIS-PROTOCOL: Flag Orchestrator
+ */
+const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
+  if (!lang) return null;
+  const lowLang = lang.toLowerCase();
+  
+  if (lowLang.includes('be') || lowLang === 'vlaams') return <FlagBE size={size} />;
+  if (lowLang.includes('nl') || lowLang === 'nederlands') return <FlagNL size={size} />;
+  if (lowLang.includes('fr') || lowLang === 'frans') return <FlagFR size={size} />;
+  if (lowLang.includes('de') || lowLang === 'duits') return <FlagDE size={size} />;
+  if (lowLang.includes('gb') || lowLang.includes('uk') || lowLang === 'engels') return <FlagUK size={size} />;
+  if (lowLang.includes('us')) return <FlagUS size={size} />;
+  if (lowLang.includes('es') || lowLang === 'spaans') return <FlagES size={size} />;
+  if (lowLang.includes('it') || lowLang === 'italiaans') return <FlagIT size={size} />;
+  if (lowLang.includes('pl') || lowLang === 'pools') return <FlagPL size={size} />;
+  if (lowLang.includes('dk') || lowLang === 'deens') return <FlagDK size={size} />;
+  if (lowLang.includes('pt') || lowLang === 'portugees') return <FlagPT size={size} />;
+  
+  return null;
+};
 
 /**
  * CATEGORY DEFINITIONS (The Big 8)
@@ -175,9 +197,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
         stopDemo();
         playClick('light');
       } else {
-        // If not playing, start the first demo
-        if (voice.demos && voice.demos.length > 0) {
-          handleCategoryClick(e, voice.demos[0]);
+        // 🛡️ CHRIS-PROTOCOL: Prioritize demo based on current journey
+        const journeyDemo = categorizedDemos[masterControlState.journey === 'telephony' ? 'telefonie' : masterControlState.journey];
+        const firstDemo = journeyDemo || (voice.demos && voice.demos.length > 0 ? voice.demos[0] : null);
+        
+        if (firstDemo) {
+          handleCategoryClick(e, firstDemo);
         }
       }
     }
@@ -381,7 +406,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
           )}
         >
           {/* Top Row: Secondary Demos (Compact Glassy Chips) */}
-          <ContainerInstrument plain className="flex flex-wrap gap-2 max-w-full overflow-hidden">
+          <div className="flex flex-wrap gap-2 max-w-full overflow-hidden">
             {CATEGORIES.map((cat) => {
               const demo = categorizedDemos[cat.id];
               if (!demo) return null;
@@ -392,29 +417,26 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                   key={cat.id}
                   onClick={(e) => handleCategoryClick(e, demo)}
                   className={cn(
-                    "px-2.5 py-1 rounded-full text-[10px] font-black tracking-widest backdrop-blur-md border transition-all duration-300",
+                    "px-3 py-1.5 rounded-full text-[10px] font-black tracking-widest backdrop-blur-md border transition-all duration-300",
                     isActive 
                       ? "bg-primary border-primary text-white shadow-lg scale-105" 
-                      : "bg-black/20 border-white/10 text-white/70 hover:bg-black/40 hover:text-white"
+                      : "bg-black/40 border-white/20 text-white/90 hover:bg-black/60 hover:text-white"
                   )}
                 >
                   {cat.label}
                 </button>
               );
             })}
-          </ContainerInstrument>
+          </div>
 
           {/* Center: Main Play Button */}
-          <ContainerInstrument 
-            plain 
+          <div 
             onClick={togglePlay}
-            className="flex items-center justify-center flex-grow"
+            className="flex items-center justify-center flex-grow cursor-pointer"
           >
-            <ContainerInstrument 
-              plain 
+            <div 
               className={cn(
-                "w-20 h-20 rounded-full bg-va-black/40 backdrop-blur-xl border border-white/20 flex items-center justify-center hover:scale-110 transition-all duration-500 shadow-2xl group/play",
-                isCurrentlyPlaying ? "opacity-100" : "opacity-100"
+                "w-20 h-20 rounded-full bg-va-black/40 backdrop-blur-xl border border-white/20 flex items-center justify-center hover:scale-110 transition-all duration-500 shadow-2xl group/play"
               )}
             >
               {isCurrentlyPlaying ? (
@@ -422,17 +444,17 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
               ) : (
                 <Play strokeWidth={1.5} size={32} className="text-white fill-white ml-1" />
               )}
-            </ContainerInstrument>
-          </ContainerInstrument>
+            </div>
+          </div>
 
           {/* Bottom Row: Active Demo Title (VOICES DNA 2026) */}
           <div className="flex flex-col items-center gap-2 mb-4">
             {isCurrentlyPlaying && activeDemo && (
-              <ContainerInstrument plain className="bg-va-black/40 backdrop-blur-md rounded-xl px-3 py-1.5 border border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <div className="bg-va-black/40 backdrop-blur-md rounded-xl px-3 py-1.5 border border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-500">
                 <TextInstrument className="text-white text-[11px] font-black tracking-[0.2em] truncate max-w-[150px]">
                   {cleanDemoTitle(activeDemo.title)}
                 </TextInstrument>
-              </ContainerInstrument>
+              </div>
             )}
           </div>
         </ContainerInstrument>
@@ -464,43 +486,17 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
 
       <ContainerInstrument plain className="p-0 flex flex-col h-full">
         <ContainerInstrument plain className="flex flex-col gap-4 mb-4 px-8 pt-8 shrink-0">
-            <ContainerInstrument plain className="flex items-center gap-2">
+            <ContainerInstrument plain className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 bg-va-off-white/50 px-2 py-1 rounded-full border border-black/[0.03]">
-                {voice.native_lang?.includes('BE') && (
-                  <div className="w-4 h-4 rounded-full overflow-hidden border border-black/5 shrink-0">
-                    <div className="flex h-full w-full">
-                      <div className="w-1/3 h-full bg-black" />
-                      <div className="w-1/3 h-full bg-[#FAE042]" />
-                      <div className="w-1/3 h-full bg-[#ED2939]" />
-                    </div>
-                  </div>
-                )}
-                {voice.native_lang?.includes('NL') && !voice.native_lang?.includes('BE') && (
-                  <div className="w-4 h-4 rounded-full overflow-hidden border border-black/5 shrink-0">
-                    <div className="flex flex-col h-full w-full">
-                      <div className="h-1/3 w-full bg-[#AE1C28]" />
-                      <div className="h-1/3 w-full bg-white" />
-                      <div className="h-1/3 w-full bg-[#21468B]" />
-                    </div>
-                  </div>
-                )}
-                {voice.native_lang?.includes('FR') && !voice.native_lang?.includes('BE') && (
-                  <div className="w-4 h-4 rounded-full overflow-hidden border border-black/5 shrink-0">
-                    <div className="flex h-full w-full">
-                      <div className="w-1/3 h-full bg-[#002395]" />
-                      <div className="w-1/3 h-full bg-white" />
-                      <div className="w-1/3 h-full bg-[#ED2939]" />
-                    </div>
-                  </div>
-                )}
+                <VoiceFlag lang={voice.native_lang} size={16} />
                 <TextInstrument className="text-[13px] font-bold text-va-black/60 tracking-tight">
                   <VoiceglotText 
                     translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} 
                     defaultText={
-                      voice.native_lang === 'nl-BE' ? 'Vlaams' : 
-                      voice.native_lang === 'nl-NL' ? 'Nederlands' : 
-                      voice.native_lang === 'fr-FR' ? 'Frans' : 
-                      voice.native_lang === 'fr-BE' ? 'Frans (BE)' :
+                      voice.native_lang?.toLowerCase() === 'nl-be' || voice.native_lang?.toLowerCase() === 'vlaams' ? 'Vlaams' : 
+                      voice.native_lang?.toLowerCase() === 'nl-nl' || voice.native_lang?.toLowerCase() === 'nederlands' ? 'Nederlands' : 
+                      voice.native_lang?.toLowerCase() === 'fr-fr' || voice.native_lang?.toLowerCase() === 'frans' ? 'Frans' : 
+                      voice.native_lang?.toLowerCase() === 'fr-be' ? 'Frans (BE)' :
                       voice.native_lang || ''
                     } 
                   />
@@ -511,10 +507,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect }) => {
                   )}
                 </TextInstrument>
               </div>
-              <TextInstrument className="text-[14px] font-medium text-primary tracking-tight flex items-center gap-1.5">
-                <span className="text-[10px] font-bold tracking-[0.1em] text-primary/40 uppercase">Levering:</span>
-                {deliveryInfo.formattedShort}
-              </TextInstrument>
+              <div className="flex flex-col items-end justify-center">
+                <span className="text-[9px] font-bold tracking-[0.1em] text-primary/40 uppercase leading-none mb-0.5">Levering:</span>
+                <TextInstrument className="text-[13px] font-medium text-primary tracking-tight leading-none">
+                  {deliveryInfo.formattedShort}
+                </TextInstrument>
+              </div>
             </ContainerInstrument>
         </ContainerInstrument>
 

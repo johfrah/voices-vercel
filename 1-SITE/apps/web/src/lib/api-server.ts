@@ -38,41 +38,41 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     
 
 const langMap: Record<string, string> = {
-  'Vlaams': 'nl-BE',
-  'Nederlands': 'nl-NL',
-  'Frans': 'fr-FR',
-  'Frans (BE)': 'fr-BE',
-  'Frans (FR)': 'fr-FR',
-  'Engels': 'en-GB',
-  'Engels (UK)': 'en-GB',
-  'Engels (US)': 'en-US',
-  'Duits': 'de-DE',
-  'Spaans': 'es-ES',
-  'Italiaans': 'it-IT',
-  'Pools': 'pl-PL',
-  'Deens': 'da-DK',
-  'Portugees': 'pt-PT',
-  'nl-BE': 'nl-BE',
-  'nl-NL': 'nl-NL',
-  'fr-BE': 'fr-BE',
-  'fr-FR': 'fr-FR',
-  'en-GB': 'en-GB',
-  'en-US': 'en-US',
-  'de-DE': 'de-DE',
-  'es-ES': 'es-ES',
-  'it-IT': 'it-IT',
-  'pl-PL': 'pl-PL',
-  'da-DK': 'da-DK',
-  'pt-PT': 'pt-PT',
-  'nl': 'nl-BE',
-  'en': 'en-GB',
-  'fr': 'fr-FR',
-  'de': 'de-DE',
-  'es': 'es-ES',
-  'it': 'it-IT',
-  'pl': 'pl-PL',
-  'da': 'da-DK',
-  'pt': 'pt-PT'
+  'vlaams': 'nl-be',
+  'nederlands': 'nl-nl',
+  'frans': 'fr-fr',
+  'frans (be)': 'fr-be',
+  'frans (fr)': 'fr-fr',
+  'engels': 'en-gb',
+  'engels (uk)': 'en-gb',
+  'engels (us)': 'en-us',
+  'duits': 'de-de',
+  'spaans': 'es-es',
+  'italiaans': 'it-it',
+  'pools': 'pl-pl',
+  'deens': 'da-dk',
+  'portugees': 'pt-pt',
+  'nl-be': 'nl-be',
+  'nl-nl': 'nl-nl',
+  'fr-be': 'fr-be',
+  'fr-fr': 'fr-fr',
+  'en-gb': 'en-gb',
+  'en-us': 'en-us',
+  'de-de': 'de-de',
+  'es-es': 'es-es',
+  'it-it': 'it-it',
+  'pl-pl': 'pl-pl',
+  'da-dk': 'da-dk',
+  'pt-pt': 'pt-pt',
+  'nl': 'nl-be',
+  'en': 'en-gb',
+  'fr': 'fr-fr',
+  'de': 'de-de',
+  'es': 'es-es',
+  'it': 'it-it',
+  'pl': 'pl-pl',
+  'da': 'da-dk',
+  'pt': 'pt-pt'
 };
 
 
@@ -88,9 +88,9 @@ const langMap: Record<string, string> = {
     };
 
     const lowLang = language?.toLowerCase() || '';
-    const dbLang = language ? (langMap[lowLang] || language) : null;
+    const dbLang = language ? (langMap[lowLang] || lowLang) : null;
     const lowGender = gender?.toLowerCase() || '';
-    const dbGender = gender ? (genderMap[lowGender] || (lowGender.includes('mannelijk') ? 'male' : lowGender.includes('vrouwelijk') ? 'female' : gender)) : null;
+    const dbGender = gender ? (genderMap[lowGender] || (lowGender.includes('mannelijk') ? 'male' : lowGender.includes('vrouwelijk') ? 'female' : lowGender)) : null;
     
     // 🛡️ CHRIS-PROTOCOL: Debug log in terminal (server-side)
     console.log('🎙️ API: getActors internal params:', { 
