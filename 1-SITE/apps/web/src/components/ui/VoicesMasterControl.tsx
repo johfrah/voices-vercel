@@ -198,16 +198,27 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
       const lowPrimary = primary.toLowerCase();
       const extraLangsSet = new Set<string>();
       
-      // Note: 'actors' is not available here, we need to pass it or use a different approach.
-      // For now, we'll use a fixed mapping based on our database audit
-      const polyglotMap: Record<string, string[]> = {
-        'nl-be': ['Frans', 'Engels', 'Duits', 'Spaans', 'Italiaans'],
-        'nl-nl': ['Engels', 'Duits', 'Frans'],
-        'fr-fr': ['Engels', 'Spaans', 'Duits'],
-        'en-gb': ['Frans', 'Duits', 'Spaans']
-      };
-      
-      return polyglotMap[lowPrimary] || [];
+      actors.forEach(a => {
+        const actorNative = a.native_lang?.toLowerCase();
+        // 🛡️ CHRIS-PROTOCOL: Only consider LIVE actors for available extra languages
+        if (actorNative === lowPrimary || actorNative?.includes(lowPrimary)) {
+          if (a.extra_langs) {
+            a.extra_langs.split(',').forEach(l => {
+              const trimmed = l.trim();
+              if (trimmed && trimmed.toLowerCase() !== lowPrimary) {
+                // Map to standard labels
+                const langMap: Record<string, string> = {
+                  'frans': 'Frans', 'engels': 'Engels', 'duits': 'Duits',
+                  'nederlands': 'Nederlands', 'italiaans': 'Italiaans',
+                  'spaans': 'Spaans', 'vlaams': 'Vlaams'
+                };
+                extraLangsSet.add(langMap[trimmed.toLowerCase()] || trimmed);
+              }
+            });
+          }
+        }
+      });
+      return Array.from(extraLangsSet).sort();
     };
 
     const languageConfig = [
