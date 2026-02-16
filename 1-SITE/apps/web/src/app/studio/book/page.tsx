@@ -42,10 +42,15 @@ function BookingContent() {
             <CheckCircle2 strokeWidth={1.5} size={48} />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-4">
-            <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter"><VoiceglotText  translationKey="studio.booking.success.title" defaultText="Je bent erbij!" /><TextInstrument className="text-va-black/50 font-medium text-lg"><VoiceglotText  
+            <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
+              <VoiceglotText  translationKey="studio.booking.success.title" defaultText="Je bent erbij!" />
+            </HeadingInstrument>
+            <TextInstrument className="text-va-black/50 font-medium text-lg">
+              <VoiceglotText  
                 translationKey="studio.booking.success.subtitle" 
                 defaultText="We hebben je inschrijving goed ontvangen. Je ontvangt direct een bevestiging en factuur in je mailbox." 
-              /></TextInstrument></HeadingInstrument>
+              />
+            </TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="pt-8">
             <Link  href="/account/orders" className="va-btn-pro"><VoiceglotText  translationKey="studio.booking.success.cta" defaultText="Bekijk mijn bestelling" /></Link>
@@ -58,10 +63,15 @@ function BookingContent() {
   return (
     <>
       <SectionInstrument className="mb-20 text-center space-y-4">
-        <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter"><VoiceglotText  translationKey="studio.booking.title" defaultText="Reserveer je plek" /><TextInstrument className="text-va-black/40 font-medium max-w-xl mx-auto text-lg"><VoiceglotText  
+        <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
+          <VoiceglotText  translationKey="studio.booking.title" defaultText="Reserveer je plek" />
+        </HeadingInstrument>
+        <TextInstrument className="text-va-black/40 font-medium max-w-xl mx-auto text-lg">
+          <VoiceglotText  
             translationKey="studio.booking.subtitle" 
             defaultText="Vul je gegevens in om je inschrijving voor de workshop te voltooien." 
-          /></TextInstrument></HeadingInstrument>
+          />
+        </TextInstrument>
       </SectionInstrument>
 
       <ZeroLossCheckoutInstrument 
@@ -79,7 +89,7 @@ export default function BookingPage() {
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20">
       <Suspense  fallback={<ContainerInstrument className="animate-pulse text-va-black/20 font-black tracking-widest text-center py-40"><VoiceglotText  translationKey="auto.page.laden___.cb4395" defaultText="Laden..." /></ContainerInstrument>}>
-        <BookingContent strokeWidth={1.5} />
+        <BookingContent strokeWidth={1.5}  />
       </Suspense>
     </PageWrapperInstrument>
   );

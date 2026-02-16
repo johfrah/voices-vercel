@@ -294,7 +294,19 @@ export class DirectMailService {
                   imap.end();
                   return reject(err);
                 }
-                const attachments: MailAttachment[] = (parsed.attachments || []).map((att: Attachment) => ({
+                const attachments: MailAttachment[] = (parsed.attachments || [])
+                  .filter((att: Attachment) => {
+                    // 🛡️ CHRIS-PROTOCOL: Filter signature slop
+                    const isSmall = att.size < 15360; // < 15KB
+                    const isSignatureName = /logo|facebook|linkedin|twitter|instagram|icon|sign|banner|header|image00/i.test(att.filename || '');
+                    
+                    if (isSmall && isSignatureName) {
+                      console.log(`🧹 Filtering signature attachment: ${att.filename} (${att.size} bytes)`);
+                      return false;
+                    }
+                    return true;
+                  })
+                  .map((att: Attachment) => ({
                   filename: att.filename || 'unnamed',
                   contentType: att.contentType,
                   size: att.size,

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Globe, Users, Mic2, CheckCircle2 } from 'lucide-react';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
+import { MarketManager } from '@config/market-manager';
 import { 
   ButtonInstrument, 
   ContainerInstrument, 
@@ -35,8 +36,31 @@ export const AgencyFilterSheet: React.FC<{
 
   // 🌍 MARKET-BASED LANGUAGE LOGIC
   const sortedLanguages = React.useMemo(() => {
-    const baseLangs = [...filters.languages];
-    return baseLangs.sort((a, b) => a.localeCompare(b));
+    // 🌍 MARKET-AWARE FILTERING
+    const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+    const market = MarketManager.getCurrentMarket(host);
+    
+    // 🛡️ CHRIS-PROTOCOL: Toon ALTIJD alle talen die in de database zitten, 
+    // maar gebruik de market-volgorde voor de top-selectie.
+    const allAvailableLangs = [...filters.languages];
+    const marketLangs = market.supported_languages;
+    
+    return allAvailableLangs.sort((a, b) => {
+      // 1. Primary language ALTIJD op 1
+      if (a === market.primary_language) return -1;
+      if (b === market.primary_language) return 1;
+      
+      // 2. Check of ze in de market-lijst staan
+      const indexA = marketLangs.indexOf(a);
+      const indexB = marketLangs.indexOf(b);
+      
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      
+      // 3. De rest alfabetisch
+      return a.localeCompare(b);
+    });
   }, [filters.languages]);
 
   return (
@@ -73,7 +97,7 @@ export const AgencyFilterSheet: React.FC<{
                     <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.agencyfiltersheet.vind_de_perfecte_ste.1bb911" defaultText="Vind de perfecte stem" /></TextInstrument>
                   </ContainerInstrument>
                   <ButtonInstrument 
-                    onClick={() => { onUpdate({ language: undefined, gender: undefined, style: undefined, search: undefined }); }}
+                    onClick={() => { onUpdate({ language: undefined, gender: undefined, style: undefined }); }}
                     className="text-[15px] font-light tracking-widest text-primary"
                   >
                     <VoiceglotText  translationKey="auto.agencyfiltersheet.wis_alles.07cfca" defaultText="Wis alles" />

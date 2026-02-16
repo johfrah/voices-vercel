@@ -41,18 +41,23 @@ export default function ScriptsPage() {
 
   return (
     <PageWrapperInstrument className="relative min-h-screen pt-32 pb-20 overflow-hidden">
-      <LiquidBackground strokeWidth={1.5} />
+      <LiquidBackground />
       
       <SectionInstrument className="max-w-6xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-16">
           <TextInstrument className="text-[15px] font-black tracking-[0.2em] text-primary mb-4"><VoiceglotText  translationKey="scripts.category" defaultText="Inspiratie" /></TextInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6"><VoiceglotText  translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" /><TextInstrument className="text-xl text-va-black/40 font-medium max-w-2xl"><VoiceglotText  
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6">
+            <VoiceglotText  translationKey="scripts.title" defaultText="Voorbeeldteksten voor je telefooncentrale" />
+          </HeadingInstrument>
+          <TextInstrument className="text-xl text-va-black/40 font-medium max-w-2xl">
+            <VoiceglotText  
               translationKey="scripts.intro" 
               defaultText="Geen inspiratie? Gebruik onze beproefde teksten als basis voor jouw eigen boodschap. Kopieer, plak en pas aan." 
-            /></TextInstrument></HeadingInstrument>
+            />
+          </TextInstrument>
         </ContainerInstrument>
 
-        <BentoGrid strokeWidth={1.5} columns={2}>
+        <BentoGrid columns={2}>
           {categories.map((cat, i) => (
             <BentoCard 
               key={i}

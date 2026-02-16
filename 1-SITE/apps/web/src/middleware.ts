@@ -2,7 +2,7 @@ import { updateSession } from '@/utils/supabase/middleware'
 import { type NextRequest, NextResponse } from 'next/server'
 
 /**
- * ⚡ NUCLEAR MIDDLEWARE (GOD MODE 2026)
+ * NUCLEAR MIDDLEWARE (GOD MODE 2026)
  * 
  * Doel: Volledige controle over routing, i18n, en journey detection.
  * Deze middleware is de 'Traffic Controller' van het Voices Ecosysteem.
@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
   const pathname = url.pathname
   const userAgent = request.headers.get('user-agent') || ''
 
-  // 🛡️ NUCLEAR BOT PROTECTION
+  // NUCLEAR BOT PROTECTION
   const aiBots = [
     'gptbot', 'chatgpt-user', 'google-extended', 'ccbot', 'anthropicai', 
     'claude-web', 'omgili', 'facebookbot', 'diffbot', 'bytespider', 
@@ -22,11 +22,11 @@ export async function middleware(request: NextRequest) {
   ]
   
   if (aiBots.some(bot => userAgent.toLowerCase().includes(bot))) {
-    console.warn(`🚫 NUCLEAR BLOCK: AI Bot detected [${userAgent}] at ${pathname}`)
+    console.warn(` NUCLEAR BLOCK: AI Bot detected [${userAgent}] at ${pathname}`)
     return new NextResponse('AI Training and Scraping is strictly prohibited on Voices.be.', { status: 403 })
   }
 
-  // 1. 🛡️ SECURITY & ASSET BYPASS
+  // 1. SECURITY & ASSET BYPASS
   // Laat statische assets en API's direct door (matcher doet dit ook, maar extra veiligheid)
   if (
     pathname.startsWith('/_next') ||
@@ -34,13 +34,13 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/assets') ||
     pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|ico|wav|mp3|mp4)$/)
   ) {
-    // 🔒 HOTLINKING PROTECTION FOR ASSETS
+    // HOTLINKING PROTECTION FOR ASSETS
     const referer = request.headers.get('referer')
     const isAsset = pathname.startsWith('/assets/agency/voices')
     const host = request.headers.get('host') || ''
     
     if (isAsset && referer && !referer.includes(host) && !referer.includes('localhost')) {
-      console.warn(`🚫 HOTLINK BLOCK: Asset requested from external domain [${referer}]`)
+      console.warn(` HOTLINK BLOCK: Asset requested from external domain [${referer}]`)
       return new NextResponse('Unauthorized asset request.', { status: 403 })
     }
 
@@ -51,12 +51,12 @@ export async function middleware(request: NextRequest) {
   try {
     response = await updateSession(request)
   } catch (err) {
-    console.error('❌ Middleware updateSession failed:', err)
+    console.error(' Middleware updateSession failed:', err)
     response = NextResponse.next()
   }
   const host = request.headers.get('host') || ''
 
-  // 1.5 🧹 NUCLEAR SESSION CLEANUP (FORCE LOGOUT FROM OLD WP)
+  // 1.5 NUCLEAR SESSION CLEANUP (FORCE LOGOUT FROM OLD WP)
   // Als we WordPress cookies zien, of als de 'voices_session_v2' vlag ontbreekt, 
   // dwingen we een schone lei af voor de nieuwe Next.js omgeving.
   const hasNewSession = request.cookies.has('voices_session_v2')
@@ -77,23 +77,23 @@ export async function middleware(request: NextRequest) {
       sameSite: 'lax' 
     })
     
-    console.log('🧹 NUCLEAR CLEANUP: Old WordPress sessions cleared.')
+    console.log(' NUCLEAR CLEANUP: Old WordPress sessions cleared.')
   }
 
-  // 1.7 🚧 UNDER CONSTRUCTION GATE (GOD MODE)
+  // 1.7 UNDER CONSTRUCTION GATE (GOD MODE)
   // Als de site in 'under construction' modus staat, laten we alleen admins door.
   // We gebruiken een environment variable of een cookie voor de bypass.
   const isUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true' || host.includes('voices.be')
   
-  // 🎯 DOMAIN BYPASS: Specifieke domeinen mogen ALTIJD door (Johfrah, Ademing, Youssef)
+  // DOMAIN BYPASS: Specifieke domeinen mogen ALTIJD door (Johfrah, Ademing, Youssef)
   const isBypassDomain = (host.includes('johfrah.be') || 
                          host.includes('ademing.be') || 
                          host.includes('youssefzaki.eu') ||
                          host.includes('johfrai.be') ||
-                         host.includes('localhost') || // 🧪 LOCAL TEST BYPASS
+                         host.includes('localhost') || // LOCAL TEST BYPASS
                          url.searchParams.get('moby') === 'true') && !host.includes('voices.be')
 
-  // 🧠 LLM CONTEXT & INTENT FILTER (Project DNA-Filter)
+  // LLM CONTEXT & INTENT FILTER (Project DNA-Filter)
   const intent = url.searchParams.get('intent') || 'explore'
   const persona = url.searchParams.get('persona') || 'visitor'
   
@@ -113,13 +113,13 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
-  // 🛡️ REDIRECT OLD SIGNUP TO UNIVERSAL LOGIN
+  // REDIRECT OLD SIGNUP TO UNIVERSAL LOGIN
   if (pathname === '/auth/signup') {
     url.pathname = '/auth/login'
     return NextResponse.redirect(url)
   }
 
-  // 2. 🌍 MARKET DETECTION
+  // 2. MARKET DETECTION
   let market = 'BE'
   if (host.includes('voices.nl')) market = 'NL'
   else if (host.includes('voices.fr')) market = 'FR'
@@ -131,7 +131,7 @@ export async function middleware(request: NextRequest) {
   else if (host.includes('ademing.be')) market = 'ADEMING'
   else if (host.includes('johfrai.be')) market = 'JOHFRAI'
 
-  // 3. 🗺️ JOURNEY ROUTING (DOMAIN BASED REWRITES)
+  // 3. JOURNEY ROUTING (DOMAIN BASED REWRITES)
   
   // Portfolio Journey
   if (host.includes('johfrah.be')) {
@@ -141,13 +141,13 @@ export async function middleware(request: NextRequest) {
     return portfolioResponse
   }
 
-  // 🤖 JOHFRAI AI DOMAIN
+  // JOHFRAI AI DOMAIN
   if (host.includes('johfrai.be')) {
     url.pathname = `/johfrai${pathname === '/' ? '' : pathname}`
     return NextResponse.rewrite(url)
   }
   
-  // 🎤 ARTIST DOMAIN (YOUSSEF) - STRICT ISOLATION
+  // ARTIST DOMAIN (YOUSSEF) - STRICT ISOLATION
   if (host.includes('youssefzaki.eu')) {
     url.pathname = `/artist/youssef${pathname === '/' ? '' : pathname}`
     const artistResponse = NextResponse.rewrite(url)
@@ -170,7 +170,7 @@ export async function middleware(request: NextRequest) {
     return ademingResponse
   }
 
-  // 4. 🌍 I18N NUCLEAR REWRITE (CLEAN URLS)
+  // 4. I18N NUCLEAR REWRITE (CLEAN URLS)
   // Ondersteunt /fr/, /en/, /nl/, /de/, /es/, /it/, /pt/
   const langMatch = pathname.match(/^\/(fr|en|nl|de|es|it|pt)(\/|$)/i)
   let detectedLang = 'nl' // Default
@@ -185,7 +185,7 @@ export async function middleware(request: NextRequest) {
   if (langMatch) {
     detectedLang = langMatch[1].toLowerCase()
     const pathWithoutLocale = pathname.replace(/^\/(fr|en|nl|de|es|it|pt)/i, '')
-    // ⚠️ content-preview zit onder [locale]/content-preview/[slug] – de locale moet in het pad blijven
+    // content-preview zit onder [locale]/content-preview/[slug]  de locale moet in het pad blijven
     // anders matcht de route niet en krijg je 404
     if (pathWithoutLocale.startsWith('/content-preview/')) {
       url.pathname = pathname
@@ -193,14 +193,14 @@ export async function middleware(request: NextRequest) {
       url.pathname = pathWithoutLocale || '/'
     }
     
-    console.log(`⚡ NUCLEAR I18N: ${pathname} -> ${url.pathname} [Market: ${market}, Lang: ${detectedLang}]`)
+    console.log(` NUCLEAR I18N: ${pathname} -> ${url.pathname} [Market: ${market}, Lang: ${detectedLang}]`)
     
     const i18nResponse = NextResponse.rewrite(url)
     i18nResponse.headers.set('x-voices-market', market)
     i18nResponse.headers.set('x-voices-lang', detectedLang)
     i18nResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
     
-    // 🍪 Bewaar de taalvoorkeur in een cookie voor de bezoeker
+    // Bewaar de taalvoorkeur in een cookie voor de bezoeker
     i18nResponse.cookies.set('voices_lang', detectedLang, {
       path: '/',
       maxAge: 60 * 60 * 24 * 365, // 1 jaar
@@ -210,14 +210,14 @@ export async function middleware(request: NextRequest) {
     return i18nResponse
   }
 
-  // 5. 🚀 FINAL HEADERS (FOR SERVER COMPONENTS)
+  // 5. FINAL HEADERS (FOR SERVER COMPONENTS)
   const protocol = request.nextUrl.protocol
   response.headers.set('x-voices-host', `${protocol}//${host}`)
   response.headers.set('x-voices-market', market)
   response.headers.set('x-voices-lang', detectedLang)
   response.headers.set('x-voices-pathname', pathname)
 
-  // 🍪 Ook hier de taal cookie zetten voor de default taal
+  // Ook hier de taal cookie zetten voor de default taal
   response.cookies.set('voices_lang', detectedLang, {
     path: '/',
     maxAge: 60 * 60 * 24 * 365,

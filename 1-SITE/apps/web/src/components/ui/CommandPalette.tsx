@@ -11,6 +11,7 @@ import {
     Layers,
     LayoutDashboard,
     Mail,
+    Menu,
     Mic,
     Music,
     Plus,
@@ -22,7 +23,7 @@ import {
     Zap
 } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { VoiceglotText } from './VoiceglotText';
@@ -37,12 +38,15 @@ export const CommandPalette = () => {
   const [open, setOpen] = useState(false);
   const { isAdmin, user } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   // 🍎 CMD+K SHORTCUT
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        if (!isAdmin) return;
+        // BOB'S MANDATE: CommandPalette is gedeactiveerd voor admins ten gunste van SpotlightDashboard
+        if (isAdmin) return;
+        
         e.preventDefault();
         setOpen((open) => !open);
       }
@@ -90,7 +94,7 @@ export const CommandPalette = () => {
       label="Command Palette"
       className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-va-black/40 backdrop-blur-sm"
     >
-      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col animate-in fade-in zoom-in duration-200">
+      <div className="w-full max-w-2xl bg-white rounded-[20px] shadow-2xl overflow-hidden border border-gray-100 flex flex-col animate-in fade-in zoom-in duration-200">
         <div className="flex items-center px-6 py-4 border-b border-gray-50">
           <Search strokeWidth={1.5} className="w-5 h-5 text-gray-400 mr-3" />
           <Command.Input
@@ -211,10 +215,20 @@ export const CommandPalette = () => {
               <span><VoiceglotText  translationKey="admin.pages.title" defaultText="Pages & Layouts" /></span>
               <Shortcut>G P</Shortcut>
             </Item>
+            <Item strokeWidth={1.5} onSelect={() => runCommand(() => router.push('/admin/navigation'))}>
+              <Menu strokeWidth={1.5} className="w-4 h-4 mr-3" />
+              <span><VoiceglotText  translationKey="admin.navigation.title" defaultText="Navigatie & Header" /></span>
+              <Shortcut>G N</Shortcut>
+            </Item>
             <Item strokeWidth={1.5} onSelect={() => runCommand(() => router.push('/admin/studio'))}>
               <Music strokeWidth={1.5} className="w-4 h-4 mr-3" />
               <span><VoiceglotText  translationKey="admin.studio.title" defaultText="Studio & Workshops" /></span>
               <Shortcut>G W</Shortcut>
+            </Item>
+            <Item strokeWidth={1.5} onSelect={() => runCommand(() => router.push('/admin/studio?action=edit'))}>
+              <Settings strokeWidth={1.5} className="w-4 h-4 mr-3" />
+              <span><VoiceglotText  translationKey="admin.studio.edit_mode" defaultText="Workshop Beheer (Snel)" /></span>
+              <Shortcut>E W</Shortcut>
             </Item>
             <Item strokeWidth={1.5} onSelect={() => runCommand(() => router.push('/backoffice/media'))}>
               <Plus strokeWidth={1.5} className="w-4 h-4 mr-3" />
@@ -265,6 +279,16 @@ export const CommandPalette = () => {
           </Command.Group>
 
           <Command.Group heading={<VoiceglotText  translationKey="command.palette.group.actions" defaultText="Acties" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400 mt-4">
+            {pathname?.startsWith('/studio/') && !pathname.includes('/dashboard') && (
+              <Item strokeWidth={1.5} onSelect={() => runCommand(() => {
+                const slug = pathname.split('/').pop();
+                router.push(`/admin/studio?slug=${slug}`);
+              })}>
+                <Settings strokeWidth={1.5} className="w-4 h-4 mr-3 text-primary" />
+                <span className="font-bold text-primary"><VoiceglotText  translationKey="admin.studio.edit_this" defaultText="Deze Workshop Bewerken" /></span>
+                <Shortcut>E T</Shortcut>
+              </Item>
+            )}
             <Item strokeWidth={1.5} onSelect={() => runCommand(() => {
               toast.success('Nieuw bericht venster geopend');
               // Trigger compose logic via event of state

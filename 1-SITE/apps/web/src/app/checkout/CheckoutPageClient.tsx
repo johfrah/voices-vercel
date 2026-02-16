@@ -1,7 +1,6 @@
 "use client";
 
-import { CheckoutForm } from '@/components/checkout/CheckoutForm';
-import { PricingSummary } from '@/components/checkout/PricingSummary';
+import React, { useEffect, useMemo } from 'react';
 import {
     ContainerInstrument,
     HeadingInstrument,
@@ -14,12 +13,29 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { CheckoutForm } from '@/components/checkout/CheckoutForm';
+import { PricingSummary } from '@/components/checkout/PricingSummary';
+
 /**
  * 🛒 CHECKOUT PAGE (NUCLEAR 2026)
  */
 export default function CheckoutPageClient() {
-  const { state } = useCheckout();
+  const { state, setJourney } = useCheckout();
   const isLoading = false; // Tijdelijk, aangezien isLoading niet in de context zit
+  
+  const searchParams = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    return new URLSearchParams(window.location.search);
+  }, []);
+
+  useEffect(() => {
+    const editionId = searchParams?.get('editionId');
+    const journey = searchParams?.get('journey');
+    
+    if (editionId && journey === 'studio') {
+      setJourney('studio', parseInt(editionId));
+    }
+  }, [searchParams, setJourney]);
 
   if (isLoading) return <LoadingScreenInstrument />;
 
@@ -31,7 +47,12 @@ export default function CheckoutPageClient() {
             <Image  src="/assets/common/branding/icons/CART.svg" width={48} height={48} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.1 }} />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-2">
-            <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter"><VoiceglotText  translationKey="checkout.empty.title" defaultText="Winkelmand leeg" /><TextInstrument className="text-va-black/40 font-light"><VoiceglotText  translationKey="checkout.empty.text" defaultText="Je hebt nog geen stemmen geselecteerd voor je project." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter">
+              <VoiceglotText  translationKey="checkout.empty.title" defaultText="Winkelmand leeg" />
+            </HeadingInstrument>
+            <TextInstrument className="text-va-black/40 font-light">
+              <VoiceglotText  translationKey="checkout.empty.text" defaultText="Je hebt nog geen stemmen geselecteerd voor je project." />
+            </TextInstrument>
           </ContainerInstrument>
           <Link  href="/agency" className="va-btn-pro inline-block"><VoiceglotText  translationKey="checkout.empty.cta" defaultText="Ontdek stemmen" /></Link>
         </ContainerInstrument>

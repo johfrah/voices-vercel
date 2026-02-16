@@ -34,15 +34,51 @@ export function createClient(): SupabaseClient | null {
   }
 
   if (cachedClient) return cachedClient
+
+  console.log('[Voices] Initializing Supabase Browser Client (lockSession: false)')
+  
+  // 🛡️ Global patch for AbortError in locks.js
+  if (typeof window !== 'undefined') {
+    const originalErrorHandler = window.onerror;
+    window.onerror = function(message, source, lineno, colno, error) {
+      if (message?.toString().includes('AbortError') || message?.toString().includes('signal is aborted')) {
+        console.warn('[Voices] Caught global AbortError (locks.js) - suppressing crash.');
+        return true; // Suppress error
+      }
+      if (originalErrorHandler) {
+        return originalErrorHandler(message, source, lineno, colno, error);
+      }
+      return false;
+    };
+  }
+
   cachedClient = createBrowserClient(url!, key!, {
     auth: {
-      // 🔒 Voorkomt 'AbortError: signal is aborted without reason' bij veel gelijktijdige requests
-      // door de navigator.locks API uit te schakelen voor sessie-beheer.
+      // 🔒 Voorkomt 'AbortError: signal is aborted without reason' en deadlocks bij gelijktijdige requests.
+      // lockSession: false schakelt de Web Locks API uit (bron: supabase/supabase-js#1594).
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      // @ts-ignore - lockSession is een geldige optie in @supabase/auth-js maar soms niet in types
+      // @ts-expect-error - lockSession is geldig in auth-js maar niet in @supabase/ssr types
       lockSession: false,
+      // 🛡️ Extra beveiliging tegen AbortError
+      storageKey: 'voices-auth-token',
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    },
+    global: {
+      // @ts-ignore
+      fetch: (...args) => {
+        return fetch(...args).catch(err => {
+          if (err.name === 'AbortError' || err.message?.includes('aborted')) {
+            console.warn('[Voices] Supabase fetch aborted (harmless):', err.message)
+            return new Response(JSON.stringify({ error: 'Aborted', message: err.message }), { 
+              status: 499,
+              statusText: 'Client Closed Request' 
+            })
+          }
+          throw err
+        })
+      }
     }
   })
   return cachedClient

@@ -1,17 +1,16 @@
 "use client";
 
+import {
+    ContainerInstrument,
+    HeadingInstrument,
+    TextInstrument
+} from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { motion } from 'framer-motion';
+import { CheckCircle2, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { 
-  ContainerInstrument, 
-  TextInstrument,
-  HeadingInstrument
-} from '@/components/ui/LayoutInstruments';
-import { Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 export const PricingSummary: React.FC = () => {
   const { state } = useCheckout();
@@ -38,7 +37,7 @@ export const PricingSummary: React.FC = () => {
     fetchConfig();
   }, []);
 
-  const hasContextData = state.selectedActor || state.briefing || isSubscription;
+  const hasContextData = state.selectedActor || state.briefing || isSubscription || state.editionId;
   
   if (loading && !hasContextData) {
     return (
@@ -51,6 +50,50 @@ export const PricingSummary: React.FC = () => {
   const subtotal = state.pricing.total;
   const tax = subtotal * 0.21;
   const total = subtotal + tax;
+
+  if (state.isQuoteRequest) {
+    return (
+      <ContainerInstrument className="space-y-6">
+        <ContainerInstrument className="p-8 bg-va-black text-white rounded-[20px] shadow-aura-lg border-b-4 border-primary relative overflow-hidden">
+          <ContainerInstrument className="flex items-center gap-4 relative z-10">
+            <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-primary/20 flex items-center justify-center text-primary">
+              <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            </ContainerInstrument>
+            <ContainerInstrument>
+              <HeadingInstrument level={4} className="font-light text-lg tracking-tight text-white">
+                Offerte op aanvraag
+              </HeadingInstrument>
+              <TextInstrument className="text-[15px] tracking-widest text-white/40 font-light ">
+                Voor {state.selectedActor?.display_name}
+              </TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+
+        <ContainerInstrument className="p-6 bg-white rounded-[20px] border border-va-black/5 shadow-aura space-y-4">
+          <TextInstrument className="text-[15px] font-light text-va-black/60 leading-relaxed">
+            Omdat er voor deze specifieke media-combinatie nog geen tarieven zijn vastgelegd, maken we een offerte op maat.
+          </TextInstrument>
+          <ContainerInstrument className="pt-4 border-t border-va-black/5">
+            <TextInstrument className="text-[13px] font-bold tracking-widest text-va-black/20 uppercase">
+              Inbegrepen
+            </TextInstrument>
+            <ul className="mt-2 space-y-2">
+              <li className="text-[14px] font-light text-va-black/60 flex items-center gap-2">
+                <CheckCircle2 size={14} className="text-primary" /> Studiosessie & techniek
+              </li>
+              <li className="text-[14px] font-light text-va-black/60 flex items-center gap-2">
+                <CheckCircle2 size={14} className="text-primary" /> Nabewerking & mastering
+              </li>
+              <li className="text-[14px] font-light text-va-black/60 flex items-center gap-2">
+                <CheckCircle2 size={14} className="text-primary" /> Buyout op maat
+              </li>
+            </ul>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
+    );
+  }
 
   return (
     <ContainerInstrument className="space-y-6">
@@ -112,6 +155,25 @@ export const PricingSummary: React.FC = () => {
               </ContainerInstrument>
             </ContainerInstrument>
             <TextInstrument className="font-light text-lg text-va-black">€{state.pricing.base.toFixed(2)}</TextInstrument>
+          </ContainerInstrument>
+        )}
+
+        {state.journey === 'studio' && state.editionId && (
+          <ContainerInstrument className="flex justify-between items-center p-4 bg-white rounded-[20px] border border-va-black/5 shadow-aura">
+            <ContainerInstrument className="flex items-center gap-3">
+              <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
+                <Image src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+              </ContainerInstrument>
+              <ContainerInstrument>
+                <HeadingInstrument level={4} className="font-light text-[15px] text-va-black">
+                  <VoiceglotText translationKey="checkout.summary.workshop_title" defaultText="Workshop deelname" />
+                </HeadingInstrument>
+                <TextInstrument className="text-[15px] tracking-widest text-va-black/40 font-light ">
+                  <VoiceglotText translationKey="checkout.summary.workshop_desc" defaultText="Live in de studio" />
+                </TextInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+            <TextInstrument className="font-light text-lg text-va-black">€{state.pricing.total.toFixed(2)}</TextInstrument>
           </ContainerInstrument>
         )}
 

@@ -72,7 +72,7 @@ export const SectorSelector: React.FC = () => {
                 w-12 h-12 rounded-2xl flex items-center justify-center transition-colors
                 ${isActive ? 'bg-primary text-white' : 'bg-va-off-white text-va-black/40'}
               `}>
-                <Icon strokeWidth={1.5} size={24} />
+                {Icon && (typeof Icon === 'function' || (typeof Icon === 'object' && (Icon as any).$$typeof)) ? <Icon strokeWidth={1.5} size={24} /> : Icon}
               </div>
               <span className="text-[15px] font-black tracking-widest text-center leading-tight">
                 {sector.label}

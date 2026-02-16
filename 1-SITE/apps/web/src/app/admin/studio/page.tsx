@@ -8,10 +8,11 @@ import {
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { StudioDataBridge } from "@/lib/studio-bridge";
+import { FixedCostsInstrument } from "@/components/admin/FixedCostsInstrument";
 import { db } from "@db";
 import { workshopEditions } from "@db/schema";
 import { desc } from "drizzle-orm";
-import { ArrowRight, DollarSign, Mail, Settings, Upload } from "lucide-react";
+import { ArrowRight, DollarSign, Mail, Settings, Upload, Plus } from "lucide-react";
 import Link from "next/link";
 
 /**
@@ -40,6 +41,12 @@ export default async function StudioAdminPage() {
           <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2"><VoiceglotText  translationKey="admin.studio.badge" defaultText="Studio Master Control" /></TextInstrument>
           <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter"><VoiceglotText  translationKey="admin.studio.title_part1" defaultText="Studio" /><TextInstrument as="span" className="text-primary font-light"><VoiceglotText  translationKey="admin.studio.title_part2" defaultText="Beheer." /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
+        
+        <ButtonInstrument className="px-8 py-4 bg-va-black text-white rounded-2xl font-black tracking-widest text-[13px] hover:bg-primary transition-all flex items-center gap-3 shadow-aura">
+          <Plus size={18} strokeWidth={2} />
+          <VoiceglotText translationKey="admin.studio.new_edition" defaultText="NIEUWE EDITIE TOEVOEGEN" />
+        </ButtonInstrument>
+      </ContainerInstrument>
 
       <BentoGrid strokeWidth={1.5} columns={3} className="gap-8">
         {/* FINANCE OVERVIEW (Step 4) */}
@@ -51,18 +58,55 @@ export default async function StudioAdminPage() {
               €{financeStats.totalRevenue.toLocaleString('nl-BE')}
             </HeadingInstrument>
           </ContainerInstrument>
+          
           <ContainerInstrument className="pt-8 border-t border-white/5 space-y-4">
             <ContainerInstrument className="flex justify-between items-center">
-              <TextInstrument className="text-[15px] font-bold text-white/20 tracking-widest">
-                <VoiceglotText  translationKey="common.net_profit" defaultText="Netto Winst" />
+              <TextInstrument className="text-[13px] font-bold text-white/20 tracking-widest uppercase">
+                Externe Kosten
               </TextInstrument>
-              <TextInstrument className="text-[15px] font-black text-primary">€{financeStats.netRevenue.toLocaleString('nl-BE')}</TextInstrument>
+              <TextInstrument className="text-[13px] font-black text-white/60">€{financeStats.externalCosts.toLocaleString('nl-BE')}</TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex justify-between items-center">
-              <TextInstrument className="text-[15px] font-bold text-white/20 tracking-widest">
+              <TextInstrument className="text-[13px] font-bold text-white/20 tracking-widest uppercase">
+                Partner Payouts
+              </TextInstrument>
+              <TextInstrument className="text-[13px] font-black text-white/60">€{financeStats.partnerPayouts.toLocaleString('nl-BE')}</TextInstrument>
+            </ContainerInstrument>
+            {financeStats.pendingRevenue > 0 && (
+              <ContainerInstrument className="flex justify-between items-center">
+                <TextInstrument className="text-[13px] font-bold text-primary/40 tracking-widest uppercase">
+                  ⏳ Onbetaalde Orders
+                </TextInstrument>
+                <TextInstrument className="text-[13px] font-black text-primary/60">€{financeStats.pendingRevenue.toLocaleString('nl-BE')}</TextInstrument>
+              </ContainerInstrument>
+            )}
+            <div className="pt-2 border-t border-white/5">
+              <ContainerInstrument className="flex justify-between items-center">
+                <TextInstrument className="text-[15px] font-bold text-white/40 tracking-widest">
+                  <VoiceglotText  translationKey="common.net_profit" defaultText="De Pot (Winst)" />
+                </TextInstrument>
+                <TextInstrument className="text-[15px] font-black text-primary">€{financeStats.netProfit.toLocaleString('nl-BE')}</TextInstrument>
+              </ContainerInstrument>
+            </div>
+            <ContainerInstrument className="flex justify-between items-center bg-primary/10 p-3 rounded-xl mt-2">
+              <TextInstrument className="text-[13px] font-bold text-primary tracking-widest uppercase">
+                Aandeel p.p. (50/50)
+              </TextInstrument>
+              <TextInstrument className="text-[15px] font-black text-primary">€{financeStats.partnerShare.toLocaleString('nl-BE')}</TextInstrument>
+            </ContainerInstrument>
+            {financeStats.forecastProfit && financeStats.forecastProfit > financeStats.netProfit && (
+              <ContainerInstrument className="flex justify-between items-center pt-2 border-t border-white/5 mt-2">
+                <TextInstrument className="text-[11px] font-bold text-white/20 tracking-widest uppercase">
+                  📈 Prognose (incl. onbetaald)
+                </TextInstrument>
+                <TextInstrument className="text-[11px] font-black text-white/40">€{financeStats.forecastProfit.toLocaleString('nl-BE')}</TextInstrument>
+              </ContainerInstrument>
+            )}
+            <ContainerInstrument className="flex justify-between items-center">
+              <TextInstrument className="text-[13px] font-bold text-white/20 tracking-widest">
                 <VoiceglotText  translationKey="common.margin" defaultText="Marge" />
               </TextInstrument>
-              <TextInstrument className="text-[15px] font-black">{financeStats.marginPercentage.toFixed(1)}%</TextInstrument>
+              <TextInstrument className="text-[13px] font-black">{financeStats.marginPercentage.toFixed(1)}%</TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </BentoCard>
@@ -75,6 +119,10 @@ export default async function StudioAdminPage() {
             <ContainerInstrument className="space-y-3 mt-6">
               <ButtonInstrument className="w-full py-3 bg-white border border-black/5 text-[15px] font-black tracking-widest hover:bg-primary transition-all"><VoiceglotText  translationKey="admin.studio.trigger.new_edition" defaultText="Nieuwe Editie Aankondiging" /></ButtonInstrument>
               <ButtonInstrument className="w-full py-3 bg-white border border-black/5 text-[15px] font-black tracking-widest hover:bg-primary transition-all"><VoiceglotText  translationKey="admin.studio.trigger.certificates" defaultText="Certificaten Klaar (Bulk)" /></ButtonInstrument>
+              
+              <div className="pt-4 border-t border-black/5 mt-4">
+                <FixedCostsInstrument />
+              </div>
             </ContainerInstrument>
           </ContainerInstrument>
           <TextInstrument className="text-[15px] font-medium text-black/30 mt-8"><VoiceglotText  translationKey="admin.studio.mail_disclaimer" defaultText="* Mails worden alleen door Johfrah getriggerd." /></TextInstrument>
@@ -134,7 +182,6 @@ export default async function StudioAdminPage() {
           </ContainerInstrument>
         </BentoCard>
       </BentoGrid>
-      </ContainerInstrument>
     </PageWrapperInstrument>
   );
 }

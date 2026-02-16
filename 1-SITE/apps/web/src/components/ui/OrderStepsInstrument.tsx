@@ -5,63 +5,56 @@ import React from 'react';
 import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 
-interface OrderStep {
-  id: string;
-  icon: any;
-  titleKey: string;
-  defaultTitle: string;
+interface OrderStepsInstrumentProps {
+  currentStep?: 'voice' | 'script' | 'checkout';
+  className?: string;
 }
 
 /**
- * ORDER STEPS INSTRUMENT
+ * ⚡ ORDER STEPS INSTRUMENT (2026 MASTERCLASS)
  * 
- * Toont de visuele flow van een bestelling:
- * Kies stem -> Tekst toevoegen -> Muziek (optioneel) -> Winkelmandje
+ * Een strak, gecentreerd instrument dat de voortgang van de klant toont.
+ * Voldoet aan het Chris-Protocol: Minimalistisch, geen layout shifts, 100ms feedback.
  */
-export const OrderStepsInstrument: React.FC<{ currentStep?: string, isTelephony?: boolean }> = ({ 
+export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({ 
   currentStep = 'voice',
-  isTelephony = false 
+  className = ''
 }) => {
-  const steps: OrderStep[] = [
-    { id: 'voice', icon: null, titleKey: 'order_steps.voice', defaultTitle: '01 Kies stem' },
-    { id: 'text', icon: null, titleKey: 'order_steps.text', defaultTitle: '02 Script' },
-    ...(isTelephony ? [{ id: 'music', icon: null, titleKey: 'order_steps.music', defaultTitle: '03 Muziek' }] : []),
-    { id: 'cart', icon: null, titleKey: 'order_steps.cart', defaultTitle: '04 Checkout' },
-  ];
+  const steps = [
+    { id: 'voice', label: 'Kies Stem', key: 'order_steps.voice' },
+    { id: 'script', label: 'Script', key: 'order_steps.script' },
+    { id: 'checkout', label: 'Checkout', key: 'order_steps.checkout' },
+  ] as const;
 
   return (
-    <ContainerInstrument className="va-order-steps-container py-16">
-      <ContainerInstrument className="max-w-4xl mx-auto flex items-center justify-between px-4">
+    <div className={cn("flex justify-center opacity-40 hover:opacity-100 transition-opacity duration-500", className)}>
+      <div className="flex items-center gap-4 md:gap-6">
         {steps.map((step, index) => {
           const isActive = step.id === currentStep;
-          const isLast = index === steps.length - 1;
+          const isPast = steps.findIndex(s => s.id === currentStep) > index;
 
           return (
             <React.Fragment key={step.id}>
-              <ContainerInstrument className="flex flex-col items-center gap-4 group">
-                <ContainerInstrument className={cn(
-                  "w-16 h-16 rounded-[15px] flex items-center justify-center transition-all duration-700 shadow-aura border border-black/[0.03]",
-                  isActive 
-                    ? "bg-primary text-white scale-110 shadow-lg shadow-primary/20 border-primary/20" 
-                    : "bg-white text-va-black/20 group-hover:bg-va-black/5 group-hover:text-va-black/40"
+              <div className="flex items-center gap-2">
+                <div className={cn(
+                  "w-1.5 h-1.5 rounded-full transition-all duration-500",
+                  isActive ? "bg-primary scale-150" : isPast ? "bg-va-black" : "bg-va-black/40"
+                )} />
+                <span className={cn(
+                  "text-[11px] font-bold tracking-[0.2em] uppercase transition-colors duration-500",
+                  isActive ? "text-va-black" : "text-va-black/50"
                 )}>
-                  <TextInstrument className="text-2xl font-extralight tracking-tighter">0{index + 1}</TextInstrument>
-                </ContainerInstrument>
-                <TextInstrument className={cn(
-                  "text-[15px] font-light tracking-[0.2em] text-center whitespace-nowrap uppercase",
-                  isActive ? "text-va-black" : "text-va-black/30"
-                )}><VoiceglotText  translationKey={step.titleKey} defaultText={step.defaultTitle.split(' ').slice(1).join(' ')} /></TextInstrument>
-              </ContainerInstrument>
-
-              {!isLast && (
-                <ContainerInstrument className="flex-1 flex justify-center items-center px-6">
-                  <ContainerInstrument className="w-full h-[1px] bg-gradient-to-r from-transparent via-black/5 to-transparent" />
-                </ContainerInstrument>
+                  <VoiceglotText translationKey={step.key} defaultText={step.label} />
+                </span>
+              </div>
+              
+              {index < steps.length - 1 && (
+                <div className="w-4 h-[1px] bg-va-black/5" />
               )}
             </React.Fragment>
           );
         })}
-      </ContainerInstrument>
-    </ContainerInstrument>
+      </div>
+    </div>
   );
 };

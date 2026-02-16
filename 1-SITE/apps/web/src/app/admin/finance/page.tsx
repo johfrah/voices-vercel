@@ -1,126 +1,137 @@
-import { PontoBridge } from '@/lib/payments/ponto-bridge';
-import { YukiService } from '@/services/YukiService';
-import { db } from '@db';
-import { yukiOutstanding } from '@db/schema';
-import { desc } from 'drizzle-orm';
-import { SyncButton } from './sync-button';
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import {
+    ContainerInstrument,
+    HeadingInstrument,
+    PageWrapperInstrument,
+    TextInstrument
+} from "@/components/ui/LayoutInstruments";
+import { StudioDataBridge } from "@/lib/studio-bridge";
+import { cn } from "@/lib/utils";
+import { 
+    TrendingUp, 
+    Users, 
+    Mic2, 
+    GraduationCap,
+    ArrowUpRight,
+    ArrowDownRight,
+    Euro,
+    ArrowLeft
+} from "lucide-react";
+import Link from "next/link";
+import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
+import { redirect } from "next/navigation";
 
-export const dynamic = 'force-dynamic';
+export default async function FinancialCockpitPage() {
+  const user = await getServerUser();
+  if (!user || !isAdminUser(user)) redirect('/studio');
 
-export default async function FinanceDashboard() {
-  // 1. Fetch Live Data
-  const [yukiLive, pontoPending, dbOutstanding] = await Promise.all([
-    YukiService.getOutstandingInvoices(),
-    PontoBridge.getPendingPayouts(),
-    db.select().from(yukiOutstanding).orderBy(desc(yukiOutstanding.invoiceDate))
-  ]);
+  const studioStats = await StudioDataBridge.getFinancialStatsByJourney('studio');
+  const agencyStats = await StudioDataBridge.getFinancialStatsByJourney('agency');
+  const academyStats = await StudioDataBridge.getFinancialStatsByJourney('academy');
 
-  // 2. Calculate Stats
-  const totalOutstanding = yukiLive.reduce((acc, inv) => acc + inv.openAmount, 0);
-  const totalPendingPayout = pontoPending.reduce((acc, p) => acc + p.amount, 0);
+  const totalRevenue = studioStats.totalRevenue + agencyStats.totalRevenue + academyStats.totalRevenue;
+  const totalCosts = studioStats.totalCosts + agencyStats.totalCosts + academyStats.totalCosts;
+  const totalNet = totalRevenue - totalCosts;
+
+  const JourneyCard = ({ title, stats, icon: Icon, color, href }: any) => (
+    <BentoCard className="bg-white shadow-aura border border-black/5 p-8 group hover:border-primary/20 transition-all">
+      <div className="flex justify-between items-start mb-8">
+        <div className={cn("p-3 rounded-2xl", color)}>
+          <Icon size={24} className="text-white" />
+        </div>
+        <Link href={href} className="p-2 rounded-full bg-va-off-white opacity-0 group-hover:opacity-100 transition-all">
+          <ArrowUpRight size={16} />
+        </Link>
+      </div>
+      
+      <TextInstrument className="text-[13px] font-black tracking-widest text-black/30 uppercase mb-1">{title}</TextInstrument>
+      <HeadingInstrument level={3} className="text-3xl font-light mb-6">€{stats.netRevenue.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
+      
+      <div className="space-y-3 pt-6 border-t border-black/5">
+        <div className="flex justify-between text-[13px]">
+          <span className="text-black/40">Omzet</span>
+          <span className="font-bold">€{stats.totalRevenue.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</span>
+        </div>
+        <div className="flex justify-between text-[13px]">
+          <span className="text-black/40">Kosten</span>
+          <span className="font-bold text-red-500">- €{stats.totalCosts.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</span>
+        </div>
+        <div className="flex justify-between text-[13px]">
+          <span className="text-black/40">Marge</span>
+          <span className={cn("font-black", stats.marginPercentage > 30 ? "text-green-500" : "text-amber-500")}>
+            {stats.marginPercentage.toFixed(1)}%
+          </span>
+        </div>
+      </div>
+    </BentoCard>
+  );
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-light text-va-black mb-2">Finance Dashboard</h1>
-          <p className="text-va-gray-500">Yuki & Ponto Reconciliatie Centrum</p>
-        </div>
-        <SyncButton strokeWidth={1.5} />
-      </div>
+    <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1400px] mx-auto">
+      <Link href="/admin/dashboard" className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group">
+        <ArrowLeft strokeWidth={1.5} size={14} className="group-hover:-translate-x-1 transition-transform" />
+        TERUG NAAR DASHBOARD
+      </Link>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-[20px] shadow-aura border border-va-gray-100">
-          <h3 className="text-[15px] font-medium text-va-gray-400 tracking-wider mb-2">Openstaand (Yuki)</h3>
-          <p className="text-3xl font-light text-va-black">€{totalOutstanding.toFixed(2)}</p>
-          <p className="text-[15px] text-va-gray-400 mt-2">{yukiLive.length} facturen</p>
-        </div>
-        <div className="bg-white p-6 rounded-[20px] shadow-aura border border-va-gray-100">
-          <h3 className="text-[15px] font-medium text-va-gray-400 tracking-wider mb-2">Wacht op Ponto</h3>
-          <p className="text-3xl font-light text-va-black">€{totalPendingPayout.toFixed(2)}</p>
-          <p className="text-[15px] text-va-gray-400 mt-2">{pontoPending.length} uitbetalingen</p>
-        </div>
-        <div className="bg-white p-6 rounded-[20px] shadow-aura border border-va-gray-100">
-          <h3 className="text-[15px] font-medium text-va-gray-400 tracking-wider mb-2">Reconciliatie Gap</h3>
-          <p className="text-3xl font-light text-va-black">€{(totalOutstanding - totalPendingPayout).toFixed(2)}</p>
-          <p className="text-[15px] text-green-500 mt-2">Te ontvangen</p>
-        </div>
-      </div>
+      <ContainerInstrument className="mb-16">
+        <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2 uppercase">Financial Cockpit</TextInstrument>
+        <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-4">De Boekhouding</HeadingInstrument>
+        <TextInstrument className="text-xl text-black/40 max-w-2xl font-medium">
+          Eén centraal overzicht van alle inkomsten en kosten, strikt gescheiden per journey volgens de Bob-methode.
+        </TextInstrument>
+      </ContainerInstrument>
 
-      {/* Yuki Outstanding Table */}
-      <div className="bg-white rounded-[20px] shadow-aura border border-va-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-va-gray-100 flex justify-between items-center">
-          <h2 className="text-xl font-light">Openstaande Facturen (Live)</h2>
-          <span className="text-[15px] bg-green-100 text-green-800 px-2 py-1 rounded-full">
-            Yuki Connected
-          </span>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="bg-va-black text-white p-10 rounded-[40px] shadow-aura-lg relative overflow-hidden">
+          <div className="relative z-10">
+            <TextInstrument className="text-[13px] font-black tracking-widest text-white/30 uppercase mb-2">Totaal Netto Resultaat</TextInstrument>
+            <HeadingInstrument level={2} className="text-5xl font-light">€{totalNet.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
+            <div className="mt-8 flex items-center gap-4">
+              <div className="flex items-center gap-1 text-green-400 text-sm font-bold bg-white/5 px-3 py-1 rounded-full">
+                <TrendingUp size={14} /> +12.4%
+              </div>
+              <TextInstrument className="text-white/40 text-[13px]">t.o.v. vorige maand</TextInstrument>
+            </div>
+          </div>
+          <Euro className="absolute -right-10 -bottom-10 text-white/5 w-64 h-64 rotate-12" />
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-va-off-white">
-              <tr>
-                <th className="px-6 py-3 text-left text-[15px] font-medium text-va-gray-500 tracking-wider">Factuur</th>
-                <th className="px-6 py-3 text-left text-[15px] font-medium text-va-gray-500 tracking-wider">Klant</th>
-                <th className="px-6 py-3 text-left text-[15px] font-medium text-va-gray-500 tracking-wider">Datum</th>
-                <th className="px-6 py-3 text-left text-[15px] font-medium text-va-gray-500 tracking-wider">Vervaldatum</th>
-                <th className="px-6 py-3 text-right text-[15px] font-medium text-va-gray-500 tracking-wider">Bedrag</th>
-                <th className="px-6 py-3 text-right text-[15px] font-medium text-va-gray-500 tracking-wider">Open</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-va-gray-100">
-              {yukiLive.map((inv) => (
-                <tr key={inv.id} className="hover:bg-va-off-white/50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] font-medium text-va-black">{inv.invoiceNr}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] text-va-gray-600">{inv.contactName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] text-va-gray-500">
-                    {new Date(inv.invoiceDate).toLocaleDateString('nl-BE')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] text-va-gray-500">
-                    {new Date(inv.dueDate).toLocaleDateString('nl-BE')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] text-right text-va-gray-600">€{inv.amount.toFixed(2)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] text-right font-medium text-red-500">€{inv.openAmount.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        <div className="bg-va-off-white p-10 rounded-[40px] border border-black/5 flex flex-col justify-center">
+          <TextInstrument className="text-[13px] font-black tracking-widest text-black/30 uppercase mb-2">Totale Omzet</TextInstrument>
+          <HeadingInstrument level={2} className="text-4xl font-light">€{totalRevenue.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
+        </div>
+
+        <div className="bg-va-off-white p-10 rounded-[40px] border border-black/5 flex flex-col justify-center">
+          <TextInstrument className="text-[13px] font-black tracking-widest text-black/30 uppercase mb-2">Totale Kosten</TextInstrument>
+          <HeadingInstrument level={2} className="text-4xl font-light text-red-500">€{totalCosts.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
         </div>
       </div>
 
-      {/* Ponto Pending Table */}
-      <div className="bg-white rounded-[20px] shadow-aura border border-va-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-va-gray-100 flex justify-between items-center">
-          <h2 className="text-xl font-light">Wachtend op Uitbetaling (Ponto)</h2>
-          <span className="text-[15px] bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-            Ready for Approval
-          </span>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-va-off-white">
-              <tr>
-                <th className="px-6 py-3 text-left text-[15px] font-medium text-va-gray-500 tracking-wider">Order</th>
-                <th className="px-6 py-3 text-left text-[15px] font-medium text-va-gray-500 tracking-wider">Ontvanger</th>
-                <th className="px-6 py-3 text-left text-[15px] font-medium text-va-gray-500 tracking-wider">IBAN</th>
-                <th className="px-6 py-3 text-left text-[15px] font-medium text-va-gray-500 tracking-wider">Referentie</th>
-                <th className="px-6 py-3 text-right text-[15px] font-medium text-va-gray-500 tracking-wider">Bedrag</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-va-gray-100">
-              {pontoPending.map((payout) => (
-                <tr key={payout.orderId} className="hover:bg-va-off-white/50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] font-medium text-va-black">#{payout.orderId}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] text-va-gray-600">{payout.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] text-va-gray-500 font-mono">{payout.iban}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] text-va-gray-500">{payout.reference}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[15px] text-right font-medium text-va-black">€{payout.amount.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+      <HeadingInstrument level={2} className="text-[15px] font-black tracking-widest text-black/30 uppercase mb-8 ml-2">Journeys</HeadingInstrument>
+      
+      <BentoGrid columns={3} className="gap-8">
+        <JourneyCard 
+          title="Studio (Workshops)" 
+          stats={studioStats} 
+          icon={Users} 
+          color="bg-indigo-500"
+          href="/admin/studio/workshops"
+        />
+        <JourneyCard 
+          title="Agency (Voice-overs)" 
+          stats={agencyStats} 
+          icon={Mic2} 
+          color="bg-primary"
+          href="/admin/agency/orders"
+        />
+        <JourneyCard 
+          title="Academy (LMS)" 
+          stats={academyStats} 
+          icon={GraduationCap} 
+          color="bg-amber-500"
+          href="/admin/academy/stats"
+        />
+      </BentoGrid>
+    </PageWrapperInstrument>
   );
 }

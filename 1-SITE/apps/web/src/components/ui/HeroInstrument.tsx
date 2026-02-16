@@ -1,10 +1,29 @@
 "use client";
 
-import Link from "next/link";
+import { MarketManager } from "@config/market-manager";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import React from 'react';
 import { VoiceglotText } from "./VoiceglotText";
-import { MarketManager } from "@config/market-manager";
+
+const HERO_IMAGES = [
+  {
+    url: "/assets/agency/voices/nl/nl/female/kristel-A-216105/kristel-photo.jpg",
+    name: "Kristel",
+    role: "Stemactrice"
+  },
+  {
+    url: "/assets/agency/voices/be/nl/male/johfrah-A-182508/johfrah-photo.jpg",
+    name: "Johfrah Lefebvre",
+    role: "Founder & Stemacteur"
+  },
+  {
+    url: "/assets/agency/voices/nl/nl/female/carolina-A-186284/carolina-photo.jpg",
+    name: "Carolina",
+    role: "Stemactrice"
+  }
+];
 
 /**
  * HERO INSTRUMENT
@@ -16,16 +35,24 @@ export const HeroInstrument: React.FC = () => {
   const market = MarketManager.getCurrentMarket();
   const isPortfolio = market.market_code === 'JOHFRAH';
   const ctaHref = isPortfolio ? '/#demos' : '/agency';
+  const [imageIndex, setImageIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setImageIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 8000); // ⏳ Trager: Elke 8 seconden wisselen
+    return () => clearInterval(timer);
+  }, []);
+
+  const currentActor = HERO_IMAGES[imageIndex];
 
   return (
     <div className="va-hero-container relative overflow-hidden py-24 md:py-32">
-      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="max-w-[1140px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="relative z-10">
-          <div className="va-hero-badge inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-[20px] text-primary text-[15px] font-light tracking-widest border border-primary/10 mb-8">
-            <Image  src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /> <VoiceglotText  translationKey="home.hero.badge" defaultText="De beste stemmen van de Benelux" />
-          </div>
           <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black mb-8">
-            <VoiceglotText  translationKey="home.hero.title_part1" defaultText="Vind de " />
+            <VoiceglotText  translationKey="home.hero.title_part1" defaultText="Vind de" />
+            {" "}
             <span className="text-primary italic">
               <VoiceglotText  translationKey="home.hero.title_highlight" defaultText="stem" />
             </span>
@@ -40,15 +67,34 @@ export const HeroInstrument: React.FC = () => {
           </div>
         </div>
 
-        <div className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg group">
-          <Image  
-            src="/assets/voices-photo.jpg" 
-            alt="Voices Artist"
-            fill
-            className="object-cover transition-transform duration-1000 group-hover:scale-105"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg group bg-va-off-white">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={imageIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 2, ease: "easeInOut" }} // ⏳ Zachte fade van 2 seconden
+              className="absolute inset-0"
+            >
+              <Image  
+                src={currentActor.url} 
+                alt={currentActor.name}
+                fill
+                className="object-cover"
+                priority
+              />
+              
+              {/* 🏷️ ACTOR LABEL (Progressive Disclosure) */}
+              <div className="absolute bottom-8 left-8 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-[15px] shadow-sm border border-black/[0.03]">
+                  <p className="text-[15px] font-light tracking-tight text-va-black">{currentActor.name}</p>
+                  <p className="text-[15px] font-extralight tracking-widest text-black/40 mt-0.5">{currentActor.role}</p>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10" />
         </div>
       </div>
     </div>

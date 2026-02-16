@@ -56,10 +56,15 @@ function AfspraakContent() {
             <CheckCircle2 strokeWidth={1.5} size={48} />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-4">
-            <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter"><VoiceglotText  translationKey="studio.meeting.success.title" defaultText="Afspraak staat!" /><TextInstrument className="text-va-black/50 font-light text-[15px]"><VoiceglotText  
+            <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
+              <VoiceglotText  translationKey="studio.meeting.success.title" defaultText="Afspraak staat!" />
+            </HeadingInstrument>
+            <TextInstrument className="text-va-black/50 font-light text-[15px]">
+              <VoiceglotText  
                 translationKey="studio.meeting.success.subtitle" 
                 defaultText="Je ontvangt direct een bevestiging met de meeting link in je mailbox. Tot snel in de studio!" 
-              /></TextInstrument></HeadingInstrument>
+              />
+            </TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="pt-8">
             <Link  href="/studio" className="va-btn-pro"><VoiceglotText  translationKey="common.back_to_home" defaultText="Terug naar home" /></Link>
@@ -88,10 +93,15 @@ function AfspraakContent() {
         </ContainerInstrument>
         
         <ContainerInstrument className="space-y-4">
-          <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter"><VoiceglotText  translationKey="studio.appointment.cancel.title" defaultText="Afspraak geannuleerd" /><TextInstrument className="text-va-black/50 font-light text-[15px] leading-relaxed"><VoiceglotText  
+          <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter">
+            <VoiceglotText  translationKey="studio.appointment.cancel.title" defaultText="Afspraak geannuleerd" />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/50 font-light text-[15px] leading-relaxed">
+            <VoiceglotText  
               translationKey="studio.appointment.cancel.subtitle" 
               defaultText="Je afspraak is succesvol geannuleerd. We hebben je een e-mail gestuurd met een link om een nieuw moment in te plannen wanneer het jou uitkomt." 
-            /></TextInstrument></HeadingInstrument>
+            />
+          </TextInstrument>
         </ContainerInstrument>
 
         <ContainerInstrument className="pt-8 flex flex-col gap-4">
@@ -113,10 +123,15 @@ function AfspraakContent() {
         </ContainerInstrument>
         
         <ContainerInstrument className="space-y-4">
-          <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter"><VoiceglotText  translationKey="studio.appointment.manage.title" defaultText="Afspraak beheren" /><TextInstrument className="text-va-black/50 font-light text-[15px] leading-relaxed"><VoiceglotText  
+          <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter">
+            <VoiceglotText  translationKey="studio.appointment.manage.title" defaultText="Afspraak beheren" />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/50 font-light text-[15px] leading-relaxed">
+            <VoiceglotText  
               translationKey="studio.appointment.manage.subtitle" 
               defaultText="Wat wil je doen met je afspraak?" 
-            /></TextInstrument></HeadingInstrument>
+            />
+          </TextInstrument>
         </ContainerInstrument>
 
         <ContainerInstrument className="pt-8 flex flex-col gap-4">
@@ -131,10 +146,15 @@ function AfspraakContent() {
   return (
     <ContainerInstrument className="max-w-4xl w-full mx-auto px-6 py-20">
       <ContainerInstrument className="mb-16 text-center space-y-4">
-        <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter"><VoiceglotText  translationKey="studio.meeting.title" defaultText="Kennismaken" /><TextInstrument className="text-va-black/40 font-light max-w-xl mx-auto text-[15px] text-center"><VoiceglotText  
+        <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
+          <VoiceglotText  translationKey="studio.meeting.title" defaultText="Kennismaken" />
+        </HeadingInstrument>
+        <TextInstrument className="text-va-black/40 font-light max-w-xl mx-auto text-[15px] text-center">
+          <VoiceglotText  
             translationKey="studio.meeting.subtitle" 
             defaultText="Plan een moment in met Johfrah om je potentieel te bespreken. De koffie staat klaar (virtueel of fysiek)." 
-          /></TextInstrument></HeadingInstrument>
+          />
+        </TextInstrument>
       </ContainerInstrument>
 
       <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">

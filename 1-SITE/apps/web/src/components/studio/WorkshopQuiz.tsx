@@ -180,7 +180,7 @@ export const WorkshopQuiz: React.FC = () => {
     return (
       <div className="relative w-full aspect-[9/16] bg-va-off-white rounded-[20px] overflow-hidden shadow-aura border border-black/5 flex-shrink-0">
         <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-va-black/10 animate-spin" />
+          <Loader2 strokeWidth={1.5} className="w-8 h-8 text-va-black/10 animate-spin" />
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
           <div className="h-8 bg-va-black/5 rounded-lg w-3/4 animate-pulse" />
@@ -198,7 +198,7 @@ export const WorkshopQuiz: React.FC = () => {
       {/* 🔄 Video Loading State */}
       {!isVideoLoaded && !hasError && (
         <div className="absolute inset-0 flex items-center justify-center z-20 bg-va-black/50">
-          <Loader2 className="w-8 h-8 text-white/20 animate-spin" />
+          <Loader2 strokeWidth={1.5} className="w-8 h-8 text-white/20 animate-spin" />
         </div>
       )}
 
@@ -237,7 +237,7 @@ export const WorkshopQuiz: React.FC = () => {
             exit={{ opacity: 0, y: -10 }}
             className="absolute top-20 left-6 right-6 z-40 text-center"
           >
-            <span className="inline-block px-4 py-2 bg-va-black/60 backdrop-blur-lg rounded-lg text-white text-[14px] font-light leading-snug shadow-lg border border-white/5">
+            <span className="inline-block px-4 py-2 bg-va-black/60 backdrop-blur-lg rounded-lg text-white text-[15px] font-light leading-snug shadow-lg border border-white/5">
               {currentSubtitle.text}
             </span>
           </motion.div>
@@ -247,7 +247,7 @@ export const WorkshopQuiz: React.FC = () => {
       {/* Fallback Background */}
       {hasError && (
         <div className="absolute inset-0 bg-va-black flex items-center justify-center z-10">
-          <div className="text-white/20 text-xs text-center p-4 font-light">
+          <div className="text-white/20 text-[15px] text-center p-4 font-light">
             Video tijdelijk niet beschikbaar
           </div>
         </div>

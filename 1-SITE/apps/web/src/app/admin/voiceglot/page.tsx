@@ -152,10 +152,15 @@ export default function VoiceglotAdminPage() {
         <BentoCard span="sm" className="bg-primary text-white p-10 space-y-6 flex flex-col justify-between">
           <ContainerInstrument className="space-y-4">
             <ShieldCheck strokeWidth={1.5} size={40} />
-            <HeadingInstrument level={3} className="text-3xl font-light tracking-tighter leading-none"><VoiceglotText  translationKey="admin.voiceglot.seo_title" defaultText="AI SEO AUTOMATION" /><TextInstrument className="text-[15px] font-medium opacity-80"><VoiceglotText  
+            <HeadingInstrument level={3} className="text-3xl font-light tracking-tighter leading-none">
+              <VoiceglotText  translationKey="admin.voiceglot.seo_title" defaultText="AI SEO AUTOMATION" />
+            </HeadingInstrument>
+            <TextInstrument className="text-[15px] font-medium opacity-80">
+              <VoiceglotText  
                 translationKey="admin.voiceglot.seo_text" 
                 defaultText="Alle slugs en meta-data worden automatisch gesynchroniseerd in 5 talen. Geen handmatige invoer nodig." 
-              /></TextInstrument></HeadingInstrument>
+              />
+            </TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="p-4 bg-white/10 rounded-2xl border border-white/10">
             <ContainerInstrument className="flex justify-between items-center mb-2">
@@ -175,10 +180,15 @@ export default function VoiceglotAdminPage() {
           <Zap strokeWidth={1.5} size={32} />
         </ContainerInstrument>
         <ContainerInstrument className="space-y-1">
-          <HeadingInstrument level={4} className="text-primary font-light tracking-tight"><VoiceglotText  translationKey="admin.voiceglot.protocol_title" defaultText="VOICEGLOT PROTOCOL" /><TextInstrument className="text-[15px] opacity-60 font-medium"><VoiceglotText  
+          <HeadingInstrument level={4} className="text-primary font-light tracking-tight">
+            <VoiceglotText  translationKey="admin.voiceglot.protocol_title" defaultText="VOICEGLOT PROTOCOL" />
+          </HeadingInstrument>
+          <TextInstrument className="text-[15px] opacity-60 font-medium">
+            <VoiceglotText  
               translationKey="admin.voiceglot.protocol_text" 
               defaultText="De Freedom Machine spreekt elke taal. Zodra een nieuwe string wordt gedetecteerd in de UI, wordt deze binnen 60 seconden automatisch vertaald door de Intelligence Layer. Slugs worden automatisch 'slugified' per taal om SEO-waarde te maximaliseren." 
-            /></TextInstrument></HeadingInstrument>
+            />
+          </TextInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
 

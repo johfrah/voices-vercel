@@ -81,8 +81,10 @@ async function JohfrahContent() {
               
               <HeadingInstrument level={1} className="text-6xl md:text-8xl font-extralight leading-[0.9] tracking-tighter text-va-black">
                 Johfrah <br />
-                <TextInstrument className="text-primary/40 font-light"><VoiceglotText  translationKey="auto.page.lefebvre.6eaa14" defaultText="Lefebvre" /></TextInstrument>
               </HeadingInstrument>
+              <TextInstrument className="text-primary/40 font-light text-6xl md:text-8xl tracking-tighter leading-[0.9]">
+                <VoiceglotText  translationKey="auto.page.lefebvre.6eaa14" defaultText="Lefebvre" />
+              </TextInstrument>
               
               <TextInstrument className="text-2xl font-light text-va-black/40 leading-tight tracking-tight max-w-xl"><VoiceglotText  translationKey="portfolio.johfrah.title" defaultText={data.title} /></TextInstrument>
 
@@ -127,7 +129,12 @@ async function JohfrahContent() {
               <ContainerInstrument className="w-14 h-14 rounded-[12px] bg-white/10 backdrop-blur-md flex items-center justify-center">
                 <Award strokeWidth={1.5} size={28} className="text-white/60" />
               </ContainerInstrument>
-              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter leading-none "><VoiceglotText  translationKey="portfolio.johfrah.host.title" defaultText="Host & Reporter" /><TextInstrument className="text-lg text-white/70 font-light leading-relaxed max-w-sm"><VoiceglotText  translationKey="portfolio.johfrah.host.intro" defaultText={data.host_content.intro} /></TextInstrument></HeadingInstrument>
+              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter leading-none ">
+                <VoiceglotText  translationKey="portfolio.johfrah.host.title" defaultText="Host & Reporter" />
+              </HeadingInstrument>
+              <TextInstrument className="text-lg text-white/70 font-light leading-relaxed max-w-sm">
+                <VoiceglotText  translationKey="portfolio.johfrah.host.intro" defaultText={data.host_content.intro} />
+              </TextInstrument>
             </ContainerInstrument>
             
             <ContainerInstrument className="relative z-10">

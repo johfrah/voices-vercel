@@ -11,6 +11,8 @@ import { VOICES_CONFIG } from './config';
 export interface MarketConfig {
   market_code: string;
   language: string;
+  primary_language: string; // De voorgeselecteerde taal (bijv. 'Vlaams')
+  supported_languages: string[]; // Welke talen zichtbaar zijn in de dropdown
   currency: string;
   name: string;
   phone: string;
@@ -27,6 +29,13 @@ export class MarketManager {
     'voices.be': {
       market_code: 'BE',
       language: 'nl',
+      primary_language: 'Vlaams',
+      supported_languages: [
+        'Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits', 
+        'Spaans', 'Italiaans', 'Pools', 'Portugees', 'Turks', 
+        'Deens', 'Zweeds', 'Noors', 'Fins', 'Grieks', 
+        'Russisch', 'Arabisch', 'Chinees', 'Japans'
+      ],
       name: 'België',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices'
@@ -34,6 +43,8 @@ export class MarketManager {
     'voices.nl': {
       market_code: 'NLNL',
       language: 'nl',
+      primary_language: 'Nederlands',
+      supported_languages: ['Nederlands', 'Vlaams', 'Engels', 'Duits', 'Frans', 'Spaans', 'Italiaans'],
       name: 'Nederland',
       phone: '+31 (0)85 016 34 60',
       email: 'johfrah@voices.nl',
@@ -43,6 +54,8 @@ export class MarketManager {
     'voices.fr': {
       market_code: 'FR',
       language: 'fr',
+      primary_language: 'Frans',
+      supported_languages: ['Frans', 'Engels', 'Nederlands', 'Vlaams', 'Duits', 'Spaans', 'Italiaans'],
       name: 'France',
       email: 'johfrah@voices.fr',
       logo_url: VOICES_CONFIG.assets.logos.fr,
@@ -51,6 +64,8 @@ export class MarketManager {
     'voices.es': {
       market_code: 'ES',
       language: 'es',
+      primary_language: 'Spaans',
+      supported_languages: ['Spaans', 'Engels', 'Frans', 'Portugees', 'Italiaans'],
       name: 'España',
       email: 'johfrah@voices.es',
       logo_url: VOICES_CONFIG.assets.logos.es,
@@ -59,6 +74,8 @@ export class MarketManager {
     'voices.pt': {
       market_code: 'PT',
       language: 'pt',
+      primary_language: 'Portugees',
+      supported_languages: ['Portugees', 'Engels', 'Spaans', 'Frans'],
       name: 'Portugal',
       email: 'johfrah@voices.pt',
       logo_url: VOICES_CONFIG.assets.logos.pt,
@@ -67,6 +84,8 @@ export class MarketManager {
     'voices.eu': {
       market_code: 'EU',
       language: 'en',
+      primary_language: 'Engels',
+      supported_languages: ['Engels', 'Vlaams', 'Nederlands', 'Frans', 'Duits', 'Spaans', 'Italiaans'],
       name: 'Europe',
       email: 'johfrah@voices.eu',
       logo_url: VOICES_CONFIG.assets.logos.eu,
@@ -75,6 +94,8 @@ export class MarketManager {
     'voices.de': {
       market_code: 'DE',
       language: 'de',
+      primary_language: 'Duits',
+      supported_languages: ['Duits', 'Engels', 'Frans', 'Nederlands', 'Vlaams', 'Italiaans', 'Spaans'],
       name: 'Deutschland',
       email: 'johfrah@voices.de',
       logo_url: VOICES_CONFIG.assets.logos.eu, // Fallback to EU logo
@@ -83,6 +104,8 @@ export class MarketManager {
     'johfrah.be': {
       market_code: 'JOHFRAH',
       language: 'nl',
+      primary_language: 'Vlaams',
+      supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
       name: 'Johfrah',
       email: 'johfrah@johfrah.be',
       logo_url: VOICES_CONFIG.assets.logos.johfrah,
@@ -92,6 +115,8 @@ export class MarketManager {
     'youssefzaki.eu': {
       market_code: 'YOUSSEF',
       language: 'en',
+      primary_language: 'Engels',
+      supported_languages: ['Engels', 'Nederlands', 'Vlaams', 'Frans', 'Duits'],
       name: 'Youssef Zaki',
       email: 'info@youssefzaki.eu',
       logo_url: VOICES_CONFIG.assets.logos.be,
@@ -100,6 +125,8 @@ export class MarketManager {
     'ademing.be': {
       market_code: 'ADEMING',
       language: 'nl',
+      primary_language: 'Vlaams',
+      supported_languages: ['Vlaams', 'Nederlands'],
       name: 'Ademing',
       email: 'info@ademing.be',
       logo_url: VOICES_CONFIG.assets.logos.ademing,
@@ -108,6 +135,8 @@ export class MarketManager {
     'johfrai.be': {
       market_code: 'JOHFRAI',
       language: 'nl',
+      primary_language: 'Vlaams',
+      supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
       name: 'Johfrai',
       email: 'info@johfrai.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
@@ -134,6 +163,8 @@ export class MarketManager {
     return {
       market_code: config.market_code || 'BE',
       language: config.language || 'nl',
+      primary_language: config.primary_language || 'Vlaams',
+      supported_languages: config.supported_languages || ['Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits'],
       currency: config.currency || 'EUR',
       name: config.name || 'Voices',
       phone: config.phone || VOICES_CONFIG.company.phone,

@@ -62,7 +62,7 @@ export default function StudioDashboardPage() {
           </TextInstrument>
         </SectionInstrument>
 
-        <BentoGrid strokeWidth={1.5} columns={3}>
+        <BentoGrid columns={3}>
           {/* 🎙️ LAATSTE OPNAME BENTO */}
           <BentoCard span="lg" className="hblue p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[400px]">
             <ContainerInstrument>

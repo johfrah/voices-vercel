@@ -70,7 +70,7 @@ export default function VoicePageClient({ actors }: { actors: any[] }) {
                 <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-va-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <ContainerInstrument className="absolute bottom-4 left-4 right-4 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-500">
                   <ContainerInstrument className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shadow-lg">
-                    <Image  src="/assets/common/branding/icons/PLAY.svg" width={18} height={18} alt="" className="brightness-0 invert ml-1" />
+                    <Image  src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert ml-1" />
                   </ContainerInstrument>
                   <ButtonInstrument className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white">
                     <Image  src="/assets/common/branding/icons/FAVORITES.svg" width={18} height={18} alt="" className="brightness-0 invert" />

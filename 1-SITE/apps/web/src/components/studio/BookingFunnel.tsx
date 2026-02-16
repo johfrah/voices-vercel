@@ -1,29 +1,28 @@
 "use client";
 
-import { VoiceCard } from '@/components/ui/VoiceCard';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    InputInstrument,
+    TextInstrument
+} from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
-import { Actor } from '@/types';
-import { AnimatePresence } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { 
-  ContainerInstrument, 
-  TextInstrument,
-  ButtonInstrument,
-  HeadingInstrument,
-  InputInstrument,
-  LabelInstrument
-} from '@/components/ui/LayoutInstruments';
+import React, { useState } from 'react';
 
 interface WorkshopDate {
   date_raw: string;
   price: string;
   location: string;
   capacity: number;
+  filled?: number; // 👥 Aantal deelnemers
   time?: string;
+  includes_lunch?: boolean;
+  includes_certificate?: boolean;
 }
 
 interface BookingFunnelProps {
@@ -33,6 +32,7 @@ interface BookingFunnelProps {
   dates: WorkshopDate[];
   onDateSelect?: (index: number) => void;
   selectedDateIndex?: number;
+  isLoading?: boolean;
 }
 
 export const BookingFunnel: React.FC<BookingFunnelProps> = ({ 
@@ -47,232 +47,258 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   const { t } = useTranslation();
   const [internalIndex, setInternalIndex] = useState<number>(0);
   const [isBooking, setIsBooking] = useState(false);
-  const [showInterestForm, setShowInterestForm] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [foundVoices, setFoundVoices] = useState<Actor[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const selectedDateIndex = controlledIndex !== undefined ? controlledIndex : internalIndex;
   const selectedDate = dates[selectedDateIndex] || null;
+  const hasDates = dates.length > 0;
 
-  useEffect(() => {
-    const searchVoices = async () => {
-      if (searchQuery.length < 3) {
-        setFoundVoices([]);
-        return;
-      }
-
-      setIsSearching(true);
-      try {
-        const res = await fetch(`/api/agency/actors?search=${encodeURIComponent(searchQuery)}&journey=studio`);
-        if (res.ok) {
-          const { results } = await res.json();
-          setFoundVoices(results || []);
-        }
-      } catch (e) {
-        console.error('Search failed:', e);
-      } finally {
-        setIsSearching(false);
-      }
-    };
-
-    const timer = setTimeout(searchVoices, 400);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  if (showInterestForm) {
-    return (
-      <ContainerInstrument className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <ButtonInstrument 
-          onClick={() => setShowInterestForm(false)}
-          className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-va-black transition-colors flex items-center gap-2 p-0 bg-transparent "
-        >
-          <Image  src="/assets/common/branding/icons/BACK.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 
-          <VoiceglotText  translationKey="common.back_to_overview" defaultText="Terug naar overzicht" />
-        </ButtonInstrument>
-        <ContainerInstrument className="p-8 bg-va-off-white rounded-[20px] border border-va-black/5">
-          <HeadingInstrument level={4} className="text-xl font-light tracking-tight mb-4 text-va-black">
-            <VoiceglotText  translationKey="studio.booking.notify_me.title" defaultText="Houd me op de hoogte" />
-          </HeadingInstrument>
-          <TextInstrument className="text-[15px] text-va-black/60 mb-8 leading-relaxed font-light">
-            <VoiceglotText  
-              translationKey="studio.booking.notify_me.text" 
-              defaultText="Er zijn momenteel geen data gepland voor deze workshop. Laat je gegevens achter en we laten je als eerste weten wanneer er nieuwe edities beschikbaar zijn." 
-            />
-          </TextInstrument>
-          <form className="space-y-4">
-            <InputInstrument 
-              type="email" 
-              placeholder={t('common.placeholder.email', 'Jouw e-mailadres')} 
-              className="w-full p-4 !rounded-[10px] border border-va-black/10 text-[15px] outline-none transition-all"
-            />
-            <ButtonInstrument className="w-full py-4 bg-va-black text-white rounded-[10px] font-light tracking-widest text-[15px] hover:bg-primary transition-all ">
-              <VoiceglotText  translationKey="common.send" defaultText="Verzenden" />
-            </ButtonInstrument>
-          </form>
-        </ContainerInstrument>
-      </ContainerInstrument>
-    );
-  }
-  const priceExclVatValue = selectedDate ? parseFloat(selectedDate.price) || priceExclVat : priceExclVat;
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    age: '',
+    profession: ''
+  });
 
   const handleBooking = () => {
     playClick('premium');
     setIsBooking(true);
+    
+    // Sherlock: Als er geen data zijn, sturen we naar de interesselijst (doe-je-mee)
+    if (!hasDates) {
+      console.log(`Interest Registration for ${title}:`, formData);
+    } else {
+      console.log(`Core Booking for ${title}:`, { date: selectedDate?.date_raw, ...formData });
+    }
+
     setTimeout(() => {
-      console.log(`Core Booking: ${title} for ${selectedDate?.date_raw}`);
       setIsBooking(false);
+      setIsSuccess(true);
     }, 1500);
   };
 
-  return (
-    <ContainerInstrument className="space-y-8">
-      {/* 🔍 VOICE SEARCH */}
-      <ContainerInstrument className="space-y-4">
-        <ContainerInstrument className="relative group">
-            <InputInstrument 
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('studio.booking.search_voice', "Zoek een stem (bijv. 'johfra')...")}
-              className="w-full bg-va-off-white border border-va-black/5 rounded-[20px] py-4 pl-12 pr-4 text-[15px] font-light focus:ring-2 focus:ring-primary/20 outline-none transition-all group-hover:border-va-black/10"
-            />
-            <Image  src="/assets/common/branding/icons/SEARCH.svg" width={16} height={16} alt="" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-            {isSearching && (
-              <ContainerInstrument className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></ContainerInstrument>
-            )}
-          </ContainerInstrument>
-
-        <AnimatePresence>
-          {foundVoices.length > 0 && (
-            <ContainerInstrument className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
-              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 px-2 ">
-                <VoiceglotText  translationKey="studio.booking.found_voices" defaultText="Gevonden Stemmen" />
-              </TextInstrument>
-              {foundVoices.map((voice) => (
-                <ContainerInstrument key={voice.id} className="scale-90 origin-top-left -mb-10 last:mb-0">
-                  <VoiceCard voice={voice} onSelect={() => {
-                    playClick('pro');
-                    window.location.href = `/checkout?usage=telefonie&voice=${voice.id}`;
-                  }} />
-                </ContainerInstrument>
-              ))}
-              <ContainerInstrument className="pt-4 border-t border-va-black/5" />
-            </ContainerInstrument>
-          )}
-        </AnimatePresence>
-      </ContainerInstrument>
-
-      {/* DATE SELECTOR */}
-      <ContainerInstrument className="space-y-4">
-        <ContainerInstrument className="flex items-center justify-between">
-          <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 ">
-            <VoiceglotText  translationKey="studio.booking.available_dates" defaultText="Beschikbare Data" />
-          </HeadingInstrument>
-          <TextInstrument className="text-[15px] font-light text-primary tracking-widest flex items-center gap-1 ">
-            <Image  src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /> 
-            <VoiceglotText  translationKey="studio.booking.limited_spots" defaultText="Slechts enkele plaatsen" />
-          </TextInstrument>
+  
+  if (isLoading) {
+    return (
+      <ContainerInstrument plain className="space-y-8 animate-pulse">
+        <ContainerInstrument plain className="space-y-4">
+          <div className="h-4 w-32 bg-va-black/5 rounded-full mb-4" />
+          <div className="grid gap-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="w-full h-[84px] rounded-[15px] bg-va-black/5 border border-va-black/5" />
+            ))}
+          </div>
         </ContainerInstrument>
-        
-        <ContainerInstrument className="grid gap-3">
-          {dates.length > 0 ? dates.map((date, index) => (
-            <ButtonInstrument
-              key={index}
-              onClick={() => {
-                playClick('light');
-                if (onDateSelect) {
-                  onDateSelect(index);
-                } else {
-                  setInternalIndex(index);
-                }
-              }}
-              className={cn(
-                "w-full p-5 rounded-[20px] border transition-all duration-500 flex items-center justify-between group",
-                selectedDateIndex === index 
-                  ? "bg-va-black border-va-black text-white shadow-aura scale-[1.02]" 
-                  : "bg-va-off-white border-va-black/5 text-va-black/60 hover:border-va-black/20 hover:bg-white"
-              )}
-            >
-              <ContainerInstrument className="flex items-center gap-4">
-                <ContainerInstrument className={cn(
-                  "w-10 h-10 rounded-[10px] flex flex-col items-center justify-center transition-colors",
-                  selectedDateIndex === index ? "bg-white/10" : "bg-va-black/5"
-                )}>
-                  <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className={selectedDateIndex === index ? "brightness-0 invert" : ""} style={selectedDateIndex !== index ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 } : {}} />
-                </ContainerInstrument>
-                <ContainerInstrument className="text-left">
-                  <TextInstrument className="text-[15px] font-light tracking-tight">{date.date_raw}</TextInstrument>
-                  <TextInstrument className="text-[15px] font-light opacity-40 tracking-widest flex items-center gap-2 mt-0.5 ">
-                    <Image  src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> {date.location}
+        <ContainerInstrument plain className="space-y-4">
+          <div className="h-4 w-32 bg-va-black/5 rounded-full mb-4" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className={cn("h-[54px] bg-va-black/5 rounded-[10px]", i === 3 && "md:col-span-2")} />
+            ))}
+          </div>
+        </ContainerInstrument>
+        <div className="pt-8 border-t border-va-black/5">
+          <div className="w-full h-[68px] bg-va-black/5 rounded-[10px]" />
+        </div>
+      </ContainerInstrument>
+    );
+  }
+
+  if (isSuccess) {
+    return (
+      <ContainerInstrument className="space-y-6 py-12 text-center animate-in fade-in zoom-in-95 duration-500">
+        <ContainerInstrument className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(58%) sepia(68%) saturate(534%) hue-rotate(113deg) brightness(94%) contrast(91%)' }} />
+        </ContainerInstrument>
+        <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-va-black">
+          {hasDates ? "Bedankt voor je inschrijving!" : "Je staat op de lijst!"}
+        </HeadingInstrument>
+        <TextInstrument className="text-[15px] text-va-black/60 font-light leading-relaxed max-w-[240px] mx-auto">
+          {hasDates 
+            ? "We hebben je gegevens ontvangen. Je ontvangt binnen enkele minuten een bevestiging per e-mail."
+            : "We laten je als eerste weten wanneer er een nieuwe datum voor deze workshop beschikbaar is."}
+        </TextInstrument>
+        <ButtonInstrument 
+          onClick={() => setIsSuccess(false)}
+          className="text-[15px] font-light tracking-widest text-primary mt-8 hover:underline"
+        >
+          Sluiten
+        </ButtonInstrument>
+      </ContainerInstrument>
+    );
+  }
+
+  const priceExclVatValue = selectedDate ? parseFloat(selectedDate.price) || priceExclVat : priceExclVat;
+
+  return (
+    <ContainerInstrument plain className="space-y-8">
+      {/* 📅 DATE SELECTOR (Alleen tonen als er data zijn) */}
+      {hasDates && (
+        <ContainerInstrument plain className="space-y-4">
+        <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/60 ">
+          <VoiceglotText translationKey="studio.booking.select_date" defaultText="Kies je datum" />
+        </HeadingInstrument>
+
+          <ContainerInstrument plain className="grid gap-3">
+            {dates.map((date, index) => (
+              <ButtonInstrument
+                key={index}
+                onClick={() => {
+                  playClick('light');
+                  if (onDateSelect) onDateSelect(index);
+                  else setInternalIndex(index);
+                }}
+                className={cn(
+                  "w-full p-5 rounded-[15px] border transition-all duration-500 flex items-center justify-between group text-left",
+                  selectedDateIndex === index 
+                    ? "bg-va-black border-va-black text-white shadow-aura" 
+                    : "bg-va-off-white border-va-black/5 text-va-black/80 hover:border-va-black/20 hover:bg-white"
+                )}
+              >
+                <ContainerInstrument plain className="flex-1">
+                  <ContainerInstrument plain className="flex items-center gap-3">
+                    <TextInstrument className="text-[15px] font-light tracking-tight text-inherit">{date.date_raw}</TextInstrument>
+                    {date.capacity && (
+                      <div className={cn(
+                        "px-2 py-0.5 rounded-full text-[9px] font-black tracking-widest uppercase",
+                        (date.capacity - (date.filled || 0)) <= 0 
+                          ? "bg-red-500/20 text-red-500" 
+                          : (date.capacity - (date.filled || 0)) <= 2 
+                            ? "bg-primary/20 text-primary animate-pulse" 
+                            : "bg-va-black/10 text-va-black/40"
+                      )}>
+                        {(date.capacity - (date.filled || 0)) <= 0 
+                          ? "VOLZET" 
+                          : (date.capacity - (date.filled || 0)) <= 2 
+                            ? `LAATSTE ${(date.capacity - (date.filled || 0)) === 1 ? 'PLEK' : 'PLEKKEN'}` 
+                            : "BESCHIKBAAR"}
+                      </div>
+                    )}
+                  </ContainerInstrument>
+                  <TextInstrument className="text-[15px] font-light opacity-60 tracking-widest mt-1 text-inherit">
+                    {date.location} • {date.time}
                   </TextInstrument>
                 </ContainerInstrument>
-              </ContainerInstrument>
-              <ContainerInstrument className="text-right">
-                <TextInstrument className="text-[15px] font-light tracking-tighter">€{parseFloat(date.price || String(priceExclVatValue))}</TextInstrument>
-              </ContainerInstrument>
-            </ButtonInstrument>
-          )) : (
-            <ContainerInstrument className="p-8 rounded-[20px] bg-va-off-white border border-dashed border-va-black/10 text-center">
-              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 ">
-                <VoiceglotText  translationKey="studio.booking.no_dates" defaultText="Geen data gepland" />
-              </TextInstrument>
-              <ButtonInstrument 
-                onClick={() => setShowInterestForm(true)}
-                className="text-[15px] font-light tracking-widest text-primary mt-2 hover:underline p-0 bg-transparent "
-              >
-                <VoiceglotText  translationKey="studio.booking.notify_me.cta" defaultText="Houd me op de hoogte" />
+                <TextInstrument className="text-[15px] font-light tracking-tighter ml-4 text-inherit">
+                  €{parseFloat(date.price || String(priceExclVatValue))}
+                </TextInstrument>
               </ButtonInstrument>
-            </ContainerInstrument>
+            ))}
+          </ContainerInstrument>
+        </ContainerInstrument>
+      )}
+
+      {/* 👤 REGISTRATION FORM */}
+      <ContainerInstrument plain className="space-y-4">
+        <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/60 ">
+          {hasDates ? (
+            <VoiceglotText translationKey="studio.booking.your_details" defaultText="Jouw gegevens" />
+          ) : (
+            <VoiceglotText translationKey="studio.booking.notify_me.title" defaultText="Houd me op de hoogte" />
           )}
+        </HeadingInstrument>
+
+        {!hasDates && (
+          <TextInstrument className="text-[15px] text-va-black/80 font-light leading-relaxed mb-4">
+            Er zijn momenteel geen data gepland. Laat je gegevens achter en we laten je weten wanneer er een nieuwe editie is.
+          </TextInstrument>
+        )}
+
+        <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputInstrument 
+            placeholder="Voornaam"
+            value={formData.firstName}
+            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+            className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all"
+          />
+          <InputInstrument 
+            placeholder="Familienaam"
+            value={formData.lastName}
+            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+            className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all"
+          />
+          
+          <InputInstrument 
+            type="email"
+            placeholder="Emailadres"
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all md:col-span-2"
+          />
+
+          <InputInstrument 
+            placeholder="Leeftijd"
+            value={formData.age}
+            onChange={(e) => setFormData({...formData, age: e.target.value})}
+            className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all"
+          />
+          <InputInstrument 
+            placeholder="Beroep"
+            value={formData.profession}
+            onChange={(e) => setFormData({...formData, profession: e.target.value})}
+            className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all"
+          />
         </ContainerInstrument>
       </ContainerInstrument>
 
       {/* SUMMARY & ACTION */}
-      <ContainerInstrument className="pt-8 border-t border-va-black/5 space-y-6">
-        <ContainerInstrument className="flex justify-between items-end">
-          <ContainerInstrument>
-            <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 mb-1 ">
-              <VoiceglotText  translationKey="studio.booking.total_investment" defaultText="Totaal Investering" />
-            </TextInstrument>
-            <TextInstrument className="text-4xl font-light tracking-tighter">€{priceExclVatValue}</TextInstrument>
-          </ContainerInstrument>
-          <ContainerInstrument className="text-right">
-            <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light text-emerald-500 tracking-widest mb-1 ">
-              <Image  src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /> 
-              <VoiceglotText  translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
+      <ContainerInstrument plain className={cn("pt-8 border-t border-va-black/5 space-y-6", !hasDates && "border-none pt-0")}>
+        {hasDates && (
+          <ContainerInstrument plain className="flex justify-between items-end">
+            <ContainerInstrument plain>
+              <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-va-black/60 mb-1 ">
+                <VoiceglotText translationKey="studio.booking.total_investment" defaultText="Totaal Investering" />
+              </TextInstrument>
+              <TextInstrument className="text-4xl font-light tracking-tighter text-va-black">€{priceExclVatValue}</TextInstrument>
+              <TextInstrument className="text-[15px] font-light opacity-60 tracking-widest mt-1">
+                <VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" />
+              </TextInstrument>
             </ContainerInstrument>
-            <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light text-emerald-500 tracking-widest ">
-              <Image  src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /> 
-              <VoiceglotText  translationKey="studio.booking.certificate" defaultText="Certificaat" />
+            <ContainerInstrument plain className="text-right space-y-1">
+              {selectedDate?.includes_lunch && (
+                <ContainerInstrument plain className="flex items-center justify-end gap-2 text-[15px] font-light text-emerald-700 tracking-widest ">
+                  <VoiceglotText translationKey="studio.booking.includes_lunch" defaultText="Inclusief lunch" />
+                </ContainerInstrument>
+              )}
+              {selectedDate?.includes_certificate && (
+                <ContainerInstrument plain className="flex items-center justify-end gap-2 text-[15px] font-light text-emerald-700 tracking-widest ">
+                  <VoiceglotText translationKey="studio.booking.certificate" defaultText="Certificaat" />
+                </ContainerInstrument>
+              )}
             </ContainerInstrument>
           </ContainerInstrument>
-        </ContainerInstrument>
+        )}
 
         <ButtonInstrument 
           onClick={handleBooking}
-          disabled={isBooking || dates.length === 0}
+          disabled={isBooking}
           className={cn(
-            "w-full py-6 rounded-[10px] font-light tracking-widest text-[15px] transition-all duration-500 shadow-aura flex items-center justify-center gap-3 group relative overflow-hidden",
+            "w-full py-6 rounded-[10px] font-light tracking-widest text-[15px] transition-all duration-500 shadow-aura flex items-center justify-center gap-3 group",
             isBooking ? "bg-va-black/80 cursor-wait" : "bg-va-black text-white hover:bg-primary active:scale-95"
           )}
         >
           {isBooking ? (
             <ContainerInstrument className="flex items-center gap-2">
               <ContainerInstrument className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></ContainerInstrument>
-              <VoiceglotText  translationKey="common.processing" defaultText="Verwerken..." />
+              <VoiceglotText translationKey="common.processing" defaultText="Verwerken..." />
             </ContainerInstrument>
           ) : (
             <>
-              <VoiceglotText  translationKey="studio.booking.cta" defaultText="Nu inschrijven" /> 
-              <Image  src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert group-hover:translate-x-2 transition-transform" />
+              <VoiceglotText 
+                translationKey={hasDates ? "studio.booking.cta" : "studio.booking.notify_me.cta_v2"} 
+                defaultText={hasDates ? "Nu inschrijven" : "Op de hoogte blijven"} 
+              /> 
+              <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert group-hover:translate-x-2 transition-transform" />
             </>
           )}
         </ButtonInstrument>
         
-        <TextInstrument className="text-[15px] text-center text-va-black/30 font-light tracking-widest ">
-          <VoiceglotText  translationKey="studio.booking.security_info" defaultText="Veilig betalen via Mollie • Directe bevestiging" />
-        </TextInstrument>
+        {hasDates && (
+          <TextInstrument className="text-[15px] text-center text-va-black/60 font-light tracking-[0.2em] ">
+            <VoiceglotText translationKey="studio.booking.security_info" defaultText="Veilig betalen via Mollie • Directe bevestiging" />
+          </TextInstrument>
+        )}
       </ContainerInstrument>
     </ContainerInstrument>
   );

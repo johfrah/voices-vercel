@@ -79,7 +79,12 @@ export default function JohfrahHostPage() {
           </ContainerInstrument>
 
           <ContainerInstrument className="bg-primary text-white p-16 rounded-[60px] text-center space-y-8 mb-24">
-            <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter"><VoiceglotText  translationKey="auto.page.samen_iets_moois_mak.4d02ac" defaultText="Samen iets moois maken?" /><TextInstrument className="text-xl text-white/80 max-w-2xl mx-auto font-light"><VoiceglotText  translationKey="auto.page.laten_we_kijken_hoe_.950cbb" defaultText="Laten we kijken hoe we jouw merk of event een menselijk gezicht kunnen geven." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter">
+              <VoiceglotText  translationKey="auto.page.samen_iets_moois_mak.4d02ac" defaultText="Samen iets moois maken?" />
+            </HeadingInstrument>
+            <TextInstrument className="text-xl text-white/80 max-w-2xl mx-auto font-light">
+              <VoiceglotText  translationKey="auto.page.laten_we_kijken_hoe_.950cbb" defaultText="Laten we kijken hoe we jouw merk or event een menselijk gezicht kunnen geven." />
+            </TextInstrument>
             <ButtonInstrument as="a" href="/contact" className="va-btn-pro !bg-white !text-primary"><VoiceglotText  translationKey="auto.page.laten_we_praten.58853f" defaultText="Laten we praten" /></ButtonInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

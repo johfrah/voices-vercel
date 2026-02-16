@@ -174,11 +174,11 @@ export default function GlobalFooter() {
   const isStudio = typeof window !== 'undefined' && (window.location.pathname.startsWith('/studio') || window.location.pathname.startsWith('/academy'));
 
   return (
-    <ContainerInstrument as="footer" className="bg-va-off-white text-va-black pt-24 pb-12 overflow-hidden relative border-t border-black/5">
+    <ContainerInstrument as="footer" className="bg-va-off-white text-va-black pt-24 pb-12 overflow-hidden relative border-t border-black/5 !px-0">
       {/* Liquid Gradient Background */}
       <ContainerInstrument className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none hmagic" />
       
-      <ContainerInstrument className="max-w-7xl mx-auto px-6 relative z-10">
+      <ContainerInstrument className="max-w-[1140px] mx-auto px-6 relative z-10">
         {/* Dynamic Journey Elements */}
         {!isSpecial && (
           <ContainerInstrument className="mb-24">
@@ -189,7 +189,7 @@ export default function GlobalFooter() {
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 mb-24">
           {/* Brand Column */}
           <ContainerInstrument className="lg:col-span-2 space-y-8">
-            <ButtonInstrument as={Link} href="/" onClick={() => playClick('light')} className="flex items-center gap-3 group">
+            <ButtonInstrument as={Link} href="/" variant="plain" size="none" onClick={() => playClick('light')} className="flex items-center gap-3 group">
               {isArtist ? (
                 <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black">
                   <VoiceglotText  translationKey="auto.globalfooter.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" />
@@ -231,12 +231,14 @@ export default function GlobalFooter() {
               <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 ">
                 <VoiceglotText  translationKey={`footer.section.${i}.title`} defaultText={section.title} />
               </HeadingInstrument>
-              <ContainerInstrument as="ul" className="space-y-4">
+              <ContainerInstrument as="ul" className="space-y-2">
                 {section.links.map((link, j) => (
                   <ContainerInstrument as="li" key={j}>
                     <ButtonInstrument 
                       as={Link}
                       href={link.href} 
+                      variant="plain"
+                      size="none"
                       onClick={() => playClick('light')}
                       className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors duration-300"
                     >
@@ -255,7 +257,7 @@ export default function GlobalFooter() {
             © 2026 {isPortfolio ? 'Johfrah Lefebvre' : isArtist ? 'Youssef Zaki' : 'Voices'}. {isSpecial && (
               <TextInstrument as="span">
                 Powered by 
-                <ButtonInstrument as="a" href="https://voices.be" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
+                <ButtonInstrument as="a" href="https://voices.be" variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
                   <VoiceglotText  translationKey="auto.globalfooter.voices_be.46435e" defaultText="Voices.be" />
                 </ButtonInstrument>
               </TextInstrument>

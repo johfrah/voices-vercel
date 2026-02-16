@@ -36,4 +36,16 @@ export class SelfHealingService {
     
     return {};
   }
+
+  static async reportDataAnomaly(type: string, id: string, message: string) {
+    await this.logEvent('info', `Anomaly gedetecteerd (${type}) voor ID ${id}: ${message}`);
+  }
+
+  static async reportBrokenAsset(path: string, context: string, host?: string) {
+    await this.logEvent('error', `Broken asset gedetecteerd: ${path}`, { context, host });
+  }
+
+  static async getRecentHeals() {
+    return []; // Placeholder
+  }
 }

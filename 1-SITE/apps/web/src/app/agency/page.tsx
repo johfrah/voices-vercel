@@ -1,10 +1,11 @@
 import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
-import { ContainerInstrument, PageWrapperInstrument, SectionInstrument, LoadingScreenInstrument } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument, LoadingScreenInstrument, PageWrapperInstrument, SectionInstrument } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { VoiceGrid } from "@/components/ui/VoiceGrid";
+import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import { getActors } from "@/lib/api-server";
-import { Suspense } from "react";
 import { headers } from "next/headers";
+import { Suspense } from "react";
 
 export const dynamic = 'force-dynamic';
 
@@ -15,11 +16,12 @@ export default async function AgencyPage() {
 
   // 🌍 MARKET-FIRST FETCH: Prefill language based on market
   let initialLang = undefined;
-  if (market === 'FR') initialLang = 'frans';
-  else if (market === 'ES') initialLang = 'spaans';
-  else if (market === 'PT') initialLang = 'portugees';
-  else if (market === 'NL') initialLang = 'nederlands';
-  else if (market === 'DE') initialLang = 'duits';
+  if (market === 'FR') initialLang = 'Frans';
+  else if (market === 'ES') initialLang = 'Spaans';
+  else if (market === 'PT') initialLang = 'Portugees';
+  else if (market === 'NL') initialLang = 'Nederlands';
+  else if (market === 'DE') initialLang = 'Duits';
+  else if (market === 'BE') initialLang = 'Vlaams'; // 🛡️ CHRIS-PROTOCOL: Forceer Vlaams voor België
 
   const searchResults = await getActors(initialLang ? { language: initialLang } : {}, lang);
   const actors = searchResults.results;
@@ -32,7 +34,8 @@ export default async function AgencyPage() {
     native_lang: actor.native_lang,
     ai_tags: actor.ai_tags || [],
     slug: actor.slug,
-    demos: actor.demos || []
+    demos: actor.demos || [],
+    bio: actor.bio // 🛡️ CHRIS-PROTOCOL: Zorg dat de bio wordt doorgegeven voor de VoiceCard
   }));
 
   return (
@@ -40,16 +43,19 @@ export default async function AgencyPage() {
       <LiquidBackground strokeWidth={1.5} />
       <AgencyHeroInstrument 
         title={market === 'FR' ? "Voix-off Françaises" : market === 'DE' ? "Deutsche Synchronsprecher" : "Vlaamse Voice-overs"} 
-        subtitle={market === 'FR' ? "Découvrez les meilleures voix pour vos projets." : market === 'DE' ? "Entdecken Sie die besten Stimmen für Ihre Projekte." : "Ontdek de beste stemmen van België voor uw commercials, documentaires en bedrijfsfilms."}
+        subtitle={market === 'FR' ? "Découvrez les meilleures voix voor vos projets." : market === 'DE' ? "Entdecken Sie die besten Stimmen für Ihre Projekte." : "Ontdek de beste stemmen van België voor uw commercials, documentaires en bedrijfsfilms."}
         filters={searchResults.filters}
         market={market}
         searchParams={initialLang ? { language: initialLang } : {}}
       />
-      <SectionInstrument>
-        <ContainerInstrument>
-          <Suspense  fallback={<LoadingScreenInstrument />}>
-            <VoiceGrid strokeWidth={1.5} actors={mappedActors as any} />
-          </Suspense>
+      <SectionInstrument className="!pt-0 -mt-24 relative z-40">
+        <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
+          <VoicesMasterControl filters={searchResults.filters} />
+          <div className="mt-12">
+            <Suspense  fallback={<LoadingScreenInstrument />}>
+              <VoiceGrid strokeWidth={1.5} actors={mappedActors as any} />
+            </Suspense>
+          </div>
         </ContainerInstrument>
       </SectionInstrument>
       <script

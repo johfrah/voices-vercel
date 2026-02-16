@@ -46,6 +46,7 @@ export interface Workshop {
   status: string;
   media?: Media | null;
   instructor?: Instructor | null;
+  meta?: any;
 }
 
 export interface StudioDashboardData {
@@ -91,6 +92,8 @@ export interface Actor {
   ai_tags?: string;
   price_ivr?: number;
   photo_url: string;
+  tone_of_voice?: string;
+  clients?: string;
   demos: Demo[];
   reviews?: any[];
   rates_raw?: Record<string, any>;
@@ -99,6 +102,8 @@ export interface Actor {
   cutoff_time?: string;
   availability?: any[];
   bio?: string;
+  tagline?: string;
+  extra_langs?: string;
 }
 
 export interface Demo {

@@ -97,14 +97,42 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
     });
     
     // 🎭 Dynamic Result Label based on usage
-    const formattedPrice = result.price === 0 && state.usage === 'paid' 
-      ? 'Op aanvraag' 
-      : result.formatted;
+    const status = PricingEngine.getAvailabilityStatus(
+      actor || referenceActor || {}, 
+      state.usage === 'paid' ? media : [], 
+      country
+    );
+
+    if (status === 'unavailable' && state.usage === 'paid') {
+      setPricing({ ...result, formatted: 'Niet beschikbaar' });
+      return;
+    }
+
+    const formattedPrice = result.formatted;
 
     setPricing({ ...result, formatted: formattedPrice });
   }, [state.usage, words, country, media, tvRegion, radioRegion, spots, years, mode, actor, filteredActors, state.music.asBackground, state.music.asHoldMusic]);
 
   const handleBookNow = () => {
+    // 🛡️ AVAILABILITY PROTECTION
+    const status = PricingEngine.getAvailabilityStatus(
+      actor || (filteredActors && filteredActors[0]) || {}, 
+      state.usage === 'paid' ? media : [], 
+      country
+    );
+
+    if (status === 'unavailable' && state.usage === 'paid') {
+      const event = new CustomEvent('voicy:suggestion', {
+        detail: {
+          title: 'Niet beschikbaar',
+          content: `Het lijkt erop dat ${actor?.display_name || 'deze stem'} geen tarieven heeft ingesteld voor deze media-combinatie en daarom niet direct geboekt kan worden. Wil je dat ik een alternatieve stem voor je zoek of Johfrah vraag om een uitzondering?`,
+          tab: 'mail'
+        }
+      });
+      window.dispatchEvent(event);
+      return;
+    }
+
     // 🛡️ ZERO PRICE PROTECTION
     if (pricing.price === 0) {
       const event = new CustomEvent('voicy:suggestion', {
@@ -173,7 +201,13 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                       : 'border-black/5 hover:border-black/10 text-va-black/40'
                   }`}
                 >
-                  <type.icon size={24} />
+                  {(() => {
+                    const Icon = type.icon;
+                    if (!Icon) return null;
+                    return (typeof Icon === 'function' || (typeof Icon === 'object' && (Icon as any).$$typeof)) 
+                      ? <Icon strokeWidth={1.5} size={24} /> 
+                      : Icon;
+                  })()}
                   <TextInstrument className="font-medium text-[15px]">
                     <VoiceglotText  translationKey={type.translationKey} defaultText={type.label} />
                   </TextInstrument>
@@ -443,13 +477,31 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
             </ContainerInstrument>
 
             <ContainerInstrument className="pt-8 space-y-4">
-              <ButtonInstrument 
-                onClick={handleBookNow}
-                className="va-btn-pro w-full !bg-primary flex items-center justify-center gap-2 group"
-              >
-                <VoiceglotText  translationKey="pricing.cta" defaultText="Kies je stem" />
-                <ChevronRight strokeWidth={1.5} size={18} className="group-hover:translate-x-1 transition-transform" />
-              </ButtonInstrument>
+            <ButtonInstrument 
+              onClick={handleBookNow}
+              className={cn(
+                "va-btn-pro w-full flex items-center justify-center gap-2 group",
+                PricingEngine.getAvailabilityStatus(
+                  actor || (filteredActors && filteredActors[0]) || {}, 
+                  state.usage === 'paid' ? media : [], 
+                  country
+                ) === 'unavailable' && state.usage === 'paid' ? "opacity-50 cursor-not-allowed !bg-va-black" : "!bg-primary"
+              )}
+            >
+              <VoiceglotText 
+                translationKey={PricingEngine.getAvailabilityStatus(
+                  actor || (filteredActors && filteredActors[0]) || {}, 
+                  state.usage === 'paid' ? media : [], 
+                  country
+                ) === 'unavailable' && state.usage === 'paid' ? "common.unavailable" : "pricing.cta"} 
+                defaultText={PricingEngine.getAvailabilityStatus(
+                  actor || (filteredActors && filteredActors[0]) || {}, 
+                  state.usage === 'paid' ? media : [], 
+                  country
+                ) === 'unavailable' && state.usage === 'paid' ? "Niet beschikbaar" : "Kies je stem"} 
+              />
+              <ChevronRight strokeWidth={1.5} size={18} className="group-hover:translate-x-1 transition-transform" />
+            </ButtonInstrument>
               <ContainerInstrument className="space-y-2 opacity-0">
                 <TextInstrument className="text-[15px] font-medium text-primary animate-pulse">
                   <VoiceglotText  translationKey="pricing.final_price" defaultText="Finale prijs voor deze opdracht" />

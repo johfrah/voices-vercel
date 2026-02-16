@@ -78,7 +78,12 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
         {/* Demos & Player */}
         <BentoCard span="xl" className="bg-va-off-white/50 backdrop-blur-md border-white/20 shadow-aura p-12">
           <ContainerInstrument className="flex justify-between items-center mb-12">
-            <HeadingInstrument level={2} className="text-3xl font-light tracking-tight"><VoiceglotText  translationKey="actor.demos.title" defaultText="Demos & " /><TextInstrument as="span" className="text-primary font-light"><VoiceglotText  translationKey="actor.demos.subtitle" defaultText="Stijlen" /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={2} className="text-3xl font-light tracking-tight">
+              <VoiceglotText  translationKey="actor.demos.title" defaultText="Demos & " />
+              <TextInstrument as="span" className="text-primary font-light">
+                <VoiceglotText  translationKey="actor.demos.subtitle" defaultText="Stijlen" />
+              </TextInstrument>
+            </HeadingInstrument>
             <ContainerInstrument className="flex gap-2">
               {['Commercieel', 'Corporate', 'E-learning'].map(cat => (
                 <TextInstrument as="span" key={cat} className="px-4 py-2 bg-white rounded-full text-[15px] font-black tracking-widest text-va-black/40 border border-black/5"><VoiceglotText  translationKey={`category.${cat.toLowerCase()}`} defaultText={cat} /></TextInstrument>
@@ -98,10 +103,10 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
                   <ContainerInstrument>
                     <HeadingInstrument level={4} className="font-light tracking-tight text-[15px]">
                       <VoiceglotText  translationKey={`actor.${actor.id}.demo.${demo.id}.title`} defaultText={demo.title} />
-                      <TextInstrument className="text-[15px] font-bold text-va-black/30 tracking-widest mt-1">
-                        <VoiceglotText  translationKey={`category.${demo.category.toLowerCase()}`} defaultText={demo.category} />
-                      </TextInstrument>
                     </HeadingInstrument>
+                    <TextInstrument className="text-[15px] font-bold text-va-black/30 tracking-widest mt-1">
+                      <VoiceglotText  translationKey={`category.${demo.category.toLowerCase()}`} defaultText={demo.category} />
+                    </TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
                 <TextInstrument className="text-[15px] font-black text-va-black/20 tracking-widest">0:30</TextInstrument>

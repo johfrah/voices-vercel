@@ -78,12 +78,25 @@ async function ArticleContent({ slug }: { slug: string }) {
 
         {/* Content Card */}
         <BentoCard span="xl" className="bg-va-off-white/50 backdrop-blur-md border-white/20 shadow-aura p-12 prose prose-va max-w-none !rounded-[20px]">
-          <ContainerInstrument dangerouslySetInnerHTML={{ __html: article.content }} className="font-light leading-relaxed" />
+          {article.blocks && article.blocks.length > 0 ? (
+            <ContainerInstrument className="space-y-12">
+              {article.blocks.map((block: any) => (
+                <ContainerInstrument key={block.id} dangerouslySetInnerHTML={{ __html: block.content }} className="font-light leading-relaxed" />
+              ))}
+            </ContainerInstrument>
+          ) : (
+            <ContainerInstrument dangerouslySetInnerHTML={{ __html: article.content || '' }} className="font-light leading-relaxed" />
+          )}
         </BentoCard>
 
         <BentoCard span="md" className="hred text-white p-12 flex flex-col justify-between !rounded-[20px]">
           <ContainerInstrument>
-            <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-4 "><VoiceglotText  translationKey="article.cta.title" defaultText="Klaar voor de volgende stap?" /><TextInstrument className="text-[15px] font-light opacity-80 mb-8 leading-relaxed"><VoiceglotText  translationKey="article.cta.text" defaultText="Onze experts staan klaar om je te helpen met je project of je carrière." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-4 ">
+              <VoiceglotText  translationKey="article.cta.title" defaultText="Klaar voor de volgende stap?" />
+            </HeadingInstrument>
+            <TextInstrument className="text-[15px] font-light opacity-80 mb-8 leading-relaxed">
+              <VoiceglotText  translationKey="article.cta.text" defaultText="Onze experts staan klaar om je te helpen met je project of je carrière." />
+            </TextInstrument>
           </ContainerInstrument>
           <Link  href="/agency" className="va-btn-pro !bg-white !text-va-black w-full text-center !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText  translationKey="article.cta.button" defaultText="Ontdek de Mogelijkheden" /></Link>
         </BentoCard>

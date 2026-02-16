@@ -26,9 +26,12 @@ export default function AudioReviewTestPage() {
       <ContainerInstrument className="max-w-7xl mx-auto pt-32 pb-20 px-6">
         <ContainerInstrument className="mb-12">
           <TextInstrument as="span" className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[15px] font-bold tracking-widest mb-4"><VoiceglotText  translationKey="auto.page.spotlight_feature_pr.501ec9" defaultText="Spotlight Feature Preview" /></TextInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter text-va-black mb-4">
-            Audio Review <TextInstrument as="span" className="text-primary font-extralight"><VoiceglotText  translationKey="auto.page.engine.7bfa30" defaultText="Engine" /></TextInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter text-va-black mb-4 inline-block">
+            Audio Review 
           </HeadingInstrument>
+          <TextInstrument as="span" className="text-primary font-extralight text-5xl tracking-tighter ml-2">
+            <VoiceglotText  translationKey="auto.page.engine.7bfa30" defaultText="Engine" />
+          </TextInstrument>
           <TextInstrument className="text-xl text-gray-500 max-w-2xl font-light"><VoiceglotText  translationKey="auto.page.test_hier_de_interac.dd28cd" defaultText="Test hier de interactieve feedback loop. Pas de muziekbalans aan, 
             bekijk de geanimeerde waveform en simuleer de Dropbox-export." /></TextInstrument>
         </ContainerInstrument>
@@ -59,13 +62,18 @@ export default function AudioReviewTestPage() {
             </ul>
           </ContainerInstrument>
           <ContainerInstrument className="bg-va-off-white p-8 rounded-[20px] border border-black/5">
-            <HeadingInstrument level={3} className="text-lg font-light text-va-black mb-2"><VoiceglotText  translationKey="auto.page.core_mandaat.834017" defaultText="Core Mandaat" /><TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light"><VoiceglotText  translationKey="auto.page.dit_is_een_100__next.743f24" defaultText="Dit is een 100% Next.js implementatie. Er wordt geen PHP gebruikt voor de rendering of de audio-logica. 
-              De data-bridge communiceert direct met de Node.js services." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-lg font-light text-va-black mb-2">
+              <VoiceglotText  translationKey="auto.page.core_mandaat.834017" defaultText="Core Mandaat" />
+            </HeadingInstrument>
+            <TextInstrument className="text-[15px] text-va-black/40 leading-relaxed font-light">
+              <VoiceglotText  translationKey="auto.page.dit_is_een_100__next.743f24" defaultText="Dit is een 100% Next.js implementatie. Er wordt geen PHP gebruikt voor de rendering of de audio-logica. 
+              De data-bridge communiceert direct met de Node.js services." />
+            </TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
 
-      <GlobalFooter />
+      <GlobalFooter strokeWidth={1.5}  />
     </main>
   );
 }

@@ -1,21 +1,21 @@
 "use client";
 
 import { BentoShowcaseInstrument } from "@/components/ui/BentoShowcaseInstrument";
-import { HeroInstrument } from "@/components/ui/HeroInstrument";
-import { LoadingScreenInstrument, PageWrapperInstrument, SectionInstrument, ContainerInstrument } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument, HeadingInstrument, LoadingScreenInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { SpotlightDashboard } from "@/components/ui/SpotlightDashboard";
-import { VoiceGrid } from "@/components/ui/VoiceGrid";
 import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
-import { OrderStepsInstrument } from "@/components/ui/OrderStepsInstrument";
+import { VoiceGrid } from "@/components/ui/VoiceGrid";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useAuth } from "@/contexts/AuthContext";
-import { MarketManager } from "@config/market-manager";
-import { Suspense, useEffect, useState } from 'react';
 import { Actor } from "@/types";
+import { MarketManager } from "@config/market-manager";
+import { Suspense, useEffect, useMemo, useState } from 'react';
 
-import { JourneySelector } from "@/components/ui/JourneySelector";
-import { FilterBar } from "@/components/ui/FilterBar";
+import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import { useTranslation } from "@/contexts/TranslationContext";
+import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
+
+import { PricingEngine } from '@/lib/pricing-engine';
 
 /**
  * HOME CONTENT (GOD MODE 2026 - AIRBNB STYLE)
@@ -33,6 +33,7 @@ import { useTranslation } from "@/contexts/TranslationContext";
 function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
+  const { state: masterControlState } = useMasterControl();
   const [customerDNA, setCustomerDNA] = useState<any>(null);
 
   useEffect(() => {
@@ -44,12 +45,55 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
     }
   }, [isAuthenticated, user]);
 
+  // COMMERCIAL & TELEPHONY FILTERING (Korneel Mandate)
+  const filteredActors = useMemo(() => {
+    let result = actors;
+
+    console.log('HomeContent: Filtering actors', { 
+      total: actors.length, 
+      journey: masterControlState.journey,
+      media: masterControlState.filters.media,
+      country: masterControlState.filters.country,
+      languages: masterControlState.filters.languages
+    });
+
+    if (masterControlState.journey === 'commercial' && Array.isArray(masterControlState.filters.media) && masterControlState.filters.media.length > 0) {
+      const selectedMedia = masterControlState.filters.media;
+      
+      result = result.filter(actor => {
+        // 🛡️ KORNEEL RULE: Use Centralized PricingEngine Logic
+        return PricingEngine.isAvailable(actor, selectedMedia as any, masterControlState.filters.country);
+      });
+    }
+
+    // 🛡️ TELEPHONY MULTI-LANG FILTERING
+    if (masterControlState.journey === 'telephony' && Array.isArray(masterControlState.filters.languages) && masterControlState.filters.languages.length > 1) {
+      const selectedLangs = masterControlState.filters.languages;
+      
+      result = result.filter(actor => {
+        const actorLangs = [
+          actor.native_lang, 
+          ...(actor.extra_langs ? actor.extra_langs.split(',').map(l => l.trim()) : [])
+        ].filter(Boolean).map(l => l?.toLowerCase());
+
+        // Check if actor supports ALL selected languages
+        return selectedLangs.every(lang => {
+          const lowLang = lang.toLowerCase();
+          return actorLangs.some(al => al === lowLang || al?.includes(lowLang));
+        });
+      });
+    }
+
+    console.log('HomeContent: Filtered result', { count: result.length, names: result.map(a => a.display_name) });
+    return result;
+  }, [actors, masterControlState.journey, masterControlState.filters.media, masterControlState.filters.country, masterControlState.filters.languages]);
+
   const isTelephony = customerDNA?.intelligence?.lastIntent === 'telephony' || customerDNA?.intelligence?.detectedSector === 'it';
 
   // Mock filters voor de homepage (of haal ze op via API indien nodig)
   const filters = {
     languages: ['Vlaams', 'Nederlands', 'Frans', 'Engels', 'Duits'],
-    genders: ['Mannelijke stem', 'Vrouwelijke stem'],
+    genders: ['Mannelijk', 'Vrouwelijk'],
     styles: [],
     categories: []
   };
@@ -57,27 +101,53 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
   return (
     <>
       <LiquidBackground strokeWidth={1.5} />
-      <SpotlightDashboard strokeWidth={1.5} />
-      <HeroInstrument />
       
-      <SectionInstrument className="!pt-0 -mt-12 relative z-30">
-        <ContainerInstrument className="max-w-5xl mx-auto px-6">
-          <JourneySelector strokeWidth={1.5} />
-          <FilterBar strokeWidth={1.5} filters={filters} params={{}} />
+      <SectionInstrument className="!pt-20 pb-32 relative z-50">
+        <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="mb-20 text-center max-w-4xl mx-auto space-y-8">
+            <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
+              <VoiceglotText translationKey="home.hero.title_part1" defaultText="Vind de" />
+              {" "}
+              <span className="text-primary italic">
+                <VoiceglotText translationKey="home.hero.title_highlight" defaultText="stem" />
+              </span>
+              <br />
+              <VoiceglotText translationKey="home.hero.title_part2" defaultText="voor jouw verhaal." />
+            </h1>
+            <p className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
+              <VoiceglotText translationKey="home.hero.subtitle" defaultText="Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap." />
+            </p>
+          </div>
+
+          <VoicesMasterControl filters={filters} />
+          
+          <div className="mt-20">
+            {filteredActors && filteredActors.length > 0 ? (
+              <VoiceGrid strokeWidth={1.5} actors={filteredActors} featured={true} />
+            ) : (
+              <div className="py-20 text-center">
+                <TextInstrument className="text-va-black/20 text-xl font-light italic">
+                  Geen stemmen gevonden voor deze selectie.
+                </TextInstrument>
+              </div>
+            )}
+          </div>
         </ContainerInstrument>
       </SectionInstrument>
 
-      <OrderStepsInstrument currentStep="voice" isTelephony={isTelephony} />
-      
-      <SectionInstrument>
-        <ContainerInstrument>
-          <Suspense  fallback={<LoadingScreenInstrument />}>
-            <VoiceGrid strokeWidth={1.5} actors={actors} featured={true} />
-          </Suspense>
+      <SectionInstrument className="py-40 bg-va-off-white border-y border-black/[0.03]">
+        <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="max-w-3xl mb-24 space-y-6">
+            <TextInstrument className="text-[15px] font-bold tracking-[0.3em] text-primary/60 uppercase">
+              <VoiceglotText translationKey="home.reviews.label" defaultText="Wat klanten zeggen" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-6xl md:text-7xl font-light tracking-tighter leading-none text-va-black">
+              <VoiceglotText translationKey="home.reviews.title" defaultText="Ervaringen." />
+            </HeadingInstrument>
+          </div>
+          <ReviewsInstrument reviews={reviews} hideHeader={true} />
         </ContainerInstrument>
       </SectionInstrument>
-
-      <ReviewsInstrument reviews={reviews} />
 
       <BentoShowcaseInstrument customerDNA={customerDNA} />
 
@@ -127,12 +197,48 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
-    const market = MarketManager.getCurrentMarket();
-    fetch(`/api/actors?market=${market.market_code}`)
+  }, []);
+
+  const searchParams = typeof window !== 'undefined' ? window.location.search : '';
+  const searchParamsKey = useMemo(() => searchParams, [searchParams]);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+    const market = MarketManager.getCurrentMarket(host);
+    
+    //  CHRIS-PROTOCOL: Forceer de fetch op basis van de huidige URL (filters)
+    const params = new URLSearchParams(searchParamsKey);
+    
+    //  CHRIS-PROTOCOL: Forceer market en taal als ze ontbreken
+    if (!params.has('market')) params.set('market', market.market_code);
+    if (!params.has('language')) params.set('language', market.primary_language);
+    
+    //  CHRIS-PROTOCOL: Als er GEEN taal geselecteerd is, vallen we terug op de market taal
+    const currentLanguage = params.get('language');
+    if (!currentLanguage || currentLanguage === 'null' || currentLanguage === 'undefined') {
+      params.set('language', market.primary_language);
+    }
+
+    // Filter out empty params
+    const cleanParams = new URLSearchParams();
+    params.forEach((value, key) => {
+      if (value && value !== 'null' && value !== 'undefined') {
+        cleanParams.set(key, value);
+      }
+    });
+
+    const fetchUrl = `/api/actors?${cleanParams.toString()}`;
+    
+    console.log(' Home: Fetching from', fetchUrl);
+    
+    fetch(fetchUrl)
       .then(res => res.json())
       .then(resData => {
+        console.log(' Home: Received', resData?.results?.length || 0, 'actors');
         if (!resData || !resData.results) {
-          console.error('🛡️ Home Data: Invalid response format', resData);
+          setData({ actors: [], reviews: [] });
           return;
         }
         const mappedActors = resData.results.map((actor: any) => ({
@@ -143,17 +249,28 @@ export default function Home() {
           native_lang: actor.native_lang,
           starting_price: actor.starting_price,
           delivery_days_min: actor.delivery_days_min || 1,
-          delivery_days_max: actor.delivery_days_max || 2,
+        delivery_days_max: actor.delivery_days_max || 2,
+        extra_langs: actor.extra_langs,
+        tone_of_voice: actor.tone_of_voice,
+          clients: actor.clients,
           cutoff_time: actor.cutoff_time || '18:00',
           availability: actor.availability || [],
+          tagline: actor.tagline,
           ai_tags: actor.ai_tags || '',
           slug: actor.slug,
-          demos: actor.demos || []
+          demos: actor.demos || [],
+          bio: actor.bio,
+          price_ivr: actor.price_ivr,
+          price_online: actor.price_online,
+          rates_raw: actor.rates_raw || {} // CHRIS-PROTOCOL: Pass rates for filtering
         }));
         setData({ actors: mappedActors, reviews: resData.reviews || [] });
       })
-      .catch(err => console.error('Home Data Fetch Error:', err));
-  }, []);
+      .catch(err => {
+        console.error('Home Data Fetch Error:', err);
+        setData({ actors: [], reviews: [] });
+      });
+  }, [mounted, searchParamsKey]);
 
   if (!mounted || !data) {
     return <LoadingScreenInstrument text="Voices..." />;
