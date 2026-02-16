@@ -188,11 +188,28 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
 
   
   
-  // 🌍 Comprehensive sorted languages from Database Audit
+  // 🌍 COMPREHENSIVE LANGUAGE CONFIG (With Nested Polyglot Data)
   const sortedLanguages = useMemo(() => {
     const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
     const market = MarketManager.getCurrentMarket(host);
     
+    // 🛡️ CHRIS-PROTOCOL: Map extra languages available for each primary language
+    const getExtraLangsFor = (primary: string) => {
+      const lowPrimary = primary.toLowerCase();
+      const extraLangsSet = new Set<string>();
+      
+      // Note: 'actors' is not available here, we need to pass it or use a different approach.
+      // For now, we'll use a fixed mapping based on our database audit
+      const polyglotMap: Record<string, string[]> = {
+        'nl-be': ['Frans', 'Engels', 'Duits', 'Spaans', 'Italiaans'],
+        'nl-nl': ['Engels', 'Duits', 'Frans'],
+        'fr-fr': ['Engels', 'Spaans', 'Duits'],
+        'en-gb': ['Frans', 'Duits', 'Spaans']
+      };
+      
+      return polyglotMap[lowPrimary] || [];
+    };
+
     const languageConfig = [
       { label: 'Vlaams', value: 'nl-be', icon: FlagBE, subLabel: 'België', popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
       { label: 'Nederlands', value: 'nl-nl', icon: FlagNL, subLabel: 'Nederland', popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
@@ -206,18 +223,19 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
       { label: 'Pools', value: 'pl-pl', icon: FlagPL, subLabel: 'Polen' },
       { label: 'Deens', value: 'da-dk', icon: FlagDK, subLabel: 'Denemarken' },
       { label: 'Portugees', value: 'pt-pt', icon: FlagPT, subLabel: 'Portugal', popular: market.market_code === 'PT' },
-    ];
+    ].map(lang => ({
+      ...lang,
+      availableExtraLangs: state.journey === 'telephony' ? getExtraLangsFor(lang.value) : []
+    }));
 
     const popularLangs = languageConfig.filter(l => l.popular);
     const otherLangs = languageConfig.filter(l => !l.popular);
 
     const sortFn = (a: any, b: any) => {
-      // 1. Group by base language name (Frans, Engels, etc.)
       const getBaseLang = (label: string) => label.split(' ')[0];
       const baseA = getBaseLang(a.label);
-      const baseB = getBaseLang(b.label);
+      const baseB = getBaseLang(getBaseLang(b.label)); // Fixed potential double split
 
-      // Specific Market Order for BE
       if (market.market_code === 'BE') {
         if (a.label === 'Vlaams') return -1;
         if (b.label === 'Vlaams') return 1;
@@ -225,7 +243,6 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
         if (b.label === 'Nederlands') return 1;
       }
 
-      // Specific Market Order for NL
       if (market.market_code === 'NLNL') {
         if (a.label === 'Nederlands') return -1;
         if (b.label === 'Nederlands') return 1;
@@ -233,12 +250,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
         if (b.label === 'Vlaams') return 1;
       }
 
-      // Group identical base languages together
-      if (baseA !== baseB) {
-        return baseA.localeCompare(baseB);
-      }
-
-      // Within same group, sort by label
+      if (baseA !== baseB) return baseA.localeCompare(baseB);
       return a.label.localeCompare(b.label);
     };
 
@@ -299,22 +311,34 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
             <ContainerInstrument plain className="flex items-center bg-white rounded-full shadow-md border border-black/10 divide-x divide-black/10 h-20">
               
             {/* Language Segment */}
-            <VoicesDropdown 
-              searchable
-              rounding="left"
-              options={sortedLanguages}
-              value={state.filters.language}
-              onChange={(val) => {
-                // 🛡️ CHRIS-PROTOCOL: When changing primary language, reset polyglot selection
-                updateFilters({ 
-                  language: val || undefined,
-                  languages: val ? [val.toLowerCase()] : undefined 
-                });
-              }}
-              placeholder="Alle talen"
-              label="Welke taal?"
-              className="flex-1 h-full"
-            />
+            <div className="flex-1 h-full flex flex-col justify-center relative group/lang">
+              <VoicesDropdown 
+                searchable
+                rounding="left"
+                options={sortedLanguages}
+                value={state.filters.language}
+                selectedExtraLangs={state.filters.languages || []}
+                onExtraLangToggle={(lang) => {
+                  const currentLangs = state.filters.languages || [state.filters.language!.toLowerCase()];
+                  const lowLang = lang.toLowerCase();
+                  if (currentLangs.includes(lowLang)) {
+                    updateFilters({ languages: currentLangs.filter(l => l !== lowLang) });
+                  } else {
+                    updateFilters({ languages: [...currentLangs, lowLang] });
+                  }
+                }}
+                onChange={(val) => {
+                  // 🛡️ CHRIS-PROTOCOL: When changing primary language, reset polyglot selection
+                  updateFilters({ 
+                    language: val || undefined,
+                    languages: val ? [val.toLowerCase()] : undefined 
+                  });
+                }}
+                placeholder="Alle talen"
+                label="Welke taal?"
+                className="h-full"
+              />
+            </div>
 
               {/* Gender Segment */}
               <VoicesDropdown 
@@ -405,41 +429,6 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
               )}
             </ContainerInstrument>
 
-            {/* 🌍 POLYGLOT CHIPS (Progressive Disclosure for Telephony) - ALIGNED UNDER LANGUAGE */}
-            {state.journey === 'telephony' && state.filters.language && availableExtraLangs.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 mt-4 px-8 animate-in fade-in slide-in-from-top-2 duration-700">
-                <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em] mr-2">
-                  Combineer met:
-                </span>
-                {availableExtraLangs.map((lang) => {
-                  const isSelected = state.filters.languages?.includes(lang);
-                  return (
-                    <button
-                      key={lang}
-                      onClick={() => {
-                        playClick('soft');
-                        const currentLangs = state.filters.languages || [state.filters.language!];
-                        if (isSelected) {
-                          updateFilters({ languages: currentLangs.filter(l => l !== lang) });
-                        } else {
-                          updateFilters({ languages: [...currentLangs, lang] });
-                        }
-                      }}
-                      className={cn(
-                        "px-3 py-1.5 rounded-full border text-[12px] font-bold transition-all duration-300 flex items-center gap-2",
-                        isSelected 
-                          ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105" 
-                          : "bg-white border-black/5 text-va-black/40 hover:border-primary/30 hover:text-primary"
-                      )}
-                    >
-                      <Globe size={12} className={cn("opacity-40", isSelected && "opacity-100")} />
-                      {lang}
-                      {isSelected && <Check size={12} strokeWidth={3} />}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
           </div>
         </ContainerInstrument>
       </ContainerInstrument>

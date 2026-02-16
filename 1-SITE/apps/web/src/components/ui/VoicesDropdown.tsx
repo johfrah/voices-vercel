@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, ChevronDown, Minus, Plus, Search } from 'lucide-react';
+import { Check, ChevronDown, Globe, Minus, Plus, Search } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
@@ -15,18 +15,21 @@ interface VoicesDropdownProps {
     isSub?: boolean;
     subLabel?: string;
     icon?: React.ElementType | string;
+    availableExtraLangs?: string[]; // 🛡️ Support for nested polyglot chips
   })[];
-  value: any; // Support string, string[], or Record<string, number> for steppers
+  value: any; 
   onChange: (value: any) => void;
+  onExtraLangToggle?: (lang: string) => void; // 🛡️ Callback for polyglot chips
+  selectedExtraLangs?: string[]; // 🛡️ Currently selected extra languages
   placeholder: string;
   label?: string;
   icon?: string;
   className?: string;
   required?: boolean;
   multiSelect?: boolean;
-  stepperMode?: boolean; // 🛡️ Airbnb Stepper Mode
-  searchable?: boolean; // 🛡️ Airbnb Search Mode
-  rounding?: 'left' | 'right' | 'none'; // 🛡️ Fix for pill rounding
+  stepperMode?: boolean; 
+  searchable?: boolean; 
+  rounding?: 'left' | 'right' | 'none'; 
   livePrice?: string;
 }
 
@@ -34,6 +37,8 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
   options,
   value,
   onChange,
+  onExtraLangToggle,
+  selectedExtraLangs = [],
   placeholder,
   label,
   icon,
@@ -79,7 +84,13 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
       }
     } else {
       onChange(itemValue);
-      setIsOpen(false);
+      // 🛡️ CHRIS-PROTOCOL: Don't close if we are in telephony journey to allow polyglot selection
+      // The user needs to see the chips that appear under the selection.
+      if (window.location.search.includes('journey=telephony')) {
+        // Keep open
+      } else {
+        setIsOpen(false);
+      }
     }
   };
 
@@ -293,40 +304,76 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                 const IconComponent = item.icon;
 
                 return (
-                  <button
-                    key={idx}
-                    onClick={() => handleSelect(item.value)}
-                    className={cn(
-                      "w-full px-6 py-3 text-left transition-colors flex items-center justify-between group min-h-[56px]",
-                      isSelected ? "bg-primary/5 text-primary" : "text-va-black hover:bg-va-off-white",
-                      item.isSub && "pl-10"
-                    )}
-                  >
-                    <div className="flex items-center gap-4 min-w-0">
-                      {IconComponent && (
-                        <div className={cn("shrink-0", isSelected ? "text-primary" : "text-va-black/30")}>
-                          {typeof IconComponent === 'string' ? (
-                            <VoiceglotImage src={IconComponent} width={18} height={18} alt="" />
-                          ) : (
-                            <IconComponent size={18} strokeWidth={1.5} />
+                  <div key={idx} className="flex flex-col">
+                    <button
+                      onClick={() => handleSelect(item.value)}
+                      className={cn(
+                        "w-full px-6 py-3 text-left transition-colors flex items-center justify-between group min-h-[56px]",
+                        isSelected ? "bg-primary/5 text-primary" : "text-va-black hover:bg-va-off-white",
+                        item.isSub && "pl-10"
+                      )}
+                    >
+                      <div className="flex items-center gap-4 min-w-0">
+                        {IconComponent && (
+                          <div className={cn("shrink-0", isSelected ? "text-primary" : "text-va-black/30")}>
+                            {typeof IconComponent === 'string' ? (
+                              <VoiceglotImage src={IconComponent} width={18} height={18} alt="" />
+                            ) : (
+                              <IconComponent size={18} strokeWidth={1.5} />
+                            )}
+                          </div>
+                        )}
+                        <div className="flex flex-col min-w-0">
+                          <span className={cn("text-[15px] font-bold truncate", isSelected ? "text-primary" : "text-va-black")}>
+                            {item.label}
+                          </span>
+                          {item.subLabel && (
+                            <span className="text-[11px] opacity-60 leading-tight">
+                              {item.subLabel}
+                            </span>
                           )}
                         </div>
-                      )}
-                      <div className="flex flex-col min-w-0">
-                        <span className={cn("text-[15px] font-bold truncate", isSelected ? "text-primary" : "text-va-black")}>
-                          {item.label}
-                        </span>
-                        {item.subLabel && (
-                          <span className="text-[11px] opacity-60 leading-tight">
-                            {item.subLabel}
-                          </span>
-                        )}
                       </div>
-                    </div>
-                    <div className="w-5 flex justify-end shrink-0 ml-4">
-                      {isSelected && <Check size={16} strokeWidth={3} className="text-primary" />}
-                    </div>
-                  </button>
+                      <div className="w-5 flex justify-end shrink-0 ml-4">
+                        {isSelected && <Check size={16} strokeWidth={3} className="text-primary" />}
+                      </div>
+                    </button>
+
+                    {/* 🛡️ NESTED POLYGLOT CHIPS (Progressive Disclosure inside Dropdown) */}
+                    {isSelected && item.availableExtraLangs && item.availableExtraLangs.length > 0 && (
+                      <div className="px-6 py-4 bg-primary/[0.02] border-y border-black/[0.03] animate-in slide-in-from-top-2 duration-500">
+                        <div className="flex flex-col gap-3">
+                          <span className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                            Combineer met:
+                          </span>
+                          <div className="flex flex-wrap gap-2">
+                            {item.availableExtraLangs.map((extraLang) => {
+                              const isExtraSelected = selectedExtraLangs.includes(extraLang.toLowerCase());
+                              return (
+                                <button
+                                  key={extraLang}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onExtraLangToggle?.(extraLang);
+                                  }}
+                                  className={cn(
+                                    "px-3 py-1.5 rounded-full border text-[11px] font-bold transition-all duration-300 flex items-center gap-1.5",
+                                    isExtraSelected 
+                                      ? "bg-primary text-white border-primary shadow-md scale-105" 
+                                      : "bg-white border-black/5 text-va-black/60 hover:border-primary/30 hover:text-primary"
+                                  )}
+                                >
+                                  <Globe size={10} className={cn("opacity-40", isExtraSelected && "opacity-100")} />
+                                  {extraLang}
+                                  {isExtraSelected && <Check size={10} strokeWidth={3} />}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 );
 
               })}
