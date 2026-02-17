@@ -88,6 +88,14 @@ export default function ConfiguratorPageClient({
 
   const wordCount = useMemo(() => localBriefing.trim().split(/\s+/).filter(Boolean).length, [localBriefing]);
   
+  // CHRIS-PROTOCOL: Calculate prompts for telephony based on (titles) in brackets
+  const promptCount = useMemo(() => {
+    if (state.usage !== 'telefonie') return 0;
+    // Match anything between brackets that's on its own line or at the start of a block
+    const matches = localBriefing.match(/\(([^)]+)\)/g);
+    return matches ? matches.length : 0;
+  }, [localBriefing, state.usage]);
+
   //  CHRIS-PROTOCOL: Binding Word Count for Telephony & Video
   // We ensure that the pricing engine uses the ACTUAL word count from the script
   // once the user has started typing, overriding any indicative filter values.
@@ -460,7 +468,13 @@ export default function ConfiguratorPageClient({
                   <div className="w-[1px] h-3 bg-va-black/10" />
                   <div className="flex items-center gap-2 text-va-black/40">
                     <Clock size={12} strokeWidth={1.5} />
-                    <span className="text-[11px] font-medium uppercase tracking-widest">± {estimatedTime} min</span>
+                    <span className="text-[11px] font-medium uppercase tracking-widest">
+                      {state.usage === 'telefonie' && promptCount > 0 ? (
+                        <>{promptCount} {promptCount === 1 ? 'prompt' : 'prompts'}</>
+                      ) : (
+                        <>± {estimatedTime} min</>
+                      )}
+                    </span>
                   </div>
                   {isAutoSaving && (
                     <>
