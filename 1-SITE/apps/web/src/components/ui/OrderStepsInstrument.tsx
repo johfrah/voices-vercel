@@ -27,7 +27,7 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
   ] as const;
 
   return (
-    <div className={cn("flex justify-center opacity-40 hover:opacity-100 transition-opacity duration-500", className)}>
+    <div className={cn("flex justify-center opacity-80 hover:opacity-100 transition-opacity duration-500", className)}>
       <div className="flex items-center gap-4 md:gap-6">
         {steps.map((step, index) => {
           const isActive = step.id === currentStep;
@@ -38,18 +38,18 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
               <div className="flex items-center gap-2">
                 <div className={cn(
                   "w-1.5 h-1.5 rounded-full transition-all duration-500",
-                  isActive ? "bg-primary scale-150" : isPast ? "bg-va-black" : "bg-va-black/40"
+                  isActive ? "bg-primary scale-150" : isPast ? "bg-va-black" : "bg-va-black/60"
                 )} />
                 <span className={cn(
-                  "text-[11px] font-bold tracking-[0.2em] uppercase transition-colors duration-500",
-                  isActive ? "text-va-black" : "text-va-black/50"
+                  "text-[12px] font-bold tracking-[0.15em] uppercase transition-colors duration-500",
+                  isActive ? "text-va-black" : "text-va-black/60"
                 )}>
                   <VoiceglotText translationKey={step.key} defaultText={step.label} />
                 </span>
               </div>
               
               {index < steps.length - 1 && (
-                <div className="w-4 h-[1px] bg-va-black/5" />
+                <div className="w-4 h-[1px] bg-va-black/10" />
               )}
             </React.Fragment>
           );

@@ -57,8 +57,29 @@ body {
   color: var(--va-dark);
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 15px;
+  font-weight: 300; /* Default to light, but not extralight */
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+}
+
+/* 🖋️ CONTRAST & READABILITY MANDATE (2026) */
+.text-va-black\/20 { color: rgba(26, 26, 26, 0.45) !important; } /* Was too light, now readable metadata */
+.text-va-black\/30 { color: rgba(26, 26, 26, 0.55) !important; }
+.text-va-black\/40 { color: rgba(26, 26, 26, 0.65) !important; } /* Was standard metadata, now solid */
+.text-va-black\/50 { color: rgba(26, 26, 26, 0.75) !important; }
+.text-va-black\/60 { color: rgba(26, 26, 26, 0.85) !important; }
+
+.tracking-widest {
+  tracking: 0.1em !important; /* Sanitize extreme tracking */
+}
+
+.tracking-\[0.2em\] {
+  tracking: 0.1em !important;
+}
+
+.tracking-\[0.3em\] {
+  tracking: 0.15em !important;
 }
 
 /* 🧪 LIQUID GRADIENTS (120s slow-motion) */
