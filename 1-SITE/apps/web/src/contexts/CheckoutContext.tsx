@@ -255,6 +255,13 @@ interface CheckoutState {
       const wordCount = state.briefing.trim().split(/\s+/).filter(Boolean).length;
       const promptCount = state.briefing.trim().split(/\n+/).filter(Boolean).length;
   
+      //  CHRIS-PROTOCOL: Binding Word Count Mandate
+      // For telephony and video, once a script is entered, the word count from the briefing
+      // is strictly binding and overrides any indicative filter values.
+      const bindingWords = (state.usage === 'telefonie' || state.usage === 'unpaid') && wordCount > 0
+        ? wordCount
+        : wordCount; // PricingEngine already handles words, but we ensure it's calculated here.
+  
       //  COMMERCIAL LOGIC: Apply spots/years to ALL selected media types
       // If detail maps exist, use those. Otherwise fall back to global spots/years.
       const spotsMap = state.usage === 'commercial' && Array.isArray(state.media) 

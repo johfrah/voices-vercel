@@ -25,6 +25,7 @@ interface VoiceCardProps {
   onSelect?: (voice: Actor) => void;
   hideButton?: boolean;
   isCornered?: boolean; // NEW: for SPA transition focus
+  compact?: boolean; // NEW: for space-saving on mobile/configurator
 }
 
 /**
@@ -62,7 +63,7 @@ const CATEGORIES = [
   { id: 'meditatie', src: '/assets/common/branding/icons/INFO.svg', label: 'Meditatie', key: 'category.meditation' },
 ];
 
-export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButton, isCornered }) => {
+export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButton, isCornered, compact }) => {
   const { playClick, playSwell } = useSonicDNA();
   const { state, getPlaceholderValue, toggleActorSelection } = useVoicesState();
   const { state: masterControlState } = useMasterControl();
@@ -357,7 +358,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
         "group relative bg-white rounded-[20px] overflow-hidden shadow-aura hover:scale-[1.01] active:scale-[0.99] transition-all duration-500 border border-black/[0.02] flex flex-col cursor-pointer touch-manipulation",
         isSelected ? "ring-2 ring-primary" : "",
         isEditMode && "ring-2 ring-primary ring-inset",
-        isCornered && "shadow-aura-lg"
+        isCornered && "shadow-aura-lg",
+        compact && "flex-row h-[120px] md:h-[160px]"
       )}
       onMouseEnter={handleMouseEnter}
     >
@@ -374,7 +376,10 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
       {/* Moved inside photo container for better alignment */}
 
       {/*  PHOTO PREVIEW (Mandate: Aspect Square) */}
-      <ContainerInstrument plain className="relative aspect-square w-full bg-va-black overflow-hidden">
+      <ContainerInstrument plain className={cn(
+        "relative bg-va-black overflow-hidden shrink-0",
+        compact ? "w-[120px] md:w-[160px] h-full" : "aspect-square w-full"
+      )}>
         {voice.video_url ? (
           <video 
             ref={videoRef}
@@ -522,43 +527,45 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
         <ContainerInstrument plain className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
       </ContainerInstrument>
 
-      <ContainerInstrument plain className="p-0 flex flex-col flex-grow">
-        <div className="flex flex-col gap-2 mb-2 px-8 pt-8 shrink-0">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 bg-va-off-white/50 px-2 py-1 rounded-full border border-black/[0.03]">
-              <VoiceFlag lang={voice.native_lang} size={16} />
-              <TextInstrument className="text-[13px] font-bold text-va-black/60 tracking-tight">
-                <VoiceglotText 
-                  translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} 
-                  defaultText={
-                    voice.native_lang?.toLowerCase() === 'nl-be' || voice.native_lang?.toLowerCase() === 'vlaams' ? 'Vlaams' : 
-                    voice.native_lang?.toLowerCase() === 'nl-nl' || voice.native_lang?.toLowerCase() === 'nederlands' ? 'Nederlands' : 
-                    voice.native_lang?.toLowerCase() === 'fr-fr' || voice.native_lang?.toLowerCase() === 'frans' ? 'Frans' : 
-                    voice.native_lang?.toLowerCase() === 'fr-be' ? 'Frans (BE)' :
-                    voice.native_lang || ''
-                  } 
-                />
-              </TextInstrument>
+      <ContainerInstrument plain className={cn("p-0 flex flex-col flex-grow", compact && "justify-center px-4")}>
+        {!compact && (
+          <div className="flex flex-col gap-2 mb-2 px-8 pt-8 shrink-0">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 bg-va-off-white/50 px-2 py-1 rounded-full border border-black/[0.03]">
+                <VoiceFlag lang={voice.native_lang} size={16} />
+                <TextInstrument className="text-[13px] font-bold text-va-black/60 tracking-tight">
+                  <VoiceglotText 
+                    translationKey={`common.language.${voice.native_lang?.toLowerCase()}`} 
+                    defaultText={
+                      voice.native_lang?.toLowerCase() === 'nl-be' || voice.native_lang?.toLowerCase() === 'vlaams' ? 'Vlaams' : 
+                      voice.native_lang?.toLowerCase() === 'nl-nl' || voice.native_lang?.toLowerCase() === 'nederlands' ? 'Nederlands' : 
+                      voice.native_lang?.toLowerCase() === 'fr-fr' || voice.native_lang?.toLowerCase() === 'frans' ? 'Frans' : 
+                      voice.native_lang?.toLowerCase() === 'fr-be' ? 'Frans (BE)' :
+                      voice.native_lang || ''
+                    } 
+                  />
+                </TextInstrument>
+              </div>
+              <div className="flex flex-col items-end justify-center">
+                <span className="text-[9px] font-bold tracking-[0.1em] text-primary/60 uppercase leading-none mb-0.5">Levering:</span>
+                <TextInstrument className="text-[13px] font-semibold text-primary tracking-tight leading-none">
+                  {deliveryInfo.formattedShort}
+                </TextInstrument>
+              </div>
             </div>
-            <div className="flex flex-col items-end justify-center">
-              <span className="text-[9px] font-bold tracking-[0.1em] text-primary/60 uppercase leading-none mb-0.5">Levering:</span>
-              <TextInstrument className="text-[13px] font-semibold text-primary tracking-tight leading-none">
-                {deliveryInfo.formattedShort}
-              </TextInstrument>
-            </div>
+            {masterControlState.journey === 'telephony' && voice.extra_langs && (
+              <div className="px-2 animate-in fade-in slide-in-from-top-1 duration-500">
+                <TextInstrument className="text-[11px] text-va-black/60 font-medium italic leading-tight">
+                  Ook beschikbaar in: {voice.extra_langs.split(',').map(l => l.trim()).join(', ')}
+                </TextInstrument>
+              </div>
+            )}
           </div>
-          {masterControlState.journey === 'telephony' && voice.extra_langs && (
-            <div className="px-2 animate-in fade-in slide-in-from-top-1 duration-500">
-              <TextInstrument className="text-[11px] text-va-black/60 font-medium italic leading-tight">
-                Ook beschikbaar in: {voice.extra_langs.split(',').map(l => l.trim()).join(', ')}
-              </TextInstrument>
-            </div>
-          )}
-        </div>
+        )}
 
-          <div className="px-8 pb-8 flex flex-col flex-grow">
+          <div className={cn("flex flex-col flex-grow", compact ? "px-0 pb-0" : "px-8 pb-8")}>
             <div className="flex flex-col">
-              {voice.tone_of_voice && (
+              {!compact && voice.tone_of_voice && (
                 <div className="flex flex-wrap gap-1 mb-2 animate-in fade-in slide-in-from-left-2 duration-500">
                   {voice.tone_of_voice.split(',').slice(0, 2).map((tone, i) => (
                     <span key={i} className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10">
@@ -567,7 +574,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                   ))}
                 </div>
               )}
-              <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-tight mb-1 group-hover:text-primary transition-colors truncate">
+              <HeadingInstrument level={3} className={cn("font-light tracking-tighter leading-tight group-hover:text-primary transition-colors truncate", compact ? "text-2xl mb-0" : "text-4xl mb-1")}>
                 <VoiceglotText  
                   translationKey={`actor.${voice.id}.name`} 
                   defaultText={voice.display_name} 
@@ -575,7 +582,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                 />
               </HeadingInstrument>
               
-              {voice.clients && (
+              {!compact && voice.clients && (
                 <div className="min-h-[1.2em]">
                   <TextInstrument className="text-[10px] font-bold tracking-[0.1em] text-va-black/40 uppercase mb-3 truncate">
                     {voice.clients.split(',').slice(0, 3).join('  ')}
@@ -583,29 +590,33 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                 </div>
               )}
               
-              <div className="mb-3 h-[80px] overflow-y-auto no-scrollbar">
-                <TextInstrument className="text-va-black/40 text-[13px] font-light leading-relaxed italic">
-                  {sectorDemo ? (
-                    <>{sectorDemo}</>
-                  ) : (
-                    <VoiceglotText 
-                      translationKey={`actor.${voice.id}.bio`} 
-                      defaultText={cleanDescription(voice.tagline || voice.bio || 'Professionele voice-over voor al uw projecten.')} 
-                    />
-                  )}
-                </TextInstrument>
-              </div>
+              {!compact && (
+                <div className="mb-3 h-[80px] overflow-y-auto no-scrollbar">
+                  <TextInstrument className="text-va-black/40 text-[13px] font-light leading-relaxed italic">
+                    {sectorDemo ? (
+                      <>{sectorDemo}</>
+                    ) : (
+                      <VoiceglotText 
+                        translationKey={`actor.${voice.id}.bio`} 
+                        defaultText={cleanDescription(voice.tagline || voice.bio || 'Professionele voice-over voor al uw projecten.')} 
+                      />
+                    )}
+                  </TextInstrument>
+                </div>
+              )}
             </div>
 
-            <div className="flex justify-between items-center pt-6 border-t border-black/[0.03] mt-auto">
-            <div className="flex flex-col w-full items-end">
-              <TextInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-1">
-                Vanaf
-              </TextInstrument>
-              <TextInstrument className="text-3xl font-medium tracking-tighter text-va-black leading-none">
+            <div className={cn("flex justify-between items-center mt-auto", compact ? "pt-2" : "pt-6 border-t border-black/[0.03]")}>
+            <div className={cn("flex flex-col items-end", compact ? "w-auto" : "w-full")}>
+              {!compact && (
+                <TextInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-1">
+                  Vanaf
+                </TextInstrument>
+              )}
+              <TextInstrument className={cn("font-medium tracking-tighter text-va-black leading-none", compact ? "text-xl" : "text-3xl")}>
                 {displayPrice.price}
               </TextInstrument>
-              {masterControlState.journey === 'telephony' && displayPrice.pricePerPrompt && (
+              {!compact && masterControlState.journey === 'telephony' && displayPrice.pricePerPrompt && (
                 <TextInstrument className="text-[10px] text-va-black/60 font-medium mt-1">
                    {displayPrice.pricePerPrompt} per prompt
                 </TextInstrument>

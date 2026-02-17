@@ -85,10 +85,19 @@ export default function ConfiguratorPageClient({
   }, [localBriefing, updateBriefing]);
 
   const wordCount = useMemo(() => localBriefing.trim().split(/\s+/).filter(Boolean).length, [localBriefing]);
+  
+  //  CHRIS-PROTOCOL: Binding Word Count for Telephony & Video
+  // We ensure that the pricing engine uses the ACTUAL word count from the script
+  // once the user has started typing, overriding any indicative filter values.
+  const effectiveWordCount = useMemo(() => {
+    if (wordCount > 0) return wordCount;
+    return masterControlState.filters.words || 0;
+  }, [wordCount, masterControlState.filters.words]);
+
   const estimatedTime = useMemo(() => {
-    const seconds = Math.round((wordCount / 160) * 60);
+    const seconds = Math.round((effectiveWordCount / 160) * 60);
     return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
-  }, [wordCount]);
+  }, [effectiveWordCount]);
 
   // MARK'S LIVE TIPS
   const liveTip = useMemo(() => {
@@ -177,7 +186,7 @@ export default function ConfiguratorPageClient({
   ];
 
   const handleAddToCart = () => {
-    if (!state.selectedActor || wordCount === 0) return;
+    if (!state.selectedActor || effectiveWordCount === 0) return;
     addItem({
       id: `voice-${state.selectedActor.id}-${Date.now()}`,
       type: 'voice_over',
@@ -447,7 +456,7 @@ export default function ConfiguratorPageClient({
                   <Info size={12} className="text-primary/40" /> Tip: Gebruik (haakjes) voor regie
                 </div>
                 <div className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase">
-                  {wordCount} {wordCount === 1 ? 'woord' : 'woorden'}
+                  {effectiveWordCount} {effectiveWordCount === 1 ? 'woord' : 'woorden'}
                 </div>
               </div>
             </ContainerInstrument>
@@ -522,8 +531,8 @@ export default function ConfiguratorPageClient({
                         </div>
                       </div>
                       <div className="flex-1 w-full space-y-3">
-                        <ButtonInstrument onClick={() => { if (isEmbedded) { updateJourney(state.usage === 'commercial' ? 'commercial' : state.usage === 'telefonie' ? 'telephony' : 'video'); updateStep('checkout'); window.scrollTo({ top: 0, behavior: 'smooth' }); } }} disabled={!state.selectedActor || wordCount === 0} className="va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-xl hover:!bg-primary transition-all">Bestellen <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" /></ButtonInstrument>
-                        <button onClick={handleAddToCart} disabled={!state.selectedActor || wordCount === 0 || addedToCart} className="w-full py-3 text-[11px] font-bold tracking-[0.2em] text-va-black/20 hover:text-primary transition-all flex items-center justify-center gap-2 uppercase">{addedToCart ? (<><CheckCircle2 size={12} className="text-green-500" /> Toegevoegd</>) : (<><ShoppingBag size={12} /> Bewaar in mandje</>)}</button>
+                        <ButtonInstrument onClick={() => { if (isEmbedded) { updateJourney(state.usage === 'commercial' ? 'commercial' : state.usage === 'telefonie' ? 'telephony' : 'video'); updateStep('checkout'); window.scrollTo({ top: 0, behavior: 'smooth' }); } }} disabled={!state.selectedActor || effectiveWordCount === 0} className="va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-xl hover:!bg-primary transition-all">Bestellen <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" /></ButtonInstrument>
+                        <button onClick={handleAddToCart} disabled={!state.selectedActor || effectiveWordCount === 0 || addedToCart} className="w-full py-3 text-[11px] font-bold tracking-[0.2em] text-va-black/20 hover:text-primary transition-all flex items-center justify-center gap-2 uppercase">{addedToCart ? (<><CheckCircle2 size={12} className="text-green-500" /> Toegevoegd</>) : (<><ShoppingBag size={12} /> Bewaar in mandje</>)}</button>
                       </div>
                     </div>
                   </div>
@@ -580,8 +589,8 @@ export default function ConfiguratorPageClient({
                     {state.pricing.legalDisclaimer && <div className="text-[10px] text-va-black/40 font-light italic mt-2 leading-tight">{state.pricing.legalDisclaimer}</div>}
                   </div>
                   <div className="pt-4 space-y-3">
-                    <ButtonInstrument onClick={() => { if (isEmbedded) { updateJourney(state.usage === 'commercial' ? 'commercial' : state.usage === 'telefonie' ? 'telephony' : 'video'); updateStep('checkout'); window.scrollTo({ top: 0, behavior: 'smooth' }); } else { setStep('details'); router.push('/checkout'); } }} disabled={!state.selectedActor || wordCount === 0} className="va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-lg hover:!bg-primary transition-all">Bestellen <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" /></ButtonInstrument>
-                    <button onClick={handleAddToCart} disabled={!state.selectedActor || wordCount === 0 || addedToCart} className="w-full py-3 text-[11px] font-bold tracking-[0.2em] text-va-black/20 hover:text-primary transition-all flex items-center justify-center gap-2 uppercase border border-black/[0.03] rounded-[10px] hover:bg-black/[0.02]">{addedToCart ? (<><CheckCircle2 size={12} className="text-green-500" /> Toegevoegd</>) : (<><ShoppingBag size={12} /> Bewaar in mandje</>)}</button>
+                    <ButtonInstrument onClick={() => { if (isEmbedded) { updateJourney(state.usage === 'commercial' ? 'commercial' : state.usage === 'telefonie' ? 'telephony' : 'video'); updateStep('checkout'); window.scrollTo({ top: 0, behavior: 'smooth' }); } else { setStep('details'); router.push('/checkout'); } }} disabled={!state.selectedActor || effectiveWordCount === 0} className="va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-lg hover:!bg-primary transition-all">Bestellen <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" /></ButtonInstrument>
+                    <button onClick={handleAddToCart} disabled={!state.selectedActor || effectiveWordCount === 0 || addedToCart} className="w-full py-3 text-[11px] font-bold tracking-[0.2em] text-va-black/20 hover:text-primary transition-all flex items-center justify-center gap-2 uppercase border border-black/[0.03] rounded-[10px] hover:bg-black/[0.02]">{addedToCart ? (<><CheckCircle2 size={12} className="text-green-500" /> Toegevoegd</>) : (<><ShoppingBag size={12} /> Bewaar in mandje</>)}</button>
                   </div>
                 </div>
                 <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-primary/5 blur-[80px] rounded-full" />
@@ -601,13 +610,13 @@ export default function ConfiguratorPageClient({
                 <PriceCountUp value={state.pricing.total} />
               </span>
             </div>
-            <button 
-              onClick={() => { updateJourney(state.usage === 'commercial' ? 'commercial' : state.usage === 'telefonie' ? 'telephony' : 'video'); updateStep('checkout'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              disabled={!state.selectedActor || wordCount === 0}
-              className="bg-va-black text-white px-8 py-3 rounded-xl font-bold text-[13px] tracking-widest uppercase active:scale-95 transition-all disabled:opacity-50"
-            >
-              Bestellen
-            </button>
+              <button 
+                onClick={() => { updateJourney(state.usage === 'commercial' ? 'commercial' : state.usage === 'telefonie' ? 'telephony' : 'video'); updateStep('checkout'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                disabled={!state.selectedActor || effectiveWordCount === 0}
+                className="bg-va-black text-white px-8 py-3 rounded-xl font-bold text-[13px] tracking-widest uppercase active:scale-95 transition-all disabled:opacity-50"
+              >
+                Bestellen
+              </button>
           </div>
         </div>
       )}
