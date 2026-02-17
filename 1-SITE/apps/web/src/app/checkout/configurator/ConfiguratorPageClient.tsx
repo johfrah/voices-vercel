@@ -25,6 +25,8 @@ import { VoiceCard } from '@/components/ui/VoiceCard';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
 import { useMasterControl, JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { MusicSelector } from '@/components/studio/MusicSelector';
+import { TelephonySmartSuggestions } from '@/components/checkout/TelephonySmartSuggestions';
+import { Sparkles, Brain, Wand2, Zap } from 'lucide-react';
 
 /**
  *  CHRIS-PROTOCOL: Count-Up Component for Pricing
@@ -64,6 +66,12 @@ export default function ConfiguratorPageClient({
   const [localBriefing, setLocalBriefing] = useState(state.briefing);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
+  
+  // AI Assistant State
+  const [showAiAssistant, setShowAiAssistant] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const suggestionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-Save Logic
   useEffect(() => {
@@ -86,6 +94,51 @@ export default function ConfiguratorPageClient({
     }, 1000);
     return () => clearTimeout(timer);
   }, [localBriefing, updateBriefing]);
+
+  // AI Predictive Logic (Johfrai)
+  useEffect(() => {
+    if (!showAiAssistant || !localBriefing || localBriefing.length < 5) {
+      setAiSuggestion("");
+      return;
+    }
+
+    if (suggestionTimeoutRef.current) clearTimeout(suggestionTimeoutRef.current);
+
+    suggestionTimeoutRef.current = setTimeout(async () => {
+      setIsAiLoading(true);
+      try {
+        const res = await fetch('/api/johfrai/predictive', {
+          method: 'POST',
+          body: JSON.stringify({
+            text: localBriefing,
+            companyName: state.customer.company,
+            context: state.usage
+          })
+        });
+        const data = await res.json();
+        setAiSuggestion(data.suggestion || "");
+      } catch (err) {
+        console.error('AI Suggestion Error:', err);
+      } finally {
+        setIsAiLoading(false);
+      }
+    }, 800);
+
+    return () => {
+      if (suggestionTimeoutRef.current) clearTimeout(suggestionTimeoutRef.current);
+    };
+  }, [localBriefing, showAiAssistant, state.customer.company, state.usage]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Tab' && aiSuggestion) {
+      e.preventDefault();
+      const newText = localBriefing + aiSuggestion;
+      setLocalBriefing(newText);
+      updateBriefing(newText);
+      setAiSuggestion("");
+      playClick('pro');
+    }
+  };
 
   const wordCount = useMemo(() => localBriefing.trim().split(/\s+/).filter(Boolean).length, [localBriefing]);
   
@@ -460,7 +513,7 @@ export default function ConfiguratorPageClient({
               </div>
             )}
 
-            <ContainerInstrument className="bg-white rounded-[20px] shadow-aura border border-black/[0.03] overflow-hidden group/script mb-6">
+            <ContainerInstrument className="bg-white rounded-[20px] shadow-aura border border-black/[0.03] overflow-hidden group/script mb-6 relative">
               <div className="p-4 bg-va-off-white/50 border-b border-black/[0.03] flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase">
@@ -484,17 +537,69 @@ export default function ConfiguratorPageClient({
                     </>
                   )}
                 </div>
-                <div className="flex items-center gap-2 text-[11px] text-va-black/40 font-light italic">
-                  <Info size={12} className="text-primary/40" /> Zet regie-aanwijzingen of bestandsnamen (tussen haakjes)
+
+                <div className="flex items-center gap-6">
+                  {state.usage === 'telefonie' && (
+                    <button 
+                      onClick={() => {
+                        setShowAiAssistant(!showAiAssistant);
+                        playClick(showAiAssistant ? 'light' : 'pro');
+                      }}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300",
+                        showAiAssistant 
+                          ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" 
+                          : "bg-white border-black/5 text-va-black/40 hover:text-primary hover:border-primary/20"
+                      )}
+                    >
+                      <Sparkles size={12} className={cn(showAiAssistant && "animate-pulse")} />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">AI Assistant</span>
+                    </button>
+                  )}
+                  <div className="flex items-center gap-2 text-[11px] text-va-black/40 font-light italic">
+                    <Info size={12} className="text-primary/40" /> Zet regie-aanwijzingen of bestandsnamen (tussen haakjes)
+                  </div>
                 </div>
               </div>
-              <textarea
-                value={localBriefing}
-                onChange={(e) => handleBriefingChange(e.target.value)}
-                placeholder={scriptPlaceholder}
-                className="w-full h-[400px] p-8 text-xl font-light leading-relaxed bg-transparent border-none focus:ring-0 outline-none resize-none placeholder:text-va-black/10"
-              />
+              
+              <div className="relative">
+                <textarea
+                  value={localBriefing}
+                  onChange={(e) => handleBriefingChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={scriptPlaceholder}
+                  className="w-full h-[400px] p-8 text-xl font-light leading-relaxed bg-transparent border-none focus:ring-0 outline-none resize-none placeholder:text-va-black/10"
+                />
+                
+                {/* AI Ghost Text Suggestion */}
+                {showAiAssistant && aiSuggestion && (
+                  <div className="absolute top-0 left-0 p-8 pointer-events-none text-xl font-light leading-relaxed text-va-black/20 whitespace-pre-wrap">
+                    <span className="text-transparent">{localBriefing}</span>
+                    {aiSuggestion}
+                    <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 bg-primary/5 text-primary text-[10px] font-bold rounded border border-primary/10 align-middle">TAB</span>
+                  </div>
+                )}
+
+                {isAiLoading && (
+                  <div className="absolute bottom-4 right-8">
+                    <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+                  </div>
+                )}
+              </div>
             </ContainerInstrument>
+
+            <AnimatePresence>
+              {showAiAssistant && state.usage === 'telefonie' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mb-6"
+                >
+                  <TelephonySmartSuggestions />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <div className={cn("grid grid-cols-1 gap-4", !minimalMode && "mt-8")}>
               {state.usage === 'telefonie' && (
