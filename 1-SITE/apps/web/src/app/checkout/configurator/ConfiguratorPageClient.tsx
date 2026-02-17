@@ -482,21 +482,6 @@ export default function ConfiguratorPageClient({
             </ContainerInstrument>
 
             <div className={cn("grid grid-cols-1 gap-4", !minimalMode && "mt-8")}>
-              {state.usage === 'commercial' && (
-                <button onClick={() => updateLiveSession(!state.liveSession)} className={cn("flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", state.liveSession ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10")}>
-                  <div className="flex items-center gap-4">
-                    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", state.liveSession ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
-                      {state.liveSession ? <Check size={18} strokeWidth={3} /> : <Mic size={18} strokeWidth={1.5} />}
-                    </div>
-                    <div>
-                      <div className={cn("text-[13px] font-bold transition-colors", state.liveSession ? "text-primary" : "text-va-black")}>Live Regie</div>
-                      <div className="text-[11px] text-va-black/40 font-light">Regisseer via Zoom/Teams</div>
-                    </div>
-                  </div>
-                  <div className={cn("text-[13px] font-medium transition-colors", state.liveSession ? "text-primary" : "text-va-black/40")}>+ {PricingEngine.format(liveRegiePrice)}</div>
-                </button>
-              )}
-              
               {state.usage === 'telefonie' && (
                 <button onClick={() => updateMusic({ asBackground: !state.music.asBackground, trackId: state.music.trackId || 'corporate-growth' })} className={cn("flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", state.music.asBackground ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10")}>
                   <div className="flex items-center gap-4">
@@ -554,13 +539,6 @@ export default function ConfiguratorPageClient({
                           <div className="flex justify-between text-[13px]">
                             <span className="text-va-black/40 font-light">Muziek Mix (Wachtmuziek)</span>
                             <span className="font-medium">+{PricingEngine.format(59)}</span>
-                          </div>
-                        )}
-                        
-                        {state.usage === 'commercial' && state.liveSession && (
-                          <div className="flex justify-between text-[13px]">
-                            <span className="text-va-black/40 font-light">Live Regie (Zoom/Teams)</span>
-                            <span className="font-medium">+{PricingEngine.format(liveRegiePrice)}</span>
                           </div>
                         )}
                       </div>
