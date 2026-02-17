@@ -67,11 +67,13 @@ export default function ConfiguratorPageClient({
   // Auto-Save Logic
   useEffect(() => {
     const saved = localStorage.getItem('voices_draft_script');
-    if (saved && !localBriefing) {
+    // CHRIS-PROTOCOL: Only restore if there is NO existing briefing in state
+    // and the saved content is not just dummy text.
+    if (saved && !state.briefing && saved.trim() !== '' && !saved.includes('woord woord')) {
       setLocalBriefing(saved);
       updateBriefing(saved);
     }
-  }, [localBriefing, updateBriefing]);
+  }, [state.briefing, updateBriefing]);
 
   useEffect(() => {
     if (!localBriefing) return;
@@ -115,7 +117,7 @@ export default function ConfiguratorPageClient({
   const scriptPlaceholder = useMemo(() => {
     if (state.usage === 'telefonie') return "Voer hier uw IVR of voicemail teksten in...";
     if (state.usage === 'commercial') return "Voer hier uw commercial script in...";
-    return "Voer hier uw script in voor video of corporate projecten...";
+    return "Voer hier uw tekst in...";
   }, [state.usage]);
 
   const handleUsageSwitch = (usageId: any) => {
@@ -220,8 +222,8 @@ export default function ConfiguratorPageClient({
       )}
       
       <SectionInstrument className={cn(
-        "max-w-7xl mx-auto px-6 relative z-10",
-        !isEmbedded ? "pt-20" : "pt-0"
+        "max-w-7xl mx-auto relative z-10",
+        !isEmbedded ? "pt-20 px-6" : "pt-0 px-0"
       )}>
         {!isEmbedded && (
           <ContainerInstrument className="text-center mb-12 space-y-8">
@@ -260,9 +262,9 @@ export default function ConfiguratorPageClient({
             </div>
           )}
 
-          <div className={cn(
-            "space-y-6 pt-0",
-            minimalMode ? "lg:col-span-12" : "lg:col-span-6"
+            <div className={cn(
+            "pt-0",
+            minimalMode ? "lg:col-span-12" : "lg:col-span-6 space-y-6"
           )}>
             {!hideMediaSelector && (
               <div className="space-y-4 mb-8 relative">
@@ -435,20 +437,8 @@ export default function ConfiguratorPageClient({
               </div>
             )}
 
-            <div className="flex items-center justify-end px-2">
-              <div className="flex items-center gap-4">
-                {isAutoSaving && <span className="text-[10px] font-bold text-primary animate-pulse tracking-widest uppercase">Auto-saving...</span>}
-              </div>
-            </div>
-            
             <ContainerInstrument className="bg-white rounded-[20px] shadow-aura border border-black/[0.03] overflow-hidden group/script">
-              <textarea
-                value={localBriefing}
-                onChange={(e) => handleBriefingChange(e.target.value)}
-                placeholder={scriptPlaceholder}
-                className="w-full h-[400px] p-8 text-xl font-light leading-relaxed bg-transparent border-none focus:ring-0 outline-none resize-none placeholder:text-va-black/10"
-              />
-              <div className="p-4 bg-va-off-white/50 border-t border-black/[0.03] flex items-center justify-between">
+              <div className="p-4 bg-va-off-white/50 border-b border-black/[0.03] flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase">
                     {effectiveWordCount} {effectiveWordCount === 1 ? 'woord' : 'woorden'}
@@ -458,14 +448,26 @@ export default function ConfiguratorPageClient({
                     <Clock size={12} strokeWidth={1.5} />
                     <span className="text-[11px] font-medium uppercase tracking-widest">± {estimatedTime} min</span>
                   </div>
+                  {isAutoSaving && (
+                    <>
+                      <div className="w-[1px] h-3 bg-va-black/10" />
+                      <span className="text-[10px] font-bold text-primary animate-pulse tracking-widest uppercase">Auto-saving...</span>
+                    </>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 text-[11px] text-va-black/40 font-light italic">
                   <Info size={12} className="text-primary/40" /> Tip: Gebruik (haakjes) voor regie
                 </div>
               </div>
+              <textarea
+                value={localBriefing}
+                onChange={(e) => handleBriefingChange(e.target.value)}
+                placeholder={scriptPlaceholder}
+                className="w-full h-[400px] p-8 text-xl font-light leading-relaxed bg-transparent border-none focus:ring-0 outline-none resize-none placeholder:text-va-black/10"
+              />
             </ContainerInstrument>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+            <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-4", !minimalMode && "mt-8")}>
               <button onClick={() => updateLiveSession(!state.liveSession)} className={cn("flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", state.liveSession ? "bg-primary/5 border-primary/20" : "bg-white border-black/[0.03] hover:border-black/10")}>
                 <div className="flex items-center gap-4">
                   <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-colors", state.liveSession ? "bg-primary text-white" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}><Mic size={18} strokeWidth={1.5} /></div>
