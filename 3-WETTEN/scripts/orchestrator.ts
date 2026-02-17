@@ -302,7 +302,6 @@ class AgentOrchestrator {
     while (attempts < maxAttempts) {
       attempts++;
       try {
-        // Gebruik vercel inspect --json voor diepe data
         const output = execSync('vercel list voices-os-2026 --limit 1 --json').toString();
         const deployments = JSON.parse(output);
         
@@ -320,12 +319,11 @@ class AgentOrchestrator {
         } else if (status === 'ERROR' || status === 'FAILED') {
           this.log('ANNA', 'CRITICAL', '❌ Vercel Deployment FAILED!');
           
-          // FORENSISCH ONDERZOEK: Haal de logs op
+          // FORENSISCH ONDERZOEK & LEARNING
           try {
             this.log('CHRIS', 'INFO', '🔍 Chris start forensisch onderzoek naar build-logs...');
             const inspectOutput = execSync(`vercel inspect ${latest.id}`).toString();
             
-            // Zoek naar foutmeldingen in de output
             const errorLines = inspectOutput.split('\n').filter(line => 
               line.toLowerCase().includes('error') || 
               line.toLowerCase().includes('failed') ||
@@ -335,12 +333,29 @@ class AgentOrchestrator {
             if (errorLines.length > 0) {
               this.log('CHRIS', 'ERROR', 'Gevonden foutmeldingen in Vercel:');
               errorLines.forEach(err => console.log(`${COLORS.red}  ! ${err.trim()}${COLORS.reset}`));
+              
+              // BOB LEARNING PROTOCOL
+              this.log('BOB', 'INFO', '🧠 Bob analyseert de fout voor team-aansturing...');
+              const errorSummary = errorLines.join(' ');
+              
+              if (errorSummary.includes('Module not found')) {
+                this.log('FELIX', 'FIX', 'Aansturing: Felix, controleer ontbrekende dependencies of hoofdlettergebruik in imports.');
+              } else if (errorSummary.includes('Type error')) {
+                this.log('CHRIS', 'FIX', 'Aansturing: Chris, dwing strengere TypeScript validatie af voor de volgende push.');
+              } else if (errorSummary.includes('Build optimization failed')) {
+                this.log('ANNA', 'FIX', 'Aansturing: Anna, her-evalueer de build-cache en image-optimalisaties.');
+              }
+              
+              // Sla de error op in de Kelder voor toekomstige 'legacy wisdom'
+              const errorLogPath = '4-KELDER/LOGS/build-failures.md';
+              const logEntry = `\n- [${new Date().toLocaleString()}] Build faalde: ${errorLines[0].trim()}`;
+              fs.appendFileSync(errorLogPath, logEntry);
             }
           } catch (logErr) {
             this.log('WIM', 'WARNING', 'Kon gedetailleerde logs niet ophalen via CLI.');
           }
 
-          throw new Error('Vercel build failed. Check de logs hierboven.');
+          throw new Error('Vercel build failed. Team is aangestuurd voor herstel.');
         } else {
           if (attempts % 3 === 0) {
             this.log('ANNA', 'INFO', `... Vercel Status: ${status} (poging ${attempts}/${maxAttempts})`);

@@ -80,6 +80,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
                       voice={checkoutState.selectedActor} 
                       onSelect={() => {}} 
                       hideButton
+                      isCornered
                     />
                   </motion.div>
                 </div>
@@ -147,12 +148,13 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
 
 // Internal wrapper to override default VoiceCard behavior for Agency page
 import { VoiceCard } from "@/components/ui/VoiceCard";
-function ConfigurableVoiceCard({ voice, onSelect, hideButton }: { voice: any, onSelect: () => void, hideButton?: boolean }) {
+function ConfigurableVoiceCard({ voice, onSelect, hideButton, isCornered }: { voice: any, onSelect: () => void, hideButton?: boolean, isCornered?: boolean }) {
   return (
     <VoiceCard 
       voice={voice} 
       onSelect={onSelect} 
       hideButton={hideButton}
+      isCornered={isCornered}
     />
   );
 }

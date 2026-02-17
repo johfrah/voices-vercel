@@ -12,6 +12,7 @@ import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
 import { ArrowRight, Check, Mic, Pause, Play, Plus, Settings, Edit3 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, HeadingInstrument, TextInstrument } from './LayoutInstruments';
@@ -23,6 +24,7 @@ interface VoiceCardProps {
   voice: Actor;
   onSelect?: (voice: Actor) => void;
   hideButton?: boolean;
+  isCornered?: boolean; // NEW: for SPA transition focus
 }
 
 /**
@@ -60,7 +62,7 @@ const CATEGORIES = [
   { id: 'meditatie', src: '/assets/common/branding/icons/INFO.svg', label: 'Meditatie', key: 'category.meditation' },
 ];
 
-export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButton }) => {
+export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButton, isCornered }) => {
   const { playClick, playSwell } = useSonicDNA();
   const { state, getPlaceholderValue, toggleActorSelection } = useVoicesState();
   const { state: masterControlState } = useMasterControl();
@@ -340,10 +342,20 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
       className={cn(
         "group relative bg-white rounded-[20px] overflow-hidden shadow-aura hover:scale-[1.01] active:scale-[0.99] transition-all duration-500 border border-black/[0.02] flex flex-col cursor-pointer touch-manipulation",
         isSelected ? "ring-2 ring-primary" : "",
-        isEditMode && "ring-2 ring-primary ring-inset"
+        isEditMode && "ring-2 ring-primary ring-inset",
+        isCornered && "shadow-aura-lg"
       )}
       onMouseEnter={handleMouseEnter}
     >
+      {/* LAYA'S AURA GLOW (SPA Mode) */}
+      {isCornered && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.4, 0.6, 0.4] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 bg-primary/5 blur-[40px] -z-10"
+        />
+      )}
       {/*  ADMIN EDIT BUTTON */}
       {/* Moved inside photo container for better alignment */}
 
