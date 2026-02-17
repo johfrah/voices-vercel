@@ -16,6 +16,13 @@ import { PricingEngine } from '@/lib/pricing-engine';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 
+import { useRouter } from 'next/navigation';
+import { useCheckout } from "@/contexts/CheckoutContext";
+import { useSonicDNA } from "@/lib/sonic-dna";
+import ConfiguratorPageClient from '@/app/checkout/configurator/ConfiguratorPageClient';
+import { motion, AnimatePresence } from 'framer-motion';
+import { VoiceCard } from "@/components/ui/VoiceCard";
+
 /**
  * HOME CONTENT (GOD MODE 2026 - AIRBNB STYLE)
  * 
@@ -29,10 +36,13 @@ import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
  * - Geen HowItWorks of Pricing (deze hebben eigen pagina's).
  * - Reviews blijven behouden voor social proof.
  */
-function HomeContent({ actors: initialActors, reviews }: { actors: Actor[], reviews: any[] }) {
+function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number } }) {
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
-  const { state: masterControlState } = useMasterControl();
+  const { state: masterControlState, updateStep } = useMasterControl();
+  const { selectActor, state: checkoutState } = useCheckout();
+  const { playClick } = useSonicDNA();
+  const router = useRouter();
 
   const { openEditModal } = useEditMode();
   const [customerDNA, setCustomerDNA] = useState<any>(null);
@@ -320,35 +330,86 @@ function HomeContent({ actors: initialActors, reviews }: { actors: Actor[], revi
 
           <VoicesMasterControl actors={actors} filters={filters} availableExtraLangs={availableExtraLangs} />
           
-          <div className="mt-20">
-            {filteredActors && filteredActors.length > 0 ? (
-              <VoiceGrid 
-                strokeWidth={1.5} 
-                actors={filteredActors.map(a => ({
-                  ...a,
-                  // Ensure we use the latest photo_url from our local state
-                  photo_url: actors.find(actor => actor.id === a.id)?.photo_url || a.photo_url
-                }))} 
-                featured={true} 
-                onSelect={(actor) => {
-                  //  SPA MANDATE: Op de homepage navigeren we naar de agency pagina
-                  // met de geselecteerde acteur en de juiste journey/filters.
-                  const params = new URLSearchParams(window.location.search);
-                  params.set('actorId', actor.id.toString());
-                  params.set('step', 'script');
-                  params.set('journey', masterControlState.journey);
-                  
-                  // CHRIS-PROTOCOL: Force immediate navigation to the agency page with params
-                  window.location.href = `/agency/?${params.toString()}`;
-                }}
-              />
-            ) : (
-              <div className="py-20 text-center">
-                <TextInstrument className="text-va-black/20 text-xl font-light italic">
-                  Geen stemmen gevonden voor deze selectie.
-                </TextInstrument>
-              </div>
-            )}
+          <div className="mt-20 relative min-h-[600px]">
+            <AnimatePresence mode="wait">
+              {masterControlState.currentStep === 'voice' ? (
+                <motion.div
+                  key="voice-grid"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                >
+                  {filteredActors && filteredActors.length > 0 ? (
+                    <VoiceGrid 
+                      strokeWidth={1.5} 
+                      actors={filteredActors.map(a => ({
+                        ...a,
+                        // Ensure we use the latest photo_url from our local state
+                        photo_url: actors.find(actor => actor.id === a.id)?.photo_url || a.photo_url
+                      }))} 
+                      featured={true} 
+                      onSelect={(actor) => {
+                        //  CHRIS-PROTOCOL: The "Ultimate SPA" Way
+                        // We stay on the homepage and just switch the step!
+                        console.log(`[Home] Initiating in-page SPA transition for: ${actor.display_name}`);
+                        playClick('success');
+                        
+                        // 1. Set the actor in global checkout context
+                        selectActor(actor);
+                        
+                        // 2. Set the step to script
+                        updateStep('script');
+                        
+                        // 3. Scroll to top of the section
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    />
+                  ) : (
+                    <div className="py-20 text-center">
+                      <TextInstrument className="text-va-black/20 text-xl font-light italic">
+                        Geen stemmen gevonden voor deze selectie.
+                      </TextInstrument>
+                    </div>
+                  )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="configurator"
+                  initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.98, y: -20 }}
+                  transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                >
+                  <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
+                    {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
+                    <div className="order-1 lg:order-2 lg:col-span-9 w-full">
+                      <ConfiguratorPageClient 
+                        isEmbedded={true} 
+                        hideMediaSelector={true} 
+                        minimalMode={true} 
+                      />
+                    </div>
+
+                    {/* VoiceCard (3 kolommen breed) - LATER op mobiel, compact */}
+                    <div className="order-2 lg:order-1 lg:col-span-3 w-full">
+                      <motion.div
+                        layoutId={`actor-${checkoutState.selectedActor?.id}`}
+                        className="lg:sticky lg:top-10"
+                      >
+                        <VoiceCard 
+                          voice={checkoutState.selectedActor!} 
+                          onSelect={() => {}} 
+                          hideButton
+                          isCornered
+                          compact={true} 
+                        />
+                      </motion.div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </ContainerInstrument>
       </SectionInstrument>
@@ -366,8 +427,8 @@ function HomeContent({ actors: initialActors, reviews }: { actors: Actor[], revi
           <ReviewsInstrument 
             reviews={reviews} 
             hideHeader={false} 
-            averageRating="4.9"
-            totalReviews="1250"
+            averageRating={reviewStats?.averageRating?.toString() || "4.9"}
+            totalReviews={reviewStats?.totalCount?.toString() || "158"}
           />
         </ContainerInstrument>
       </SectionInstrument>
@@ -384,16 +445,16 @@ function HomeContent({ actors: initialActors, reviews }: { actors: Actor[], revi
         "description": "Castingbureau voor stemacteurs en voice-overs.",
         "aggregateRating": {
           "@type": "AggregateRating",
-          "ratingValue": "4.9",
-          "reviewCount": "1250",
+          "ratingValue": reviewStats?.averageRating || "4.9",
+          "reviewCount": reviewStats?.totalCount || "158",
           "bestRating": "5",
           "worstRating": "1"
         },
         "review": reviews.slice(0, 3).map(r => ({
           "@type": "Review",
-          "author": { "@type": "Person", "name": r.authorName },
+          "author": { "@type": "Person", "name": r.name || r.authorName },
           "reviewRating": { "@type": "Rating", "ratingValue": r.rating },
-          "reviewBody": r.textNl || r.textFr || r.textEn
+          "reviewBody": r.text || r.textNl || r.textFr || r.textEn
         })),
         "founder": {
           "@type": "Person",
@@ -416,7 +477,7 @@ function HomeContent({ actors: initialActors, reviews }: { actors: Actor[], revi
  */
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [data, setData] = useState<{ actors: Actor[], reviews: any[] } | null>(null);
+  const [data, setData] = useState<{ actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number } } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -505,12 +566,12 @@ export default function Home() {
             rates_raw: actor.rates_raw || {} // CHRIS-PROTOCOL: Pass rates for filtering
           };
         });
-        setData({ actors: mappedActors, reviews: resData.reviews || [] });
+        setData({ actors: mappedActors, reviews: resData.reviews || [], reviewStats: resData.reviewStats });
       })
       .catch(err => {
         if (err.name === 'AbortError') return;
         console.error('Home Data Fetch Error:', err);
-        setData(prev => prev || { actors: [], reviews: [] });
+        setData(prev => prev || { actors: [], reviews: [], reviewStats: { averageRating: 4.9, totalCount: 0 } });
       })
       .finally(() => {
         if (!controller.signal.aborted) {
@@ -527,7 +588,7 @@ export default function Home() {
   
   return (
     <Suspense  fallback={<LoadingScreenInstrument text="Voices..." />}>
-      {data && <HomeContent strokeWidth={1.5} actors={data.actors} reviews={data.reviews} />}
+      {data && <HomeContent strokeWidth={1.5} actors={data.actors} reviews={data.reviews} reviewStats={data.reviewStats} />}
       {isLoading && data && (
         <div className="fixed top-0 left-0 w-full h-1 bg-primary/20 z-[9999]">
           <div className="h-full bg-primary animate-progress-fast" style={{ width: '30%' }} />

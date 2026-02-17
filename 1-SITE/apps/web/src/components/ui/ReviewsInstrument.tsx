@@ -40,7 +40,7 @@ export const ReviewsInstrument: React.FC<{
         "@type": "Rating",
         "ratingValue": review.rating
       },
-      "reviewBody": review.text || review.textNl || review.textEn
+      "reviewBody": review.text || review.textNl || review.textEn || review.textFr || review.textDe || ""
     })),
     "_llm_context": {
       "intent": "social_proof",
@@ -140,10 +140,16 @@ export const ReviewsInstrument: React.FC<{
                 </div>
                 <div className="flex flex-col">
                   <HeadingInstrument level={5} className="text-[16px] font-bold tracking-tight text-va-black">
-                    <VoiceglotText  translationKey={`${translationKeyPrefix}.reviewer.${i}`} defaultText={review.name || review.authorName} noTranslate={true} />
+                    {review.authorUrl ? (
+                      <a href={review.authorUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                        <VoiceglotText  translationKey={`${translationKeyPrefix}.reviewer.${i}`} defaultText={review.name || review.authorName} noTranslate={true} />
+                      </a>
+                    ) : (
+                      <VoiceglotText  translationKey={`${translationKeyPrefix}.reviewer.${i}`} defaultText={review.name || review.authorName} noTranslate={true} />
+                    )}
                   </HeadingInstrument>
                   <TextInstrument className="text-[13px] font-medium text-va-black/40 mt-0.5">
-                    {review.date || new Date(review.createdAt).toLocaleDateString('nl-BE')}
+                    {review.date}
                   </TextInstrument>
                 </div>
               </ContainerInstrument>
