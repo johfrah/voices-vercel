@@ -330,6 +330,14 @@ function HomeContent({ actors: initialActors, reviews }: { actors: Actor[], revi
                   photo_url: actors.find(actor => actor.id === a.id)?.photo_url || a.photo_url
                 }))} 
                 featured={true} 
+                onSelect={(actor) => {
+                  //  SPA MANDATE: Op de homepage navigeren we naar de agency pagina
+                  // met de geselecteerde acteur en de juiste journey/filters.
+                  const params = new URLSearchParams(window.location.search);
+                  params.set('actorId', actor.id.toString());
+                  params.set('step', 'script');
+                  window.location.href = `/agency/?${params.toString()}`;
+                }}
               />
             ) : (
               <div className="py-20 text-center">
