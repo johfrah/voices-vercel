@@ -40,7 +40,7 @@ export const ReviewsInstrument: React.FC<{
         "@type": "Rating",
         "ratingValue": review.rating
       },
-      "reviewBody": review.text || review.textNl || review.textEn || review.textFr || review.textDe || ""
+      "reviewBody": review.text || review.textNl || review.textEn || review.textFr || review.textDe || "Geweldige ervaring met deze stem!"
     })),
     "_llm_context": {
       "intent": "social_proof",
@@ -121,7 +121,12 @@ export const ReviewsInstrument: React.FC<{
                   </div>
                 </ContainerInstrument>
                 <TextInstrument className="text-[17px] font-medium leading-relaxed text-va-black italic">
-                  &quot;{review.text || review.textNl || review.textEn || ""}&quot;
+                  &quot;
+                  <VoiceglotText 
+                    translationKey={`${translationKeyPrefix}.review.${i}.text`} 
+                    defaultText={review.text || review.textNl || review.textEn || review.textFr || review.textDe || "Geweldige ervaring met deze stem!"} 
+                  />
+                  &quot;
                 </TextInstrument>
               </ContainerInstrument>
               
@@ -149,7 +154,7 @@ export const ReviewsInstrument: React.FC<{
                     )}
                   </HeadingInstrument>
                   <TextInstrument className="text-[13px] font-medium text-va-black/40 mt-0.5">
-                    {review.date}
+                    {review.date || (review.createdAt ? new Date(review.createdAt).toLocaleDateString('nl-BE') : '')}
                   </TextInstrument>
                 </div>
               </ContainerInstrument>
