@@ -197,6 +197,20 @@ export default function ConfiguratorPageClient({
     { id: 'GLOBAL', label: 'Wereldwijd' },
   ];
 
+  const liveRegiePrice = useMemo(() => {
+    if (!state.selectedActor) return 99;
+    const actorRates = state.selectedActor.rates || state.selectedActor.rates_raw || {};
+    const country = Array.isArray(state.country) ? state.country[0] : (state.country || 'BE');
+    const countryRates = actorRates[country] || {};
+    
+    let fee = 0;
+    if (countryRates['live_regie'] > 0) fee = parseFloat(countryRates['live_regie']);
+    else if (actorRates.price_live_regie > 0) fee = parseFloat(actorRates.price_live_regie);
+    else if (actorRates['price_live_regie'] > 0) fee = parseFloat(actorRates['price_live_regie']);
+    
+    return fee || 99; // Fallback to 99 if not set, but Kelly's engine will use what's found
+  }, [state.selectedActor, state.country]);
+
   const handleAddToCart = () => {
     if (!state.selectedActor || effectiveWordCount === 0) return;
     addItem({
@@ -467,28 +481,34 @@ export default function ConfiguratorPageClient({
               />
             </ContainerInstrument>
 
-            <div className={cn("grid grid-cols-1 gap-4", state.usage === 'telefonie' ? "md:grid-cols-2" : "md:grid-cols-1", !minimalMode && "mt-8")}>
-              <button onClick={() => updateLiveSession(!state.liveSession)} className={cn("flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", state.liveSession ? "bg-primary/5 border-primary/20" : "bg-white border-black/[0.03] hover:border-black/10")}>
-                <div className="flex items-center gap-4">
-                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-colors", state.liveSession ? "bg-primary text-white" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}><Mic size={18} strokeWidth={1.5} /></div>
-                  <div>
-                    <div className={cn("text-[13px] font-bold", state.liveSession ? "text-primary" : "text-va-black")}>Live Regie</div>
-                    <div className="text-[11px] text-va-black/40 font-light">Regisseer via Zoom/Teams</div>
+            <div className={cn("grid grid-cols-1 gap-4", !minimalMode && "mt-8")}>
+              {state.usage === 'commercial' && (
+                <button onClick={() => updateLiveSession(!state.liveSession)} className={cn("flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", state.liveSession ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10")}>
+                  <div className="flex items-center gap-4">
+                    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", state.liveSession ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
+                      {state.liveSession ? <Check size={18} strokeWidth={3} /> : <Mic size={18} strokeWidth={1.5} />}
+                    </div>
+                    <div>
+                      <div className={cn("text-[13px] font-bold transition-colors", state.liveSession ? "text-primary" : "text-va-black")}>Live Regie</div>
+                      <div className="text-[11px] text-va-black/40 font-light">Regisseer via Zoom/Teams</div>
+                    </div>
                   </div>
-                </div>
-                <div className={cn("text-[13px] font-medium", state.liveSession ? "text-primary" : "text-va-black/40")}>+ €99</div>
-              </button>
+                  <div className={cn("text-[13px] font-medium transition-colors", state.liveSession ? "text-primary" : "text-va-black/40")}>+ {PricingEngine.format(liveRegiePrice)}</div>
+                </button>
+              )}
               
               {state.usage === 'telefonie' && (
-                <button onClick={() => updateMusic({ asBackground: !state.music.asBackground, trackId: state.music.trackId || 'corporate-growth' })} className={cn("flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", state.music.asBackground ? "bg-primary/5 border-primary/20" : "bg-white border-black/[0.03] hover:border-black/10")}>
+                <button onClick={() => updateMusic({ asBackground: !state.music.asBackground, trackId: state.music.trackId || 'corporate-growth' })} className={cn("flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", state.music.asBackground ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10")}>
                   <div className="flex items-center gap-4">
-                    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-colors", state.music.asBackground ? "bg-primary text-white" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}><Music size={18} strokeWidth={1.5} /></div>
+                    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", state.music.asBackground ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
+                      {state.music.asBackground ? <Check size={18} strokeWidth={3} /> : <Music size={18} strokeWidth={1.5} />}
+                    </div>
                     <div>
-                      <div className={cn("text-[13px] font-bold", state.music.asBackground ? "text-primary" : "text-va-black")}>Muziek Mix</div>
+                      <div className={cn("text-[13px] font-bold transition-colors", state.music.asBackground ? "text-primary" : "text-va-black")}>Muziek Mix</div>
                       <div className="text-[11px] text-va-black/40 font-light">Rechtenvrije achtergrond</div>
                     </div>
                   </div>
-                  <div className={cn("text-[13px] font-medium", state.music.asBackground ? "text-primary" : "text-va-black/40")}>+ €59</div>
+                  <div className={cn("text-[13px] font-medium transition-colors", state.music.asBackground ? "text-primary" : "text-va-black/40")}>+ €59</div>
                 </button>
               )}
             </div>
