@@ -414,7 +414,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
         </ContainerInstrument>
       </SectionInstrument>
 
-      <SectionInstrument className="py-48 bg-white relative z-10">
+      <SectionInstrument className="py-48 bg-white/80 backdrop-blur-md relative z-10">
         <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="max-w-3xl mb-24 space-y-6">
             <TextInstrument className="text-[15px] font-bold tracking-[0.3em] text-primary uppercase">
