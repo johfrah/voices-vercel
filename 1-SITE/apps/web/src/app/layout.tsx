@@ -143,7 +143,7 @@ export default async function RootLayout({
     }
   };
 
-  // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer
+  // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
   if (isUnderConstruction) {
     return (
       <RootLayoutInstrument lang={market.language} className={`${raleway.className} theme-${market.theme} ${raleway.variable}`}>
