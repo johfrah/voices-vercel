@@ -336,6 +336,8 @@ function HomeContent({ actors: initialActors, reviews }: { actors: Actor[], revi
                   const params = new URLSearchParams(window.location.search);
                   params.set('actorId', actor.id.toString());
                   params.set('step', 'script');
+                  
+                  // CHRIS-PROTOCOL: Force immediate navigation to the agency page with params
                   window.location.href = `/agency/?${params.toString()}`;
                 }}
               />
