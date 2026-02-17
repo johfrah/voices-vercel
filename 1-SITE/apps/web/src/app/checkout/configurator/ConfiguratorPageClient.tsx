@@ -523,30 +523,43 @@ export default function ConfiguratorPageClient({
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between text-[13px]">
-                          <span className="text-va-black/40 font-light">Basis (BSF)</span>
+                          <span className="text-va-black/40 font-light">
+                            {state.usage === 'commercial' ? 'Basis (BSF)' : 
+                             state.usage === 'telefonie' ? 'Basis (Telefonie)' : 
+                             'Basis (Video)'}
+                          </span>
                           <span className="font-medium">{PricingEngine.format(state.pricing.base)}</span>
                         </div>
+                        
                         {state.pricing.wordSurcharge > 0 && (
                           <div className="flex justify-between text-[13px]">
-                            <span className="text-va-black/40 font-light">{state.usage === 'telefonie' ? 'Extra prompts' : 'Extra woorden'}</span>
+                            <span className="text-va-black/40 font-light">
+                              {state.usage === 'telefonie' ? `Extra prompts (${Math.max(0, (state.briefing.trim().split(/\n+/).filter(Boolean).length || 1) - 1)})` : 
+                               `Extra woorden (${Math.max(0, effectiveWordCount - (state.usage === 'unpaid' ? 200 : 0))})`}
+                            </span>
                             <span className="font-medium">+{PricingEngine.format(state.pricing.wordSurcharge)}</span>
                           </div>
                         )}
+                        
                         {state.usage === 'commercial' && state.pricing.mediaSurcharge > 0 && (
                           <div className="flex justify-between text-[13px]">
-                            <span className="text-va-black/40 font-light">Buyout ({state.media?.length} {state.media?.length === 1 ? 'kanaal' : 'kanalen'})</span>
+                            <span className="text-va-black/40 font-light">
+                              Buyout ({state.media?.length} {state.media?.length === 1 ? 'kanaal' : 'kanalen'})
+                            </span>
                             <span className="font-medium">+{PricingEngine.format(state.pricing.mediaSurcharge)}</span>
                           </div>
                         )}
-                        {state.music.asBackground && (
+                        
+                        {state.usage === 'telefonie' && state.music.asBackground && (
                           <div className="flex justify-between text-[13px]">
-                            <span className="text-va-black/40 font-light">Muziek Mix</span>
+                            <span className="text-va-black/40 font-light">Muziek Mix (Wachtmuziek)</span>
                             <span className="font-medium">+{PricingEngine.format(59)}</span>
                           </div>
                         )}
-                        {state.liveSession && (
+                        
+                        {state.usage === 'commercial' && state.liveSession && (
                           <div className="flex justify-between text-[13px]">
-                            <span className="text-va-black/40 font-light">Live Regie</span>
+                            <span className="text-va-black/40 font-light">Live Regie (Zoom/Teams)</span>
                             <span className="font-medium">+{PricingEngine.format(liveRegiePrice)}</span>
                           </div>
                         )}
