@@ -533,8 +533,8 @@ export default function GlobalNav() {
               ))}
               
               <ContainerInstrument plain className="mt-1.5 px-3 py-1.5 border-t border-black/5">
-                <TextInstrument className="text-[11px] font-light text-va-black/30 tracking-[0.2em] mb-2 "><VoiceglotText  translationKey="nav.menu.proefopname_title" defaultText="Direct naar proefopname" /></TextInstrument>
-                <ContainerInstrument plain className="grid grid-cols-2 gap-1.5 mb-3">
+                <TextInstrument className="text-[12px] font-bold text-va-black/40 tracking-[0.1em] uppercase mb-3 "><VoiceglotText  translationKey="nav.menu.proefopname_title" defaultText="Direct naar proefopname" /></TextInstrument>
+                <ContainerInstrument plain className="grid grid-cols-2 gap-2 mb-4">
                   {[
                     { label: 'TV Spot', icon: Monitor, href: '/agency?category=tv', key: 'category.tv' },
                     { label: 'Radio', icon: Radio, href: '/agency?category=radio', key: 'category.radio' },
@@ -549,32 +549,32 @@ export default function GlobalNav() {
                       href={cat.href}
                       variant="plain"
                       size="none"
-                      className="flex items-center gap-2 p-2 rounded-xl bg-va-off-white hover:bg-primary/5 hover:text-primary transition-all group"
+                      className="flex items-center gap-2.5 p-2.5 rounded-xl bg-va-off-white hover:bg-primary/5 hover:text-primary transition-all group border border-black/[0.03]"
                     >
-                      <cat.icon size={12} strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
-                      <TextInstrument className="text-[11px] font-light whitespace-nowrap">
+                      <cat.icon size={14} strokeWidth={1.5} className="text-va-black/40 group-hover:text-primary transition-colors" />
+                      <TextInstrument className="text-[13px] font-medium whitespace-nowrap">
                         <VoiceglotText  translationKey={cat.key} defaultText={cat.label} />
                       </TextInstrument>
                     </ButtonInstrument>
                   ))}
                 </ContainerInstrument>
 
-                <TextInstrument className="text-[11px] font-light text-va-black/30 tracking-[0.2em] mb-2 "><VoiceglotText  translationKey="nav.menu.recommended_title" defaultText="Aanbevolen stemmen" /></TextInstrument>
-                <ContainerInstrument plain className="space-y-1 mb-3">
+                <TextInstrument className="text-[12px] font-bold text-va-black/40 tracking-[0.1em] uppercase mb-3 "><VoiceglotText  translationKey="nav.menu.recommended_title" defaultText="Aanbevolen stemmen" /></TextInstrument>
+                <ContainerInstrument plain className="space-y-1.5 mb-4">
                   {[
                     { name: 'Johfrah', type: 'Mannelijk', slug: 'johfrah', typeKey: 'gender.male' },
                     { name: 'Birgit', type: 'Vrouwelijk', slug: 'birgit', typeKey: 'gender.female' },
                     { name: 'Korneel', type: 'Mannelijk', slug: 'korneel', typeKey: 'gender.male' },
                     { name: 'Annelies', type: 'Vrouwelijk', slug: 'annelies-1', typeKey: 'gender.female' }
                   ].map((voice) => (
-                    <ContainerInstrument plain key={voice.slug} className="flex items-center justify-between p-1 rounded-xl hover:bg-va-black/5 transition-all group">
-                      <ContainerInstrument plain className="flex items-center gap-2.5">
-                        <ContainerInstrument plain className="w-7 h-7 rounded-full bg-va-black/5 flex items-center justify-center overflow-hidden">
-                          <User strokeWidth={1.5} size={14} className="text-va-black/20" />
+                    <ContainerInstrument plain key={voice.slug} className="flex items-center justify-between p-1.5 rounded-xl hover:bg-va-black/5 transition-all group">
+                      <ContainerInstrument plain className="flex items-center gap-3">
+                        <ContainerInstrument plain className="w-8 h-8 rounded-full bg-va-black/5 flex items-center justify-center overflow-hidden border border-black/[0.03]">
+                          <User strokeWidth={1.5} size={16} className="text-va-black/40" />
                         </ContainerInstrument>
                         <ContainerInstrument plain>
-                          <TextInstrument className="text-[12px] font-light text-va-black">{voice.name}</TextInstrument>
-                          <TextInstrument className="text-[10px] text-va-black/40 font-light">
+                          <TextInstrument className="text-[14px] font-medium text-va-black">{voice.name}</TextInstrument>
+                          <TextInstrument className="text-[12px] text-va-black/60 font-light">
                             <VoiceglotText  translationKey={voice.typeKey} defaultText={voice.type} />
                           </TextInstrument>
                         </ContainerInstrument>
@@ -584,7 +584,7 @@ export default function GlobalNav() {
                         href={`/artist/${voice.slug}`}
                         variant="plain"
                         size="none"
-                        className="px-2 py-0.5 bg-primary/10 text-primary rounded-[20px] text-[10px] font-light opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white"
+                        className="px-3 py-1 bg-primary/10 text-primary rounded-[20px] text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white"
                       ><VoiceglotText  translationKey="action.proefopname" defaultText="Proefopname" /></ButtonInstrument>
                     </ContainerInstrument>
                   ))}
@@ -594,7 +594,7 @@ export default function GlobalNav() {
               as={Link}
               href="/agency/"
               variant="default"
-              className="flex items-center justify-center gap-2 w-full py-2.5 bg-va-black text-white rounded-xl text-[11px] font-light tracking-widest hover:bg-primary transition-all shadow-lg"
+              className="flex items-center justify-center gap-2 w-full py-3 bg-va-black text-white rounded-xl text-[13px] font-medium tracking-widest hover:bg-primary transition-all shadow-lg"
             >
               <VoiceglotText  translationKey="nav.menu.discover_all" defaultText="Ontdek alle stemmen" />
             </ButtonInstrument>

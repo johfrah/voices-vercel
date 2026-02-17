@@ -70,29 +70,30 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
               exit={{ opacity: 0, scale: 0.98, y: -20 }}
               transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
             >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                {/* VoiceCard linksboven (3 kolommen breed) */}
-                <div className="lg:col-span-3">
+              <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
+                {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
+                <div className="order-1 lg:order-2 lg:col-span-9 w-full">
+                  <ConfiguratorPageClient 
+                    isEmbedded={true} 
+                    hideMediaSelector={true} 
+                    minimalMode={true} 
+                  />
+                </div>
+
+                {/* VoiceCard (3 kolommen breed) - LATER op mobiel, compact */}
+                <div className="order-2 lg:order-1 lg:col-span-3 w-full">
                   <motion.div
                     layoutId={`actor-${checkoutState.selectedActor?.id}`}
-                    className="sticky top-10"
+                    className="lg:sticky lg:top-10"
                   >
                     <ConfigurableVoiceCard 
                       voice={checkoutState.selectedActor} 
                       onSelect={() => {}} 
                       hideButton
                       isCornered
+                      compact={true} // Always compact in script step to save space
                     />
                   </motion.div>
-                </div>
-
-                {/* Script & Prijs (9 kolommen breed) */}
-                <div className="lg:col-span-9">
-                  <ConfiguratorPageClient 
-                    isEmbedded={true} 
-                    hideMediaSelector={true} 
-                    minimalMode={true} 
-                  />
                 </div>
               </div>
             </motion.div>
@@ -149,13 +150,14 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
 
 // Internal wrapper to override default VoiceCard behavior for Agency page
 import { VoiceCard } from "@/components/ui/VoiceCard";
-function ConfigurableVoiceCard({ voice, onSelect, hideButton, isCornered }: { voice: any, onSelect: () => void, hideButton?: boolean, isCornered?: boolean }) {
+function ConfigurableVoiceCard({ voice, onSelect, hideButton, isCornered, compact }: { voice: any, onSelect: () => void, hideButton?: boolean, isCornered?: boolean, compact?: boolean }) {
   return (
     <VoiceCard 
       voice={voice} 
       onSelect={onSelect} 
       hideButton={hideButton}
       isCornered={isCornered}
+      compact={compact}
     />
   );
 }
