@@ -470,7 +470,7 @@ export default function ConfiguratorPageClient({
                   )}
                 </div>
                 <div className="flex items-center gap-2 text-[11px] text-va-black/40 font-light italic">
-                  <Info size={12} className="text-primary/40" /> Tip: Gebruik (haakjes) voor regie
+                  <Info size={12} className="text-primary/40" /> Zet regie-aanwijzingen of bestandsnamen (tussen haakjes)
                 </div>
               </div>
               <textarea
