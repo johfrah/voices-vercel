@@ -60,8 +60,6 @@ export default async function AgencyPage() {
     <PageWrapperInstrument>
       <LiquidBackground strokeWidth={1.5} />
       <AgencyHeroInstrument 
-        title={market === 'FR' ? "Voix-off Franaises" : market === 'DE' ? "Deutsche Synchronsprecher" : "Vlaamse Voice-overs"} 
-        subtitle={market === 'FR' ? "Dcouvrez les meilleures voix voor vos projets." : market === 'DE' ? "Entdecken Sie die besten Stimmen fr Ihre Projekte." : "Ontdek de beste stemmen van Belgi voor uw commercials, documentaires en bedrijfsfilms."}
         filters={searchResults.filters}
         market={market}
         searchParams={initialLang ? { language: initialLang } : {}}

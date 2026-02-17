@@ -218,6 +218,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
 
   const handleCategoryClick = (e: React.MouseEvent, demo: Demo) => {
     e.stopPropagation();
+    
+    // CHRIS-PROTOCOL: If we are in SPA mode (onSelect provided), clicking a category chip 
+    // should ONLY play the demo, NOT trigger the selection.
     playClick('pro');
     
     // If this specific demo is already active, just toggle play/pause
@@ -333,8 +336,17 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
 
   return (
     <ContainerInstrument 
-      onClick={() => {
+      onClick={(e) => {
         if (isEditMode) return;
+        
+        // CHRIS-PROTOCOL: Clicking the CARD itself in SPA mode should NOT trigger selection
+        // Selection is EXCLUSIVELY via the "Kies stem" button to prevent accidental navigations
+        // while trying to play demos or view the card.
+        if (onSelect) {
+          // Do nothing, let internal buttons handle their own clicks
+          return;
+        }
+        
         playClick('soft');
         onSelect?.(voice);
       }}
@@ -509,8 +521,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
       </ContainerInstrument>
 
       <ContainerInstrument plain className="p-0 flex flex-col flex-grow">
-        <ContainerInstrument plain className="flex flex-col gap-2 mb-2 px-8 pt-8 shrink-0">
-          <ContainerInstrument plain className="flex items-center justify-between gap-2">
+        <div className="flex flex-col gap-2 mb-2 px-8 pt-8 shrink-0">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 bg-va-off-white/50 px-2 py-1 rounded-full border border-black/[0.03]">
               <VoiceFlag lang={voice.native_lang} size={16} />
               <TextInstrument className="text-[13px] font-bold text-va-black/60 tracking-tight">
@@ -532,7 +544,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                 {deliveryInfo.formattedShort}
               </TextInstrument>
             </div>
-          </ContainerInstrument>
+          </div>
           {masterControlState.journey === 'telephony' && voice.extra_langs && (
             <div className="px-2 animate-in fade-in slide-in-from-top-1 duration-500">
               <TextInstrument className="text-[11px] text-va-black/40 italic leading-tight">
@@ -540,9 +552,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
               </TextInstrument>
             </div>
           )}
-        </ContainerInstrument>
+        </div>
 
-          <ContainerInstrument plain className="px-8 pb-8 flex flex-col flex-grow">
+          <div className="px-8 pb-8 flex flex-col flex-grow">
             <div className="flex flex-col">
               {voice.tone_of_voice && (
                 <div className="flex flex-wrap gap-1 mb-2 animate-in fade-in slide-in-from-left-2 duration-500">
@@ -583,7 +595,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
               </div>
             </div>
 
-            <ContainerInstrument plain className="flex justify-between items-center pt-6 border-t border-black/[0.03] mt-auto">
+            <div className="flex justify-between items-center pt-6 border-t border-black/[0.03] mt-auto">
             <div className="flex flex-col w-full items-end">
               <TextInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase mb-1">
                 Vanaf
@@ -607,6 +619,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                   
                   // CHRIS-PROTOCOL: If we have an onSelect handler (SPA mode), use it instead of navigating
                   if (onSelect) {
+                    console.log(`[VoiceCard] Kies stem clicked for: ${voice.display_name}`);
                     onSelect(voice);
                   } else if (typeof window !== 'undefined') {
                     window.location.href = `/voice/${voice.slug}/`;
@@ -618,8 +631,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                 <ArrowRight size={16} strokeWidth={2.5} className="group-hover/btn:translate-x-1.5 transition-transform" />
               </ButtonInstrument>
             )}
-          </ContainerInstrument>
-        </ContainerInstrument>
+          </div>
+        </div>
       </ContainerInstrument>
     </ContainerInstrument>
   );

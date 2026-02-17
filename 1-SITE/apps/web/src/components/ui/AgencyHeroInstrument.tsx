@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { VoiceglotText } from './VoiceglotText';
-import { FilterBar } from './FilterBar';
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 
 interface AgencyHeroInstrumentProps {
   market?: string;
@@ -32,6 +32,24 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
   title,
   subtitle
 }) => {
+  const { state } = useMasterControl();
+
+  // JOURNEY-AWARE TITLES
+  const journeyTitles: Record<string, string> = {
+    telephony: 'Telefoonstemmen',
+    video: 'Video Voice-overs',
+    commercial: 'Advertentie Stemmen'
+  };
+
+  const journeySubtitles: Record<string, string> = {
+    telephony: 'IVR, wachtmuziek en voicemail berichten.',
+    video: 'Geef jouw video een eigen stem. Bedrijfsfilms, explanimations of documentaires.',
+    commercial: 'Radio, TV en online video advertenties.'
+  };
+
+  const activeTitle = title || journeyTitles[state.journey] || 'Vlaamse Voice-overs';
+  const activeSubtitle = subtitle || journeySubtitles[state.journey] || 'De beste stemmen voor uw project.';
+
   return (
     <header className="va-agency-hero pb-0">
       <div className="va-container">
@@ -55,22 +73,14 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
 
           {/* Title */}
           <h1 className="va-hero-title font-light">
-            {title ? (
-              <VoiceglotText  translationKey="agency.hero.custom_title" defaultText={title} />
-            ) : (
-              <>
-                <VoiceglotText  translationKey="agency.hero.title.line1" defaultText="Vind jouw" />
-                <br />
-                <span className="va-hmagic-text">
-                  <VoiceglotText  translationKey="agency.hero.title.line2" defaultText="Stemacteur." />
-                </span>
-              </>
-            )}
+            <VoiceglotText translationKey={`agency.hero.title.${state.journey}`} defaultText={activeTitle} />
           </h1>
+          
+          {/* Subtitle */}
+          <p className="text-xl text-va-black/40 font-light tracking-tight max-w-2xl mx-auto mt-4">
+            <VoiceglotText translationKey={`agency.hero.subtitle.${state.journey}`} defaultText={activeSubtitle} />
+          </p>
         </div>
-
-        {/* Integrated Master Control (Journey + Search + Filters) */}
-        {filters.languages.length > 0 && <FilterBar strokeWidth={1.5} filters={filters} params={{ ...searchParams, market }} />}
       </div>
     </header>
   );

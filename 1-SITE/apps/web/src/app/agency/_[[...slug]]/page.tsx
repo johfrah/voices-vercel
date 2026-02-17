@@ -1,11 +1,8 @@
 import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
-import { ContainerInstrument, LoadingScreenInstrument, PageWrapperInstrument, SectionInstrument } from "@/components/ui/LayoutInstruments";
+import { PageWrapperInstrument, SectionInstrument } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { VoiceGrid } from "@/components/ui/VoiceGrid";
 import { getActors } from "@/lib/api";
-import { Suspense } from "react";
-
-import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
+import { AgencyContent } from "../AgencyContent";
 
 export const dynamic = 'force-dynamic';
 
@@ -60,14 +57,7 @@ export default async function AgencyDynamicPage({ params }: { params: { slug?: s
         filters={searchResults.filters}
       />
       <SectionInstrument className="!pt-0 -mt-24 relative z-40">
-        <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
-          <VoicesMasterControl filters={searchResults.filters} />
-          <div className="mt-12">
-            <Suspense  fallback={<LoadingScreenInstrument />}>
-              <VoiceGrid strokeWidth={1.5} actors={mappedActors as any} />
-            </Suspense>
-          </div>
-        </ContainerInstrument>
+        <AgencyContent mappedActors={mappedActors} filters={searchResults.filters} />
       </SectionInstrument>
     </PageWrapperInstrument>
   );

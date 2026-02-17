@@ -12,7 +12,7 @@ export type JourneyType = 'telephony' | 'video' | 'commercial';
 interface MasterControlState {
   journey: JourneyType;
   usage: UsageType;
-    filters: {
+  filters: {
     language: string | null;
     languages?: string[]; //  Support for multi-language selection (Telephony)
     gender: string | null;
@@ -47,71 +47,79 @@ const JOURNEY_USAGE_MAP: Record<JourneyType, UsageType> = {
 
 const VoicesMasterControlContext = createContext<VoicesMasterControlContextType | undefined>(undefined);
 
+export const useMasterControl = () => {
+  const context = useContext(VoicesMasterControlContext);
+  if (context === undefined) {
+    throw new Error('useMasterControl must be used within a VoicesMasterControlProvider');
+  }
+  return context;
+};
+
 export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { state: voicesState, updateJourney: updateVoicesJourney } = useVoicesState();
   const { state: checkoutState, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateBriefing, setStep: setCheckoutStep } = useCheckout();
 
-    // Initialize state from URL or contexts
-    const [state, setState] = useState<MasterControlState>(() => {
-      //  MARKET-AWARE INITIALIZATION
-      const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
-      const market = MarketManager.getCurrentMarket(host);
+  // Initialize state from URL or contexts
+  const [state, setState] = useState<MasterControlState>(() => {
+    //  MARKET-AWARE INITIALIZATION
+    const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+    const market = MarketManager.getCurrentMarket(host);
 
-      const journey = (searchParams.get('journey') as JourneyType) || 
-                     (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
+    const journey = (searchParams.get('journey') as JourneyType) || 
+                   (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
+    
+    const initialLanguageParam = searchParams.get('language');
+    const initialLanguage = initialLanguageParam 
+      ? MarketManager.getLanguageLabel(initialLanguageParam) 
+      : MarketManager.getLanguageLabel(MarketManager.getLanguageCode(market.primary_language));
       
-      const initialLanguageParam = searchParams.get('language');
-      const initialLanguage = initialLanguageParam 
-        ? MarketManager.getLanguageLabel(initialLanguageParam) 
-        : MarketManager.getLanguageLabel(MarketManager.getLanguageCode(market.primary_language));
-        
-      const initialLanguages = searchParams.get('languages') ? searchParams.get('languages')?.split(',') : [initialLanguage.toLowerCase()];
-      const initialWordsParam = searchParams.get('words');
-      const initialWords = (initialWordsParam && parseInt(initialWordsParam) > 0) 
-        ? parseInt(initialWordsParam) 
-        : (journey === 'telephony' ? 25 : 200);
-      const initialCountries = searchParams.get('countries') ? searchParams.get('countries')?.split(',') : [market.market_code];
-      
-      let initialSpotsDetail = undefined;
-      try {
-        const sd = searchParams.get('spotsDetail');
-        if (sd) initialSpotsDetail = JSON.parse(decodeURIComponent(sd));
-      } catch (e) {
-        console.error('Failed to parse spotsDetail from URL', e);
-      }
+    const initialLanguages = searchParams.get('languages') ? searchParams.get('languages')?.split(',') : [initialLanguage.toLowerCase()];
+    const initialWordsParam = searchParams.get('words');
+    const initialWords = (initialWordsParam && parseInt(initialWordsParam) > 0) 
+      ? parseInt(initialWordsParam) 
+      : (journey === 'telephony' ? 25 : (journey === 'commercial' ? 100 : 200));
+    const initialCountries = searchParams.get('countries') ? searchParams.get('countries')?.split(',') : [market.market_code];
+    
+    let initialSpotsDetail = undefined;
+    try {
+      const sd = searchParams.get('spotsDetail');
+      if (sd) initialSpotsDetail = JSON.parse(decodeURIComponent(sd));
+    } catch (e) {
+      console.error('Failed to parse spotsDetail from URL', e);
+    }
 
-      let initialYearsDetail = undefined;
-      try {
-        const yd = searchParams.get('yearsDetail');
-        if (yd) initialYearsDetail = JSON.parse(decodeURIComponent(yd));
-      } catch (e) {
-        console.error('Failed to parse yearsDetail from URL', e);
-      }
+    let initialYearsDetail = undefined;
+    try {
+      const yd = searchParams.get('yearsDetail');
+      if (yd) initialYearsDetail = JSON.parse(decodeURIComponent(yd));
+    } catch (e) {
+      console.error('Failed to parse yearsDetail from URL', e);
+    }
 
-      return {
-        journey,
-        usage: JOURNEY_USAGE_MAP[journey],
-        filters: {
-          language: initialLanguage,
-          languages: initialLanguages as string[],
-          gender: searchParams.get('gender') || null,
-          style: searchParams.get('style') || null,
-          sortBy: (searchParams.get('sortBy') as any) || 'popularity',
-          words: initialWords,
-          media: (searchParams.get('media') ? searchParams.get('media')?.split(',') : ['online']),
-          countries: initialCountries as string[],
-          country: searchParams.get('country') || market.market_code,
-          spots: searchParams.get('spots') ? parseInt(searchParams.get('spots')!) : 1,
-          years: searchParams.get('years') ? parseInt(searchParams.get('years')!) : 1,
-          spotsDetail: initialSpotsDetail,
-          yearsDetail: initialYearsDetail,
-          liveSession: searchParams.get('liveSession') === 'true',
-        },
-        currentStep: 'voice',
-      };
-    });
+    return {
+      journey,
+      usage: JOURNEY_USAGE_MAP[journey],
+      filters: {
+        language: initialLanguage,
+        languages: initialLanguages as string[],
+        gender: searchParams.get('gender') || null,
+        style: searchParams.get('style') || null,
+        sortBy: (searchParams.get('sortBy') as any) || 'popularity',
+        words: initialWords,
+        media: (searchParams.get('media') ? searchParams.get('media')?.split(',') : ['online']),
+        countries: initialCountries as string[],
+        country: searchParams.get('country') || market.market_code,
+        spots: searchParams.get('spots') ? parseInt(searchParams.get('spots')!) : 1,
+        years: searchParams.get('years') ? parseInt(searchParams.get('years')!) : 1,
+        spotsDetail: initialSpotsDetail,
+        yearsDetail: initialYearsDetail,
+        liveSession: searchParams.get('liveSession') === 'true',
+      },
+      currentStep: 'voice',
+    };
+  });
 
   //  CHRIS-PROTOCOL: Force initial sync of voicesState to ensure grid matches filters immediately
   useEffect(() => {
@@ -133,13 +141,16 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     // This prevents the "reset" effect when the configurator updates usage directly.
     if (checkoutState.usage !== targetUsage) {
       console.log(`[MasterControl] Syncing checkout usage to journey: ${state.journey} -> ${targetUsage}`);
-      updateUsage(targetUsage);
+      // Use a microtask or timeout to avoid setState in render if this effect is triggered during render
+      const timer = setTimeout(() => {
+        updateUsage(targetUsage);
+      }, 0);
+      return () => clearTimeout(timer);
     }
     
     // Sync words with briefing if it's empty or needs initialization
     if (state.filters.words && !checkoutState.briefing) {
-      const dummyText = Array(state.filters.words).fill('woord').join(' ');
-      updateBriefing(dummyText);
+      updateBriefing(Array(state.filters.words).fill('woord').join(' '));
     }
 
     // If it's a commercial journey, sync the media type and details
@@ -281,12 +292,4 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       {children}
     </VoicesMasterControlContext.Provider>
   );
-};
-
-export const useMasterControl = () => {
-  const context = useContext(VoicesMasterControlContext);
-  if (context === undefined) {
-    throw new Error('useMasterControl must be used within a VoicesMasterControlProvider');
-  }
-  return context;
 };

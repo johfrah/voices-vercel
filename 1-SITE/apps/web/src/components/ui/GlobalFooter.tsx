@@ -186,10 +186,10 @@ export default function GlobalFooter() {
           </ContainerInstrument>
         )}
 
-        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 mb-24">
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-16 mb-24">
           {/* Brand Column */}
-          <ContainerInstrument className="lg:col-span-2 space-y-8">
-            <ButtonInstrument as={Link} href="/" variant="plain" size="none" onClick={() => playClick('light')} className="flex items-center gap-3 group">
+          <ContainerInstrument className="space-y-8 flex flex-col items-start">
+            <ButtonInstrument as={Link} href="/" variant="plain" size="none" onClick={() => playClick('light')} className="flex items-center gap-3 group justify-start">
               {isArtist ? (
                 <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black">
                   <VoiceglotText  translationKey="auto.globalfooter.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" />
@@ -204,7 +204,7 @@ export default function GlobalFooter() {
                 />
               )}
             </ButtonInstrument>
-            <TextInstrument className="text-va-black/40 text-lg font-light leading-relaxed max-w-sm">
+            <TextInstrument className="text-va-black/40 text-lg font-light leading-relaxed max-w-sm text-left">
               {isPortfolio 
                 ? <VoiceglotText  translationKey="footer.portfolio.tagline" defaultText="De stem achter het verhaal. Warme, natuurlijke voice-over & host." />
                 : isArtist
@@ -212,14 +212,16 @@ export default function GlobalFooter() {
                 : <VoiceglotText  translationKey="footer.tagline" defaultText="Een warm en vertrouwd geluid. De perfecte stem voor elk project." />
               }
             </TextInstrument>
-            <ContainerInstrument className="flex gap-4">
+            <ContainerInstrument className="flex gap-4 justify-start">
               {[Instagram, Twitter, Linkedin, Facebook].map((Icon, i) => (
                 <ButtonInstrument 
                   key={i} 
+                  as="a"
+                  href="#"
                   onClick={() => playClick('light')}
                   className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
                 >
-                  <Icon size={18} strokeWidth={1.5} />
+                  <Icon size={18} strokeWidth={1.5} className="shrink-0" />
                 </ButtonInstrument>
               ))}
             </ContainerInstrument>
@@ -227,27 +229,27 @@ export default function GlobalFooter() {
 
           {/* Links Columns */}
           {footerSections.map((section, i) => (
-            <ContainerInstrument key={i} className="space-y-8">
-              <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/20 ">
+            <div key={i} className="space-y-6 flex flex-col items-start">
+              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase text-left">
                 <VoiceglotText  translationKey={`footer.section.${i}.title`} defaultText={section.title} />
               </HeadingInstrument>
-              <ContainerInstrument as="ul" className="space-y-2">
+              <ul className="flex flex-col items-start space-y-1 w-full">
                 {section.links.map((link, j) => (
-                  <ContainerInstrument as="li" key={j}>
+                  <li key={j} className="w-full flex justify-start">
                     <ButtonInstrument 
                       as={Link}
                       href={link.href} 
                       variant="plain"
                       size="none"
                       onClick={() => playClick('light')}
-                      className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors duration-300"
+                      className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors duration-300 py-1"
                     >
                       <VoiceglotText  translationKey={`footer.link.${i}.${j}`} defaultText={link.name} />
                     </ButtonInstrument>
-                  </ContainerInstrument>
+                  </li>
                 ))}
-              </ContainerInstrument>
-            </ContainerInstrument>
+              </ul>
+            </div>
           ))}
         </ContainerInstrument>
 
