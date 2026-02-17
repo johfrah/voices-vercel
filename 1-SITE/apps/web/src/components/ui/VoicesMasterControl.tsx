@@ -514,24 +514,6 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
         onClose={() => setIsSheetOpen(false)}
       />
 
-      {/* Live Regie Toggle (Always Visible for Commercial) */}
-      {state.journey === 'commercial' && (
-        <ContainerInstrument plain className="flex items-center justify-center gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
-          <button 
-            onClick={() => updateFilters({ liveSession: !state.filters.liveSession })}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300",
-              state.filters.liveSession 
-                ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" 
-                : "bg-white/50 border-black/5 text-va-black/40 hover:text-va-black hover:border-black/10"
-            )}
-          >
-            <span className="text-[11px] font-bold uppercase tracking-widest">Live Regie</span>
-            {state.filters.liveSession ? <Check size={14} strokeWidth={3} /> : <div className="w-3.5 h-3.5 rounded-full border-2 border-current opacity-40" />}
-          </button>
-        </ContainerInstrument>
-      )}
-
       {/* 3. Order Progress (Bottom Row - Subtle) */}
       <ContainerInstrument plain className="pt-4 relative z-0 flex items-center justify-center">
         <OrderStepsInstrument currentStep={state.currentStep} className="!mb-0" />
