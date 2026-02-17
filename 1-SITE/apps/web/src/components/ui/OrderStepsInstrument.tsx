@@ -2,6 +2,8 @@
 
 import { cn } from '@/lib/utils';
 import React from 'react';
+import { useCheckout } from '@/contexts/CheckoutContext';
+import { Check } from 'lucide-react';
 import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 
@@ -20,6 +22,8 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
   currentStep = 'voice',
   className = ''
 }) => {
+  const { state: checkoutState } = useCheckout();
+  
   const steps = [
     { id: 'voice', label: 'Kies Stem', key: 'order_steps.voice' },
     { id: 'script', label: 'Script', key: 'order_steps.script' },
@@ -32,19 +36,34 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
         {steps.map((step, index) => {
           const isActive = step.id === currentStep;
           const isPast = steps.findIndex(s => s.id === currentStep) > index;
+          const isVoiceStep = step.id === 'voice';
+          const showActorName = isVoiceStep && (isActive || isPast) && checkoutState.selectedActor;
 
           return (
             <React.Fragment key={step.id}>
               <div className="flex items-center gap-2">
-                <div className={cn(
-                  "w-1.5 h-1.5 rounded-full transition-all duration-500",
-                  isActive ? "bg-primary scale-150" : isPast ? "bg-va-black" : "bg-va-black/60"
-                )} />
+                {isPast && isVoiceStep ? (
+                  <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center animate-in zoom-in duration-300">
+                    <Check size={10} className="text-white" strokeWidth={4} />
+                  </div>
+                ) : (
+                  <div className={cn(
+                    "w-1.5 h-1.5 rounded-full transition-all duration-500",
+                    isActive ? "bg-primary scale-150" : isPast ? "bg-va-black" : "bg-va-black/60"
+                  )} />
+                )}
                 <span className={cn(
-                  "text-[12px] font-bold tracking-[0.15em] uppercase transition-colors duration-500",
-                  isActive ? "text-va-black" : "text-va-black/60"
+                  "text-[12px] font-bold tracking-[0.15em] uppercase transition-all duration-500",
+                  isActive ? "text-va-black" : "text-va-black/60",
+                  isPast && isVoiceStep && "text-green-600"
                 )}>
-                  <VoiceglotText translationKey={step.key} defaultText={step.label} />
+                  {showActorName ? (
+                    <span className="flex items-center gap-1.5">
+                      {checkoutState.selectedActor?.display_name}
+                    </span>
+                  ) : (
+                    <VoiceglotText translationKey={step.key} defaultText={step.label} />
+                  )}
                 </span>
               </div>
               

@@ -121,7 +121,7 @@ export const ReviewsInstrument: React.FC<{
                   </div>
                 </ContainerInstrument>
                 <TextInstrument className="text-[17px] font-medium leading-relaxed text-va-black italic">
-                  &quot;<VoiceglotText  translationKey={`${translationKeyPrefix}.review.${i}.text`} defaultText={review.text || review.textNl || review.textEn || ""} />&quot;
+                  &quot;{review.text || review.textNl || review.textEn || ""}&quot;
                 </TextInstrument>
               </ContainerInstrument>
               
