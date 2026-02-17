@@ -401,6 +401,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                           voice={checkoutState.selectedActor!} 
                           onSelect={() => {}} 
                           hideButton
+                          hidePrice // CHRIS-PROTOCOL: Hide price in sidebar
                           isCornered
                           compact={true} 
                         />
