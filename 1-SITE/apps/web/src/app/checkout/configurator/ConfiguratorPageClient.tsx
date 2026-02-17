@@ -435,22 +435,9 @@ export default function ConfiguratorPageClient({
               </div>
             )}
 
-            <div className="flex items-center justify-between px-2">
-              <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">
-                {minimalMode ? '02. Het Script' : '03. Het Script'}
-              </LabelInstrument>
+            <div className="flex items-center justify-end px-2">
               <div className="flex items-center gap-4">
-                <AnimatePresence mode="wait">
-                  <motion.div key={liveTip} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} className="hidden md:flex items-center gap-2 bg-primary/5 px-3 py-1 rounded-full border border-primary/10">
-                    <Sparkles size={10} className="text-primary" />
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{liveTip}</span>
-                  </motion.div>
-                </AnimatePresence>
                 {isAutoSaving && <span className="text-[10px] font-bold text-primary animate-pulse tracking-widest uppercase">Auto-saving...</span>}
-                <div className="flex items-center gap-2 text-va-black/40">
-                  <Clock size={14} strokeWidth={1.5} />
-                  <span className="text-[13px] font-medium">± {estimatedTime} min</span>
-                </div>
               </div>
             </div>
             
@@ -462,11 +449,18 @@ export default function ConfiguratorPageClient({
                 className="w-full h-[400px] p-8 text-xl font-light leading-relaxed bg-transparent border-none focus:ring-0 outline-none resize-none placeholder:text-va-black/10"
               />
               <div className="p-4 bg-va-off-white/50 border-t border-black/[0.03] flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase">
+                    {effectiveWordCount} {effectiveWordCount === 1 ? 'woord' : 'woorden'}
+                  </div>
+                  <div className="w-[1px] h-3 bg-va-black/10" />
+                  <div className="flex items-center gap-2 text-va-black/40">
+                    <Clock size={12} strokeWidth={1.5} />
+                    <span className="text-[11px] font-medium uppercase tracking-widest">± {estimatedTime} min</span>
+                  </div>
+                </div>
                 <div className="flex items-center gap-2 text-[11px] text-va-black/40 font-light italic">
                   <Info size={12} className="text-primary/40" /> Tip: Gebruik (haakjes) voor regie
-                </div>
-                <div className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase">
-                  {effectiveWordCount} {effectiveWordCount === 1 ? 'woord' : 'woorden'}
                 </div>
               </div>
             </ContainerInstrument>
