@@ -339,16 +339,18 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
       onClick={(e) => {
         if (isEditMode) return;
         
-        // CHRIS-PROTOCOL: Clicking the CARD itself in SPA mode should NOT trigger selection
-        // Selection is EXCLUSIVELY via the "Kies stem" button to prevent accidental navigations
-        // while trying to play demos or view the card.
+        // CHRIS-PROTOCOL: In SPA mode (onSelect provided), the WHOLE card triggers the transition.
+        // We prevent any other click handlers or default browser navigation.
         if (onSelect) {
-          // Do nothing, let internal buttons handle their own clicks
+          e.preventDefault();
+          e.stopPropagation();
+          console.log(`[VoiceCard] SPA Selection triggered for: ${voice.display_name}`);
+          playClick('success');
+          onSelect(voice);
           return;
         }
         
         playClick('soft');
-        onSelect?.(voice);
       }}
       plain
       className={cn(
@@ -539,15 +541,15 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
               </TextInstrument>
             </div>
             <div className="flex flex-col items-end justify-center">
-              <span className="text-[9px] font-bold tracking-[0.1em] text-primary/40 uppercase leading-none mb-0.5">Levering:</span>
-              <TextInstrument className="text-[13px] font-medium text-primary tracking-tight leading-none">
+              <span className="text-[9px] font-bold tracking-[0.1em] text-primary/60 uppercase leading-none mb-0.5">Levering:</span>
+              <TextInstrument className="text-[13px] font-semibold text-primary tracking-tight leading-none">
                 {deliveryInfo.formattedShort}
               </TextInstrument>
             </div>
           </div>
           {masterControlState.journey === 'telephony' && voice.extra_langs && (
             <div className="px-2 animate-in fade-in slide-in-from-top-1 duration-500">
-              <TextInstrument className="text-[11px] text-va-black/40 italic leading-tight">
+              <TextInstrument className="text-[11px] text-va-black/60 font-medium italic leading-tight">
                 Ook beschikbaar in: {voice.extra_langs.split(',').map(l => l.trim()).join(', ')}
               </TextInstrument>
             </div>
@@ -575,7 +577,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
               
               {voice.clients && (
                 <div className="min-h-[1.2em]">
-                  <TextInstrument className="text-[10px] font-bold tracking-[0.1em] text-va-black/20 uppercase mb-3 truncate">
+                  <TextInstrument className="text-[10px] font-bold tracking-[0.1em] text-va-black/40 uppercase mb-3 truncate">
                     {voice.clients.split(',').slice(0, 3).join('  ')}
                   </TextInstrument>
                 </div>
@@ -597,14 +599,14 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
 
             <div className="flex justify-between items-center pt-6 border-t border-black/[0.03] mt-auto">
             <div className="flex flex-col w-full items-end">
-              <TextInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase mb-1">
+              <TextInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-1">
                 Vanaf
               </TextInstrument>
-              <TextInstrument className="text-3xl font-light tracking-tighter text-va-black leading-none">
+              <TextInstrument className="text-3xl font-medium tracking-tighter text-va-black leading-none">
                 {displayPrice.price}
               </TextInstrument>
               {masterControlState.journey === 'telephony' && displayPrice.pricePerPrompt && (
-                <TextInstrument className="text-[10px] text-va-black/40 font-light mt-1">
+                <TextInstrument className="text-[10px] text-va-black/60 font-medium mt-1">
                    {displayPrice.pricePerPrompt} per prompt
                 </TextInstrument>
               )}
@@ -614,16 +616,17 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
             {typeof window !== 'undefined' && !window.location.pathname.includes(`/voice/${voice.slug}`) && !hideButton && (
               <ButtonInstrument 
                 onClick={(e) => {
+                  // CHRIS-PROTOCOL: If we have an onSelect handler (SPA mode), 
+                  // the parent container already handles this. We just prevent double-triggering.
+                  if (onSelect) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                  }
+                  
                   e.stopPropagation();
                   playClick('success');
-                  
-                  // CHRIS-PROTOCOL: If we have an onSelect handler (SPA mode), use it instead of navigating
-                  if (onSelect) {
-                    console.log(`[VoiceCard] Kies stem clicked for: ${voice.display_name}`);
-                    onSelect(voice);
-                  } else if (typeof window !== 'undefined') {
-                    window.location.href = `/voice/${voice.slug}/`;
-                  }
+                  window.location.href = `/voice/${voice.slug}/`;
                 }}
                 className="flex items-center justify-center gap-3 text-[12px] font-bold tracking-widest text-white group/btn h-[48px] px-5 bg-va-black hover:bg-primary rounded-[12px] transition-all shadow-[0_10px_30px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_rgba(233,30,99,0.3)]"
               >

@@ -160,15 +160,15 @@ const DropdownItem = ({
       onClick={handleClick}
       variant="plain"
       size="none"
-      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl transition-all duration-300 group ${
+      className={`w-full flex items-center justify-between px-2.5 py-2.5 rounded-xl transition-all duration-300 group ${
         variant === 'danger' ? 'text-red-500 hover:bg-red-50' : 
         variant === 'primary' ? 'text-primary hover:bg-primary/5' :
-        'text-va-black/60 hover:text-va-black hover:bg-va-black/5'
+        'text-va-black/80 hover:text-va-black hover:bg-va-black/5'
       }`}
     >
       <ContainerInstrument plain className="flex items-center gap-2.5">
-        {Icon ? (typeof Icon === 'function' || (typeof Icon === 'object' && Icon.$$typeof)) ? <Icon size={14} strokeWidth={1.5} /> : Icon : null}
-        <TextInstrument className="text-[13px] font-light tracking-widest">{label}</TextInstrument>
+        {Icon ? (typeof Icon === 'function' || (typeof Icon === 'object' && Icon.$$typeof)) ? <Icon size={16} strokeWidth={1.5} className={variant === 'default' ? 'text-va-black/40 group-hover:text-va-black' : ''} /> : Icon : null}
+        <TextInstrument className="text-[15px] font-medium tracking-tight">{label}</TextInstrument>
       </ContainerInstrument>
       <ContainerInstrument plain className="flex items-center gap-2">
         {badge && (

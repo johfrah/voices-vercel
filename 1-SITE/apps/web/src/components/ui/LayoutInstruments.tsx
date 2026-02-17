@@ -142,12 +142,11 @@ export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumen
     <Tag 
       ref={ref} 
       className={cn(
-        "font-light text-[15px]", //  CHRIS MANDATE: Default to light and 15px
+        "text-[15px]", //  CHRIS MANDATE: Default to 15px
+        !className.includes('font-') && "font-light", // Default to light if no weight specified
         noTranslate && "notranslate",
-        className.includes('va-text-soft') && "text-va-black/40",
-        className,
-        // Force override any slop weight or size classes if they are smaller than 15px or heavier than light
-        "font-light" 
+        className.includes('va-text-soft') && "text-va-black/60", // Increased contrast
+        className
       )} 
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
@@ -183,12 +182,11 @@ export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({
     <Component 
       ref={ref} 
       className={cn(
-        "text-[15px] font-light", //  CHRIS MANDATE: Default to 15px and light
+        "text-[15px]", //  CHRIS MANDATE: Default to 15px
+        !className.includes('font-') && "font-light", // Default to light if no weight specified
         noTranslate && "notranslate",
-        className.includes('va-text-soft') && "text-va-black/40",
-        className,
-        // Force override any slop weight or size classes
-        "font-light"
+        className.includes('va-text-soft') && "text-va-black/60", // Increased contrast
+        className
       )} 
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
@@ -253,7 +251,8 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
       type={Component === 'button' ? type : undefined}
       href={(Component === 'a' || Component === Link) ? href : undefined}
       className={cn(
-        "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] font-light ease-va-bezier inline-flex items-center justify-center whitespace-nowrap",
+        "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] ease-va-bezier inline-flex items-center justify-center whitespace-nowrap",
+        !className.includes('font-') && "font-light",
         variantClasses[variant],
         sizeClasses[size],
         (variant === 'link' || variant === 'plain') && "justify-start",
