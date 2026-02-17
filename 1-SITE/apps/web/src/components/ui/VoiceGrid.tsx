@@ -9,14 +9,19 @@ import { VoiceCard } from './VoiceCard';
 interface VoiceGridProps {
   actors: Actor[];
   featured?: boolean;
+  onSelect?: (actor: Actor) => void;
 }
 
-export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false }) => {
+export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, onSelect }) => {
   const { playDemo } = useGlobalAudio();
   
   console.log(` VoiceGrid: rendering ${actors?.length || 0} actors`, { featured, actors: actors?.map(a => a.display_name) });
 
   const handleSelect = (actor: Actor) => {
+    if (onSelect) {
+      onSelect(actor);
+      return;
+    }
     //  NAVIGATION MANDATE: Als we op de agency pagina zijn, navigeren we direct naar de individuele voice pagina.
     // Dit stelt de klant in staat om direct een script in te voeren voor die specifieke stem.
     if (typeof window !== 'undefined') {
@@ -38,14 +43,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false }
             <div key={actor.id} className={cn(featured && "w-[85vw] md:w-auto snap-center")}>
               <VoiceCard 
                 voice={actor} 
-                onSelect={() => {
-                  // We gebruiken de eerste demo van de actor als default voor de grid
-                  if (actor.demos && actor.demos.length > 0) {
-                    playDemo(actor.demos[0]);
-                  } else {
-                    handleSelect(actor);
-                  }
-                }}
+                onSelect={() => handleSelect(actor)}
               />
             </div>
           ))}
