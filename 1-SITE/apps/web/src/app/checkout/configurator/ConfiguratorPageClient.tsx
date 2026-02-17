@@ -560,7 +560,7 @@ export default function ConfiguratorPageClient({
                           <PriceCountUp value={state.pricing.total} />
                         </div>
                       </div>
-                      <div className="flex-1 w-full space-y-3">
+                      <div className="flex-1 w-full">
                         <ButtonInstrument 
                           onClick={() => { 
                             if (isEmbedded) { 
@@ -570,17 +570,10 @@ export default function ConfiguratorPageClient({
                             } 
                           }} 
                           disabled={!state.selectedActor || effectiveWordCount === 0} 
-                          className="va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-xl hover:!bg-primary transition-all"
+                          className="va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-xl hover:!bg-primary transition-all rounded-[15px]"
                         >
                           Bestellen <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                         </ButtonInstrument>
-                        <button 
-                          onClick={handleAddToCart} 
-                          disabled={!state.selectedActor || effectiveWordCount === 0 || addedToCart} 
-                          className="w-full py-3 text-[11px] font-bold tracking-[0.2em] text-va-black/20 hover:text-primary transition-all flex items-center justify-center gap-2 uppercase"
-                        >
-                          {addedToCart ? (<><CheckCircle2 size={12} className="text-green-500" /> Toegevoegd</>) : (<><ShoppingBag size={12} /> Bewaar in mandje</>)}
-                        </button>
                       </div>
                     </div>
                   </div>
