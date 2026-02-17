@@ -59,13 +59,13 @@ export const EmailListItemInstrument = ({
       case 'partner': return { label: 'PARTNER', color: 'bg-orange-100 text-orange-700' };
       case 'accounting': return { label: 'FINANCIEEL', color: 'bg-yellow-100 text-yellow-700' };
       case 'student': return { label: 'STUDENT', color: 'bg-indigo-100 text-indigo-700' };
-      case 'technical': return { label: '🚨 ERROR', color: 'bg-red-100 text-red-700' };
-      case 'financial_service': return { label: '🏦 BANK', color: 'bg-emerald-100 text-emerald-700' };
-      case 'security': return { label: '🛡️ SECURITY', color: 'bg-slate-800 text-white' };
-      case 'infrastructure': return { label: '📦 INFRA', color: 'bg-zinc-100 text-zinc-700' };
-      case 'bounce': return { label: '⚠️ BOUNCE', color: 'bg-orange-50 text-orange-600' };
-      case 'calendar': return { label: '📅 AGENDA', color: 'bg-sky-100 text-sky-700' };
-      case 'suspicious': return { label: '🚩 CHECK', color: 'bg-rose-600 text-white animate-pulse' };
+      case 'technical': return { label: ' ERROR', color: 'bg-red-100 text-red-700' };
+      case 'financial_service': return { label: ' BANK', color: 'bg-emerald-100 text-emerald-700' };
+      case 'security': return { label: ' SECURITY', color: 'bg-slate-800 text-white' };
+      case 'infrastructure': return { label: ' INFRA', color: 'bg-zinc-100 text-zinc-700' };
+      case 'bounce': return { label: ' BOUNCE', color: 'bg-orange-50 text-orange-600' };
+      case 'calendar': return { label: ' AGENDA', color: 'bg-sky-100 text-sky-700' };
+      case 'suspicious': return { label: ' CHECK', color: 'bg-rose-600 text-white animate-pulse' };
       case 'noise': return { label: 'RUIS', color: 'bg-gray-100 text-gray-400' };
       default: return null;
     }

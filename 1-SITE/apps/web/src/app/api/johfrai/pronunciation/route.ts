@@ -6,7 +6,7 @@ const openai = new OpenAI({
 });
 
 /**
- * 🗣️ JOHFRAI PRONUNCIATION & LANGUAGE INTELLIGENCE API (2026)
+ *  JOHFRAI PRONUNCIATION & LANGUAGE INTELLIGENCE API (2026)
  * 
  * Doel: Automatiseert uitspraakinstructies en detecteert talen binnen een script.
  * Gebruikt GPT-4o-mini om fonetische spelling en meertalige context te genereren.
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('❌ Pronunciation Intelligence API Error:', error);
+    console.error(' Pronunciation Intelligence API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

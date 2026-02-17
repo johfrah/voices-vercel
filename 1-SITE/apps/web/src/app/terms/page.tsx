@@ -12,7 +12,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { FileText, Shield, Scale, Gavel } from 'lucide-react';
 
 /**
- * 📜 TERMS & CONDITIONS PAGE (NUCLEAR 2026)
+ *  TERMS & CONDITIONS PAGE (NUCLEAR 2026)
  */
 export default function TermsPage() {
   return (

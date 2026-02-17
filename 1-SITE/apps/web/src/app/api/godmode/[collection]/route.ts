@@ -5,11 +5,11 @@ import { eq, desc, sql } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🚀 GODMODE API: UNIFIED CRUD (NUCLEAR EDITION)
+ *  GODMODE API: UNIFIED CRUD (NUCLEAR EDITION)
  * 
- * Doel: Universele toegang tot alle 2026 data-entiteiten via één endpoint.
+ * Doel: Universele toegang tot alle 2026 data-entiteiten via n endpoint.
  * Ondersteunt: reviews, workshops, appointments, ademing, yuki.
- * 🛡️ ENKEL voor admins.
+ *  ENKEL voor admins.
  */
 
 const ALLOWED_COLLECTIONS = {
@@ -80,7 +80,7 @@ export async function POST(
     const body = await request.json();
     const [inserted] = await db.insert(table).values(body).returning();
     
-    // ☢️ NUCLEAR TRIGGER: Emit system event for automation
+    //  NUCLEAR TRIGGER: Emit system event for automation
     await db.insert(systemEvents).values({
       source: `api/godmode/${collectionName}`,
       level: 'info',
@@ -124,7 +124,7 @@ export async function PUT(
 
     if (!updated) return NextResponse.json({ error: 'Entry not found' }, { status: 404 });
 
-    // ☢️ NUCLEAR TRIGGER: Audit Log
+    //  NUCLEAR TRIGGER: Audit Log
     await db.insert(systemEvents).values({
       source: `api/godmode/${collectionName}`,
       level: 'info',
@@ -157,7 +157,7 @@ export async function DELETE(
   if (!id) return NextResponse.json({ error: 'ID required for deletion' }, { status: 400 });
 
   try {
-    // 🛡️ ZERO-DELETE POLICY (SERVER): Soft delete or Archive
+    //  ZERO-DELETE POLICY (SERVER): Soft delete or Archive
     // We check if the table has a 'status' or 'deletedAt' field, otherwise we move to system_events as an archive record
     const [deleted] = await db
       .delete(table)
@@ -166,7 +166,7 @@ export async function DELETE(
 
     if (!deleted) return NextResponse.json({ error: 'Entry not found' }, { status: 404 });
 
-    // ☢️ NUCLEAR ARCHIVE: Log the full deleted record to system_events
+    //  NUCLEAR ARCHIVE: Log the full deleted record to system_events
     await db.insert(systemEvents).values({
       source: `api/godmode/${collectionName}`,
       level: 'warning',

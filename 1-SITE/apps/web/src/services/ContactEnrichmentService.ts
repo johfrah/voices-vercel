@@ -4,7 +4,7 @@ import { users } from '@db/schema';
 import { eq } from 'drizzle-orm';
 
 /**
- * 👤 CONTACT ENRICHMENT SERVICE (2026)
+ *  CONTACT ENRICHMENT SERVICE (2026)
  * 
  * Doel: Destilleert adresgegevens uit mail-handtekeningen en koppelt avatars.
  */
@@ -54,7 +54,7 @@ export class ContactEnrichmentService {
       const extractedData = JSON.parse(response.choices[0].message.content || '{}');
 
       if (Object.keys(extractedData).length > 0) {
-        console.log(`   🧠 AI heeft gegevens gedestilleerd voor user ${userId}:`, extractedData);
+        console.log(`    AI heeft gegevens gedestilleerd voor user ${userId}:`, extractedData);
         
         await db.update(users)
           .set({
@@ -64,7 +64,7 @@ export class ContactEnrichmentService {
           .where(eq(users.id, userId));
       }
     } catch (error) {
-      console.error('❌ Contact Enrichment Error:', error);
+      console.error(' Contact Enrichment Error:', error);
     }
   }
 }

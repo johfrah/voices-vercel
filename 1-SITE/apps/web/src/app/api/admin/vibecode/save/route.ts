@@ -5,7 +5,7 @@ import { requireAdmin } from '@/lib/auth/api-auth';
 import { commitFileToGitHub } from '@/lib/github-api';
 
 /**
- * ⚡ API: VIBECODE SAVE (NUCLEAR 2026)
+ *  API: VIBECODE SAVE (NUCLEAR 2026)
  * 
  * Doel: Slaat in-app logica op als fysieke Markdown bestanden in de codebase.
  * 
@@ -25,11 +25,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Filename and code are required' }, { status: 400 });
     }
 
-    // 🛡️ SECURITY: Alleen toegestane mappen en bestandstypes
+    //  SECURITY: Alleen toegestane mappen en bestandstypes
     let relativePath = 'src/content/vibes';
     let safeFilename = filename.replace(/[^a-z0-9-/]/gi, '_').toLowerCase();
 
-    // 📄 PAGINA CREATIE LOGIC
+    //  PAGINA CREATIE LOGIC
     if (filename.startsWith('page/')) {
       relativePath = 'src/content/pages';
       safeFilename = safeFilename.replace('page_', '') + '.md';
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       safeFilename = safeFilename + '.vibe.md';
     }
 
-    // 📝 Content met Frontmatter
+    //  Content met Frontmatter
     const fileContent = filename.startsWith('page/') 
       ? `---
 title: ${metadata?.title || 'Nieuwe Pagina'}
@@ -59,18 +59,18 @@ ${code}
 \`\`\`
 `;
 
-    // 🚀 HYBRID SAVE LOGIC
+    //  HYBRID SAVE LOGIC
     const isProduction = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
 
     if (isProduction) {
-      // ☁️ CLOUD MODE: Commit to GitHub
+      //  CLOUD MODE: Commit to GitHub
       const fullRepoPath = `1-SITE/apps/web/${relativePath}/${safeFilename}`;
-      console.log(`☁️ Cloud Save: Committing to ${fullRepoPath}`);
+      console.log(` Cloud Save: Committing to ${fullRepoPath}`);
       
       await commitFileToGitHub(
         fullRepoPath, 
         fileContent, 
-        `⚡ Cody Update: ${safeFilename} (via Dashboard)`
+        ` Cody Update: ${safeFilename} (via Dashboard)`
       );
 
       return NextResponse.json({ 
@@ -80,7 +80,7 @@ ${code}
       });
 
     } else {
-      // 💻 LOCAL MODE: Write to Disk
+      //  LOCAL MODE: Write to Disk
       const targetDir = path.join(process.cwd(), relativePath);
       const filePath = path.join(targetDir, safeFilename);
 

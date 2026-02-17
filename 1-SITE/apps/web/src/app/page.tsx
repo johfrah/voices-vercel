@@ -7,15 +7,14 @@ import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { VoiceGrid } from "@/components/ui/VoiceGrid";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useAuth } from "@/contexts/AuthContext";
-import { Actor } from "@/types";
-import { MarketManager } from "@config/market-manager";
-import { Suspense, useEffect, useMemo, useState } from 'react';
-
-import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
-
+import { useEditMode } from "@/contexts/EditModeContext";
+import { Actor } from "@/types";
+import { MarketManager } from "@config/market-manager";
 import { PricingEngine } from '@/lib/pricing-engine';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 
 /**
  * HOME CONTENT (GOD MODE 2026 - AIRBNB STYLE)
@@ -30,20 +29,57 @@ import { PricingEngine } from '@/lib/pricing-engine';
  * - Geen HowItWorks of Pricing (deze hebben eigen pagina's).
  * - Reviews blijven behouden voor social proof.
  */
-function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
+function HomeContent({ actors: initialActors, reviews }: { actors: Actor[], reviews: any[] }) {
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const { state: masterControlState } = useMasterControl();
+
+  const { openEditModal } = useEditMode();
   const [customerDNA, setCustomerDNA] = useState<any>(null);
+  const [actors, setActors] = useState<Actor[]>(initialActors);
+
+  //  CHRIS-PROTOCOL: Sync local state with initial props
+  useEffect(() => {
+    setActors(initialActors);
+  }, [initialActors]);
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
-      fetch(`/api/intelligence/customer-360?email=${user.email}`)
-        .then(res => res.json())
-        .then(data => setCustomerDNA(data))
-        .catch(err => console.error('DNA Fetch Error:', err));
+      const fetchDNA = async () => {
+        try {
+          const res = await fetch(`/api/intelligence/customer-360?email=${user.email}`);
+          const data = await res.json();
+          setCustomerDNA(data);
+        } catch (err) {
+          console.error('DNA Fetch Error:', err);
+        }
+      };
+      fetchDNA();
     }
   }, [isAuthenticated, user]);
+
+  //  CHRIS-PROTOCOL: Handle immediate UI updates from Edit Mode
+  const handleActorUpdate = (updatedActor: any) => {
+    console.log('HomeContent: Immediate UI update for actor', updatedActor.id);
+    
+    //  CHRIS-PROTOCOL: Ensure we have a clean photo_url for the UI
+    let finalPhotoUrl = updatedActor.photo_url;
+    if (updatedActor.photoId && !finalPhotoUrl?.includes('/api/proxy')) {
+      // If we only have a photoId or a raw path, proxy it immediately
+      finalPhotoUrl = `/api/proxy/?path=${encodeURIComponent(updatedActor.photo_url || '')}`;
+    }
+
+    setActors(prev => prev.map(a => {
+      if (a.id === updatedActor.id || a.wpProductId === updatedActor.id || a.id === updatedActor.wpProductId) {
+        return {
+          ...a,
+          ...updatedActor,
+          photo_url: finalPhotoUrl || a.photo_url
+        };
+      }
+      return a;
+    }));
+  };
 
   // COMMERCIAL & TELEPHONY FILTERING (Korneel Mandate)
   const filteredActors = useMemo(() => {
@@ -61,13 +97,70 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
       const selectedMedia = masterControlState.filters.media;
       
       result = result.filter(actor => {
-        // 🛡️ KORNEEL RULE: Use Centralized PricingEngine Logic
+        //  KORNEEL RULE: Use Centralized PricingEngine Logic
         return PricingEngine.isAvailable(actor, selectedMedia as any, masterControlState.filters.country);
       });
     }
 
-    // 🛡️ TELEPHONY MULTI-LANG FILTERING
-    if (masterControlState.journey === 'telephony' && Array.isArray(masterControlState.filters.languages) && masterControlState.filters.languages.length > 1) {
+    //  PRIMARY LANGUAGE FILTERING (Now handled on client for better UI context)
+    if (masterControlState.filters.language) {
+    const lowLang = masterControlState.filters.language?.toLowerCase() || '';
+    const dbLang = MarketManager.getLanguageCode(lowLang);
+      
+      result = result.filter(actor => {
+        const actorNative = actor.native_lang?.toLowerCase();
+        const actorNativeLabel = actor.native_lang_label?.toLowerCase();
+        
+    //  CHRIS-PROTOCOL: Strict primary language matching for the grid
+    // If the user selects a primary language, we only show actors whose native_lang matches.
+    const isNativeMatch = actorNative === dbLang || 
+                         actorNative === lowLang || 
+                         actorNativeLabel === lowLang ||
+                         (dbLang === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be' || actorNativeLabel === 'vlaams')) ||
+                         (dbLang === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl' || actorNativeLabel === 'nederlands')) ||
+                         (dbLang === 'fr-fr' && (actorNative === 'frans' || actorNative === 'fr-fr' || actorNativeLabel === 'frans')) ||
+                         (dbLang === 'fr-be' && (actorNative === 'frans (be)' || actorNative === 'fr-be' || actorNativeLabel === 'frans (be)')) ||
+                         (dbLang === 'en-gb' && (actorNative === 'engels' || actorNative === 'en-gb' || actorNativeLabel === 'engels')) ||
+                         (dbLang === 'en-us' && (actorNative === 'engels (us)' || actorNative === 'en-us' || actorNativeLabel === 'engels (us)'));
+        
+        //  TELEPHONY MULTI-LANG: Only allow extra languages if multiple languages are selected
+        // AND the actor's native language matches the primary selected language.
+        if (masterControlState.journey === 'telephony' && masterControlState.filters.languages && masterControlState.filters.languages.length > 1) {
+          // In multi-lang telephony, the FIRST language in the array is the primary native language.
+          // We MUST ensure the actor is a native speaker of that primary language.
+          const primarySelected = masterControlState.filters.languages[0]?.toLowerCase() || '';
+          const primaryDbCode = MarketManager.getLanguageCode(primarySelected);
+          
+          const isNativeOfPrimary = actorNative === primaryDbCode || 
+                                   actorNative === primarySelected ||
+                                   actorNativeLabel === primarySelected ||
+                                   (primaryDbCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be' || actorNativeLabel === 'vlaams')) ||
+                                   (primaryDbCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl' || actorNativeLabel === 'nederlands')) ||
+                                   (primaryDbCode === 'fr-fr' && (actorNative === 'frans' || actorNative === 'fr-fr' || actorNativeLabel === 'frans')) ||
+                                   (primaryDbCode === 'fr-be' && (actorNative === 'frans (be)' || actorNative === 'fr-be' || actorNativeLabel === 'frans (be)'));
+          
+          if (!isNativeOfPrimary) return false;
+          
+          return true; // Let the multi-lang block below handle the extra language checks
+        }
+
+        return isNativeMatch;
+      });
+    }
+
+    //  GENDER FILTERING (Now handled on client)
+    if (masterControlState.filters.gender && masterControlState.filters.gender !== 'Iedereen') {
+      const lowGender = masterControlState.filters.gender.toLowerCase();
+      result = result.filter(actor => {
+        const g = actor.gender?.toLowerCase() || '';
+        if (lowGender.includes('man')) return g === 'male' || g === 'mannelijk';
+        if (lowGender.includes('vrouw')) return g === 'female' || g === 'vrouwelijk';
+        return true;
+      });
+    }
+
+    //  TELEPHONY MULTI-LANG FILTERING
+    if (masterControlState.journey === 'telephony' && masterControlState.filters.languages && masterControlState.filters.languages.length > 1) {
       const selectedLangs = masterControlState.filters.languages;
       
       result = result.filter(actor => {
@@ -79,27 +172,57 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
         // Check if actor supports ALL selected languages
         return selectedLangs.every(lang => {
           const lowLang = lang.toLowerCase();
-          // Support both ISO codes (nl-BE) and short codes (nl) for extra languages
+          const dbLang = MarketManager.getLanguageCode(lowLang);
           const shortLang = lowLang.split('-')[0];
-          return actorLangs.some(al => al === lowLang || al === shortLang || al?.includes(lowLang) || al?.includes(shortLang));
+          
+          return actorLangs.some(al => al === dbLang || al === lowLang || al === shortLang || al?.includes(dbLang) || al?.includes(shortLang));
         });
       });
     }
 
-    console.log('HomeContent: Filtered result', { count: result.length, names: result.map(a => a.display_name) });
-    return result;
-  }, [actors, masterControlState.journey, masterControlState.filters.media, masterControlState.filters.country, masterControlState.filters.languages]);
+    console.log('HomeContent: Filtered result', { 
+      count: result.length, 
+      names: result.map(a => a.display_name),
+      firstActor: result.length > 0 ? {
+        name: result[0].display_name,
+        native: result[0].native_lang,
+        price: result[0].starting_price
+      } : null
+    });
+
+    //  SORTING LOGIC (God Mode 2026)
+    const sortedResult = [...result].sort((a, b) => {
+      switch (masterControlState.filters.sortBy) {
+        case 'delivery':
+          // Sort by minimum delivery days (lower is faster)
+          return (a.delivery_days_min || 1) - (b.delivery_days_min || 1);
+        case 'alphabetical':
+          return (a.display_name || '').localeCompare(b.display_name || '');
+        case 'popularity':
+        default:
+          // Sort by voiceScore (lower is better/more popular)
+          return (a.voice_score || 10) - (b.voice_score || 10);
+      }
+    });
+
+    return sortedResult;
+  }, [actors, masterControlState.journey, masterControlState.filters.media, masterControlState.filters.country, masterControlState.filters.languages, masterControlState.filters.language, masterControlState.filters.gender, masterControlState.filters.sortBy]);
 
   const isTelephony = customerDNA?.intelligence?.lastIntent === 'telephony' || customerDNA?.intelligence?.detectedSector === 'it';
 
-  // 🛡️ POLYGLOT CHIPS LOGIC: Calculate available extra languages for the selected primary language
+  //  POLYGLOT CHIPS LOGIC: Calculate available extra languages for the selected primary language
   const availableExtraLangs = useMemo(() => {
     if (masterControlState.journey !== 'telephony' || !masterControlState.filters.language) return [];
     
     const primaryLang = masterControlState.filters.language.toLowerCase();
+    const primaryCode = MarketManager.getLanguageCode(primaryLang);
+
     const relevantActors = actors.filter(a => {
       const actorNative = a.native_lang?.toLowerCase();
-      return actorNative === primaryLang || actorNative?.includes(primaryLang);
+      return actorNative === primaryLang || 
+             actorNative === primaryCode ||
+             (primaryCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be')) ||
+             (primaryCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl'));
     });
 
     const extraLangsSet = new Set<string>();
@@ -107,18 +230,23 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
       if (a.extra_langs) {
         a.extra_langs.split(',').forEach(l => {
           const trimmed = l.trim();
-          if (trimmed && trimmed.toLowerCase() !== primaryLang) {
-            // 🛡️ CHRIS-PROTOCOL: Map extra language names to standard labels
-            const langMap: Record<string, string> = {
-              'frans': 'Frans',
-              'engels': 'Engels',
-              'duits': 'Duits',
-              'nederlands': 'Nederlands',
-              'italiaans': 'Italiaans',
-              'spaans': 'Spaans',
-              'vlaams': 'Vlaams'
-            };
-            const mapped = langMap[trimmed.toLowerCase()] || trimmed;
+          const lowTrimmed = trimmed.toLowerCase();
+          
+  //  CHRIS-PROTOCOL: Exclude native language and its variations from extra languages
+  const isPrimary = lowTrimmed === primaryLang || 
+                   lowTrimmed === primaryCode || 
+                   (primaryCode === 'nl-be' && (lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be')) ||
+                   (primaryCode === 'nl-nl' && (lowTrimmed === 'nederlands' || lowTrimmed === 'nl-nl')) ||
+                   (primaryCode === 'fr-fr' && (lowTrimmed === 'frans' || lowTrimmed === 'fr-fr')) ||
+                   (primaryCode === 'fr-be' && (lowTrimmed === 'frans (be)' || lowTrimmed === 'fr-be'));
+          
+          //  CHRIS-PROTOCOL: Vlaams is a unique native type (nl-BE). 
+          // Non-natives (like FR or NL-NL) can offer "Nederlands" as extra, but NEVER "Vlaams".
+          const isVlaamsExtra = lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be';
+          
+          if (trimmed && !isPrimary && !isVlaamsExtra) {
+            //  CHRIS-PROTOCOL: Map extra language names to standard labels with CAPITALIZATION
+            const mapped = MarketManager.getLanguageLabel(trimmed);
             extraLangsSet.add(mapped);
           }
         });
@@ -136,6 +264,39 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
     categories: []
   };
 
+  const journeyContent = useMemo(() => {
+    switch (masterControlState.journey) {
+      case 'telephony':
+        return {
+          titlePart1: "Maak jouw",
+          titleHighlight: "telefooncentrale",
+          titlePart2: "menselijk.",
+          subtitle: "Van welkomstboodschap tot wachtmuziek. Professionele stemmen die jouw klanten direct vertrouwen geven."
+        };
+      case 'video':
+        return {
+          titlePart1: "Geef jouw",
+          titleHighlight: "video",
+          titlePart2: "een eigen stem.",
+          subtitle: "Bedrijfsfilms, explanimations of documentaires. Vind de perfecte match voor jouw visuele verhaal."
+        };
+      case 'commercial':
+        return {
+          titlePart1: "Scoor met",
+          titleHighlight: "high-end",
+          titlePart2: "commercials.",
+          subtitle: "Radio, TV of Online. Stemmen met autoriteit die jouw merkwaarde en conversie direct verhogen."
+        };
+      default:
+        return {
+          titlePart1: "Vind de",
+          titleHighlight: "stem",
+          titlePart2: "voor jouw verhaal.",
+          subtitle: "Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap."
+        };
+    }
+  }, [masterControlState.journey]);
+
   return (
     <>
       <LiquidBackground strokeWidth={1.5} />
@@ -144,24 +305,32 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
         <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="mb-20 text-center max-w-4xl mx-auto space-y-8">
             <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
-              <VoiceglotText translationKey="home.hero.title_part1" defaultText="Vind de" />
+              <VoiceglotText translationKey={`home.hero.title_part1_${masterControlState.journey}`} defaultText={journeyContent.titlePart1} />
               {" "}
               <span className="text-primary italic">
-                <VoiceglotText translationKey="home.hero.title_highlight" defaultText="stem" />
+                <VoiceglotText translationKey={`home.hero.title_highlight_${masterControlState.journey}`} defaultText={journeyContent.titleHighlight} />
               </span>
               <br />
-              <VoiceglotText translationKey="home.hero.title_part2" defaultText="voor jouw verhaal." />
+              <VoiceglotText translationKey={`home.hero.title_part2_${masterControlState.journey}`} defaultText={journeyContent.titlePart2} />
             </h1>
             <p className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
-              <VoiceglotText translationKey="home.hero.subtitle" defaultText="Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap." />
+              <VoiceglotText translationKey={`home.hero.subtitle_${masterControlState.journey}`} defaultText={journeyContent.subtitle} />
             </p>
           </div>
 
-          <VoicesMasterControl filters={filters} availableExtraLangs={availableExtraLangs} />
+          <VoicesMasterControl actors={actors} filters={filters} availableExtraLangs={availableExtraLangs} />
           
           <div className="mt-20">
             {filteredActors && filteredActors.length > 0 ? (
-              <VoiceGrid strokeWidth={1.5} actors={filteredActors} featured={true} />
+              <VoiceGrid 
+                strokeWidth={1.5} 
+                actors={filteredActors.map(a => ({
+                  ...a,
+                  // Ensure we use the latest photo_url from our local state
+                  photo_url: actors.find(actor => actor.id === a.id)?.photo_url || a.photo_url
+                }))} 
+                featured={true} 
+              />
             ) : (
               <div className="py-20 text-center">
                 <TextInstrument className="text-va-black/20 text-xl font-light italic">
@@ -232,6 +401,7 @@ function HomeContent({ actors, reviews }: { actors: Actor[], reviews: any[] }) {
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [data, setData] = useState<{ actors: Actor[], reviews: any[] } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -249,74 +419,104 @@ export default function Home() {
     //  CHRIS-PROTOCOL: Forceer de fetch op basis van de huidige URL (filters)
     const params = new URLSearchParams(searchParamsKey);
     
-    //  CHRIS-PROTOCOL: Forceer market en taal als ze ontbreken
-    if (!params.has('market')) params.set('market', market.market_code);
-    if (!params.has('language')) params.set('language', market.primary_language);
-    
-    //  CHRIS-PROTOCOL: Als er GEEN taal geselecteerd is, vallen we terug op de market taal
-    const currentLanguage = params.get('language');
-    if (!currentLanguage || currentLanguage === 'null' || currentLanguage === 'undefined') {
-      params.set('language', market.primary_language);
-    }
-
-    // Filter out empty params
+    //  CHRIS-PROTOCOL: We fetch ALL live actors to handle polyglot UI context on client
+    //  Previously we filtered by language/gender here, but that broke the "available extra languages" chips
+    //  when switching between languages in the dropdown.
     const cleanParams = new URLSearchParams();
     params.forEach((value, key) => {
-      if (value && value !== 'null' && value !== 'undefined') {
-        cleanParams.set(key, value);
+      // Only send journey, words, market, country to API. 
+      // Language and Gender are now handled client-side for better UI responsiveness.
+      if (['journey', 'words', 'market', 'country', 'spots', 'years'].includes(key)) {
+        if (value && value !== 'null' && value !== 'undefined') {
+          cleanParams.set(key, value);
+        }
       }
     });
 
-    const fetchUrl = `/api/actors?${cleanParams.toString()}`;
+    const fetchUrl = `/api/actors/?${cleanParams.toString()}`;
+    
+    //  CHRIS-PROTOCOL: Use AbortController to prevent ghost fetches
+    const controller = new AbortController();
     
     console.log(' Home: Fetching from', fetchUrl);
+    setIsLoading(true);
     
-    fetch(fetchUrl)
+    fetch(fetchUrl, { signal: controller.signal })
       .then(res => res.json())
       .then(resData => {
+        if (!mounted) return;
         console.log(' Home: Received', resData?.results?.length || 0, 'actors');
         if (!resData || !resData.results) {
           setData({ actors: [], reviews: [] });
           return;
         }
-        const mappedActors = resData.results.map((actor: any) => ({
-          id: actor.id,
-          display_name: actor.display_name,
-          photo_url: actor.photo_url,
-          voice_score: actor.voice_score,
-          native_lang: actor.native_lang,
-          starting_price: actor.starting_price,
-          delivery_days_min: actor.delivery_days_min || 1,
-        delivery_days_max: actor.delivery_days_max || 2,
-        extra_langs: actor.extra_langs,
-        tone_of_voice: actor.tone_of_voice,
-          clients: actor.clients,
-          cutoff_time: actor.cutoff_time || '18:00',
-          availability: actor.availability || [],
-          tagline: actor.tagline,
-          ai_tags: actor.ai_tags || '',
-          slug: actor.slug,
-          demos: actor.demos || [],
-          bio: actor.bio,
-          price_ivr: actor.price_ivr,
-          price_online: actor.price_online,
-          rates_raw: actor.rates_raw || {} // CHRIS-PROTOCOL: Pass rates for filtering
-        }));
+        const mappedActors = resData.results.map((actor: any) => {
+          //  CHRIS-PROTOCOL: Ensure photo_url is correctly proxied if it's a raw path
+          let photoUrl = actor.photo_url;
+          if (photoUrl && !photoUrl.startsWith('http') && !photoUrl.startsWith('/api/proxy') && !photoUrl.startsWith('/assets')) {
+            photoUrl = `/api/proxy/?path=${encodeURIComponent(photoUrl)}`;
+          }
+
+          return {
+            id: actor.id,
+            display_name: actor.display_name,
+            first_name: actor.first_name || actor.firstName,
+            last_name: actor.last_name || actor.lastName,
+            firstName: actor.firstName || actor.first_name,
+            lastName: actor.lastName || actor.last_name,
+            email: actor.email,
+            photo_url: photoUrl,
+            voice_score: actor.voice_score,
+            native_lang: actor.native_lang,
+            gender: actor.gender, //  CHRIS-PROTOCOL: Added missing gender field
+            starting_price: actor.starting_price,
+            delivery_days_min: actor.delivery_days_min || 1,
+            delivery_days_max: actor.delivery_days_max || 2,
+            extra_langs: actor.extra_langs,
+            tone_of_voice: actor.tone_of_voice,
+            clients: actor.clients,
+            cutoff_time: actor.cutoff_time || '18:00',
+            availability: actor.availability || [],
+            tagline: actor.tagline,
+            ai_tags: actor.ai_tags || '',
+            slug: actor.slug,
+            demos: actor.demos || [],
+            bio: actor.bio,
+            price_ivr: actor.price_ivr,
+            price_online: actor.price_online,
+            holiday_from: actor.holiday_from,
+            holiday_till: actor.holiday_till,
+            rates_raw: actor.rates_raw || {} // CHRIS-PROTOCOL: Pass rates for filtering
+          };
+        });
         setData({ actors: mappedActors, reviews: resData.reviews || [] });
       })
       .catch(err => {
+        if (err.name === 'AbortError') return;
         console.error('Home Data Fetch Error:', err);
-        setData({ actors: [], reviews: [] });
+        setData(prev => prev || { actors: [], reviews: [] });
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       });
+
+    return () => controller.abort();
   }, [mounted, searchParamsKey]);
 
-  if (!mounted || !data) {
+  if (!mounted || (!data && isLoading)) {
     return <LoadingScreenInstrument text="Voices..." />;
   }
   
   return (
     <Suspense  fallback={<LoadingScreenInstrument text="Voices..." />}>
-      <HomeContent strokeWidth={1.5} actors={data.actors} reviews={data.reviews} />
+      {data && <HomeContent strokeWidth={1.5} actors={data.actors} reviews={data.reviews} />}
+      {isLoading && data && (
+        <div className="fixed top-0 left-0 w-full h-1 bg-primary/20 z-[9999]">
+          <div className="h-full bg-primary animate-progress-fast" style={{ width: '30%' }} />
+        </div>
+      )}
     </Suspense>
   );
 }

@@ -3,7 +3,7 @@ import { faq, actors, workshops, contentArticles } from '@db/schema';
 import { eq, and } from 'drizzle-orm';
 
 /**
- * ⚡ SEO ENGINE SERVICE (2026)
+ *  SEO ENGINE SERVICE (2026)
  * 
  * Ported from legacy PHP systems. Handles meta-tags, sitemaps, 
  * and internal linking automation.

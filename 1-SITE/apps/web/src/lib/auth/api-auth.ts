@@ -1,5 +1,5 @@
 /**
- * 🛡️ API AUTH HELPER (NUCLEAR 2026)
+ *  API AUTH HELPER (NUCLEAR 2026)
  *
  * Centrale authenticatie voor admin-only API routes.
  * Gebruikt Supabase Auth + users table voor role-check (johfrah@voices.be of role === 'admin').
@@ -13,7 +13,7 @@ import { db } from '@db';
 import { users } from '@db/schema';
 import { eq } from 'drizzle-orm';
 
-// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
@@ -29,7 +29,7 @@ async function checkIsAdmin(user: User | null): Promise<boolean> {
     const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, user.email)).limit(1);
     return dbUser?.role === 'admin';
   } catch (dbError) {
-    console.warn('⚠️ API Auth Drizzle failed, falling back to SDK');
+    console.warn(' API Auth Drizzle failed, falling back to SDK');
     const { data, error } = await sdkClient
       .from('users')
       .select('role')

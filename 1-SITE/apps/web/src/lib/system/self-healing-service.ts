@@ -22,7 +22,7 @@ export class SelfHealingService {
         details
       });
     } catch (e) {
-      console.error('❌ [HEAL] Kon event niet loggen:', e);
+      console.error(' [HEAL] Kon event niet loggen:', e);
     }
   }
 

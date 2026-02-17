@@ -40,7 +40,7 @@ async function StatsGrid() {
       <ContainerInstrument className="bg-white rounded-[40px] p-6 border border-black/[0.03] shadow-sm">
         <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-2"><VoiceglotText  translationKey="admin.cockpit.orders_label" defaultText="Bestellingen" /></TextInstrument>
         <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{orderCount.value}</HeadingInstrument>
-        <TextInstrument className="text-[15px] text-green-600 font-light mt-2">↑ 12%</TextInstrument>
+        <TextInstrument className="text-[15px] text-green-600 font-light mt-2"> 12%</TextInstrument>
       </ContainerInstrument>
 
       {/* Users Card */}
@@ -82,7 +82,7 @@ async function RecentActivity() {
               </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="text-right">
-              <TextInstrument className="font-light tracking-tighter text-[15px]">€ {order.total}</TextInstrument>
+              <TextInstrument className="font-light tracking-tighter text-[15px]"> {order.total}</TextInstrument>
               <TextInstrument className={`text-[15px] font-light px-2 py-0.5 rounded-full inline-block ${
                 order.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
               }`}>
@@ -112,7 +112,7 @@ export default function BackofficePage() {
             {/* Media Library Link */}
             <ButtonInstrument as="a" href="/backoffice/media" className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm flex flex-col justify-between hover:scale-[1.02] transition-all group">
               <ContainerInstrument className="w-12 h-12 bg-va-black text-white rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform">
-                <TextInstrument as="span" className="text-xl font-light">🖼️</TextInstrument>
+                <TextInstrument as="span" className="text-xl font-light"></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument>
                 <HeadingInstrument level={4} className="font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="admin.cockpit.media_library" defaultText="Media" /><TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mt-1"><VoiceglotText  translationKey="admin.cockpit.media_library_subtitle" defaultText="Beheer online assets" /></TextInstrument></HeadingInstrument>
@@ -122,7 +122,7 @@ export default function BackofficePage() {
             {/* Future Widget */}
             <ContainerInstrument className="bg-transparent rounded-[40px] p-8 flex flex-col items-center justify-center text-center border-dashed border-2 border-black/10 shadow-none">
               <ContainerInstrument className="w-12 h-12 bg-black/5 rounded-full flex items-center justify-center mb-4">
-                <TextInstrument as="span" className="text-xl font-light">🧠</TextInstrument>
+                <TextInstrument as="span" className="text-xl font-light"></TextInstrument>
               </ContainerInstrument>
               <HeadingInstrument level={4} className="font-light tracking-tighter text-va-black/40 text-[15px]"><VoiceglotText  translationKey="admin.cockpit.lead_scoring" defaultText="Leads" /><TextInstrument className="text-[15px] font-light text-va-black/20 tracking-widest mt-2"><VoiceglotText  translationKey="common.coming_soon" defaultText="Binnenkort" /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>

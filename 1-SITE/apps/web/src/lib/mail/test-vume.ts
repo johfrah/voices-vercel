@@ -4,21 +4,21 @@ import { eq, desc } from 'drizzle-orm';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
 
 /**
- * 🧪 VUME TEST SCRIPT (2026)
+ *  VUME TEST SCRIPT (2026)
  * 
  * Doel: Versturen van voorbeeldmails naar Johfrah om de VUME-engine te valideren.
  * Gebruikt ECHTE data uit Supabase voor een realistische test.
  */
 
 export async function sendTestMails(recipient: string) {
-  console.log(`🧪 Starting VUME Test Suite for ${recipient}...`);
+  console.log(` Starting VUME Test Suite for ${recipient}...`);
 
   try {
     // 1. Test Magic Link (Auth Journey) - Gebruik echte user data
     const [realUser] = await db.select().from(users).orderBy(desc(users.createdAt)).limit(1);
     await VumeEngine.send({
       to: recipient,
-      subject: '✨ Test: Inloggen op Voices.be (Real Data)',
+      subject: ' Test: Inloggen op Voices.be (Real Data)',
       template: 'magic-link',
       context: {
         name: realUser?.firstName || 'Johfrah',
@@ -27,7 +27,7 @@ export async function sendTestMails(recipient: string) {
       },
       host: 'voices.be'
     });
-    console.log('✅ Magic Link test mail verzonden.');
+    console.log(' Magic Link test mail verzonden.');
 
     // 2. Test Studio Experience (Studio Journey) - Gebruik echte workshop data
     const [realEdition] = await db
@@ -45,7 +45,7 @@ export async function sendTestMails(recipient: string) {
 
     await VumeEngine.send({
       to: recipient,
-      subject: '🎙️ Test: Je plek in de studio (Real Data)',
+      subject: ' Test: Je plek in de studio (Real Data)',
       template: 'studio-experience',
       context: {
         name: realUser?.firstName || 'Johfrah',
@@ -58,7 +58,7 @@ export async function sendTestMails(recipient: string) {
       },
       host: 'voices.be'
     });
-    console.log('✅ Studio Experience test mail verzonden.');
+    console.log(' Studio Experience test mail verzonden.');
 
     // 3. Test Invoice Reply (Agency Journey) - Gebruik echte order data
     const [realOrder] = await db
@@ -72,7 +72,7 @@ export async function sendTestMails(recipient: string) {
 
     await VumeEngine.send({
       to: recipient,
-      subject: '🧾 Test: Factuur goed ontvangen (Real Data)',
+      subject: ' Test: Factuur goed ontvangen (Real Data)',
       template: 'invoice-reply',
       context: {
         userName: realUser?.firstName || 'Johfrah',
@@ -82,11 +82,11 @@ export async function sendTestMails(recipient: string) {
       },
       host: 'voices.be'
     });
-    console.log('✅ Invoice Reply test mail verzonden.');
+    console.log(' Invoice Reply test mail verzonden.');
 
     return { success: true };
   } catch (error) {
-    console.error('❌ VUME Test Suite Failed:', error);
+    console.error(' VUME Test Suite Failed:', error);
     return { success: false, error };
   }
 }

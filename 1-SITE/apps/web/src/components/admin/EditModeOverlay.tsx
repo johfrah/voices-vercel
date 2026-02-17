@@ -10,7 +10,7 @@ import { BentoArchitect } from './BentoArchitect';
 import { VoiceglotText } from '../ui/VoiceglotText';
 
 /**
- * ⚡ EDIT MODE OVERLAY (GOD MODE 2026)
+ *  EDIT MODE OVERLAY (GOD MODE 2026)
  * 
  * Voldoet aan de Zero Laws:
  * - HTML ZERO: Geen rauwe tags in de page layer.

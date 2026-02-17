@@ -3,7 +3,7 @@ import { orders } from "@db/schema";
 import { eq, inArray } from "drizzle-orm";
 
 /**
- * 🤖 DOCUMENT PROCESSOR (NUCLEAR EDITION)
+ *  DOCUMENT PROCESSOR (NUCLEAR EDITION)
  * 
  * Doel: Het intelligent matchen van factuurtekst aan database orders.
  * Herkent patronen zoals VOICES-2026-XXXX en valideert bedragen.
@@ -59,7 +59,7 @@ export class DocumentProcessor {
     // 2. Validatie logica
     const discrepancies: string[] = [];
     if (Math.abs(totalAmount - expectedTotal) > 0.01) {
-      discrepancies.push(`Bedrag op factuur (€${expectedTotal}) wijkt af van database totaal (€${totalAmount})`);
+      discrepancies.push(`Bedrag op factuur (${expectedTotal}) wijkt af van database totaal (${totalAmount})`);
     }
 
     const missingIds = orderIds.filter(id => !matchedIds.includes(id));
@@ -92,7 +92,7 @@ export class DocumentProcessor {
   }
 
   /**
-   * 🧠 EXTRACT INTELLIGENCE
+   *  EXTRACT INTELLIGENCE
    * Haalt nuttige data (IBAN, contactinfo) uit ruwe tekst.
    * Wordt gebruikt door de mailbox om kansen te spotten.
    */

@@ -45,14 +45,14 @@ export const CustomerInstrument: React.FC<CustomerInstrumentProps> = ({
             <VoiceglotText  translationKey="order.customer.company" defaultText="Bedrijf" />
           </TextInstrument>
           <TextInstrument className="font-light">
-            {company || <VoiceglotText  translationKey="common.private" defaultText="Privé" />}
+            {company || <VoiceglotText  translationKey="common.private" defaultText="Priv" />}
           </TextInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="p-3 bg-va-off-white rounded-[20px]">
           <TextInstrument className="text-va-black/20 text-[15px] font-light tracking-widest ">
             <VoiceglotText  translationKey="order.customer.total_spent" defaultText="Total Spent" />
           </TextInstrument>
-          <TextInstrument className="font-light">€{totalSpent}</TextInstrument>
+          <TextInstrument className="font-light">{totalSpent}</TextInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
     </BentoCard>

@@ -3,7 +3,7 @@ import { orders, orderItems, workshops, users } from "@db/schema";
 import { eq, and } from "drizzle-orm";
 
 /**
- * 🎓 NUCLEAR CERTIFICATE SERVICE (2026)
+ *  NUCLEAR CERTIFICATE SERVICE (2026)
  * 
  * Beheert de generatie en validatie van workshop certificaten.
  * Vervangt de PHP Workshop Certificate Generator.
@@ -59,7 +59,7 @@ export class CertificateService {
    * Genereert een PDF certificaat (Mock / API Call).
    */
   static async generatePdf(data: CertificateData): Promise<string> {
-    console.log(`📄 Generating PDF Certificate for ${data.participantName}...`);
+    console.log(` Generating PDF Certificate for ${data.participantName}...`);
     
     // In Beheer-modus gebruiken we een serverless function of een service zoals Cloudinary/Vercel OG
     // Voor nu retourneren we een mock URL.

@@ -53,7 +53,7 @@ export default function MachteldStoryPage() {
               <TextInstrument className="text-va-black/60 font-medium text-lg leading-relaxed">
                 <VoiceglotText 
                   translationKey="story.machteld.text" 
-                  defaultText="Machteld Van Der Gaag is één van de meest-gevraagde drietalige voice-over stemmen van Nederland. We kregen de primeur om haar gloednieuwe studio uit te proberen." 
+                  defaultText="Machteld Van Der Gaag is n van de meest-gevraagde drietalige voice-over stemmen van Nederland. We kregen de primeur om haar gloednieuwe studio uit te proberen." 
                 />
               </TextInstrument>
             </ContainerInstrument>

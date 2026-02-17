@@ -122,15 +122,15 @@ async function ActorDetailContent({ params }: { params: { slug: string } }) {
             <ContainerInstrument className="space-y-4">
               <ContainerInstrument className="flex justify-between items-center py-3 border-b border-white/5">
                 <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-white/30"><VoiceglotText  translationKey="rate.telephony" defaultText="Telefonie" /></TextInstrument>
-                <TextInstrument as="span" className="font-black text-primary">€89</TextInstrument>
+                <TextInstrument as="span" className="font-black text-primary">89</TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex justify-between items-center py-3 border-b border-white/5">
                 <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-white/30"><VoiceglotText  translationKey="rate.web_video" defaultText="Web Video" /></TextInstrument>
-                <TextInstrument as="span" className="font-black text-primary">€175</TextInstrument>
+                <TextInstrument as="span" className="font-black text-primary">175</TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex justify-between items-center py-3">
                 <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-white/30"><VoiceglotText  translationKey="rate.commercial" defaultText="Commercial" /></TextInstrument>
-                <TextInstrument as="span" className="font-black text-primary">v.a. €450</TextInstrument>
+                <TextInstrument as="span" className="font-black text-primary">v.a. 450</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             <ButtonInstrument className="va-btn-pro w-full mt-8 !bg-primary flex items-center justify-center gap-2 group"><VoiceglotText  translationKey="actor.book_now" defaultText="Nu Boeken" /><Mic strokeWidth={1.5} size={16} /></ButtonInstrument>

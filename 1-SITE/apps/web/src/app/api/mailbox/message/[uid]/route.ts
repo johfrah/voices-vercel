@@ -4,7 +4,7 @@ import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 /**
- * 🚀 MAILBOX MESSAGE API (DATABASE-FIRST 2026)
+ *  MAILBOX MESSAGE API (DATABASE-FIRST 2026)
  * 
  * Haalt de volledige inhoud van een mail op uit de database.
  * Inclusief bijlagen uit de Vault.
@@ -74,7 +74,7 @@ export async function GET(
       }))
     });
   } catch (error) {
-    console.error('❌ Mailbox Message API Error:', error);
+    console.error(' Mailbox Message API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -8,7 +8,7 @@ import {
 import { VoiceglotText } from './VoiceglotText';
 
 /**
- * ⚡ HITL ACTION CARD INSTRUMENT
+ *  HITL ACTION CARD INSTRUMENT
  * 
  * Een kaart die de admin een actie voorstelt (HITL).
  * Wordt gebruikt in de Mailbox Sidebar of Dashboard.

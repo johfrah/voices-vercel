@@ -3,7 +3,7 @@ import { vouchers } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * ⚡ PARTNER LINK GENERATOR (2026)
+ *  PARTNER LINK GENERATOR (2026)
  * 
  * Deze route vervangt de legacy /partner/generate-link API.
  * Het genereert een unieke voucher/link voor een klant.

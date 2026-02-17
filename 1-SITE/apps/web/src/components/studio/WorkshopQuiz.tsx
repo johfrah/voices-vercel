@@ -95,7 +95,7 @@ const QUIZ_DATA: QuizStep[] = [
   }
 ];
 
-// 🛡️ FELIX-OPTIMIZATION: Exact va-bezier for framer-motion
+//  FELIX-OPTIMIZATION: Exact va-bezier for framer-motion
 const VA_BEZIER = [0.165, 0.84, 0.44, 1];
 
 export const WorkshopQuiz: React.FC = () => {
@@ -155,7 +155,7 @@ export const WorkshopQuiz: React.FC = () => {
     return () => video.removeEventListener('timeupdate', handleTimeUpdate);
   }, [isVideoLoaded, currentStepId]);
 
-  // 🛡️ FELIX-OPTIMIZATION: Preload next possible videos
+  //  FELIX-OPTIMIZATION: Preload next possible videos
   useEffect(() => {
     if (!isMounted) return;
     
@@ -175,7 +175,7 @@ export const WorkshopQuiz: React.FC = () => {
     });
   }, [currentStep.choices, isMounted]);
 
-  // 🛡️ CHRIS-PROTOCOL: Deterministic Skeleton (Server-side safe)
+  //  CHRIS-PROTOCOL: Deterministic Skeleton (Server-side safe)
   if (!isMounted || isLoading) {
     return (
       <div className="relative w-full aspect-[9/16] bg-va-off-white rounded-[20px] overflow-hidden shadow-aura border border-black/5 flex-shrink-0">
@@ -195,7 +195,7 @@ export const WorkshopQuiz: React.FC = () => {
 
   return (
     <div className="relative w-full aspect-[9/16] bg-va-black rounded-[20px] overflow-hidden shadow-aura border border-white/10 group flex-shrink-0 will-change-transform">
-      {/* 🔄 Video Loading State */}
+      {/*  Video Loading State */}
       {!isVideoLoaded && !hasError && (
         <div className="absolute inset-0 flex items-center justify-center z-20 bg-va-black/50">
           <Loader2 strokeWidth={1.5} className="w-8 h-8 text-white/20 animate-spin" />
@@ -220,7 +220,7 @@ export const WorkshopQuiz: React.FC = () => {
         src={currentStep.video}
       />
 
-      {/* 🔊 Mute Toggle */}
+      {/*  Mute Toggle */}
       <button 
         onClick={toggleMute}
         className="absolute top-6 right-6 z-50 p-3 bg-va-black/20 hover:bg-va-black/40 backdrop-blur-md rounded-full text-white transition-all active:scale-90 border border-white/10"
@@ -228,7 +228,7 @@ export const WorkshopQuiz: React.FC = () => {
         {isMuted ? <VolumeX size={18} strokeWidth={1.5} /> : <Volume2 size={18} strokeWidth={1.5} />}
       </button>
 
-      {/* 📝 Subtitles (Top-aligned to avoid buttons) */}
+      {/*  Subtitles (Top-aligned to avoid buttons) */}
       <AnimatePresence>
         {currentSubtitle && (
           <motion.div

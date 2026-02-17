@@ -7,7 +7,7 @@ import { MarketManager } from '@config/market-manager';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🩹 API: VOICEGLOT HEAL-ALL (NUCLEAR 2026)
+ *  API: VOICEGLOT HEAL-ALL (NUCLEAR 2026)
  * 
  * Doel: Scant de hele registry op ontbrekende vertalingen en vult deze aan
  * zonder dat er een pagina geopend hoeft te worden.
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];
     let totalHealed = 0;
 
-    // 🌍 NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
+    //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
     const host = request.headers.get('host') || 'voices.be';
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
@@ -86,10 +86,10 @@ export async function POST(request: NextRequest) {
         const mailService = DirectMailService.getInstance();
         await mailService.sendMail({
           to: adminEmail,
-          subject: `🚀 Nuclear Heal-All LIVE: ${totalHealed} vertalingen toegevoegd`,
+          subject: ` Nuclear Heal-All LIVE: ${totalHealed} vertalingen toegevoegd`,
           html: `
             <div style="font-family: sans-serif; padding: 40px; background: #000; color: #fff; border-radius: 24px;">
-              <h2 style="letter-spacing: -0.02em; color: #ff4f00;">🚀 Nuclear Heal-All Live</h2>
+              <h2 style="letter-spacing: -0.02em; color: #ff4f00;"> Nuclear Heal-All Live</h2>
               <p>De Freedom Machine heeft een volledige scan uitgevoerd en alle vertalingen direct geactiveerd.</p>
               <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;" />
               <p style="font-size: 24px; font-weight: bold;">${totalHealed} strings zijn nu live.</p>
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
           `
         });
       } catch (mailErr) {
-        console.error('❌ Failed to send completion notification:', mailErr);
+        console.error(' Failed to send completion notification:', mailErr);
       }
     }
 

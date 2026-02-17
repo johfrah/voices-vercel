@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 /**
- * 🌊 LIQUID TRANSITION OVERLAY
+ *  LIQUID TRANSITION OVERLAY
  * 
  * Een zijdezachte overgang tussen pagina's die de 'Ademing' feel versterkt.
  */

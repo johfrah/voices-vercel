@@ -54,7 +54,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
-      {/* 🚀 DYNAMIC MAIN CARD: Verandert op basis van DNA */}
+      {/*  DYNAMIC MAIN CARD: Verandert op basis van DNA */}
       {detectedSector === 'it' || lastIntent === 'telephony' ? (
         <BentoCard span="xl" className="h-[500px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
           <ContainerInstrument plain className="relative z-10">
@@ -87,7 +87,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
         <BentoCard span="xl" className="h-[500px] flex flex-col justify-between group overflow-hidden relative p-12 bg-white border border-black/[0.03] shadow-aura">
           <ContainerInstrument className="absolute inset-0 z-0">
             <Image  
-              src="/assets/voice-photo.jpg" 
+              src="/assets/visuals/active/voicecards/1760-johfrah-photo-square-1.jpg" 
               alt="Casting" 
               fill 
               className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-1000"

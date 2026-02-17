@@ -22,7 +22,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
   items
 }) => {
   const { playClick } = useSonicDNA();
-  const [message, setMessage] = React.useState(`Dag ${customerName},\n\nBedankt voor je aanvraag bij Voices.be! Hierbij ontvang je de vrijblijvende offerte voor je project.\n\nDetails:\n${items.map(item => `- ${item.name}`).join('\n')}\n\nTotaalbedrag: €${totalAmount} (excl. BTW)\n\nJe kunt deze offerte direct online bevestigen via de link in de bijlage. Heb je nog vragen? Laat het me gerust weten!\n\nMet vriendelijke groet,\n\nJohfrah\nVoices.be`);
+  const [message, setMessage] = React.useState(`Dag ${customerName},\n\nBedankt voor je aanvraag bij Voices.be! Hierbij ontvang je de vrijblijvende offerte voor je project.\n\nDetails:\n${items.map(item => `- ${item.name}`).join('\n')}\n\nTotaalbedrag: ${totalAmount} (excl. BTW)\n\nJe kunt deze offerte direct online bevestigen via de link in de bijlage. Heb je nog vragen? Laat het me gerust weten!\n\nMet vriendelijke groet,\n\nJohfrah\nVoices.be`);
 
   if (!isOpen) return null;
 

@@ -77,6 +77,8 @@ interface CheckoutState {
     updateMusic: (music: Partial<CheckoutState['music']>) => void;
     selectActor: (actor: Actor | null) => void;
     updateCustomer: (customer: Partial<CheckoutState['customer']>) => void;
+    addItem: (item: any) => void;
+    removeItem: (itemId: string) => void;
     calculatePricing: () => void;
     lockPrice: () => void;
     unlockPrice: () => void;
@@ -135,46 +137,61 @@ interface CheckoutState {
   export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [state, setState] = useState<CheckoutState>(initialState);
   
-    const setStep = (step: CheckoutState['step']) => setState(prev => ({ ...prev, step }));
+    const setStep = useCallback((step: CheckoutState['step']) => setState(prev => ({ ...prev, step })), []);
     
-    const setJourney = (journey: CheckoutState['journey'], courseId?: number) => 
+    const setJourney = useCallback((journey: CheckoutState['journey'], courseId?: number) => 
       setState(prev => ({ 
         ...prev, 
         journey, 
         courseId: journey === 'academy' ? courseId : undefined,
         editionId: journey === 'studio' ? courseId : undefined,
         items: (journey === 'studio' && courseId) ? [{ id: courseId, type: 'workshop_edition' }] : prev.items
-      }));
+      })), []);
   
-    const toggleUpsell = (upsell: keyof CheckoutState['upsells']) =>
+    const toggleUpsell = useCallback((upsell: keyof CheckoutState['upsells']) =>
       setState(prev =>
         ({
         ...prev,
         upsells: { ...prev.upsells, [upsell]: !prev.upsells[upsell] }
-      }));
+      })), []);
   
-    const updateBriefing = (briefing: string) => setState(prev => ({ ...prev, briefing }));
+    const updateBriefing = useCallback((briefing: string) => setState(prev => ({ ...prev, briefing })), []);
     
-    const updatePronunciation = (pronunciation: string) => setState(prev => ({ ...prev, pronunciation }));
+    const updatePronunciation = useCallback((pronunciation: string) => setState(prev => ({ ...prev, pronunciation })), []);
     
-    const updateUsage = (usage: CheckoutState['usage']) => setState(prev => ({ ...prev, usage }));
+    const updateUsage = useCallback((usage: CheckoutState['usage']) => {
+      console.log(`[CheckoutContext] Updating usage to: ${usage}`);
+      setState(prev => {
+        if (prev.usage === usage) return prev;
+        return { ...prev, usage };
+      });
+    }, []);
+
+    //  KELLY'S SYNC: Re-calculate pricing whenever usage, briefing or other key factors change
+    // This effect is the primary driver for price updates in the configurator.
+    useEffect(() => {
+      calculatePricing();
+    }, [state.usage, state.briefing, state.selectedActor, state.plan, state.media, state.country, state.spots, state.years, state.liveSession]);
     
-    const updatePlan = (plan: PlanType) => setState(prev => ({ ...prev, plan }));
+    const updatePlan = useCallback((plan: PlanType) => setState(prev => ({ ...prev, plan })), []);
     
-    const updateMedia = (media: CheckoutState['media']) => setState(prev => ({ ...prev, media }));
-    const updateCountry = (country: string | string[]) => setState(prev => ({ ...prev, country }));
-    const updateSpots = (spots: number) => setState(prev => ({ ...prev, spots }));
-    const updateYears = (years: number) => setState(prev => ({ ...prev, years }));
-    const updateSpotsDetail = (detail: Record<string, number>) => setState(prev => ({ ...prev, spotsDetail: detail }));
-    const updateYearsDetail = (detail: Record<string, number>) => setState(prev => ({ ...prev, yearsDetail: detail }));
-    const updateLiveSession = (liveSession: boolean) => setState(prev => ({ ...prev, liveSession }));
-    const updateIsQuoteRequest = (isQuoteRequest: boolean) => setState(prev => ({ ...prev, isQuoteRequest }));
+    const updateMedia = useCallback((media: CheckoutState['media']) => {
+      console.log(`[CheckoutContext] Updating media to: ${JSON.stringify(media)}`);
+      setState(prev => ({ ...prev, media }));
+    }, []);
+    const updateCountry = useCallback((country: string | string[]) => setState(prev => ({ ...prev, country })), []);
+    const updateSpots = useCallback((spots: number) => setState(prev => ({ ...prev, spots })), []);
+    const updateYears = useCallback((years: number) => setState(prev => ({ ...prev, years })), []);
+    const updateSpotsDetail = useCallback((detail: Record<string, number>) => setState(prev => ({ ...prev, spotsDetail: detail })), []);
+    const updateYearsDetail = useCallback((detail: Record<string, number>) => setState(prev => ({ ...prev, yearsDetail: detail })), []);
+    const updateLiveSession = useCallback((liveSession: boolean) => setState(prev => ({ ...prev, liveSession })), []);
+    const updateIsQuoteRequest = useCallback((isQuoteRequest: boolean) => setState(prev => ({ ...prev, isQuoteRequest })), []);
     
-    const updateMusic = (music: Partial<CheckoutState['music']>) => 
-      setState(prev => ({ ...prev, music: { ...prev.music, ...music } }));
+    const updateMusic = useCallback((music: Partial<CheckoutState['music']>) => 
+      setState(prev => ({ ...prev, music: { ...prev.music, ...music } })), []);
     
-    const selectActor = (actor: Actor | null) => setState(prev => {
-      // 🛡️ AUTO-QUOTE DETECTION: Als een stem geen tarieven heeft voor de huidige context, 
+    const selectActor = useCallback((actor: Actor | null) => setState(prev => {
+      //  AUTO-QUOTE DETECTION: Als een stem geen tarieven heeft voor de huidige context, 
       // zetten we de checkout automatisch in 'offerte' modus.
       const status = actor ? PricingEngine.getAvailabilityStatus(
         actor, 
@@ -187,17 +204,29 @@ interface CheckoutState {
         selectedActor: actor,
         isQuoteRequest: status === 'on_request'
       };
-    });
+    }), []);
     
-    const updateCustomer = (customer: Partial<CheckoutState['customer']>) => 
-      setState(prev => ({ ...prev, customer: { ...prev.customer, ...customer } }));
+    const updateCustomer = useCallback((customer: Partial<CheckoutState['customer']>) => 
+      setState(prev => ({ ...prev, customer: { ...prev.customer, ...customer } })), []);
   
-    const lockPrice = () => setState(prev => ({ ...prev, isLocked: true }));
-    const unlockPrice = () => setState(prev => ({ ...prev, isLocked: false }));
+    const addItem = useCallback((item: any) => setState(prev => ({
+      ...prev,
+      items: [...prev.items, item]
+    })), []);
+
+    const removeItem = useCallback((itemId: string) => setState(prev => ({
+      ...prev,
+      items: prev.items.filter(i => i.id !== itemId)
+    })), []);
+
+    const lockPrice = useCallback(() => setState(prev => ({ ...prev, isLocked: true })), []);
+    const unlockPrice = useCallback(() => setState(prev => ({ ...prev, isLocked: false })), []);
   
     const calculatePricing = useCallback(() => {
-      if (state.isLocked) return; // 🛡️ KELLY'S LOCK: No recalculation if price is frozen
+      if (state.isLocked) return; //  KELLY'S LOCK: No recalculation if price is frozen
   
+      console.log(`[CheckoutContext] Calculating pricing for journey: ${state.journey}, usage: ${state.usage}`);
+
       // Academy pricing logic
       if (state.journey === 'academy') {
         let total = 149;
@@ -229,13 +258,13 @@ interface CheckoutState {
         return;
       }
   
-      // 🛡️ AGENCY MANDATE: No Academy upsells during Agency journey
+      //  AGENCY MANDATE: No Academy upsells during Agency journey
       const activeUpsells = state.journey === 'agency' ? {} : state.upsells;
   
       const wordCount = state.briefing.trim().split(/\s+/).filter(Boolean).length;
       const promptCount = state.briefing.trim().split(/\n+/).filter(Boolean).length;
   
-      // 🛡️ COMMERCIAL LOGIC: Apply spots/years to ALL selected media types
+      //  COMMERCIAL LOGIC: Apply spots/years to ALL selected media types
       // If detail maps exist, use those. Otherwise fall back to global spots/years.
       const spotsMap = state.usage === 'commercial' && Array.isArray(state.media) 
         ? state.media.reduce((acc, m) => ({ ...acc, [m]: (state.spotsDetail && state.spotsDetail[m]) || state.spots || 1 }), {})
@@ -245,24 +274,26 @@ interface CheckoutState {
         ? state.media.reduce((acc, m) => ({ ...acc, [m]: (state.yearsDetail && state.yearsDetail[m]) || state.years || 1 }), {})
         : undefined;
   
+      console.log(`[CheckoutContext] Calculating with media: ${JSON.stringify(state.media)}`);
+
       const result = PricingEngine.calculate({
         usage: state.usage,
         plan: state.plan,
         words: wordCount,
         prompts: promptCount,
-        mediaTypes: state.usage === 'commercial' ? state.media as any : undefined,
+        mediaTypes: state.usage === 'commercial' ? (state.media as any) : [],
         countries: Array.isArray(state.country) ? state.country : [state.country],
         spots: spotsMap,
         years: yearsMap,
         liveSession: state.liveSession,
-        actorRates: state.selectedActor?.rates_raw,
+        actorRates: state.selectedActor?.rates || state.selectedActor?.rates_raw,
         music: state.music,
         isVatExempt: !!state.customer.vat_number && state.customer.country !== 'BE'
       });
   
       // Liquid price animation in context
       setState(prev => {
-        // 🛡️ INFINITE LOOP GUARD: Only update if values actually changed
+        //  INFINITE LOOP GUARD: Only update if values actually changed
         if (
           prev.prompts === promptCount &&
           prev.pricing.base === result.base &&
@@ -270,7 +301,10 @@ interface CheckoutState {
           prev.pricing.mediaSurcharge === result.mediaSurcharge &&
           prev.pricing.musicSurcharge === result.musicSurcharge &&
           prev.pricing.total === result.subtotal &&
-          prev.pricing.legalDisclaimer === result.legalDisclaimer
+          prev.pricing.legalDisclaimer === result.legalDisclaimer &&
+          prev.liveSession === state.liveSession &&
+          prev.spots === state.spots &&
+          prev.years === state.years
         ) {
           return prev;
         }
@@ -291,8 +325,8 @@ interface CheckoutState {
     }, [state.briefing, state.usage, state.plan, state.journey, state.upsells, state.music, state.customer.vat_number, state.customer.country, state.isLocked, state.editionId, state.media, state.country, state.selectedActor, state.spots, state.years, state.spotsDetail, state.yearsDetail, state.liveSession]);
   
     useEffect(() => {
-      calculatePricing();
-    }, [calculatePricing]);
+      // calculatePricing is now driven by the KELLY'S SYNC effect above
+    }, []);
   
     const isVatExempt = !!state.customer.vat_number && state.customer.country !== 'BE';
   
@@ -317,6 +351,8 @@ interface CheckoutState {
         updateMusic,
         selectActor, 
         updateCustomer,
+        addItem,
+        removeItem,
         calculatePricing,
         lockPrice,
         unlockPrice,

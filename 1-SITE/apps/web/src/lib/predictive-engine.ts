@@ -1,5 +1,5 @@
 /**
- * 🧠 PREDICTIVE LAYOUT ENGINE
+ *  PREDICTIVE LAYOUT ENGINE
  * Beheer-modus: Berekent de optimale structuur op basis van context.
  */
 
@@ -32,7 +32,7 @@ export class LayoutEngine {
     
     const suggestions: LayoutSuggestion = {
       score: 72,
-      reasoning: `Voor de "${context.persona}" in de "${context.journey}" journey is meer visuele hiërarchie nodig.`,
+      reasoning: `Voor de "${context.persona}" in de "${context.journey}" journey is meer visuele hirarchie nodig.`,
       suggestedChanges: []
     };
 

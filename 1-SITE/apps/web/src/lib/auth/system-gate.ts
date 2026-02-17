@@ -1,5 +1,5 @@
 /**
- * 🛡️ NUCLEAR AUTH GATE (2026)
+ *  NUCLEAR AUTH GATE (2026)
  * 
  * Beveiligingslaag voor de Next.js Core-laag.
  * Vervangt de PHP voices_ajax_verify() en beheert Admin Edit Mode.
@@ -32,13 +32,13 @@ export async function getAuthSession(): Promise<AuthSession> {
 }
 
 /**
- * 🛡️ EDIT MODE GATE
+ *  EDIT MODE GATE
  * Gooit een error als de gebruiker niet in Edit Mode is terwijl dat wel moet.
  */
 export async function validateEditMode() {
   const session = await getAuthSession();
   if (!session.isEditMode) {
-    throw new Error('☢️ NUCLEAR ACCESS DENIED: Action requires Admin Edit Mode.');
+    throw new Error(' NUCLEAR ACCESS DENIED: Action requires Admin Edit Mode.');
   }
 }
 

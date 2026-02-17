@@ -70,7 +70,7 @@ export const WorkshopEditionEditor: React.FC<WorkshopEditionEditorProps> = ({ ed
   return (
     <ContainerInstrument plain className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* 📅 DATUM & TIJD */}
+        {/*  DATUM & TIJD */}
         <ContainerInstrument plain className="space-y-4">
           <div className="flex items-center gap-2 text-black/40">
             <Calendar size={16} strokeWidth={1.5} />
@@ -97,7 +97,7 @@ export const WorkshopEditionEditor: React.FC<WorkshopEditionEditorProps> = ({ ed
           />
         </ContainerInstrument>
 
-        {/* 📍 LOCATIE */}
+        {/*  LOCATIE */}
         <ContainerInstrument plain className="space-y-4">
           <div className="flex items-center gap-2 text-black/40">
             <MapPin size={16} strokeWidth={1.5} />
@@ -115,7 +115,7 @@ export const WorkshopEditionEditor: React.FC<WorkshopEditionEditorProps> = ({ ed
           </select>
         </ContainerInstrument>
 
-        {/* 👤 INSTRUCTEUR */}
+        {/*  INSTRUCTEUR */}
         <ContainerInstrument plain className="space-y-4">
           <div className="flex items-center gap-2 text-black/40">
             <User size={16} strokeWidth={1.5} />
@@ -133,7 +133,7 @@ export const WorkshopEditionEditor: React.FC<WorkshopEditionEditorProps> = ({ ed
           </select>
         </ContainerInstrument>
 
-        {/* 💰 PRIJS */}
+        {/*  PRIJS */}
         <ContainerInstrument plain className="space-y-4">
           <div className="flex items-center gap-2 text-black/40">
             <DollarSign size={16} strokeWidth={1.5} />
@@ -149,7 +149,7 @@ export const WorkshopEditionEditor: React.FC<WorkshopEditionEditorProps> = ({ ed
           />
         </ContainerInstrument>
 
-        {/* 👥 CAPACITEIT */}
+        {/*  CAPACITEIT */}
         <ContainerInstrument plain className="space-y-4">
           <div className="flex items-center gap-2 text-black/40">
             <Users size={16} strokeWidth={1.5} />

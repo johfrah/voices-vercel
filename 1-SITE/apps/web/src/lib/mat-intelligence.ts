@@ -1,5 +1,5 @@
 /**
- * 🚪 MAT: VISITOR INTELLIGENCE HELPER (2026)
+ *  MAT: VISITOR INTELLIGENCE HELPER (2026)
  * 
  * Eenvoudige client-side helper om events naar Mat's radar te sturen.
  */

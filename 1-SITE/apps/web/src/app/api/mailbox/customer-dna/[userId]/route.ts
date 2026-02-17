@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🧬 CUSTOMER DNA API (2026)
+ *  CUSTOMER DNA API (2026)
  * 
  * Haalt alle relationele data op van een klant voor de Mailbox cockpit.
  * Inclusief: Orders, Vault Files (Scripts/Demos), en Actor link.
@@ -49,7 +49,7 @@ export async function GET(
     // 4. Signature Assets (Potential Avatars)
     const signatureAssets = files.filter(f => f.category === 'signature_asset');
 
-    // 5. Yuki Financiële Context (Openstaande Facturen)
+    // 5. Yuki Financile Context (Openstaande Facturen)
     // We zoeken op email in de yuki_outstanding tabel (mirror van Yuki)
     const outstanding = await db.query.yukiOutstanding.findMany({
       where: eq(yukiOutstanding.contactId, user.email), // In onze mirror gebruiken we vaak email als contactId link
@@ -114,7 +114,7 @@ export async function GET(
       actorAssignments: actorAssignments || []
     });
   } catch (error) {
-    console.error('❌ Customer DNA API Error:', error);
+    console.error(' Customer DNA API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

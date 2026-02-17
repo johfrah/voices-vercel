@@ -45,7 +45,7 @@ export const AcademyUpsellSection: React.FC = () => {
                   />
                 </p>
                 <div className="pt-2 flex items-center gap-2">
-                  <span className="text-[15px] font-light text-primary">+ €395</span>
+                  <span className="text-[15px] font-light text-primary">+ 395</span>
                   <span className="text-[15px] font-light text-va-black/20 tracking-widest">
                     <VoiceglotText  translationKey="common.excl_vat" defaultText="excl. BTW" />
                   </span>

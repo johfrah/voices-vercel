@@ -5,7 +5,7 @@ import { eq, sql } from 'drizzle-orm';
 import { CoreAutomationEngine, CoreEvent } from '@/lib/system/core-automation-engine';
 
 /**
- * ⚙️ SYSTEM AUTOMATION: WEBHOOK & EVENT BUS
+ *  SYSTEM AUTOMATION: WEBHOOK & EVENT BUS
  * 
  * Doel: Real-time triggers voor order-statussen en systeem-events.
  * Verbindt de headless core met backend-services (Email, Yuki, Analytics).
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { event, data, secret } = body;
 
-    // 🛡️ Basic security (Internal only)
+    //  Basic security (Internal only)
     if (secret !== process.env.NUCLEAR_SECRET && process.env.NODE_ENV === 'production') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

@@ -4,7 +4,7 @@ import { desc, eq, and, or, like, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * 🏛️ VAULT BROWSER API (2026)
+ *  VAULT BROWSER API (2026)
  * 
  * Krachtige API voor het doorzoeken en filteren van de Kluis.
  * Ondersteunt filters op Project ID, Klant, Categorie en Datum.
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(files);
   } catch (error) {
-    console.error('❌ Vault Browser API Error:', error);
+    console.error(' Vault Browser API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

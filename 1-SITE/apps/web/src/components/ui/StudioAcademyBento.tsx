@@ -15,7 +15,7 @@ import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./Layout
 export const StudioAcademyBento = () => {
   return (
     <BentoGrid strokeWidth={1.5} className="mb-32">
-      {/* 🎙️ MAIN CARD: Workshops */}
+      {/*  MAIN CARD: Workshops */}
       <BentoCard span="xl" className="h-[450px] flex flex-col justify-between group overflow-hidden relative p-12 bg-va-black text-white border-none shadow-aura">
         <ContainerInstrument className="absolute inset-0 z-0">
           <Image  
@@ -37,7 +37,7 @@ export const StudioAcademyBento = () => {
         <ContainerInstrument className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
       </BentoCard>
 
-      {/* 🎓 Academy Quick-Link */}
+      {/*  Academy Quick-Link */}
       <BentoCard span="sm" className="bg-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
           <BookOpen strokeWidth={1.5} className="text-primary mb-4" size={24} />
@@ -45,7 +45,7 @@ export const StudioAcademyBento = () => {
         </ContainerInstrument>
       </BentoCard>
 
-      {/* 📅 Kalender */}
+      {/*  Kalender */}
       <BentoCard span="sm" className="bg-va-dark-soft text-white p-8 flex flex-col justify-between h-[280px] border-none">
         <ContainerInstrument plain>
           <Calendar strokeWidth={1.5} className="text-primary mb-4" size={24} />
@@ -53,7 +53,7 @@ export const StudioAcademyBento = () => {
         </ContainerInstrument>
       </BentoCard>
 
-      {/* 🌟 De Coaches (Bernadette & Johfrah) */}
+      {/*  De Coaches (Bernadette & Johfrah) */}
       <BentoCard span="md" className="bg-va-off-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
           <Users strokeWidth={1.5} className="text-va-black/20 mb-4" size={24} />
@@ -61,7 +61,7 @@ export const StudioAcademyBento = () => {
         </ContainerInstrument>
       </BentoCard>
 
-      {/* 🎬 Video Quiz */}
+      {/*  Video Quiz */}
       <BentoCard span="sm" className="bg-primary text-va-black p-8 flex flex-col justify-between h-[280px] border-none">
         <ContainerInstrument plain>
           <PlayCircle strokeWidth={1.5} className="mb-4" size={24} fill="currentColor" />

@@ -3,8 +3,8 @@ import { costs } from "@voices/database/src/schema";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * 💰 COSTS API
- * 🛡️ VOICES OS: Beheer van vaste en variabele kosten.
+ *  COSTS API
+ *  VOICES OS: Beheer van vaste en variabele kosten.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, cost: newCost[0] });
   } catch (error) {
-    console.error("❌ Error saving cost:", error);
+    console.error(" Error saving cost:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -4,7 +4,7 @@ import { eq, desc } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 /**
- * 🔍 CUSTOMER DNA SEARCH API (2026)
+ *  CUSTOMER DNA SEARCH API (2026)
  * 
  * Zoekt een klant op basis van e-mail en haalt hun DNA op.
  */
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     // 4. Signature Assets
     const signatureAssets = files.filter(f => f.category === 'signature_asset');
 
-    // 5. Yuki Financiële Context
+    // 5. Yuki Financile Context
     const outstanding = await db.query.yukiOutstanding.findMany({
       where: eq(yukiOutstanding.contactId, user.email),
       orderBy: [desc(yukiOutstanding.invoiceDate)]
@@ -96,7 +96,7 @@ export async function GET(request: Request) {
       actorAssignments: actorAssignments || []
     });
   } catch (error) {
-    console.error('❌ Customer DNA Search API Error:', error);
+    console.error(' Customer DNA Search API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

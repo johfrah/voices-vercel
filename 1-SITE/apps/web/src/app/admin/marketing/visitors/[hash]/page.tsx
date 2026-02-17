@@ -24,7 +24,7 @@ import 'rrweb-player/dist/style.css';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 /**
- * 🏺 LIVE VIEW PLAYER (2026)
+ *  LIVE VIEW PLAYER (2026)
  * 
  * Reconstrueert user sessies via rrweb-player.
  * Onderdeel van de Intelligence Layer.
@@ -76,7 +76,7 @@ export default function VisitorPlayerPage() {
           setError("Geen events gevonden voor deze sessie.");
         }
       } catch (err) {
-        console.error('❌ Failed to load session data:', err);
+        console.error(' Failed to load session data:', err);
         setError("Fout bij het laden van de sessie.");
       } finally {
         setLoading(false);

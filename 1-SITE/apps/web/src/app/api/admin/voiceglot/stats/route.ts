@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🌍 API: VOICEGLOT STATS (2026)
+ *  API: VOICEGLOT STATS (2026)
  */
 
 export async function GET(request: NextRequest) {

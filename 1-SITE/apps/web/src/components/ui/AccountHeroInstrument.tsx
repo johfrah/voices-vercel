@@ -11,7 +11,7 @@ interface AccountHeroInstrumentProps {
 }
 
 /**
- * ⚡ ACCOUNT HERO INSTRUMENT (GOD MODE 2026)
+ *  ACCOUNT HERO INSTRUMENT (GOD MODE 2026)
  * 
  * Voldoet aan de Zero Laws:
  * - HTML ZERO: Geen rauwe tags in de page layer.

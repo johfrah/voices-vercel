@@ -138,7 +138,7 @@ export const AcademyRecorder: React.FC<AcademyRecorderProps> = ({ lessonId, onUp
       });
 
       if (res.ok) {
-        alert(t('academy.recorder.success_msg', "Inzending succesvol ontvangen! De mentor bekijkt het zo snel mogelijk. 🎙️"));
+        alert(t('academy.recorder.success_msg', "Inzending succesvol ontvangen! De mentor bekijkt het zo snel mogelijk. "));
         resetRecording();
       }
     } catch (err) {

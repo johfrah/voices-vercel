@@ -1,5 +1,5 @@
 /**
- * 📱 TELEGRAM-BOB BRIDGE WEBHOOK
+ *  TELEGRAM-BOB BRIDGE WEBHOOK
  *
  * Receives incoming messages from Telegram and routes them to Bob or Voicy.
  * BOB: Wise, authoritative, warm. Knows codebase, agents, Voices mission.
@@ -8,9 +8,9 @@
  * LEX: Privacy-First Intelligence. Nuclear Hardening.
  * ANNA: Altijd Aan.
  *
- * /voicy <prompt>  → Route to Voicy (one-shot)
- * /voicy           → Toggle Voicy-mode (subsequent messages go to Voicy)
- * /bob             → Exit Voicy-mode, back to Bob
+ * /voicy <prompt>   Route to Voicy (one-shot)
+ * /voicy            Toggle Voicy-mode (subsequent messages go to Voicy)
+ * /bob              Exit Voicy-mode, back to Bob
  *
  * ENV VARS (see .env.example):
  * - TELEGRAM_BOT_TOKEN: Bot token from @BotFather
@@ -76,13 +76,13 @@ function resolveVoicyRouting(text: string, chatId: number): VoicyRoutingResult {
   const trimmed = text.trim();
   const lower = trimmed.toLowerCase();
 
-  // /bob → exit Voicy-mode
+  // /bob  exit Voicy-mode
   if (lower === '/bob') {
     voicyModeChats.delete(chatId);
     return { useVoicy: false, payload: '', fixedReply: 'Terug bij Bob. Stel gerust je vraag over het project of de agents.' };
   }
 
-  // /voicy → toggle Voicy-mode
+  // /voicy  toggle Voicy-mode
   if (lower === '/voicy') {
     if (voicyModeChats.has(chatId)) {
       voicyModeChats.delete(chatId);
@@ -92,11 +92,11 @@ function resolveVoicyRouting(text: string, chatId: number): VoicyRoutingResult {
     return {
       useVoicy: false,
       payload: '',
-      fixedReply: 'Voicy-modus aan. Stel je vraag over stemmen, prijzen of de studio — ik help je.',
+      fixedReply: 'Voicy-modus aan. Stel je vraag over stemmen, prijzen of de studio  ik help je.',
     };
   }
 
-  // /voicy <prompt> → one-shot Voicy; /voicy  (nothing) → toggle
+  // /voicy <prompt>  one-shot Voicy; /voicy  (nothing)  toggle
   if (lower.startsWith('/voicy ')) {
     const payload = trimmed.slice(7).trim();
     if (!payload) {
@@ -108,7 +108,7 @@ function resolveVoicyRouting(text: string, chatId: number): VoicyRoutingResult {
       return {
         useVoicy: false,
         payload: '',
-        fixedReply: 'Voicy-modus aan. Stel je vraag over stemmen, prijzen of de studio — ik help je.',
+        fixedReply: 'Voicy-modus aan. Stel je vraag over stemmen, prijzen of de studio  ik help je.',
       };
     }
     return { useVoicy: true, payload };
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!process.env.TELEGRAM_BOT_TOKEN) {
-      console.warn('📱 Telegram webhook: TELEGRAM_BOT_TOKEN not set, skipping reply');
+      console.warn(' Telegram webhook: TELEGRAM_BOT_TOKEN not set, skipping reply');
     }
 
     const body = (await request.json()) as TelegramUpdate;
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
     // 2. LEX: User whitelist (prevent unauthorized access)
     const senderId = getSenderId(body);
     if (senderId !== undefined && !isAllowedUser(senderId)) {
-      console.warn(`📱 Telegram: Rejected message from unauthorized user ${senderId}`);
+      console.warn(` Telegram: Rejected message from unauthorized user ${senderId}`);
       return NextResponse.json({ ok: true }); // 200 to prevent Telegram retries
     }
 
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       let replyText: string;
       const isStart = text.trim().toLowerCase() === '/start';
 
-      // Mode switch: /voicy or /bob → fixed reply
+      // Mode switch: /voicy or /bob  fixed reply
       if (routing?.fixedReply) {
         replyText = routing.fixedReply;
         console.log('[Telegram] Mode switch reply to chat', chatId);
@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
         replyText = BOB_WELCOME_MESSAGE;
         console.log('[Telegram-Bob] Welcome sent to chat', chatId);
       } else {
-        // 🚀 DUAL AGENT ORCHESTRATION: Both Bob and Voicy can answer
+        //  DUAL AGENT ORCHESTRATION: Both Bob and Voicy can answer
         try {
           const { KnowledgeService } = await import('@/services/KnowledgeService');
           const { PricingEngine } = await import('@/lib/pricing-engine');
@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
           const isAdmin = senderId !== undefined && isAllowedUser(senderId);
           const gemini = GeminiService.getInstance();
 
-          // ⚡ PRICING CONTEXT: Inject real-time pricing data from Supabase app_configs
+          //  PRICING CONTEXT: Inject real-time pricing data from Supabase app_configs
           const { data: configs } = await (await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/app_configs?key=eq.pricing_config`, {
             headers: {
               'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -196,11 +196,11 @@ export async function POST(request: NextRequest) {
           
           const pricingContext = `
 ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
-- Basis Video (unpaid): €${dbPricing.unpaid_base || 239} (tot 100 woorden)
-- Telefoon/IVR: €${dbPricing.ivr_base || 89} (tot 5 prompts)
-- Commercial (paid): Vanaf €250 (afhankelijk van usage)
-- Extra woorden: €${dbPricing.bulk_word_ivr || 0.25} per woord
-- Wachtmuziek: €${dbPricing.music_mix || 59} per track
+- Basis Video (unpaid): ${dbPricing.unpaid_base || 239} (tot 100 woorden)
+- Telefoon/IVR: ${dbPricing.ivr_base || 89} (tot 5 prompts)
+- Commercial (paid): Vanaf 250 (afhankelijk van usage)
+- Extra woorden: ${dbPricing.bulk_word_ivr || 0.25} per woord
+- Wachtmuziek: ${dbPricing.music_mix || 59} per track
 - BTW: ${Math.round((dbPricing.vat_rate || 0.21) * 100)}%
           `;
 
@@ -209,7 +209,7 @@ ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
           const payload = routing?.payload ?? text;
 
           if (useVoicy) {
-            // VOICY: Chatty domain — voices, pricing, studio (Ademing vibe)
+            // VOICY: Chatty domain  voices, pricing, studio (Ademing vibe)
             const prompt = buildVoicyTelegramPrompt({
               userMessage: payload,
               coreBriefing: `${coreBriefing}\n${voicyBriefing}\n${pricingContext}`,
@@ -247,8 +247,8 @@ Antwoord als de behulpzame, operationele Bob:
           
           replyText = replyText.trim().slice(0, 4096);
         } catch (aiErr) {
-          console.error('📱 Telegram AI generation failed:', aiErr);
-          replyText = 'Even nadenken — probeer het straks opnieuw of stel je vraag anders.';
+          console.error(' Telegram AI generation failed:', aiErr);
+          replyText = 'Even nadenken  probeer het straks opnieuw of stel je vraag anders.';
         }
       }
 
@@ -262,13 +262,13 @@ Antwoord als de behulpzame, operationele Bob:
           }),
         });
       } catch (sendErr) {
-        console.error('📱 Telegram sendMessage failed:', sendErr);
+        console.error(' Telegram sendMessage failed:', sendErr);
       }
     }
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error('📱 Telegram webhook error:', error);
+    console.error(' Telegram webhook error:', error);
     return new NextResponse('Internal Error', { status: 500 });
   }
 }

@@ -78,7 +78,7 @@ export default function AboutPage() {
             <ContainerInstrument className="space-y-4">
               <HeadingInstrument level={2} className="text-3xl font-light tracking-tight"><VoiceglotText  translationKey="about.partners.title" defaultText="Jouw branding. Onze stemmen." /><TextInstrument className="text-va-black/60 font-light text-lg"><VoiceglotText  
                   translationKey="about.partners.text" 
-                  defaultText="Wij zijn de trotse audio-partner van talloze IT-bedrijven en VoIP-resellers. Via onze whitelabel oplossingen bieden zij hun klanten de hoogste kwaliteit audio, direct geïntegreerd in hun eigen dienstverlening. Wij maken de partner de held: zij verkopen, wij leveren de perfecte stem." 
+                  defaultText="Wij zijn de trotse audio-partner van talloze IT-bedrijven en VoIP-resellers. Via onze whitelabel oplossingen bieden zij hun klanten de hoogste kwaliteit audio, direct gentegreerd in hun eigen dienstverlening. Wij maken de partner de held: zij verkopen, wij leveren de perfecte stem." 
                 /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>
           </BentoCard>

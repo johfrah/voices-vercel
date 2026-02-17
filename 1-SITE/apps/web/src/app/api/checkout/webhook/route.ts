@@ -8,7 +8,7 @@ import { MarketManager } from '@config/market-manager';
 import { MusicDeliveryService } from '@/services/MusicDeliveryService';
 
 /**
- * ⚡ MOLLIE WEBHOOK (NUCLEAR)
+ *  MOLLIE WEBHOOK (NUCLEAR)
  * 
  * Doel: Real-time status updates van Mollie verwerken.
  * Bij succes: Order op 'paid' zetten en Customer DNA updaten.
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     if (payment.isExpired()) newStatus = 'expired';
     if (payment.isFailed()) newStatus = 'failed';
 
-    // 🌍 NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
+    //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
     const host = request.headers.get('host') || 'voices.be';
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       // Update Order status
       let finalStatus = newStatus;
       
-      // 🚀 Als betaald: Check of het een "Music Only" order is
+      //  Als betaald: Check of het een "Music Only" order is
       if (newStatus === 'paid' && order) {
         const hasVoice = (order.rawMeta as any)?.actorId || (order.rawMeta as any)?.voiceId;
         const hasMusic = (order.rawMeta as any)?.music?.trackId;
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         // Als er ENKEL muziek is (geen stem), zetten we de order direct op 'completed'
         if (hasMusic && !hasVoice) {
           finalStatus = 'completed';
-          console.log(`🎵 Order #${orderId} is Music Only. Setting status to 'completed'.`);
+          console.log(` Order #${orderId} is Music Only. Setting status to 'completed'.`);
         }
       }
 
@@ -73,13 +73,13 @@ export async function POST(request: NextRequest) {
         isCustomerNote: false
       });
 
-      // 🚀 Als betaald: Lever muziek en update DNA
+      //  Als betaald: Lever muziek en update DNA
       if (newStatus === 'paid') {
-        // 🎵 Lever muziek uit indien aanwezig in de order
+        //  Lever muziek uit indien aanwezig in de order
         try {
           await MusicDeliveryService.deliverMusic(orderId);
         } catch (musicErr) {
-          console.error('❌ Failed to deliver music after payment:', musicErr);
+          console.error(' Failed to deliver music after payment:', musicErr);
           // We gaan door, want de betaling is wel gelukt
         }
 
@@ -94,23 +94,23 @@ export async function POST(request: NextRequest) {
             })
             .where(eq(users.id, userId));
             
-          console.log(`🧠 Intelligence: DNA updated for user ${userId} after successful payment.`);
+          console.log(` Intelligence: DNA updated for user ${userId} after successful payment.`);
         }
 
-        // 📧 Notificatie naar Admin (HITL)
+        //  Notificatie naar Admin (HITL)
         try {
           const { DirectMailService } = await import('@/services/DirectMailService');
           const mailService = DirectMailService.getInstance();
           await mailService.sendMail({
             to: adminEmail,
-            subject: `💰 Nieuwe Betaling Ontvangen: Order #${orderId}`,
+            subject: ` Nieuwe Betaling Ontvangen: Order #${orderId}`,
             html: `
               <div style="font-family: sans-serif; padding: 40px; background: #f9f9f9; border-radius: 24px;">
-                <h2 style="color: #ff4f00;">💰 Nieuwe Betaling</h2>
+                <h2 style="color: #ff4f00;"> Nieuwe Betaling</h2>
                 <p>Er is een nieuwe betaling succesvol verwerkt via Mollie.</p>
                 <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
                 <p><strong>Order ID:</strong> #${orderId}</p>
-                <p><strong>Bedrag:</strong> €${payment.amount.value}</p>
+                <p><strong>Bedrag:</strong> ${payment.amount.value}</p>
                 <p><strong>Klant ID:</strong> ${payment.metadata.userId || 'Gast'}</p>
                 <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
                 <p>Bekijk de details in de <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/dashboard">Voices Cockpit</a>.</p>
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
             `
           });
         } catch (mailErr) {
-          console.error('❌ Failed to send payment notification:', mailErr);
+          console.error(' Failed to send payment notification:', mailErr);
         }
       }
     });
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     return new NextResponse('OK');
 
   } catch (error) {
-    console.error('🚀 MOLLIE WEBHOOK ERROR:', error);
+    console.error(' MOLLIE WEBHOOK ERROR:', error);
     return new NextResponse('Internal Error', { status: 500 });
   }
 }

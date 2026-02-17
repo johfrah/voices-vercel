@@ -6,7 +6,7 @@ import { mailContent } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * 🧠 AI BRAIN SYNC API (2026)
+ *  AI BRAIN SYNC API (2026)
  * 
  * Deze route wordt aangeroepen om op de achtergrond mails te indexeren.
  * Het haalt mails op via IMAP, genereert embeddings via OpenAI, 
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     const { folder = 'INBOX.Archive', limit = 10 } = await request.json();
     
-    console.log(`🧠 AI Sync: Start sync voor ${folder} (limit: ${limit})...`);
+    console.log(` AI Sync: Start sync voor ${folder} (limit: ${limit})...`);
     
     const mailService = DirectMailService.getInstance();
     const vectorService = VectorService.getInstance();
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('❌ AI Sync Error:', error);
+    console.error(' AI Sync Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

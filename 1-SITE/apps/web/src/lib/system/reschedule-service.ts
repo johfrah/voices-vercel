@@ -5,7 +5,7 @@ import { DbService } from "../db-service";
 import crypto from "crypto";
 
 /**
- * 📅 NUCLEAR RESCHEDULE SERVICE (2026)
+ *  NUCLEAR RESCHEDULE SERVICE (2026)
  * 
  * Beheert het verplaatsen van afspraken en workshops via veilige tokens.
  * Vervangt de PHP Workshop Reschedule Endpoint en Appointment System.
@@ -66,7 +66,7 @@ export class RescheduleService {
    * Voert de daadwerkelijke verplaatsing uit via DbService.
    */
   static async applyReschedule(orderId: number, newDate: Date, note?: string) {
-    console.log(`📅 Rescheduling Order #${orderId} to ${newDate.toISOString()}...`);
+    console.log(` Rescheduling Order #${orderId} to ${newDate.toISOString()}...`);
 
     return await db.transaction(async (tx) => {
       // 1. Update de order met de nieuwe datum

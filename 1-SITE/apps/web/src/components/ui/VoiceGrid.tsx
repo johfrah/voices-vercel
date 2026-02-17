@@ -14,10 +14,10 @@ interface VoiceGridProps {
 export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false }) => {
   const { playDemo } = useGlobalAudio();
   
-  console.log(`🎙️ VoiceGrid: rendering ${actors?.length || 0} actors`, { featured, actors: actors?.map(a => a.display_name) });
+  console.log(` VoiceGrid: rendering ${actors?.length || 0} actors`, { featured, actors: actors?.map(a => a.display_name) });
 
   const handleSelect = (actor: Actor) => {
-    // 🛡️ NAVIGATION MANDATE: Als we op de agency pagina zijn, navigeren we direct naar de individuele voice pagina.
+    //  NAVIGATION MANDATE: Als we op de agency pagina zijn, navigeren we direct naar de individuele voice pagina.
     // Dit stelt de klant in staat om direct een script in te voeren voor die specifieke stem.
     if (typeof window !== 'undefined') {
       const targetSlug = actor.slug || actor.first_name?.toLowerCase() || actor.display_name?.toLowerCase()?.split(' ')[0] || 'unknown';

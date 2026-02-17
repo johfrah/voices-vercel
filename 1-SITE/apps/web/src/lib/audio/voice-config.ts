@@ -1,5 +1,5 @@
 /**
- * 🎙️ NUCLEAR VOICE CONFIG ENGINE (2026)
+ *  NUCLEAR VOICE CONFIG ENGINE (2026)
  * 
  * Beheert stem-configuraties en tokenized URL's.
  * Vervangt de PHP VoicesConfigEngine en zorgt voor schone URL's (?vcfg=).
@@ -19,7 +19,7 @@ export interface VoiceSettings {
 }
 
 /**
- * 🧬 GENERATE TOKEN
+ *  GENERATE TOKEN
  * Maakt een unieke MD5 hash van de instellingen en slaat deze op.
  */
 export async function generateVoiceConfigToken(settings: VoiceSettings): Promise<string> {
@@ -38,7 +38,7 @@ export async function generateVoiceConfigToken(settings: VoiceSettings): Promise
 }
 
 /**
- * 📥 LOAD CONFIG
+ *  LOAD CONFIG
  * Haalt instellingen op basis van een token.
  */
 export async function loadVoiceConfig(token: string): Promise<VoiceSettings | null> {
@@ -51,7 +51,7 @@ export async function loadVoiceConfig(token: string): Promise<VoiceSettings | nu
 }
 
 /**
- * 🔗 PARSE URL
+ *  PARSE URL
  * Detecteert vcfg token of losse parameters in de URL.
  */
 export function getVoiceSettingsFromParams(searchParams: URLSearchParams): VoiceSettings {

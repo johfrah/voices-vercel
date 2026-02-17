@@ -18,13 +18,13 @@ import * as path from 'path';
  */
 
 const countryToIso: Record<string, string> = {
-  'belgië': 'be', 'belgie': 'be', 'nederland': 'nl', 'verenigd koninkrijk': 'gb',
-  'groot-brittannië': 'gb', 'groot brittannie': 'gb', 'spanje': 'es', 'italië': 'it', 
+  'belgi': 'be', 'belgie': 'be', 'nederland': 'nl', 'verenigd koninkrijk': 'gb',
+  'groot-brittanni': 'gb', 'groot brittannie': 'gb', 'spanje': 'es', 'itali': 'it', 
   'italie': 'it', 'frankrijk': 'fr', 'duitsland': 'de', 'amerika': 'us', 
-  'denemarken': 'dk', 'polen': 'pl', 'brazillië': 'br', 'brazillie': 'br', 
+  'denemarken': 'dk', 'polen': 'pl', 'brazilli': 'br', 'brazillie': 'br', 
   'portugal': 'pt', 'vietnam': 'vn', 'colombia': 'co', 'finland': 'fi',
-  'noorwegen': 'no', 'zweden': 'se', 'turkije': 'tr', 'roemenië': 'ro',
-  'roemenie': 'ro', 'tsjechië': 'cz', 'tsjechie' : 'cz', 'taiwan': 'tw'
+  'noorwegen': 'no', 'zweden': 'se', 'turkije': 'tr', 'roemeni': 'ro',
+  'roemenie': 'ro', 'tsjechi': 'cz', 'tsjechie' : 'cz', 'taiwan': 'tw'
 };
 
 const langToIso: Record<string, string> = {
@@ -149,7 +149,7 @@ function getCleanedLang(raw: string, country: string, extra: string): string {
 }
 
 export async function seedInstructorBios() {
-  console.log('🎙️ Seeding Instructor Bios with Legacy Accuracy...');
+  console.log(' Seeding Instructor Bios with Legacy Accuracy...');
   
   try {
     // Update Bernadette
@@ -168,18 +168,18 @@ export async function seedInstructorBios() {
       })
       .where(eq(instructors.name, "Johfrah Lefebvre"));
 
-    console.log('✅ Instructor bios updated.');
+    console.log(' Instructor bios updated.');
   } catch (e) {
-    console.error('❌ Failed to seed instructor bios:', e);
+    console.error(' Failed to seed instructor bios:', e);
   }
 }
 
 export async function syncAllData() {
-  console.log('🚀 STARTING 100% ASSET-ACCURATE NUCLEAR SYNC (LOCAL FALLBACK)...');
+  console.log(' STARTING 100% ASSET-ACCURATE NUCLEAR SYNC (LOCAL FALLBACK)...');
 
   try {
     // 1. Sync Users
-    console.log('👤 Syncing Users (Local File)...');
+    console.log(' Syncing Users (Local File)...');
     const usersPath = path.join(process.cwd(), 'users_sync.json');
     if (fs.existsSync(usersPath)) {
       const usersDataRaw = fs.readFileSync(usersPath, 'utf8');
@@ -210,11 +210,11 @@ export async function syncAllData() {
           console.error(`  [ERROR] Failed to sync user ${user.email}:`, e);
         }
       }
-      console.log(`✅ Users synced: ${userData.length}`);
+      console.log(` Users synced: ${userData.length}`);
     }
 
     // 2. Sync Actors & Demos
-    console.log('🎙️ Syncing Actors & Demos (Local File)...');
+    console.log(' Syncing Actors & Demos (Local File)...');
     const actorsPath = path.join(process.cwd(), 'actors_sync.json');
     if (fs.existsSync(actorsPath)) {
       const actorsDataRaw = fs.readFileSync(actorsPath, 'utf8');
@@ -239,7 +239,7 @@ export async function syncAllData() {
 
           const [existingActor] = await db.select().from(actors).where(eq(actors.wpProductId, actor.product_id)).limit(1);
           
-          // 🛡️ NUCLEAR LOCK MANDATE: Overschrijf nooit handmatige aanpassingen
+          //  NUCLEAR LOCK MANDATE: Overschrijf nooit handmatige aanpassingen
           if (existingActor?.isManuallyEdited) {
             console.log(`[LOCK] Skipping actor ${actor.product_id} (${actor.first_name}) due to manual edits.`);
             continue;
@@ -309,11 +309,11 @@ export async function syncAllData() {
           console.error(`  [ERROR] Failed to sync actor ${actor.id}:`, e);
         }
       }
-      console.log(`✅ Actors synced: ${results.length}`);
+      console.log(` Actors synced: ${results.length}`);
     }
 
-    console.log('🏁 NUCLEAR SYNC COMPLETED.');
+    console.log(' NUCLEAR SYNC COMPLETED.');
   } catch (error) {
-    console.error('❌ SYNC FAILED:', error);
+    console.error(' SYNC FAILED:', error);
   }
 }

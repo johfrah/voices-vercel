@@ -47,7 +47,7 @@ async function ParticipantsContent() {
           <VoiceglotText  translationKey="studio.participants.title" defaultText="Deelnemers" />
         </HeadingInstrument>
         <TextInstrument className="text-va-black/50 font-light text-[15px]">
-          <VoiceglotText  translationKey="studio.participants.subtitle" defaultText="Beheer alle workshop aanmeldingen en geïnteresseerden." />
+          <VoiceglotText  translationKey="studio.participants.subtitle" defaultText="Beheer alle workshop aanmeldingen en genteresseerden." />
         </TextInstrument>
       </SectionInstrument>
 

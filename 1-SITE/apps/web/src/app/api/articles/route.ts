@@ -4,7 +4,7 @@ import path from 'path';
 import matter from 'gray-matter';
 
 /**
- * 📰 API: ARTICLES (NUCLEAR 2026)
+ *  API: ARTICLES (NUCLEAR 2026)
  * 
  * Doel: Haalt alle artikelen (Stories & Blueprints) op voor de blog/overzichtspagina.
  */

@@ -29,7 +29,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 
 /**
- * ⚙️ ADMIN SETTINGS (NUCLEAR 2026)
+ *  ADMIN SETTINGS (NUCLEAR 2026)
  * 
  * Beheer van bedrijfsinformatie, algemene instellingen en vakantieregelingen.
  */
@@ -41,7 +41,7 @@ export default function AdminSettingsPage() {
   const [configs, setConfigs] = useState<any>({
     company_info: {
       name: 'Voices.be',
-      address: 'Gent, België',
+      address: 'Gent, Belgi',
       email: 'hello@voices.be',
       phone: '+32 9 000 00 00',
       vat: 'BE0000.000.000',
@@ -148,7 +148,7 @@ export default function AdminSettingsPage() {
       </SectionInstrument>
 
       <BentoGrid strokeWidth={1.5} columns={3}>
-        {/* 🏢 BEDRIJFSINFORMATIE */}
+        {/*  BEDRIJFSINFORMATIE */}
         <BentoCard span="lg" className="bg-white border border-black/5 p-10 space-y-8">
           <ContainerInstrument className="flex items-center gap-4 border-b border-black/5 pb-6">
             <ContainerInstrument className="w-12 h-12 bg-blue-500/10 text-blue-600 rounded-2xl flex items-center justify-center">
@@ -233,7 +233,7 @@ export default function AdminSettingsPage() {
           )}
         </BentoCard>
 
-        {/* 🕒 ALGEMENE INSTELLINGEN */}
+        {/*  ALGEMENE INSTELLINGEN */}
         <BentoCard span="sm" className="bg-white border border-black/5 p-10 space-y-8">
           <ContainerInstrument className="flex items-center gap-4 border-b border-black/5 pb-6">
             <ContainerInstrument className="w-12 h-12 bg-orange-500/10 text-orange-600 rounded-2xl flex items-center justify-center">
@@ -289,7 +289,7 @@ export default function AdminSettingsPage() {
           )}
         </BentoCard>
 
-        {/* 🌴 VAKANTIEREGELING */}
+        {/*  VAKANTIEREGELING */}
         <BentoCard span="full" className="bg-va-black text-white p-12 relative overflow-hidden group">
           <ContainerInstrument className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12">
             <ContainerInstrument className="space-y-6">

@@ -5,10 +5,10 @@ import { desc } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * ⚡ API: ADMIN PAGES (NUCLEAR CMS)
+ *  API: ADMIN PAGES (NUCLEAR CMS)
  * 
  * Doel: Lijst van alle pagina's in de database.
- * 🛡️ Admin only.
+ *  Admin only.
  */
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin();
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, pages });
   } catch (error) {
-    console.error('❌ Admin Pages API Error:', error);
+    console.error(' Admin Pages API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

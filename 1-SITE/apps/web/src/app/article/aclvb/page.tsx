@@ -176,7 +176,7 @@ export default function AclvbStoryPage() {
               <TextInstrument className="text-va-black/60 font-light text-lg leading-relaxed">
                 <VoiceglotText 
                   translationKey="story.aclvb.text" 
-                  defaultText="Voor een vakbond als ACLVB is bereikbaarheid essentieel. Door 140 verschillende, rommelige begroetingen te vervangen door één warme, professionele stem, voelen tienduizenden leden zich meteen gehoord en welkom." 
+                  defaultText="Voor een vakbond als ACLVB is bereikbaarheid essentieel. Door 140 verschillende, rommelige begroetingen te vervangen door n warme, professionele stem, voelen tienduizenden leden zich meteen gehoord en welkom." 
                 />
               </TextInstrument>
             </ContainerInstrument>
@@ -214,7 +214,7 @@ export default function AclvbStoryPage() {
                   />
                 </TextInstrument>
                 <TextInstrument className="mt-6 text-[15px] font-light tracking-widest text-va-black/40 ">
-                  — Tom Van Droogenbroeck, ACLVB
+                   Tom Van Droogenbroeck, ACLVB
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

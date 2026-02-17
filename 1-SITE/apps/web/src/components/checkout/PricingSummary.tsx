@@ -114,7 +114,7 @@ export const PricingSummary: React.FC = () => {
                   Johfrai {state.plan}
                 </HeadingInstrument>
                 <TextInstrument className="text-[15px] tracking-widest text-white/40 font-light ">
-                  <VoiceglotText  translationKey="checkout.summary.subscription_desc" defaultText="Jaarabonnement • Direct Actief" />
+                  <VoiceglotText  translationKey="checkout.summary.subscription_desc" defaultText="Jaarabonnement  Direct Actief" />
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -125,7 +125,7 @@ export const PricingSummary: React.FC = () => {
                 animate={{ y: 0, opacity: 1 }}
                 className="block font-light text-2xl text-primary"
               >
-                €{state.pricing.total.toFixed(2)}
+                {state.pricing.total.toFixed(2)}
               </motion.span>
               <TextInstrument className="text-[15px] tracking-widest text-white/20 font-light ">
                 <VoiceglotText  translationKey="common.per_month" defaultText="per maand" />
@@ -154,7 +154,7 @@ export const PricingSummary: React.FC = () => {
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <TextInstrument className="font-light text-lg text-va-black">€{state.pricing.base.toFixed(2)}</TextInstrument>
+            <TextInstrument className="font-light text-lg text-va-black">{state.pricing.base.toFixed(2)}</TextInstrument>
           </ContainerInstrument>
         )}
 
@@ -173,7 +173,7 @@ export const PricingSummary: React.FC = () => {
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <TextInstrument className="font-light text-lg text-va-black">€{state.pricing.total.toFixed(2)}</TextInstrument>
+            <TextInstrument className="font-light text-lg text-va-black">{state.pricing.total.toFixed(2)}</TextInstrument>
           </ContainerInstrument>
         )}
 
@@ -196,7 +196,7 @@ export const PricingSummary: React.FC = () => {
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <TextInstrument className="font-light text-lg text-va-black">€{state.pricing.wordSurcharge.toFixed(2)}</TextInstrument>
+            <TextInstrument className="font-light text-lg text-va-black">{state.pricing.wordSurcharge.toFixed(2)}</TextInstrument>
           </ContainerInstrument>
         )}
 
@@ -221,7 +221,7 @@ export const PricingSummary: React.FC = () => {
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <TextInstrument className="font-light text-lg text-va-black">€59.00</TextInstrument>
+            <TextInstrument className="font-light text-lg text-va-black">59.00</TextInstrument>
           </ContainerInstrument>
         )}
 
@@ -237,7 +237,7 @@ export const PricingSummary: React.FC = () => {
               {isSubscription ? 
                 <VoiceglotText  
                   translationKey={`checkout.summary.guarantee.${state.plan}`} 
-                  defaultText={`Inbegrepen in je ${state.plan} plan: ${state.plan === 'pro' ? '1× per kwartaal' : state.plan === 'studio' ? '1× per maand' : 'Upgrade mogelijk naar'} een menselijke fix door Johfrah zelf.`} 
+                  defaultText={`Inbegrepen in je ${state.plan} plan: ${state.plan === 'pro' ? '1 per kwartaal' : state.plan === 'studio' ? '1 per maand' : 'Upgrade mogelijk naar'} een menselijke fix door Johfrah zelf.`} 
                 /> :
                 <VoiceglotText  
                   translationKey="checkout.summary.guarantee.ai" 
@@ -253,10 +253,10 @@ export const PricingSummary: React.FC = () => {
             <ContainerInstrument>
               <HeadingInstrument level={4} className="font-light text-[15px] text-va-black">{item.name}</HeadingInstrument>
               <TextInstrument className="text-[15px] tracking-widest text-va-black/40 font-light ">
-                {item.quantity}x • {item.meta?.style || 'Standaard'}
+                {item.quantity}x  {item.meta?.style || 'Standaard'}
               </TextInstrument>
             </ContainerInstrument>
-            <TextInstrument className="font-light text-lg text-va-black">€{item.price.toFixed(2)}</TextInstrument>
+            <TextInstrument className="font-light text-lg text-va-black">{item.price.toFixed(2)}</TextInstrument>
           </ContainerInstrument>
         ))}
       </ContainerInstrument>
@@ -266,13 +266,13 @@ export const PricingSummary: React.FC = () => {
           <TextInstrument className="text-va-black/40 font-light tracking-widest text-[15px] ">
             <VoiceglotText  translationKey="common.subtotal" defaultText="Subtotaal" />
           </TextInstrument>
-          <TextInstrument className="font-light text-va-black">€{subtotal.toFixed(2)}</TextInstrument>
+          <TextInstrument className="font-light text-va-black">{subtotal.toFixed(2)}</TextInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="flex justify-between text-[15px]">
           <TextInstrument className="text-va-black/40 font-light tracking-widest text-[15px] ">
             <VoiceglotText  translationKey="common.vat" defaultText="BTW (21%)" />
           </TextInstrument>
-          <TextInstrument className="font-light text-va-black">€{tax.toFixed(2)}</TextInstrument>
+          <TextInstrument className="font-light text-va-black">{tax.toFixed(2)}</TextInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="pt-4 border-t border-va-black/5 flex justify-between items-center">
           <TextInstrument className="text-[15px] font-light tracking-widest text-va-black ">
@@ -284,7 +284,7 @@ export const PricingSummary: React.FC = () => {
             animate={{ scale: 1 }}
             className="text-3xl font-light text-primary"
           >
-            €{total.toFixed(2)}
+            {total.toFixed(2)}
           </motion.span>
         </ContainerInstrument>
       </ContainerInstrument>

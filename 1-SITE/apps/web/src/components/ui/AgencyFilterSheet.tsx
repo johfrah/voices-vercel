@@ -34,13 +34,13 @@ export const AgencyFilterSheet: React.FC<{
     onUpdate({ [key]: current === value ? undefined : value });
   };
 
-  // 🌍 MARKET-BASED LANGUAGE LOGIC
+  //  MARKET-BASED LANGUAGE LOGIC
   const sortedLanguages = React.useMemo(() => {
-    // 🌍 MARKET-AWARE FILTERING
+    //  MARKET-AWARE FILTERING
     const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
     const market = MarketManager.getCurrentMarket(host);
     
-    // 🛡️ CHRIS-PROTOCOL: Toon ALTIJD alle talen die in de database zitten, 
+    //  CHRIS-PROTOCOL: Toon ALTIJD alle talen die in de database zitten, 
     // maar gebruik de market-volgorde voor de top-selectie.
     const allAvailableLangs = [...filters.languages];
     const marketLangs = market.supported_languages;

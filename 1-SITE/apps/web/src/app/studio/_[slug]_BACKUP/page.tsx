@@ -22,7 +22,7 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">
-      {/* 🧪 LIQUID BACKGROUND */}
+      {/*  LIQUID BACKGROUND */}
       <ContainerInstrument className="fixed inset-0 -z-10 opacity-[0.03] pointer-events-none">
         <ContainerInstrument className="absolute inset-0 hmagic animate-slow-pulse" />
       </ContainerInstrument>
@@ -31,7 +31,7 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
 
       <WorkshopContent  workshop={workshop} />
 
-      {/* 🌟 REVIEWS SPECIFIEK VOOR DEZE WORKSHOP */}
+      {/*  REVIEWS SPECIFIEK VOOR DEZE WORKSHOP */}
       {workshop.reviews && workshop.reviews.length > 0 && (
         <ReviewsInstrument 
           reviews={workshop.reviews} 

@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 import { PayoutReadinessService } from '@/services/PayoutReadinessService';
 
 /**
- * 💎 CLIENT APPROVAL API (NUCLEAR 2026)
+ *  CLIENT APPROVAL API (NUCLEAR 2026)
  * 
  * Wordt aangeroepen wanneer een klant audio goedkeurt in het portaal.
  * Triggert direct de Payout Readiness check.
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'orderItemId is verplicht' }, { status: 400 });
     }
 
-    console.log(`💎 Klant keurt Order Item ${orderItemId} goed...`);
+    console.log(` Klant keurt Order Item ${orderItemId} goed...`);
 
     // 1. Update de status in de database
     await db.update(orderItems)
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Client Approval Error:', error);
+    console.error(' Client Approval Error:', error);
     return NextResponse.json({ error: 'Approval failed' }, { status: 500 });
   }
 }

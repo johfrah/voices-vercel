@@ -2,15 +2,15 @@ import soap from 'soap';
 import { create } from 'xmlbuilder2';
 
 /**
- * ⚡ YUKI NUCLEAR SERVICE (2026)
+ *  YUKI NUCLEAR SERVICE (2026)
  * 
  * Handles all SOAP communication with Yuki for invoicing and administration.
  */
 
 export interface YukiInvoiceData {
   orderId: string | number;
-  invoiceDate?: string; // 🛡️ LEGACY: Ondersteuning voor specifieke factuurdatum
-  paymentId?: string;   // 🛡️ LEGACY: Mollie Transactie ID of PO referentie
+  invoiceDate?: string; //  LEGACY: Ondersteuning voor specifieke factuurdatum
+  paymentId?: string;   //  LEGACY: Mollie Transactie ID of PO referentie
   customer: {
     firstName: string;
     lastName: string;
@@ -28,13 +28,13 @@ export interface YukiInvoiceData {
     quantity: number;
     price: number;
     vatType: number; 
-    vatPercentage?: number; // 🛡️ LEGACY: Expliciet percentage
-    remarks?: string;       // 🛡️ LEGACY: Details per regel (Usage, etc.)
+    vatPercentage?: number; //  LEGACY: Expliciet percentage
+    remarks?: string;       //  LEGACY: Details per regel (Usage, etc.)
   }>;
   paymentMethod: string;
   poNumber?: string;
   isCreditNote?: boolean;
-  originalInvoiceNumber?: string; // 🛡️ LEGACY: Voor creditnota referentie
+  originalInvoiceNumber?: string; //  LEGACY: Voor creditnota referentie
 }
 
 export interface YukiOutstandingInvoice {
@@ -55,7 +55,7 @@ export class YukiService {
   private static ADMINISTRATION_ID = process.env.YUKI_ADMINISTRATION_ID || '';
 
   /**
-   * 🛡️ CONTACT UPSERT: Zoekt en werkt contacten bij in Yuki
+   *  CONTACT UPSERT: Zoekt en werkt contacten bij in Yuki
    * Voorkomt dubbele entries en houdt de database zuiver.
    */
   static async upsertContact(customer: YukiInvoiceData['customer']) {
@@ -87,7 +87,7 @@ export class YukiService {
         contactId = contacts[0].ID;
       }
 
-      // 2. Bouw Contact XML voor Update/Create (🛡️ LEGACY PARITY)
+      // 2. Bouw Contact XML voor Update/Create ( LEGACY PARITY)
       const xml = create({ version: '1.0', encoding: 'UTF-8' })
         .ele('Contacts', { xmlns: 'urn:xmlns:http://www.theyukicompany.com:contacts' })
           .ele('Contact')
@@ -98,7 +98,7 @@ export class YukiService {
             .ele('City').txt(customer.city || '').up()
             .ele('Zipcode').txt(customer.zipCode || '').up()
             .ele('AddressLine_1').txt(customer.address || '').up()
-            // 🛡️ LEGACY: ContactPerson blok is essentieel voor Yuki
+            //  LEGACY: ContactPerson blok is essentieel voor Yuki
             .ele('ContactPerson')
               .ele('FirstName').txt(customer.firstName).up()
               .ele('LastName').txt(customer.lastName).up()
@@ -134,7 +134,7 @@ export class YukiService {
     }
 
     try {
-      // 🛡️ LEGACY MANDATE: Eerst contact upserten om Yuki zuiver te houden
+      //  LEGACY MANDATE: Eerst contact upserten om Yuki zuiver te houden
       await this.upsertContact(data.customer);
 
       const client = await soap.createClientAsync(this.WSDL_SALES);
@@ -145,12 +145,12 @@ export class YukiService {
 
       if (!sessionId) throw new Error('Yuki Authentication failed');
 
-      // 2. Build the Yuki SalesInvoice XML (🛡️ LEGACY PARITY)
+      // 2. Build the Yuki SalesInvoice XML ( LEGACY PARITY)
       const xml = create({ version: '1.0', encoding: 'UTF-8' })
         .ele('SalesInvoices', { xmlns: 'urn:xmlns:http://www.theyukicompany.com:salesinvoices' })
           .ele('SalesInvoice')
             .ele('Reference').txt(`Order-${data.orderId}`).up()
-            // 🛡️ LEGACY: Subject bevat nu ook "Factuur" of "Creditnota"
+            //  LEGACY: Subject bevat nu ook "Factuur" of "Creditnota"
             .ele('Subject').txt(`${data.isCreditNote ? 'Creditnota' : 'Factuur'} - Order-${data.orderId}${data.poNumber ? ' - PO-' + data.poNumber : ''}`).up()
             .ele('Process').txt('true').up()
             .ele('EmailToCustomer').txt('false').up()
@@ -159,7 +159,7 @@ export class YukiService {
             .ele('DueDate').txt(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]).up()
             .ele('Currency').txt('EUR').up()
             .ele('PaymentID').txt(data.paymentId || data.poNumber || '').up()
-            // 🛡️ LEGACY: Uitgebreide Remarks met payment info en credit referentie
+            //  LEGACY: Uitgebreide Remarks met payment info en credit referentie
             .ele('Remarks').txt(
               `Ordernumber-${data.orderId}` +
               `${data.poNumber ? ' | Customer-PO-' + data.poNumber : ''}` +
@@ -181,11 +181,11 @@ export class YukiService {
               .ele(data.lines.map(line => ({
                 InvoiceLine: {
                   Description: line.description,
-                  Remarks: line.remarks || '', // 🛡️ LEGACY: Extra details per regel
+                  Remarks: line.remarks || '', //  LEGACY: Extra details per regel
                   Quantity: data.isCreditNote ? -Math.abs(line.quantity) : line.quantity,
                   SalesPrice: line.price,
                   VATType: line.vatType,
-                  VATPercentage: line.vatPercentage || (line.vatType === 1 ? 21.00 : 0.00), // 🛡️ LEGACY: Expliciet percentage
+                  VATPercentage: line.vatPercentage || (line.vatType === 1 ? 21.00 : 0.00), //  LEGACY: Expliciet percentage
                   VATIncluded: 'false'
                 }
               })))
@@ -225,7 +225,7 @@ export class YukiService {
   }
 
   /**
-   * 🛡️ ACCOUNTING INFO: Haalt bankrekening informatie en openstaande posten op
+   *  ACCOUNTING INFO: Haalt bankrekening informatie en openstaande posten op
    */
   static async getAccountingInfo() {
     if (!this.ACCESS_KEY) return null;
@@ -253,7 +253,7 @@ export class YukiService {
   }
 
   /**
-   * 🏦 PONTO RECONCILIATION: Haalt openstaande posten op uit Yuki
+   *  PONTO RECONCILIATION: Haalt openstaande posten op uit Yuki
    * voor synchronisatie met banktransacties.
    */
   static async getOutstandingInvoices(): Promise<YukiOutstandingInvoice[]> {

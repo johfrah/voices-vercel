@@ -3,15 +3,15 @@ import { users, orders, utmTouchpoints, reviews } from '@db/schema';
 import { eq, sql, desc, sum, count } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 
-// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 /**
- * ⚡ UNIFIED CUSTOMER INTELLIGENCE (UCI) SERVICE
+ *  UNIFIED CUSTOMER INTELLIGENCE (UCI) SERVICE
  * 
- * Doel: Eén bron van waarheid creëren voor elke klant door alle data-fragmenten
+ * Doel: En bron van waarheid creren voor elke klant door alle data-fragmenten
  * (orders, insights, DNA, tracking) te consolideren.
  * 
  * Volgens Master Voices Protocol 2026.
@@ -48,7 +48,7 @@ export interface Customer360 {
 
 export class UCIService {
   /**
-   * Haalt het volledige 360° profiel op van een klant
+   * Haalt het volledige 360 profiel op van een klant
    */
   static async getCustomer360(identifier: string | number): Promise<Customer360 | null> {
     try {
@@ -66,7 +66,7 @@ export class UCIService {
           .limit(1);
         user = dbUser;
       } catch (dbError) {
-        console.warn('⚠️ UCI Service Drizzle failed, falling back to SDK');
+        console.warn(' UCI Service Drizzle failed, falling back to SDK');
         const query = supabase.from('users').select('*');
         if (typeof identifier === 'number') query.eq('id', identifier);
         else query.eq('email', identifier);
@@ -123,7 +123,7 @@ export class UCIService {
         orderCount = Number(stats?.orderCount || 0);
         lastOrderDate = stats?.lastOrder as Date;
       } catch (orderError) {
-        console.warn('⚠️ UCI Order stats Drizzle failed, falling back to SDK');
+        console.warn(' UCI Order stats Drizzle failed, falling back to SDK');
         const { data: ordersData } = await supabase.from('orders').select('total, created_at').eq('user_id', user.id);
         if (ordersData) {
           totalSpent = ordersData.reduce((acc, o) => acc + Number(o.total || 0), 0);
@@ -144,7 +144,7 @@ export class UCIService {
           .orderBy(desc(utmTouchpoints.createdAt))
           .limit(10);
       } catch (utmError) {
-        console.warn('⚠️ UCI UTM Drizzle failed, falling back to SDK');
+        console.warn(' UCI UTM Drizzle failed, falling back to SDK');
         const { data } = await supabase.from('utm_touchpoints').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10);
         touchpoints = data || [];
       }

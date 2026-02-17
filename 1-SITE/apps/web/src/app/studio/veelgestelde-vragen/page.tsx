@@ -14,7 +14,7 @@ import { getFaqs } from '@/lib/api-server';
 export const dynamic = 'force-dynamic';
 
 export default async function StudioFaqPage() {
-  // 🎙️ Haal de 5 gedestilleerde workshop vragen op via de server API
+  //  Haal de 5 gedestilleerde workshop vragen op via de server API
   const workshopFaqs = await getFaqs('Workshops', 5);
 
   const accordionItems = (workshopFaqs || []).map(f => ({
@@ -41,12 +41,12 @@ export default async function StudioFaqPage() {
         </SectionInstrument>
 
         <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-          {/* 🎯 LINKS: VIDEO QUIZ (5 Kolommen) */}
+          {/*  LINKS: VIDEO QUIZ (5 Kolommen) */}
           <ContainerInstrument className="lg:col-span-5 lg:sticky lg:top-40 z-20 w-full min-h-[600px] flex flex-col items-center">
             <WorkshopQuiz   />
           </ContainerInstrument>
 
-          {/* 🎙️ RECHTS: FAQ VRAGEN (7 Kolommen) */}
+          {/*  RECHTS: FAQ VRAGEN (7 Kolommen) */}
           <ContainerInstrument className="lg:col-span-7 space-y-12">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tight mb-8 border-b border-black/10 pb-6 text-va-black">
               Veelgestelde vragen
@@ -54,7 +54,7 @@ export default async function StudioFaqPage() {
             
             <AccordionInstrument items={accordionItems} />
             
-            {/* 🏁 MINI CTA */}
+            {/*  MINI CTA */}
             <ContainerInstrument className="pt-12 p-10 bg-white/40 backdrop-blur-xl rounded-[32px] border border-black/5 shadow-aura">
               <TextInstrument className="text-va-black text-lg font-light tracking-wide mb-6 opacity-60">
                 Staat je vraag er niet tussen? Onze AI-gids Voicy kent alle details van de workshops.
@@ -65,7 +65,7 @@ export default async function StudioFaqPage() {
         </ContainerInstrument>
       </ContainerInstrument>
 
-      {/* 🧠 LLM CONTEXT */}
+      {/*  LLM CONTEXT */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

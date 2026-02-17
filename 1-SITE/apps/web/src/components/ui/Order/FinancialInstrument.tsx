@@ -31,19 +31,19 @@ export const FinancialInstrument: React.FC<FinancialInstrumentProps> = ({
           <TextInstrument className="text-white/40 text-[15px] font-light tracking-widest ">
             <VoiceglotText  translationKey="order.financial.revenue" defaultText="Omzet" />
           </TextInstrument>
-          <TextInstrument className="text-2xl font-light">€{total}</TextInstrument>
+          <TextInstrument className="text-2xl font-light">{total}</TextInstrument>
         </ContainerInstrument>
         <ContainerInstrument>
           <TextInstrument className="text-white/40 text-[15px] font-light tracking-widest ">
             <VoiceglotText  translationKey="order.financial.cost" defaultText="Inkoop (COG)" />
           </TextInstrument>
-          <TextInstrument className="text-2xl font-light text-red-400">€{totalCost}</TextInstrument>
+          <TextInstrument className="text-2xl font-light text-red-400">{totalCost}</TextInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="p-3 bg-white/5 rounded-[10px] border border-white/10">
           <TextInstrument className="text-white/40 text-[15px] font-light tracking-widest ">
             <VoiceglotText  translationKey="order.financial.margin" defaultText="Marge" />
           </TextInstrument>
-          <TextInstrument className="text-2xl font-light text-primary">€{totalProfit}</TextInstrument>
+          <TextInstrument className="text-2xl font-light text-primary">{totalProfit}</TextInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
     </BentoCard>

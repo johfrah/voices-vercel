@@ -4,7 +4,7 @@ import { PricingEngine } from './pricing-engine';
 import { eq } from 'drizzle-orm';
 
 /**
- * ⚡ NUCLEAR PRICING ENGINE (2026) - DYNAMIC VERSION
+ *  NUCLEAR PRICING ENGINE (2026) - DYNAMIC VERSION
  * 
  * Deze service haalt rekenregels uit de database.
  * 100% Cursorless & Futureproof.

@@ -17,10 +17,10 @@ interface Language {
 }
 
 const LANGUAGE_MAP: Record<string, Language> = {
-  nl: { code: 'nl', label: 'Nederlands', native: 'Nederlands', flag: '🇧🇪' },
-  fr: { code: 'fr', label: 'Frans', native: 'Français', flag: '🇫🇷' },
-  en: { code: 'en', label: 'Engels', native: 'English', flag: '🇬🇧' },
-  de: { code: 'de', label: 'Duits', native: 'Deutsch', flag: '🇩🇪' },
+  nl: { code: 'nl', label: 'Nederlands', native: 'Nederlands', flag: '' },
+  fr: { code: 'fr', label: 'Frans', native: 'Franais', flag: '' },
+  en: { code: 'en', label: 'Engels', native: 'English', flag: '' },
+  de: { code: 'de', label: 'Duits', native: 'Deutsch', flag: '' },
 };
 
 export const LanguageSwitcher: React.FC = () => {

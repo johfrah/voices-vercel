@@ -278,7 +278,7 @@ export const WorkshopInterestForm: React.FC = () => {
               disabled={isLoading}
               className="flex-1 py-5 sm:py-6 rounded-[10px] bg-black text-white font-light tracking-tight text-[15px] hover:bg-primary transition-all duration-100 shadow-aura flex items-center justify-center gap-3 group min-h-[52px] active:scale-[0.99] disabled:opacity-50 disabled:active:scale-100"
             >
-              {isLoading ? <VoiceglotText  translationKey="common.processing" defaultText="Verwerken…" /> : <VoiceglotText  translationKey="workshop.interest.submit" defaultText="Inschrijving voltooien" />}
+              {isLoading ? <VoiceglotText  translationKey="common.processing" defaultText="Verwerken" /> : <VoiceglotText  translationKey="workshop.interest.submit" defaultText="Inschrijving voltooien" />}
               <Image  src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className={cn("brightness-0 invert shrink-0 transition-transform duration-100", isLoading && "opacity-50")} />
             </ButtonInstrument>
           </ContainerInstrument>

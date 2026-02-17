@@ -41,7 +41,7 @@ export default function OrdersPage() {
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tighter">
                 <VoiceglotText  translationKey="account.orders.example_project" defaultText="Vlaamse Voice-over Commercial" />
                 <TextInstrument className="text-[15px] font-light text-va-black/40 tracking-widest">
-                  <VoiceglotText  translationKey="account.orders.example_id" defaultText="Order #88291 • Stem: Johfrah" />
+                  <VoiceglotText  translationKey="account.orders.example_id" defaultText="Order #88291  Stem: Johfrah" />
                 </TextInstrument>
               </HeadingInstrument>
             </ContainerInstrument>

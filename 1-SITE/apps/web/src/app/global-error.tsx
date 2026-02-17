@@ -13,7 +13,7 @@ import { AlertCircle, RefreshCw } from 'lucide-react';
 import { useEffect } from 'react';
 
 /**
- * 🛡️ GLOBAL ERROR (NUCLEAR 2026)
+ *  GLOBAL ERROR (NUCLEAR 2026)
  * Laatste verdediging: vangt fouten in root layout.
  */
 export default function GlobalError({
@@ -62,7 +62,7 @@ export default function GlobalError({
           </EditModeProvider>
         </TranslationProvider>
 
-        {/* 🧠 LLM CONTEXT (Compliance) */}
+        {/*  LLM CONTEXT (Compliance) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

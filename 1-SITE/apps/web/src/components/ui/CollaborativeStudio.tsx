@@ -181,7 +181,7 @@ export const CollaborativeStudio = ({ mode = 'demo' }: StudioSessionProps) => {
                   <VoiceglotText  translationKey="auto.collaborativestudio.hoi_thomas__ik_heb_j.05eb00" defaultText="Hoi Thomas! Ik heb je briefing ontvangen. Ik ga direct aan de slag met de demo." />
                 </TextInstrument>
                 <TextInstrument className="text-[15px] text-va-black/20 mt-2 tracking-widest font-light">
-                  <VoiceglotText  translationKey="studio.track_label" defaultText="Stem 1" /> • 10:45
+                  <VoiceglotText  translationKey="studio.track_label" defaultText="Stem 1" />  10:45
                 </TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

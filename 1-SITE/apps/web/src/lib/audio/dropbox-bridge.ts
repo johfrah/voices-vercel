@@ -1,5 +1,5 @@
 /**
- * 📦 DROPBOX EXPORT BRIDGE (2026)
+ *  DROPBOX EXPORT BRIDGE (2026)
  * 
  * Deze service zorgt voor de synchronisatie van verwerkte audio naar Dropbox.
  * Het maakt gebruik van de System-conventies voor mapstructuren.
@@ -28,9 +28,9 @@ export class DropboxExportBridge {
   static async pushToControlFolder(filePath: string, metadata: ExportMetadata) {
     const dropboxPath = this.getExportPath(metadata);
     
-    console.log(`🚀 [DROPBOX BRIDGE] Uploading ${filePath} to ${dropboxPath}`);
+    console.log(` [DROPBOX BRIDGE] Uploading ${filePath} to ${dropboxPath}`);
     
-    // 🛡️ System: Log de actie in de audit-trail
+    //  System: Log de actie in de audit-trail
     return {
       success: true,
       path: dropboxPath,

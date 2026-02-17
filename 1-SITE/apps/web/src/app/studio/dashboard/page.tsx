@@ -15,7 +15,7 @@ import { Mic, Calendar, Award, Download, ArrowRight, Play, Star, Clock } from 'l
 import Link from 'next/link';
 
 /**
- * 🎙️ STUDIO DASHBOARD (NUCLEAR 2026)
+ *  STUDIO DASHBOARD (NUCLEAR 2026)
  * 
  * Volgt de Zero Laws:
  * - HTML ZERO: Geen rauwe HTML tags.
@@ -63,7 +63,7 @@ export default function StudioDashboardPage() {
         </SectionInstrument>
 
         <BentoGrid columns={3}>
-          {/* 🎙️ LAATSTE OPNAME BENTO */}
+          {/*  LAATSTE OPNAME BENTO */}
           <BentoCard span="lg" className="hblue p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[400px]">
             <ContainerInstrument>
               <Mic strokeWidth={1.5} className="text-white/20 mb-8" size={48} />
@@ -99,7 +99,7 @@ export default function StudioDashboardPage() {
             </ContainerInstrument>
           </BentoCard>
 
-          {/* 📅 GEPLANDE WORKSHOPS */}
+          {/*  GEPLANDE WORKSHOPS */}
           <BentoCard span="sm" className="bg-white p-10 flex flex-col justify-between border border-black/5 shadow-aura">
             <ContainerInstrument>
               <Calendar strokeWidth={1.5} className="text-primary mb-8" size={32} />
@@ -132,7 +132,7 @@ export default function StudioDashboardPage() {
             </ButtonInstrument>
           </BentoCard>
 
-          {/* 🏆 ACHIEVEMENTS / PROGRESS */}
+          {/*  ACHIEVEMENTS / PROGRESS */}
           <BentoCard span="full" className="bg-va-black text-white p-12 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
             <ContainerInstrument className="relative z-10 flex items-center gap-8">
               <ContainerInstrument className="w-20 h-20 bg-primary rounded-3xl flex items-center justify-center text-va-black shadow-lg shadow-primary/20">

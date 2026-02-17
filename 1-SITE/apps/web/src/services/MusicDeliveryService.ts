@@ -4,14 +4,14 @@ import { eq, sql } from 'drizzle-orm';
 import { DropboxExportBridge } from '@/lib/audio/dropbox-bridge';
 
 /**
- * 🎵 MUSIC DELIVERY SERVICE (2026)
+ *  MUSIC DELIVERY SERVICE (2026)
  * 
  * Verantwoordelijk voor het leveren van aangekochte muziekstukken.
  * Na betaling worden de juiste formaten klaargezet in Dropbox.
  */
 export class MusicDeliveryService {
   static async deliverMusic(orderId: number) {
-    console.log(`🎵 [MUSIC DELIVERY] Starting delivery for Order #${orderId}...`);
+    console.log(` [MUSIC DELIVERY] Starting delivery for Order #${orderId}...`);
 
     try {
       // 1. Haal order en klantgegevens op
@@ -24,7 +24,7 @@ export class MusicDeliveryService {
       // 2. Check of er muziek in de order zit
       const musicMeta = (order.rawMeta as any)?.music;
       if (!musicMeta || !musicMeta.trackId) {
-        console.log(`🎵 [MUSIC DELIVERY] No music found in Order #${orderId}. Skipping.`);
+        console.log(` [MUSIC DELIVERY] No music found in Order #${orderId}. Skipping.`);
         return;
       }
 
@@ -36,13 +36,13 @@ export class MusicDeliveryService {
         .limit(1);
 
       if (!track) {
-        console.error(`❌ [MUSIC DELIVERY] Track ${musicMeta.trackId} not found in database!`);
+        console.error(` [MUSIC DELIVERY] Track ${musicMeta.trackId} not found in database!`);
         return;
       }
 
       const formats = (track.metadata as any)?.formats;
       if (!formats) {
-        console.error(`❌ [MUSIC DELIVERY] No formats found for track ${track.fileName}`);
+        console.error(` [MUSIC DELIVERY] No formats found for track ${track.fileName}`);
         return;
       }
 
@@ -65,12 +65,12 @@ export class MusicDeliveryService {
         await DropboxExportBridge.pushToControlFolder(filePath, metadata);
       }
 
-      console.log(`✅ [MUSIC DELIVERY] Successfully pushed ${filesToDeliver.length} files to Dropbox for Order #${orderId}.`);
+      console.log(` [MUSIC DELIVERY] Successfully pushed ${filesToDeliver.length} files to Dropbox for Order #${orderId}.`);
 
       return { success: true, files: filesToDeliver.length };
 
     } catch (err) {
-      console.error(`❌ [MUSIC DELIVERY] Failed to deliver music for Order #${orderId}:`, err);
+      console.error(` [MUSIC DELIVERY] Failed to deliver music for Order #${orderId}:`, err);
       throw err;
     }
   }

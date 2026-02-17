@@ -17,10 +17,10 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 /**
- * ⭐️ STUDIO REVIEWS (NUCLEAR 2026)
+ *  STUDIO REVIEWS (NUCLEAR 2026)
  * 
  * "Kwaliteitsbewaking van de stemmen."
- * 🛡️ Alleen voor admins – middleware + API beveiligen.
+ *  Alleen voor admins  middleware + API beveiligen.
  */
 export default function StudioReviewsPage() {
   const { isAdmin, isLoading } = useAuth();
@@ -164,7 +164,7 @@ export default function StudioReviewsPage() {
         ))}
       </BentoGrid>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

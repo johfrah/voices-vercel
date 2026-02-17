@@ -69,7 +69,7 @@ async function RecentActivity() {
             </ContainerInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="text-right">
-            <TextInstrument className="text-[15px] font-light">€ {order.total}</TextInstrument>
+            <TextInstrument className="text-[15px] font-light"> {order.total}</TextInstrument>
             <TextInstrument className="text-[15px] text-va-black/40 font-light">{new Date(order.createdAt!).toLocaleDateString()}</TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
@@ -91,7 +91,7 @@ export default async function BackofficeDashboard() {
         </SectionInstrument>
 
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
-          {/* 💰 COMMERCIAL CARD */}
+          {/*  COMMERCIAL CARD */}
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-green-500/10 text-green-600 rounded-2xl">
@@ -99,7 +99,7 @@ export default async function BackofficeDashboard() {
               </ContainerInstrument>
               <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest"><VoiceglotText  translationKey="admin.dashboard.card.voices" defaultText="Voices Agency" /></TextInstrument>
             </ContainerInstrument>
-            <TextInstrument className="text-4xl font-light tracking-tighter mb-1">€ {Number(stats.revenue).toLocaleString('nl-BE')}</TextInstrument>
+            <TextInstrument className="text-4xl font-light tracking-tighter mb-1"> {Number(stats.revenue).toLocaleString('nl-BE')}</TextInstrument>
             <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest"><VoiceglotText  translationKey="admin.dashboard.revenue" defaultText="Omzet" /></TextInstrument>
             <ContainerInstrument className="mt-6 pt-6 border-t border-black/5 flex justify-between">
               <ContainerInstrument>
@@ -113,7 +113,7 @@ export default async function BackofficeDashboard() {
             </ContainerInstrument>
           </ContainerInstrument>
 
-          {/* 🧘 ENGAGEMENT CARD */}
+          {/*  ENGAGEMENT CARD */}
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-va-primary/10 text-va-primary rounded-2xl">
@@ -135,7 +135,7 @@ export default async function BackofficeDashboard() {
             </ContainerInstrument>
           </ContainerInstrument>
 
-          {/* 👤 USER DNA CARD */}
+          {/*  USER DNA CARD */}
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-blue-500/10 text-blue-600 rounded-2xl">
@@ -151,13 +151,13 @@ export default async function BackofficeDashboard() {
                 <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.dashboard.chats" defaultText="Chats" /></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="text-right">
-                <TextInstrument className="text-lg font-light">360°</TextInstrument>
+                <TextInstrument className="text-lg font-light">360</TextInstrument>
                 <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.dashboard.visibility" defaultText="Zichtbaarheid" /></TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
           </ContainerInstrument>
 
-          {/* 🎓 STUDIO & ACADEMY CARD */}
+          {/*  STUDIO & ACADEMY CARD */}
           <ContainerInstrument className="bg-white rounded-[40px] p-8 border border-black/[0.03] shadow-sm">
             <ContainerInstrument className="flex justify-between items-start mb-6">
               <ContainerInstrument className="p-3 bg-orange-500/10 text-orange-600 rounded-2xl">

@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🎙️ API: ADMIN STUDIO EDITION (2026)
+ *  API: ADMIN STUDIO EDITION (2026)
  * PATCH: Update een specifieke workshop editie
  */
 

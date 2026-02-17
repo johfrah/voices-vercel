@@ -4,7 +4,7 @@ import { orders, orderItems, users } from '@db/schema';
 import { eq, sql, and, isNotNull } from 'drizzle-orm';
 
 /**
- * 📈 NUCLEAR PROFIT ENGINE (GODMODE 2026)
+ *  NUCLEAR PROFIT ENGINE (GODMODE 2026)
  * 
  * Doel: Real-time berekening van marges door Mollie omzet te koppelen
  * aan Yuki inkoopfacturen en Ponto uitbetalingen.

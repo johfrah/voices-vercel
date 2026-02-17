@@ -7,13 +7,13 @@ interface ActionPreviewProps {
 }
 
 /**
- * ⚛️ ATOMIC ACTION PREVIEW
+ *  ATOMIC ACTION PREVIEW
  * Rendert het 'concrete resultaat' van een AI-voorstel.
  */
 export const AtomicActionPreview = ({ type, payload, reasoning }: ActionPreviewProps) => {
   return (
     <div className="space-y-6">
-      {/* 🧠 Reasoning Layer */}
+      {/*  Reasoning Layer */}
       {reasoning && (
         <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl">
           <p className="text-[15px] font-black tracking-widest text-primary mb-2"><VoiceglotText  translationKey="auto.atomicactionpreview.ai_redenering.23dd78" defaultText="AI Redenering" /></p>
@@ -21,7 +21,7 @@ export const AtomicActionPreview = ({ type, payload, reasoning }: ActionPreviewP
         </div>
       )}
 
-      {/* 🖼️ Result Preview Layer */}
+      {/*  Result Preview Layer */}
       <div className="bg-white border border-black/5 rounded-3xl overflow-hidden shadow-sm">
         <div className="p-4 bg-va-background border-b border-black/5 flex items-center justify-between">
           <span className="text-[15px] font-black tracking-widest opacity-40"><VoiceglotText  translationKey="auto.atomicactionpreview.concreet_resultaat.0ecf9f" defaultText="Concreet Resultaat" /></span>
@@ -48,7 +48,7 @@ export const AtomicActionPreview = ({ type, payload, reasoning }: ActionPreviewP
           {type === 'payment' && (
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-black tracking-tighter">€{payload.amount}</p>
+                <p className="text-2xl font-black tracking-tighter">{payload.amount}</p>
                 <p className="text-[15px] opacity-40 font-bold tracking-widest">IBAN: {payload.recipient_iban}</p>
               </div>
               <div className="text-right">
@@ -74,7 +74,7 @@ export const AtomicActionPreview = ({ type, payload, reasoning }: ActionPreviewP
               </div>
               <div className="p-4 bg-va-dark text-white rounded-2xl flex justify-between items-center">
                 <span className="text-[15px] font-bold tracking-widest"><VoiceglotText  translationKey="auto.atomicactionpreview.totaalbedrag.ca9253" defaultText="Totaalbedrag" /></span>
-                <span className="text-lg font-black italic">€{payload.total_price}</span>
+                <span className="text-lg font-black italic">{payload.total_price}</span>
               </div>
             </div>
           )}

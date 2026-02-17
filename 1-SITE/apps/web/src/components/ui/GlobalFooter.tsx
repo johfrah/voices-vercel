@@ -14,7 +14,7 @@ import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrumen
 import { VoiceglotText } from './VoiceglotText';
 
 /**
- * 🌐 GLOBAL FOOTER (NUCLEAR 2026)
+ *  GLOBAL FOOTER (NUCLEAR 2026)
  * 
  * Volgt de Zero Laws:
  * - HTML ZERO: Geen rauwe HTML tags.
@@ -57,18 +57,18 @@ export default function GlobalFooter() {
     {
       title: t('footer.agency', 'Castingbureau'),
       links: [
-        { name: t('nav.voices', 'Onze stemmen'), href: '/agency' },
+        { name: t('nav.voices', 'Onze stemmen'), href: '/agency/' },
         { name: t('nav.how_it_works', 'Hoe werkt het'), href: '/#how-it-works' },
-        { name: t('nav.pricing', 'Hoeveel kost het'), href: '/price' },
-        { name: t('nav.contact', 'Contact'), href: '/contact' },
+        { name: t('nav.pricing', 'Hoeveel kost het'), href: '/price/' },
+        { name: t('nav.contact', 'Contact'), href: '/contact/' },
       ]
     },
     {
       title: t('footer.actors', 'Voor voice-overs'),
       links: [
-        { name: t('nav.studio', 'Voices Studio (workshops)'), href: '/studio' },
-        { name: t('nav.academy', 'Academy (online leertraject)'), href: '/academy' },
-        { name: t('nav.signup', 'Aanmelden als stemacteur'), href: '/auth/signup' },
+        { name: t('nav.studio', 'Voices Studio (workshops)'), href: '/studio/' },
+        { name: t('nav.academy', 'Academy (online leertraject)'), href: '/academy/' },
+        { name: t('nav.signup', 'Aanmelden als stemacteur'), href: '/auth/signup/' },
       ]
     },
     {
@@ -76,16 +76,16 @@ export default function GlobalFooter() {
       links: [
         { name: market.phone, href: `tel:${market.phone.replace(/\s+/g, '')}` },
         { name: market.email, href: `mailto:${market.email}` },
-        { name: t('footer.faq', 'Veelgestelde Vragen'), href: '/faq' },
-        { name: t('footer.terms', 'Voorwaarden'), href: '/terms' },
+        { name: t('footer.faq', 'Veelgestelde Vragen'), href: '/faq/' },
+        { name: t('footer.terms', 'Voorwaarden'), href: '/terms/' },
       ]
     },
     {
       title: t('footer.company', 'Over Voices'),
       links: [
-        { name: t('footer.about', 'Ons verhaal'), href: '/about' },
+        { name: t('footer.about', 'Ons verhaal'), href: '/about/' },
         { name: t('footer.ademing', 'Ademing (Rust)'), href: 'https://ademing.be' },
-        { name: t('footer.blog', 'Blog'), href: '/blog' },
+        { name: t('footer.blog', 'Blog'), href: '/blog/' },
       ]
     }
   ];
@@ -254,7 +254,7 @@ export default function GlobalFooter() {
         {/* Bottom Bar */}
         <ContainerInstrument className="pt-12 border-t border-black/5 flex flex-col md:flex-row justify-between items-center gap-8">
           <TextInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/20 ">
-            © 2026 {isPortfolio ? 'Johfrah Lefebvre' : isArtist ? 'Youssef Zaki' : 'Voices'}. {isSpecial && (
+             2026 {isPortfolio ? 'Johfrah Lefebvre' : isArtist ? 'Youssef Zaki' : 'Voices'}. {isSpecial && (
               <TextInstrument as="span">
                 Powered by 
                 <ButtonInstrument as="a" href="https://voices.be" variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">

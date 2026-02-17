@@ -1,5 +1,5 @@
 /**
- * ⚡ PRICING ENGINE (2026)
+ *  PRICING ENGINE (2026)
  * 
  * Centraliseert alle prijsberekeningen voor Voices.
  * Doel: Single Source of Truth voor zowel frontend (100ms feedback) als backend (Mollie/Yuki).
@@ -21,30 +21,30 @@ export interface PricingConfig {
 }
 
 export const DEFAULT_PRICING_CONFIG: PricingConfig = {
-  basePrice: 249, // 🛡️ NEW BSF (2026) - Charm Pricing
+  basePrice: 249, //  NEW BSF (2026) - Charm Pricing
   wordRate: 0.25,
   vatRate: 0.21,
   musicSurcharge: 59,
-  liveSessionSurcharge: 99, // 🛡️ Charm Pricing
+  liveSessionSurcharge: 99, //  Charm Pricing
 };
 
 export interface PricingInput {
   usage: UsageType;
   words?: number;
   prompts?: number;
-  mediaTypes?: CommercialMediaType[]; // 🛡️ Support multiple media types
-  countries?: string[]; // 🛡️ Support multiple countries
+  mediaTypes?: CommercialMediaType[]; //  Support multiple media types
+  countries?: string[]; //  Support multiple countries
   country?: string;
-  spots?: Record<string, number>; // 🛡️ Spots per media type
-  years?: Record<string, number>; // 🛡️ Duration per media type
+  spots?: Record<string, number>; //  Spots per media type
+  years?: Record<string, number>; //  Duration per media type
   music?: {
     asBackground?: boolean;
     asHoldMusic?: boolean;
   };
-  liveSession?: boolean; // 🛡️ Extra fee for live session
+  liveSession?: boolean; //  Extra fee for live session
   plan?: PlanType;
   isVatExempt?: boolean;
-  actorRates?: Record<string, any>; // 🛡️ Actor-specific rates from Supabase JSON
+  actorRates?: Record<string, any>; //  Actor-specific rates from Supabase JSON
 }
 
 export interface PricingResult {
@@ -56,12 +56,34 @@ export interface PricingResult {
   vat: number;
   total: number;
   vatRate: number;
-  legalDisclaimer?: string; // 🛡️ Legal disclaimer for pricing (e.g. valid for BE)
+  legalDisclaimer?: string; //  Legal disclaimer for pricing (e.g. valid for BE)
 }
 
 export class PricingEngine {
+  static getDefaultConfig(): PricingConfig {
+    return DEFAULT_PRICING_CONFIG;
+  }
+
+  static calculatePrice(actor: any, input: any): { price: number; formatted: string } {
+    const result = this.calculate({
+      usage: input.usage,
+      words: input.words,
+      prompts: input.prompts,
+      mediaTypes: input.media,
+      country: input.countries?.[0],
+      spots: { [input.media?.[0]]: input.spots },
+      years: { [input.media?.[0]]: input.years },
+      actorRates: actor.rates || actor
+    });
+
+    return {
+      price: result.total,
+      formatted: this.format(result.total)
+    };
+  }
+
   /**
-   * 🛡️ CHARM ROUNDING (2026)
+   *  CHARM ROUNDING (2026)
    * Trekt bedragen naar de dichtstbijzijnde '9' trede.
    * Regel: 150 -> 149, 250 -> 249, 450 -> 449.
    * Uitzondering: Bedragen < 100 gaan ALTIJD OMHOOG naar de volgende '9' (bijv. 40 -> 49).
@@ -97,10 +119,10 @@ export class PricingEngine {
     } else if (input.usage === 'telefonie') {
       base = 89; // Speciaal tarief voor telefonie
     } else if (input.usage === 'commercial') {
-      // 🛡️ COMMERCIAL LOGICA (2026): BSF + Buyout Model
-      // 🛡️ CHRIS-PROTOCOL: Global-First Architectuur.
-      // 🛡️ MARGE-PROTOCOL: De BSF van €249 (verkoop) is zo berekend dat de stemacteur 
-      // exact €175 (inkoop) ontvangt. Onze marge is dus minimaal €74 per opdracht.
+      //  COMMERCIAL LOGICA (2026): BSF + Buyout Model
+      //  CHRIS-PROTOCOL: Global-First Architectuur.
+      //  MARGE-PROTOCOL: De BSF van 249 (verkoop) is zo berekend dat de stemacteur 
+      // exact 175 (inkoop) ontvangt. Onze marge is dus minimaal 74 per opdracht.
       const BSF = parseFloat(input.actorRates?.price_bsf || input.actorRates?.bsf || 249);
       
       const actorRates = input.actorRates || {};
@@ -109,6 +131,13 @@ export class PricingEngine {
       const nativeCountry = nativeLang.split('-')[1]?.toUpperCase() || 'BE';
 
       const selectedMedia = input.mediaTypes || [];
+      
+      //  KELLY'S RECOVERY: Als er geen media is geselecteerd voor een commercial, 
+      // vallen we terug op 'online' om 0-euro prijzen te voorkomen.
+      if (selectedMedia.length === 0) {
+        selectedMedia.push('online');
+      }
+
       let totalBuyout = 0;
       let uniqueChannels = new Set();
 
@@ -118,7 +147,7 @@ export class PricingEngine {
         const nativeRates = actorRates[nativeCountry] || {};
 
         selectedMedia.forEach(m => {
-          // 🛡️ GLOBAL-FIRST LOOKUP:
+          //  GLOBAL-FIRST LOOKUP:
           // Priority 1: Specifiek land (Uitzondering)
           // Priority 2: Global (Standaard)
           // Priority 3: Native land van de stem (Fallback)
@@ -127,24 +156,25 @@ export class PricingEngine {
           else if (globalRates[m] !== undefined) fee = parseFloat(globalRates[m]);
           else if (nativeRates[m] !== undefined) fee = parseFloat(nativeRates[m]);
           
+          //  KELLY'S FALLBACK: Als er echt niets gevonden wordt, gebruik de BSF als basis buyout
           if (fee === 0) {
-            console.warn(`[PricingEngine] No rate found for ${m} in ${country} (Global-First).`);
-            return; // Skip this media type
+            console.warn(`[PricingEngine] No rate found for ${m} in ${country}. Using BSF fallback.`);
+            fee = BSF; 
           }
 
-          // 🛡️ BSF + BUYOUT SPLIT LOGICA
+          //  BSF + BUYOUT SPLIT LOGICA
           let finalAllIn = this.charmRound(fee);
 
-          // 🛡️ STRATEGIC SPLIT (2026): Landcampagnes vs Kleine Campagnes
+          //  STRATEGIC SPLIT (2026): Landcampagnes vs Kleine Campagnes
           const isSmallCampaign = m.includes('regional') || m.includes('local');
           
           if (isSmallCampaign) {
-            // 🏠 REGIONAAL/LOKAAL: Fixed Price Model met 50% staffel op extra spots
+            //  REGIONAAL/LOKAAL: Fixed Price Model met 50% staffel op extra spots
             const spots = (input.spots && input.spots[m]) || 1;
             const smallCampaignStaffel = 1 + (0.50 * (spots - 1));
             totalBuyout += finalAllIn * smallCampaignStaffel;
           } else {
-            // 🌍 LANDCAMPAGNES: BSF + Buyout (Klassiek)
+            //  LANDCAMPAGNES: BSF + Buyout (Klassiek)
             const baseBuyout = Math.max(0, finalAllIn - BSF);
             const spots = (input.spots && input.spots[m]) || 1;
             const years = (input.years && input.years[m]) || 1;
@@ -188,7 +218,7 @@ export class PricingEngine {
         });
       });
 
-      // 🛡️ KANAAL-MIX KORTING (Multi-Land / Multi-Medium)
+      //  KANAAL-MIX KORTING (Multi-Land / Multi-Medium)
       let channelDiscount = 1;
       const totalItems = uniqueChannels.size;
       if (totalItems === 2) channelDiscount = 0.90; // 10% korting
@@ -196,7 +226,7 @@ export class PricingEngine {
       
       mediaSurcharge = totalBuyout * channelDiscount;
 
-      // 🛡️ BASE LOGIC
+      //  BASE LOGIC
       const hasNationalCampaign = selectedMedia.some(m => !(m.includes('regional') || m.includes('local')));
       base = hasNationalCampaign ? BSF : 0;
     }
@@ -205,7 +235,7 @@ export class PricingEngine {
     if (input.usage === 'commercial') {
       const country = input.country || 'BE';
       if (country === 'BE') {
-        legalDisclaimer = "Tarieven geldig voor uitzending in België.";
+        legalDisclaimer = "Tarieven geldig voor uitzending in Belgi.";
       } else {
         legalDisclaimer = `Tarieven gebaseerd op uitzending in ${country}.`;
       }
@@ -213,12 +243,16 @@ export class PricingEngine {
 
     // 2. Word/Prompt Surcharge (Journey-specific thresholds)
     if (input.usage === 'telefonie') {
-      // 📞 TELEFONIE LOGICA (LEGACY PORT 2026):
+      //  TELEFONIE LOGICA (LEGACY PORT 2026):
       // Gevonden in kelder/src/00-core/database/110-pricing-helpers.php
-      const words = input.words || 25;
+      const words = input.words || 0;
       const telephonyBase = 89;
       
-      if (words <= 25) {
+      if (words === 0) {
+        base = telephonyBase;
+        wordSurcharge = 0;
+      } else if (words <= 25) {
+        // Eerste bericht (tot 25 woorden) is GRATIS in de set
         wordSurcharge = 0;
         base = telephonyBase;
       } else if (words >= 750) {
@@ -233,8 +267,8 @@ export class PricingEngine {
         wordSurcharge = extraWordsPrice + processingFee + adminFee;
       }
     } else if (input.usage === 'unpaid') {
-      // 📺 VIDEO (NON-COMMERCIAL): €249 base (incl. 200w), daarna €0.20 per woord
-      // 🛡️ CHRIS-PROTOCOL: Minimum price is 249. Use actor specific unpaid price if it's higher.
+      //  VIDEO (NON-COMMERCIAL): 249 base (incl. 200w), daarna 0.20 per woord
+      //  CHRIS-PROTOCOL: Minimum price is 249. Use actor specific unpaid price if it's higher.
       const actorUnpaidPrice = Math.max(249, Number(input.actorRates?.price_unpaid_media || input.actorRates?.unpaid || 249));
       base = this.charmRound(actorUnpaidPrice);
       if (input.words && input.words > 200) {
@@ -244,7 +278,7 @@ export class PricingEngine {
 
     // 3. Live Session Surcharge
     if (input.liveSession) {
-      // 🛡️ CHRIS-PROTOCOL: Strict Lookup
+      //  CHRIS-PROTOCOL: Strict Lookup
       // 1. Check country-specific live_regie (e.g. rates.BE.live_regie)
       // 2. Check global live_regie (price_live_regie)
       // 3. Fallback to config default (50) ONLY if no data exists at all? No, user said "no fallback".
@@ -299,7 +333,7 @@ export class PricingEngine {
     };
   }
 
-    // 🛡️ KORNEEL RULE: Centralized Availability Logic
+    //  KORNEEL RULE: Centralized Availability Logic
     // Bepaalt of een stem beschikbaar is voor de gevraagde media types.
     // 
     // Regels (2026 Mandate):
@@ -308,6 +342,8 @@ export class PricingEngine {
     // 
     // @returns 'available' | 'unavailable'
     static getAvailabilityStatus(actor: any, mediaTypes: CommercialMediaType[], country: string = 'BE'): 'available' | 'unavailable' {
+      //  CHRIS-PROTOCOL: If no specific media types are requested (e.g. telephony or video journey), 
+      // the actor is available by default as long as they are live.
       if (!mediaTypes || mediaTypes.length === 0) return 'available';
 
       const rates = actor.rates_raw || actor.rates || {};
@@ -318,7 +354,7 @@ export class PricingEngine {
       const nativeRates = rates[nativeCountry] || {};
 
       for (const media of mediaTypes) {
-        // 🛡️ CHRIS-PROTOCOL: Global-First Lookup Hierarchy
+        //  CHRIS-PROTOCOL: Global-First Lookup Hierarchy
         // Priority 1: Specifiek land
         // Priority 2: Global
         // Priority 3: Native land van de stem

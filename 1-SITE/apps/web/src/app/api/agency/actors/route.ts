@@ -14,9 +14,9 @@ export async function GET(request: NextRequest) {
   try {
     const results = await AgencyDataBridge.getActors(params);
     
-    // 🛡️ EMERGENCY CLEANUP: Als de user vraagt om Kirsten, en er zijn duplicaten, fix ze in de DB
+    //  EMERGENCY CLEANUP: Als de user vraagt om Kirsten, en er zijn duplicaten, fix ze in de DB
     if (params.search && params.search.toLowerCase().includes('kirsten')) {
-      console.log('🛡️ Kirsten cleanup triggered via API');
+      console.log(' Kirsten cleanup triggered via API');
       // Hier zouden we een async cleanup kunnen starten, maar voor nu doen we het via de bridge
     }
 

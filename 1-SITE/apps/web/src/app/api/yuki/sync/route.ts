@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       ]
     };
 
-    console.log('📤 Sending to Yuki:', yukiPayload);
+    console.log(' Sending to Yuki:', yukiPayload);
 
     // 3. Update Order Status in Supabase
     await db.update(orders)
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('❌ Yuki Sync Error:', error);
+    console.error(' Yuki Sync Error:', error);
     return NextResponse.json({ error: 'Yuki synchronization failed' }, { status: 500 });
   }
 }

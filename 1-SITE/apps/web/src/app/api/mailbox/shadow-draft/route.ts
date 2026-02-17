@@ -6,7 +6,7 @@ import { VectorService } from '@/services/VectorService';
 import { NextResponse } from 'next/server';
 
 /**
- * 🎭 NUCLEAR SHADOW DRAFT API (v2 - 2026)
+ *  NUCLEAR SHADOW DRAFT API (v2 - 2026)
  * 
  * Doel: Genereert een AI-concept antwoord d.m.v. Semantic Style Matching.
  * In plaats van de laatste 50 mails, zoekt Voicy naar de meest relevante 
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     // Als we geen relevante mails vinden, vallen we terug op de laatste verzonden mails
     let styleSample = "";
     if (relevantSentMails.length > 0) {
-      console.log(`🧠 Semantic Style Matching: ${relevantSentMails.length} vergelijkbare antwoorden gevonden.`);
+      console.log(` Semantic Style Matching: ${relevantSentMails.length} vergelijkbare antwoorden gevonden.`);
       styleSample = relevantSentMails.map((m: any) => `ONDERWERP: ${m.subject}\nANTWOORD: ${m.textBody}`).join('\n---\n');
     } else {
       const fallbackMails = await db.query.mailContent.findMany({
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
       method: relevantSentMails.length > 0 ? 'semantic_matching' : 'fallback_recent'
     });
   } catch (error) {
-    console.error('❌ Nuclear Shadow Draft Error:', error);
+    console.error(' Nuclear Shadow Draft Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 import { db } from "@db";
-import { actorDemos, actors, contentArticles, contentBlocks, lessons, media, reviews } from "@db/schema";
+import { actorDemos, actors, contentArticles, contentBlocks, lessons, media, reviews, languages, actorLanguages } from "@db/schema";
 import { createClient } from "@supabase/supabase-js";
-import { and, asc, desc, eq, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
@@ -10,6 +10,7 @@ import {
     SearchResults,
 } from "../types";
 import { VoiceglotBridge } from "./voiceglot-bridge";
+import { MarketManager } from "@config/market-manager";
 
 const readFile = promisify(fs.readFile);
 
@@ -31,69 +32,20 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
  */
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
+  console.log(' API: getActors called with params:', params);
   const { language, search, gender, style, market } = params;
   
   try {
     //  CHRIS-PROTOCOL: Map UI language names to DB codes (ISO-based for precision)
     
 
-const langMap: Record<string, string> = {
-  'vlaams': 'nl-be',
-  'nederlands': 'nl-nl',
-  'frans': 'fr-fr',
-  'frans (be)': 'fr-be',
-  'frans (fr)': 'fr-fr',
-  'engels': 'en-gb',
-  'engels (uk)': 'en-gb',
-  'engels (us)': 'en-us',
-  'duits': 'de-de',
-  'spaans': 'es-es',
-  'italiaans': 'it-it',
-  'pools': 'pl-pl',
-  'deens': 'da-dk',
-  'portugees': 'pt-pt',
-  'nl-be': 'nl-be',
-  'nl-nl': 'nl-nl',
-  'fr-be': 'fr-be',
-  'fr-fr': 'fr-fr',
-  'en-gb': 'en-gb',
-  'en-us': 'en-us',
-  'de-de': 'de-de',
-  'es-es': 'es-es',
-  'it-it': 'it-it',
-  'pl-pl': 'pl-pl',
-  'da-dk': 'da-dk',
-  'pt-pt': 'pt-pt',
-  'nl': 'nl-be',
-  'en': 'en-gb',
-  'fr': 'fr-fr',
-  'de': 'de-de',
-  'es': 'es-es',
-  'it': 'it-it',
-  'pl': 'pl-pl',
-  'da': 'da-dk',
-  'pt': 'pt-pt'
-};
-
-
-
-    //  CHRIS-PROTOCOL: Map UI gender names to DB codes
-    const genderMap: Record<string, string> = {
-      'mannelijke stem': 'male',
-      'vrouwelijke stem': 'female',
-      'mannelijk': 'male',
-      'vrouwelijk': 'female',
-      'man': 'male',
-      'vrouw': 'female'
-    };
-
     const lowLang = language?.toLowerCase() || '';
-    const dbLang = language ? (langMap[lowLang] || lowLang) : null;
+    const dbLang = language ? MarketManager.getLanguageCode(lowLang) : null;
     const lowGender = gender?.toLowerCase() || '';
-    const dbGender = gender ? (genderMap[lowGender] || (lowGender.includes('mannelijk') ? 'male' : lowGender.includes('vrouwelijk') ? 'female' : lowGender)) : null;
+    const dbGender = gender ? (lowGender.includes('mannelijk') ? 'male' : lowGender.includes('vrouwelijk') ? 'female' : lowGender) : null;
     
-    // 🛡️ CHRIS-PROTOCOL: Debug log in terminal (server-side)
-    console.log('🎙️ API: getActors internal params:', { 
+    //  CHRIS-PROTOCOL: Debug log in terminal (server-side)
+    console.log(' API: getActors internal params:', { 
       language, 
       dbLang, 
       market,
@@ -105,158 +57,181 @@ const langMap: Record<string, string> = {
     // We proberen eerst Drizzle (direct connect)
     let dbResults: any[] = [];
     try {
-      console.log(' API: Querying with dbLang:', dbLang, 'dbGender:', dbGender);
-      let query = db.select().from(actors).$dynamic();
-      const conditions: any[] = [eq(actors.status, 'live')];
-
-      // 🛡️ CHRIS-PROTOCOL: Market filtering should only apply if no specific language is selected,
-      // to avoid intersection issues where a market might exclude a valid language choice.
-      if (!language) {
-        if (market === 'FR') conditions.push(or(eq(actors.nativeLang, 'fr-FR'), eq(actors.nativeLang, 'fr-BE')));
-        else if (market === 'DE') conditions.push(eq(actors.nativeLang, 'de-DE'));
-        else if (market === 'NL') conditions.push(eq(actors.nativeLang, 'nl-NL'));
-        else if (market === 'BE') conditions.push(or(eq(actors.nativeLang, 'nl-BE'), eq(actors.nativeLang, 'fr-BE')));
-      }
-
-      if (search) {
-        conditions.push(or(
-          sql`LOWER(${actors.firstName}) LIKE ${`%${search.toLowerCase()}%`}`,
-          sql`LOWER(${actors.lastName}) LIKE ${`%${search.toLowerCase()}%`}`,
-          sql`LOWER(${actors.aiTags}::text) LIKE ${`%${search.toLowerCase()}%`}`,
-          sql`LOWER(${actors.bio}) LIKE ${`%${search.toLowerCase()}%`}`
-        ));
-      }
-      if (dbLang) {
-        //  CHRIS-PROTOCOL: Support both exact code and loose name matching
-        // Met de nieuwe nl-BE / nl-NL structuur is dit veel eenvoudiger.
-        conditions.push(or(
-          eq(actors.nativeLang, dbLang),
-          sql`LOWER(${actors.nativeLang}) LIKE ${`%${lowLang}%`}`,
-          sql`LOWER(${actors.bio}) LIKE ${`%${lowLang}%`}`,
-          sql`LOWER(${actors.tagline}) LIKE ${`%${lowLang}%`}`
-        ));
-      }
-      if (dbGender) {
-        conditions.push(or(
-          eq(actors.gender, dbGender),
-          sql`LOWER(${actors.gender}) = ${lowGender}`,
-          sql`LOWER(${actors.gender}) = ${dbGender}`
-        ));
-      }
-
-      console.log(' API: Executing Drizzle query...');
-      dbResults = await query
-        .where(and(...conditions))
-        .orderBy(asc(actors.voiceScore))
-        .limit(50);
+      console.log(' API: Querying all live actors with relations...');
+      
+      //  CHRIS-PROTOCOL: Use relational query builder for clean joins
+      dbResults = await db.query.actors.findMany({
+        columns: {
+          id: true,
+          wpProductId: true,
+          userId: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          gender: true,
+          nativeLang: true,
+          countryId: true,
+          deliveryTime: true,
+          extraLangs: true,
+          bio: true,
+          whyVoices: true,
+          tagline: true,
+          toneOfVoice: true,
+          photoId: true,
+          logoId: true,
+          voiceScore: true,
+          priceUnpaid: true,
+          priceOnline: true,
+          priceIvr: true,
+          priceLiveRegie: true,
+          dropboxUrl: true,
+          status: true,
+          isPublic: true,
+          isAi: true,
+          elevenlabsId: true,
+          internalNotes: true,
+          createdAt: true,
+          updatedAt: true,
+          slug: true,
+          youtubeUrl: true,
+          menuOrder: true,
+          rates: true,
+          deliveryDaysMin: true,
+          deliveryDaysMax: true,
+          cutoffTime: true,
+          samedayDelivery: true,
+          pendingBio: true,
+          pendingTagline: true,
+          experienceLevel: true,
+          studioSpecs: true,
+          connectivity: true,
+          availability: true,
+          isManuallyEdited: true,
+          website: true,
+          clients: true,
+          linkedin: true,
+          birthYear: true,
+          location: true,
+          aiTags: true
+          // holidayFrom and holidayTill are excluded as they don't exist in DB
+        },
+        where: eq(actors.status, 'live'),
+        orderBy: [asc(actors.voiceScore)],
+        limit: 200,
+        with: {
+          demos: true,
+          country: true
+        }
+      });
       
       console.log(' API: Drizzle returned', dbResults.length, 'results');
+      if (dbResults.length > 0) {
+        console.log('  API: Sample actor photoId:', { 
+          name: dbResults[0].firstName, 
+          photoId: dbResults[0].photoId,
+          photo_id: dbResults[0].photo_id 
+        });
+      }
       
       if (dbResults.length === 0) {
-        console.log(' ⚠️ Drizzle returned 0, checking total live actors...');
+        console.log('  Drizzle returned 0, checking total live actors...');
         const totalLive = await db.select({ count: sql`count(*)` }).from(actors).where(eq(actors.status, 'live'));
         console.log(' Total live actors in DB:', totalLive[0].count);
-        
-        // Let's try a very broad query to see what's in there
-        const sample = await db.select({ id: actors.id, name: actors.firstName, lang: actors.nativeLang, status: actors.status }).from(actors).limit(5);
-        console.log(' Sample actors in DB:', sample);
       }
     } catch (dbError) {
       console.warn(' Drizzle failed, falling back to Supabase SDK:', dbError);
       
       let sdkQuery = supabase
         .from('actors')
-        .select('*')
-        .eq('status', 'live');
+        .select(`
+          *,
+          actor_languages(is_native, languages(*)),
+          actor_tones(voice_tones(*)),
+          countries(*),
+          actor_demos(*)
+        `)
+        .filter('status', 'eq', 'live');
 
-      if (!language) {
-        if (market === 'FR') sdkQuery = sdkQuery.or('native_lang.eq.fr-FR,native_lang.eq.fr-BE');
-        else if (market === 'DE') sdkQuery = sdkQuery.eq('native_lang', 'de-DE');
-        else if (market === 'NL') sdkQuery = sdkQuery.eq('native_lang', 'nl-NL');
-        else if (market === 'BE') sdkQuery = sdkQuery.or('native_lang.eq.nl-BE,native_lang.eq.fr-BE');
-      }
-      
-      if (dbLang) {
-        sdkQuery = sdkQuery.or(`native_lang.eq.${dbLang},native_lang.ilike.%${language}%,bio.ilike.%${language}%,tagline.ilike.%${language}%`);
-      }
-      if (dbGender) {
-        sdkQuery = sdkQuery.or(`gender.eq.${dbGender},gender.ilike.${gender}`);
-      }
-      if (search) sdkQuery = sdkQuery.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%,ai_tags.ilike.%${search}%,bio.ilike.%${search}%`);
-
-      const { data, error } = await sdkQuery.order('voice_score', { ascending: true }).limit(50);
+      const { data, error } = await sdkQuery.order('voice_score', { ascending: true }).limit(200);
       if (error) {
         console.error(' Supabase SDK Error:', error);
         throw error;
       }
-      dbResults = data || [];
+      
+      // Map SDK field names to Drizzle field names if they differ
+      dbResults = (data || []).map(item => {
+        const mapped = {
+          ...item,
+          firstName: item.first_name,
+          lastName: item.last_name,
+          nativeLang: item.native_lang,
+          voiceScore: item.voice_score,
+          dropboxUrl: item.dropbox_url,
+          priceUnpaid: item.price_unpaid,
+          priceIvr: item.price_ivr,
+          priceOnline: item.price_online,
+          isAi: item.is_ai,
+          aiTags: item.ai_tags,
+          deliveryDaysMin: item.delivery_days_min,
+          deliveryDaysMax: item.delivery_days_max,
+          cutoffTime: item.cutoff_time,
+          toneOfVoice: item.tone_of_voice,
+          clients: item.clients,
+          email: item.email,
+          extraLangs: item.extra_langs,
+          wpProductId: item.wp_product_id,
+          photoId: item.photo_id,
+          // Map relations
+          actorLanguages: item.actor_languages?.map((al: any) => ({
+            isNative: al.is_native,
+            language: al.languages
+          })),
+          actorTones: item.actor_tones?.map((at: any) => ({
+            tone: at.voice_tones
+          })),
+          country: item.countries,
+          demos: item.actor_demos
+        };
+        return mapped;
+      });
       
       console.log(' API: Supabase SDK returned', dbResults.length, 'results');
-
-      // Map SDK field names to Drizzle field names if they differ
-      dbResults = dbResults.map(item => ({
-        ...item,
-        firstName: item.first_name,
-        lastName: item.last_name,
-        nativeLang: item.native_lang,
-        voiceScore: item.voice_score,
-        dropboxUrl: item.dropbox_url,
-        priceUnpaid: item.price_unpaid,
-        priceIvr: item.price_ivr,
-        priceOnline: item.price_online,
-        isAi: item.is_ai,
-        aiTags: item.ai_tags,
-        deliveryDaysMin: item.delivery_days_min,
-        deliveryDaysMax: item.delivery_days_max,
-        cutoffTime: item.cutoff_time,
-        toneOfVoice: item.tone_of_voice,
-        clients: item.clients,
-        wpProductId: item.wp_product_id
-      }));
+      if (dbResults.length > 0) {
+        console.log('  API: SDK Sample actor photo_id:', { 
+          name: dbResults[0].firstName, 
+          photo_id: dbResults[0].photoId 
+        });
+      }
     }
     
     console.log(' ACTORS FETCH SUCCESS:', { count: dbResults.length });
 
     const actorIds = dbResults.map(a => a.id);
-    const photoIds = dbResults.map(a => a.photoId).filter(Boolean);
+    const photoIds = Array.from(new Set(dbResults.map(a => a.photoId).filter(Boolean).map(id => parseInt(id.toString()))));
+    console.log(' API: dbResults sample:', dbResults.slice(0, 2).map(a => ({ id: a.id, firstName: a.firstName, photoId: a.photoId })));
+    console.log(' API: photoIds to fetch:', photoIds);
     
-    // Fetch demos, reviews, translations and media in batch
-    let demos: any[] = [];
+    // Fetch reviews, translations and media in batch (demos are now included in dbResults)
     let dbReviews: any[] = [];
     let mediaResults: any[] = [];
     let translationMap: Record<string, string> = {};
-    let photoManifest: any = { voices: {} };
 
     try {
-      //  MOBY: Load photo manifest to match images correctly
-      try {
-        const manifestPath = path.join(process.cwd(), 'public/assets/visuals/photo-manifest.json');
-        const manifestData = await readFile(manifestPath, 'utf8');
-        photoManifest = JSON.parse(manifestData);
-      } catch (e) {
-        console.warn(' Could not load photo-manifest.json');
-      }
-
-      const [demosRes, reviewsRes, transRes, mediaRes] = await Promise.all([
-        actorIds.length > 0 
-          ? db.select().from(actorDemos).where(sql`${actorDemos.actorId} IN (${sql.join(actorIds, sql`, `)})`)
-          : Promise.resolve([]),
+      //  CHRIS-PROTOCOL: Batch all secondary requests to avoid sequential blocking
+      const [reviewsRes, transRes, mediaRes] = await Promise.all([
         db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(10),
         VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang),
         photoIds.length > 0
           ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`)
           : Promise.resolve([])
       ]);
-      demos = demosRes;
+      
       dbReviews = reviewsRes;
       translationMap = transRes;
       mediaResults = mediaRes;
-    } catch (relError) {
-      console.warn(' Drizzle relation fetch failed, falling back to SDK');
-      const [demosRes, reviewsRes, transRes, mediaRes] = await Promise.all([
-        actorIds.length > 0 
-          ? supabase.from('actor_demos').select('*').in('actor_id', actorIds)
-          : Promise.resolve({ data: [] }),
+    } catch (relError: any) {
+      console.warn(' Drizzle relation fetch failed, falling back to SDK:', relError.message);
+      const [reviewsRes, transRes, mediaRes] = await Promise.all([
         supabase.from('reviews').select('*').order('created_at', { ascending: false }).limit(10),
         VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang),
         photoIds.length > 0
@@ -264,7 +239,6 @@ const langMap: Record<string, string> = {
           : Promise.resolve({ data: [] })
       ]);
       
-      demos = (demosRes.data || []).map(d => ({ ...d, actorId: d.actor_id }));
       dbReviews = (reviewsRes.data || []).map(r => ({
         ...r,
         authorName: r.author_name,
@@ -276,99 +250,100 @@ const langMap: Record<string, string> = {
       mediaResults = (mediaRes.data || []).map(m => ({ ...m, filePath: m.file_path }));
     }
 
+    // Get unique languages for filters
+    let uniqueLangs: string[] = [];
+    try {
+      //  CHRIS-PROTOCOL: Fetch unique languages from the relational table
+      // If actorLanguages relation is missing, we use the flat field fallback
+      uniqueLangs = Array.from(new Set(dbResults.map(a => a.nativeLang))).filter(Boolean);
+    } catch (langError) {
+      console.warn(' API: uniqueLangs calculation failed, falling back to SDK');
+      const { data } = await supabase.from('actors').select('native_lang').filter('status', 'eq', 'live');
+      uniqueLangs = Array.from(new Set((data || []).map(l => l.native_lang))).filter((l): l is string => l !== null);
+    }
+
     const mappedResults = dbResults.map((actor) => {
-      const actorId = actor.wpProductId || actor.id;
-      const firstName = actor.firstName?.toLowerCase() || 'voice';
-      const fallbackPath = `/assets/visuals/active/voicecards/${actorId}-${firstName}-photo-square-1.jpg`;
-      
+      //  CHRIS-PROTOCOL: The photo_id in the database is the ABSOLUTE Source of Truth (Linked to Supabase Storage)
+      // We check both photoId (Drizzle) and photo_id (SDK)
       let photoUrl = '';
-
-      // 🛡️ CHRIS-PROTOCOL: The photo_id in the database is the ABSOLUTE Source of Truth (Linked to Supabase Storage)
-      if (actor.photoId) {
-        const mediaItem = mediaResults.find(m => m.id === actor.photoId);
-        if (mediaItem) {
-          photoUrl = mediaItem.filePath;
-        }
+    const effectivePhotoId = actor.photoId || (actor as any).photo_id;
+    
+    if (effectivePhotoId) {
+      const mediaItem = mediaResults.find(m => m.id === effectivePhotoId || m.id === parseInt(effectivePhotoId.toString()));
+      if (mediaItem) {
+        photoUrl = mediaItem.filePath;
+      } else {
+        console.log(` API: mediaItem NOT FOUND for actor ${actor.firstName}, photoId: ${effectivePhotoId}`);
       }
+    }
 
-      // 🛡️ FALLBACK 1: Match with manifest if no database link exists
-      if (!photoUrl) {
-        const manifestEntry = photoManifest.voices[actorId.toString()];
-        if (manifestEntry) {
-          const bestPhoto = 
-            manifestEntry.optimised?.find((p: any) => p.file.includes('square-3')) ||
-            manifestEntry.portfolio?.find((p: any) => p.file.includes('square-3')) ||
-            manifestEntry.optimised?.find((p: any) => p.orientation === 'square') ||
-            manifestEntry.portfolio?.find((p: any) => p.orientation === 'square') ||
-            manifestEntry.optimised?.[0] ||
-            manifestEntry.portfolio?.[0];
-          
-          if (bestPhoto) {
-            photoUrl = bestPhoto.path;
-          }
-        }
-      }
-
-      // 🛡️ FALLBACK 2: Strict naming convention
-      if (!photoUrl) {
-        photoUrl = fallbackPath;
-      }
-      
-      if (!photoUrl && actor.photo_url) photoUrl = actor.photo_url;
-      if (!photoUrl && actor.dropboxUrl) {
+    //  CHRIS-PROTOCOL: No legacy fallbacks allowed. If it's not in Supabase, it's not there.
+    // The only exception is the dropboxUrl field which acts as a temporary manual override.
+    // MAAR: Als dropboxUrl een proxy-URL is, haal dan het pad eruit om dubbele proxying te voorkomen.
+    if (!photoUrl && actor.dropboxUrl) {
+      console.log(` API: Falling back to dropboxUrl for actor ${actor.firstName} (ID: ${actor.id}):`, { dropboxUrl: actor.dropboxUrl });
+      if (actor.dropboxUrl.includes('/api/proxy/?path=')) {
+        const urlObj = new URL(actor.dropboxUrl, 'http://localhost');
+        photoUrl = decodeURIComponent(urlObj.searchParams.get('path') || '');
+      } else {
         const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_URL || '';
         photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${ASSET_BASE}${actor.dropboxUrl}`;
       }
+    }
 
-      // 🛡️ NUCLEAR PROXY ENFORCEMENT: All local paths must go through the proxy
-      // We use the trailing slash because next.config.mjs has trailingSlash: true
-      const proxiedPhoto = photoUrl.startsWith('http') 
-        ? photoUrl 
-        : (photoUrl ? `/api/proxy/?path=${encodeURIComponent(photoUrl)}` : '');
-
-      // 🛡️ AUDIO PROXY & PRIORITY ENFORCEMENT
-      const actorDemos = demos.filter(d => d.actorId === actor.id);
+      //  NUCLEAR PROXY ENFORCEMENT: All local paths must go through the proxy
+      const proxiedPhoto = photoUrl.startsWith('/api/proxy')
+        ? photoUrl
+        : (photoUrl.startsWith('http') 
+          ? `/api/proxy/?path=${encodeURIComponent(photoUrl)}` 
+          : (photoUrl ? `/api/proxy/?path=${encodeURIComponent(photoUrl)}` : ''));
       
-      // Separate Supabase demos from legacy demos
-      const supabaseDemos = actorDemos.filter(d => d.url.includes('supabase.co'));
-      const legacyDemos = actorDemos.filter(d => !d.url.includes('supabase.co'));
+      const proxiedPhotoWithFallback = proxiedPhoto; // No more fallback parameter
       
-      // If we have Supabase demos, we prefer them
-      const finalDemos = supabaseDemos.length > 0 ? supabaseDemos : legacyDemos;
+      console.log(` API: Final photoUrl for ${actor.firstName}:`, { original: photoUrl, proxied: proxiedPhotoWithFallback });
 
-      const proxiedDemos = finalDemos.map(d => {
-        // Supabase URLs are direct and don't need proxying
-        if (d.url.includes('supabase.co')) {
-          return {
-            id: d.id,
-            title: d.name,
-            audio_url: d.url,
-            category: d.type || 'demo'
-          };
-        }
-        
-        // Legacy URLs go through the proxy
-        return {
-          id: d.id,
-          title: d.name,
-          audio_url: d.url.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url,
-          category: d.type || 'demo'
-        };
-      });
+    //  AUDIO PROXY & PRIORITY ENFORCEMENT
+    const proxiedDemos = (actor.demos || []).map((d: any) => {
+      //  CHRIS-PROTOCOL: Relationele koppeling is heilig. 
+      // De URL in actor_demos is de directe bron.
+      const audioUrl = d.url || '';
+      
+      // Als de URL al een volledige Supabase URL is, stuur deze dan direct door naar de proxy
+      // zonder deze opnieuw te encoden als het al een proxy URL is.
+      let finalUrl = audioUrl;
+      if (audioUrl.startsWith('http')) {
+        finalUrl = `/api/proxy/?path=${encodeURIComponent(audioUrl)}`;
+      }
+      
+      return {
+        id: d.id,
+        title: d.name,
+        audio_url: finalUrl,
+        category: d.type || 'demo'
+      };
+    });
 
       const translatedBio = translationMap[actor.bio || ''] || actor.bio || '';
       const translatedTagline = translationMap[actor.tagline || ''] || actor.tagline || '';
+
+      //  CHRIS-PROTOCOL: Resolve relational languages and tones
+      // Fallback to flat fields if relations are missing
+      const nativeLangObj = actor.actorLanguages?.find((al: any) => al.isNative)?.language;
+      const extraLangsList = actor.actorLanguages?.filter((al: any) => !al.isNative).map((al: any) => al.language?.code);
+      const tonesList = actor.actorTones?.map((at: any) => at.tone?.label);
 
       return {
         id: actor.wpProductId || actor.id,
         display_name: actor.firstName,
         first_name: actor.firstName,
         last_name: actor.lastName || '',
-        slug: actor.firstName.toLowerCase(),
-        gender: actor.gender,
-        native_lang: (actor.nativeLang as string | undefined) ?? undefined,
-        photo_url: proxiedPhoto,
-        local_photo_path: fallbackPath,
+        firstName: actor.firstName || (actor as any).first_name,
+        lastName: actor.lastName || (actor as any).last_name || '',
+        email: actor.email || (actor as any).email || '',
+        slug: actor.firstName?.toLowerCase() || (actor as any).first_name?.toLowerCase(),
+        gender: actor.gender_new || actor.gender, // Prefer enum if available
+        native_lang: nativeLangObj?.code || actor.nativeLang,
+        photo_url: proxiedPhotoWithFallback,
         starting_price: parseFloat(actor.priceUnpaid || '0'),
         price_unpaid_media: parseFloat(actor.priceUnpaid || '0'),
         price_ivr: parseFloat(actor.priceIvr || '0'),
@@ -379,26 +354,19 @@ const langMap: Record<string, string> = {
         ai_tags: actor.aiTags || '',
         bio: translatedBio,
         tagline: translatedTagline,
-        tone_of_voice: actor.toneOfVoice || actor.tone_of_voice || '',
+        tone_of_voice: tonesList?.join(', ') || actor.toneOfVoice || actor.tone_of_voice || actor.toneOfVoiceNew || '',
         clients: actor.clients || '',
         delivery_days_min: actor.deliveryDaysMin || 1,
         delivery_days_max: actor.deliveryDaysMax || 3,
         cutoff_time: actor.cutoffTime || '18:00',
         availability: actor.availability as any[] || [],
-        extra_langs: actor.extraLangs || '',
+        holiday_from: (actor as any).holidayFrom || (actor as any).holiday_from || '',
+        holiday_till: (actor as any).holidayTill || (actor as any).holiday_till || '',
+        extra_langs: extraLangsList?.join(', ') || actor.extraLangs || '',
+        native_lang_label: nativeLangObj?.label || MarketManager.getLanguageLabel(actor.nativeLang || ''),
         demos: proxiedDemos
       };
     });
-
-    // Get unique languages for filters
-    let uniqueLangs: string[] = [];
-    try {
-      const langs = await db.select({ lang: actors.nativeLang }).from(actors).where(eq(actors.status, 'live')).groupBy(actors.nativeLang);
-      uniqueLangs = Array.from(new Set(langs.map(l => l.lang))).filter((l): l is string => l !== null);
-    } catch (langError) {
-      const { data } = await supabase.from('actors').select('native_lang').eq('status', 'live');
-      uniqueLangs = Array.from(new Set((data || []).map(l => l.native_lang))).filter((l): l is string => l !== null);
-    }
 
     //  CHRIS-PROTOCOL: Ensure primary languages are always present and at the top
     const priorityLangs = ['Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits', 'Spaans', 'Italiaans', 'Pools', 'Portugees', 'Turks', 'Deens', 'Zweeds', 'Noors', 'Fins', 'Grieks', 'Russisch', 'Arabisch', 'Chinees', 'Japans'];
@@ -461,10 +429,91 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
   let actor: any = null;
   try {
-    [actor] = await db.select().from(actors).where(eq(actors.firstName, slug)).limit(1);
+    console.log(' API: Querying actor with relations:', slug);
+    actor = await db.query.actors.findFirst({
+      columns: {
+        id: true,
+        wpProductId: true,
+        userId: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        gender: true,
+        nativeLang: true,
+        countryId: true,
+        deliveryTime: true,
+        extraLangs: true,
+        bio: true,
+        whyVoices: true,
+        tagline: true,
+        toneOfVoice: true,
+        photoId: true,
+        logoId: true,
+        voiceScore: true,
+        priceUnpaid: true,
+        priceOnline: true,
+        priceIvr: true,
+        priceLiveRegie: true,
+        dropboxUrl: true,
+        status: true,
+        isPublic: true,
+        isAi: true,
+        elevenlabsId: true,
+        internalNotes: true,
+        createdAt: true,
+        updatedAt: true,
+        slug: true,
+        youtubeUrl: true,
+        menuOrder: true,
+        rates: true,
+        deliveryDaysMin: true,
+        deliveryDaysMax: true,
+        cutoffTime: true,
+        samedayDelivery: true,
+        pendingBio: true,
+        pendingTagline: true,
+        experienceLevel: true,
+        studioSpecs: true,
+        connectivity: true,
+        availability: true,
+        isManuallyEdited: true,
+        website: true,
+        clients: true,
+        linkedin: true,
+        birthYear: true,
+        location: true,
+        aiTags: true
+      },
+      where: or(eq(actors.slug, slug), ilike(actors.firstName, slug)),
+      with: {
+        actorLanguages: {
+          with: {
+            language: true
+          }
+        },
+        actorTones: {
+          with: {
+            tone: true
+          }
+        },
+        country: true,
+        demos: true
+      }
+    });
   } catch (dbError) {
     console.warn(' getActor Drizzle failed, falling back to SDK');
-    const { data } = await supabase.from('actors').select('*').eq('first_name', slug).single();
+    const { data } = await supabase
+      .from('actors')
+      .select(`
+        *,
+        actor_languages(is_native, languages(*)),
+        actor_tones(voice_tones(*)),
+        countries(*),
+        actor_demos(*)
+      `)
+      .eq('first_name', slug)
+      .single();
+      
     if (data) {
       actor = {
         ...data,
@@ -481,36 +530,45 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
         aiTags: data.ai_tags,
         website: data.website,
         linkedin: data.linkedin,
+        email: data.email,
+        status: data.status,
+        first_name: data.first_name,
+        last_name: data.last_name,
         deliveryDaysMin: data.delivery_days_min,
         deliveryDaysMax: data.delivery_days_max,
         cutoffTime: data.cutoff_time,
-        wpProductId: data.wp_product_id
+        wpProductId: data.wp_product_id,
+        // Map relations
+        actorLanguages: data.actor_languages?.map((al: any) => ({
+          isNative: al.is_native,
+          language: al.languages
+        })),
+        actorTones: data.actor_tones?.map((at: any) => ({
+          tone: at.voice_tones
+        })),
+        country: data.countries,
+        demos: data.actor_demos
       };
     }
   }
 
   if (!actor) throw new Error("Actor not found");
 
-  let demos: any[] = [];
   let dbReviews: any[] = [];
   let mediaItem: { filePath: string } | null = null;
 
   try {
-    const [demosRes, reviewsRes, mediaRes] = await Promise.all([
-      db.select().from(actorDemos).where(eq(actorDemos.actorId, actor.id)),
+    const [reviewsRes, mediaRes] = await Promise.all([
       db.select().from(reviews).where(sql`${reviews.iapContext}->>'actorId' = ${actor.id.toString()}`).limit(3),
       actor.photoId ? db.select().from(media).where(eq(media.id, actor.photoId)).limit(1) : Promise.resolve([])
     ]);
-    demos = demosRes;
     dbReviews = reviewsRes;
     mediaItem = mediaRes[0] || null;
   } catch (relError) {
     console.warn(' getActor relations Drizzle failed, falling back to SDK');
-    const [demosRes, reviewsRes] = await Promise.all([
-      supabase.from('actor_demos').select('*').eq('actor_id', actor.id),
+    const [reviewsRes] = await Promise.all([
       supabase.from('reviews').select('*').contains('iap_context', { actorId: actor.id }).limit(3)
     ]);
-    demos = demosRes.data || [];
     dbReviews = (reviewsRes.data || []).map(r => ({
       ...r,
       authorName: r.author_name,
@@ -535,6 +593,7 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${ASSET_BASE}${actor.dropboxUrl}`;
   }
   if (!photoUrl && actor.photo_url) {
+    console.log(` API: Falling back to actor.photo_url for ${actor.firstName}:`, actor.photo_url);
     photoUrl = actor.photo_url.startsWith('http') ? actor.photo_url : `/api/proxy?path=${encodeURIComponent(actor.photo_url)}`;
   }
 
@@ -542,18 +601,27 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     VoiceglotBridge.t(actor.bio || '', lang)
   ]);
 
+  //  CHRIS-PROTOCOL: Resolve relational languages and tones
+  const nativeLangObj = actor.actorLanguages?.find((al: any) => al.isNative)?.language;
+  const extraLangsList = actor.actorLanguages?.filter((al: any) => !al.isNative).map((al: any) => al.language?.code);
+  const tonesList = actor.actorTones?.map((at: any) => at.tone?.label);
+
   return {
     id: actor.wpProductId || actor.id,
     display_name: actor.firstName,
     first_name: actor.firstName,
     last_name: actor.lastName || '',
-    slug: actor.firstName.toLowerCase(),
-    gender: actor.gender || '',
-    native_lang: (actor.nativeLang as string | undefined) ?? undefined,
+    firstName: actor.firstName || (actor as any).first_name,
+    lastName: actor.lastName || (actor as any).last_name || '',
+    email: actor.email || (actor as any).email || '',
+    slug: actor.firstName?.toLowerCase() || (actor as any).first_name?.toLowerCase(),
+    gender: actor.gender_new || actor.gender || '',
+    native_lang: nativeLangObj?.code || actor.nativeLang,
     photo_url: photoUrl,
     description: actor.bio,
     website: actor.website,
     linkedin: actor.linkedin,
+    status: actor.status,
     starting_price: parseFloat(actor.priceUnpaid || '0'),
     price_ivr: parseFloat(actor.priceIvr || actor.price_ivr || '0'),
     price_online: parseFloat(actor.priceOnline || actor.price_online || '0'),
@@ -566,13 +634,17 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     delivery_days_max: actor.deliveryDaysMax || 2,
     cutoff_time: actor.cutoffTime || '18:00',
     availability: actor.availability as any[] || [],
+    holiday_from: (actor as any).holidayFrom || (actor as any).holiday_from || '',
+    holiday_till: (actor as any).holidayTill || (actor as any).holiday_till || '',
+    extra_langs: extraLangsList?.join(', ') || actor.extraLangs || '',
+    native_lang_label: nativeLangObj?.label || '',
     reviews: dbReviews.map(r => ({
       name: r.authorName,
       text: r.textNl || r.textEn || '',
       rating: r.rating,
       date: new Date(r.createdAt!).toLocaleDateString('nl-BE')
     })),
-    demos: demos.map(d => ({
+    demos: (actor.demos || []).map((d: any) => ({
       id: d.id,
       title: d.name,
       audio_url: d.url,

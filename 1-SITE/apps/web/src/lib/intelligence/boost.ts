@@ -3,7 +3,7 @@ import { actors, users, orders, voiceAffinity } from '@db/schema';
 import { sql, eq, and, or, isNotNull } from 'drizzle-orm';
 
 /**
- * ⚡ NUCLEAR INTELLIGENCE BOOST (Supabase Edition)
+ *  NUCLEAR INTELLIGENCE BOOST (Supabase Edition)
  * 
  * Doel: Slim koppelen van data en verrijken van de database in de cloud.
  * Pijler: Professional Luiheid & Data-Integriteit.
@@ -30,7 +30,7 @@ export class IntelligenceBoost {
    * Zoekt naar workshop orders en maakt shadow users aan voor deelnemers.
    */
   static async linkWorkshopParticipants() {
-    console.log('🎓 Starting Workshop Participant linking...');
+    console.log(' Starting Workshop Participant linking...');
     
     // Haal alle studio orders op
     const studioOrders = await db.select().from(orders).where(eq(orders.journey, 'studio'));
@@ -51,7 +51,7 @@ export class IntelligenceBoost {
 
         // 2. Als er geen user is, maak een Shadow User aan (Silent)
         if (!matchedUser) {
-          console.log(`   👤 Creating Shadow User for Workshop Participant (${email})...`);
+          console.log(`    Creating Shadow User for Workshop Participant (${email})...`);
           
           // Haal meta data op voor prefill
           const meta = (order.rawMeta as any) || {};
@@ -87,15 +87,15 @@ export class IntelligenceBoost {
       }
     }
 
-    console.log(`✅ Workshop Participants linked: (Shadow Users created: ${createdCount})`);
+    console.log(` Workshop Participants linked: (Shadow Users created: ${createdCount})`);
   }
 
   /**
    * 2. Boost Subroles (The Talent Ladder)
-   * Deelt subrollen uit op basis van de "Core" regels (A/B/C categorieën).
+   * Deelt subrollen uit op basis van de "Core" regels (A/B/C categorien).
    */
   static async boostSubroles() {
-    console.log('🚀 Boosting Subroles (Talent Ladder)...');
+    console.log(' Boosting Subroles (Talent Ladder)...');
     
     const allUsers = await db.select().from(users);
     let updatedCount = 0;
@@ -115,7 +115,7 @@ export class IntelligenceBoost {
         const status = actor.status || 'live';
         const isSpotlight = (actor as any).isSpotlight === true || score <= 50;
 
-        // 🪜 THE LADDER LOGIC
+        //  THE LADDER LOGIC
         // Tier A: Spotlight / Top 10 (Score 0-50)
         // Tier B: Main Database (Score 51-300)
         // Tier C: Extended / Offline (Score 301+)
@@ -185,7 +185,7 @@ export class IntelligenceBoost {
       }
     }
 
-    console.log(`✅ Users boosted: ${updatedCount}`);
+    console.log(` Users boosted: ${updatedCount}`);
   }
 
   /**
@@ -193,11 +193,11 @@ export class IntelligenceBoost {
    * Analyseert orders om de voice_affinity tabel te vullen.
    */
   static async crunchAffinity() {
-    console.log('🧬 Crunching Voice Affinity from Historical Orders...');
+    console.log(' Crunching Voice Affinity from Historical Orders...');
     
     // 1. Get all orders with rawMeta
     const allOrders = await db.select().from(orders).where(isNotNull(orders.rawMeta));
-    console.log(`🔍 Analyzing ${allOrders.length} orders for voice pairs...`);
+    console.log(` Analyzing ${allOrders.length} orders for voice pairs...`);
 
     const affinityPairs: Record<string, number> = {};
 
@@ -252,18 +252,18 @@ export class IntelligenceBoost {
       }
     }
     
-    console.log(`✅ Affinity crunching completed. ${pairsFound} pairs updated.`);
+    console.log(` Affinity crunching completed. ${pairsFound} pairs updated.`);
   }
 
   /**
    * Voer de volledige boost uit
    */
   static async runAll() {
-    console.log('🔥 STARTING FULL NUCLEAR INTELLIGENCE BOOST...');
+    console.log(' STARTING FULL NUCLEAR INTELLIGENCE BOOST...');
     await this.linkGhostActors();
     await this.linkWorkshopParticipants();
     await this.boostSubroles();
     await this.crunchAffinity();
-    console.log('🏁 ALL ENGINES COMPLETED SILENTLY.');
+    console.log(' ALL ENGINES COMPLETED SILENTLY.');
   }
 }

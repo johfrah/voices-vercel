@@ -3,7 +3,7 @@ import { orderItems, orders } from '@db/schema';
 import { and, desc, eq, sql } from 'drizzle-orm';
 
 /**
- * 🧠 VOICY PATTERN ENGINE (NUCLEAR EDITION 2026)
+ *  VOICY PATTERN ENGINE (NUCLEAR EDITION 2026)
  * 
  * Deze service vervangt de PHP Pattern Engine logica.
  * Het analyseert order-historie om terugkerende patronen te detecteren
@@ -37,7 +37,7 @@ export class VoicyPatternEngine {
       return { hasPattern: false, reason: 'Onvoldoende order historie' };
     }
 
-    // 2. Haal alle items op voor deze orders om categorieën te mappen
+    // 2. Haal alle items op voor deze orders om categorien te mappen
     const orderIds = userOrders.map(o => o.id);
     const items = await db.select()
       .from(orderItems)

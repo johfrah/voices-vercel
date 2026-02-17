@@ -13,10 +13,10 @@ import { VoiceglotText } from '../ui/VoiceglotText';
 import { cn } from '@/lib/utils';
 
 /**
- * ⚡ PROFIT ENGINE WIDGET (2026)
+ *  PROFIT ENGINE WIDGET (2026)
  * 
  * Deze component vervangt de PHP voices_render_profit_engine_widget.
- * Het toont de real-time financiële status van de systeem-kern van Voices.
+ * Het toont de real-time financile status van de systeem-kern van Voices.
  */
 
 export const ProfitEngineWidget: React.FC = () => {

@@ -1,7 +1,7 @@
 import { VoicyPatternEngine } from '../intelligence/pattern-engine';
 
 /**
- * 🧠 SMARTMAIL SERVICE (2026)
+ *  SMARTMAIL SERVICE (2026)
  * 
  * Verantwoordelijk voor het genereren van hyper-gepersonaliseerde 
  * sales- en retentie e-mails op basis van DataMatch intelligentie.
@@ -46,7 +46,7 @@ export class SmartmailService {
 
   /**
    * Verzendt een Smartmail via de EmailService.
-   * 🛡️ HITL: Mails worden nu eerst in de wachtrij geplaatst voor goedkeuring.
+   *  HITL: Mails worden nu eerst in de wachtrij geplaatst voor goedkeuring.
    */
   static async queueSmartmail(opportunity: SmartOpportunity) {
     const url = process.env.EMAIL_SERVICE_URL || 'http://localhost:3001/api/v2/emails/queue';

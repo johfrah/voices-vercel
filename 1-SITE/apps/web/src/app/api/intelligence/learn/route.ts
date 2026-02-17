@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         const [dbUser] = await db.select().from(users).where(eq(users.email, user.email)).limit(1);
         numericUserId = dbUser?.id;
       } catch (dbError) {
-        console.warn('⚠️ Learn API Drizzle failed, falling back to SDK');
+        console.warn(' Learn API Drizzle failed, falling back to SDK');
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
         const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
         const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);

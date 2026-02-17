@@ -3,7 +3,7 @@ import { VoiceRecorder } from 'capacitor-voice-recorder';
 import { Device } from '@capacitor/device';
 
 /**
- * 📱 MOBILE BRIDGE (Capacitor)
+ *  MOBILE BRIDGE (Capacitor)
  * 
  * Zorgt voor de naadloze overgang tussen Web en Native (iOS/Android).
  * Detecteert hardware mogelijkheden en activeert native tools.

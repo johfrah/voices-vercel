@@ -13,7 +13,7 @@ interface AccordionItem {
 }
 
 /**
- * 🎙️ ACCORDION INSTRUMENT (VOICES 2026)
+ *  ACCORDION INSTRUMENT (VOICES 2026)
  * 
  * Volgt de Ademing-feel:
  * - Minimale padding voor een strakke look.

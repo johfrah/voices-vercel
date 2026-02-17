@@ -29,10 +29,10 @@ import toast from 'react-hot-toast';
 import { VoiceglotText } from './VoiceglotText';
 
 /**
- * ⚡ COMMAND PALETTE (GOD MODE 2026)
+ *  COMMAND PALETTE (GOD MODE 2026)
  * 
  * Een centrale hub voor razendsnelle navigatie en acties.
- * Geïnspireerd op Raycast en Linear.
+ * Genspireerd op Raycast en Linear.
  */
 export const CommandPalette = () => {
   const [open, setOpen] = useState(false);
@@ -40,7 +40,7 @@ export const CommandPalette = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  // 🍎 CMD+K SHORTCUT
+  //  CMD+K SHORTCUT
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -332,7 +332,7 @@ export const CommandPalette = () => {
         <div className="px-6 py-3 bg-gray-50/50 border-t border-gray-50 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
-              <span className="px-1 py-0.5 bg-white border border-gray-200 rounded text-[15px] font-bold shadow-sm">↑↓</span>
+              <span className="px-1 py-0.5 bg-white border border-gray-200 rounded text-[15px] font-bold shadow-sm"></span>
               <span className="text-[15px] text-gray-400 font-medium">
                 <VoiceglotText  translationKey="command.palette.hint.navigate" defaultText="Navigeren" />
               </span>

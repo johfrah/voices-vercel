@@ -4,7 +4,7 @@ import { and, count, desc, eq, sql } from "drizzle-orm";
 import { StudioDashboardData, Workshop } from "./api";
 
 /**
- * ☢️ NUCLEAR DATA BRIDGE - STUDIO JOURNEY (FULL NATIVE)
+ *  NUCLEAR DATA BRIDGE - STUDIO JOURNEY (FULL NATIVE)
  * 
  * Deze service is 100% vrij van legacy-bridge of legacyApiBaseUrl.
  * Het gebruikt direct Drizzle ORM voor alle data-operaties.
@@ -25,7 +25,7 @@ export interface FinanceStats {
   partnerPayouts: number;
   netProfit: number; // De "Pot"
   partnerShare: number; // 50/50 split aandeel
-  forecastProfit?: number; // 📈 Prognose winst
+  forecastProfit?: number; //  Prognose winst
   marginPercentage: number;
 }
 
@@ -73,7 +73,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt een specifieke workshop op basis van slug
-   * 🛡️ VOICES OS: 100% Native Drizzle
+   *  VOICES OS: 100% Native Drizzle
    */
   static async getWorkshopBySlug(slug: string): Promise<WorkshopDetail | null> {
     try {
@@ -142,10 +142,10 @@ export class StudioDataBridge {
           location_address: e.location?.address,
           instructor: e.instructor?.name || instructor?.name,
           capacity: e.capacity || 8,
-          filled: e.participants?.length || 0, // 👥 Deelnemers koppelen voor de chip
+          filled: e.participants?.length || 0, //  Deelnemers koppelen voor de chip
           includes_lunch: e.meta?.includes_lunch ?? true,
           includes_certificate: e.meta?.includes_certificate ?? true,
-          program: e.program || dbWorkshop.program // 👈 Gebruik editie-specifiek programma of fallback naar workshop default
+          program: e.program || dbWorkshop.program //  Gebruik editie-specifiek programma of fallback naar workshop default
         })) || [],
         aftermovie_url: dbWorkshop.meta?.aftermovie_url,
         aftermovie_description: dbWorkshop.meta?.aftermovie_beschrijving,
@@ -172,7 +172,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt de volledige dashboard configuratie op (100% Native)
-   * 🛡️ VOICES OS: WordPress-vrij
+   *  VOICES OS: WordPress-vrij
    */
   static async getDashboardData(tab: string = 'funnel'): Promise<StudioDashboardData                 & { _nuclear: boolean }> {
     try {
@@ -262,8 +262,8 @@ export class StudioDataBridge {
   }
 
   /**
-   * Haalt financiële statistieken op (Native Logic)
-   * 🛡️ VOICES OS: Onderscheid tussen Externe Kosten en Partner Payouts.
+   * Haalt financile statistieken op (Native Logic)
+   *  VOICES OS: Onderscheid tussen Externe Kosten en Partner Payouts.
    */
   static async getFinanceStats(): Promise<FinanceStats> {
     try {
@@ -299,9 +299,9 @@ export class StudioDataBridge {
         .reduce((acc, c) => acc + parseFloat(c.amount || '0'), 0);
 
       const netProfit = totalRevenue - externalCosts - partnerPayouts;
-      const partnerShare = netProfit / 2; // 🤝 De 50/50 split
+      const partnerShare = netProfit / 2; //  De 50/50 split
       
-      // 📈 Prognose: Gerealiseerd + Onbetaald
+      //  Prognose: Gerealiseerd + Onbetaald
       const forecastProfit = netProfit + pendingRevenue;
       
       const marginPercentage = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
@@ -332,7 +332,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt een workshop op met al zijn edities (datums)
-   * 🛡️ VOICES OS: Nuclear Edition Support
+   *  VOICES OS: Nuclear Edition Support
    */
   static async getWorkshopWithEditions(slug: string) {
     try {
@@ -354,7 +354,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt alle inschrijvingen op voor een specifieke gebruiker
-   * 🛡️ VOICES OS: Silent User Support
+   *  VOICES OS: Silent User Support
    */
   static async getRegistrationsByUserId(userId: number) {
     try {
@@ -377,7 +377,7 @@ export class StudioDataBridge {
 
   /**
    * Voegt een nieuwe workshop toe aan het systeem
-   * 🛡️ VOICES OS: 100% Native
+   *  VOICES OS: 100% Native
    */
   static async createWorkshop(data: Partial<typeof workshops.$inferInsert>) {
     try {
@@ -392,7 +392,7 @@ export class StudioDataBridge {
 
   /**
    * Verplaatst of wijzigt een bestaande workshop
-   * 🛡️ VOICES OS: 100% Native
+   *  VOICES OS: 100% Native
    */
   static async updateWorkshop(id: number, data: Partial<typeof workshops.$inferInsert>) {
     try {
@@ -409,7 +409,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt alle instructeurs op
-   * 🛡️ VOICES OS: 100% Native
+   *  VOICES OS: 100% Native
    */
   static async getInstructors() {
     try {
@@ -427,7 +427,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt een specifieke instructeur op basis van slug
-   * 🛡️ VOICES OS: 100% Native
+   *  VOICES OS: 100% Native
    */
   static async getInstructorBySlug(slug: string) {
     try {
@@ -445,7 +445,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt alle workshops op van een specifieke instructeur
-   * 🛡️ VOICES OS: 100% Native
+   *  VOICES OS: 100% Native
    */
   static async getWorkshopsByInstructor(instructorId: number) {
     try {
@@ -466,7 +466,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt de instructeur-data op voor een specifieke User ID
-   * 🛡️ VOICES OS: Voor het Instructor Dashboard
+   *  VOICES OS: Voor het Instructor Dashboard
    */
   static async getInstructorByUserId(userId: number) {
     try {
@@ -522,7 +522,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt alle deelnemers op voor een specifieke workshop editie
-   * 🛡️ VOICES OS: Voor de instructeur cockpit
+   *  VOICES OS: Voor de instructeur cockpit
    */
   static async getParticipantsByEdition(editionId: number) {
     try {
@@ -544,7 +544,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt ALLE edities op (zowel verleden als toekomst)
-   * 🛡️ VOICES OS: Voor Studio Admin
+   *  VOICES OS: Voor Studio Admin
    */
   static async getAllEditions() {
     try {
@@ -581,7 +581,7 @@ export class StudioDataBridge {
   }
 
   /**
-   * Haalt financiële statistieken op per journey
+   * Haalt financile statistieken op per journey
    */
   static async getFinancialStatsByJourney(journey: 'studio' | 'agency' | 'academy') {
     try {

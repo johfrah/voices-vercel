@@ -25,7 +25,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
   const nextEdition = workshop.editions?.length > 0 ? workshop.editions[0] : null;
   const videoPath = workshop.media?.filePath || workshop.media?.file_path;
 
-  // 🧠 SMART AVAILABILITY LOGIC
+  //  SMART AVAILABILITY LOGIC
   const getAvailabilityStatus = (edition: any) => {
     if (!edition) return null;
     const capacity = edition.capacity || 8;
@@ -39,11 +39,11 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
 
   const availability = getAvailabilityStatus(nextEdition);
 
-  // 📝 SUBTITLE LOGIC (VOICES 2026)
+  //  SUBTITLE LOGIC (VOICES 2026)
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
 
   useEffect(() => {
-    // 🛡️ CHRIS-PROTOCOL: Lazy load video only when card is in view or after a short delay
+    //  CHRIS-PROTOCOL: Lazy load video only when card is in view or after a short delay
     const timer = setTimeout(() => setShouldLoadVideo(true), 1000);
     return () => clearTimeout(timer);
   }, []);
@@ -125,7 +125,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
     playClick('pro');
   };
   
-  // 🛡️ CHRIS-PROTOCOL: Strip HTML and clean whitespace
+  //  CHRIS-PROTOCOL: Strip HTML and clean whitespace
   const cleanDescription = (text: string) => {
     if (!text) return '';
     return text
@@ -156,7 +156,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
       {/* VIDEO PREVIEW / AFTERMOVIE */}
       {videoPath && (
         <ContainerInstrument plain className="relative aspect-square w-full bg-va-black overflow-hidden">
-          {/* 🧠 SMART AVAILABILITY CHIP */}
+          {/*  SMART AVAILABILITY CHIP */}
           {availability && (
             <div className={`absolute top-6 left-6 z-30 px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg ${availability.color}`}>
               {availability.label}
@@ -210,7 +210,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
           </ContainerInstrument>
           <ContainerInstrument plain className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
           
-          {/* 📝 CUSTOM SUBTITLES (VOICES MIX) */}
+          {/*  CUSTOM SUBTITLES (VOICES MIX) */}
           {activeSubtitle && (
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[85%] z-20 pointer-events-none text-center">
               <span className="inline-block px-4 py-2 bg-va-black/80 backdrop-blur-md rounded-[12px] text-white text-[14px] font-light leading-relaxed shadow-aura-lg border border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -279,7 +279,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
                 <VoiceglotText translationKey="studio.investment" defaultText="Investering" />
               </TextInstrument>
               <TextInstrument className="text-3xl font-light tracking-tighter text-va-black">
-                € {nextEdition?.price ? parseFloat(nextEdition.price.toString()).toFixed(2) : parseFloat(workshop.price?.toString() || '0').toFixed(2)}
+                 {nextEdition?.price ? parseFloat(nextEdition.price.toString()).toFixed(2) : parseFloat(workshop.price?.toString() || '0').toFixed(2)}
               </TextInstrument>
             </ContainerInstrument>
             

@@ -68,7 +68,7 @@ const DraggableWidget: React.FC<{ widget: BuilderWidget }> = ({ widget }) => {
 };
 
 /**
- * 🏗️ BENTO ARCHITECT - HET ONTWERPPANEEL
+ *  BENTO ARCHITECT - HET ONTWERPPANEEL
  * Beheer-modus: Volledige controle over de structuur.
  */
 export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {

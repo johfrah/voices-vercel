@@ -62,7 +62,7 @@ export default function CostsManagerClient({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-[15px] font-black tracking-widest text-black/30 uppercase">Kostenbeheer (Privé)</h3>
+        <h3 className="text-[15px] font-black tracking-widest text-black/30 uppercase">Kostenbeheer (Priv)</h3>
         <div className="flex gap-2">
           <button 
             onClick={() => addCost('locatie')}
@@ -135,7 +135,7 @@ export default function CostsManagerClient({
         <div className="pt-6 border-t border-black/5 flex justify-between items-center">
           <div>
             <span className="text-[11px] font-black tracking-widest text-black/20 uppercase block">Totaal Kosten</span>
-            <span className="text-xl font-light">€{totalCosts.toFixed(2)}</span>
+            <span className="text-xl font-light">{totalCosts.toFixed(2)}</span>
           </div>
           <button 
             onClick={handleSave}

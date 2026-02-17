@@ -84,7 +84,7 @@ export default function LocationFormClient({ initialData }: { initialData?: any 
             />
           </div>
           <div>
-            <label className="text-[11px] font-black tracking-widest text-white/30 uppercase block mb-2 text-primary">BTW Nummer (Privé)</label>
+            <label className="text-[11px] font-black tracking-widest text-white/30 uppercase block mb-2 text-primary">BTW Nummer (Priv)</label>
             <input 
               type="text" 
               value={formData.vatNumber}

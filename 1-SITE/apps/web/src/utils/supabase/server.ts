@@ -11,12 +11,12 @@ function hasValidSupabaseConfig(): boolean {
 }
 
 /**
- * Maakt een Supabase-serverclient. Retourneert null wanneer env vars ontbreken –
+ * Maakt een Supabase-serverclient. Retourneert null wanneer env vars ontbreken 
  * voorkomt FATAL 500 bij deploy zonder Supabase-config.
  */
 export function createClient(): SupabaseClient | null {
   if (!hasValidSupabaseConfig()) {
-    console.warn('[Voices] Supabase env vars missing – server client unavailable')
+    console.warn('[Voices] Supabase env vars missing  server client unavailable')
     return null
   }
 
@@ -51,4 +51,27 @@ export function createClient(): SupabaseClient | null {
       },
     }
   )
+}
+
+/**
+ *  ADMIN CLIENT (GOD MODE)
+ * Gebruikt de Service Role Key om RLS te omzeilen.
+ * Alleen gebruiken op de server voor admin-acties!
+ */
+export function createAdminClient(): SupabaseClient | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  
+  if (!url || !key) {
+    console.warn('[Voices] Supabase Admin env vars missing')
+    return null
+  }
+
+  return createServerClient(url, key, {
+    cookies: {
+      get(name: string) { return '' },
+      set() {},
+      remove() {},
+    },
+  })
 }

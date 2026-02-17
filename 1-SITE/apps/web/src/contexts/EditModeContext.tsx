@@ -7,6 +7,10 @@ interface EditModeContextType {
   isEditMode: boolean;
   toggleEditMode: () => void;
   canEdit: boolean;
+  openEditModal: (actor: any, onUpdate?: (updatedActor: any) => void) => void;
+  closeEditModal: () => void;
+  editingActor: any | null;
+  onActorUpdate?: (updatedActor: any) => void;
 }
 
 const EditModeContext = createContext<EditModeContextType | undefined>(undefined);
@@ -14,48 +18,67 @@ const EditModeContext = createContext<EditModeContextType | undefined>(undefined
 export const EditModeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAdmin } = useAuth();
   const [isEditMode, setIsEditMode] = useState(false);
+  const [editingActor, setEditingActor] = useState<any | null>(null);
+  const [onActorUpdate, setOnActorUpdate] = useState<((updatedActor: any) => void) | undefined>(undefined);
 
-  // Reset edit mode if user is no longer admin
-  useEffect(() => {
-    if (!isAdmin) {
-      setIsEditMode(false);
-    }
-  }, [isAdmin]);
-
-  const toggleEditMode = React.useCallback(() => {
-    if (isAdmin) {
-      setIsEditMode(prev => !prev);
-    }
-  }, [isAdmin]);
-
-  // SHORTCUT MANDATE: Cmd+Shift+B toggles Edit Mode
+  // SHORTCUT MANDATE: Cmd+Shift+E toggles Edit Mode sitewide (E for Edit)
+  // We avoid Cmd+Shift+B as it's used by Chrome for the bookmarks bar.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'b') {
-        e.preventDefault();
-        toggleEditMode();
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'e') {
+        if (isAdmin) {
+          e.preventDefault();
+          setIsEditMode(prev => !prev);
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [toggleEditMode]);
+  }, [isAdmin]);
+
+  const openEditModal = (actor: any, onUpdate?: (updatedActor: any) => void) => {
+    setEditingActor(actor);
+    setOnActorUpdate(() => onUpdate);
+  };
+
+  const closeEditModal = () => {
+    setEditingActor(null);
+    setOnActorUpdate(undefined);
+  };
 
   return (
     <EditModeContext.Provider value={{ 
       isEditMode, 
-      toggleEditMode, 
-      canEdit: isAdmin 
+      toggleEditMode: () => { if (isAdmin) setIsEditMode(prev => !prev); }, 
+      canEdit: isAdmin,
+      openEditModal,
+      closeEditModal,
+      editingActor,
+      onActorUpdate
     }}>
       {children}
     </EditModeContext.Provider>
   );
 };
 
-export const useEditMode = () => {
+export function useEditMode() {
   const context = useContext(EditModeContext);
+  
+  // CHRIS-PROTOCOL: Safe context access for SSR
+  if (typeof window === 'undefined') {
+    return { 
+      isEditMode: false, 
+      toggleEditMode: () => {}, 
+      canEdit: false, 
+      openEditModal: () => {}, 
+      closeEditModal: () => {}, 
+      editingActor: null 
+    };
+  }
+  
   if (context === undefined) {
     throw new Error('useEditMode must be used within an EditModeProvider');
   }
   return context;
-};
+}

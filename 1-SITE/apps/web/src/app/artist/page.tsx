@@ -15,7 +15,7 @@ import { Suspense } from 'react';
  */
 
 async function PortfolioGrid() {
-  // 🚀 Native Fetch from Supabase
+  //  Native Fetch from Supabase
   // We filteren op acteurs die 'musician' of 'singer' in hun tags hebben
   const artists = await db.select()
     .from(actors)
@@ -80,7 +80,7 @@ export default async function ArtistPage() {
   return (
     <PageWrapperInstrument className="min-h-screen pt-32 pb-32 bg-va-black text-white relative overflow-hidden">
       <LiquidBackground strokeWidth={1.5} />
-      {/* 🧪 ANALOG WARMTH LAYER */}
+      {/*  ANALOG WARMTH LAYER */}
       <ContainerInstrument className="fixed inset-0 -z-10 opacity-[0.05] pointer-events-none">
         <ContainerInstrument className="absolute inset-0 hred rotate-180 animate-slow-pulse" />
       </ContainerInstrument>

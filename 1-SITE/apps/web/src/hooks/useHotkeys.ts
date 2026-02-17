@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 type KeyHandler = (event: KeyboardEvent) => void;
 
 /**
- * ⌨️ USE HOTKEYS HOOK (2026)
+ *  USE HOTKEYS HOOK (2026)
  * 
  * Maakt keyboard-first navigatie mogelijk voor admin interfaces.
  * Ondersteunt combinaties en voorkomt triggers in input velden.

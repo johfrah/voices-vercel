@@ -3,7 +3,7 @@ import { translations } from '@db/schema';
 import { eq, and } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 
-// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -45,7 +45,7 @@ export class VoiceglotBridge {
           .limit(1);
         result = dbResult;
       } catch (dbError) {
-        console.warn('⚠️ Voiceglot Drizzle failed, falling back to SDK');
+        console.warn(' Voiceglot Drizzle failed, falling back to SDK');
         const query = supabase.from('translations').select('*').eq('lang', lang);
         if (isKey) query.eq('translation_key', textOrKey);
         else query.eq('original_text', textOrKey);
@@ -66,7 +66,7 @@ export class VoiceglotBridge {
       this.cache[cacheKey] = translated;
       return translated;
     } catch (e) {
-      console.error('❌ Voiceglot Error:', e);
+      console.error(' Voiceglot Error:', e);
       return textOrKey;
     }
   }
@@ -86,7 +86,7 @@ export class VoiceglotBridge {
           .from(translations)
           .where(eq(translations.lang, lang));
       } catch (dbError) {
-        console.warn('⚠️ Voiceglot Batch Drizzle failed, falling back to SDK');
+        console.warn(' Voiceglot Batch Drizzle failed, falling back to SDK');
         const { data } = await supabase.from('translations').select('*').eq('lang', lang);
         results = (data || []).map(r => ({
           ...r,

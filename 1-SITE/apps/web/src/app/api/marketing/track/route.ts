@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { type NextRequest, NextResponse } from 'next/server'
 
 /**
- * 🚪 MAT: VISITOR TRACKING API (2026)
+ *  MAT: VISITOR TRACKING API (2026)
  * 
  * Verwerkt real-time footprints van bezoekers en slaat deze op in de database.
  */
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     const { event, pathname, referrer, intent, iapContext } = body;
     
-    // 🛡️ MAT: Wees extreem voorzichtig met pathname
+    //  MAT: Wees extreem voorzichtig met pathname
     if (!pathname || typeof pathname !== 'string') {
       return NextResponse.json({ success: false, error: 'Missing or invalid pathname' }, { status: 400 });
     }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
 
     if (!visitorHash) {
-      // 🕵️ MAT: Als er geen hash is, loggen we het als anoniem of we negeren het
+      //  MAT: Als er geen hash is, loggen we het als anoniem of we negeren het
       // We geven een 200 terug om de frontend niet te storen
       return NextResponse.json({ success: true, message: 'Skipped: No visitor hash' });
     }
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    // 🕵️ MAT: UTM Extraction from URL if present in pathname
+    //  MAT: UTM Extraction from URL if present in pathname
     let utmSource = null;
     let utmMedium = null;
     let utmCampaign = null;
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
           utm_campaign: utmCampaign,
         }, { onConflict: 'visitor_hash' });
     } catch (visitorError) {
-      console.error('❌ MAT: Visitor upsert error:', visitorError);
+      console.error(' MAT: Visitor upsert error:', visitorError);
     }
 
     // 2. Log het event
@@ -93,14 +93,14 @@ export async function POST(request: NextRequest) {
         market,
         intent,
         event: event || 'pageview',
-        iap_context: iapContext
+        iap_context: typeof iapContext === 'string' ? JSON.parse(iapContext) : iapContext
       });
 
     if (logError) throw logError;
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    console.error('❌ MAT TRACKING ERROR:', {
+    console.error(' MAT TRACKING ERROR:', {
       message: err.message,
       stack: err.stack
     });

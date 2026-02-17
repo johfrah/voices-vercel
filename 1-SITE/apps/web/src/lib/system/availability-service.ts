@@ -4,7 +4,7 @@ import { eq, sql } from "drizzle-orm";
 import { DbService } from "../db-service";
 
 /**
- * 📅 NUCLEAR AVAILABILITY SERVICE (2026)
+ *  NUCLEAR AVAILABILITY SERVICE (2026)
  * 
  * Beheert de beschikbaarheid en vakanties van stemacteurs.
  * Vervangt de PHP Vacation Utilities.

@@ -3,7 +3,7 @@ import { chatMessages } from '@db/schema';
 import { and, asc, eq, gt } from 'drizzle-orm';
 
 /**
- * ⚡ REAL-TIME CHAT SSE (2026)
+ *  REAL-TIME CHAT SSE (2026)
  * 
  * Native Server-Sent Events handler for VoicyChat.
  * Replaces legacy PHP 15-chat-sse.php.
@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   const conversationId = parseInt(searchParams.get('conversationId') || '0');
   let lastMessageId = parseInt(searchParams.get('lastMessageId') || '0');
   
-  // 🛡️ CHRIS-PROTOCOL: Prevent Postgres integer out-of-range error
+  //  CHRIS-PROTOCOL: Prevent Postgres integer out-of-range error
   if (isNaN(lastMessageId) || lastMessageId > 2147483647) {
     lastMessageId = 0;
   }
@@ -37,6 +37,11 @@ export async function GET(request: Request) {
       // Poll loop (simulating real-time with database checks)
       // In a full production environment, this would use Postgres NOTIFY/LISTEN or a PubSub
       const interval = setInterval(async () => {
+        if (request.signal.aborted) {
+          clearInterval(interval);
+          return;
+        }
+
         try {
           const newMessages = await db.select()
             .from(chatMessages)
@@ -49,17 +54,20 @@ export async function GET(request: Request) {
             .orderBy(asc(chatMessages.id));
 
           if (newMessages.length > 0) {
+            lastMessageId = Math.max(...newMessages.map(m => m.id));
             sendEvent({
               type: 'new_messages',
               messages: newMessages
             });
-            // Note: In a real app, the client would update its lastMessageId
           }
 
           // Heartbeat
           sendEvent({ type: 'heartbeat' });
         } catch (error) {
           console.error('SSE Error:', error);
+          //  CHRIS-PROTOCOL: Stop bij fatale DB errors om serverload te beperken
+          clearInterval(interval);
+          controller.close();
         }
       }, 3000); // Check every 3 seconds
 

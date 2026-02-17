@@ -4,14 +4,14 @@ import { eq } from 'drizzle-orm';
 import { InvoiceService } from './commerce/invoice-service';
 
 /**
- * ⚡ ZERO-LOSS CHECKOUT SERVICE (2026)
+ *  ZERO-LOSS CHECKOUT SERVICE (2026)
  * 
  * Beheert de frictieloze booking flow voor Studio & Agency.
  * SSoT: Single Source of Truth voor order creatie.
  */
 export class CheckoutService {
   /**
-   * Creëert een nieuwe order met minimale frictie.
+   * Creert een nieuwe order met minimale frictie.
    * Volgt het "Zero-Loss" protocol.
    */
   static async createOrder(data: {
@@ -30,7 +30,7 @@ export class CheckoutService {
     billingVatNumber?: string;
     market: string;
   }) {
-    console.log(`🚀 Zero-Loss Checkout: Creating ${data.journey} order for ${data.billingEmail}...`);
+    console.log(` Zero-Loss Checkout: Creating ${data.journey} order for ${data.billingEmail}...`);
 
     try {
       // 1. Bereken totalen
@@ -68,7 +68,7 @@ export class CheckoutService {
         });
       }
 
-      console.log(`✅ Order #${newOrder.id} created successfully.`);
+      console.log(` Order #${newOrder.id} created successfully.`);
 
       // 4. Trigger facturatie (HITL ready via Yuki sync)
       // In een echte flow zou dit pas na betaling gebeuren, 
@@ -76,7 +76,7 @@ export class CheckoutService {
       
       return newOrder;
     } catch (error) {
-      console.error('❌ Zero-Loss Checkout Error:', error);
+      console.error(' Zero-Loss Checkout Error:', error);
       throw error;
     }
   }

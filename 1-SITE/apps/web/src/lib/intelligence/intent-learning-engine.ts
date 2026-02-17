@@ -4,7 +4,7 @@ import { eq, sql } from 'drizzle-orm';
 import { GeminiService } from '@/services/GeminiService';
 
 /**
- * 🧠 INTENT LEARNING ENGINE (GOD MODE 2026)
+ *  INTENT LEARNING ENGINE (GOD MODE 2026)
  * 
  * Doel: Leren van user-gedrag (typen en lezen) om het Customer DNA te verrijken.
  * De machine wordt slimmer bij elke interactie.
@@ -27,7 +27,7 @@ export class IntentLearningEngine {
 
     if (!content || content.length < 3) return;
 
-    console.log(`🧠 INTENT LEARNING: Analyzing ${type} interaction from ${userId || visitorHash}`);
+    console.log(` INTENT LEARNING: Analyzing ${type} interaction from ${userId || visitorHash}`);
 
     try {
       // 1. AI Analyse van de interactie via Voicy
@@ -85,13 +85,13 @@ export class IntentLearningEngine {
             })
             .where(eq(users.id, userId));
             
-          console.log(`✅ DNA Updated for user ${userId}: Intent=${analysis.intent}`);
+          console.log(` DNA Updated for user ${userId}: Intent=${analysis.intent}`);
         }
       }
 
       return analysis;
     } catch (error) {
-      console.error('❌ Intent Learning failed:', error);
+      console.error(' Intent Learning failed:', error);
       return null;
     }
   }

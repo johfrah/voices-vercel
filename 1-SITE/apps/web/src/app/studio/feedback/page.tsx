@@ -30,7 +30,7 @@ export default function StudioFeedbackPage() {
         <StudioFeedbackForm />
       </ContainerInstrument>
 
-      {/* 🧠 LLM CONTEXT */}
+      {/*  LLM CONTEXT */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

@@ -17,7 +17,7 @@ import { CheckoutForm } from '@/components/checkout/CheckoutForm';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 
 /**
- * 🛒 CHECKOUT PAGE (NUCLEAR 2026)
+ *  CHECKOUT PAGE (NUCLEAR 2026)
  */
 export default function CheckoutPageClient() {
   const { state, setJourney } = useCheckout();
@@ -97,7 +97,7 @@ export default function CheckoutPageClient() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

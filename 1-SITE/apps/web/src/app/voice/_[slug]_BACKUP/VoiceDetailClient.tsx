@@ -31,7 +31,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
     setLocalBriefing(val);
     updateBriefing(val);
 
-    // 🧠 INTENT LEARNING: Leer van wat de gebruiker typt (debounced)
+    //  INTENT LEARNING: Leer van wat de gebruiker typt (debounced)
     if (val.length > 20) {
       const timer = setTimeout(() => {
         fetch('/api/intelligence/learn', {
@@ -125,7 +125,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
         </BentoCard>
       </BentoGrid>
 
-      {/* 🚀 DYNAMIC CONTENT FOR TOP VOICES */}
+      {/*  DYNAMIC CONTENT FOR TOP VOICES */}
       {(hasCustomVideo || hasCustomReels) && (
         <SectionInstrument className="mb-20">
           <HeadingInstrument level={2} className="text-4xl font-light tracking-tight mb-12">
@@ -166,7 +166,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
         </SectionInstrument>
       )}
 
-      {/* 💰 ORDER ENGINE: De Script Editor & Pricing Calculator */}
+      {/*  ORDER ENGINE: De Script Editor & Pricing Calculator */}
       <SectionInstrument className="mb-20">
         <ContainerInstrument className="bg-white rounded-[48px] shadow-aura border border-black/5 p-8 md:p-12">
           <ContainerInstrument className="mb-12">
@@ -207,7 +207,7 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🌟 REVIEWS */}
+      {/*  REVIEWS */}
       {actor.reviews && actor.reviews.length > 0 && (
         <ReviewsInstrument 
           reviews={actor.reviews} 

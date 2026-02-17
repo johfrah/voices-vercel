@@ -9,7 +9,7 @@ import { eq } from 'drizzle-orm';
  * ACADEMY SUBMISSION HANDLER
  * 
  * Verwerkt audio-inzendingen van studenten via Drizzle ORM.
- * 🛡️ ATOMIC CRUD: Gewikkeld in db.transaction()
+ *  ATOMIC CRUD: Gewikkeld in db.transaction()
  */
 
 export async function POST(request: Request) {
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       const [dbUser] = await db.select().from(users).where(eq(users.id, parseInt(userId))).limit(1);
       user = dbUser;
     } catch (dbError) {
-      console.warn('⚠️ Academy Submit Drizzle user fetch failed, falling back to SDK');
+      console.warn(' Academy Submit Drizzle user fetch failed, falling back to SDK');
       const { data } = await supabase.from('users').select('*').eq('id', parseInt(userId)).single();
       user = data;
     }
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
       });
     }
 
-    console.log(`🎙️ Academy Submission: ${result.filePath} by user ${userId} (Synced to Dropbox)`);
+    console.log(` Academy Submission: ${result.filePath} by user ${userId} (Synced to Dropbox)`);
 
     return NextResponse.json({
       success: true,
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('❌ Core Academy Submission Error:', error);
+    console.error(' Core Academy Submission Error:', error);
     return NextResponse.json({ 
       error: 'Submission failed',
       message: error instanceof Error ? error.message : 'Unknown error'

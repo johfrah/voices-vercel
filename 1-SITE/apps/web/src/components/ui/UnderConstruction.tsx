@@ -32,7 +32,7 @@ export default function UnderConstruction() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden bg-va-off-white">
-      {/* ⚡ ADMIN BYPASS LINK */}
+      {/*  ADMIN BYPASS LINK */}
       {isAdmin && (
         <div className="fixed top-8 right-8 z-50">
           <Link  
@@ -44,7 +44,7 @@ export default function UnderConstruction() {
           </Link>
         </div>
       )}
-      {/* 🧪 LIQUID BACKGROUND (Tone of Voice) */}
+      {/*  LIQUID BACKGROUND (Tone of Voice) */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full hred blur-[120px] animate-pulse"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full hblue blur-[120px] animate-pulse delay-1000"></div>

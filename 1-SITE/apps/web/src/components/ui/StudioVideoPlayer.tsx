@@ -15,7 +15,7 @@ interface StudioVideoPlayerProps {
 }
 
 /**
- * 🎬 STUDIO VIDEO PLAYER (VOICES 2026)
+ *  STUDIO VIDEO PLAYER (VOICES 2026)
  * 
  * Een high-end videoplayer met:
  * - Skeleton loader tijdens het laden.
@@ -54,7 +54,7 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
       setIsPlaying(true);
     }
 
-    // 📝 Subtitle Logic via TextTrack API (for .vtt files)
+    //  Subtitle Logic via TextTrack API (for .vtt files)
     const video = videoRef.current;
     if (!video || subtitleData) return; // Skip if using hardcoded array
 
@@ -132,7 +132,7 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
       aspect === 'portrait' ? "aspect-[9/16]" : "aspect-video",
       className
     )}>
-      {/* 🦴 SKELETON LOADER */}
+      {/*  SKELETON LOADER */}
       {!isLoaded && (
         <div className="absolute inset-0 bg-va-black/5 flex items-center justify-center">
           <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
@@ -155,19 +155,19 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onLoadedData={() => {
-          console.log("🎥 Video data loaded:", url);
+          console.log(" Video data loaded:", url);
           setIsLoaded(true);
         }}
         onCanPlay={() => {
-          console.log("🎥 Video can play:", url);
+          console.log(" Video can play:", url);
           setIsLoaded(true);
         }}
         onLoadedMetadata={() => {
-          console.log("🎥 Video metadata loaded:", url);
+          console.log(" Video metadata loaded:", url);
           setIsLoaded(true);
         }}
         onError={(e) => {
-          console.error("❌ Video failed to load:", url, e);
+          console.error(" Video failed to load:", url, e);
           setIsLoaded(true);
         }}
         onClick={togglePlay}
@@ -185,7 +185,7 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
         )}
       </video>
 
-      {/* 📝 CUSTOM SUBTITLES (VOICES MIX) */}
+      {/*  CUSTOM SUBTITLES (VOICES MIX) */}
       {activeSubtitle && (
         <div className="absolute bottom-32 left-1/2 -translate-x-1/2 w-[80%] z-20 pointer-events-none text-center">
           <span className="inline-block px-4 py-2 bg-va-black/80 backdrop-blur-md rounded-[12px] text-white text-[15px] md:text-[16px] font-light leading-relaxed shadow-aura-lg border border-white/5">

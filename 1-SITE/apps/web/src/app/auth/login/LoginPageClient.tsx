@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 /**
- * 🔐 LOGIN PAGE (NUCLEAR 2026)
+ *  LOGIN PAGE (NUCLEAR 2026)
  * 
  * Volgt de Zero Laws:
  * - HTML ZERO: Geen rauwe HTML tags.
@@ -32,7 +32,7 @@ export function LoginPageClient() {
 
   const supabaseUnavailable = !supabase;
 
-  // 🛡️ HANDLE CALLBACK ERRORS
+  //  HANDLE CALLBACK ERRORS
   useEffect(() => {
     const errorParam = searchParams.get('error');
     if (errorParam === 'auth-callback-failed') {
@@ -40,7 +40,7 @@ export function LoginPageClient() {
     }
   }, [searchParams]);
 
-  // 📧 PRE-FILL EMAIL FROM COOKIE
+  //  PRE-FILL EMAIL FROM COOKIE
   useEffect(() => {
     const savedEmail = document.cookie
       .split('; ')
@@ -52,7 +52,7 @@ export function LoginPageClient() {
     }
   }, []);
 
-  // ⚡ MAGIC LOGIN
+  //  MAGIC LOGIN
   useEffect(() => {
     if (supabaseUnavailable) return;
     const magic = searchParams.get('magic');
@@ -259,7 +259,7 @@ export function LoginPageClient() {
         </ContainerInstrument>
       </ContainerInstrument>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

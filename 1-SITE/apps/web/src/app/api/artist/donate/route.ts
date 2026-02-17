@@ -4,7 +4,7 @@ import { orders } from '@db/schema';
 import { NextResponse } from 'next/server';
 
 /**
- * 🎤 ARTIST DONATION API (NUCLEAR 2026)
+ *  ARTIST DONATION API (NUCLEAR 2026)
  * 
  * Doel: Directe donaties aan artiesten via Mollie.
  * Bypasses de standaard winkelwagen voor een snelle 'Support' flow.
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error: any) {
-    console.error('❌ Donation API Error:', error);
+    console.error(' Donation API Error:', error);
     return NextResponse.json({ error: error.message || 'Donation failed' }, { status: 500 });
   }
 }

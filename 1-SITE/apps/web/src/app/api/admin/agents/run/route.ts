@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import path from 'path';
 
-// 🛡️ SECURITY: Only allow specific agents
+//  SECURITY: Only allow specific agents
 const ALLOWED_AGENTS: Record<string, string> = {
   'bob': 'npx ts-node 3-WETTEN/scripts/orchestrator.ts live',
   'chris': 'npx ts-node 3-WETTEN/scripts/watchdog.ts audit 1-SITE/apps/web/src',
@@ -30,8 +30,8 @@ export async function POST(req: NextRequest) {
     const isProduction = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
 
     if (isProduction) {
-      // ☁️ REMOTE CONTROL PROTOCOL (GitHub Actions)
-      console.log(`☁️ Triggering Remote Concert for Agent: ${agent}`);
+      //  REMOTE CONTROL PROTOCOL (GitHub Actions)
+      console.log(` Triggering Remote Concert for Agent: ${agent}`);
       
       const GITHUB_TOKEN = process.env.BOB_GITHUB_TOKEN;
       const REPO_OWNER = 'johfrah';
@@ -65,11 +65,11 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ 
         success: true, 
-        logs: `🚀 Remote Concert gestart op GitHub! Bob wordt wakker... (Check Actions tab)` 
+        logs: ` Remote Concert gestart op GitHub! Bob wordt wakker... (Check Actions tab)` 
       });
 
     } else {
-      // 💻 LOCAL EXECUTION (Dev Mode)
+      //  LOCAL EXECUTION (Dev Mode)
       // Check if we are in apps/web or root
       const currentDir = process.cwd();
       let command = ALLOWED_AGENTS[agent];
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
        cwd = path.resolve(currentDir, '../../..');
     }
 
-    console.log(`🤖 AGENT RUN: ${agent}`);
+    console.log(` AGENT RUN: ${agent}`);
     console.log(`   Command: ${command}`);
     console.log(`   CWD: ${cwd}`);
 
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
     return new Promise((resolve) => {
       exec(command, { cwd }, (error, stdout, stderr) => {
         if (error) {
-          console.error(`❌ Agent ${agent} failed:`, error);
+          console.error(` Agent ${agent} failed:`, error);
           resolve(NextResponse.json({ 
             success: false, 
             error: error.message, 
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
           return;
         }
 
-        console.log(`✅ Agent ${agent} finished.`);
+        console.log(` Agent ${agent} finished.`);
         resolve(NextResponse.json({ 
           success: true, 
           logs: stdout 

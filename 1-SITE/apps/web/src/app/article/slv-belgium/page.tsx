@@ -167,7 +167,7 @@ export default function SlvBelgiumArticlePage() {
                 <TextInstrument className="text-va-black/60 font-light leading-relaxed">
                   <VoiceglotText 
                     translationKey="story.slv.result_text" 
-                    defaultText="Klanten worden nu positief verrast door warme radiostemmen en professionele muziek. Het proces is efficiënt, de uitstraling is top-notch, en SLV kan razendsnel schakelen bij wijzigingen." 
+                    defaultText="Klanten worden nu positief verrast door warme radiostemmen en professionele muziek. Het proces is efficint, de uitstraling is top-notch, en SLV kan razendsnel schakelen bij wijzigingen." 
                   />
                 </TextInstrument>
               </ContainerInstrument>
@@ -184,7 +184,7 @@ export default function SlvBelgiumArticlePage() {
                 />
               </TextInstrument>
               <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-white/40 ">
-                — Jan Joostens, SLV Belgium
+                 Jan Joostens, SLV Belgium
               </TextInstrument>
             </ContainerInstrument>
           </BentoCard>

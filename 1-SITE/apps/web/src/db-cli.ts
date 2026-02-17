@@ -9,7 +9,7 @@ import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
  */
 
 async function injectMarkMobyContent() {
-  console.log("🚀 MARK & MOBY: Start injectie 'Zo werkt het', 'Garanties', 'FAQ', 'Scripts', 'Stories' & 'Muziek'...");
+  console.log(" MARK & MOBY: Start injectie 'Zo werkt het', 'Garanties', 'FAQ', 'Scripts', 'Stories' & 'Muziek'...");
 
   const now = new Date();
 
@@ -84,7 +84,7 @@ async function injectMarkMobyContent() {
   const storyBlocks = [
     { 
       title: "De uitdaging", 
-      content: "## Waarom een telefooncentrale?\n'Dat was een no-brainer. Je kunt privé van zakelijk scheiden en je 100% focussen op de klant.'",
+      content: "## Waarom een telefooncentrale?\n'Dat was een no-brainer. Je kunt priv van zakelijk scheiden en je 100% focussen op de klant.'",
       order: 1 
     },
     { 
@@ -114,7 +114,7 @@ async function injectMarkMobyContent() {
 
   try {
     // Inject How It Works
-    console.log(`📝 MARK: Upserting article [${howSlug}]...`);
+    console.log(` MARK: Upserting article [${howSlug}]...`);
     const [howArticle] = await db.insert(contentArticles).values({
       title: howTitle,
       slug: howSlug,
@@ -140,7 +140,7 @@ async function injectMarkMobyContent() {
     }
 
     // Inject Garanties
-    console.log(`📝 MARK: Upserting article [${garSlug}]...`);
+    console.log(` MARK: Upserting article [${garSlug}]...`);
     const [garArticle] = await db.insert(contentArticles).values({
       title: garTitle,
       slug: garSlug,
@@ -166,7 +166,7 @@ async function injectMarkMobyContent() {
     }
 
     // Inject FAQ
-    console.log(`📝 MARK: Upserting article [${faqSlug}]...`);
+    console.log(` MARK: Upserting article [${faqSlug}]...`);
     const [faqArticle] = await db.insert(contentArticles).values({
       title: faqTitle,
       slug: faqSlug,
@@ -192,7 +192,7 @@ async function injectMarkMobyContent() {
     }
 
     // Inject Script Bibliotheek (Inspiratie)
-    console.log(`📝 MARK: Upserting article [${scriptSlug}]...`);
+    console.log(` MARK: Upserting article [${scriptSlug}]...`);
     const [scriptArticle] = await db.insert(contentArticles).values({
       title: scriptTitle,
       slug: scriptSlug,
@@ -221,7 +221,7 @@ async function injectMarkMobyContent() {
     const coolSlug = "coolblue-story";
     const coolTitle = "Audio Branding: Het geheim van Coolblue";
     const coolIntro = "Waarom het klantvriendelijkste bedrijf van de Benelux zweert bij een herkenbare audio-branding.";
-    console.log(`📝 MARK: Upserting article [${coolSlug}]...`);
+    console.log(` MARK: Upserting article [${coolSlug}]...`);
     const [coolArticle] = await db.insert(contentArticles).values({
       title: coolTitle,
       slug: coolSlug,
@@ -245,7 +245,7 @@ async function injectMarkMobyContent() {
     });
 
     // Inject SKYGGE Story (Stories)
-    console.log(`📝 MARK: Upserting story [${storySlug}]...`);
+    console.log(` MARK: Upserting story [${storySlug}]...`);
     const [storyArticle] = await db.insert(contentArticles).values({
       title: storyTitle,
       slug: storySlug,
@@ -274,7 +274,7 @@ async function injectMarkMobyContent() {
     const creoSlug = "story-creo";
     const creoTitle = "CREO | De eerste indruk";
     const creoIntro = "Waarom het telefonisch onthaal voor een onderwijsinstelling het belangrijkste visitekaartje is.";
-    console.log(`📝 MARK: Upserting story [${creoSlug}]...`);
+    console.log(` MARK: Upserting story [${creoSlug}]...`);
     const [creoArticle] = await db.insert(contentArticles).values({
       title: creoTitle,
       slug: creoSlug,
@@ -301,7 +301,7 @@ async function injectMarkMobyContent() {
     const jokerSlug = "jokershop";
     const jokerTitle = "Jokershop | Fun & Kwaliteit";
     const jokerIntro = "Waarom ook een feestwinkel kiest voor een professionele uitstraling aan de telefoon.";
-    console.log(`📝 MARK: Upserting story [${jokerSlug}]...`);
+    console.log(` MARK: Upserting story [${jokerSlug}]...`);
     const [jokerArticle] = await db.insert(contentArticles).values({
       title: jokerTitle,
       slug: jokerSlug,
@@ -325,7 +325,7 @@ async function injectMarkMobyContent() {
     });
 
     // Inject Muziek (Beleving)
-    console.log(`📝 MARK: Upserting music [${musicSlug}]...`);
+    console.log(` MARK: Upserting music [${musicSlug}]...`);
     const [musicArticle] = await db.insert(contentArticles).values({
       title: musicTitle,
       slug: musicSlug,
@@ -354,7 +354,7 @@ async function injectMarkMobyContent() {
     const slvSlug = "slv-belgium";
     const slvTitle = "SLV Belgium | Rust door professionalisering";
     const slvIntro = "Hoe een marktleider in verlichting koos voor een uniform visitekaartje aan de telefoon.";
-    console.log(`📝 MARK: Upserting story [${slvSlug}]...`);
+    console.log(` MARK: Upserting story [${slvSlug}]...`);
     const [slvArticle] = await db.insert(contentArticles).values({
       title: slvTitle,
       slug: slvSlug,
@@ -381,7 +381,7 @@ async function injectMarkMobyContent() {
     const nkcSlug = "nkc";
     const nkcTitle = "NKC | Evolutie in audio";
     const nkcIntro = "Hoe technologische vooruitgang en een warme aanpak samengaan in de klantendienst.";
-    console.log(`📝 MARK: Upserting story [${nkcSlug}]...`);
+    console.log(` MARK: Upserting story [${nkcSlug}]...`);
     const [nkcArticle] = await db.insert(contentArticles).values({
       title: nkcTitle,
       slug: nkcSlug,
@@ -408,7 +408,7 @@ async function injectMarkMobyContent() {
     const ttSlug = "ticketteam";
     const ttTitle = "Ticket Team | Strak onthaal";
     const ttIntro = "Van een rommeltje naar een professioneel visitekaartje aan de telefoon.";
-    console.log(`📝 MARK: Upserting story [${ttSlug}]...`);
+    console.log(` MARK: Upserting story [${ttSlug}]...`);
     const [ttArticle] = await db.insert(contentArticles).values({
       title: ttTitle,
       slug: ttSlug,
@@ -435,7 +435,7 @@ async function injectMarkMobyContent() {
     const jokerIntSlug = "jokershop-be-investeert-in-een-warm-onthaal";
     const jokerIntTitle = "Jokershop | Investering in een warm onthaal";
     const jokerIntIntro = "Roel van Jokershop vertelt waarom een professionele telefooncentrale cruciaal is voor hun groei.";
-    console.log(`📝 MARK: Upserting story [${jokerIntSlug}]...`);
+    console.log(` MARK: Upserting story [${jokerIntSlug}]...`);
     const [jokerIntArticle] = await db.insert(contentArticles).values({
       title: jokerIntTitle,
       slug: jokerIntSlug,
@@ -458,9 +458,9 @@ async function injectMarkMobyContent() {
       isManuallyEdited: true
     });
 
-    console.log("✅ MARK & MOBY: Alles is nu live in de database met de juiste thema-tags.");
+    console.log(" MARK & MOBY: Alles is nu live in de database met de juiste thema-tags.");
   } catch (error) {
-    console.error("❌ MARK: Injectie mislukt:", error);
+    console.error(" MARK: Injectie mislukt:", error);
     process.exit(1);
   }
 }

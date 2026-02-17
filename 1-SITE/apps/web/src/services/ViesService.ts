@@ -11,9 +11,9 @@ export interface ViesCompanyData {
 }
 
 /**
- * 🌍 VIES SERVICE (2026)
+ *  VIES SERVICE (2026)
  * 
- * Verifieert BTW-nummers en haalt officiële bedrijfsgegevens op via de VIES API.
+ * Verifieert BTW-nummers en haalt officile bedrijfsgegevens op via de VIES API.
  */
 export class ViesService {
   private static instance: ViesService;
@@ -35,7 +35,7 @@ export class ViesService {
     const countryCode = cleanVat.substring(0, 2);
     const vatOnly = cleanVat.substring(2);
 
-    console.log(`🌍 VIES check voor ${cleanVat}...`);
+    console.log(` VIES check voor ${cleanVat}...`);
 
     try {
       // In een productie-omgeving zouden we hier een echte fetch doen naar viesapi.eu of de EU SOAP service.
@@ -62,7 +62,7 @@ export class ViesService {
       };
 
     } catch (error) {
-      console.error('❌ VIES API Error:', error);
+      console.error(' VIES API Error:', error);
       return null;
     }
   }

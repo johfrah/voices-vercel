@@ -7,11 +7,11 @@ import { MarketManager } from '@config/market-manager';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🚀 MAILBOX INBOX API (VOICES ENGINE 2026)
+ *  MAILBOX INBOX API (VOICES ENGINE 2026)
  * 
  * Doel: Razendsnel ophalen en sorteren van mails.
- * Ondersteunt commerciële prioriteit en database-first architectuur.
- * 🛡️ ENKEL voor admins.
+ * Ondersteunt commercile prioriteit en database-first architectuur.
+ *  ENKEL voor admins.
  */
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin();
@@ -27,14 +27,14 @@ export async function GET(request: NextRequest) {
   const sortByValue = searchParams.get('sortByValue') === 'true';
 
   try {
-    console.log(`📬 API Mailbox Inbox: Fetching folder ${folder} for account ${account} (${market.market_code})...`);
+    console.log(` API Mailbox Inbox: Fetching folder ${folder} for account ${account} (${market.market_code})...`);
     
     // 1. Probeer Direct IMAP (alleen als offset 0 is, voor live data)
     if (offset === 0 && account !== 'all') {
       try {
         const mailService = DirectMailService.getInstance();
       } catch (directError: any) {
-        console.error('📬 API Mailbox Inbox: Direct IMAP fetch failed:', directError.message);
+        console.error(' API Mailbox Inbox: Direct IMAP fetch failed:', directError.message);
       }
     }
     let query = db.select({
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     .$dynamic();
 
     if (sortByValue) {
-      // 💰 Sorteer op commerciële waarde (offerte-aanvragen eerst)
+      //  Sorteer op commercile waarde (offerte-aanvragen eerst)
       query = query.orderBy(
         sql`CASE WHEN iap_context->>'intent' = 'quote_request' THEN 0 ELSE 1 END`,
         desc(mailContent.date)
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       const iapContext = mail.iapContext as any;
       let avatarUrl = iapContext?.avatarUrl || null;
       
-      // 📎 Check of er bijlagen zijn (iapContext kan dit bevatten van de sync engine)
+      //  Check of er bijlagen zijn (iapContext kan dit bevatten van de sync engine)
       const hasAttachments = iapContext?.hasAttachments || false;
 
       return {
@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
       totalCount: totalCount
     });
   } catch (error) {
-    console.error('❌ Mailbox API Error:', error);
+    console.error(' Mailbox API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 import soap from 'soap';
 
 /**
- * 🏦 YUKI INBOUND MONITOR (GODMODE 2026)
+ *  YUKI INBOUND MONITOR (GODMODE 2026)
  * 
  * Doel: Het monitoren van inkomende aankoopfacturen in Yuki die door de 
  * boekhouder zijn goedgekeurd en relevant zijn voor Voices (acteurs/partners).

@@ -2,7 +2,7 @@ import { db } from "@db";
 import { systemKnowledge } from "@db/schema";
 
 /**
- * 🧠 SENTIMENT ENGINE (ADULT VOICY)
+ *  SENTIMENT ENGINE (ADULT VOICY)
  * 
  * Analyseert tekst op emotionele lading, haast en waarachtigheid.
  * Gebruikt de 'Grondwet' om de juiste toon te bepalen.

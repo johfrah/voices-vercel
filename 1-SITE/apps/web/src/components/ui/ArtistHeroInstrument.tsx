@@ -13,7 +13,7 @@ interface ArtistHeroInstrumentProps {
 }
 
 /**
- * ⚡ ARTIST HERO INSTRUMENT (GOD MODE 2026)
+ *  ARTIST HERO INSTRUMENT (GOD MODE 2026)
  * 
  * Voldoet aan de Zero Laws:
  * - HTML ZERO: Geen rauwe tags in de page layer.

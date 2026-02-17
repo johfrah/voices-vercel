@@ -6,7 +6,7 @@ import {
 import { VoiceglotText } from './VoiceglotText';
 
 /**
- * ⚡ PRICING TOOLTIP INSTRUMENT
+ *  PRICING TOOLTIP INSTRUMENT
  * 
  * Toont context-bewuste uitleg over prijzen en licenties.
  * Volgt de "Vriendelijke Autoriteit" ToV.
@@ -32,9 +32,9 @@ export const PricingTooltipInstrument = ({
   };
 
   const getDefaultText = () => {
-    if (isUnpaid) return "Onbeperkt gebruik voor interne projecten, presentaties en niet-commerciële doeleinden. Je betaalt alleen voor de stemopname.";
+    if (isUnpaid) return "Onbeperkt gebruik voor interne projecten, presentaties en niet-commercile doeleinden. Je betaalt alleen voor de stemopname.";
     
-    return "Gebruiksrechten voor commerciële inzet. Dit dekt het gebruik voor de geselecteerde periode en het gekozen medium.";
+    return "Gebruiksrechten voor commercile inzet. Dit dekt het gebruik voor de geselecteerde periode en het gekozen medium.";
   };
 
   return (

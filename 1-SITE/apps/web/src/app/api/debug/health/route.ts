@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 /**
- * Health check – veilige diagnoseroute voor 500-debugging.
+ * Health check  veilige diagnoseroute voor 500-debugging.
  * Geen secrets, alleen status.
  */
 export async function GET() {

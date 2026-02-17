@@ -1,7 +1,7 @@
 import BlogPage from '../blog/page';
 
 /**
- * 🇳🇱 NIEUWS (DUTCH SLUG)
+ *  NIEUWS (DUTCH SLUG)
  * 
  * "Directe route voor de Nederlandse markt."
  */

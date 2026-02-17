@@ -3,7 +3,7 @@ import { MarketManager } from '@config/market-manager';
 import { NextResponse } from 'next/server';
 
 /**
- * 📬 CONTACT API (Chatty mandate)
+ *  CONTACT API (Chatty mandate)
  * Accepts contact form submissions and forwards to the team via DirectMailService.
  */
 export async function POST(request: Request) {

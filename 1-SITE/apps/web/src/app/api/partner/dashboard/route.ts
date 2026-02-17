@@ -4,7 +4,7 @@ import { orders, users, partnerWidgets } from '@db/schema';
 import { eq, sql, count, sum } from 'drizzle-orm';
 
 /**
- * ⚡ NUCLEAR PARTNER DASHBOARD (2026)
+ *  NUCLEAR PARTNER DASHBOARD (2026)
  * 
  * Deze route vervangt de WordPress /partner/dashboard API.
  * Het haalt alle statistieken direct uit Supabase.
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
         status: o.status,
         status_label: o.status?.toUpperCase(),
         customer_name: 'Klant', // Moet uit relationele tabel komen
-        total: `€ ${o.total}`,
+        total: ` ${o.total}`,
         is_quote: false,
         checkout_url: null
       })),

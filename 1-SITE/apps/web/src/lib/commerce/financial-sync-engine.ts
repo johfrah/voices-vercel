@@ -5,7 +5,7 @@ import { db } from "@db";
 import { systemEvents } from "@db/schema";
 
 /**
- * 🔄 FINANCIAL SYNC ENGINE (2026)
+ *  FINANCIAL SYNC ENGINE (2026)
  * 
  * De lijm tussen Yuki goedkeuringen en de Voices administratie.
  * Draait periodiek om de acties van de boekhouder te verwerken.
@@ -17,7 +17,7 @@ export class FinancialSyncEngine {
    * "Direct Match" Edition: Wacht niet op de boekhouder, maar match op document-niveau.
    */
   static async syncApprovedInvoices() {
-    console.log('[Financial Sync] 🔄 Starting Direct Match sync with Yuki...');
+    console.log('[Financial Sync]  Starting Direct Match sync with Yuki...');
 
     try {
       // 1. Haal alle nieuwe aankoopfacturen op (niet alleen de goedgekeurde)
@@ -44,7 +44,7 @@ export class FinancialSyncEngine {
           await CoreAutomationEngine.trigger('order.completed', { orderIds: match.matchedOrderIds });
         }
       }
-      console.log('[Financial Sync] ✅ Direct Match sync completed.');
+      console.log('[Financial Sync]  Direct Match sync completed.');
     } catch (error) {
       console.error('[Financial Sync Error]:', error);
     }

@@ -275,7 +275,7 @@ export default function AgentCommandCenter() {
                                             <ContainerInstrument className="flex-1 min-w-0">
                                                 <TextInstrument className="text-[15px] font-light block truncate">{task.name}</TextInstrument>
                                                 <TextInstrument className="text-[15px] font-light opacity-40 tracking-widest ">
-                                                    {task.status} • {task.time}
+                                                    {task.status}  {task.time}
                                                 </TextInstrument>
                                             </ContainerInstrument>
                                         </ContainerInstrument>

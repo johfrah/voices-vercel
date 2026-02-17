@@ -29,7 +29,7 @@ export async function GET() {
       }
     });
 
-    console.log(`🕵️ Watchdog: Found ${delayedOrders.length} delayed orders.`);
+    console.log(` Watchdog: Found ${delayedOrders.length} delayed orders.`);
 
     // 2. Process Nudges (Simulated)
     const nudgedOrders = delayedOrders.map(order => ({
@@ -47,7 +47,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error('❌ Watchdog Error:', error);
+    console.error(' Watchdog Error:', error);
     return NextResponse.json({ error: 'Watchdog scan failed' }, { status: 500 });
   }
 }

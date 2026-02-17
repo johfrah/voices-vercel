@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 /**
- * 📰 CENTRAL ARTICLE HUB (NUCLEAR 2026)
+ *  CENTRAL ARTICLE HUB (NUCLEAR 2026)
  * 
  * Thema's: Stories, Inspiratie, Beleving, Nieuws
  */
@@ -82,7 +82,7 @@ export default function BlogPage() {
       id: 'tips-voicemail',
       slug: 'tips-voicemail',
       title: '5 tips voor je voicemail',
-      excerpt: 'Houd het kort, glimlach door de telefoon en vermijd clichés. Zo maak je een onvergetelijke eerste indruk.',
+      excerpt: 'Houd het kort, glimlach door de telefoon en vermijd clichs. Zo maak je een onvergetelijke eerste indruk.',
       theme: 'Inspiratie',
       createdAt: new Date().toISOString(),
       icon: Lightbulb
@@ -100,7 +100,7 @@ export default function BlogPage() {
       id: 'ilari',
       slug: 'ilari-hoevenaars',
       title: 'In de studio bij Ilari Hoevenaars',
-      excerpt: 'Ontdek de studio van de stem van WAZE en Hornbach. Zijn gouden tip: één accent per zin.',
+      excerpt: 'Ontdek de studio van de stem van WAZE en Hornbach. Zijn gouden tip: n accent per zin.',
       theme: 'Stories',
       createdAt: new Date().toISOString(),
       icon: Mic2

@@ -46,7 +46,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
     router.push(`?${nextParams.toString()}`, { scroll: false });
   };
 
-  // 🌍 MARKET-BASED LANGUAGE LOGIC
+  //  MARKET-BASED LANGUAGE LOGIC
   const sortedLanguages = React.useMemo(() => {
     const market = combinedParams.market || 'BE';
     const primaryLang = market === 'BE' ? 'Vlaams' : 'Nederlands';

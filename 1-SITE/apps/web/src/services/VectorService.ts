@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 
 /**
- * 🧠 VECTOR SERVICE (2026)
+ *  VECTOR SERVICE (2026)
  * 
  * Doel: Genereert semantische embeddings voor teksten (mails, scripts, briefings).
  * Maakt gebruik van OpenAI text-embedding-3-small (1536 dims).
@@ -40,7 +40,7 @@ export class VectorService {
 
       return response.data[0].embedding;
     } catch (error) {
-      console.error('❌ Vector Generation Error:', error);
+      console.error(' Vector Generation Error:', error);
       return [];
     }
   }

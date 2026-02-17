@@ -22,12 +22,33 @@ export default async function AgencyDynamicPage({ params }: { params: { slug?: s
   const mappedActors = filteredActors.map(actor => ({
     id: actor.id,
     display_name: actor.display_name,
+    first_name: actor.first_name || actor.firstName,
+    last_name: actor.last_name || actor.lastName,
+    firstName: actor.firstName || actor.first_name,
+    lastName: actor.lastName || actor.last_name,
+    email: actor.email,
     photo_url: actor.photo_url,
     voice_score: actor.voice_score,
     native_lang: actor.native_lang,
+    gender: actor.gender,
+    starting_price: actor.starting_price,
+    delivery_days_min: actor.delivery_days_min || 1,
+    delivery_days_max: actor.delivery_days_max || 2,
+    extra_langs: actor.extra_langs,
+    tone_of_voice: actor.tone_of_voice,
+    clients: actor.clients,
+    cutoff_time: actor.cutoff_time || '18:00',
+    availability: actor.availability || [],
+    tagline: actor.tagline,
     ai_tags: actor.ai_tags || [],
     slug: actor.slug,
-    demos: actor.demos || []
+    demos: actor.demos || [],
+    bio: actor.bio,
+    price_ivr: actor.price_ivr,
+    price_online: actor.price_online,
+    holiday_from: actor.holiday_from,
+    holiday_till: actor.holiday_till,
+    rates_raw: actor.rates_raw || {}
   }));
 
   return (

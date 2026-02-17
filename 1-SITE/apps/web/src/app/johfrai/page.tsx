@@ -99,7 +99,7 @@ function JohfraiContent() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   
-  // 🏢 EXTENDED CONTEXT STATE
+  //  EXTENDED CONTEXT STATE
   const [openingHours, setOpeningHours] = useState("");
   const [supportEmail, setSupportEmail] = useState("");
   const [holidayFrom, setHolidayFrom] = useState("");
@@ -126,17 +126,17 @@ function JohfraiContent() {
   const [audioMode, setAudioMode] = useState<'hd' | 'telephony'>('hd');
   const [deliveryMethod, setDeliveryMethod] = useState<'download' | 'whatsapp' | 'email'>('download');
   
-  // 🔮 PREDICTIVE STATE
+  //  PREDICTIVE STATE
   const [suggestion, setSuggestion] = useState("");
   const [isFetchingSuggestion, setIsFetchingSuggestion] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const suggestionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 🛡️ SECURE AUDIO STATE
+  //  SECURE AUDIO STATE
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
 
-  // 🎚️ LIVE MIXER STATE
+  //  LIVE MIXER STATE
   const [generatedSegments, setGeneratedSegments] = useState<{ id: string, title: string, voiceUrl: string, musicUrl?: string | null }[]>([]);
   const [musicUrl, setMusicUrl] = useState<string | null>(null);
 
@@ -157,7 +157,7 @@ function JohfraiContent() {
     loadMusic();
   }, []);
 
-  // 🔮 PREDICTIVE LOGIC
+  //  PREDICTIVE LOGIC
   const fetchSuggestion = useCallback(async (currentText: string) => {
     if (!currentText || currentText.length < 5 || currentText.endsWith(' ')) {
       setSuggestion("");
@@ -219,7 +219,7 @@ function JohfraiContent() {
     }
   };
 
-  // 🗣️ PRONUNCIATION AUTOMATION
+  //  PRONUNCIATION AUTOMATION
   const handleOptimizePronunciation = async () => {
     if (!text || text.length < 5) return;
     setIsOptimizing(true);
@@ -266,7 +266,7 @@ function JohfraiContent() {
     }
   };
 
-  // 🔗 SHARE LINK LOGIC: Load from URL
+  //  SHARE LINK LOGIC: Load from URL
   useEffect(() => {
     const sharedText = searchParams.get('s');
     const sharedCompany = searchParams.get('c');
@@ -286,7 +286,7 @@ function JohfraiContent() {
     }
   }, [searchParams, updateMusic]);
 
-  // 💾 PERSISTENCE
+  //  PERSISTENCE
   useEffect(() => {
     if (!searchParams.get('s')) {
       const savedText = localStorage.getItem('johfrai_draft_text');
@@ -590,7 +590,7 @@ function JohfraiContent() {
                 <HeadingInstrument level={3} className="text-[15px] tracking-widest text-va-black/40 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.basic.title" defaultText="Basic" />
                 </HeadingInstrument>
-                <TextInstrument className="text-4xl font-black">€19<TextInstrument as="span" className="text-[15px] font-medium text-va-black/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
+                <TextInstrument className="text-4xl font-black">19<TextInstrument as="span" className="text-[15px] font-medium text-va-black/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
                 <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.contract" defaultText="12 maanden contract" />
                 </TextInstrument>
@@ -619,7 +619,7 @@ function JohfraiContent() {
                 <HeadingInstrument level={3} className="text-[15px] tracking-widest text-white/40 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.pro.title" defaultText="Pro" />
                 </HeadingInstrument>
-                <TextInstrument className="text-4xl font-black text-white">€39<TextInstrument as="span" className="text-[15px] font-medium text-white/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
+                <TextInstrument className="text-4xl font-black text-white">39<TextInstrument as="span" className="text-[15px] font-medium text-white/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
                 <TextInstrument className="text-[15px] tracking-widest text-white/30 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.contract" defaultText="12 maanden contract" />
                 </TextInstrument>
@@ -630,7 +630,7 @@ function JohfraiContent() {
                 <ContainerInstrument as="li" className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-primary" /> <VoiceglotText  translationKey="johfrai.pricing.pro.feat3" defaultText="Vlaams + FR + EN" /></ContainerInstrument>
                 <ContainerInstrument as="li" className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-primary" /> <VoiceglotText  translationKey="johfrai.pricing.pro.feat4" defaultText="Muziekmix inbegrepen" /></ContainerInstrument>
                 <ContainerInstrument as="li" className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-primary" /> <VoiceglotText  translationKey="johfrai.pricing.pro.feat5" defaultText="HD Video (48kHz)" /></ContainerInstrument>
-                <ContainerInstrument as="li" className="flex items-center gap-2 text-[15px] font-medium"><ShieldCheck strokeWidth={1.5} size={14} className="text-primary" /> <VoiceglotText  translationKey="johfrai.pricing.pro.feat6" defaultText="1× per kwartaal Menselijke Fix" /></ContainerInstrument>
+                <ContainerInstrument as="li" className="flex items-center gap-2 text-[15px] font-medium"><ShieldCheck strokeWidth={1.5} size={14} className="text-primary" /> <VoiceglotText  translationKey="johfrai.pricing.pro.feat6" defaultText="1 per kwartaal Menselijke Fix" /></ContainerInstrument>
               </ContainerInstrument>
               <ButtonInstrument 
                 onClick={() => handleCheckout('pro')}
@@ -646,7 +646,7 @@ function JohfraiContent() {
                 <HeadingInstrument level={3} className="text-[15px] tracking-widest text-va-black/40 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.studio.title" defaultText="Studio" />
                 </HeadingInstrument>
-                <TextInstrument className="text-4xl font-black">€99<TextInstrument as="span" className="text-[15px] font-medium text-va-black/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
+                <TextInstrument className="text-4xl font-black">99<TextInstrument as="span" className="text-[15px] font-medium text-va-black/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
                 <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.contract" defaultText="12 maanden contract" />
                 </TextInstrument>
@@ -656,7 +656,7 @@ function JohfraiContent() {
                 <ContainerInstrument as="li" className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText  translationKey="johfrai.pricing.studio.feat2" defaultText="Jaarbudget (60.000 w.)" /></ContainerInstrument>
                 <ContainerInstrument as="li" className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText  translationKey="johfrai.pricing.studio.feat3" defaultText="Volume/Agency gebruik" /></ContainerInstrument>
                 <ContainerInstrument as="li" className="flex items-center gap-2 text-[15px] font-medium"><CheckCircle2 strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText  translationKey="johfrai.pricing.studio.feat4" defaultText="Custom Dictionary (Studio)" /></ContainerInstrument>
-                <ContainerInstrument as="li" className="flex items-center gap-2 text-[15px] font-medium"><ShieldCheck strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText  translationKey="johfrai.pricing.studio.feat5" defaultText="1× per maand Menselijke Fix" /></ContainerInstrument>
+                <ContainerInstrument as="li" className="flex items-center gap-2 text-[15px] font-medium"><ShieldCheck strokeWidth={1.5} size={14} className="text-green-500" /> <VoiceglotText  translationKey="johfrai.pricing.studio.feat5" defaultText="1 per maand Menselijke Fix" /></ContainerInstrument>
               </ContainerInstrument>
               <ButtonInstrument 
                 onClick={() => handleCheckout('studio')}
@@ -815,7 +815,7 @@ function JohfraiContent() {
 
                           <ContainerInstrument className="flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-black/5">
                             <Clock strokeWidth={1.5} size={10} className="text-va-black/40" />
-                            <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-va-black/60">± {estimatedDuration}s</TextInstrument>
+                            <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-va-black/60"> {estimatedDuration}s</TextInstrument>
                           </ContainerInstrument>
                         </ContainerInstrument>
                         <ContainerInstrument className="flex items-center gap-1.5 bg-va-black/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg pointer-events-auto">
@@ -826,7 +826,7 @@ function JohfraiContent() {
                     </ContainerInstrument>
                   </ContainerInstrument>
 
-                  {/* 🎚️ LIVE MIXER RESULTS */}
+                  {/*  LIVE MIXER RESULTS */}
                   <AnimatePresence>
                     {generatedSegments.length > 0 && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-6">
@@ -923,7 +923,7 @@ function JohfraiContent() {
                       <ContainerInstrument className="flex items-center gap-4">
                         <ContainerInstrument className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all", (checkoutState.music.asBackground || checkoutState.music.asHoldMusic) ? "bg-primary/10 text-primary" : "bg-va-black/5 text-va-black/20")}><Music strokeWidth={1.5} size={18} /></ContainerInstrument>
                         <ContainerInstrument>
-                          <TextInstrument className="text-[15px] font-black tracking-widest">Wachtmuziek toevoegen (+€{pricingConfig.music_mix})</TextInstrument>
+                          <TextInstrument className="text-[15px] font-black tracking-widest">Wachtmuziek toevoegen (+{pricingConfig.music_mix})</TextInstrument>
                           <TextInstrument className="text-[15px] font-bold text-va-black/40 tracking-tighter"><VoiceglotText  translationKey="auto.page.inclusief_mix___loss.0da798" defaultText="Inclusief mix + losse bestanden in HD & 8kHz" /></TextInstrument>
                         </ContainerInstrument>
                       </ContainerInstrument>
@@ -956,7 +956,7 @@ function JohfraiContent() {
                           )}
                         </ContainerInstrument>
 
-                        {/* 🎵 USE CASE SELECTION */}
+                        {/*  USE CASE SELECTION */}
                         <ContainerInstrument className="bg-white p-6 rounded-2xl border border-primary/10 space-y-4">
                           <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/60 flex items-center gap-2">
                             <Info strokeWidth={1.5} size={14} className="text-primary" /><VoiceglotText  translationKey="auto.page.hoe_wil_je_deze_muzi.e4e63c" defaultText="Hoe wil je deze muziek gebruiken?" /></TextInstrument>
@@ -1042,7 +1042,7 @@ function JohfraiContent() {
                       </ContainerInstrument>
                     </ContainerInstrument>
                     <ButtonInstrument as="a" href={`/checkout?usage=subscription&plan=${checkoutState.plan}&voice=johfrah&text=${encodeURIComponent(text)}&music=${checkoutState.music.asBackground || checkoutState.music.asHoldMusic}&track=${checkoutState.music.trackId}&delivery=${deliveryMethod}&phone=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(email)}`} className="va-btn-pro !bg-primary flex-1 !py-6 !text-[15px] !tracking-[0.2em] shadow-xl shadow-primary/20 h-fit">
-                      {deliveryMethod === 'whatsapp' ? <VoiceglotText  translationKey="johfrai.checkout.whatsapp" defaultText="Stuur naar WhatsApp" /> : deliveryMethod === 'email' ? <VoiceglotText  translationKey="johfrai.checkout.email" defaultText="Stuur naar E-mail" /> : <VoiceglotText  translationKey="johfrai.checkout.download" defaultText="Download meteen" />} (€{price.toFixed(2)}) <ArrowRight strokeWidth={1.5} size={16} />
+                      {deliveryMethod === 'whatsapp' ? <VoiceglotText  translationKey="johfrai.checkout.whatsapp" defaultText="Stuur naar WhatsApp" /> : deliveryMethod === 'email' ? <VoiceglotText  translationKey="johfrai.checkout.email" defaultText="Stuur naar E-mail" /> : <VoiceglotText  translationKey="johfrai.checkout.download" defaultText="Download meteen" />} ({price.toFixed(2)}) <ArrowRight strokeWidth={1.5} size={16} />
                     </ButtonInstrument>
                   </ContainerInstrument>
 
@@ -1074,7 +1074,7 @@ function JohfraiContent() {
                 <motion.div key="explorer" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <ContainerInstrument className="mb-10 text-center space-y-2">
                     <HeadingInstrument level={2} className="text-2xl font-light tracking-tight"><VoiceglotText  translationKey="johfrai.explorer.title" defaultText="Slimme Voorbeelden" /></HeadingInstrument>
-                    <TextInstrument className="text-[15px] text-va-black/40 font-medium max-w-md mx-auto"><VoiceglotText  translationKey="johfrai.explorer.description" defaultText="Laat je inspireren door Johfrai demo's uit jouw sector. Luister, leer en adopteer het script met één klik." /></TextInstrument>
+                    <TextInstrument className="text-[15px] text-va-black/40 font-medium max-w-md mx-auto"><VoiceglotText  translationKey="johfrai.explorer.description" defaultText="Laat je inspireren door Johfrai demo's uit jouw sector. Luister, leer en adopteer het script met n klik." /></TextInstrument>
                   </ContainerInstrument>
                   <SmartDemoExplorer strokeWidth={1.5} onAdoptScript={(script) => { setText(script); setActiveTab('editor'); }} />
                 </motion.div>
@@ -1119,7 +1119,7 @@ function JohfraiContent() {
         </ContainerInstrument>
       </SectionInstrument>
       
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

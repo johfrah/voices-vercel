@@ -2,7 +2,7 @@ import { StudioDataBridge } from '@/lib/studio-bridge';
 import { NextResponse } from 'next/server';
 
 /**
- * ⚡ NUCLEAR STUDIO DASHBOARD API (2026)
+ *  NUCLEAR STUDIO DASHBOARD API (2026)
  * 
  * Doel: Native Node.js/TypeScript service met Drizzle ORM.
  * Vrij van legacy-bridge of legacyApiBaseUrl.
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   const tab = searchParams.get('tab') || 'funnel';
 
   try {
-    // 🚀 NUCLEAR DATA: Direct uit Supabase via StudioDataBridge
+    //  NUCLEAR DATA: Direct uit Supabase via StudioDataBridge
     const data = await StudioDataBridge.getDashboardData(tab);
 
     return NextResponse.json({

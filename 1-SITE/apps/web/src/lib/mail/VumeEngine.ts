@@ -4,7 +4,7 @@ import { VumeStudioTemplate } from './templates/VumeStudioTemplate';
 import { VumeInvoiceReplyTemplate } from './templates/VumeInvoiceReplyTemplate';
 
 /**
- * 🚀 VUME ENGINE (2026)
+ *  VUME ENGINE (2026)
  * 
  * Het centrale zenuwcentrum voor alle e-mails uit Voices.
  */
@@ -71,6 +71,6 @@ export class VumeEngine {
       host
     });
 
-    console.log(`[VUME ✉️] Mail verzonden via template: ${template} naar ${to}`);
+    console.log(`[VUME ] Mail verzonden via template: ${template} naar ${to}`);
   }
 }

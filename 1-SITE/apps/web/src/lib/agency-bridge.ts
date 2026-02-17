@@ -3,7 +3,7 @@ import { actorDemos, actors } from "@db/schema";
 import { and, eq, like, or, sql } from "drizzle-orm";
 import { Actor, SearchResults } from "./api";
 
-// 🛡️ VOICES OS: Dit bestand mag NOOIT in de browser worden geladen.
+//  VOICES OS: Dit bestand mag NOOIT in de browser worden geladen.
 // Het bevat directe database-toegang.
 if (typeof window !== 'undefined') {
   throw new Error('AgencyDataBridge can only be used on the server side.');
@@ -35,7 +35,7 @@ export class AgencyDataBridge {
    * Haalt stemacteurs op uit Supabase (Hyper-fast)
    */
   static async getActors(params: Record<string, string> = {}): Promise<SearchResults> {
-    console.log('🔍 Fetching actors from Supabase with params:', params);
+    console.log(' Fetching actors from Supabase with params:', params);
     
     const { language, search, gender } = params;
     
@@ -43,10 +43,10 @@ export class AgencyDataBridge {
     let query = db.select().from(actors);
     const conditions = [];
 
-    // 🛡️ Filter alleen LIVE acteurs voor de publieke site
+    //  Filter alleen LIVE acteurs voor de publieke site
     conditions.push(eq(actors.status, 'live'));
 
-    // 🛡️ JOHFRAI PROTECTION: Johfrah's AI voice mag NOOIT in de algemene agency resultaten verschijnen.
+    //  JOHFRAI PROTECTION: Johfrah's AI voice mag NOOIT in de algemene agency resultaten verschijnen.
     // UITZONDERING: Voor telefonie kan het een laagdrempelige instap zijn.
     const isTelephony = params.usage === 'telefonie';
     const isStudio = params.journey === 'studio' || params.context === 'studio';
@@ -54,14 +54,14 @@ export class AgencyDataBridge {
     
     if (isTelephony) {
       // Voor telefonie laten we Johfrah AI wel toe
-      console.log('📞 Telephony mode: Johfrah AI allowed');
+      console.log(' Telephony mode: Johfrah AI allowed');
     } else {
       // In alle andere gevallen (inclusief Studio): GEEN AI promotie van Johfrah
       conditions.push(sql`${actors.firstName} NOT ILIKE 'Johfrah%' OR ${actors.isAi} = false`);
       conditions.push(eq(actors.isAi, false));
     }
 
-    // 🛡️ Kirsten Duplicate Prevention (DB Level)
+    //  Kirsten Duplicate Prevention (DB Level)
     // Als we zoeken op Kirsten, zorgen we dat we alleen de master (wpProductId 40) pakken
     if (search && search.toLowerCase().includes('kirsten')) {
       conditions.push(or(
@@ -109,14 +109,26 @@ export class AgencyDataBridge {
     const ASSET_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || '';
 
     const mappedResults = results.map(actor => {
-      // 🛡️ LOUIS: photoId (Supabase Storage) prioritized over dropboxUrl/legacy URLs.
-      // 🛡️ 2026 UPDATE: Check first for local optimized photos in visuals/active/voicecards/
+      //  CHRIS-PROTOCOL: Relationele koppeling is heilig.
+      // We gebruiken de directe koppeling uit de database (actorDemos).
+      const actorDemosList = demos
+        .filter(d => d.actorId === actor.id)
+        .map(d => ({
+          id: d.id, 
+          name: d.name,
+          title: d.name, 
+          audio_url: d.url.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url, 
+          type: d.type || 'commercial'
+        }));
+
+      //  LOUIS: photoId (Supabase Storage) prioritized over dropboxUrl/legacy URLs.
+      //  2026 UPDATE: Check first for local optimized photos in visuals/active/voicecards/
       let photoUrl: string | null = null;
       
       // Try to find a local optimized version first based on actor ID
       const actorId = actor.wpProductId || actor.id;
       
-      // 🛡️ MOBY MANDATE: Use the new voicecards directory with strict naming convention
+      //  MOBY MANDATE: Use the new voicecards directory with strict naming convention
       const localVoicecardPath = `/assets/visuals/active/voicecards/${actorId}-${actor.firstName?.toLowerCase()}-photo-square-1.jpg`;
       
       // Default fallback chain
@@ -147,16 +159,7 @@ export class AgencyDataBridge {
         voice_score: actor.voiceScore,
         tagline: actor.tagline,
         ai_enabled: actor.isAi,
-        demos: demos
-          .filter(d => d.actorId === actor.id)
-          .map(d => ({
-            id: d.id, 
-            name: d.name,
-            title: d.name, 
-            url: d.url.startsWith('http') ? d.url : `${ASSET_BASE_URL}${d.url}`,
-            audio_url: d.url.startsWith('http') ? d.url : `${ASSET_BASE_URL}${d.url}`, 
-            type: d.type || 'commercial'
-          }))
+        demos: actorDemosList
       };
     });
 

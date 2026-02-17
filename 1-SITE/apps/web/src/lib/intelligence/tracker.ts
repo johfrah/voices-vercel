@@ -1,5 +1,5 @@
 /**
- * 💎 NUCLEAR DATA GOLD & TRACKING (2026)
+ *  NUCLEAR DATA GOLD & TRACKING (2026)
  * 
  * Beheert de centrale lead-scoring, marketing attributie en GA4 events.
  * Vervangt de PHP VoicesDataStandardizer en GA4 Direct Tracking.
@@ -18,7 +18,7 @@ export interface LeadContext {
 }
 
 /**
- * 🎯 CALCULATE LEAD SCORE
+ *  CALCULATE LEAD SCORE
  * Vertaalt user-gedrag naar een atomaire score (0-100).
  */
 export function calculateCoreLeadScore(context: LeadContext, visitCount: number = 1): { score: number, vibe: LeadVibe } {
@@ -50,7 +50,7 @@ export function calculateCoreLeadScore(context: LeadContext, visitCount: number 
 }
 
 /**
- * 📈 GA4 EVENT TRACKER
+ *  GA4 EVENT TRACKER
  * Verstuurt events conform de 2026 privacy-wetten (hashed PII).
  */
 export function trackCoreEvent(eventName: string, params: Record<string, any>) {
@@ -62,11 +62,11 @@ export function trackCoreEvent(eventName: string, params: Record<string, any>) {
     nuclear_timestamp: new Date().toISOString()
   });
   
-  console.log(`📊 TRACKED: ${eventName}`, params);
+  console.log(` TRACKED: ${eventName}`, params);
 }
 
 /**
- * 🛡️ HASH PII (Privacy First)
+ *  HASH PII (Privacy First)
  * Slaat gevoelige data alleen gehashed op voor marketing-matching.
  */
 export async function hashCorePII(data: string): Promise<string> {

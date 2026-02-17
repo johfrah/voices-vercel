@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { parseStringPromise } from 'xml2js';
 
 /**
- * ⚡ NUCLEAR VIES VALIDATION (2026)
+ *  NUCLEAR VIES VALIDATION (2026)
  * 
  * Directe SOAP connectie met de Europese Commissie (VIES).
  * Geen simulatie, pure data-integriteit voor het platform.
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
     });
 
   } catch (error) {
-    console.error('❌ VIES Validation Error:', error);
+    console.error(' VIES Validation Error:', error);
     return NextResponse.json({ 
       error: 'VIES validation service unavailable',
       details: error instanceof Error ? error.message : 'Unknown error'

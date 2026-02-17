@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🧠 API: CODY THOUGHTS (2026)
+ *  API: CODY THOUGHTS (2026)
  * 
  * Doel: Maakt de interne logica en "gedachten" van Cody zichtbaar voor de admin.
  */

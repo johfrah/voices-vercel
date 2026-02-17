@@ -6,10 +6,10 @@ const openai = new OpenAI({
 });
 
 /**
- * 🌍 JOHFRAI SMART TRANSLATION API (2026)
+ *  JOHFRAI SMART TRANSLATION API (2026)
  * 
  * Doel: Vertaalt scripts naar andere talen met behoud van de juiste telefonie-terminologie.
- * Gebruikt de Voices.be Glossary voor termen als 'prédécroché'.
+ * Gebruikt de Voices.be Glossary voor termen als 'prdcroch'.
  */
 
 const TELEPHONY_GLOSSARY = {
@@ -21,11 +21,11 @@ const TELEPHONY_GLOSSARY = {
     voicemail: 'voicemail'
   },
   fr: {
-    welcome: 'prédécroché',
+    welcome: 'prdcroch',
     hold: "musique d'attente",
     menu: 'menu vocal',
     after_hours: 'hors heures de bureau',
-    voicemail: 'boîte vocale'
+    voicemail: 'bote vocale'
   },
   en: {
     welcome: 'welcome greeting',
@@ -35,10 +35,10 @@ const TELEPHONY_GLOSSARY = {
     voicemail: 'voicemail'
   },
   de: {
-    welcome: 'Begrüßungsansage',
+    welcome: 'Begrungsansage',
     hold: 'Wartemusik',
-    menu: 'Auswahlmenü',
-    after_hours: 'außerhalb der Geschäftszeiten',
+    menu: 'Auswahlmen',
+    after_hours: 'auerhalb der Geschftszeiten',
     voicemail: 'Voicemail'
   }
 };
@@ -60,13 +60,13 @@ export async function POST(request: NextRequest) {
           Vertaal de gegeven tekst naar de gevraagde talen: ${targetLangs.join(', ')}.
           
           STRICTE TELEFONIE GLOSSARY:
-          - Welkomstbegroeting -> FR: prédécroché, EN: welcome greeting, DE: Begrüßungsansage
+          - Welkomstbegroeting -> FR: prdcroch, EN: welcome greeting, DE: Begrungsansage
           - Wachtmuziek -> FR: musique d'attente, EN: hold music, DE: Wartemusik
-          - Keuzemenu -> FR: menu vocal, EN: IVR menu, DE: Auswahlmenü
-          - Buiten kantooruren -> FR: hors heures de bureau, EN: after hours, DE: außerhalb der Geschäftszeiten
+          - Keuzemenu -> FR: menu vocal, EN: IVR menu, DE: Auswahlmen
+          - Buiten kantooruren -> FR: hors heures de bureau, EN: after hours, DE: auerhalb der Geschftszeiten
           
           REGELS:
-          1. Behoud de titels tussen haakjes, bijv. (Welkomstbegroeting) wordt (Prédécroché) in het Frans.
+          1. Behoud de titels tussen haakjes, bijv. (Welkomstbegroeting) wordt (Prdcroch) in het Frans.
           2. Zorg voor een natuurlijke, warme toon die past bij de stem van Johfrah.
           3. Return de vertalingen in een JSON object waarbij de key de taalcode is.
           
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('❌ Translation API Error:', error);
+    console.error(' Translation API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

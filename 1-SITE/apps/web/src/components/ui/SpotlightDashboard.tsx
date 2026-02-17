@@ -75,7 +75,7 @@ const journeyInstructions: Record<string, string[]> = {
 };
 
 const menuItems: MenuItem[] = [
-  // 🚀 CORE & OPERATIONS
+  //  CORE & OPERATIONS
   { title: 'Command Center', icon: Zap, href: '/admin/dashboard', color: 'text-yellow-500', group: 'Core', journey: 'all' },
   { title: 'Workshop Cockpit', icon: Calendar, href: '/admin/studio/workshops', color: 'text-purple-500', group: 'Core', journey: 'studio' },
   { title: 'Datamatch Monitor', icon: Activity, href: '/admin/datamatch', color: 'text-blue-400', group: 'Core', journey: 'all' },
@@ -83,13 +83,13 @@ const menuItems: MenuItem[] = [
   { title: 'Analytics Hub', icon: TrendingUp, href: '/admin/analytics', color: 'text-orange-500', group: 'Core', journey: 'all' },
   { title: 'Klant Inzichten', icon: Brain, href: '/admin/insights', color: 'text-pink-500', group: 'Core', journey: 'all' },
 
-  // 📈 ANALYTICS & INTELLIGENCE
+  //  ANALYTICS & INTELLIGENCE
   { title: 'UTM Attribution', icon: BarChart3, href: '/admin/marketing/utm', color: 'text-orange-500', group: 'Analytics', journey: 'all' },
   { title: 'Visitor Intel', icon: Activity, href: '/admin/marketing/visitors', color: 'text-emerald-500', group: 'Analytics', journey: 'all' },
   { title: 'CTA AB Test', icon: MousePointer2, href: '/admin/marketing/ab-test', color: 'text-primary', group: 'Analytics', journey: 'all' },
   { title: 'Trends & SWOT', icon: TrendingUp, href: '/admin/marketing/trends', color: 'text-indigo-500', group: 'Analytics', journey: 'all' },
 
-  // 💰 FINANCIEEL & COMMERCE
+  //  FINANCIEEL & COMMERCE
   { title: 'Bestellingen', icon: ShoppingBag, href: '/admin/orders', color: 'text-blue-600', group: 'Financieel', badge: 5, journey: 'all' },
   { title: 'Boekhouder Review', icon: ShieldCheck, href: '/admin/approvals', color: 'text-green-600', group: 'Financieel', journey: 'all' },
   { title: 'Yuki Dashboard', icon: CreditCard, href: '/admin/finance', color: 'text-indigo-500', group: 'Financieel', journey: 'all' },
@@ -97,25 +97,25 @@ const menuItems: MenuItem[] = [
   { title: 'Vouchers', icon: Star, href: '/admin/vouchers', color: 'text-yellow-600', group: 'Financieel', journey: 'all' },
   { title: 'Omzet Monitor', icon: TrendingUp, href: '/admin/finance/revenue', color: 'text-green-500', group: 'Financieel', journey: 'all' },
 
-  // 🎙️ AGENCY & VOICES
+  //  AGENCY & VOICES
   { title: 'Voice Manager', icon: Mic, href: '/admin/voices', color: 'text-purple-500', group: 'Agency', journey: 'agency' },
   { title: 'Product Catalogus', icon: Database, href: '/admin/catalog', color: 'text-va-black', group: 'Agency', journey: 'agency' },
   { title: 'Demo Beheer', icon: Music, href: '/admin/demos', color: 'text-blue-500', group: 'Agency', journey: 'agency' },
   { title: 'Vakanties', icon: Clock, href: '/admin/vacations', color: 'text-red-400', group: 'Agency', journey: 'agency' },
   { title: 'Artist Cockpit', icon: Briefcase, href: '/admin/artists', color: 'text-slate-600', group: 'Agency', journey: 'agency' },
 
-  // 🎧 STUDIO & WORKSHOPS
+  //  STUDIO & WORKSHOPS
   { title: 'Workshop Manager', icon: Calendar, href: '/admin/workshops', color: 'text-primary', group: 'Studio', journey: 'studio' },
   { title: 'Deelnemers', icon: Users, href: '/admin/participants', color: 'text-green-500', group: 'Studio', journey: 'studio' },
   { title: 'Workshop Funnel', icon: Target, href: '/admin/funnel', color: 'text-orange-400', group: 'Studio', journey: 'studio' },
   { title: 'Feedback', icon: Smile, href: '/admin/feedback', color: 'text-yellow-500', group: 'Studio', journey: 'studio' },
   { title: 'Meetings', icon: Clock, href: '/admin/meetings', color: 'text-blue-400', group: 'Studio', journey: 'studio' },
 
-  // 🎓 ACADEMY
+  //  ACADEMY
   { title: 'Academy Dashboard', icon: GraduationCap, href: '/admin/academy', color: 'text-primary', group: 'Academy', journey: 'academy' },
   { title: 'Lessen Beheer', icon: FileText, href: '/admin/academy/lessons', color: 'text-blue-500', group: 'Academy', journey: 'academy' },
 
-  // ⚙️ SYSTEMS
+  //  SYSTEMS
   { title: 'Systeem Instellingen', icon: Settings, href: '/admin/settings', color: 'text-va-black/40', group: 'Systems', journey: 'all' },
   { title: 'Voiceglot Registry', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Systems', journey: 'all' },
   { title: 'OpenAI Intelligence', icon: Brain, href: '/admin/ai-settings', color: 'text-pink-400', group: 'Systems', journey: 'all' },
@@ -135,7 +135,7 @@ export const SpotlightDashboard: React.FC = () => {
   const { t } = useTranslation();
   const { playClick, playSwell } = useSonicDNA();
   
-  // 🎯 JOURNEY DETECTION
+  //  JOURNEY DETECTION
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
   const journey = pathname.includes('agency') ? 'agency' : 
                   pathname.includes('studio') ? 'studio' : 
@@ -150,7 +150,7 @@ export const SpotlightDashboard: React.FC = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        // 🛡️ BOB'S MANDATE: Spotlight is uitsluitend voor admins
+        //  BOB'S MANDATE: Spotlight is uitsluitend voor admins
         if (!isAdmin) return; 
 
         e.preventDefault();
@@ -166,7 +166,7 @@ export const SpotlightDashboard: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [playClick, isAdmin]);
 
-  // 🛡️ BOB'S MANDATE: Spotlight is uitsluitend voor admins en moet open staan
+  //  BOB'S MANDATE: Spotlight is uitsluitend voor admins en moet open staan
   if (!isAdmin || !isOpen) return null;
 
   const filteredItems = menuItems

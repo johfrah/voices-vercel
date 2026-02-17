@@ -217,7 +217,7 @@ export default function AdminDashboard() {
           <ButtonInstrument className="va-btn-pro !bg-va-black w-fit !rounded-[10px]"><VoiceglotText  translationKey="admin.users.cta" defaultText="Gebruikers beheren" /></ButtonInstrument>
         </BentoCard>
 
-        {/* 🩹 GOD MODE: SELF-HEALING LOGS */}
+        {/*  GOD MODE: SELF-HEALING LOGS */}
         <BentoCard span="sm" className="bg-va-black text-white p-10 h-[400px] flex flex-col justify-between relative overflow-hidden group rounded-[20px]">
           <ContainerInstrument className="relative z-10">
             <Image  src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" className="text-primary mb-8 brightness-0 invert opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
         </BentoCard>
       </BentoGrid>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

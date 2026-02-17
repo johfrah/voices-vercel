@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * 🪄 MAGIC LINK HANDLER (VOICES 2026)
+ *  MAGIC LINK HANDLER (VOICES 2026)
  * 
  * Route: /api/auth/magic-link?token=...
  * 

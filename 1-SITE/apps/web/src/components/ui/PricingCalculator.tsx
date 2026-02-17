@@ -29,11 +29,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
   const [years, setYears] = useState(1);
   const [language, setLanguage] = useState('nl-BE');
   const [filteredActors, setFilteredActors] = useState<any[]>([]);
-  const [pricing, setPricing] = useState({ price: 0, formatted: '€ 0,00' });
+  const [pricing, setPricing] = useState({ price: 0, formatted: ' 0,00' });
 
   const pricingConfig = PricingEngine.getDefaultConfig();
 
-  // 🎙️ Fetch & Filter Voices based on criteria
+  //  Fetch & Filter Voices based on criteria
   useEffect(() => {
     const fetchVoices = async () => {
       try {
@@ -47,7 +47,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
           if (!hasLang) return false;
 
           if (state.usage === 'paid') {
-            // Voor commercials moeten ze minimaal één paid rate hebben
+            // Voor commercials moeten ze minimaal n paid rate hebben
             const rates = a.rates_raw || {};
             return Object.values(rates).some((r: any) => r.price_online_media || r.price_tv_national || r.price_radio_national);
           }
@@ -74,7 +74,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
       price_ivr: referenceActor.price_ivr,
       rates: referenceActor.rates_raw || {}
     } : {
-      // 🛡️ NUCLEAR FALLBACK: Als er geen acteurs zijn, gebruik de globale defaults
+      //  NUCLEAR FALLBACK: Als er geen acteurs zijn, gebruik de globale defaults
       price_unpaid_media: 239,
       price_ivr: 89,
       rates: {}
@@ -96,7 +96,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
       musicMix: state.music.asBackground || state.music.asHoldMusic
     });
     
-    // 🎭 Dynamic Result Label based on usage
+    //  Dynamic Result Label based on usage
     const status = PricingEngine.getAvailabilityStatus(
       actor || referenceActor || {}, 
       state.usage === 'paid' ? media : [], 
@@ -114,7 +114,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
   }, [state.usage, words, country, media, tvRegion, radioRegion, spots, years, mode, actor, filteredActors, state.music.asBackground, state.music.asHoldMusic]);
 
   const handleBookNow = () => {
-    // 🛡️ AVAILABILITY PROTECTION
+    //  AVAILABILITY PROTECTION
     const status = PricingEngine.getAvailabilityStatus(
       actor || (filteredActors && filteredActors[0]) || {}, 
       state.usage === 'paid' ? media : [], 
@@ -133,7 +133,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
       return;
     }
 
-    // 🛡️ ZERO PRICE PROTECTION
+    //  ZERO PRICE PROTECTION
     if (pricing.price === 0) {
       const event = new CustomEvent('voicy:suggestion', {
         detail: {
@@ -154,10 +154,9 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
       if (!state.briefing) updateBriefing(" ".repeat(words)); // Mock words for pricing
     }
     
-    // If we have a selected actor (from the VoicePage), we skip the voice selection step
-    if (state.selectedActor) {
-      setStep('details');
-      router.push(`/checkout?usage=${state.usage}&words=${words}&voice=${state.selectedActor.slug}`);
+    // If we have a geselecteerde stem, we go to the configurator
+    if (actor || state.selectedActor) {
+      router.push('/checkout/configurator');
     } else {
       setStep('voice');
       router.push(`/checkout?usage=${state.usage}&words=${words}`);
@@ -246,7 +245,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                 >
-                  <OptionInstrument value="BE"><VoiceglotText  translationKey="common.country.be" defaultText="België" /></OptionInstrument>
+                  <OptionInstrument value="BE"><VoiceglotText  translationKey="common.country.be" defaultText="Belgi" /></OptionInstrument>
                   <OptionInstrument value="NL"><VoiceglotText  translationKey="common.country.nl" defaultText="Nederland" /></OptionInstrument>
                   <OptionInstrument value="FR"><VoiceglotText  translationKey="common.country.fr" defaultText="Frankrijk" /></OptionInstrument>
                   <OptionInstrument value="EU"><VoiceglotText  translationKey="common.country.eu" defaultText="Europa" /></OptionInstrument>
@@ -312,7 +311,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                 </ContainerInstrument>
               </ContainerInstrument>
 
-              {/* 🎙️ Sherlock: Universele VoiceCards in Pricing voor directe vergelijking */}
+              {/*  Sherlock: Universele VoiceCards in Pricing voor directe vergelijking */}
               <ContainerInstrument className="pt-10 border-t border-black/5">
                 <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-8">
                   <VoiceglotText  translationKey="pricing.matching_voices" defaultText="Direct vergelijken & boeken" />
@@ -371,12 +370,12 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     {state.usage === 'telefonie' ? '500+' : '5000+'}
                   </TextInstrument>
                   <TextInstrument className="text-[15px] font-medium text-primary/40 tracking-tighter">
-                    ± {Math.floor(words / 160)}:{(Math.round((words % 160) / 160 * 60)).toString().padStart(2, '0')} min (160 wpm)
+                     {Math.floor(words / 160)}:{(Math.round((words % 160) / 160 * 60)).toString().padStart(2, '0')} min (160 wpm)
                   </TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
 
-              {/* 🎙️ Sherlock: Universele VoiceCards in Pricing voor directe vergelijking */}
+              {/*  Sherlock: Universele VoiceCards in Pricing voor directe vergelijking */}
               <ContainerInstrument className="pt-10 border-t border-black/5">
                 <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30 mb-8">
                   <VoiceglotText  translationKey="pricing.matching_voices" defaultText="Direct vergelijken & boeken" />
@@ -417,7 +416,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   </ContainerInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="text-right">
-                  <TextInstrument className="text-lg font-light text-va-black">€59</TextInstrument>
+                  <TextInstrument className="text-lg font-light text-va-black">59</TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
 

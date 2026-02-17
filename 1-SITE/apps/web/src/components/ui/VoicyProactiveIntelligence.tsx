@@ -8,11 +8,11 @@ import React, { useEffect, useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 
 /**
- * 🧠 VOICY PROACTIVE INTELLIGENCE (GOD MODE 2026)
+ *  VOICY PROACTIVE INTELLIGENCE (GOD MODE 2026)
  * 
  * Een intelligent instrument dat pro-actief tips en inzichten geeft
  * op basis van de huidige context (dashboard, mailbox, etc).
- * ENKEL zichtbaar voor admins – niet voor publieke bezoekers.
+ * ENKEL zichtbaar voor admins  niet voor publieke bezoekers.
  */
 
 interface IntelligenceTip {
@@ -54,7 +54,7 @@ export const VoicyProactiveIntelligence = () => {
     return () => clearTimeout(timer);
   }, [isAdmin]);
 
-  // ENKEL voor admins – verberg volledig voor publieke bezoekers (incl. incognito)
+  // ENKEL voor admins  verberg volledig voor publieke bezoekers (incl. incognito)
   if (!isAdmin) return null;
   if (!tip) return null;
 

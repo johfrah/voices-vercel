@@ -80,7 +80,7 @@ export default async function AdminWorkshopCatalogPage() {
               </div>
 
               <div className="mt-auto pt-6 border-t border-black/5 flex justify-between items-center">
-                <span className="text-xl font-light">€{parseFloat(w.price || '0').toFixed(2)}</span>
+                <span className="text-xl font-light">{parseFloat(w.price || '0').toFixed(2)}</span>
                 <Link href={`/studio/${w.slug}`} target="_blank" className="text-[11px] font-black tracking-widest text-black/20 hover:text-primary transition-colors">
                   BEKIJK LIVE
                 </Link>

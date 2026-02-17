@@ -15,7 +15,7 @@ import { notFound } from "next/navigation";
 
 /**
  * INSTRUCTOR DETAIL PAGE
- * 🛡️ VOICES OS: 100% Native & WordPress-vrij
+ *  VOICES OS: 100% Native & WordPress-vrij
  */
 export default async function InstructorDetailPage({ params }: { params: { slug: string } }) {
   const instructor = await StudioDataBridge.getInstructorBySlug(params.slug);
@@ -28,7 +28,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">
-      {/* 🔙 BACK BUTTON */}
+      {/*  BACK BUTTON */}
       <Link  
         href="/studio/instructeurs" 
         className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"
@@ -38,7 +38,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
       </Link>
 
       <BentoGrid columns={3} className="gap-8">
-        {/* 👤 PROFILE CARD */}
+        {/*  PROFILE CARD */}
         <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between">
           <ContainerInstrument>
             <ContainerInstrument className="relative w-48 h-48 rounded-3xl overflow-hidden mb-8 border-2 border-white/10 mx-auto">
@@ -80,7 +80,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
           </ButtonInstrument>
         </BentoCard>
 
-        {/* 📝 BIO CARD */}
+        {/*  BIO CARD */}
         <BentoCard span="lg" className="bg-white shadow-aura p-12 border border-black/5">
           <HeadingInstrument level={2} className="text-[15px] font-light tracking-widest text-black/30 mb-8"><VoiceglotText  translationKey="instructor.about_title" defaultText="Over de instructeur" /></HeadingInstrument>
           <ContainerInstrument className="prose prose-lg prose-black max-w-none">
@@ -90,7 +90,7 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
           </ContainerInstrument>
         </BentoCard>
 
-        {/* 🎓 WORKSHOPS CARD */}
+        {/*  WORKSHOPS CARD */}
         <BentoCard span="lg" className="bg-va-off-white p-12">
           <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-black/30 mb-10"><VoiceglotText  translationKey="instructor.workshops_title" defaultText="Workshops door deze instructeur" /></HeadingInstrument>
           
@@ -128,14 +128,14 @@ export default async function InstructorDetailPage({ params }: { params: { slug:
           </ContainerInstrument>
         </BentoCard>
 
-        {/* 💬 QUOTE / FOOTER CARD */}
+        {/*  QUOTE / FOOTER CARD */}
         <BentoCard span="sm" className="bg-primary text-black p-10 flex flex-col justify-center items-center text-center">
           <HeadingInstrument level={4} className="text-2xl font-light tracking-tighter mb-4"><VoiceglotText  
               translationKey="instructor.quote" 
               defaultText="De stem is het instrument van de ziel." 
             /></HeadingInstrument>
           <TextInstrument className="text-[15px] font-light tracking-widest opacity-40">
-            — {instructor.name}
+             {instructor.name}
           </TextInstrument>
         </BentoCard>
       </BentoGrid>

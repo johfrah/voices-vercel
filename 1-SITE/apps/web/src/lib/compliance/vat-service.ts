@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { DbService } from "../db-service";
 
 /**
- * 🛡️ NUCLEAR VAT SERVICE (2026)
+ *  NUCLEAR VAT SERVICE (2026)
  * 
  * Verantwoordelijk voor BTW-validatie via VIES en normalisatie van BTW-nummers.
  * Vervangt de PHP VIES Utility en VAT Helpers.
@@ -21,7 +21,7 @@ export interface VATValidationResult {
 
 export class VatService {
   /**
-   * Valideert een BTW-nummer via de officiële EU VIES REST API.
+   * Valideert een BTW-nummer via de officile EU VIES REST API.
    */
   static async validateVat(vatNumber: string, countryCode?: string): Promise<VATValidationResult> {
     // 1. Normaliseer het nummer

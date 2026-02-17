@@ -6,7 +6,7 @@ const openai = new OpenAI({
 });
 
 /**
- * 🔮 JOHFRAI PREDICTIVE AUTOFILL API (2026)
+ *  JOHFRAI PREDICTIVE AUTOFILL API (2026)
  * 
  * Doel: Genereert 'ghost text' suggesties terwijl de gebruiker typt.
  * Houdt rekening met context zoals de bedrijfsnaam, openingsuren, etc.
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ suggestion: result.suggestion || "" });
   } catch (error) {
-    console.error('❌ Predictive API Error:', error);
+    console.error(' Predictive API Error:', error);
     return NextResponse.json({ suggestion: "" });
   }
 }

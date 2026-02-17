@@ -1,11 +1,9 @@
 import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
 import { ContainerInstrument, LoadingScreenInstrument, PageWrapperInstrument, SectionInstrument } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { VoiceGrid } from "@/components/ui/VoiceGrid";
-import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import { getActors } from "@/lib/api-server";
 import { headers } from "next/headers";
-import { Suspense } from "react";
+import { AgencyContent } from "./AgencyContent";
 
 export const dynamic = 'force-dynamic';
 
@@ -14,14 +12,14 @@ export default async function AgencyPage() {
   const market = headerList.get('x-voices-market') || 'BE';
   const lang = headerList.get('x-voices-lang') || 'nl';
 
-  // 🌍 MARKET-FIRST FETCH: Prefill language based on market
+  //  MARKET-FIRST FETCH: Prefill language based on market
   let initialLang = undefined;
   if (market === 'FR') initialLang = 'Frans';
   else if (market === 'ES') initialLang = 'Spaans';
   else if (market === 'PT') initialLang = 'Portugees';
   else if (market === 'NL') initialLang = 'Nederlands';
   else if (market === 'DE') initialLang = 'Duits';
-  else if (market === 'BE') initialLang = 'Vlaams'; // 🛡️ CHRIS-PROTOCOL: Forceer Vlaams voor België
+  else if (market === 'BE') initialLang = 'Vlaams'; //  CHRIS-PROTOCOL: Forceer Vlaams voor Belgi
 
   const searchResults = await getActors(initialLang ? { language: initialLang } : {}, lang);
   const actors = searchResults.results;
@@ -29,34 +27,47 @@ export default async function AgencyPage() {
   const mappedActors = actors.map(actor => ({
     id: actor.id,
     display_name: actor.display_name,
+    first_name: actor.first_name || actor.firstName,
+    last_name: actor.last_name || actor.lastName,
+    firstName: actor.firstName || actor.first_name,
+    lastName: actor.lastName || actor.last_name,
+    email: actor.email,
     photo_url: actor.photo_url,
     voice_score: actor.voice_score,
     native_lang: actor.native_lang,
+    gender: actor.gender,
+    starting_price: actor.starting_price,
+    delivery_days_min: actor.delivery_days_min || 1,
+    delivery_days_max: actor.delivery_days_max || 2,
+    extra_langs: actor.extra_langs,
+    tone_of_voice: actor.tone_of_voice,
+    clients: actor.clients,
+    cutoff_time: actor.cutoff_time || '18:00',
+    availability: actor.availability || [],
+    tagline: actor.tagline,
     ai_tags: actor.ai_tags || [],
     slug: actor.slug,
     demos: actor.demos || [],
-    bio: actor.bio // 🛡️ CHRIS-PROTOCOL: Zorg dat de bio wordt doorgegeven voor de VoiceCard
+    bio: actor.bio,
+    price_ivr: actor.price_ivr,
+    price_online: actor.price_online,
+    holiday_from: actor.holiday_from,
+    holiday_till: actor.holiday_till,
+    rates_raw: actor.rates_raw || {}
   }));
 
   return (
     <PageWrapperInstrument>
       <LiquidBackground strokeWidth={1.5} />
       <AgencyHeroInstrument 
-        title={market === 'FR' ? "Voix-off Françaises" : market === 'DE' ? "Deutsche Synchronsprecher" : "Vlaamse Voice-overs"} 
-        subtitle={market === 'FR' ? "Découvrez les meilleures voix voor vos projets." : market === 'DE' ? "Entdecken Sie die besten Stimmen für Ihre Projekte." : "Ontdek de beste stemmen van België voor uw commercials, documentaires en bedrijfsfilms."}
+        title={market === 'FR' ? "Voix-off Franaises" : market === 'DE' ? "Deutsche Synchronsprecher" : "Vlaamse Voice-overs"} 
+        subtitle={market === 'FR' ? "Dcouvrez les meilleures voix voor vos projets." : market === 'DE' ? "Entdecken Sie die besten Stimmen fr Ihre Projekte." : "Ontdek de beste stemmen van Belgi voor uw commercials, documentaires en bedrijfsfilms."}
         filters={searchResults.filters}
         market={market}
         searchParams={initialLang ? { language: initialLang } : {}}
       />
       <SectionInstrument className="!pt-0 -mt-24 relative z-40">
-        <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
-          <VoicesMasterControl filters={searchResults.filters} />
-          <div className="mt-12">
-            <Suspense  fallback={<LoadingScreenInstrument />}>
-              <VoiceGrid strokeWidth={1.5} actors={mappedActors as any} />
-            </Suspense>
-          </div>
-        </ContainerInstrument>
+        <AgencyContent mappedActors={mappedActors} filters={searchResults.filters} />
       </SectionInstrument>
       <script
         type="application/ld+json"
@@ -64,8 +75,8 @@ export default async function AgencyPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebPage",
-            "name": market === 'FR' ? "Voix-off Françaises" : market === 'DE' ? "Deutsche Synchronsprecher" : "Vlaamse Voice-overs",
-            "description": "Ontdek de beste stemmen van België voor uw commercials, documentaires en bedrijfsfilms.",
+            "name": market === 'FR' ? "Voix-off Franaises" : market === 'DE' ? "Deutsche Synchronsprecher" : "Vlaamse Voice-overs",
+            "description": "Ontdek de beste stemmen van Belgi voor uw commercials, documentaires en bedrijfsfilms.",
             "_llm_context": {
               "intent": "search_voices",
               "persona": "visitor",

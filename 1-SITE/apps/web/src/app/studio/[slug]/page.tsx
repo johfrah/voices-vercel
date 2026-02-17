@@ -23,7 +23,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 /**
- * 🎙️ STUDIO DETAIL PAGE (VOICES 2026)
+ *  STUDIO DETAIL PAGE (VOICES 2026)
  * 
  * Gebaseerd op de Studio-layout:
  * - Hero met Video & Directe CTA
@@ -38,7 +38,7 @@ const WORKSHOP_SUBTITLES: Record<string, { start: number; end: number; text: str
     { start: 7.68, end: 10.88, text: "en een gerichte intonatie? Dat kan." },
     { start: 11.0, end: 15.72, text: "Die drie componenten, articulatie, stem, intonatie, dat hoort bij elkaar." },
     { start: 15.84, end: 18.68, text: "Je kan zeker leren om een professionele spreker te worden." },
-    { start: 18.80, end: 22.68, text: "Dat kan in één dag. Veel oefeningen wel, maar het kan zeker." },
+    { start: 18.80, end: 22.68, text: "Dat kan in n dag. Veel oefeningen wel, maar het kan zeker." },
     { start: 22.80, end: 24.28, text: "Welkom." }
   ],
   'voice-overs-voor-beginners': [
@@ -56,7 +56,7 @@ const WORKSHOP_SUBTITLES: Record<string, { start: number; end: number; text: str
     { start: 28.36, end: 29.36, text: "Ja, sorry." },
     { start: 29.72, end: 31.4, text: "We zijn al eens in het verder." },
     { start: 31.4, end: 34.52, text: "Geloof me, het vliegt voorbij, maar daarna doen we het nog een paar keer." },
-    { start: 34.52, end: 35.88, text: "En je wilt dat we het nog eens doen, hè?" },
+    { start: 34.52, end: 35.88, text: "En je wilt dat we het nog eens doen, h?" },
     { start: 35.88, end: 36.88, text: "Ja, mogen we ook nog eens?" },
     { start: 36.88, end: 40.44, text: "En dan gaan we samen luisteren, feedback geven, verbeteren en samen zorgen we ervoor" },
     { start: 40.44, end: 44.32, text: "dat je de beste technieken hebt om prachtige VoiceOvers in te spreken." },
@@ -93,7 +93,7 @@ const WORKSHOP_SUBTITLES: Record<string, { start: number; end: number; text: str
     { start: 66.16, end: 69.24, text: "Dat ging van Onder Vuur, wat iets anders is als Chantal," },
     { start: 69.32, end: 71.16, text: "als Dertigers en ook een jeugdreeks." },
     { start: 71.24, end: 73.08, text: "Die variatie was ook wel heel leuk." },
-    { start: 73.16, end: 75.08, text: "Je hebt dat in het script. Dat is één ding." },
+    { start: 73.16, end: 75.08, text: "Je hebt dat in het script. Dat is n ding." },
     { start: 75.16, end: 78.36, text: "Dat script moet goed in elkaar zitten, dat moet goed geschreven zijn," },
     { start: 78.44, end: 81.24, text: "om het daarna nog ook goed te laten bekken." },
     { start: 81.32, end: 84.24, text: "Gio trekt de vrouw Cordata haar huis uit." },
@@ -104,7 +104,7 @@ const WORKSHOP_SUBTITLES: Record<string, { start: number; end: number; text: str
     { start: 95.68, end: 97.56, text: "van iemand die daar zoveel ervaring in heeft." },
     { start: 97.64, end: 99.24, text: "Zeg, Giovra." },
     { start: 99.32, end: 101.56, text: "Met Guido Godon hadden we wel een topper in huis." },
-    { start: 101.64, end: 106.48, text: "Dat is ongelooflijk. Als er één man is die AD ademt..." },
+    { start: 101.64, end: 106.48, text: "Dat is ongelooflijk. Als er n man is die AD ademt..." },
     { start: 106.56, end: 107.56, text: "Dan is het Guido." },
     { start: 107.64, end: 112.16, text: "Ik vond het heel fijn om vandaag met deze mensen te kunnen samenwerken." },
     { start: 112.24, end: 115.76, text: "Aflevering per aflevering hebben we geleerd om een verhaal te vertellen." },
@@ -119,7 +119,7 @@ const WORKSHOP_SUBTITLES: Record<string, { start: number; end: number; text: str
     { start: 10.0, end: 12.0, text: "Meer nog, we gaan ze verwennen." },
     { start: 12.0, end: 14.0, text: "Want die stem moet blijven functioneren." },
     { start: 14.0, end: 16.0, text: "Geen stem, geen werk." },
-    { start: 16.0, end: 17.0, text: "Dat is niet oké." },
+    { start: 16.0, end: 17.0, text: "Dat is niet ok." },
     { start: 17.0, end: 19.0, text: "We gaan ze verwennen en we gaan ze trainen, die stem." },
     { start: 19.0, end: 21.0, text: "Door die oefening die ik net heb voorgedaan." },
     { start: 21.0, end: 24.0, text: "Want die spieren moeten goed opgewarmd worden." },
@@ -156,7 +156,7 @@ const WORKSHOP_SUBTITLES: Record<string, { start: number; end: number; text: str
     { start: 30.96, end: 35.68, text: "Je gaat jezelf ontdekken op beeld. Je gaat zien hoe jij klinkt op dat beeld." },
     { start: 35.8, end: 36.88, text: "En we gaan het samen doen." },
     { start: 37.0, end: 40.4, text: "Dus spreekt het jou aan om dat te leren, om door mij geregisseerd te worden..." },
-    { start: 40.52, end: 42.2, text: "...en misschien zelfs een beetje geïnterviewd..." },
+    { start: 40.52, end: 42.2, text: "...en misschien zelfs een beetje genterviewd..." },
     { start: 42.32, end: 47.2, text: "...om te komen tot jouw echte jij en jouw echte stem en jouw echte vertelstijl?" },
     { start: 47.32, end: 48.76, text: "Schrijf je in." },
     { start: 48.88, end: 50.8, text: "Ik kijk ernaar uit, toch?" }
@@ -210,16 +210,16 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function WorkshopDetailPage({ params }: { params: { slug: string } }) {
-  console.log("🔍 WorkshopDetailPage slug:", params.slug);
+  console.log(" WorkshopDetailPage slug:", params.slug);
   const workshop = await StudioDataBridge.getWorkshopBySlug(params.slug);
-  console.log("🔍 Workshop found:", workshop ? workshop.title : "null");
+  console.log(" Workshop found:", workshop ? workshop.title : "null");
   const faqs = await getFaqs('studio');
 
   if (!workshop) {
     notFound();
   }
 
-  // 🛠️ Sanitize Video URL & Subtitles
+  //  Sanitize Video URL & Subtitles
   // Prioriteit: Aftermovie URL (indien beschikbaar) > VideoAsk URL > Fallback
   const rawVideoUrl = workshop.aftermovie_url || workshop.meta?.videoask;
   const videoFilename = rawVideoUrl?.split('/').pop() || "perfect-spreken-in-een-dag.mp4";
@@ -240,7 +240,7 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
     <PageWrapperInstrument className="min-h-screen bg-va-off-white">
       <LiquidBackground />
 
-      {/* 🚀 HERO SECTION */}
+      {/*  HERO SECTION */}
       <SectionInstrument className="voices-hero">
         <ContainerInstrument plain className="voices-video-hero-grid">
           {/* LINKS: VIDEO / IMAGE (40%) */}
@@ -283,14 +283,14 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 📖 CONTENT SECTION (Includes Booking, Info, Program & Aftermovie) */}
+      {/*  CONTENT SECTION (Includes Booking, Info, Program & Aftermovie) */}
       <SectionInstrument id="inschrijven" className="py-32 bg-white relative">
         <ContainerInstrument plain className="max-w-[1140px] mx-auto">
           <WorkshopContent workshop={workshop} />
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🌟 REVIEWS */}
+      {/*  REVIEWS */}
       {workshopFaqs.length > 0 && (
         <SectionInstrument className="py-32 bg-va-off-white/50">
           <ContainerInstrument className="max-w-[1140px] mx-auto">
@@ -313,7 +313,7 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
         </SectionInstrument>
       )}
 
-      {/* 🌟 REVIEWS */}
+      {/*  REVIEWS */}
       {workshop.reviews && workshop.reviews.length > 0 && (
         <SectionInstrument className="py-32 border-t border-black/[0.03]">
           <ContainerInstrument className="max-w-[1140px]">

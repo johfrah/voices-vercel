@@ -80,7 +80,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
 
   return (
     <div className="space-y-8">
-      {/* 🏷️ SECTOR SELECTOR */}
+      {/*  SECTOR SELECTOR */}
       <div className="space-y-4">
         <h3 className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
           <Briefcase strokeWidth={1.5} size={14} /> 
@@ -107,7 +107,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
         </div>
       </div>
 
-      {/* 🎭 VIBE SELECTOR */}
+      {/*  VIBE SELECTOR */}
       <div className="space-y-4">
         <h3 className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
           <Sparkles strokeWidth={1.5} size={14} /> 
@@ -131,7 +131,7 @@ export const SmartDemoExplorer: React.FC<SmartDemoExplorerProps> = ({ onAdoptScr
         </div>
       </div>
 
-      {/* 🎙️ DEMO LIST */}
+      {/*  DEMO LIST */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-[15px] font-light tracking-widest text-va-black/40">

@@ -24,7 +24,7 @@ import React, { useEffect, useState } from 'react';
 type MailboxTab = 'inbox' | 'insights' | 'faq';
 
 /**
- * ⚡ MAILBOX PAGE (GOD MODE 2026)
+ *  MAILBOX PAGE (GOD MODE 2026)
  * 
  * Volgt de Zero Laws:
  * - HTML ZERO: Geen rauwe HTML tags.
@@ -193,7 +193,7 @@ export default function MailboxPage() {
         setHasMore(data.mails.length === 50);
       }
     } catch (error) {
-      console.error('📬 Mailbox Error:', error);
+      console.error(' Mailbox Error:', error);
     } finally {
       setIsRefreshing(false);
     }
@@ -377,7 +377,7 @@ export default function MailboxPage() {
               <ButtonInstrument 
                 onClick={() => setSortByValue(!sortByValue)}
                 className={`p-3 rounded-[10px] border transition-all ${sortByValue ? 'bg-va-black text-white border-va-black' : 'bg-va-off-white border-black/5 text-va-black/40'}`}
-                title="Sorteer op commerciële waarde"
+                title="Sorteer op commercile waarde"
               >
                 <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className={sortByValue ? 'brightness-0 invert' : ''} style={!sortByValue ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 } : {}} />
               </ButtonInstrument>
@@ -397,7 +397,7 @@ export default function MailboxPage() {
                       onChange={(e) => refreshInbox(true, true, 'INBOX', e.target.value)}
                       className="w-full bg-va-black text-white text-[15px] font-light tracking-widest py-3 px-4 rounded-[10px] shadow-lg focus:ring-2 focus:ring-primary/20 outline-none appearance-none cursor-pointer border-none"
                     >
-                      <OptionInstrument value="all">📬 {t('mailbox.accounts.all', 'Alle Accounts')}</OptionInstrument>
+                      <OptionInstrument value="all"> {t('mailbox.accounts.all', 'Alle Accounts')}</OptionInstrument>
                       <OptionInstrument value="johfrah@voices.be">Voices.be</OptionInstrument>
                       <OptionInstrument value="info@johfrah.be">Johfrah.be</OptionInstrument>
                     </SelectInstrument>
@@ -512,7 +512,7 @@ export default function MailboxPage() {
                               onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
                               className="bg-transparent text-[15px] font-light outline-none p-0"
                             />
-                            <TextInstrument as="span" className="text-[15px] font-light text-gray-300">→</TextInstrument>
+                            <TextInstrument as="span" className="text-[15px] font-light text-gray-300"></TextInstrument>
                             <InputInstrument 
                               type="date" 
                               value={dateRange.end} 
@@ -651,7 +651,7 @@ export default function MailboxPage() {
               <ContainerInstrument className="w-full flex justify-between items-center text-white/80">
                 <ContainerInstrument className="flex flex-col">
                   <TextInstrument as="span" className="text-2xl font-light">{spotlightFile.originalName || spotlightFile.filename}</TextInstrument>
-                  <TextInstrument as="span" className="text-[15px] tracking-widest opacity-50 font-light">{spotlightFile.category} • {(spotlightFile.fileSize / 1024 / 1024).toFixed(2)} MB</TextInstrument>
+                  <TextInstrument as="span" className="text-[15px] tracking-widest opacity-50 font-light">{spotlightFile.category}  {(spotlightFile.fileSize / 1024 / 1024).toFixed(2)} MB</TextInstrument>
                 </ContainerInstrument>
                 <ButtonInstrument as="a" href={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.filePath || spotlightFile.path)}`} download={spotlightFile.originalName || spotlightFile.filename} className="bg-white text-va-black px-6 py-3 rounded-2xl font-light tracking-widest flex items-center gap-2 hover:bg-primary hover:text-white transition-all">
                   <Download strokeWidth={1.5} size={18} /><VoiceglotText  translationKey="auto.page.downloaden.993469" defaultText="Downloaden" />

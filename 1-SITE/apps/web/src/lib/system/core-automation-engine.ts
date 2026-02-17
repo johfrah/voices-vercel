@@ -5,7 +5,7 @@ import { InvoiceService } from "../commerce/invoice-service";
 import { SmartmailService } from "../system/smartmail-service";
 
 /**
- * ⚙️ CORE AUTOMATION ENGINE (2026)
+ *  CORE AUTOMATION ENGINE (2026)
  * 
  * Het centrale brein dat events koppelt aan acties.
  * "Zero Laws" - Geen handmatige tussenkomst nodig.
@@ -23,7 +23,7 @@ export class CoreAutomationEngine {
    * Het startpunt voor elk systeem-event.
    */
   static async trigger(event: CoreEvent, data: any) {
-    console.log(`[Core ⚙️] Triggering event: ${event}`, data);
+    console.log(`[Core ] Triggering event: ${event}`, data);
 
     // 1. Log event voor audit trail
     await db.insert(systemEvents).values({
@@ -48,10 +48,10 @@ export class CoreAutomationEngine {
           break;
 
         default:
-          console.warn(`[Core ⚙️] No handler for event: ${event}`);
+          console.warn(`[Core ] No handler for event: ${event}`);
       }
     } catch (error) {
-      console.error(`[Core ⚙️] Error handling ${event}:`, error);
+      console.error(`[Core ] Error handling ${event}:`, error);
       await db.insert(systemEvents).values({
         source: `core/${event}`,
         level: 'critical',
@@ -94,7 +94,7 @@ export class CoreAutomationEngine {
     
     if (opp && opp.confidence > 0.8) {
       await SmartmailService.queueSmartmail(opp);
-      console.log(`[Core ⚙️] Proactive Smartmail queued for ${opp.email}`);
+      console.log(`[Core ] Proactive Smartmail queued for ${opp.email}`);
     }
   }
 }

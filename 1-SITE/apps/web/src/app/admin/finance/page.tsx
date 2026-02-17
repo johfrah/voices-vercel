@@ -45,16 +45,16 @@ export default async function FinancialCockpitPage() {
       </div>
       
       <TextInstrument className="text-[13px] font-black tracking-widest text-black/30 uppercase mb-1">{title}</TextInstrument>
-      <HeadingInstrument level={3} className="text-3xl font-light mb-6">€{stats.netRevenue.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
+      <HeadingInstrument level={3} className="text-3xl font-light mb-6">{stats.netRevenue.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
       
       <div className="space-y-3 pt-6 border-t border-black/5">
         <div className="flex justify-between text-[13px]">
           <span className="text-black/40">Omzet</span>
-          <span className="font-bold">€{stats.totalRevenue.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</span>
+          <span className="font-bold">{stats.totalRevenue.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</span>
         </div>
         <div className="flex justify-between text-[13px]">
           <span className="text-black/40">Kosten</span>
-          <span className="font-bold text-red-500">- €{stats.totalCosts.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</span>
+          <span className="font-bold text-red-500">- {stats.totalCosts.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</span>
         </div>
         <div className="flex justify-between text-[13px]">
           <span className="text-black/40">Marge</span>
@@ -77,7 +77,7 @@ export default async function FinancialCockpitPage() {
         <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2 uppercase">Financial Cockpit</TextInstrument>
         <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-4">De Boekhouding</HeadingInstrument>
         <TextInstrument className="text-xl text-black/40 max-w-2xl font-medium">
-          Eén centraal overzicht van alle inkomsten en kosten, strikt gescheiden per journey volgens de Bob-methode.
+          En centraal overzicht van alle inkomsten en kosten, strikt gescheiden per journey volgens de Bob-methode.
         </TextInstrument>
       </ContainerInstrument>
 
@@ -85,7 +85,7 @@ export default async function FinancialCockpitPage() {
         <div className="bg-va-black text-white p-10 rounded-[40px] shadow-aura-lg relative overflow-hidden">
           <div className="relative z-10">
             <TextInstrument className="text-[13px] font-black tracking-widest text-white/30 uppercase mb-2">Totaal Netto Resultaat</TextInstrument>
-            <HeadingInstrument level={2} className="text-5xl font-light">€{totalNet.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
+            <HeadingInstrument level={2} className="text-5xl font-light">{totalNet.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
             <div className="mt-8 flex items-center gap-4">
               <div className="flex items-center gap-1 text-green-400 text-sm font-bold bg-white/5 px-3 py-1 rounded-full">
                 <TrendingUp size={14} /> +12.4%
@@ -98,12 +98,12 @@ export default async function FinancialCockpitPage() {
 
         <div className="bg-va-off-white p-10 rounded-[40px] border border-black/5 flex flex-col justify-center">
           <TextInstrument className="text-[13px] font-black tracking-widest text-black/30 uppercase mb-2">Totale Omzet</TextInstrument>
-          <HeadingInstrument level={2} className="text-4xl font-light">€{totalRevenue.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
+          <HeadingInstrument level={2} className="text-4xl font-light">{totalRevenue.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
         </div>
 
         <div className="bg-va-off-white p-10 rounded-[40px] border border-black/5 flex flex-col justify-center">
           <TextInstrument className="text-[13px] font-black tracking-widest text-black/30 uppercase mb-2">Totale Kosten</TextInstrument>
-          <HeadingInstrument level={2} className="text-4xl font-light text-red-500">€{totalCosts.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
+          <HeadingInstrument level={2} className="text-4xl font-light text-red-500">{totalCosts.toLocaleString('nl-BE', { minimumFractionDigits: 2 })}</HeadingInstrument>
         </div>
       </div>
 

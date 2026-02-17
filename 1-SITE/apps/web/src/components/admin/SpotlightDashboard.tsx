@@ -16,7 +16,7 @@ import {
 import React, { useState } from 'react';
 
 /**
- * 📊 SPOTLIGHT DASHBOARD - HET CONTROLEPANEEL (2026)
+ *  SPOTLIGHT DASHBOARD - HET CONTROLEPANEEL (2026)
  * Beheer-modus: Real-time monitoring van het systeem.
  */
 export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
@@ -170,7 +170,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
               <div className="text-[15px] font-black text-primary">ENCRYPTED</div>
             </div>
             <p className="text-[15px] text-white/20 font-medium italic">
-              Voices Core v2.4.0 • Beheer-modus Actief
+              Voices Core v2.4.0  Beheer-modus Actief
             </p>
           </div>
         </motion.div>

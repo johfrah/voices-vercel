@@ -28,7 +28,7 @@ interface ActorRecord {
 }
 
 /**
- * 🎙️ VOICE MANAGER
+ *  VOICE MANAGER
  * Beheer-modus: Alleen bewerkbaar als 'Edit Mode' aan staat.
  */
 export default function VoiceManagerPage() {
@@ -133,7 +133,7 @@ export default function VoiceManagerPage() {
               <ContainerInstrument className={`flex items-center gap-1 text-lg font-black tracking-tighter transition-all ${
                 isEditMode ? 'text-primary' : 'text-va-black'
               }`}>
-                €
+                
                 {isEditMode ? (
                   <InputInstrument 
                     type="text" 

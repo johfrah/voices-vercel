@@ -3,10 +3,10 @@ import { db } from '@db';
 import { approvalQueue, orderItems, vaultFiles } from '@db/schema';
 
 /**
- * 💳 PAYOUT READINESS SERVICE (NUCLEAR 2026)
+ *  PAYOUT READINESS SERVICE (NUCLEAR 2026)
  * 
  * Verantwoordelijk voor de "Closed-Loop" validatie:
- * Alleen als de klant heeft goedgekeurd én de factuur is binnen,
+ * Alleen als de klant heeft goedgekeurd n de factuur is binnen,
  * wordt de betaling klaargezet voor Ponto.
  */
 export class PayoutReadinessService {
@@ -26,7 +26,7 @@ export class PayoutReadinessService {
    * 2. Engine die een factuur matcht (Mailbox Sync)
    */
   async checkAndPreparePayout(orderItemId: number): Promise<boolean> {
-    console.log(`🔍 Payout Check voor Order Item ${orderItemId}...`);
+    console.log(` Payout Check voor Order Item ${orderItemId}...`);
 
     // 1. Haal de opdracht en bijbehorende data op
     const item = await db.query.orderItems.findFirst({
@@ -46,13 +46,13 @@ export class PayoutReadinessService {
     });
 
     if (!item) {
-      console.log(`   ❌ Order Item niet gevonden.`);
+      console.log(`    Order Item niet gevonden.`);
       return false;
     }
 
-    // 🎯 Filter: Alleen voor Agency orders (voice-overs)
+    //  Filter: Alleen voor Agency orders (voice-overs)
     if ((item.order as any)?.journey !== 'agency') {
-      console.log(`   ℹ️ Geen Payout nodig: Order behoort tot journey '${(item.order as any)?.journey}'.`);
+      console.log(`    Geen Payout nodig: Order behoort tot journey '${(item.order as any)?.journey}'.`);
       return false;
     }
 
@@ -70,11 +70,11 @@ export class PayoutReadinessService {
 
     const hasInvoice = !!invoice;
 
-    console.log(`   💎 Klant Approved: ${isClientApproved ? '✅' : '❌'}`);
-    console.log(`   🧾 Factuur Binnen: ${hasInvoice ? '✅' : '❌'}`);
+    console.log(`    Klant Approved: ${isClientApproved ? '' : ''}`);
+    console.log(`    Factuur Binnen: ${hasInvoice ? '' : ''}`);
 
     if (isClientApproved && hasInvoice) {
-      console.log(`   🚀 PONTO-READY! Betaling voorbereiden...`);
+      console.log(`    PONTO-READY! Betaling voorbereiden...`);
       
       const actor = item.actor as any;
 

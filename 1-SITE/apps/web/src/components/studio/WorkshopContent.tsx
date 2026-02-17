@@ -24,7 +24,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop, isLo
 
   return (
     <ContainerInstrument plain className="space-y-32">
-      {/* 🎯 SECTION 2: BOOKING TOOL (Centraal) */}
+      {/*  SECTION 2: BOOKING TOOL (Centraal) */}
       <ContainerInstrument className="max-w-[1140px] mx-auto">
         <ContainerInstrument className="max-w-3xl mx-auto">
           <HeadingInstrument level={2} className="text-4xl md:text-5xl font-light tracking-tighter text-va-black text-center mb-12">
@@ -56,7 +56,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop, isLo
         </ContainerInstrument>
       </ContainerInstrument>
 
-      {/* 📖 SECTION 3: INHOUD, PROGRAMMA & AFTERMOVIE */}
+      {/*  SECTION 3: INHOUD, PROGRAMMA & AFTERMOVIE */}
       <SectionInstrument className="py-32 bg-va-off-white/50 border-y border-black/[0.03]">
         <ContainerInstrument className="max-w-[1140px] mx-auto space-y-32">
           
@@ -75,7 +75,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop, isLo
             </ContainerInstrument>
 
             <ContainerInstrument className="lg:col-span-5">
-              {/* 👨‍🏫 WORKSHOPGEVER BENTO */}
+              {/*  WORKSHOPGEVER BENTO */}
               <BentoCard span="full" className="bg-va-black text-white p-10 rounded-[32px] shadow-aura-lg">
                 <ContainerInstrument className="flex flex-col gap-8">
                   <ContainerInstrument className="flex items-center gap-6">

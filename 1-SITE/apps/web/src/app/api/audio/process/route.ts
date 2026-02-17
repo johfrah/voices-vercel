@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Voice URL is verplicht' }, { status: 400 });
     }
 
-    // 🛡️ System COMPLIANCE: We bereiden de opdracht voor de backend-service voor
+    //  System COMPLIANCE: We bereiden de opdracht voor de backend-service voor
     const masteringChain = AudioEngine.getMasteringChain(profile);
     const duckingFilter = musicUrl ? AudioEngine.generateDuckingFilter(ducking as DuckingOptions) : null;
 

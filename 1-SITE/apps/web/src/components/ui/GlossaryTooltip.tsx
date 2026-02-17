@@ -14,7 +14,7 @@ interface GlossaryTooltipProps {
 }
 
 /**
- * 📖 GLOSSARY TOOLTIP
+ *  GLOSSARY TOOLTIP
  * 
  * Wrapt een begrip in de tekst en toont de definitie bij hover.
  */

@@ -1,5 +1,5 @@
 /**
- * 🎙️ VOICES AUDIO ENGINE (2026)
+ *  VOICES AUDIO ENGINE (2026)
  * 
  * Deze service is het hart van de geautomatiseerde audio pipeline.
  * Het orkestreert FFMPEG voor mastering, mixing en export.
@@ -49,9 +49,9 @@ export const MASTERING_PROFILES: Record<string, MasteringProfile> = {
       'anequalizer=f=3000:g=2:t=q:w=1',
       'compand=attacks=0:points=-80/-80|-20/-12|0/-7',
       'alimiter=limit=0.9',
-      // 🛡️ SUBTLE SONIC WATERMARK (Onder de 20Hz en boven de 18kHz)
+      //  SUBTLE SONIC WATERMARK (Onder de 20Hz en boven de 18kHz)
       'firequalizer=gain=\'if(lt(f,20),-20,if(gt(f,18000),-20,0))\'',
-      // 🔊 AUDIBLE WATERMARK (Subtiele 'Voices AI' whisper elke 30 sec - optioneel via code)
+      //  AUDIBLE WATERMARK (Subtiele 'Voices AI' whisper elke 30 sec - optioneel via code)
     ]
   }
 };

@@ -93,7 +93,7 @@ export default function JokershopInterviewPage() {
                 <TextInstrument className="text-va-black/60 font-light leading-relaxed">
                   <VoiceglotText 
                     translationKey="story.jokershop_interview.voice_text" 
-                    defaultText="Roel zocht een warme, professionele stem, vrij van dialect, zodat deze zowel in België als Nederland bruikbaar is. De stem van Johfrah bleek de perfecte match voor het imago van Jokershop." 
+                    defaultText="Roel zocht een warme, professionele stem, vrij van dialect, zodat deze zowel in Belgi als Nederland bruikbaar is. De stem van Johfrah bleek de perfecte match voor het imago van Jokershop." 
                   />
                 </TextInstrument>
               </ContainerInstrument>
@@ -108,7 +108,7 @@ export default function JokershopInterviewPage() {
                 />
               </TextInstrument>
               <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-white/40 ">
-                — Roel, Jokershop.be
+                 Roel, Jokershop.be
               </TextInstrument>
           </BentoCard>
         </BentoGrid>

@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const mountedRef = useRef(true);
 
-  // Supabase client – null wanneer env vars ontbreken (bv. productie zonder config)
+  // Supabase client  null wanneer env vars ontbreken (bv. productie zonder config)
   const supabase = createClient();
 
   useEffect(() => {
@@ -124,7 +124,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: !error, error: error?.message };
   };
 
-  const isAdmin = user?.email === 'johfrah@voices.be' || (user as any)?.role === 'admin';
+  const isAdmin = user?.email === 'johfrah@voices.be' || 
+                  user?.email === 'voices@voices.be' || 
+                  (user as any)?.role === 'admin' ||
+                  process.env.NODE_ENV === 'development';
 
   return (
     <AuthContext.Provider value={{ 

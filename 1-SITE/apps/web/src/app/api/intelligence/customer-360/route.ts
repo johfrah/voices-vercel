@@ -7,13 +7,13 @@ import { users } from '@db/schema';
 import { eq } from 'drizzle-orm';
 
 /**
- * ⚡ API: CUSTOMER 360° INSIGHTS
+ *  API: CUSTOMER 360 INSIGHTS
  * 
  * Doel: Ontsluiten van UCI data voor de frontend en Voicy Chat.
- * 🛡️ Admin of eigen email/userId only.
+ *  Admin of eigen email/userId only.
  */
 
-// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
@@ -26,7 +26,7 @@ async function checkIsAdmin(email: string | undefined): Promise<boolean> {
     const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, email)).limit(1);
     return dbUser?.role === 'admin';
   } catch (dbError) {
-    console.warn('⚠️ Customer 360 Drizzle failed, falling back to SDK');
+    console.warn(' Customer 360 Drizzle failed, falling back to SDK');
     const { data, error } = await sdkClient
       .from('users')
       .select('role')

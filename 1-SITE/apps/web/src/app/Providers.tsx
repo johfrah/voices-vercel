@@ -23,7 +23,7 @@ export function Providers({
   const langMatch = pathname.match(/^\/(nl|fr|en|de)(\/|$)/);
   let lang = langMatch ? langMatch[1] : 'nl';
 
-  // 🛡️ BOB'S MANDATE: Admin/Dashboard routes altijd in het Nederlands (NL)
+  //  BOB'S MANDATE: Admin/Dashboard routes altijd in het Nederlands (NL)
   if (pathname.startsWith('/admin') || pathname.startsWith('/backoffice') || pathname.startsWith('/studio/beheer')) {
     lang = 'nl';
   }

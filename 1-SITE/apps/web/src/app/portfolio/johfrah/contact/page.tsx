@@ -59,7 +59,7 @@ export default function JohfrahContactPage() {
                 </ContainerInstrument>
                 <ContainerInstrument>
                   <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.locatie.e7a1cf" defaultText="Locatie" /></TextInstrument>
-                  <TextInstrument className="text-[15px] font-light"><VoiceglotText  translationKey="auto.page.brussel___antwerpen_.292ffa" defaultText="Brussel / Antwerpen, België" /></TextInstrument>
+                  <TextInstrument className="text-[15px] font-light"><VoiceglotText  translationKey="auto.page.brussel___antwerpen_.292ffa" defaultText="Brussel / Antwerpen, Belgi" /></TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

@@ -6,10 +6,10 @@ import path from 'path';
 import { seedFutureproofConfig } from './sync/config-seeder';
 
 /**
- * 🚀 NUCLEAR MASTER SYNC (2026)
+ *  NUCLEAR MASTER SYNC (2026)
  * 
  * Dit script is de 'Big Bang' activator voor Voices.
- * Het doet drie dingen in één atomaire operatie:
+ * Het doet drie dingen in n atomaire operatie:
  * 1. Audio & Foto Mapping (Sonic DNA)
  * 2. Pricing Alignment (Commerce Rules)
  * 3. Bento Activation (Live Status)
@@ -32,7 +32,7 @@ async function walk(dir: string): Promise<string[]> {
 }
 
 export async function runMasterSync() {
-    console.log('⚡ Starting Core Master Sync...');
+    console.log(' Starting Core Master Sync...');
     const stats = {
         actorsProcessed: 0,
         mediaMapped: 0,
@@ -54,7 +54,7 @@ export async function runMasterSync() {
             // maar voor de 'Big Bang' doen we een grondige scan.
             
             // Simuleer de scan voor dit blueprint (recursieve walk is zwaar, we focussen op de logica)
-            console.log(`🔎 Processing Actor: ${actor.firstName} (ID: ${actorId})`);
+            console.log(` Processing Actor: ${actor.firstName} (ID: ${actorId})`);
 
             // 2. PRICING ALIGNMENT (BIJBEL-COMMERCE-RULES)
             // We zorgen dat de tarieven in de database 100% kloppen.
@@ -99,7 +99,7 @@ export async function runMasterSync() {
 
         return { success: true, stats };
     } catch (error) {
-        console.error('❌ Master Sync Failed:', error);
+        console.error(' Master Sync Failed:', error);
         return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
 }

@@ -49,7 +49,7 @@ export const IVROverview: React.FC = () => {
               <VoiceglotText  translationKey="ivr.configurator.title" defaultText="IVR Configurator" />
             </h2>
             <p className="text-[15px] font-light tracking-widest text-black/30">
-              <VoiceglotText  translationKey="ivr.configurator.subtitle" defaultText="Telephony OS 2026 • Active" />
+              <VoiceglotText  translationKey="ivr.configurator.subtitle" defaultText="Telephony OS 2026  Active" />
             </p>
           </div>
         </div>

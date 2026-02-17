@@ -3,7 +3,7 @@ import { reviews, actors } from '@db/schema';
 import { eq, sql, desc, ilike, and } from 'drizzle-orm';
 
 /**
- * ⚡ REVIEW INTELLIGENCE SERVICE (2026)
+ *  REVIEW INTELLIGENCE SERVICE (2026)
  * 
  * Doel: Klantfeedback omzetten in actieerbare data voor de systeem-kern.
  * - Automatisch taggen van stemacteurs op basis van reviews.
@@ -35,7 +35,7 @@ export class ReviewIntelligence {
       const totalRating = actorReviews.reduce((acc, r) => acc + r.rating, 0);
       const avgRating = totalRating / actorReviews.length;
 
-      // 🧠 AI Logic: Extract tags from review text (Simulatie van de batch-intelligence)
+      //  AI Logic: Extract tags from review text (Simulatie van de batch-intelligence)
       const tags = this.extractTagsFromText(actorReviews.map(r => r.textNl || '').join(' '));
 
       return {

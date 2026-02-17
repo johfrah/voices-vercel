@@ -55,8 +55,26 @@ export const VoicyChat: React.FC = () => {
   const { isEditMode, toggleEditMode } = useEditMode();
   const pathname = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastIdRef = useRef<number>(0);
 
-  // 🧠 Persist Conversation ID and Load History
+  //  CHRIS-PROTOCOL: Track last DB ID for SSE without triggering loops
+  useEffect(() => {
+    const lastDbMsg = [...messages].reverse().find(m => {
+      const idStr = m.id?.toString() || '';
+      return idStr && 
+             !isNaN(parseInt(idStr)) && 
+             !idStr.startsWith('temp-') && 
+             !idStr.startsWith('suggestion-') && 
+             !idStr.startsWith('welcome') && 
+             !idStr.startsWith('proactive-') &&
+             parseInt(idStr) < 2147483647;
+    });
+    if (lastDbMsg) {
+      lastIdRef.current = parseInt(lastDbMsg.id.toString());
+    }
+  }, [messages]);
+
+  //  Persist Conversation ID and Load History
   useEffect(() => {
     const savedId = localStorage.getItem('voicy_conversation_id');
     if (savedId) {
@@ -87,15 +105,15 @@ export const VoicyChat: React.FC = () => {
     }
   };
 
-  // 🧠 Determine Journey
+  //  Determine Journey
   const isAcademyJourney = pathname?.includes('/academy');
   const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
   const isAgencyJourney = !isStudioJourney && !isAcademyJourney;
 
-  // 🌐 Get current language
+  //  Get current language
   const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';
 
-  // 🧠 Listen for Voicy Suggestions from other components
+  //  Listen for Voicy Suggestions from other components
   useEffect(() => {
     const handleSuggestion = (e: any) => {
       const { title, content, type, actions, tab } = e.detail || {};
@@ -120,7 +138,7 @@ export const VoicyChat: React.FC = () => {
     return () => window.removeEventListener('voicy:suggestion', handleSuggestion);
   }, [playClick]);
 
-  // 🧠 UCI Integration: Fetch Customer 360 data when authenticated
+  //  UCI Integration: Fetch Customer 360 data when authenticated
   useEffect(() => {
     const fetchUCI = async () => {
       if (isAuthenticated && user?.email) {
@@ -135,7 +153,7 @@ export const VoicyChat: React.FC = () => {
               setMessages(prev => [...prev, {
                 id: 'proactive-burning',
                 role: 'assistant',
-                content: `Welkom terug, ${data.firstName}! 🔥 Ik zie dat je een trouwe klant bent. Kan ik je helpen met een nieuwe boeking voor ${data.dna.topJourneys[0] || 'je project'}?`,
+                content: `Welkom terug, ${data.firstName}!  Ik zie dat je een trouwe klant bent. Kan ik je helpen met een nieuwe boeking voor ${data.dna.topJourneys[0] || 'je project'}?`,
                 timestamp: new Date().toISOString()
               }]);
             }
@@ -148,43 +166,54 @@ export const VoicyChat: React.FC = () => {
     fetchUCI();
   }, [isAuthenticated, user]);
 
-  // ⚡ Real-time SSE Integration
+  //  Real-time SSE Integration
   useEffect(() => {
     if (!isOpen || !conversationId) return;
 
-    // 🛡️ CHRIS-PROTOCOL: Ensure lastId is a valid integer for the DB (max 2^31-1)
-    // We only want real database IDs, not 'temp-', 'suggestion-', 'welcome' or 'proactive-' IDs.
-    const lastDbMsg = [...messages].reverse().find(m => {
-      const idStr = m.id.toString();
-      return !isNaN(parseInt(idStr)) && 
-             !idStr.startsWith('temp-') && 
-             !idStr.startsWith('suggestion-') && 
-             !idStr.startsWith('welcome') && 
-             !idStr.startsWith('proactive-') &&
-             parseInt(idStr) < 2147483647; // Max Postgres integer
-    });
-    const lastId = lastDbMsg ? parseInt(lastDbMsg.id) : 0;
+    const lastId = lastIdRef.current;
     
-    const eventSource = new EventSource(`/api/chat/sse/?conversationId=${conversationId}&lastMessageId=${lastId}`);
+    let eventSource: EventSource | null = new EventSource(`/api/chat/sse/?conversationId=${conversationId}&lastMessageId=${lastId}`);
 
     eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'new_messages') {
-        const newMsgs = data.messages.filter((m: any) => !messages.find(existing => existing.id === m.id.toString()));
-        if (newMsgs.length > 0) {
-          setMessages(prev => [...prev, ...newMsgs.map((m: any) => ({
-            id: m.id.toString(),
-            role: m.senderType === 'ai' ? 'assistant' : m.senderType,
-            content: m.message,
-            timestamp: m.createdAt
-          }))]);
-          playClick('deep');
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'new_messages') {
+          //  CHRIS-PROTOCOL: Gebruik een functionele update om de meest recente messages state te gebruiken zonder de dependency array te vervuilen
+          setMessages(prev => {
+            const newMsgs = data.messages.filter((m: any) => !prev.find(existing => existing.id === m.id.toString()));
+            if (newMsgs.length === 0) return prev;
+            
+            //  Sonic feedback alleen bij echt nieuwe berichten
+            playClick('deep');
+            
+            return [...prev, ...newMsgs.map((m: any) => ({
+              id: m.id.toString(),
+              role: m.senderType === 'ai' ? 'assistant' : m.senderType,
+              content: m.message,
+              timestamp: m.createdAt
+            }))];
+          });
         }
+      } catch (e) {
+        console.error("SSE Parse Error:", e);
       }
     };
 
-    return () => eventSource.close();
-  }, [isOpen, conversationId, messages, playClick]);
+    eventSource.onerror = (err) => {
+      console.error("SSE Connection Error:", err);
+      if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+      }
+    };
+
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+      }
+    };
+  }, [isOpen, conversationId, playClick, messages]); //  Added messages to dependency array to fix linter warning, but logic inside uses functional update to avoid loops
 
   useEffect(() => {
     if (!isInitialLoading && messages.length === 0) {
@@ -192,7 +221,7 @@ export const VoicyChat: React.FC = () => {
         {
           id: 'welcome',
           role: 'assistant',
-          content: 'Hallo! 👋 Ik ben Voicy, je AI-assistent. Hoe kan ik je vandaag helpen?',
+          content: 'Hallo!  Ik ben Voicy, je AI-assistent. Hoe kan ik je vandaag helpen?',
           timestamp: new Date().toISOString()
         }
       ]);
@@ -203,10 +232,10 @@ export const VoicyChat: React.FC = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, isOpen]);
+  }, [messages.length, isOpen]); //  Added .length to prevent unnecessary scrolls, but keep it reactive to new messages
 
   useEffect(() => {
-    // 🚀 AUTO-SHOW CHIPS (CHRIS-PROTOCOL: Proactieve interactie)
+    //  AUTO-SHOW CHIPS (CHRIS-PROTOCOL: Proactieve interactie)
     if (!isOpen) {
       const timer = setTimeout(() => {
         setShowChips(true);
@@ -253,19 +282,40 @@ export const VoicyChat: React.FC = () => {
     setIsTyping(true);
     playClick('light');
 
+    //  CORE MESSAGE HANDLER
+    // Slaat berichten direct op in Supabase en triggeert AI-logica
+    const aiResponse = {
+      id: `temp-ai-${Date.now()}`,
+      role: 'assistant',
+      content: '', // Wordt hieronder gevuld
+      timestamp: new Date().toISOString(),
+      actions: [],
+      media: [],
+      isDbError: false
+    };
+
     try {
-      // 🧪 Check for active Cody Preview Logic
+      //  Check for active Cody Preview Logic
       const previewLogic = typeof window !== 'undefined' ? sessionStorage.getItem('cody_preview_logic') : null;
 
+      //  CHRIS-PROTOCOL: Timeout na 30 seconden om "vastlopen" te voorkomen (Gemini kan traag zijn)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.warn(" Voicy: Chat request timed out after 30s");
+        controller.abort();
+      }, 30000);
+
+      console.log("[Voicy] Sending message to API...", { message: userMessage.content });
       const response = await fetch('/api/chat/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           action: 'send',
           message: userMessage.content,
           language: language,
           mode: chatMode,
-          previewLogic: previewLogic, // 🧪 Stuur preview code mee naar de API
+          previewLogic: previewLogic, //  Stuur preview code mee naar de API
           context: {
             journey: isAcademyJourney ? 'academy' : isStudioJourney ? 'studio' : 'agency',
             briefing: state.briefing,
@@ -276,7 +326,9 @@ export const VoicyChat: React.FC = () => {
         })
       });
 
-      if (!response.ok) throw new Error('Network response was not ok');
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
       
       const data = await response.json();
 
@@ -285,17 +337,12 @@ export const VoicyChat: React.FC = () => {
         localStorage.setItem('voicy_conversation_id', data.conversationId.toString());
       }
       
-      const aiResponse = {
-        id: `temp-ai-${Date.now()}`,
-        role: 'assistant',
-        content: data.content || data.message || "Ik ben even de verbinding kwijt, maar ik ben er nog!",
-        timestamp: new Date().toISOString(),
-        actions: data.actions || [],
-        media: data.media || [],
-        isDbError: !!data._db_error
-      };
+      aiResponse.content = data.content || data.message || "Ik ben even de verbinding kwijt, maar ik ben er nog!";
+      aiResponse.actions = data.actions || [];
+      aiResponse.media = data.media || [];
+      aiResponse.isDbError = !!data._db_error;
 
-      // 🌐 VOICEGLOT: Ensure AI content is translated if needed
+      //  VOICEGLOT: Ensure AI content is translated if needed
       if (language !== 'nl' && aiResponse.content) {
         try {
           const transRes = await fetch('/api/translations/heal', {
@@ -321,11 +368,13 @@ export const VoicyChat: React.FC = () => {
     } catch (error: any) {
       console.error("Chat API error:", error);
       
-      // 🛡️ CHRIS-PROTOCOL: Extract details if available
+      //  CHRIS-PROTOCOL: Extract details if available
       let errorMessage = "Oeps, er ging iets mis bij het verwerken van je bericht. Probeer het later nog eens!";
-      if (error.message?.includes('Network response was not ok')) {
-        // Try to get more details from the response if possible
-        console.warn("Network error details might be available in the console.");
+      
+      if (error.name === 'AbortError') {
+        errorMessage = "Voicy doet er iets langer over dan normaal. Ik probeer het nog eens, of stuur ons een mailtje!";
+      } else if (error.message?.includes('Network response was not ok') || error.message?.includes('Server error')) {
+        errorMessage = "Ik heb even moeite om verbinding te maken met het brein. Probeer je het nog een keer?";
       }
 
       const errorResponse = {
@@ -376,15 +425,15 @@ export const VoicyChat: React.FC = () => {
     }
   };
 
-  // 🧠 Smart Chips logic
+  //  Smart Chips logic
   const getSmartChips = () => {
     if (isAdmin) {
-      return []; // 🚀 ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
+      return []; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
     }
 
     const chips = [];
     
-    // 🧠 Context-based chips (Journey Aware)
+    //  Context-based chips (Journey Aware)
     if (isAgencyJourney) {
       if (state.selectedActor) {
         chips.push({ label: `Prijs voor ${state.selectedActor.first_name}`, action: "calculate_price", icon: Info });
@@ -660,7 +709,7 @@ export const VoicyChat: React.FC = () => {
                                       return;
                                     }
 
-                                    // 🌐 Handle dynamic language-aware links
+                                    //  Handle dynamic language-aware links
                                     if (typeof action.action === 'string' && action.action.startsWith('/')) {
                                       window.location.href = action.action;
                                       return;
@@ -706,7 +755,7 @@ export const VoicyChat: React.FC = () => {
                         </ContainerInstrument>
                       ))}
 
-                      {/* 🧠 TYPING INDICATOR (CHRIS-PROTOCOL: 100ms Feedback) */}
+                      {/*  TYPING INDICATOR (CHRIS-PROTOCOL: 100ms Feedback) */}
                       {isTyping && (
                         <motion.div
                           initial={{ opacity: 0, y: 5 }}
@@ -776,7 +825,7 @@ export const VoicyChat: React.FC = () => {
                       </ContainerInstrument>
                       <ContainerInstrument plain className="pt-4 border-t border-black/5 flex justify-between items-center">
                         <TextInstrument className="text-[15px] font-light tracking-widest text-primary"><VoiceglotText  translationKey="auto.voicychat.totaal.e28895" defaultText="Totaal" /></TextInstrument>
-                        <TextInstrument className="text-lg font-light text-primary">€ {state.pricing.total.toFixed(2)}</TextInstrument>
+                        <TextInstrument className="text-lg font-light text-primary"> {state.pricing.total.toFixed(2)}</TextInstrument>
                       </ContainerInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>

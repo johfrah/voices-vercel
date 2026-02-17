@@ -107,14 +107,21 @@ export async function middleware(request: NextRequest) {
 
   if (isUnderConstruction && !isAdmin && !isAuthPath && !isUnderConstructionPath && !isBypassDomain) {
     url.pathname = '/under-construction'
-    const response = NextResponse.redirect(url)
+    // We gebruiken rewrite in plaats van redirect om de headers te behouden
+    const response = NextResponse.rewrite(url)
     // Voeg een header toe zodat we in de layout weten dat we in construction mode zitten
     response.headers.set('x-voices-under-construction', 'true')
+    response.headers.set('x-voices-pathname', '/under-construction')
     return response
   }
 
-  // REDIRECT OLD SIGNUP TO UNIVERSAL LOGIN
+  //  CHRIS-PROTOCOL: Signup route is now active for God Mode 2026
   if (pathname === '/auth/signup') {
+    return response;
+  }
+
+  // REDIRECT OLD SIGNUP TO UNIVERSAL LOGIN
+  if (pathname === '/auth/signup-legacy') {
     url.pathname = '/auth/login'
     return NextResponse.redirect(url)
   }

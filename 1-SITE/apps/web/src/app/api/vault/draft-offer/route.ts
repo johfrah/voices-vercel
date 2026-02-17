@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 /**
- * 💰 OFFER DRAFTING BRIDGE (2026)
+ *  OFFER DRAFTING BRIDGE (2026)
  * 
  * Doel: Analyseert een script uit de Vault en zet een concept-offerte klaar in de Approval Queue.
  * Dit is de Human-in-the-Loop (HITL) stap voor offertes.
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Vault file not found' }, { status: 404 });
     }
 
-    // 2. 🧠 AI ANALYSE (Simulatie voor nu, later via LLM)
+    // 2.  AI ANALYSE (Simulatie voor nu, later via LLM)
     // Voicy zou hier het script lezen en usage/lengte bepalen.
     const reasoning = `Voicy heeft het script "${file.originalName}" geanalyseerd. Geschatte lengte: 30 sec. Usage: Online/Social Media.`;
     
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('❌ Offer Drafting Error:', error);
+    console.error(' Offer Drafting Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

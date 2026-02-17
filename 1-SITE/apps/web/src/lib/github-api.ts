@@ -1,13 +1,13 @@
 import { Octokit } from '@octokit/rest';
 
-// 🛡️ SECURITY: GitHub Token Management
+//  SECURITY: GitHub Token Management
 const GITHUB_TOKEN = process.env.BOB_GITHUB_TOKEN;
 const REPO_OWNER = 'johfrah';
 const REPO_NAME = 'voices-vercel';
 const BRANCH = 'main';
 
 /**
- * 🐙 GITHUB API CLIENT (Bob's Cloud Hands)
+ *  GITHUB API CLIENT (Bob's Cloud Hands)
  * 
  * Stelt de applicatie in staat om direct files aan te passen op GitHub,
  * wat een automatische Vercel deploy triggert.
@@ -62,7 +62,7 @@ export async function commitFileToGitHub(
 
     return { success: true, commit };
   } catch (error: any) {
-    console.error('❌ GitHub Commit Failed:', error);
+    console.error(' GitHub Commit Failed:', error);
     throw new Error(`GitHub Commit Failed: ${error.message}`);
   }
 }
@@ -80,7 +80,7 @@ export async function triggerWorkflow(workflowId: string, inputs: Record<string,
     });
     return { success: true };
   } catch (error: any) {
-    console.error('❌ Workflow Trigger Failed:', error);
+    console.error(' Workflow Trigger Failed:', error);
     throw new Error(`Workflow Trigger Failed: ${error.message}`);
   }
 }

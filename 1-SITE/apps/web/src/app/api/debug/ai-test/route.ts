@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import { GeminiService } from '@/services/GeminiService';
 
 /**
- * 🧪 API: AI CONNECTION TEST (NUCLEAR 2026)
+ *  API: AI CONNECTION TEST (NUCLEAR 2026)
  * 
- * Doel: Verifiëren of de koppeling met Google Gemini 1.5 Flash werkt.
+ * Doel: Verifiren of de koppeling met Google Gemini 1.5 Flash werkt.
  */
 
 export async function GET() {
@@ -25,7 +25,7 @@ export async function GET() {
       timestamp: new Date().toISOString()
     });
   } catch (error: any) {
-    console.error('❌ AI Test Failed:', error);
+    console.error(' AI Test Failed:', error);
     return NextResponse.json({
       success: false,
       status: 'AI_OFFLINE',

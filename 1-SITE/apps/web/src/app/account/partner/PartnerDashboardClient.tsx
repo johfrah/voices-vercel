@@ -34,7 +34,7 @@ export default function PartnerDashboardClient() {
     { label: 'Actieve Projecten', value: '12', icon: <Briefcase strokeWidth={1.5} size={20} />, trend: '+2' },
     { label: 'Totaal Bereik', value: '45.2k', icon: <Users strokeWidth={1.5} size={20} />, trend: '+12%' },
     { label: 'Conversie', value: '3.8%', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: '+0.4%' },
-    { label: 'Inkomsten (30d)', value: '€ 2.450', icon: <BarChart3 strokeWidth={1.5} size={20} />, trend: '+15%' },
+    { label: 'Inkomsten (30d)', value: ' 2.450', icon: <BarChart3 strokeWidth={1.5} size={20} />, trend: '+15%' },
   ];
 
   return (
@@ -93,7 +93,7 @@ export default function PartnerDashboardClient() {
             <TextInstrument className="text-white/40 max-w-sm text-[15px] font-light leading-relaxed">
               <VoiceglotText  
                 translationKey="account.partner.campaigns.text" 
-                defaultText="Bekijk en beheer al je actieve campagnes en voice-over projecten op één plek." 
+                defaultText="Bekijk en beheer al je actieve campagnes en voice-over projecten op n plek." 
               />
             </TextInstrument>
           </ContainerInstrument>

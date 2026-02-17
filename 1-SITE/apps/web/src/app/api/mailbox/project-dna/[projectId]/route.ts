@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🏗️ PROJECT DNA API (2026)
+ *  PROJECT DNA API (2026)
  * 
  * Haalt alle relevante projectdata op voor de Mailbox sidebar.
  * Inclusief: Status, Geboekte Stemmen, en Project-specifieke Vault files.
@@ -51,7 +51,7 @@ export async function GET(
       files
     });
   } catch (error) {
-    console.error('❌ Project DNA API Error:', error);
+    console.error(' Project DNA API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

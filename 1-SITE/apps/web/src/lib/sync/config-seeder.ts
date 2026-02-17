@@ -3,13 +3,13 @@ import { navMenus, marketConfigs, rateCards, siteSettings } from '@db/schema/con
 import { eq } from 'drizzle-orm';
 
 /**
- * 🚀 NUCLEAR CONFIG SEEDER
+ *  NUCLEAR CONFIG SEEDER
  * Verhuist alle hardcoded data naar de database.
  * Dit is de 'Big Bang' voor de Cursorloze wereld.
  */
 
 export async function seedFutureproofConfig() {
-  console.log('🚀 Starting Core Config Seeding...');
+  console.log(' Starting Core Config Seeding...');
 
   // 1. Navigation Menus
   const mainMenu = {
@@ -74,5 +74,5 @@ export async function seedFutureproofConfig() {
     });
   }
 
-  console.log('✅ Core Config Seeding Complete!');
+  console.log(' Core Config Seeding Complete!');
 }

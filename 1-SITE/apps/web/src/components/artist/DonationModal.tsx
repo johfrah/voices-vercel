@@ -89,7 +89,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose }: Donatio
           <ContainerInstrument className="space-y-6">
             <ContainerInstrument className="space-y-2">
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 ml-4">
-                <VoiceglotText  translationKey="artist.donate.amount" defaultText="Bedrag (€)" />
+                <VoiceglotText  translationKey="artist.donate.amount" defaultText="Bedrag ()" />
               </TextInstrument>
               <InputInstrument 
                 type="number"

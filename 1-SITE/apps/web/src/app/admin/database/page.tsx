@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 /**
- * 🗄️ ADMIN DATABASE (NUCLEAR 2026)
+ *  ADMIN DATABASE (NUCLEAR 2026)
  * 
  * "Directe toegang tot de bron van waarheid."
  */

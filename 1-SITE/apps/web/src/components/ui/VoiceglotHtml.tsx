@@ -11,7 +11,7 @@ interface VoiceglotHtmlProps {
 }
 
 /**
- * 🌐 VOICEGLOT HTML RENDERER
+ *  VOICEGLOT HTML RENDERER
  * Voor grote blokken content (zoals lessen) die Markdown/HTML bevatten.
  */
 export const VoiceglotHtml: React.FC<VoiceglotHtmlProps> = ({ 

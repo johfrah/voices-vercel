@@ -6,25 +6,7 @@ import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { MarketManager } from '@config/market-manager';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-    Bell,
-    Building2,
-    ChevronRight,
-    Globe,
-    Heart,
-    LayoutDashboard,
-    LogOut,
-    Mail,
-    Menu,
-    Mic2,
-    Monitor,
-    Phone,
-    Radio,
-    ShoppingBag,
-    ShoppingCart,
-    User,
-    Info
-} from 'lucide-react';
+import { Bell, Building2, ChevronRight, Globe, Heart, LayoutDashboard, LogOut, Mail, Menu, Mic2, Monitor, Phone, Radio, ShoppingBag, ShoppingCart, User, Info, Settings } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -37,7 +19,7 @@ import { VoiceglotText } from './VoiceglotText';
 import { NavConfig } from '@/lib/config-bridge';
 
 /**
- * 💎 HEADER ICON INSTRUMENT
+ *  HEADER ICON INSTRUMENT
  * Focus: High-End Interactie & Duidelijkheid
  */
 const HeaderIcon = ({ 
@@ -147,7 +129,7 @@ const HeaderIcon = ({
 };
 
 /**
- * 💎 DROPDOWN ITEM
+ *  DROPDOWN ITEM
  */
 const DropdownItem = ({ 
   icon: Icon, 
@@ -214,9 +196,9 @@ export default function GlobalNav() {
   const favoritesCount = voicesState.selected_actors?.length || 0;
   const cartCount = 0; // Wordt later gekoppeld aan de echte cart context
   
-  // 🔔 NOTIFICATION LOGIC
+  //  NOTIFICATION LOGIC
   const [notifications, setNotifications] = useState([
-    { id: 1, title: 'Nieuwe stem beschikbaar', message: 'Johfrah heeft een nieuwe demo geüpload.', time: '2 min geleden', read: false, type: 'voice' },
+    { id: 1, title: 'Nieuwe stem beschikbaar', message: 'Johfrah heeft een nieuwe demo gepload.', time: '2 min geleden', read: false, type: 'voice' },
     { id: 2, title: 'Bestelling voltooid', message: 'Je opname voor "Project X" is klaar.', time: '1 uur geleden', read: false, type: 'order' },
     { id: 3, title: 'Voicy Tip', message: 'Wist je dat we nu ook AI-stemmen aanbieden?', time: '3 uur geleden', read: false, type: 'tip' }
   ]);
@@ -232,7 +214,7 @@ export default function GlobalNav() {
   useEffect(() => {
     setMounted(true);
     
-    // 🎯 BEPAAL JOURNEY KEY
+    //  BEPAAL JOURNEY KEY
     let journeyKey = 'agency';
     if (market.market_code === 'ADEMING') journeyKey = 'ademing';
     else if (market.market_code === 'JOHFRAH') journeyKey = 'johfrah';
@@ -242,7 +224,7 @@ export default function GlobalNav() {
 
     const fetchNavConfig = async () => {
       try {
-        const res = await fetch(`/api/admin/navigation/${journeyKey}`);
+        const res = await fetch(`/api/admin/navigation/${journeyKey}/`);
         const data = await res.json();
         if (data && data.links) {
           setNavConfig(data);
@@ -250,16 +232,25 @@ export default function GlobalNav() {
         } else {
           // Fallback naar defaults als er geen database config is
           const defaultLinks = [
-            { name: 'Onze Stemmen', href: '/agency', key: 'nav.my_voice' },
-            { name: 'Werkwijze', href: '/over-ons', key: 'nav.how_it_works' },
-            { name: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
-            { name: 'FAQ', href: '/studio/veelgestelde-vragen', key: 'nav.faq' },
-            { name: 'Contact', href: '/contact', key: 'nav.contact' }
+            { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
+            { name: 'Werkwijze', href: '/over-ons/', key: 'nav.how_it_works' },
+            { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
+            { name: 'FAQ', href: '/studio/veelgestelde-vragen/', key: 'nav.faq' },
+            { name: 'Contact', href: '/contact/', key: 'nav.contact' }
           ];
           setLinks(defaultLinks);
         }
       } catch (error) {
         console.error('Failed to fetch nav config:', error);
+        // Fallback bij error
+        const defaultLinks = [
+          { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
+          { name: 'Werkwijze', href: '/over-ons/', key: 'nav.how_it_works' },
+          { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
+          { name: 'FAQ', href: '/studio/veelgestelde-vragen/', key: 'nav.faq' },
+          { name: 'Contact', href: '/contact/', key: 'nav.contact' }
+        ];
+        setLinks(defaultLinks);
       }
     };
 
@@ -271,7 +262,7 @@ export default function GlobalNav() {
   const isSpecialJourney = market.market_code === 'JOHFRAH' || market.market_code === 'YOUSSEF' || market.market_code === 'ADEMING';
   const isStudioJourney = pathname.startsWith('/studio') || pathname.startsWith('/academy');
 
-  // 🛡️ ICON VISIBILITY LOGIC
+  //  ICON VISIBILITY LOGIC
   const showFavorites = navConfig?.icons?.favorites ?? (!isSpecialJourney && !isStudioJourney);
   const showCart = navConfig?.icons?.cart ?? (!isSpecialJourney && !isStudioJourney);
   const showNotifications = navConfig?.icons?.notifications ?? !isSpecialJourney;
@@ -370,23 +361,23 @@ export default function GlobalNav() {
       </ContainerInstrument>
 
       <ContainerInstrument plain className="flex-1 flex gap-4 items-center justify-end relative z-50">
-        {/* ❤️ FAVORITES ICON */}
+        {/*  FAVORITES ICON */}
         {showFavorites && (
           <HeaderIcon strokeWidth={1.5} icon={Heart} 
             alt="Favorieten"
-            badge={favoritesCount}
-            href="/account/favorites" />
-        )}
+        badge={favoritesCount}
+        href="/account/favorites/" />
+    )}
 
-        {/* 🛍️ CART ICON */}
-        {showCart && (
-          <HeaderIcon strokeWidth={1.5} icon={ShoppingCart} 
-            alt="Winkelmandje" 
-            badge={cartCount}
-            href="/checkout" />
-        )}
+    {/*  CART ICON */}
+    {showCart && (
+      <HeaderIcon strokeWidth={1.5} icon={ShoppingCart} 
+        alt="Winkelmandje" 
+        badge={cartCount}
+        href="/checkout/" />
+    )}
 
-        {/* 🔔 NOTIFICATIONS ICON */}
+        {/*  NOTIFICATIONS ICON */}
         {showNotifications && (
           <HeaderIcon strokeWidth={1.5} 
             icon={Bell} 
@@ -452,12 +443,12 @@ export default function GlobalNav() {
           </HeaderIcon>
         )}
 
-        {/* 🌐 LANGUAGE ICON */}
+        {/*  LANGUAGE ICON */}
         {showLanguage && (
           <LanguageSwitcher strokeWidth={1.5}  />
         )}
 
-        {/* 👤 ACCOUNT ICON */}
+        {/*  ACCOUNT ICON */}
         {showAccount && (
           <HeaderIcon strokeWidth={1.5} 
             icon={User} 
@@ -470,17 +461,17 @@ export default function GlobalNav() {
                   <TextInstrument className="text-[11px] font-light text-va-black/30 tracking-widest mb-0.5 "><VoiceglotText  translationKey="nav.logged_in_as" defaultText="Ingelogd als" /></TextInstrument>
                   <TextInstrument className="text-[13px] font-light text-va-black truncate">{auth.user?.email}</TextInstrument>
                 </ContainerInstrument>
-                {isAdmin && (
-                  <DropdownItem strokeWidth={1.5} icon={LayoutDashboard} 
-                    label="Admin Dashboard" 
-                    href="/admin/dashboard" 
-                    variant="primary" 
-                    badge="God Mode" />
-                )}
-                <DropdownItem strokeWidth={1.5} icon={User} label="Mijn profiel" href="/account" />
-                <DropdownItem strokeWidth={1.5} icon={ShoppingBag} label="Bestellingen" href="/account/orders" />
-                <DropdownItem strokeWidth={1.5} icon={Heart} label="Favorieten" href="/account/favorites" badge={favoritesCount > 0 ? favoritesCount : undefined} />
-                <DropdownItem strokeWidth={1.5} icon={Info} label="Instellingen" href="/account/settings" />
+            {isAdmin && (
+              <DropdownItem strokeWidth={1.5} icon={LayoutDashboard} 
+                label="Admin Dashboard" 
+                href="/admin/dashboard/" 
+                variant="primary" 
+                badge="God Mode" />
+            )}
+            <DropdownItem strokeWidth={1.5} icon={User} label="Mijn profiel" href="/account/" />
+            <DropdownItem strokeWidth={1.5} icon={ShoppingBag} label="Bestellingen" href="/account/orders/" />
+            <DropdownItem strokeWidth={1.5} icon={Heart} label="Favorieten" href="/account/favorites/" badge={favoritesCount > 0 ? favoritesCount : undefined} />
+            <DropdownItem strokeWidth={1.5} icon={Info} label="Instellingen" href="/account/settings/" />
                 <DropdownItem strokeWidth={1.5} icon={LogOut} 
                   label={<VoiceglotText  translationKey="nav.logout" defaultText="Uitloggen" />} 
                   onClick={() => { auth.logout(); }} 
@@ -500,30 +491,30 @@ export default function GlobalNav() {
                     <VoiceglotText  translationKey="nav.welcome_text" defaultText="Log in om je favoriete stemmen op te slaan en bestellingen te beheren." />
                   </TextInstrument>
                 </ContainerInstrument>
-                <ContainerInstrument plain className="space-y-1 px-1.5 pb-1.5">
-                  <ButtonInstrument 
-                    as={Link}
-                    href="/auth/login" 
-                    variant="default"
-                    className="block w-full py-2 bg-va-black text-white rounded-[10px] text-[11px] font-light tracking-widest hover:bg-primary transition-all "
-                  >
-                    <VoiceglotText  translationKey="nav.login_cta" defaultText="Inloggen" />
-                  </ButtonInstrument>
-                  <ButtonInstrument 
-                    as={Link}
-                    href="/auth/register" 
-                    variant="outline"
-                    className="block w-full py-2 border border-black/10 text-va-black rounded-[10px] text-[11px] font-light tracking-widest hover:bg-va-black/5 transition-all "
-                  >
-                    <VoiceglotText  translationKey="nav.register_cta" defaultText="Account aanmaken" />
-                  </ButtonInstrument>
-                </ContainerInstrument>
+            <ContainerInstrument plain className="space-y-1 px-1.5 pb-1.5">
+              <ButtonInstrument 
+                as={Link}
+                href="/auth/login/" 
+                variant="default"
+                className="block w-full py-2 bg-va-black text-white rounded-[10px] text-[11px] font-light tracking-widest hover:bg-primary transition-all "
+              >
+                <VoiceglotText  translationKey="nav.login_cta" defaultText="Inloggen" />
+              </ButtonInstrument>
+              <ButtonInstrument 
+                as={Link}
+                href="/auth/register/" 
+                variant="outline"
+                className="block w-full py-2 border border-black/10 text-va-black rounded-[10px] text-[11px] font-light tracking-widest hover:bg-va-black/5 transition-all "
+              >
+                <VoiceglotText  translationKey="nav.register_cta" defaultText="Account aanmaken" />
+              </ButtonInstrument>
+            </ContainerInstrument>
               </ContainerInstrument>
             )}
           </HeaderIcon>
         )}
 
-        {/* 🍔 MENU ICON */}
+        {/*  MENU ICON */}
         {showMenu && (
           <HeaderIcon strokeWidth={1.5} 
             icon={Menu} 
@@ -599,22 +590,22 @@ export default function GlobalNav() {
                   ))}
                 </ContainerInstrument>
                 
-                <ButtonInstrument 
-                  as={Link}
-                  href="/agency"
-                  variant="default"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 bg-va-black text-white rounded-xl text-[11px] font-light tracking-widest hover:bg-primary transition-all shadow-lg"
-                >
-                  <VoiceglotText  translationKey="nav.menu.discover_all" defaultText="Ontdek alle stemmen" />
-                </ButtonInstrument>
-              </ContainerInstrument>
+            <ButtonInstrument 
+              as={Link}
+              href="/agency/"
+              variant="default"
+              className="flex items-center justify-center gap-2 w-full py-2.5 bg-va-black text-white rounded-xl text-[11px] font-light tracking-widest hover:bg-primary transition-all shadow-lg"
+            >
+              <VoiceglotText  translationKey="nav.menu.discover_all" defaultText="Ontdek alle stemmen" />
+            </ButtonInstrument>
+          </ContainerInstrument>
 
-              <ContainerInstrument plain className="mt-2 pt-2 border-t border-black/5">
-                <DropdownItem strokeWidth={1.5} icon={Mail} 
-                  label={<VoiceglotText  translationKey="nav.support" defaultText="Support" />} 
-                  href="/contact" 
-                />
-              </ContainerInstrument>
+          <ContainerInstrument plain className="mt-2 pt-2 border-t border-black/5">
+            <DropdownItem strokeWidth={1.5} icon={Mail} 
+              label={<VoiceglotText  translationKey="nav.support" defaultText="Support" />} 
+              href="/contact/" 
+            />
+          </ContainerInstrument>
             </ContainerInstrument>
           </HeaderIcon>
         )}

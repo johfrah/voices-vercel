@@ -45,7 +45,7 @@ export default function AccountDashboardClient() {
 
   return (
     <PageWrapperInstrument className="va-home-container">
-      {/* 🚀 ACCOUNT HERO */}
+      {/*  ACCOUNT HERO */}
       <AccountHeroInstrument 
         userEmail={user?.email || 'user@voices.be'} 
         onLogout={logout}
@@ -54,7 +54,7 @@ export default function AccountDashboardClient() {
       <SectionInstrument className="va-section-grid">
         <ContainerInstrument className="va-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           
-          {/* 📬 MAILBOX CARD */}
+          {/*  MAILBOX CARD */}
           {isAdmin && (
             <BentoCard 
               span="sm" 
@@ -74,7 +74,7 @@ export default function AccountDashboardClient() {
             </BentoCard>
           )}
 
-          {/* 🛒 ORDERS CARD */}
+          {/*  ORDERS CARD */}
           <BentoCard 
             span="sm"
             className="bg-va-dark-soft text-white p-12 rounded-[20px] border border-black/[0.03] flex flex-col justify-between va-interactive"
@@ -97,7 +97,7 @@ export default function AccountDashboardClient() {
             </ContainerInstrument>
           </BentoCard>
 
-          {/* ⚙️ SETTINGS CARD */}
+          {/*  SETTINGS CARD */}
           <BentoCard 
             span="sm" 
             className="va-card-dna p-12 rounded-[20px]"
@@ -120,7 +120,7 @@ export default function AccountDashboardClient() {
             </ContainerInstrument>
           </BentoCard>
 
-          {/* 🚀 PARTNER */}
+          {/*  PARTNER */}
           <BentoCard 
             span="sm" 
             className="va-card-dna p-12 rounded-[20px]"
@@ -146,7 +146,7 @@ export default function AccountDashboardClient() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🧠 CUSTOMER DNA & INTELLIGENCE LAYER */}
+      {/*  CUSTOMER DNA & INTELLIGENCE LAYER */}
       {customerDNA && (
         <SectionInstrument className="va-section-grid pt-0">
           <ContainerInstrument className="va-container grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -215,7 +215,7 @@ export default function AccountDashboardClient() {
         </SectionInstrument>
       )}
 
-      {/* 🔐 SECURITY & TRUST LAYER */}
+      {/*  SECURITY & TRUST LAYER */}
       <SectionInstrument className="va-section-grid pt-0">
         <ContainerInstrument className="va-container">
           <ContainerInstrument className="flex flex-col md:flex-row gap-12">

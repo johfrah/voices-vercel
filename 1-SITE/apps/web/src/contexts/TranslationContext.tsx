@@ -47,9 +47,9 @@ export const TranslationProvider: React.FC<{
     if (lang === 'nl' || key.startsWith('admin.') || key.startsWith('command.')) return defaultText;
     const translation = translations[key];
     
-    // 🛡️ STABILITEIT: Als de vertaling ontbreekt of leeg is, gebruik de defaultText (NL)
+    //  STABILITEIT: Als de vertaling ontbreekt of leeg is, gebruik de defaultText (NL)
     if (!translation || translation.trim() === '') {
-      // 🏥 SELF-HEALING TRIGGER (Silent)
+      //  SELF-HEALING TRIGGER (Silent)
       // We triggeren de healing alleen als we niet al aan het healen zijn voor deze specifieke key
       if (typeof window !== 'undefined' && !healingKeys.current.has(key)) {
         healingKeys.current.add(key);

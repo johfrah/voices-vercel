@@ -95,14 +95,14 @@ async function ArticleContent({ slug }: { slug: string }) {
               <VoiceglotText  translationKey="article.cta.title" defaultText="Klaar voor de volgende stap?" />
             </HeadingInstrument>
             <TextInstrument className="text-[15px] font-light opacity-80 mb-8 leading-relaxed">
-              <VoiceglotText  translationKey="article.cta.text" defaultText="Onze experts staan klaar om je te helpen met je project of je carrière." />
+              <VoiceglotText  translationKey="article.cta.text" defaultText="Onze experts staan klaar om je te helpen met je project of je carrire." />
             </TextInstrument>
           </ContainerInstrument>
           <Link  href="/agency" className="va-btn-pro !bg-white !text-va-black w-full text-center !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText  translationKey="article.cta.button" defaultText="Ontdek de Mogelijkheden" /></Link>
         </BentoCard>
       </BentoGrid>
 
-      {/* 🕸️ SUZY'S SCHEMA INJECTION: Article Authority */}
+      {/*  SUZY'S SCHEMA INJECTION: Article Authority */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

@@ -40,7 +40,7 @@ export const HeroInstrument: React.FC = () => {
   React.useEffect(() => {
     const timer = setInterval(() => {
       setImageIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 8000); // ⏳ Trager: Elke 8 seconden wisselen
+    }, 8000); //  Trager: Elke 8 seconden wisselen
     return () => clearInterval(timer);
   }, []);
 
@@ -74,7 +74,7 @@ export const HeroInstrument: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 2, ease: "easeInOut" }} // ⏳ Zachte fade van 2 seconden
+              transition={{ duration: 2, ease: "easeInOut" }} //  Zachte fade van 2 seconden
               className="absolute inset-0"
             >
               <Image  
@@ -85,7 +85,7 @@ export const HeroInstrument: React.FC = () => {
                 priority
               />
               
-              {/* 🏷️ ACTOR LABEL (Progressive Disclosure) */}
+              {/*  ACTOR LABEL (Progressive Disclosure) */}
               <div className="absolute bottom-8 left-8 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                 <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-[15px] shadow-sm border border-black/[0.03]">
                   <p className="text-[15px] font-light tracking-tight text-va-black">{currentActor.name}</p>

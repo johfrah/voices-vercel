@@ -34,7 +34,7 @@ interface PageRecord {
 }
 
 /**
- * 🏗️ PAGE ARCHITECT (CMS)
+ *  PAGE ARCHITECT (CMS)
  * Beheer alle pagina-content direct in de database.
  */
 export default function PageArchitectPage() {

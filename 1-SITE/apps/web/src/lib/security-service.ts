@@ -3,13 +3,13 @@ import { courseProgress, users } from "@db/schema";
 import { eq, and } from "drizzle-orm";
 import { createClient } from '@supabase/supabase-js';
 
-// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 /**
- * 🛡️ SECURITY SERVICE
+ *  SECURITY SERVICE
  * 
  * Voorkomt account-sharing en beheert Academy toegang.
  */
@@ -24,7 +24,7 @@ export const SecurityService = {
       const [dbUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
       user = dbUser;
     } catch (dbError) {
-      console.warn('⚠️ Security Service Access Drizzle failed, falling back to SDK');
+      console.warn(' Security Service Access Drizzle failed, falling back to SDK');
       const { data } = await supabase.from('users').select('*').eq('id', userId).single();
       user = data;
     }
@@ -48,7 +48,7 @@ export const SecurityService = {
       const [dbUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
       user = dbUser;
     } catch (dbError) {
-      console.warn('⚠️ Security Service Track Drizzle failed, falling back to SDK');
+      console.warn(' Security Service Track Drizzle failed, falling back to SDK');
       const { data } = await supabase.from('users').select('*').eq('id', userId).single();
       user = data;
     }
@@ -75,14 +75,14 @@ export const SecurityService = {
           .set({ activityLog: newLog })
           .where(eq(users.id, userId));
       } catch (updateError) {
-        console.warn('⚠️ Security Service Update Drizzle failed, falling back to SDK');
+        console.warn(' Security Service Update Drizzle failed, falling back to SDK');
         await supabase.from('users').update({ activity_log: newLog }).eq('id', userId);
       }
 
       // Als er meer dan 3 devices zijn, stuur een waarschuwing naar de admin
       const deviceCount = new Set(newLog.filter(l => l.type === 'device_login').map(l => l.fingerprint)).size;
       if (deviceCount > 3) {
-        console.warn(`🚨 Account sharing alert: User ${userId} has ${deviceCount} active devices.`);
+        console.warn(` Account sharing alert: User ${userId} has ${deviceCount} active devices.`);
       }
     }
   }

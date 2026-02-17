@@ -152,7 +152,7 @@ export default function NavigationAdminPage() {
         </div>
       ) : (
         <BentoGrid columns={3} className="gap-8">
-          {/* 🖼️ LOGO CONFIG */}
+          {/*  LOGO CONFIG */}
           <BentoCard span="sm" className="bg-white p-10 border border-black/5 shadow-aura">
             <div className="flex items-center gap-3 mb-8">
               <ImageIcon strokeWidth={1.5} size={24} className="text-primary" />
@@ -193,7 +193,7 @@ export default function NavigationAdminPage() {
             </div>
           </BentoCard>
 
-          {/* 🔗 LINKS CONFIG */}
+          {/*  LINKS CONFIG */}
           <BentoCard span="lg" className="bg-white p-10 border border-black/5 shadow-aura">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
@@ -238,7 +238,7 @@ export default function NavigationAdminPage() {
             </div>
           </BentoCard>
 
-          {/* 🔘 ICONS CONFIG */}
+          {/*  ICONS CONFIG */}
           <BentoCard span="full" className="bg-va-black text-white p-12">
             <div className="flex items-center gap-3 mb-12">
               <Plus strokeWidth={1.5} size={24} className="text-primary" />

@@ -20,7 +20,7 @@ interface PageRendererProps {
 }
 
 /**
- * 🎨 DYNAMIC PAGE RENDERER (CLIENT-SIDE FOR DND)
+ *  DYNAMIC PAGE RENDERER (CLIENT-SIDE FOR DND)
  * Dit component rendert de Bento Blueprint en beheert de Drag-and-Drop interacties.
  */
 export const PageRenderer: React.FC<PageRendererProps> = ({ slug, initialLayout }) => {

@@ -4,7 +4,7 @@ import { BentoCard, BentoGrid } from '../ui/BentoGrid';
 import { VoiceglotText } from '../ui/VoiceglotText';
 
 /**
- * 🛡️ HUMAN-IN-THE-LOOP: EMAIL APPROVAL DASHBOARD
+ *  HUMAN-IN-THE-LOOP: EMAIL APPROVAL DASHBOARD
  * 
  * "Nooit mails vanuit het systeem zonder human in de loop."
  */
@@ -85,17 +85,17 @@ export const EmailApprovalDashboard = () => {
                 </button>
               </div>
 
-              {/* 🧠 Feedback Loop UI */}
+              {/*  Feedback Loop UI */}
               <div className="mt-4 pt-4 border-t border-zinc-800 space-y-3">
                 {email.isValueSensitive && (
                   <div className="p-2 bg-red-900/20 border border-red-500/30 rounded-[20px] flex items-center gap-2">
-                    <span className="text-[15px] font-black text-red-500 animate-pulse">☢️ WAARDE-ALARM:</span>
+                    <span className="text-[15px] font-black text-red-500 animate-pulse"> WAARDE-ALARM:</span>
                     <span className="text-[15px] text-red-200 font-bold">Korting gedetecteerd - Strikte HITL vereist</span>
                   </div>
                 )}
                 {email.isBrandSensitive && (
                   <div className="p-2 bg-amber-900/20 border border-amber-500/30 rounded-lg flex items-center gap-2">
-                    <span className="text-[15px] font-black text-amber-500">💎 FAME-ALARM:</span>
+                    <span className="text-[15px] font-black text-amber-500"> FAME-ALARM:</span>
                     <span className="text-[15px] text-amber-200 font-bold">Topmerk gedetecteerd - Kwaliteitsbewaking</span>
                   </div>
                 )}
@@ -118,7 +118,7 @@ export const EmailApprovalDashboard = () => {
 
         {pendingEmails.length === 0 && (
           <div className="col-span-full p-20 text-center border-2 border-dashed border-zinc-800 rounded-3xl">
-            <p className="text-zinc-500 font-bold tracking-widest">Geen wachtende e-mails. Alles is clean. ☢️</p>
+            <p className="text-zinc-500 font-bold tracking-widest">Geen wachtende e-mails. Alles is clean. </p>
           </div>
         )}
       </BentoGrid>

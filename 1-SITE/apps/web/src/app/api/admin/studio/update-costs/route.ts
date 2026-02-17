@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       const costsToInsert = newCosts.map((c: any) => ({
         amount: c.amount.toString(),
         type: c.type,
-        journey: 'studio', // 🎭 Altijd studio vanuit deze cockpit
+        journey: 'studio', //  Altijd studio vanuit deze cockpit
         note: c.note,
         workshopEditionId: editionId,
         locationId: c.type === 'locatie' ? locationId : null,

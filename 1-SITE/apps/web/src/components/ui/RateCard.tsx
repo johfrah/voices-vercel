@@ -15,7 +15,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
     telephony: {
       title: 'Telefonie & Onthaal',
       icon: Phone,
-      price: '€89',
+      price: '89',
       unit: 'voor de eerste 25 woorden',
       features: [
         'Exacte prijs via woord-slider',
@@ -29,11 +29,11 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
     video: {
       title: 'Video & E-learning',
       icon: Video,
-      price: '€175',
+      price: '175',
       unit: 'basis tarief',
       features: [
         'Bereken tot op de euro',
-        '± 1 minuut per 160 woorden',
+        ' 1 minuut per 160 woorden',
         '48kHz Studiokwaliteit',
         'Retake garantie'
       ],
@@ -43,7 +43,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
     commercial: {
       title: 'Commercials',
       icon: Megaphone,
-      price: '€250',
+      price: '250',
       unit: 'excl. buy-out',
       features: [
         'Radio, TV of Social Ads',

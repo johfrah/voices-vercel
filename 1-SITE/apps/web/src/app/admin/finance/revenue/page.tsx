@@ -31,7 +31,7 @@ export default function OmzetMonitorPage() {
           </HeadingInstrument>
           
           <TextInstrument className="text-xl text-black/40 font-medium tracking-tight max-w-2xl">
-            Real-time inzicht in de financiële groei.
+            Real-time inzicht in de financile groei.
           </TextInstrument>
         </SectionInstrument>
 

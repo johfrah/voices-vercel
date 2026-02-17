@@ -237,7 +237,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
             )}
           </ContainerInstrument>
 
-          {/* Consolidatie: De Briefing Bridge is nu hier geïntegreerd */}
+          {/* Consolidatie: De Briefing Bridge is nu hier gentegreerd */}
           <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Linker kolom: Script & Bestanden */}
             <ContainerInstrument className="lg:col-span-8 space-y-8">

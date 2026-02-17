@@ -4,7 +4,7 @@ import { reviews, actors } from '@db/schema';
 import { eq, sql, desc } from 'drizzle-orm';
 
 /**
- * ⭐ REVIEW INTELLIGENCE API (GODMODE)
+ *  REVIEW INTELLIGENCE API (GODMODE)
  * 
  * Doel: Sentiment-analyse en performance scoring van reviews.
  * Ontsluit de "best presterende" stemmen per categorie.

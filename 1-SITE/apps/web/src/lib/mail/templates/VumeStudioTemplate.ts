@@ -1,10 +1,10 @@
 import { VumeMasterWrapper } from './VumeMasterWrapper';
 
 /**
- * 🎨 VUME STUDIO EXPERIENCE TEMPLATE (2026)
+ *  VUME STUDIO EXPERIENCE TEMPLATE (2026)
  * 
  * DNA: Berny (Studio Captain), Johfrah (Luxe).
- * 🛡️ Chris-Protocol: Volledig gezuiverd van dubbele footers en markdown slop.
+ *  Chris-Protocol: Volledig gezuiverd van dubbele footers en markdown slop.
  */
 
 interface StudioExperienceOptions {

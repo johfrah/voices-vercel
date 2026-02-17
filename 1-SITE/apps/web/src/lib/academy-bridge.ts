@@ -4,7 +4,7 @@ import { lessons, courseProgress, courseSubmissions } from "@db/schema";
 import { eq, sql, and, count, asc } from "drizzle-orm";
 
 /**
- * ☢️ NUCLEAR DATA BRIDGE - ACADEMY JOURNEY (FULL NATIVE)
+ *  NUCLEAR DATA BRIDGE - ACADEMY JOURNEY (FULL NATIVE)
  * 
  * Deze service is 100% vrij van legacy-bridge of legacyApiBaseUrl.
  * Het gebruikt direct Drizzle ORM voor alle data-operaties.
@@ -63,7 +63,7 @@ export class AcademyDataBridge {
 
       return {
         title: "Mijn Academy",
-        subtitle: "Uw weg naar een professionele stemcarrière.",
+        subtitle: "Uw weg naar een professionele stemcarrire.",
         lessons: mappedLessons,
         _nuclear: true
       };

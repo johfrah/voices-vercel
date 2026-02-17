@@ -77,7 +77,7 @@ function BookingContent() {
       <ZeroLossCheckoutInstrument 
         item={item}
         onComplete={(data) => {
-          console.log('🚀 Checkout completed:', data);
+          console.log(' Checkout completed:', data);
           setIsCompleted(true);
         }}
       />

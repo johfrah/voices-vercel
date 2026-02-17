@@ -7,11 +7,11 @@ export const dynamic = 'force-dynamic';
 
 export async function POST() {
   try {
-    console.log('🔄 Starting Yuki Finance Sync...');
+    console.log(' Starting Yuki Finance Sync...');
 
     // 1. Fetch from Yuki
     const outstanding = await YukiService.getOutstandingInvoices();
-    console.log(`📊 Fetched ${outstanding.length} outstanding invoices from Yuki`);
+    console.log(` Fetched ${outstanding.length} outstanding invoices from Yuki`);
 
     // 2. Refresh Database Mirror
     // We treat this table as a snapshot of the current state
@@ -33,7 +33,7 @@ export async function POST() {
 
     return NextResponse.json({ success: true, synced: outstanding.length });
   } catch (error: any) {
-    console.error('❌ Finance Sync Failed:', error);
+    console.error(' Finance Sync Failed:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

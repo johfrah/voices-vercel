@@ -75,9 +75,9 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
           </div>
         </div>
         <div className="text-right">
-          <span className="text-lg font-black text-va-black">€59</span>
+          <span className="text-lg font-black text-va-black">59</span>
           <p className="text-[15px] font-bold text-va-black/30 tracking-widest">
-            <VoiceglotText  translationKey="music.selector.price_label" defaultText="Eénmalig per set" />
+            <VoiceglotText  translationKey="music.selector.price_label" defaultText="Enmalig per set" />
           </p>
         </div>
       </div>
