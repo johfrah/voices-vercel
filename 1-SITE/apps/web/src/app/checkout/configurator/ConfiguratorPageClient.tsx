@@ -27,7 +27,7 @@ import { useMasterControl, JourneyType } from '@/contexts/VoicesMasterControlCon
 import { MusicSelector } from '@/components/studio/MusicSelector';
 import { BriefingSelector } from '@/components/studio/BriefingSelector';
 import { TelephonySmartSuggestions } from '@/components/checkout/TelephonySmartSuggestions';
-import { Sparkles, Brain, Zap } from 'lucide-react';
+import { Sparkles, Brain, Zap, Paperclip } from 'lucide-react';
 
 /**
  *  CHRIS-PROTOCOL: Count-Up Component for Pricing
@@ -617,7 +617,7 @@ export default function ConfiguratorPageClient({
                 >
                   <div className="flex items-center gap-4">
                     <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", (showBriefingSelector || state.briefingFiles.length > 0) ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
-                      {state.briefingFiles.length > 0 ? <Check size={18} strokeWidth={3} /> : <Plus size={18} strokeWidth={1.5} />}
+                      {state.briefingFiles.length > 0 ? <Check size={18} strokeWidth={3} /> : <Paperclip size={18} strokeWidth={1.5} />}
                     </div>
                     <div>
                       <div className={cn("text-[13px] font-bold transition-colors", (showBriefingSelector || state.briefingFiles.length > 0) ? "text-primary" : "text-va-black")}>Voeg briefing toe</div>
