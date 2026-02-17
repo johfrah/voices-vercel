@@ -19,6 +19,7 @@ import { ButtonInstrument, ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, 
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 import { ActorEditModal } from './ActorEditModal';
+import { MarketManager } from '@config/market-manager';
 
 interface VoiceCardProps {
   voice: Actor;
