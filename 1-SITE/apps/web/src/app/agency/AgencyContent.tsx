@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import { VoiceGrid } from "@/components/ui/VoiceGrid";
@@ -30,13 +30,18 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
         const actor = mappedActors.find(a => a.id.toString() === actorId);
         if (actor && !checkoutState.selectedActor) {
           console.log(`[AgencyContent] Initializing with actor from homepage: ${actor.display_name}`);
+          
           selectActor(actor);
           if (step === 'script') {
             updateStep('script');
           }
           
           // Clean up URL params to prevent re-triggering on refresh
-          const newUrl = window.location.pathname + (window.location.search.replace(/actorId=[^&]*&?/, '').replace(/step=[^&]*&?/, '').replace(/\?$/, ''));
+          const cleanParams = new URLSearchParams(window.location.search);
+          cleanParams.delete('actorId');
+          cleanParams.delete('step');
+          const cleanSearch = cleanParams.toString();
+          const newUrl = window.location.pathname + (cleanSearch ? `?${cleanSearch}` : '');
           window.history.replaceState(null, '', newUrl);
         }
       }

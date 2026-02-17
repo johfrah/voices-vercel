@@ -336,6 +336,7 @@ function HomeContent({ actors: initialActors, reviews }: { actors: Actor[], revi
                   const params = new URLSearchParams(window.location.search);
                   params.set('actorId', actor.id.toString());
                   params.set('step', 'script');
+                  params.set('journey', masterControlState.journey);
                   
                   // CHRIS-PROTOCOL: Force immediate navigation to the agency page with params
                   window.location.href = `/agency/?${params.toString()}`;
@@ -352,17 +353,22 @@ function HomeContent({ actors: initialActors, reviews }: { actors: Actor[], revi
         </ContainerInstrument>
       </SectionInstrument>
 
-      <SectionInstrument className="py-40 bg-va-off-white border-y border-black/[0.03]">
+      <SectionInstrument className="py-48 bg-white relative z-10">
         <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="max-w-3xl mb-24 space-y-6">
-            <TextInstrument className="text-[15px] font-bold tracking-[0.3em] text-primary/60 uppercase">
+            <TextInstrument className="text-[15px] font-bold tracking-[0.3em] text-primary uppercase">
               <VoiceglotText translationKey="home.reviews.label" defaultText="Wat klanten zeggen" />
             </TextInstrument>
-            <HeadingInstrument level={2} className="text-6xl md:text-7xl font-light tracking-tighter leading-none text-va-black">
-              <VoiceglotText translationKey="home.reviews.title" defaultText="Ervaringen." />
+            <HeadingInstrument level={2} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.85] text-va-black">
+              <VoiceglotText translationKey="home.reviews.title" defaultText="Echte verhalen van echte klanten." />
             </HeadingInstrument>
           </div>
-          <ReviewsInstrument reviews={reviews} hideHeader={true} />
+          <ReviewsInstrument 
+            reviews={reviews} 
+            hideHeader={false} 
+            averageRating="4.9"
+            totalReviews="1250"
+          />
         </ContainerInstrument>
       </SectionInstrument>
 
