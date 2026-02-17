@@ -17,7 +17,7 @@ import { PricingEngine } from '@/lib/pricing-engine';
 import { 
   Mic, Clock, ChevronRight, Phone, Video, 
   Megaphone, Info, ShoppingBag, CheckCircle2, Wand2, Check,
-  Plus, Minus, Music, Radio, Tv, Sparkles
+  Plus, Minus, Music, Radio, Tv, Sparkles, Brain, Zap, Paperclip
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -27,7 +27,6 @@ import { useMasterControl, JourneyType } from '@/contexts/VoicesMasterControlCon
 import { MusicSelector } from '@/components/studio/MusicSelector';
 import { BriefingSelector } from '@/components/studio/BriefingSelector';
 import { TelephonySmartSuggestions } from '@/components/checkout/TelephonySmartSuggestions';
-import { Sparkles, Brain, Zap, Paperclip } from 'lucide-react';
 
 /**
  *  CHRIS-PROTOCOL: Count-Up Component for Pricing
