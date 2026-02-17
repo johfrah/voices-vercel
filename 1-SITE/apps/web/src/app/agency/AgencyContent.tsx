@@ -185,6 +185,7 @@ function ConfigurableVoiceCard({ voice, onSelect, hideButton, isCornered, compac
       voice={voice} 
       onSelect={onSelect} 
       hideButton={hideButton}
+      hidePrice={true} // CHRIS-PROTOCOL: Hide price in sidebar as it's redundant
       isCornered={isCornered}
       compact={compact}
     />

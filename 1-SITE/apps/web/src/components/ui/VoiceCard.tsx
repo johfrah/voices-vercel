@@ -24,6 +24,7 @@ interface VoiceCardProps {
   voice: Actor;
   onSelect?: (voice: Actor) => void;
   hideButton?: boolean;
+  hidePrice?: boolean; // NEW: hide price when redundant
   isCornered?: boolean; // NEW: for SPA transition focus
   compact?: boolean; // NEW: for space-saving on mobile/configurator
 }
@@ -63,7 +64,7 @@ const CATEGORIES = [
   { id: 'meditatie', src: '/assets/common/branding/icons/INFO.svg', label: 'Meditatie', key: 'category.meditation' },
 ];
 
-export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButton, isCornered, compact }) => {
+export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButton, hidePrice, isCornered, compact }) => {
   const { playClick, playSwell } = useSonicDNA();
   const { state, getPlaceholderValue, toggleActorSelection } = useVoicesState();
   const { state: masterControlState } = useMasterControl();
@@ -594,47 +595,49 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
             </div>
           </div>
 
-          <div className="flex justify-between items-center mt-auto pt-6 border-t border-black/[0.03]">
-            <div className="flex flex-col items-start">
-              <TextInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-1">
-                Vanaf
-              </TextInstrument>
-              <TextInstrument className={cn("font-medium tracking-tighter text-va-black leading-none", compact ? "text-2xl" : "text-3xl")}>
-                {displayPrice.price}
-              </TextInstrument>
-              {masterControlState.journey === 'telephony' && displayPrice.pricePerPrompt && (
-                <TextInstrument className="text-[10px] text-va-black/60 font-medium mt-1">
-                   {displayPrice.pricePerPrompt} per prompt
+          {!hidePrice && (
+            <div className="flex justify-between items-center mt-auto pt-6 border-t border-black/[0.03]">
+              <div className="flex flex-col items-start">
+                <TextInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-1">
+                  Vanaf
                 </TextInstrument>
+                <TextInstrument className={cn("font-medium tracking-tighter text-va-black leading-none", compact ? "text-2xl" : "text-3xl")}>
+                  {displayPrice.price}
+                </TextInstrument>
+                {masterControlState.journey === 'telephony' && displayPrice.pricePerPrompt && (
+                  <TextInstrument className="text-[10px] text-va-black/60 font-medium mt-1">
+                     {displayPrice.pricePerPrompt} per prompt
+                  </TextInstrument>
+                )}
+              </div>
+              
+              {/* Alleen tonen als we NIET op de detailpagina zijn en hideButton niet true is */}
+              {typeof window !== 'undefined' && !window.location.pathname.includes(`/voice/${voice.slug}`) && !hideButton && (
+                <ButtonInstrument 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    
+                    // CHRIS-PROTOCOL: If we have an onSelect handler (SPA mode), 
+                    // we call it and prevent default browser navigation.
+                    if (onSelect) {
+                      e.preventDefault();
+                      console.log(`[VoiceCard] Kies stem clicked (SPA) for: ${voice.display_name}`);
+                      playClick('success');
+                      onSelect(voice);
+                      return;
+                    }
+                    
+                    playClick('success');
+                    window.location.href = `/voice/${voice.slug}/`;
+                  }}
+                  className="flex items-center justify-center gap-3 text-[12px] font-bold tracking-widest text-white group/btn h-[48px] px-5 bg-va-black hover:bg-primary rounded-[12px] transition-all shadow-[0_10px_30px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_rgba(233,30,99,0.3)]"
+                >
+                  <VoiceglotText translationKey="common.order_fast" defaultText="Kies stem" />
+                  <ArrowRight size={16} strokeWidth={2.5} className="group-hover/btn:translate-x-1.5 transition-transform" />
+                </ButtonInstrument>
               )}
             </div>
-            
-            {/* Alleen tonen als we NIET op de detailpagina zijn en hideButton niet true is */}
-            {typeof window !== 'undefined' && !window.location.pathname.includes(`/voice/${voice.slug}`) && !hideButton && (
-              <ButtonInstrument 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  
-                  // CHRIS-PROTOCOL: If we have an onSelect handler (SPA mode), 
-                  // we call it and prevent default browser navigation.
-                  if (onSelect) {
-                    e.preventDefault();
-                    console.log(`[VoiceCard] Kies stem clicked (SPA) for: ${voice.display_name}`);
-                    playClick('success');
-                    onSelect(voice);
-                    return;
-                  }
-                  
-                  playClick('success');
-                  window.location.href = `/voice/${voice.slug}/`;
-                }}
-                className="flex items-center justify-center gap-3 text-[12px] font-bold tracking-widest text-white group/btn h-[48px] px-5 bg-va-black hover:bg-primary rounded-[12px] transition-all shadow-[0_10px_30px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_rgba(233,30,99,0.3)]"
-              >
-                <VoiceglotText translationKey="common.order_fast" defaultText="Kies stem" />
-                <ArrowRight size={16} strokeWidth={2.5} className="group-hover/btn:translate-x-1.5 transition-transform" />
-              </ButtonInstrument>
-            )}
-          </div>
+          )}
         </div>
       </ContainerInstrument>
     </ContainerInstrument>
