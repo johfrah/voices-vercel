@@ -53,22 +53,29 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
 };
 
 export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
+  //  CHRIS-PROTOCOL: Clean demo titles for display
+  const cleanDemoTitle = (title: string) => {
+    if (!title) return '';
+    
+    // Remove file extensions
+    let clean = title.replace(/\.(mp3|wav|ogg|m4a)$/i, '');
+    
+    // Remove common technical prefixes/suffixes (e.g., product IDs, language codes)
+    clean = clean.replace(/^[a-z]+-A-\d+-/i, ''); // Remove "mona-A-258121-"
+    clean = clean.replace(/-(flemish|dutch|french|english|german|voiceover|demo|voices)/gi, ' ');
+    clean = clean.replace(/-/g, ' ');
+    
+    // Natural Capitalization
+    clean = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+    
+    return clean.trim();
+  };
+
   const { playClick } = useSonicDNA();
   const { isPlaying, setIsPlaying } = useGlobalAudio();
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  //  CHRIS-PROTOCOL: Clean demo titles for display
-  const cleanDemoTitle = (title: string) => {
-    if (!title) return '';
-    let clean = title.replace(/\.(mp3|wav|ogg|m4a)$/i, '');
-    clean = clean.replace(/^[a-z]+-A-\d+-/i, '');
-    clean = clean.replace(/-(flemish|dutch|french|english|german|voiceover|demo|voices)/gi, ' ');
-    clean = clean.replace(/-/g, ' ');
-    clean = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
-    return clean.trim();
-  };
 
   useEffect(() => {
     if (audioRef.current) {

@@ -311,9 +311,9 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
   };
 
   return (
-    <ContainerInstrument className="w-full max-w-7xl mx-auto space-y-8">
+    <ContainerInstrument className="w-full max-w-[1440px] mx-auto space-y-8 px-0">
       {/*  THE MASTER CONTROL BOX */}
-      <ContainerInstrument plain className="bg-white border border-black/10 rounded-[40px] p-3 shadow-aura group/master">
+      <ContainerInstrument plain className="w-full bg-white border border-black/10 rounded-[40px] p-3 shadow-aura group/master">
         
         {/* 1. Journey Selector (Top Row) */}
         <ContainerInstrument plain className="flex items-center justify-center p-1.5 bg-va-off-white/50 rounded-[32px] mb-3">
