@@ -56,7 +56,7 @@ export default function ConfiguratorPageClient({
   minimalMode?: boolean
 }) {
   const { state, updateBriefing, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateMusic, updateCountry, setStep, addItem, calculatePricing } = useCheckout();
-  const { updateJourney, updateStep } = useMasterControl();
+  const { state: masterControlState, updateJourney, updateStep } = useMasterControl();
   const { t } = useTranslation();
   const router = useRouter();
   
