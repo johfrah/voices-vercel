@@ -19,6 +19,30 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
   const { selectActor, state: checkoutState } = useCheckout();
   const { playClick } = useSonicDNA();
 
+  //  CHRIS-PROTOCOL: Handle initial actor selection from URL (Homepage SPA flow)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const actorId = params.get('actorId');
+      const step = params.get('step');
+      
+      if (actorId && mappedActors) {
+        const actor = mappedActors.find(a => a.id.toString() === actorId);
+        if (actor && !checkoutState.selectedActor) {
+          console.log(`[AgencyContent] Initializing with actor from homepage: ${actor.display_name}`);
+          selectActor(actor);
+          if (step === 'script') {
+            updateStep('script');
+          }
+          
+          // Clean up URL params to prevent re-triggering on refresh
+          const newUrl = window.location.pathname + (window.location.search.replace(/actorId=[^&]*&?/, '').replace(/step=[^&]*&?/, '').replace(/\?$/, ''));
+          window.history.replaceState(null, '', newUrl);
+        }
+      }
+    }
+  }, [mappedActors, selectActor, updateStep, checkoutState.selectedActor]);
+
   const handleActorSelect = (actor: any) => {
     playClick('success');
     selectActor(actor);
