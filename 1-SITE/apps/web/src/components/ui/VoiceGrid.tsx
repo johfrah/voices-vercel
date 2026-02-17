@@ -18,10 +18,14 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
   console.log(` VoiceGrid: rendering ${actors?.length || 0} actors`, { featured, actors: actors?.map(a => a.display_name) });
 
   const handleSelect = (actor: Actor) => {
+    console.log(`[VoiceGrid] handleSelect for: ${actor.display_name}`, { hasOnSelect: !!onSelect });
+    // CHRIS-PROTOCOL: In SPA mode, we NEVER navigate.
+    // The parent AgencyContent handles the step transition.
     if (onSelect) {
       onSelect(actor);
       return;
     }
+    
     //  NAVIGATION MANDATE: Als we op de agency pagina zijn, navigeren we direct naar de individuele voice pagina.
     // Dit stelt de klant in staat om direct een script in te voeren voor die specifieke stem.
     if (typeof window !== 'undefined') {
@@ -43,7 +47,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
             <div key={actor.id} className={cn(featured && "w-[85vw] md:w-auto snap-center")}>
               <VoiceCard 
                 voice={actor} 
-                onSelect={() => handleSelect(actor)}
+                onSelect={onSelect ? () => handleSelect(actor) : undefined}
               />
             </div>
           ))}

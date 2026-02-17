@@ -1,13 +1,14 @@
 "use client";
 
+import React, { useMemo, useState, useEffect } from 'react';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { MarketManager } from '@config/market-manager';
+import { PricingEngine } from '@/lib/pricing-engine';
 import { ArrowUpDown, Check, Globe, Megaphone, Mic2, Phone, Radio, Tv, User, Users, Video, Clock, Star, Type } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
 import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
 import { OrderStepsInstrument } from './OrderStepsInstrument';
@@ -159,6 +160,11 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
   const { state, updateJourney, updateFilters, updateStep, resetFilters } = useMasterControl();
   const { state: checkoutState } = useCheckout();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const journeys = [
     { 
@@ -528,7 +534,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
       <ContainerInstrument plain className="pt-4 relative z-0 flex items-center justify-between">
         <OrderStepsInstrument currentStep={state.currentStep} className="!mb-0" />
         
-        {state.currentStep !== 'voice' && (
+        {mounted && state.currentStep !== 'voice' && (
           <button 
             onClick={() => {
               updateStep('voice');

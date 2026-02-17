@@ -88,10 +88,18 @@ export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentPr
   // We blokkeren de standaard "va-container" (40px padding) als:
   // 1. De prop 'plain' op true staat.
   // 2. Er handmatig padding is toegevoegd (p-, px-, py-).
-  // 3. Er een max-width (max-w-) is ingesteld (die vaak al gecentreerd is).
-  const hasManualPadding = /\bp[xy]?-\d+/.test(className);
+  // 3. Er een max-width (max-w-) is ingesteld.
+  // 4. Het element een lijst-item (li), lijst (ul), of nav is.
+  // 5. Er flex/grid logica aanwezig is.
+  // 6. Het element een 'as' prop heeft die niet 'div' of 'section' is (bijv. motion.div).
+  const isStructural = Component === 'div' || Component === 'section' || Component === 'main' || Component === 'footer' || Component === 'header';
+  const isListOrNav = Component === 'ul' || Component === 'li' || Component === 'nav';
+  const hasManualPadding = /\bp[xy]?-\d+/.test(className) || className.includes('p-0') || className.includes('!px-0');
   const hasMaxWidth = className.includes('max-w-');
-  const shouldBePlain = plain || hasManualPadding || hasMaxWidth;
+  const hasFlexLogic = className.includes('flex') || className.includes('grid') || className.includes('space-y-') || className.includes('space-x-');
+  
+  // We voegen ALLEEN padding toe als het een puur structureel element is ZONDER handmatige layout-classes.
+  const shouldBePlain = plain || !isStructural || isListOrNav || hasManualPadding || hasMaxWidth || hasFlexLogic;
 
   return (
     <Component 
@@ -224,11 +232,11 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
     default: "bg-primary text-white hover:bg-primary/90",
     outline: "border border-primary/20 bg-transparent hover:bg-primary/5 text-primary",
     ghost: "bg-transparent border-none shadow-none",
-    link: "bg-transparent underline-offset-4 hover:underline text-primary p-0 h-auto",
+    link: "bg-transparent underline-offset-4 hover:underline text-primary p-0 h-auto justify-start inline-flex",
     danger: "bg-red-500 text-white hover:bg-red-600",
     nav: "bg-transparent border-none shadow-none hover:bg-va-black/5 active:scale-100",
     pure: "bg-transparent border-none shadow-none rounded-none active:scale-100",
-    plain: "bg-transparent border-none shadow-none p-0 h-auto !rounded-none !scale-100 !bg-none"
+    plain: "bg-transparent border-none shadow-none p-0 h-auto !rounded-none !scale-100 !bg-none justify-start inline-flex"
   };
 
   const sizeClasses = {
@@ -248,6 +256,7 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
         "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] font-light ease-va-bezier inline-flex items-center justify-center whitespace-nowrap",
         variantClasses[variant],
         sizeClasses[size],
+        (variant === 'link' || variant === 'plain') && "justify-start",
         className,
         noTranslate && "notranslate"
       )}

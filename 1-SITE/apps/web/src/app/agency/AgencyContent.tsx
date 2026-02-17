@@ -1,3 +1,5 @@
+"use client";
+
 import React, { Suspense } from 'react';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
@@ -26,7 +28,10 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
     setTimeout(() => {
       const element = document.getElementById('master-control-anchor');
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Gebruik een offset om de filters mooi in beeld te houden
+        const yOffset = -20; 
+        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
       }
     }, 100);
   };
@@ -34,7 +39,9 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
   return (
     <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6" id="master-control-anchor">
       {/* Filters persistent bovenaan */}
-      <VoicesMasterControl actors={mappedActors} filters={filters} />
+      <div className="relative z-50">
+        <VoicesMasterControl actors={mappedActors} filters={filters} />
+      </div>
       
       <div className="mt-12 relative min-h-[600px]">
         <AnimatePresence mode="wait">

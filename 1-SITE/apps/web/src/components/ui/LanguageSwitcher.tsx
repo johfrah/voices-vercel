@@ -104,9 +104,10 @@ export const LanguageSwitcher: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            plain
             className="absolute top-full right-0 mt-1 w-64 bg-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-[220]"
           >
-            <ContainerInstrument plain className="p-1">
+            <div className="p-1">
               {languages.map((lang) => {
                 const isActive = lang.code === currentLang;
                 return (
@@ -115,19 +116,19 @@ export const LanguageSwitcher: React.FC = () => {
                     onClick={() => switchLanguage(lang.code)}
                     variant="plain"
                     size="none"
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all duration-500 group mb-1 last:mb-0 ${
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all duration-500 group mb-1 last:mb-0 ${
                       isActive
                         ? 'bg-primary text-white shadow-lg shadow-primary/20'
                         : 'text-va-black/60 hover:text-va-black hover:bg-va-black/5'
                     }`}
                   >
-                    <ContainerInstrument plain className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5">
                       <TextInstrument as="span" className="text-base leading-none">{lang.flag}</TextInstrument>
-                      <ContainerInstrument plain className="flex flex-col">
-                        <TextInstrument as="span" className={`text-[12px] font-medium tracking-widest ${isActive ? 'text-white' : 'text-va-black'}`}>{lang.label}</TextInstrument>
-                        <TextInstrument as="span" className={`text-[10px] mt-0.5 font-medium ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>{lang.native}</TextInstrument>
-                      </ContainerInstrument>
-                    </ContainerInstrument>
+                      <div className="flex flex-col">
+                        <TextInstrument as="span" className={`text-[15px] font-medium tracking-tight ${isActive ? 'text-white' : 'text-va-black'}`}>{lang.label}</TextInstrument>
+                        <TextInstrument as="span" className={`text-[12px] mt-0.5 font-light ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>{lang.native}</TextInstrument>
+                      </div>
+                    </div>
                     {isActive ? (
                       <Check strokeWidth={1.5} size={14} className="text-white" />
                     ) : (
@@ -136,7 +137,7 @@ export const LanguageSwitcher: React.FC = () => {
                   </ButtonInstrument>
                 );
               })}
-            </ContainerInstrument>
+            </div>
           </ContainerInstrument>
         )}
       </AnimatePresence>
