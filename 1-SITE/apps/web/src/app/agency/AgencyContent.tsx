@@ -15,7 +15,10 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { ChevronRight } from 'lucide-react';
 
 export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], filters: any }) {
-  const { state, updateStep } = useMasterControl();
+  // CHRIS-PROTOCOL: Check if useMasterControl is available before calling
+  const masterControl = useMasterControl();
+  const { state, updateStep } = masterControl || { state: { currentStep: 'voice' }, updateStep: () => {} };
+  
   const { selectActor, state: checkoutState } = useCheckout();
   const { playClick } = useSonicDNA();
 
