@@ -538,14 +538,16 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                 />
               </TextInstrument>
             </div>
-            <div className="flex flex-col items-end justify-center">
-              <span className="text-[9px] font-bold tracking-[0.1em] text-primary/60 uppercase leading-none mb-0.5">Levering:</span>
-              <TextInstrument className="text-[13px] font-semibold text-primary tracking-tight leading-none">
-                {deliveryInfo.formattedShort}
-              </TextInstrument>
-            </div>
+            {!compact && (
+              <div className="flex flex-col items-end justify-center">
+                <span className="text-[9px] font-bold tracking-[0.1em] text-primary/60 uppercase leading-none mb-0.5">Levering:</span>
+                <TextInstrument className="text-[13px] font-semibold text-primary tracking-tight leading-none">
+                  {deliveryInfo.formattedShort}
+                </TextInstrument>
+              </div>
+            )}
           </div>
-          {masterControlState.journey === 'telephony' && voice.extra_langs && (
+          {(masterControlState.journey === 'telephony' || compact) && voice.extra_langs && (
             <div className="px-2 animate-in fade-in slide-in-from-top-1 duration-500">
               <TextInstrument className="text-[11px] text-va-black/60 font-medium italic leading-tight">
                 Ook beschikbaar in: {voice.extra_langs.split(',').map(l => l.trim()).join(', ')}
@@ -593,6 +595,46 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                 )}
               </TextInstrument>
             </div>
+
+            {/* DEMO PLAYLIST (VOICES 2026) - Only show in compact/configurator mode */}
+            {compact && voice.demos && voice.demos.length > 0 && (
+              <div className="mt-2 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-1 h-3 bg-primary/30 rounded-full" />
+                  <span className="text-[9px] font-bold tracking-widest text-va-black/30 uppercase">Andere demo&apos;s</span>
+                </div>
+                <div className="flex flex-col gap-1 max-h-[120px] overflow-y-auto no-scrollbar pr-1">
+                  {voice.demos.slice(0, 4).map((demo, idx) => {
+                    const isActive = activeDemo?.id === demo.id;
+                    return (
+                      <button
+                        key={demo.id || idx}
+                        onClick={(e) => handleCategoryClick(e, demo)}
+                        className={cn(
+                          "flex items-center gap-2 p-2 rounded-lg border transition-all text-left group/demo",
+                          isActive 
+                            ? "bg-primary/5 border-primary/20" 
+                            : "bg-va-off-white/50 border-black/[0.03] hover:border-black/10"
+                        )}
+                      >
+                        <div className={cn(
+                          "w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-all",
+                          isActive ? "bg-primary text-white" : "bg-va-black/5 text-va-black/20 group-hover/demo:bg-va-black/10"
+                        )}>
+                          {isActive && globalIsPlaying ? <Pause size={10} fill="currentColor" /> : <Play size={10} className="ml-0.5" fill="currentColor" />}
+                        </div>
+                        <span className={cn(
+                          "text-[11px] font-medium truncate flex-1",
+                          isActive ? "text-primary" : "text-va-black/60 group-hover/demo:text-va-black"
+                        )}>
+                          {cleanDemoTitle(demo.title)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {!hidePrice && (
