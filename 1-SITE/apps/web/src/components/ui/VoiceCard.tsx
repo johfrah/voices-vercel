@@ -340,14 +340,10 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
       onClick={(e) => {
         if (isEditMode) return;
         
-        // CHRIS-PROTOCOL: In SPA mode (onSelect provided), the WHOLE card triggers the transition.
-        // We prevent any other click handlers or default browser navigation.
+        // CHRIS-PROTOCOL: In SPA mode (onSelect provided), we don't trigger selection on card click
+        // to allow playing demos without accidentally selecting the voice.
+        // Selection is EXCLUSIVELY via the "Kies stem" button.
         if (onSelect) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log(`[VoiceCard] SPA Selection triggered for: ${voice.display_name}`);
-          playClick('success');
-          onSelect(voice);
           return;
         }
         
@@ -627,15 +623,18 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
             {typeof window !== 'undefined' && !window.location.pathname.includes(`/voice/${voice.slug}`) && !hideButton && (
               <ButtonInstrument 
                 onClick={(e) => {
+                  e.stopPropagation();
+                  
                   // CHRIS-PROTOCOL: If we have an onSelect handler (SPA mode), 
-                  // the parent container already handles this. We just prevent double-triggering.
+                  // we call it and prevent default browser navigation.
                   if (onSelect) {
                     e.preventDefault();
-                    e.stopPropagation();
+                    console.log(`[VoiceCard] Kies stem clicked (SPA) for: ${voice.display_name}`);
+                    playClick('success');
+                    onSelect(voice);
                     return;
                   }
                   
-                  e.stopPropagation();
                   playClick('success');
                   window.location.href = `/voice/${voice.slug}/`;
                 }}
