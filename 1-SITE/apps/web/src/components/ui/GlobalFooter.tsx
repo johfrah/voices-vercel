@@ -8,8 +8,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { JourneyCta } from './JourneyCta';
-import { JourneyFaq } from './JourneyFaq';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 
@@ -25,6 +25,7 @@ export default function GlobalFooter() {
   const { t } = useTranslation();
   const { playClick } = useSonicDNA();
   const { state } = useVoicesState();
+  const { state: masterControlState } = useMasterControl();
   const market = MarketManager.getCurrentMarket();
 
   const ademingSections = [
@@ -172,6 +173,7 @@ export default function GlobalFooter() {
   const isArtist = market.market_code === 'YOUSSEF';
   const isSpecial = isPortfolio || isArtist || market.market_code === 'ADEMING';
   const isStudio = typeof window !== 'undefined' && (window.location.pathname.startsWith('/studio') || window.location.pathname.startsWith('/academy'));
+  const isOrdering = masterControlState.currentStep !== 'voice';
 
   return (
     <ContainerInstrument as="footer" className="bg-va-off-white text-va-black pt-24 pb-12 overflow-hidden relative border-t border-black/5 !px-0">
@@ -180,7 +182,7 @@ export default function GlobalFooter() {
       
       <ContainerInstrument className="max-w-[1140px] mx-auto px-6 relative z-10">
         {/* Dynamic Journey Elements */}
-        {!isSpecial && (
+        {!isSpecial && !isOrdering && (
           <ContainerInstrument className="mb-24">
             <JourneyCta strokeWidth={1.5} journey={isStudio ? 'studio' as any : state.current_journey} />
           </ContainerInstrument>
