@@ -14,6 +14,7 @@ interface VoicesWordSliderProps {
   min?: number;
   max?: number;
   livePrice?: string;
+  disabled?: boolean; // NEW: for script state
   rounding?: 'left' | 'right' | 'none'; //  Fix for pill rounding
   isTelephony?: boolean; //  New prop for telephony context
   isVideo?: boolean; //  New prop for video context
@@ -27,6 +28,7 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
   min = 5,
   max = 5000,
   livePrice,
+  disabled = false,
   rounding = 'none',
   isTelephony = false,
   isVideo = false
@@ -66,11 +68,13 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
   }, []);
 
   return (
-    <ContainerInstrument plain ref={containerRef} className={cn("relative z-20", className)}>
+    <ContainerInstrument plain ref={containerRef} className={cn("relative z-20", className, disabled && "opacity-50 pointer-events-none")}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
         className={cn(
-          "w-full h-full bg-transparent border-none py-3 px-8 text-left transition-all cursor-pointer hover:bg-va-off-white group/slider flex flex-col justify-center",
+          "w-full h-full bg-transparent border-none py-3 px-8 text-left transition-all group/slider flex flex-col justify-center",
+          !disabled && "cursor-pointer hover:bg-va-off-white",
           isOpen && "bg-va-off-white",
           rounding === 'left' && "rounded-l-full",
           rounding === 'right' && "rounded-r-full"
@@ -88,16 +92,18 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
                 <span className="text-va-black/30 font-light text-[14px] ml-1">({promptSuggestion || videoSuggestion})</span>
               )}
             </span>
-            {livePrice && (
+            {livePrice && !disabled && (
               <span className="text-[14px] font-medium text-primary bg-primary/5 px-2 py-0.5 rounded-full animate-in fade-in zoom-in-95 duration-300">
                 {livePrice}
               </span>
             )}
           </div>
-          <ChevronDown 
-            size={14} 
-            className={cn("opacity-40 transition-transform duration-300 shrink-0 group-hover/slider:text-primary group-hover/slider:opacity-100", isOpen && "rotate-180 opacity-100")} 
-          />
+          {!disabled && (
+            <ChevronDown 
+              size={14} 
+              className={cn("opacity-40 transition-transform duration-300 shrink-0 group-hover/slider:text-primary group-hover/slider:opacity-100", isOpen && "rotate-180 opacity-100")} 
+            />
+          )}
         </div>
       </button>
 

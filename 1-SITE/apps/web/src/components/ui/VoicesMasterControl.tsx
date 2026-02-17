@@ -407,7 +407,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
                   isVideo={state.journey === 'video'}
                   value={state.filters.words && state.filters.words >= 5 ? state.filters.words : (state.journey === 'telephony' ? 25 : 200)}
                   onChange={(val) => updateFilters({ words: val })}
-                  livePrice={state.currentStep === 'script' ? PricingEngine.format(checkoutState.pricing.wordSurcharge) : undefined}
+                  disabled={state.currentStep === 'script'} // CHRIS-PROTOCOL: Inactive in script state
                   label="Hoeveelheid?"
                   className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
                 />
@@ -531,7 +531,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
       )}
 
       {/* 3. Order Progress (Bottom Row - Subtle) */}
-      <ContainerInstrument plain className="pt-4 relative z-0 flex items-center justify-between">
+      <ContainerInstrument plain className="pt-4 relative z-0 flex items-center justify-center">
         <OrderStepsInstrument currentStep={state.currentStep} className="!mb-0" />
         
         {mounted && state.currentStep !== 'voice' && (
@@ -544,7 +544,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
                 element.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }
             }}
-            className="text-[11px] font-bold tracking-widest text-primary uppercase hover:opacity-70 transition-opacity flex items-center gap-2"
+            className="absolute right-0 text-[11px] font-bold tracking-widest text-primary uppercase hover:opacity-70 transition-opacity flex items-center gap-2"
           >
             <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             Terug naar Casting
