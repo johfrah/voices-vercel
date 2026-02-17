@@ -509,9 +509,9 @@ export default function ConfiguratorPageClient({
                       <div className="space-y-2">
                         <div className="flex justify-between text-[13px]">
                           <span className="text-va-black/40 font-light">
-                            {state.usage === 'commercial' ? 'Basis (BSF)' : 
-                             state.usage === 'telefonie' ? 'Basis (Telefonie)' : 
-                             'Basis (Video)'}
+                            {state.usage === 'commercial' ? 'Basistarief (Opname)' : 
+                             state.usage === 'telefonie' ? 'Basistarief (Telefonie)' : 
+                             'Basistarief (Video)'}
                           </span>
                           <span className="font-medium">{PricingEngine.format(state.pricing.base)}</span>
                         </div>
