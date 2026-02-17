@@ -108,7 +108,15 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
       
       result = result.filter(actor => {
         //  KORNEEL RULE: Use Centralized PricingEngine Logic
-        return PricingEngine.isAvailable(actor, selectedMedia as any, masterControlState.filters.country);
+        const isAvailable = PricingEngine.isAvailable(actor, selectedMedia as any, masterControlState.filters.country);
+        
+        // CHRIS-PROTOCOL: If the currently selected actor becomes unavailable due to filters,
+        // we don't want them to disappear from the sidebar if we are already in the script step.
+        if (checkoutState.selectedActor?.id === actor.id && masterControlState.currentStep === 'script') {
+          return true;
+        }
+        
+        return isAvailable;
       });
     }
 
@@ -216,7 +224,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
     });
 
     return sortedResult;
-  }, [actors, masterControlState.journey, masterControlState.filters.media, masterControlState.filters.country, masterControlState.filters.languages, masterControlState.filters.language, masterControlState.filters.gender, masterControlState.filters.sortBy]);
+  }, [actors, masterControlState.journey, masterControlState.filters.media, masterControlState.filters.country, masterControlState.filters.languages, masterControlState.filters.language, masterControlState.filters.gender, masterControlState.filters.sortBy, checkoutState.selectedActor?.id, masterControlState.currentStep]);
 
   const isTelephony = customerDNA?.intelligence?.lastIntent === 'telephony' || customerDNA?.intelligence?.detectedSector === 'it';
 
@@ -397,14 +405,16 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                         layoutId={`actor-${checkoutState.selectedActor?.id}`}
                         className="lg:sticky lg:top-10"
                       >
-                        <VoiceCard 
-                          voice={checkoutState.selectedActor!} 
-                          onSelect={() => {}} 
-                          hideButton
-                          hidePrice // CHRIS-PROTOCOL: Hide price in sidebar
-                          isCornered
-                          compact={true} 
-                        />
+                        {checkoutState.selectedActor && (
+                          <VoiceCard 
+                            voice={checkoutState.selectedActor} 
+                            onSelect={() => {}} 
+                            hideButton
+                            hidePrice // CHRIS-PROTOCOL: Hide price in sidebar
+                            isCornered
+                            compact={true} 
+                          />
+                        )}
                       </motion.div>
                     </div>
                   </div>
