@@ -451,7 +451,7 @@ export default function ConfiguratorPageClient({
               </div>
             )}
 
-            <ContainerInstrument className="bg-white rounded-[20px] shadow-aura border border-black/[0.03] overflow-hidden group/script">
+            <ContainerInstrument className="bg-white rounded-[20px] shadow-aura border border-black/[0.03] overflow-hidden group/script mb-6">
               <div className="p-4 bg-va-off-white/50 border-b border-black/[0.03] flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase">
