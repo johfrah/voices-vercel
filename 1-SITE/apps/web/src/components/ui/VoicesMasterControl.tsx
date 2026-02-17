@@ -480,19 +480,21 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
               )}
 
               {/* Sorting Segment (Airbnb Style) */}
-              <VoicesDropdown 
-                rounding="right"
-                options={[
-                  { label: 'Populariteit', value: 'popularity', icon: Star },
-                  { label: 'Levertijd', value: 'delivery', icon: Clock },
-                  { label: 'Alfabetisch', value: 'alphabetical', icon: Type },
-                ]}
-                value={state.filters.sortBy || 'popularity'}
-                onChange={(val) => updateFilters({ sortBy: val as any })}
-                placeholder="Sorteer op"
-                label="Sorteren?"
-                className="flex-1 h-full"
-              />
+              {state.currentStep === 'voice' && (
+                <VoicesDropdown 
+                  rounding="right"
+                  options={[
+                    { label: 'Populariteit', value: 'popularity', icon: Star },
+                    { label: 'Levertijd', value: 'delivery', icon: Clock },
+                    { label: 'Alfabetisch', value: 'alphabetical', icon: Type },
+                  ]}
+                  value={state.filters.sortBy || 'popularity'}
+                  onChange={(val) => updateFilters({ sortBy: val as any })}
+                  placeholder="Sorteer op"
+                  label="Sorteren?"
+                  className="flex-1 h-full"
+                />
+              )}
             </ContainerInstrument>
 
           </div>
