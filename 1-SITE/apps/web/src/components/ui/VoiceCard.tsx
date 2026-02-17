@@ -555,7 +555,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
           {(masterControlState.journey === 'telephony' || compact) && voice.extra_langs && (
             <div className="px-2 animate-in fade-in slide-in-from-top-1 duration-500">
               <TextInstrument className="text-[11px] text-va-black/60 font-medium italic leading-tight">
-                Ook beschikbaar in: {voice.extra_langs.split(',').map(l => l.trim()).join(', ')}
+                Ook beschikbaar in: {voice.extra_langs.split(',').map(l => MarketManager.getLanguageLabel(l.trim())).join(', ')}
               </TextInstrument>
             </div>
           )}
