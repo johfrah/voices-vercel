@@ -467,7 +467,7 @@ export default function ConfiguratorPageClient({
               />
             </ContainerInstrument>
 
-            <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-4", !minimalMode && "mt-8")}>
+            <div className={cn("grid grid-cols-1 gap-4", state.usage === 'telefonie' ? "md:grid-cols-2" : "md:grid-cols-1", !minimalMode && "mt-8")}>
               <button onClick={() => updateLiveSession(!state.liveSession)} className={cn("flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", state.liveSession ? "bg-primary/5 border-primary/20" : "bg-white border-black/[0.03] hover:border-black/10")}>
                 <div className="flex items-center gap-4">
                   <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-colors", state.liveSession ? "bg-primary text-white" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}><Mic size={18} strokeWidth={1.5} /></div>
@@ -478,16 +478,19 @@ export default function ConfiguratorPageClient({
                 </div>
                 <div className={cn("text-[13px] font-medium", state.liveSession ? "text-primary" : "text-va-black/40")}>+ €99</div>
               </button>
-              <button onClick={() => updateMusic({ asBackground: !state.music.asBackground, trackId: state.music.trackId || 'corporate-growth' })} className={cn("flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", state.music.asBackground ? "bg-primary/5 border-primary/20" : "bg-white border-black/[0.03] hover:border-black/10")}>
-                <div className="flex items-center gap-4">
-                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-colors", state.music.asBackground ? "bg-primary text-white" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}><Music size={18} strokeWidth={1.5} /></div>
-                  <div>
-                    <div className={cn("text-[13px] font-bold", state.music.asBackground ? "text-primary" : "text-va-black")}>Muziek Mix</div>
-                    <div className="text-[11px] text-va-black/40 font-light">Rechtenvrije achtergrond</div>
+              
+              {state.usage === 'telefonie' && (
+                <button onClick={() => updateMusic({ asBackground: !state.music.asBackground, trackId: state.music.trackId || 'corporate-growth' })} className={cn("flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", state.music.asBackground ? "bg-primary/5 border-primary/20" : "bg-white border-black/[0.03] hover:border-black/10")}>
+                  <div className="flex items-center gap-4">
+                    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-colors", state.music.asBackground ? "bg-primary text-white" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}><Music size={18} strokeWidth={1.5} /></div>
+                    <div>
+                      <div className={cn("text-[13px] font-bold", state.music.asBackground ? "text-primary" : "text-va-black")}>Muziek Mix</div>
+                      <div className="text-[11px] text-va-black/40 font-light">Rechtenvrije achtergrond</div>
+                    </div>
                   </div>
-                </div>
-                <div className={cn("text-[13px] font-medium", state.music.asBackground ? "text-primary" : "text-va-black/40")}>+ €59</div>
-              </button>
+                  <div className={cn("text-[13px] font-medium", state.music.asBackground ? "text-primary" : "text-va-black/40")}>+ €59</div>
+                </button>
+              )}
             </div>
 
             {minimalMode && (
