@@ -1,0 +1,39 @@
+# 🎬 VIDEO & NUCLEAR TRANSCRIPTION PROTOCOL (2026)
+
+Dit protocol definieert de enige juiste manier om video-content te voorzien van ondertiteling binnen het Voices ecosysteem. We tolereren geen visuele slop of onnauwkeurige tekst.
+
+## 🧠 De Kernfilosofie
+Ondertiteling bij Voices is geen "extraatje", maar een **atomaire transcriptie** van het vakmanschap. Het moet de kijker ontlasten en de boodschap versterken zonder de UI te vervuilen.
+
+## 🛡️ De Wetten van Ondertiteling
+
+1.  **Atomaire Transcriptie Mandate**:
+    *   Ondertitels moeten een **letterlijke weergave** zijn van wat er gesproken wordt.
+    *   Timing moet op de **milliseconde nauwkeurig** zijn (gesynchroniseerd met de audio-wave).
+    *   Geen samenvattingen of interpretaties; uitsluitend de rauwe, gesproken waarheid.
+
+2.  **Whisper-First Workflow**:
+    *   Gebruik ALTIJD **OpenAI Whisper** (of vergelijkbare STT engine) om de initiële transcriptie en timing-data te genereren.
+    *   Handmatige invoer is uitsluitend toegestaan voor correcties op eigennamen of technische termen (bijv. "48kHz", "Drizzle").
+
+3.  **Voices Glass UI (No-Track Policy)**:
+    *   Het gebruik van standaard browser `<track>` elementen of `.vtt` bestanden in de DOM is **VERBODEN**. Dit veroorzaakt layout shifts en visuele inconsistentie.
+    *   Ondertitels worden uitsluitend gerenderd via de **Voices Glass UI**: een zwevend, semi-transparant blokje (`bg-va-black/80` met blur) binnen de React component.
+
+4.  **Positionele Integriteit**:
+    *   Ondertitels mogen **NOOIT** video-controls, antwoordknoppen of badges overlappen.
+    *   Standaard posities:
+        *   **Workshop Detail**: `bottom-32` (veilig boven de controls).
+        *   **Workshop Quiz**: `top-20` (veilig boven de antwoordknoppen).
+
+5.  **Zero Slop Handhaving**:
+    *   Dubbele ondertitels (browser + custom) worden beschouwd als een kritieke bug.
+    *   De `StudioVideoPlayer` is het enige geautoriseerde instrument voor video-weergave met ondertiteling.
+
+## 🛠️ Technische Implementatie
+Ondertitels worden aangeleverd als een `subtitleData` array van objecten:
+```typescript
+{ start: number; end: number; text: string }[]
+```
+
+"Ondertiteling bij Voices is de visuele echo van onze stemmen."

@@ -178,6 +178,94 @@ export class MarketManager {
   }
 
   /**
+   * Haalt de ISO taalcode op basis van een UI label
+   */
+  static getLanguageCode(label: string): string {
+    const lowLabel = label.toLowerCase().trim();
+    const map: Record<string, string> = {
+      'vlaams': 'nl-be',
+      'nederlands': 'nl-nl',
+      'frans': 'fr-fr',
+      'frans (be)': 'fr-be',
+      'frans (fr)': 'fr-fr',
+      'engels': 'en-gb',
+      'engels (uk)': 'en-gb',
+      'engels (us)': 'en-us',
+      'duits': 'de-de',
+      'spaans': 'es-es',
+      'italiaans': 'it-it',
+      'pools': 'pl-pl',
+      'deens': 'da-dk',
+      'portugees': 'pt-pt',
+      'zweeds': 'sv-se',
+      'noors': 'nb-no',
+      'fins': 'fi-fi',
+      'grieks': 'el-gr',
+      'turks': 'tr-tr',
+      'russisch': 'ru-ru',
+      'arabisch': 'ar-sa',
+      'chinees': 'zh-cn',
+      'japans': 'ja-jp',
+      'nl-be': 'nl-be',
+      'nl-nl': 'nl-nl',
+      'fr-fr': 'fr-fr',
+      'fr-be': 'fr-be',
+      'en-gb': 'en-gb',
+      'en-us': 'en-us',
+      'de-de': 'de-de',
+      'es-es': 'es-es',
+      'it-it': 'it-it',
+      'pl-pl': 'pl-pl',
+      'da-dk': 'da-dk',
+      'pt-pt': 'pt-pt',
+      'sv-se': 'sv-se'
+    };
+    return map[lowLabel] || lowLabel;
+  }
+
+  /**
+   * Haalt de UI label op basis van een ISO code of naam
+   */
+  static getLanguageLabel(input: string): string {
+    if (!input) return '';
+    const lowInput = input.toLowerCase().trim();
+    
+    // 🛡️ CHRIS-PROTOCOL: Map ISO codes and common variations to standard UI labels.
+    // Note: 'Vlaams' is strictly nl-BE. Non-natives can only offer 'Nederlands'.
+    const map: Record<string, string> = {
+      'nl-be': 'Vlaams',
+      'nl-nl': 'Nederlands',
+      'fr-fr': 'Frans',
+      'fr-be': 'Frans',
+      'en-gb': 'Engels',
+      'en-us': 'Engels',
+      'de-de': 'Duits',
+      'es-es': 'Spaans',
+      'it-it': 'Italiaans',
+      'pl-pl': 'Pools',
+      'da-dk': 'Deens',
+      'pt-pt': 'Portugees',
+      'sv-se': 'Zweeds',
+      'vlaams': 'Vlaams',
+      'nederlands': 'Nederlands',
+      'frans': 'Frans',
+      'engels': 'Engels',
+      'duits': 'Duits',
+      'spaans': 'Spaans',
+      'italiaans': 'Italiaans',
+      'pools': 'Pools',
+      'deens': 'Deens',
+      'portugees': 'Portugees',
+      'zweeds': 'Zweeds'
+    };
+    
+    if (map[lowInput]) return map[lowInput];
+    
+    // Fallback: Capitalize first letter
+    return lowInput.charAt(0).toUpperCase() + lowInput.slice(1);
+  }
+
+  /**
    * Haalt alle ondersteunde talen voor de huidige markt
    */
   static getNativeLanguages(lang: string = 'nl'): Record<string, string> {

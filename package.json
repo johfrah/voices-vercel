@@ -4,8 +4,9 @@
   "description": "",
   "private": true,
   "scripts": {
-    "dev": "cd 1-SITE/apps/web && npm run dev",
     "start": "cd 1-SITE/apps/web && npm run dev",
+    "stop": "killall -9 node || true",
+    "dev": "cd 1-SITE/apps/web && npm run dev",
     "bob": "npx ts-node 3-WETTEN/scripts/orchestrator.ts",
     "bob:live": "npx ts-node 3-WETTEN/scripts/orchestrator.ts live",
     "bob:fix": "npx ts-node 3-WETTEN/scripts/orchestrator.ts fix",
@@ -55,6 +56,7 @@
     "dotenv": "^17.2.4",
     "drizzle-orm": "^0.45.1",
     "pg": "^8.18.0",
-    "postgres": "^3.4.8"
+    "postgres": "^3.4.8",
+    "react-image-crop": "^11.0.10"
   }
 }

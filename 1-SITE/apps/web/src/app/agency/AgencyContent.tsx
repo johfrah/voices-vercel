@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { ChevronRight } from 'lucide-react';
 
 export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], filters: any }) {
   const { state, updateStep } = useMasterControl();
@@ -121,6 +122,19 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
                   <div className="lg:col-span-5 sticky top-10">
                     <PricingSummary strokeWidth={1.5} />
                   </div>
+                </div>
+                
+                {/* Terug knop voor checkout */}
+                <div className="mt-12 pt-8 border-t border-black/[0.03] flex justify-center">
+                  <button 
+                    onClick={() => updateStep('script')}
+                    className="text-[11px] font-bold tracking-widest text-va-black/20 hover:text-primary uppercase transition-colors flex items-center gap-2"
+                  >
+                    <div className="rotate-180">
+                      <ChevronRight size={14} />
+                    </div>
+                    Terug naar script aanpassen
+                  </button>
                 </div>
               </div>
             </motion.div>

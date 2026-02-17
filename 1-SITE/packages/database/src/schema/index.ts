@@ -18,8 +18,51 @@ export const senderTypeEnum = pgEnum('sender_type', ['user', 'admin', 'ai']);
 export const statusEnum = pgEnum('status', ['pending', 'approved', 'active', 'live', 'publish', 'rejected', 'cancelled', 'unavailable']);
 export const leadVibeEnum = pgEnum('lead_vibe', ['cold', 'warm', 'hot', 'burning']);
 export const deliveryStatusEnum = pgEnum('delivery_status', ['waiting', 'uploaded', 'admin_review', 'client_review', 'approved', 'rejected', 'revision']);
-export const experienceLevelEnum = pgEnum('experience_level', ['beginner', 'intermediate', 'pro', 'elite']);
+export const experienceLevelEnum = pgEnum('experience_level', ['junior', 'pro', 'senior', 'legend']);
 export const payoutStatusEnum = pgEnum('payout_status', ['pending', 'approved', 'paid', 'cancelled']);
+export const genderEnum = pgEnum('gender', ['male', 'female', 'non-binary']);
+
+// 🌐 LANGUAGES & GEOGRAPHY
+export const languages = pgTable('languages', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(),
+  label: text('label').notNull(),
+  isPopular: boolean('is_popular').default(false),
+  isNativeOnly: boolean('is_native_only').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const countries = pgTable('countries', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(),
+  label: text('label').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const voiceTones = pgTable('voice_tones', {
+  id: serial('id').primaryKey(),
+  label: text('label').unique().notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const actorLanguages = pgTable('actor_languages', {
+  id: serial('id').primaryKey(),
+  actorId: integer('actor_id').references(() => actors.id, { onDelete: 'cascade' }).notNull(),
+  languageId: integer('language_id').references(() => languages.id, { onDelete: 'cascade' }).notNull(),
+  isNative: boolean('is_native').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => [
+  unique('actor_languages_actor_id_language_id_key').on(table.actorId, table.languageId),
+]);
+
+export const actorTones = pgTable('actor_tones', {
+  id: serial('id').primaryKey(),
+  actorId: integer('actor_id').references(() => actors.id, { onDelete: 'cascade' }).notNull(),
+  toneId: integer('tone_id').references(() => voiceTones.id, { onDelete: 'cascade' }).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => [
+  unique('actor_tones_actor_id_tone_id_key').on(table.actorId, table.toneId),
+]);
 
 // 👤 USERS & DNA
 export const users = pgTable('users', {
@@ -89,9 +132,11 @@ export const actors = pgTable('actors', {
   firstName: text('first_name').notNull(),
   lastName: text('last_name'),
   email: text('email'), // Added for silent user creation logic
-  gender: text('gender'),
+  gender: genderEnum('gender'),
+  gender_new: genderEnum('gender_new'), // Temporary for migration
   nativeLang: text('native_lang'),
   country: text('country'),
+  countryId: integer('country_id').references(() => countries.id),
   deliveryTime: text('delivery_time'),
   deliveryDaysMin: integer('delivery_days_min').default(1),
   deliveryDaysMax: integer('delivery_days_max').default(3),
@@ -111,6 +156,7 @@ export const actors = pgTable('actors', {
   logoId: integer('logo_id'),
   voiceScore: integer('voice_score').default(10),
   experienceLevel: experienceLevelEnum('experience_level').default('pro'),
+  experience_level_new: experienceLevelEnum('experience_level_new').default('pro'), // Temporary for migration
   studioSpecs: jsonb('studio_specs').default({}), // 🎙️ Publiek: { microphone: string, preamp: string, interface: string, booth: string }
   connectivity: jsonb('connectivity').default({}), // 🌐 Publiek: { source_connect: boolean, zoom: boolean, cleanfeed: boolean, session_link: boolean }
   availability: jsonb('availability').default([]), // Array of objects: { start: string, end: string, reason: string }
@@ -178,6 +224,46 @@ export const actorsRelations = relations(actors, ({ one, many }) => ({
   videos: many(actorVideos),
   dialects: many(actorDialects),
   orderItems: many(orderItems), // 📦 Project historie voor de acteur
+  actorLanguages: many(actorLanguages),
+  actorTones: many(actorTones),
+  country: one(countries, {
+    fields: [actors.countryId],
+    references: [countries.id],
+  }),
+}));
+
+export const languagesRelations = relations(languages, ({ many }) => ({
+  actorLanguages: many(actorLanguages),
+}));
+
+export const actorLanguagesRelations = relations(actorLanguages, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorLanguages.actorId],
+    references: [actors.id],
+  }),
+  language: one(languages, {
+    fields: [actorLanguages.languageId],
+    references: [languages.id],
+  }),
+}));
+
+export const voiceTonesRelations = relations(voiceTones, ({ many }) => ({
+  actorTones: many(actorTones),
+}));
+
+export const actorTonesRelations = relations(actorTones, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorTones.actorId],
+    references: [actors.id],
+  }),
+  tone: one(voiceTones, {
+    fields: [actorTones.toneId],
+    references: [voiceTones.id],
+  }),
+}));
+
+export const countriesRelations = relations(countries, ({ many }) => ({
+  actors: many(actors),
 }));
 
 export const actorDialectsRelations = relations(actorDialects, ({ one }) => ({
@@ -207,10 +293,13 @@ export const instructors = pgTable('instructors', {
   wpId: bigint('wp_id', { mode: 'number' }).unique(), // Link naar voices_workshop_teachers ID
   userId: integer('user_id').references(() => users.id), // 👤 Link naar de user account (voor dashboard toegang)
   name: text('name').notNull(),
+  firstName: text('first_name'),
+  lastName: text('last_name'),
   slug: text('slug').unique(), // 🔗 URL-vriendelijke naam
   tagline: text('tagline'),
   bio: text('bio'),
   photoId: integer('photo_id').references(() => media.id), // 📸 De Instructor-specifieke foto (voor Studio)
+  vatNumber: text('vat_number'), // 🤫 Privé BTW nummer voor facturatie
   socials: jsonb('socials').default({}), // 📱 LinkedIn, Instagram, etc.
   internalNotes: text('internal_notes'), // 🔒 Privé admin notities (GF data etc.)
   adminMeta: jsonb('admin_meta').default({}), // 🔒 Gestructureerde admin data
@@ -250,9 +339,15 @@ export const locations = pgTable('locations', {
   description: text('description'),
   photoId: integer('photo_id').references(() => media.id),
   mapUrl: text('map_url'),
+  vatNumber: text('vat_number'), // 🤫 Privé BTW nummer voor facturatie
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
+
+export const locationsRelations = relations(locations, ({ many }) => ({
+  costs: many(costs),
+  editions: many(workshopEditions),
+}));
 
 export const workshopEditions = pgTable('workshop_editions', {
   id: serial('id').primaryKey(),
@@ -275,11 +370,17 @@ export const workshopsRelations = relations(workshops, ({ one, many }) => ({
     fields: [workshops.mediaId],
     references: [media.id],
   }),
+  instructor: one(instructors, {
+    fields: [workshops.instructorId],
+    references: [instructors.id],
+  }),
   editions: many(workshopEditions),
   gallery: many(workshopGallery),
+  costs: many(costs),
 }));
 
-export const workshopEditionsRelations = relations(workshopEditions, ({ one }) => ({
+export const workshopEditionsRelations = relations(workshopEditions, ({ one, many }) => ({
+  participants: many(orderItems),
   workshop: one(workshops, {
     fields: [workshopEditions.workshopId],
     references: [workshops.id],
@@ -292,6 +393,7 @@ export const workshopEditionsRelations = relations(workshopEditions, ({ one }) =
     fields: [workshopEditions.instructorId],
     references: [instructors.id],
   }),
+  costs: many(costs),
 }));
 
 export const instructorsRelations = relations(instructors, ({ one, many }) => ({
@@ -304,6 +406,7 @@ export const instructorsRelations = relations(instructors, ({ one, many }) => ({
     references: [users.id],
   }),
   workshops: many(workshops),
+  costs: many(costs),
 }));
 
 export const workshopInterest = pgTable('workshop_interest', {
@@ -456,7 +559,6 @@ export const orders = pgTable('orders', {
   viesValidatedAt: timestamp('vies_validated_at'),
   viesCountryCode: text('vies_country_code'),
   ipAddress: text('ip_address'), // Hashed IP for fraud analysis
-  
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -490,7 +592,7 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
   items: many(orderItems),
 }));
 
-export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
   order: one(orders, {
     fields: [orderItems.orderId],
     references: [orders.id],
@@ -503,6 +605,7 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
     fields: [orderItems.editionId],
     references: [workshopEditions.id],
   }),
+  costs: many(costs),
 }));
 
 export const orderNotes = pgTable('order_notes', {
@@ -1078,7 +1181,43 @@ export const systemEvents = pgTable('system_events', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-// 🎙️ STUDIO SESSIONS & SCRIPTS
+// 💰 COSTS (Centralized Financial Tracking)
+export const costs = pgTable('costs', {
+  id: serial('id').primaryKey(),
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  type: text('type').notNull(), // 'locatie', 'instructeur', 'materiaal', 'overig'
+  journey: text('journey').notNull().default('studio'), // 🎭 'studio', 'agency', 'academy'
+  note: text('note'),
+  workshopEditionId: integer('workshop_edition_id').references(() => workshopEditions.id),
+  locationId: integer('location_id').references(() => locations.id),
+  instructorId: integer('instructor_id').references(() => instructors.id),
+  orderItemId: integer('order_item_id').references(() => orderItems.id),
+  date: timestamp('date', { withTimezone: true }), // 📅 De datum waarop de kost betrekking heeft
+  isPartnerPayout: boolean('is_partner_payout').default(false), // 🤝 Is dit een uitbetaling aan een partner (Johfrah/Bernadette)?
+  status: text('status').default('gepland'), // gepland, betaald
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+export const costsRelations = relations(costs, ({ one }) => ({
+  edition: one(workshopEditions, {
+    fields: [costs.workshopEditionId],
+    references: [workshopEditions.id],
+  }),
+  location: one(locations, {
+    fields: [costs.locationId],
+    references: [locations.id],
+  }),
+  instructor: one(instructors, {
+    fields: [costs.instructorId],
+    references: [instructors.id],
+  }),
+  orderItem: one(orderItems, {
+    fields: [costs.orderItemId],
+    references: [orderItems.id],
+  }),
+}));
+
 export const studioSessionStatusEnum = pgEnum('studio_session_status', ['active', 'archived', 'completed']);
 export const studioFeedbackTypeEnum = pgEnum('studio_feedback_type', ['text', 'audio', 'waveform_marker']);
 

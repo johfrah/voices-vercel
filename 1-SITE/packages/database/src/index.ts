@@ -1,37 +1,42 @@
+import * as schema from './schema';
+
 // Sherlock: We gebruiken een lazy initializer voor de DB client om te voorkomen dat 
 // postgres.js wordt geïnitialiseerd in de Edge runtime (waar het niet werkt).
-let dbInstance: any = null;
-let schema: any = null;
-
+// We gebruiken globalThis om te voorkomen dat er tijdens hot-reloads in dev 
+// telkens nieuwe connecties worden geopend.
 const getDb = () => {
   if (typeof window !== 'undefined') return null; // No DB on client
   
-  // Sherlock: Als we in een Edge of Node.js runtime van Next.js zitten (tijdens build/edge),
-  // dan mogen we postgres.js niet laden omdat het 'net' en 'path' nodig heeft.
   if (process.env.NEXT_RUNTIME === 'edge') {
     return null;
   }
   
-  if (!dbInstance) {
+  if (!(globalThis as any).dbInstance) {
     try {
-      // Sherlock: We gebruiken eval('require') om te voorkomen dat Webpack de modules 
-      // probeert te bundelen voor de Edge runtime, wat 'net' errors veroorzaakt.
       const req = eval('require');
       const postgres = req('postgres');
       const { drizzle } = req('drizzle-orm/postgres-js');
-      schema = req('./schema');
-
+      
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      const client = postgres(connectionString, { prepare: false });
-      dbInstance = drizzle(client, { schema });
+      // CHRIS-PROTOCOL: Beperk het aantal connecties in de pool om "Max client connections reached" te voorkomen.
+      // In dev is 1 connectie vaak genoeg, in prod schalen we mee met de serverless limieten.
+      const client = postgres(connectionString, { 
+        prepare: false,
+        max: process.env.NODE_ENV === 'development' ? 5 : 10,
+        idle_timeout: 20,
+        connect_timeout: 10
+      });
+      
+      (globalThis as any).dbInstance = drizzle(client, { schema });
+      console.log('✅ Drizzle initialized (Pool size:', process.env.NODE_ENV === 'development' ? 5 : 10, ')');
     } catch (e) {
       console.error('❌ Failed to initialize Drizzle:', e);
       return null;
     }
   }
-  return dbInstance;
+  return (globalThis as any).dbInstance;
 };
 
 export const db = new Proxy({} as any, {

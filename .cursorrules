@@ -137,7 +137,7 @@ Deze standaard geldt voor alle carousels en kaarten (Workshops, Voicecards, etc.
    - **Natural Capitalization**: Namen en titels volgen de natuurlijke cadans. Geen geforceerde UPPERCASE.
 
 4. **Admin Empowerment (God Mode)**:
-   - **Shortcut**: `Cmd + Shift + B` toggelt de Edit Mode.
+   - **Shortcut**: `Cmd + Shift + E` toggelt de Edit Mode.
    - **Visual Feedback**: Actieve kaarten krijgen een `ring-2 ring-primary` in Edit Mode.
    - **Direct Sync**: Wijzigingen via `<VoiceglotText />` synchroniseren binnen 100ms met de database.
 

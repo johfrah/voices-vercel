@@ -6,6 +6,69 @@ export const senderType = pgEnum("sender_type", ['user', 'admin', 'ai'])
 export const status = pgEnum("status", ['pending', 'approved', 'active', 'live', 'publish', 'rejected', 'cancelled'])
 export const studioSessionStatus = pgEnum("studio_session_status", ['active', 'archived', 'completed'])
 export const studioFeedbackType = pgEnum("studio_feedback_type", ['text', 'audio', 'waveform_marker'])
+export const gender = pgEnum("gender", ['male', 'female', 'non-binary'])
+export const experienceLevel = pgEnum("experience_level", ['junior', 'pro', 'senior', 'legend'])
+
+export const languages = pgTable("languages", {
+	id: serial().primaryKey().notNull(),
+	code: text().unique().notNull(),
+	label: text().notNull(),
+	isPopular: boolean("is_popular").default(false),
+	isNativeOnly: boolean("is_native_only").default(false),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
+export const countries = pgTable("countries", {
+	id: serial().primaryKey().notNull(),
+	code: text().unique().notNull(), // ISO code (BE, NL, etc)
+	label: text().notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
+export const voiceTones = pgTable("voice_tones", {
+	id: serial().primaryKey().notNull(),
+	label: text().unique().notNull(), // Warm, Zakelijk, etc
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
+export const actorLanguages = pgTable("actor_languages", {
+	id: serial().primaryKey().notNull(),
+	actorId: integer("actor_id").notNull(),
+	languageId: integer("language_id").notNull(),
+	isNative: boolean("is_native").default(false),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.actorId],
+		foreignColumns: [actors.id],
+		name: "actor_languages_actor_id_actors_id_fk"
+	}),
+	foreignKey({
+		columns: [table.languageId],
+		foreignColumns: [languages.id],
+		name: "actor_languages_language_id_languages_id_fk"
+	}),
+	unique("actor_languages_actor_id_language_id_key").on(table.actorId, table.languageId),
+]);
+
+export const actorTones = pgTable("actor_tones", {
+	id: serial().primaryKey().notNull(),
+	actorId: integer("actor_id").notNull(),
+	toneId: integer("tone_id").notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.actorId],
+		foreignColumns: [actors.id],
+		name: "actor_tones_actor_id_actors_id_fk"
+	}),
+	foreignKey({
+		columns: [table.toneId],
+		foreignColumns: [voiceTones.id],
+		name: "actor_tones_tone_id_voice_tones_id_fk"
+	}),
+	unique("actor_tones_actor_id_tone_id_key").on(table.actorId, table.toneId),
+]);
 
 
 export const actorDemos = pgTable("actor_demos", {
@@ -758,9 +821,9 @@ export const actors = pgTable("actors", {
 	userId: integer("user_id"),
 	firstName: text("first_name").notNull(),
 	lastName: text("last_name"),
-	gender: text(),
+	gender: gender(),
 	nativeLang: text("native_lang"),
-	country: text(),
+	countryId: integer("country_id"),
 	deliveryTime: text("delivery_time"),
 	extraLangs: text("extra_langs"),
 	bio: text(),
@@ -793,7 +856,7 @@ export const actors = pgTable("actors", {
 	samedayDelivery: boolean("sameday_delivery").default(false),
 	pendingBio: text("pending_bio"),
 	pendingTagline: text("pending_tagline"),
-	experienceLevel: text("experience_level").default('pro'),
+	experienceLevel: experienceLevel().default('pro'),
 	studioSpecs: jsonb("studio_specs").default({}),
 	connectivity: jsonb().default({}),
 	availability: jsonb().default([]),
@@ -804,12 +867,19 @@ export const actors = pgTable("actors", {
 	birthYear: integer("birth_year"),
 	location: text(),
 	aiTags: jsonb("ai_tags").default([]),
+	holidayFrom: timestamp("holiday_from", { mode: 'string' }),
+	holidayTill: timestamp("holiday_till", { mode: 'string' }),
 }, (table) => [
 	uniqueIndex("actors_slug_idx").using("btree", table.slug.asc().nullsLast().op("text_ops")),
 	foreignKey({
 			columns: [table.userId],
 			foreignColumns: [users.id],
 			name: "actors_user_id_users_id_fk"
+		}),
+	foreignKey({
+			columns: [table.countryId],
+			foreignColumns: [countries.id],
+			name: "actors_country_id_countries_id_fk"
 		}),
 	unique("actors_wp_product_id_unique").on(table.wpProductId),
 	unique("actors_slug_key").on(table.slug),
