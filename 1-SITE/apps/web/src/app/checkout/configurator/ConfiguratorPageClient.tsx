@@ -25,6 +25,7 @@ import { VoiceCard } from '@/components/ui/VoiceCard';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
 import { useMasterControl, JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { MusicSelector } from '@/components/studio/MusicSelector';
+import { BriefingSelector } from '@/components/studio/BriefingSelector';
 import { TelephonySmartSuggestions } from '@/components/checkout/TelephonySmartSuggestions';
 import { Sparkles, Brain, Wand2, Zap } from 'lucide-react';
 
@@ -69,6 +70,7 @@ export default function ConfiguratorPageClient({
   
   // AI Assistant State
   const [showAiAssistant, setShowAiAssistant] = useState(false);
+  const [showBriefingSelector, setShowBriefingSelector] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
   const suggestionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -602,6 +604,40 @@ export default function ConfiguratorPageClient({
             </AnimatePresence>
 
             <div className={cn("grid grid-cols-1 gap-4", !minimalMode && "mt-8")}>
+              <div className="space-y-4">
+                <button 
+                  onClick={() => {
+                    setShowBriefingSelector(!showBriefingSelector);
+                    playClick(showBriefingSelector ? 'light' : 'pro');
+                  }} 
+                  className={cn(
+                    "w-full flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", 
+                    (showBriefingSelector || state.briefingFiles.length > 0) ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10"
+                  )}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", (showBriefingSelector || state.briefingFiles.length > 0) ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
+                      {state.briefingFiles.length > 0 ? <Check size={18} strokeWidth={3} /> : <Plus size={18} strokeWidth={1.5} />}
+                    </div>
+                    <div>
+                      <div className={cn("text-[13px] font-bold transition-colors", (showBriefingSelector || state.briefingFiles.length > 0) ? "text-primary" : "text-va-black")}>Voeg briefing toe</div>
+                      <div className="text-[11px] text-va-black/40 font-light">Spreek je briefing in, upload een bestand of voeg extra tekst toe</div>
+                    </div>
+                  </div>
+                  {state.briefingFiles.length > 0 && (
+                    <div className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-widest">
+                      {state.briefingFiles.length} {state.briefingFiles.length === 1 ? 'item' : 'items'}
+                    </div>
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {showBriefingSelector && (
+                    <BriefingSelector />
+                  )}
+                </AnimatePresence>
+              </div>
+
               {state.usage === 'telefonie' && (
                 <div className="space-y-4">
                   <button 

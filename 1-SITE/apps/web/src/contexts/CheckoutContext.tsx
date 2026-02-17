@@ -46,8 +46,14 @@ interface CheckoutState {
       country: string;
     };
     items: any[];
-    isLocked: boolean;
-    pricing: {
+  isLocked: boolean;
+  briefingFiles: {
+    id: string;
+    name: string;
+    type: 'audio' | 'video' | 'text';
+    url: string;
+  }[];
+  pricing: {
       base: number;
       wordSurcharge: number;
       mediaSurcharge: number;
@@ -80,6 +86,8 @@ interface CheckoutState {
     addItem: (item: any) => void;
     removeItem: (itemId: string) => void;
     calculatePricing: () => void;
+    addBriefingFile: (file: { name: string, type: 'audio' | 'video' | 'text', url: string }) => void;
+    removeBriefingFile: (id: string) => void;
     lockPrice: () => void;
     unlockPrice: () => void;
     isVatExempt: boolean;
@@ -118,12 +126,13 @@ interface CheckoutState {
       address: '',
       address_street: '',
       city: '',
-      postal_code: '',
-      country: 'BE',
-    },
-    items: [],
-    isLocked: false,
-    pricing: {
+    postal_code: '',
+    country: 'BE',
+  },
+  items: [],
+  isLocked: false,
+  briefingFiles: [],
+  pricing: {
       base: 0,
       wordSurcharge: 0,
       mediaSurcharge: 0,
@@ -209,6 +218,20 @@ interface CheckoutState {
       ...prev,
       items: prev.items.filter((i: { id?: string }) => i.id !== itemId)
     })), []);
+
+    const addBriefingFile = useCallback((file: { name: string, type: 'audio' | 'video' | 'text', url: string }) => {
+      setState(prev => ({
+        ...prev,
+        briefingFiles: [...prev.briefingFiles, { ...file, id: `file-${Date.now()}` }]
+      }));
+    }, []);
+
+    const removeBriefingFile = useCallback((id: string) => {
+      setState(prev => ({
+        ...prev,
+        briefingFiles: prev.briefingFiles.filter(f => f.id !== id)
+      }));
+    }, []);
 
     const lockPrice = useCallback(() => setState(prev => ({ ...prev, isLocked: true })), []);
     const unlockPrice = useCallback(() => setState(prev => ({ ...prev, isLocked: false })), []);
@@ -354,6 +377,8 @@ interface CheckoutState {
         addItem,
         removeItem,
         calculatePricing,
+        addBriefingFile,
+        removeBriefingFile,
         lockPrice,
         unlockPrice,
         isVatExempt
