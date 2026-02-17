@@ -141,6 +141,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
   };
 
   const togglePlay = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     
     if (voice.video_url) {
@@ -439,7 +440,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
 
           {/* Center: Main Play Button */}
           <div 
-            onClick={togglePlay}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              togglePlay(e);
+            }}
             className="absolute inset-0 flex items-center justify-center cursor-pointer z-20"
           >
             <div 
