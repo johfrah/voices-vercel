@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@voices/database";
 import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 

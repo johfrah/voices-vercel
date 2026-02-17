@@ -7,7 +7,7 @@ import {
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { VideoPlayer } from "@/components/ui/VideoPlayer";
+import { VideoPlayer } from "@/components/academy/VideoPlayer";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { ArrowLeft, Quote } from "lucide-react";
 import { Metadata } from 'next';
