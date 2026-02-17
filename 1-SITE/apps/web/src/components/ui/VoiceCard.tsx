@@ -607,7 +607,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
             </div>
 
             <div className={cn("flex justify-between items-center mt-auto", compact ? "pt-2" : "pt-6 border-t border-black/[0.03]")}>
-            <div className={cn("flex flex-col items-end", compact ? "w-auto" : "w-full")}>
+            <div className={cn("flex flex-col items-start", compact ? "w-auto" : "")}>
               {!compact && (
                 <TextInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-1">
                   Vanaf
