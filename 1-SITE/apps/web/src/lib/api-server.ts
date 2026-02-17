@@ -219,7 +219,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     try {
       //  CHRIS-PROTOCOL: Batch all secondary requests to avoid sequential blocking
       const [reviewsRes, transRes, mediaRes] = await Promise.all([
-        db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(10),
+        db.select().from(reviews).where(sql`length(text_nl) > 10`).orderBy(desc(reviews.createdAt)).limit(12),
         VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang),
         photoIds.length > 0
           ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`)
@@ -232,7 +232,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     } catch (relError: any) {
       console.warn(' Drizzle relation fetch failed, falling back to SDK:', relError.message);
       const [reviewsRes, transRes, mediaRes] = await Promise.all([
-        supabase.from('reviews').select('*').order('created_at', { ascending: false }).limit(10),
+        supabase.from('reviews').select('*').gt(sql`length(text_nl)`, 10).order('created_at', { ascending: false }).limit(12),
         VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang),
         photoIds.length > 0
           ? supabase.from('media').select('*').in('id', photoIds)

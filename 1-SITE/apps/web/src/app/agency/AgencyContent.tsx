@@ -69,13 +69,13 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
   };
 
   return (
-    <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6" id="master-control-anchor">
+    <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0" id="master-control-anchor">
       {/* Filters persistent bovenaan */}
-      <div className="relative z-50">
+      <div className="relative z-50 w-full px-4 md:px-6">
         <VoicesMasterControl actors={mappedActors} filters={filters} />
       </div>
       
-      <div className="mt-12 relative min-h-[600px]">
+      <div className="mt-12 relative min-h-[600px] px-4 md:px-6">
         <AnimatePresence mode="wait">
           {state.currentStep === 'voice' && (
             <motion.div

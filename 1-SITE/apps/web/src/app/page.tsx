@@ -320,8 +320,8 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
       <LiquidBackground strokeWidth={1.5} />
       
       <SectionInstrument className="!pt-20 pb-32 relative z-50">
-        <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="mb-20 text-center max-w-4xl mx-auto space-y-8">
+        <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0">
+          <div className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
             <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
               <VoiceglotText translationKey={`home.hero.title_part1_${masterControlState.journey}`} defaultText={journeyContent.titlePart1} />
               {" "}
@@ -336,9 +336,11 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
             </p>
           </div>
 
-          <VoicesMasterControl actors={actors} filters={filters} availableExtraLangs={availableExtraLangs} />
+          <div className="w-full relative z-50 px-4 md:px-6">
+            <VoicesMasterControl actors={actors} filters={filters} availableExtraLangs={availableExtraLangs} />
+          </div>
           
-          <div className="mt-20 relative min-h-[600px]">
+          <div className="mt-20 relative min-h-[600px] w-full px-4 md:px-6">
             <AnimatePresence mode="wait">
               {masterControlState.currentStep === 'voice' ? (
                 <motion.div
@@ -347,6 +349,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                  className="w-full"
                 >
                   {filteredActors && filteredActors.length > 0 ? (
                     <VoiceGrid 
@@ -356,7 +359,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                         // Ensure we use the latest photo_url from our local state
                         photo_url: actors.find(actor => actor.id === a.id)?.photo_url || a.photo_url
                       }))} 
-                      featured={true} 
+                      featured={false} 
                       onSelect={(actor) => {
                         //  CHRIS-PROTOCOL: The "Ultimate SPA" Way
                         // We stay on the homepage and just switch the step!
@@ -374,7 +377,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                       }}
                     />
                   ) : (
-                    <div className="py-20 text-center">
+                    <div className="py-20 text-center w-full">
                       <TextInstrument className="text-va-black/20 text-xl font-light italic">
                         Geen stemmen gevonden voor deze selectie.
                       </TextInstrument>
@@ -388,8 +391,9 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.98, y: -20 }}
                   transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                  className="w-full"
                 >
-                  <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
+                  <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start w-full">
                     {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
                     <div className="order-1 lg:order-2 lg:col-span-9 w-full">
                       <ConfiguratorPageClient 
@@ -403,7 +407,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                     <div className="order-2 lg:order-1 lg:col-span-3 w-full">
                       <motion.div
                         layoutId={`actor-${checkoutState.selectedActor?.id}`}
-                        className="lg:sticky lg:top-10"
+                        className="lg:sticky lg:top-10 w-full"
                       >
                         {checkoutState.selectedActor && (
                           <VoiceCard 
@@ -443,8 +447,6 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
           />
         </ContainerInstrument>
       </SectionInstrument>
-
-      <BentoShowcaseInstrument customerDNA={customerDNA} />
 
       {/* LLM Context Layer */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
