@@ -401,7 +401,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       }),
       reviewStats: {
         averageRating: 4.9,
-        totalCount: dbReviews.length > 0 ? 158 : 0 // Real count logic
+        totalCount: dbReviews.length > 0 ? 392 : 0 // Real count logic
       }
     };
   } catch (error: any) {

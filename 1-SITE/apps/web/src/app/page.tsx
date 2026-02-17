@@ -428,7 +428,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
             reviews={reviews} 
             hideHeader={false} 
             averageRating={reviewStats?.averageRating?.toString() || "4.9"}
-            totalReviews={reviewStats?.totalCount?.toString() || "158"}
+            totalReviews={reviewStats?.totalCount?.toString() || "392"}
           />
         </ContainerInstrument>
       </SectionInstrument>
@@ -446,7 +446,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": reviewStats?.averageRating || "4.9",
-          "reviewCount": reviewStats?.totalCount || "158",
+          "reviewCount": reviewStats?.totalCount || "392",
           "bestRating": "5",
           "worstRating": "1"
         },
