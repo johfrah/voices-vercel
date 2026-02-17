@@ -1,5 +1,5 @@
-import { db } from "@voices/database";
-import { costs } from "@voices/database/src/schema";
+import { db } from "@db";
+import { costs } from "@db/schema";
 import { NextRequest, NextResponse } from "next/server";
 
 /**

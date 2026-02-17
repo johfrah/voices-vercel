@@ -167,14 +167,7 @@ interface CheckoutState {
       });
     }, []);
 
-    //  KELLY'S SYNC: Re-calculate pricing whenever usage, briefing or other key factors change
-    // This effect is the primary driver for price updates in the configurator.
-    useEffect(() => {
-      calculatePricing();
-    }, [state.usage, state.briefing, state.selectedActor, state.plan, state.media, state.country, state.spots, state.years, state.liveSession]);
-    
     const updatePlan = useCallback((plan: PlanType) => setState(prev => ({ ...prev, plan })), []);
-    
     const updateMedia = useCallback((media: CheckoutState['media']) => {
       console.log(`[CheckoutContext] Updating media to: ${JSON.stringify(media)}`);
       setState(prev => ({ ...prev, media }));
@@ -186,29 +179,27 @@ interface CheckoutState {
     const updateYearsDetail = useCallback((detail: Record<string, number>) => setState(prev => ({ ...prev, yearsDetail: detail })), []);
     const updateLiveSession = useCallback((liveSession: boolean) => setState(prev => ({ ...prev, liveSession })), []);
     const updateIsQuoteRequest = useCallback((isQuoteRequest: boolean) => setState(prev => ({ ...prev, isQuoteRequest })), []);
-    
-    const updateMusic = useCallback((music: Partial<CheckoutState['music']>) => 
+
+    const updateMusic = useCallback((music: Partial<CheckoutState['music']>) =>
       setState(prev => ({ ...prev, music: { ...prev.music, ...music } })), []);
-    
+
     const selectActor = useCallback((actor: Actor | null) => setState(prev => {
-      //  AUTO-QUOTE DETECTION: Als een stem geen tarieven heeft voor de huidige context, 
-      // zetten we de checkout automatisch in 'offerte' modus.
       const status = actor ? PricingEngine.getAvailabilityStatus(
-        actor, 
-        prev.usage === 'commercial' ? (prev.media as any) : [], 
-        Array.isArray(prev.country) ? prev.country[0] : prev.country // Use first country for check
+        actor,
+        prev.usage === 'commercial' ? (prev.media as any) : [],
+        Array.isArray(prev.country) ? prev.country[0] : prev.country
       ) : 'available';
-  
-      return { 
-        ...prev, 
+
+      return {
+        ...prev,
         selectedActor: actor,
         isQuoteRequest: status === 'on_request'
       };
     }), []);
-    
-    const updateCustomer = useCallback((customer: Partial<CheckoutState['customer']>) => 
+
+    const updateCustomer = useCallback((customer: Partial<CheckoutState['customer']>) =>
       setState(prev => ({ ...prev, customer: { ...prev.customer, ...customer } })), []);
-  
+
     const addItem = useCallback((item: any) => setState(prev => ({
       ...prev,
       items: [...prev.items, item]
@@ -216,12 +207,12 @@ interface CheckoutState {
 
     const removeItem = useCallback((itemId: string) => setState(prev => ({
       ...prev,
-      items: prev.items.filter(i => i.id !== itemId)
+      items: prev.items.filter((i: { id?: string }) => i.id !== itemId)
     })), []);
 
     const lockPrice = useCallback(() => setState(prev => ({ ...prev, isLocked: true })), []);
     const unlockPrice = useCallback(() => setState(prev => ({ ...prev, isLocked: false })), []);
-  
+
     const calculatePricing = useCallback(() => {
       if (state.isLocked) return; //  KELLY'S LOCK: No recalculation if price is frozen
   
@@ -323,10 +314,12 @@ interface CheckoutState {
         };
       });
     }, [state.briefing, state.usage, state.plan, state.journey, state.upsells, state.music, state.customer.vat_number, state.customer.country, state.isLocked, state.editionId, state.media, state.country, state.selectedActor, state.spots, state.years, state.spotsDetail, state.yearsDetail, state.liveSession]);
-  
+
+    //  KELLY'S SYNC: Re-calculate pricing whenever usage, briefing or other key factors change
+    // This effect is the primary driver for price updates in the configurator.
     useEffect(() => {
-      // calculatePricing is now driven by the KELLY'S SYNC effect above
-    }, []);
+      calculatePricing();
+    }, [calculatePricing]);
   
     const isVatExempt = !!state.customer.vat_number && state.customer.country !== 'BE';
   

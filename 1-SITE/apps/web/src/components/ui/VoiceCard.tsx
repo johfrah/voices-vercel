@@ -592,7 +592,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                 onClick={(e) => {
                   e.stopPropagation();
                   playClick('success');
-                  if (typeof window !== 'undefined') {
+                  
+                  // CHRIS-PROTOCOL: If we have an onSelect handler (SPA mode), use it instead of navigating
+                  if (onSelect) {
+                    onSelect(voice);
+                  } else if (typeof window !== 'undefined') {
                     window.location.href = `/voice/${voice.slug}/`;
                   }
                 }}

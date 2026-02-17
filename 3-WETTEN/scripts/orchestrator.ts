@@ -244,20 +244,74 @@ class AgentOrchestrator {
     });
   }
 
-  async runGitOperations() {
+  async runGitOperations(message: string = "Bob Concert: Harmonized & Deployed") {
     try {
       const status = execSync('git status --porcelain').toString().trim();
       if (status) {
         this.log('BOB', 'SUCCESS', '🟢 GOLDEN STANDARD BEREIKT: Start Git Push Sequence...');
+        
+        // CHRIS-PROTOCOL: Add and commit
         execSync('git add .');
-        execSync('git commit -m "Bob Concert: Harmonized & Deployed"');
-        execSync('git push origin main');
-        this.log('BOB', 'SUCCESS', '🚀 Applaus! De etalage is bijgewerkt.');
+        execSync(`git commit -m "${message}"`);
+        
+        // SUZY-PROTOCOL: Get current branch
+        const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+        
+        this.log('BOB', 'INFO', `🚀 Pushen naar GitHub (branch: ${branch})...`);
+        
+        // Execute push and capture output for error analysis
+        try {
+          const pushOutput = execSync(`git push origin ${branch} 2>&1`).toString();
+          this.log('BOB', 'SUCCESS', '🚀 Applaus! De code staat veilig op GitHub.');
+          
+          if (pushOutput.includes('Everything up-to-date')) {
+            this.log('BOB', 'INFO', '✨ GitHub was al up-to-date.');
+          }
+        } catch (pushError: any) {
+          const errorOutput = pushError.stdout?.toString() || pushError.message;
+          this.log('BOB', 'ERROR', '❌ Git Push faalde kritiek.');
+          
+          // ANNA-PROTOCOL: Error Analysis
+          if (errorOutput.includes('rejected') || errorOutput.includes('fetch first')) {
+            this.log('ANNA', 'WARNING', 'Analyse: Remote bevat wijzigingen die je lokaal niet hebt.');
+            this.log('FELIX', 'FIX', 'Advies: Voer eerst een git pull uit.');
+          } else if (errorOutput.includes('permission denied')) {
+            this.log('WIM', 'CRITICAL', 'Analyse: Toegang geweigerd. Check je SSH-sleutels of GitHub rechten.');
+          }
+          
+          throw new Error(`Git Push failed: ${errorOutput}`);
+        }
       } else {
         this.log('BOB', 'INFO', '✨ Geen wijzigingen. Het podium is schoon.');
       }
     } catch (e: any) {
-      this.log('BOB', 'ERROR', `Git Push faalde: ${e.message}`);
+      this.log('BOB', 'ERROR', `Git operatie faalde: ${e.message}`);
+      throw e;
+    }
+  }
+
+  async runPushOnly() {
+    this.startTime = Date.now();
+    this.log('BOB', 'INFO', '🚀 START PUSH-ONLY SEQUENCE (Quick Deploy)');
+    
+    try {
+      // 1. Snelle Anna Check (Linting)
+      await this.runAgentCycle('ANNA', async () => {
+        this.log('ANNA', 'INFO', 'Snelle lint-check voor push...');
+        execSync('npm run lint', { cwd: '1-SITE/apps/web', stdio: 'pipe' });
+      }, async () => {
+        this.log('FELIX', 'FIX', 'Auto-fixing lints voor push...');
+        execSync('npm run lint:fix', { cwd: '1-SITE/apps/web', stdio: 'pipe' });
+      });
+
+      // 2. Git Operations
+      await this.runGitOperations("Quick Push: SPA & Pricing Updates");
+      
+      this.log('BOB', 'SUCCESS', '✅ PUSH VOLTOOID');
+    } catch (e: any) {
+      this.log('BOB', 'CRITICAL', `🛑 PUSH GEANNULEERD: ${e.message}`);
+    } finally {
+      this.printSummary();
     }
   }
 
@@ -427,6 +481,8 @@ if (mode === 'live') {
   });
 } else if (mode === 'deep-clean') {
   orchestrator.runFelixBasic();
+} else if (mode === 'push') {
+  orchestrator.runPushOnly();
 } else {
   orchestrator.runConcert();
 }

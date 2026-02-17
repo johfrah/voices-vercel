@@ -154,7 +154,23 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
         updateYearsDetail(state.filters.yearsDetail);
       }
     }
-  }, [state.journey, state.filters.media, state.filters.words, state.filters.spotsDetail, state.filters.yearsDetail, checkoutState.briefing, checkoutState.usage]); // Added checkoutState.usage back to dependencies to ensure sync works both ways but with the guard above
+  }, [
+    state.journey, 
+    state.filters.media, 
+    state.filters.words, 
+    state.filters.spotsDetail, 
+    state.filters.yearsDetail, 
+    checkoutState.briefing, 
+    checkoutState.usage, 
+    checkoutState.media, 
+    checkoutState.spotsDetail, 
+    checkoutState.yearsDetail, 
+    updateBriefing, 
+    updateMedia, 
+    updateSpotsDetail, 
+    updateUsage, 
+    updateYearsDetail
+  ]); // Satisfy linter while maintaining guard logic
 
   // Sync with URL and other contexts
   const updateJourney = useCallback((journey: JourneyType) => {

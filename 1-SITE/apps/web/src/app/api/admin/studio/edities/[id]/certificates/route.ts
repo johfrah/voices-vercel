@@ -1,5 +1,5 @@
-import { db } from "@voices/database";
-import { orderItems, orders, users } from "@voices/database/src/schema";
+import { db } from "@db";
+import { orderItems, orders, users } from "@db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { CertificateService } from "@/lib/system/certificate-service";

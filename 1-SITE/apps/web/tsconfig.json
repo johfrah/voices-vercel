@@ -24,7 +24,9 @@
       "@db/*": ["../../packages/database/src/*"],
       "@db-service": ["./src/lib/db-service.ts"],
       "@database/*": ["../../packages/database/*"],
-      "@legacy/*": ["../../legacy/*"]
+      "@legacy/*": ["../../legacy/*"],
+      "@voices/database": ["../../packages/database/src/index.ts"],
+      "@voices/database/*": ["../../packages/database/src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

@@ -1,0 +1,39 @@
+
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+import { createClient } from '@supabase/supabase-js';
+
+const envPath = path.join(process.cwd(), '1-SITE/apps/web/.env.local');
+dotenv.config({ path: envPath });
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function checkBirgitFixed() {
+  const fileToCheck = 'active/voicecards/189009-birgit-photo-square-1.jpg';
+  console.log(`🔍 Checking if fixed file exists: ${fileToCheck}`);
+  
+  const parts = fileToCheck.split('/');
+  const fileName = parts.pop()!;
+  const folder = parts.join('/');
+  
+  const { data, error } = await supabase.storage.from('voices').list(folder, {
+    search: fileName
+  });
+  
+  if (data && data.length > 0) {
+    console.log(`✅ FOUND: ${fileToCheck}`);
+  } else {
+    console.log(`❌ NOT FOUND: ${fileToCheck}`);
+    // List all files in folder to see what Birgit files ARE there
+    const { data: allFiles } = await supabase.storage.from('voices').list(folder);
+    console.log("   Files in folder starting with 189009:");
+    allFiles?.filter(f => f.name.startsWith('189009')).forEach(f => console.log(`   - ${f.name}`));
+  }
+  
+  process.exit(0);
+}
+
+checkBirgitFixed();
