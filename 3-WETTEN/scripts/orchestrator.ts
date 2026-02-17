@@ -266,6 +266,9 @@ class AgentOrchestrator {
           
           if (pushOutput.includes('Everything up-to-date')) {
             this.log('BOB', 'INFO', '✨ GitHub was al up-to-date.');
+          } else {
+            // ANNA-PROTOCOL: Wait for Vercel Deployment
+            await this.waitForVercelDeployment();
           }
         } catch (pushError: any) {
           const errorOutput = pushError.stdout?.toString() || pushError.message;
@@ -288,6 +291,72 @@ class AgentOrchestrator {
       this.log('BOB', 'ERROR', `Git operatie faalde: ${e.message}`);
       throw e;
     }
+  }
+
+  async waitForVercelDeployment() {
+    this.log('ANNA', 'INFO', '⏳ Start Deep Audit: Wachten op Vercel deployment status...');
+    
+    let attempts = 0;
+    const maxAttempts = 40; // 6-7 minuten max
+    
+    while (attempts < maxAttempts) {
+      attempts++;
+      try {
+        // Gebruik vercel inspect --json voor diepe data
+        const output = execSync('vercel list voices-os-2026 --limit 1 --json').toString();
+        const deployments = JSON.parse(output);
+        
+        if (!deployments || deployments.length === 0) {
+          throw new Error('Geen deployments gevonden');
+        }
+
+        const latest = deployments[0];
+        const status = latest.state || latest.status;
+
+        if (status === 'READY') {
+          this.log('ANNA', 'SUCCESS', '✅ Vercel Deployment is READY!');
+          this.log('BOB', 'SUCCESS', `🌍 Live op: https://${latest.url}`);
+          return;
+        } else if (status === 'ERROR' || status === 'FAILED') {
+          this.log('ANNA', 'CRITICAL', '❌ Vercel Deployment FAILED!');
+          
+          // FORENSISCH ONDERZOEK: Haal de logs op
+          try {
+            this.log('CHRIS', 'INFO', '🔍 Chris start forensisch onderzoek naar build-logs...');
+            const inspectOutput = execSync(`vercel inspect ${latest.id}`).toString();
+            
+            // Zoek naar foutmeldingen in de output
+            const errorLines = inspectOutput.split('\n').filter(line => 
+              line.toLowerCase().includes('error') || 
+              line.toLowerCase().includes('failed') ||
+              line.includes('⨯')
+            ).slice(0, 5);
+
+            if (errorLines.length > 0) {
+              this.log('CHRIS', 'ERROR', 'Gevonden foutmeldingen in Vercel:');
+              errorLines.forEach(err => console.log(`${COLORS.red}  ! ${err.trim()}${COLORS.reset}`));
+            }
+          } catch (logErr) {
+            this.log('WIM', 'WARNING', 'Kon gedetailleerde logs niet ophalen via CLI.');
+          }
+
+          throw new Error('Vercel build failed. Check de logs hierboven.');
+        } else {
+          if (attempts % 3 === 0) {
+            this.log('ANNA', 'INFO', `... Vercel Status: ${status} (poging ${attempts}/${maxAttempts})`);
+          }
+          await new Promise(resolve => setTimeout(resolve, 10000));
+        }
+      } catch (e: any) {
+        if (attempts === 1 && !e.message.includes('Vercel build failed')) {
+          this.log('ANNA', 'WARNING', 'Vercel CLI Deep Audit faalde. Mogelijk niet ingelogd.');
+          return;
+        }
+        if (e.message.includes('Vercel build failed')) throw e;
+      }
+    }
+    
+    this.log('ANNA', 'WARNING', 'Vercel deployment duurt te lang. Controleer handmatig.');
   }
 
   async runPushOnly() {
