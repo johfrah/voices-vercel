@@ -101,12 +101,22 @@ export default function ConfiguratorPageClient({
 
   // MARK'S LIVE TIPS
   const liveTip = useMemo(() => {
-    if (wordCount === 0) return "Begin met typen om je script tot leven te brengen.";
+    if (wordCount === 0) {
+      if (state.usage === 'telefonie') return "Tip: Voer hier je IVR of voicemail prompts in.";
+      if (state.usage === 'commercial') return "Tip: Vergeet niet de regie-aanwijzingen voor de spot.";
+      return "Begin met typen om je script tot leven te brengen.";
+    }
     if (wordCount < 10) return "Tip: Gebruik (haakjes) voor regie-aanwijzingen zoals (enthousiast).";
     if (wordCount > 150) return "Wist je dat scripts boven 150 woorden vaak beter werken als ze in delen worden opgenomen?";
     if (state.usage === 'telefonie') return "Voor IVR: Pauzes tussen prompts maken het menu duidelijker.";
     return "Je script ziet er goed uit! De prijs wordt live berekend op basis van je woorden.";
   }, [wordCount, state.usage]);
+
+  const scriptPlaceholder = useMemo(() => {
+    if (state.usage === 'telefonie') return "Voer hier uw IVR of voicemail teksten in...";
+    if (state.usage === 'commercial') return "Voer hier uw commercial script in...";
+    return "Voer hier uw script in voor video of corporate projecten...";
+  }, [state.usage]);
 
   const handleUsageSwitch = (usageId: any) => {
     const journeyMap: Record<string, JourneyType> = {
@@ -448,8 +458,8 @@ export default function ConfiguratorPageClient({
               <textarea
                 value={localBriefing}
                 onChange={(e) => handleBriefingChange(e.target.value)}
-                placeholder="Typ of plak hier je script..."
-                className="w-full h-[400px] p-8 text-xl font-light leading-relaxed bg-transparent border-none focus:ring-0 outline-none resize-none placeholder:text-va-black/5"
+                placeholder={scriptPlaceholder}
+                className="w-full h-[400px] p-8 text-xl font-light leading-relaxed bg-transparent border-none focus:ring-0 outline-none resize-none placeholder:text-va-black/10"
               />
               <div className="p-4 bg-va-off-white/50 border-t border-black/[0.03] flex items-center justify-between">
                 <div className="flex items-center gap-2 text-[11px] text-va-black/40 font-light italic">
