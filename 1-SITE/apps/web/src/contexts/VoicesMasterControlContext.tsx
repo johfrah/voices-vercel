@@ -149,8 +149,9 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     }
     
     // Sync words with briefing if it's empty or needs initialization
+    // CHRIS-PROTOCOL: No more dummy text injection. We use placeholders instead.
     if (state.filters.words && !checkoutState.briefing) {
-      updateBriefing(Array(state.filters.words).fill('woord').join(' '));
+      // updateBriefing(''); // Ensure it stays empty for placeholder to show
     }
 
     // If it's a commercial journey, sync the media type and details
