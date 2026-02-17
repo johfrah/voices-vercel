@@ -516,12 +516,12 @@ export default function ConfiguratorPageClient({
             {minimalMode && (
               <div className="mt-8">
                 <ContainerInstrument className="bg-white rounded-[20px] p-8 text-va-black shadow-aura border border-black/[0.03] relative overflow-hidden">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
-                    <div className="space-y-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+                    <div className="lg:col-span-5 space-y-4">
                       <div className="flex items-center justify-between border-b border-black/[0.03] pb-2">
                         <span className="text-[11px] font-bold tracking-widest text-va-black/30 uppercase">Opbouw prijs</span>
                       </div>
-                      <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                      <div className="space-y-2">
                         <div className="flex justify-between text-[13px]">
                           <span className="text-va-black/40 font-light">Basis (BSF)</span>
                           <span className="font-medium">{PricingEngine.format(state.pricing.base)}</span>
@@ -547,21 +547,40 @@ export default function ConfiguratorPageClient({
                         {state.liveSession && (
                           <div className="flex justify-between text-[13px]">
                             <span className="text-va-black/40 font-light">Live Regie</span>
-                            <span className="font-medium">+{PricingEngine.format(99)}</span>
+                            <span className="font-medium">+{PricingEngine.format(liveRegiePrice)}</span>
                           </div>
                         )}
                       </div>
                     </div>
-                    <div className="flex flex-col md:flex-row items-center gap-8 justify-between">
-                      <div className="space-y-1">
+                    
+                    <div className="lg:col-span-7 flex flex-col sm:flex-row items-center gap-8 justify-between">
+                      <div className="space-y-1 text-center sm:text-left">
                         <div className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Totaal (excl. BTW)</div>
                         <div className="text-5xl font-light tracking-tighter text-va-black">
                           <PriceCountUp value={state.pricing.total} />
                         </div>
                       </div>
                       <div className="flex-1 w-full space-y-3">
-                        <ButtonInstrument onClick={() => { if (isEmbedded) { updateJourney(state.usage === 'commercial' ? 'commercial' : state.usage === 'telefonie' ? 'telephony' : 'video'); updateStep('checkout'); window.scrollTo({ top: 0, behavior: 'smooth' }); } }} disabled={!state.selectedActor || effectiveWordCount === 0} className="va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-xl hover:!bg-primary transition-all">Bestellen <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" /></ButtonInstrument>
-                        <button onClick={handleAddToCart} disabled={!state.selectedActor || effectiveWordCount === 0 || addedToCart} className="w-full py-3 text-[11px] font-bold tracking-[0.2em] text-va-black/20 hover:text-primary transition-all flex items-center justify-center gap-2 uppercase">{addedToCart ? (<><CheckCircle2 size={12} className="text-green-500" /> Toegevoegd</>) : (<><ShoppingBag size={12} /> Bewaar in mandje</>)}</button>
+                        <ButtonInstrument 
+                          onClick={() => { 
+                            if (isEmbedded) { 
+                              updateJourney(state.usage === 'commercial' ? 'commercial' : state.usage === 'telefonie' ? 'telephony' : 'video'); 
+                              updateStep('checkout'); 
+                              window.scrollTo({ top: 0, behavior: 'smooth' }); 
+                            } 
+                          }} 
+                          disabled={!state.selectedActor || effectiveWordCount === 0} 
+                          className="va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-xl hover:!bg-primary transition-all"
+                        >
+                          Bestellen <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                        </ButtonInstrument>
+                        <button 
+                          onClick={handleAddToCart} 
+                          disabled={!state.selectedActor || effectiveWordCount === 0 || addedToCart} 
+                          className="w-full py-3 text-[11px] font-bold tracking-[0.2em] text-va-black/20 hover:text-primary transition-all flex items-center justify-center gap-2 uppercase"
+                        >
+                          {addedToCart ? (<><CheckCircle2 size={12} className="text-green-500" /> Toegevoegd</>) : (<><ShoppingBag size={12} /> Bewaar in mandje</>)}
+                        </button>
                       </div>
                     </div>
                   </div>
