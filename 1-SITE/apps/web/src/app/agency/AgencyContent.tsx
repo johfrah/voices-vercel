@@ -47,16 +47,10 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
               transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
             >
               <Suspense fallback={<LoadingScreenInstrument />}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {mappedActors.map((actor) => (
-                    <div key={actor.id}>
-                      <ConfigurableVoiceCard 
-                        voice={actor} 
-                        onSelect={() => handleActorSelect(actor)} 
-                      />
-                    </div>
-                  ))}
-                </div>
+                <VoiceGrid 
+                  actors={mappedActors} 
+                  onSelect={handleActorSelect}
+                />
               </Suspense>
             </motion.div>
           )}
