@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       isSubscription
     } = body;
     
-    // 🛡️ KELLY'S VIES CHECK: Server-side validation before granting tax exemption
+    //  KELLY'S VIES CHECK: Server-side validation before granting tax exemption
     let isVatExempt = false;
     let viesResult = null;
 
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       isVatExempt
     });
 
-    // 🛡️ KELLY'S INTEGRITY CHECK: Compare backend calculation with frontend submitted price
+    //  KELLY'S INTEGRITY CHECK: Compare backend calculation with frontend submitted price
     const submittedAmount = pricing?.total || 0;
     if (Math.abs(pricingResult.subtotal - submittedAmount) > 0.01) {
       console.warn(`[Price Integrity Violation]: Expected ${pricingResult.subtotal}, got ${submittedAmount}. Order ID: ${metadata?.orderId}`);
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
 
     const amount = pricingResult.subtotal; // Always use verified subtotal
 
-    // ⚖️ LEX: AUDIT & NOTIFY (Non-blocking)
+    //  LEX: AUDIT & NOTIFY (Non-blocking)
     await LexCheck.auditOrder({
       ...body,
       pricingResult,
@@ -133,9 +133,9 @@ export async function POST(request: Request) {
           usage,
           plan,
           isSubscription,
-          music: body.music // 🎵 Store music options (trackId, asBackground, asHoldMusic)
+          music: body.music //  Store music options (trackId, asBackground, asHoldMusic)
         },
-        // 🛡️ KELLY'S INTEGRITY (B2B & Fraud)
+        //  KELLY'S INTEGRITY (B2B & Fraud)
         viesValidatedAt: viesResult?.valid ? new Date() : null,
         viesCountryCode: viesResult?.countryCode || null,
         ipAddress: ip,
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
 
       // 3. Handle Response (Mollie vs Banktransfer vs Quote)
       if (isQuote || gateway === 'banktransfer') {
-        // 🚀 YUKI SYNC: Bij overschrijving maken we direct een factuur in Yuki aan
+        //  YUKI SYNC: Bij overschrijving maken we direct een factuur in Yuki aan
         if (gateway === 'banktransfer') {
           try {
             const { YukiService } = await import('@/services/YukiService');
@@ -203,7 +203,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('❌ Mollie V3 Error:', error);
+    console.error(' Mollie V3 Error:', error);
     return NextResponse.json({ error: 'Checkout initialization failed' }, { status: 500 });
   }
 }

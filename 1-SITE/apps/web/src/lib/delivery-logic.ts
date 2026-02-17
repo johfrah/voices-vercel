@@ -1,5 +1,5 @@
 /**
- * 🚚 NUCLEAR DELIVERY LOGIC (2026 EDITION) - NATIVE JS VERSION
+ *  NUCLEAR DELIVERY LOGIC (2026 EDITION) - NATIVE JS VERSION
  * 
  * Port van de legacy PHP delivery date helpers naar TypeScript.
  * Berekent de verwachte leverdatum op basis van:
@@ -164,12 +164,20 @@ export function calculateDeliveryDate(
     deliveryDaysMax: number;
     cutoffTime: string;
     availability?: any[];
+    holidayFrom?: string | null;
+    holidayTill?: string | null;
   },
   baseDate: Date = new Date()
 ): DeliveryInfo {
   const currentYear = baseDate.getFullYear();
   const holidays = [...getBelgianHolidays(currentYear), ...getBelgianHolidays(currentYear + 1)];
   
+  //  CHRIS-PROTOCOL: Combine availability array with flat holiday fields
+  const effectiveAvailability = [...(actor.availability || [])];
+  if (actor.holidayFrom && actor.holidayTill) {
+    effectiveAvailability.push({ start: actor.holidayFrom, end: actor.holidayTill });
+  }
+
   // 1. Bepaal effectieve startdatum (rekening houdend met cutoff)
   let effectiveStart = new Date(baseDate);
   const [cutoffHour, cutoffMinute] = actor.cutoffTime.split(':').map(Number);
@@ -180,7 +188,7 @@ export function calculateDeliveryDate(
   
   // Als het na de cutoff is, of geen werkdag, begin pas de volgende werkdag te tellen
   if (isAfterCutoff || !isWorkingDay(effectiveStart, holidays)) {
-    effectiveStart = getNextWorkingDay(effectiveStart, holidays, actor.availability);
+    effectiveStart = getNextWorkingDay(effectiveStart, holidays, effectiveAvailability);
   }
 
   // 2. Bereken min en max leverdatum
@@ -191,7 +199,7 @@ export function calculateDeliveryDate(
       date = addDaysNative(date, 1);
       if (isWorkingDay(date, holidays)) {
         // Check ook hier vakanties van de acteur
-        const isOnHoliday = actor.availability?.some(v => {
+        const isOnHoliday = effectiveAvailability.some(v => {
           const start = startOfDayNative(new Date(v.start));
           const end = startOfDayNative(new Date(v.end));
           const check = startOfDayNative(date);

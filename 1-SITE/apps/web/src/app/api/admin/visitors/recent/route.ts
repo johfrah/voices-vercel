@@ -5,7 +5,7 @@ import { desc } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🏺 RECENT SESSIONS API (2026)
+ *  RECENT SESSIONS API (2026)
  * 
  * Haalt de laatste 50 voltooide of inactieve sessies op.
  * Onderdeel van de Intelligence Playlist.
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Recent Sessions API Error:', error);
+    console.error(' Recent Sessions API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -7,7 +7,7 @@ import path from 'path';
 import ytdl from 'ytdl-core';
 
 /**
- * ⚡ NUCLEAR YOUTUBE CONVERTER (2026)
+ *  NUCLEAR YOUTUBE CONVERTER (2026)
  * 
  * Downloadt een YouTube video en zet deze om naar een lokale asset.
  * Koppelt de nieuwe asset direct aan de stemacteur.
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Ongeldige YouTube URL' }, { status: 400 });
     }
 
-    console.log(`🚀 Start conversie voor acteur ${actorId}: ${youtubeUrl}`);
+    console.log(` Start conversie voor acteur ${actorId}: ${youtubeUrl}`);
 
     // 1. Haal video info op
     const info = await ytdl.getInfo(youtubeUrl);

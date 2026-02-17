@@ -1,5 +1,5 @@
 /**
- * ⚖️ LEX: COMPLIANCE & VERACITY CHECKER (2026)
+ *  LEX: COMPLIANCE & VERACITY CHECKER (2026)
  * 
  * Verantwoordelijk voor het bewaken van de waarheid en integriteit op de site.
  * Lex controleert prijzen, BTW-logica en juridische consistentie.
@@ -25,13 +25,13 @@ export class LexCheck {
     if (data.pricing && data.pricingResult) {
       const diff = Math.abs(data.pricing.total - data.pricingResult.total);
       if (diff > 0.01) {
-        issues.push(`Prijs-inconsistentie gedetecteerd: Frontend gaf €${data.pricing.total}, maar Backend berekende €${data.pricingResult.total}.`);
+        issues.push(`Prijs-inconsistentie gedetecteerd: Frontend gaf ${data.pricing.total}, maar Backend berekende ${data.pricingResult.total}.`);
       }
     }
 
     // 2. BTW-logica check
     if (data.country === 'BE' && data.isVatExempt) {
-      issues.push(`Verdachte BTW-vrijstelling: Gebruiker uit België claimt BTW-vrijstelling.`);
+      issues.push(`Verdachte BTW-vrijstelling: Gebruiker uit Belgi claimt BTW-vrijstelling.`);
     }
 
     // 3. Facturatie-integriteit
@@ -55,14 +55,14 @@ export class LexCheck {
    * Stuurt een notificatie naar de admin (via Telegram of interne logs).
    */
   private static async notifyAdmin(issues: string[], context: any) {
-    console.warn(`⚖️ LEX ALERT: ${issues.join(' | ')}`);
+    console.warn(` LEX ALERT: ${issues.join(' | ')}`);
     
-    const message = `⚖️ *LEX ALERT: Inconsistentie Gevonden*\n\n` +
-      `*Issues:*\n${issues.map(i => `• ${i}`).join('\n')}\n\n` +
+    const message = ` *LEX ALERT: Inconsistentie Gevonden*\n\n` +
+      `*Issues:*\n${issues.map(i => ` ${i}`).join('\n')}\n\n` +
       `*Context:*\n` +
-      `• Gebruiker: ${context.email || 'Onbekend'}\n` +
-      `• Order ID: ${context.orderId || 'N/A'}\n` +
-      `• Bedrag: €${context.pricing?.total || '?'}\n\n` +
+      ` Gebruiker: ${context.email || 'Onbekend'}\n` +
+      ` Order ID: ${context.orderId || 'N/A'}\n` +
+      ` Bedrag: ${context.pricing?.total || '?'}\n\n` +
       `_De gebruiker is niet tegengehouden (Bob-methode: Conversie Eerst)._`;
 
     try {
@@ -82,7 +82,7 @@ export class LexCheck {
         });
       }
     } catch (e) {
-      console.error('❌ LEX: Failed to notify admin via Telegram:', e);
+      console.error(' LEX: Failed to notify admin via Telegram:', e);
     }
   }
 }

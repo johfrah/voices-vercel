@@ -20,7 +20,7 @@ export default function VoicemailTipsArticlePage() {
   const tips = [
     { title: "Houd het kort", text: "Niemand wacht graag. Beperk je boodschap tot de essentie: wie ben je, waarom neem je niet op en wanneer ben je er weer." },
     { title: "Spreek glimlachend", text: "Je hoort een glimlach door de telefoon. Het maakt je boodschap direct een stuk vriendelijker." },
-    { title: "Vermijd clichés", text: "Vervang 'uw oproep is belangrijk voor ons' door iets menselijks, zoals 'we helpen je graag zo snel mogelijk'." },
+    { title: "Vermijd clichs", text: "Vervang 'uw oproep is belangrijk voor ons' door iets menselijks, zoals 'we helpen je graag zo snel mogelijk'." },
     { title: "Check je techniek", text: "Zorg voor een ruisvrije opname. Een professionele stem verdient een professionele afwerking." },
     { title: "Update regelmatig", text: "Niets is zo frustrerend als een kerstboodschap in juli. Houd je meldingen actueel." }
   ];

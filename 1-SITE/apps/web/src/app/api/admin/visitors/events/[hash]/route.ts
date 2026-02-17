@@ -4,7 +4,7 @@ import { voicejarEvents, voicejarSessions } from '@db/schema';
 import { eq, asc } from 'drizzle-orm';
 
 /**
- * 🏺 VISITOR EVENTS API (2026)
+ *  VISITOR EVENTS API (2026)
  * 
  * Haalt alle rrweb events op voor een specifieke visitor hash.
  */
@@ -49,7 +49,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('❌ Visitor Events API Error:', error);
+    console.error(' Visitor Events API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

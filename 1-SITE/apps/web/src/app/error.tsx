@@ -11,7 +11,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
 /**
- * 🛡️ APP ERROR (NUCLEAR 2026)
+ *  APP ERROR (NUCLEAR 2026)
  * Error boundary voor app-level fouten.
  */
 export default function Error({
@@ -24,7 +24,7 @@ export default function Error({
   useEffect(() => {
     console.error('App error:', error);
     
-    // 🕵️ WATCHDOG NOTIFICATION
+    //  WATCHDOG NOTIFICATION
     const notifyWatchdog = async () => {
       try {
         await fetch('/api/watchdog/notify', {
@@ -47,7 +47,7 @@ export default function Error({
 
   return (
     <ContainerInstrument className="min-h-[60vh] flex flex-col items-center justify-center gap-8 py-20 px-6">
-      {/* 🕵️ Diagnostic Error Layer (Visible for debugging) */}
+      {/*  Diagnostic Error Layer (Visible for debugging) */}
       <ContainerInstrument className="bg-red-50 p-4 rounded-xl border border-red-100 mb-4 max-w-2xl overflow-auto animate-in fade-in duration-700">
         <TextInstrument className="text-red-800 font-mono text-[15px] font-bold mb-1">
           <VoiceglotText translationKey="auto.error.diagnostic_info_.a840d6" defaultText="Diagnostic Info:" />
@@ -77,7 +77,7 @@ export default function Error({
         <VoiceglotText translationKey="error.app.cta" defaultText="Opnieuw Proberen" />
       </ButtonInstrument>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

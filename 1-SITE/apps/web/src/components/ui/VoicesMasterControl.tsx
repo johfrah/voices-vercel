@@ -6,7 +6,7 @@ import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { MarketManager } from '@config/market-manager';
-import { Check, Globe, Megaphone, Mic2, Phone, Radio, Tv, User, Users, Video } from 'lucide-react';
+import { ArrowUpDown, Check, Globe, Megaphone, Mic2, Phone, Radio, Tv, User, Users, Video, Clock, Star, Type } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
 import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
@@ -17,7 +17,7 @@ import { VoicesDropdown } from './VoicesDropdown';
 import { VoicesWordSlider } from './VoicesWordSlider';
 
 
-// 🛡️ CHRIS-PROTOCOL: Circular Flag Components
+//  CHRIS-PROTOCOL: Circular Flag Components
 const FlagBE = () => (
   <div className="w-5 h-5 rounded-full overflow-hidden border border-black/5 shrink-0">
     <div className="flex h-full w-full">
@@ -144,16 +144,17 @@ const FlagPT = () => (
 );
 
 interface VoicesMasterControlProps {
+  actors: any[]; //  Added actors prop for real-time polyglot mapping
   filters: {
     languages: string[];
     genders: string[];
     styles: string[];
   };
-  availableExtraLangs?: string[]; // 🛡️ New prop for polyglot chips
+  availableExtraLangs?: string[]; 
 }
 
-export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filters, availableExtraLangs = [] }) => {
-  const { playClick } = useSonicDNA();
+export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors, filters, availableExtraLangs = [] }) => {
+  const { playClick, playSwell } = useSonicDNA();
   const { t } = useTranslation();
   const { state, updateJourney, updateFilters, updateStep, resetFilters } = useMasterControl();
   const { state: checkoutState } = useCheckout();
@@ -188,55 +189,72 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
 
   
   
-  // 🌍 COMPREHENSIVE LANGUAGE CONFIG (With Nested Polyglot Data)
+  //  COMPREHENSIVE LANGUAGE CONFIG (With Nested Polyglot Data)
   const sortedLanguages = useMemo(() => {
     const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
     const market = MarketManager.getCurrentMarket(host);
     
-    // 🛡️ CHRIS-PROTOCOL: Map extra languages available for each primary language
-    const getExtraLangsFor = (primary: string) => {
+    //  CHRIS-PROTOCOL: Map extra languages available for each primary language
+    const getExtraLangsFor = (primary: string, primaryValue: string) => {
       const lowPrimary = primary.toLowerCase();
+      const lowPrimaryValue = primaryValue.toLowerCase();
+      const primaryCode = MarketManager.getLanguageCode(lowPrimaryValue);
       const extraLangsSet = new Set<string>();
       
-      actors.forEach(a => {
-        const actorNative = a.native_lang?.toLowerCase();
-        // 🛡️ CHRIS-PROTOCOL: Only consider LIVE actors for available extra languages
-        if (actorNative === lowPrimary || actorNative?.includes(lowPrimary)) {
-          if (a.extra_langs) {
-            a.extra_langs.split(',').forEach(l => {
-              const trimmed = l.trim();
-              if (trimmed && trimmed.toLowerCase() !== lowPrimary) {
-                // Map to standard labels
-                const langMap: Record<string, string> = {
-                  'frans': 'Frans', 'engels': 'Engels', 'duits': 'Duits',
-                  'nederlands': 'Nederlands', 'italiaans': 'Italiaans',
-                  'spaans': 'Spaans', 'vlaams': 'Vlaams'
-                };
-                extraLangsSet.add(langMap[trimmed.toLowerCase()] || trimmed);
-              }
-            });
+      if (actors && Array.isArray(actors)) {
+        actors.forEach(a => {
+          const actorNative = a.native_lang?.toLowerCase();
+          
+          //  CHRIS-PROTOCOL: Match native language by code or label
+          const isMatch = actorNative === primaryCode || 
+                         actorNative === lowPrimaryValue ||
+                         (primaryCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be')) ||
+                         (primaryCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl'));
+
+          if (isMatch) {
+            if (a.extra_langs) {
+              a.extra_langs.split(',').forEach(l => {
+                const trimmed = l.trim();
+                const lowTrimmed = trimmed.toLowerCase();
+                
+                //  CHRIS-PROTOCOL: Exclude native language and its variations from extra languages
+                const isPrimary = lowTrimmed === lowPrimary || lowTrimmed === lowPrimaryValue || 
+                                 lowTrimmed === primaryCode ||
+                                 lowPrimary.includes(lowTrimmed) || lowTrimmed.includes(lowPrimary);
+                
+                //  CHRIS-PROTOCOL: Vlaams is a unique native type (nl-BE). 
+                // Non-natives (like FR or NL-NL) can offer "Nederlands" as extra, but NEVER "Vlaams".
+                const isVlaamsExtra = lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be';
+                
+                if (trimmed && !isPrimary && !isVlaamsExtra) {
+                  // Map to standard labels using centralized MarketManager
+                  extraLangsSet.add(MarketManager.getLanguageLabel(lowTrimmed));
+                }
+              });
+            }
           }
-        }
-      });
+        });
+      }
       return Array.from(extraLangsSet).sort();
     };
 
     const languageConfig = [
-      { label: 'Vlaams', value: 'nl-be', icon: FlagBE, subLabel: 'België', popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
-      { label: 'Nederlands', value: 'nl-nl', icon: FlagNL, subLabel: 'Nederland', popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
-      { label: 'Frans', value: 'fr-be', icon: FlagBE, subLabel: 'België', popular: market.market_code === 'BE' },
-      { label: 'Frans', value: 'fr-fr', icon: FlagFR, subLabel: 'Frankrijk', popular: market.market_code === 'FR' || market.market_code === 'BE' },
-      { label: 'Engels', value: 'en-gb', icon: FlagUK, subLabel: 'United Kingdom', popular: true },
-      { label: 'Engels', value: 'en-us', icon: FlagUS, subLabel: 'United States', popular: true },
-      { label: 'Duits', value: 'de-de', icon: FlagDE, subLabel: 'Duitsland', popular: market.market_code === 'DE' || market.market_code === 'BE' || market.market_code === 'NLNL' },
-      { label: 'Spaans', value: 'es-es', icon: FlagES, subLabel: 'Spanje', popular: market.market_code === 'ES' },
-      { label: 'Italiaans', value: 'it-it', icon: FlagIT, subLabel: 'Italië', popular: market.market_code === 'IT' },
-      { label: 'Pools', value: 'pl-pl', icon: FlagPL, subLabel: 'Polen' },
-      { label: 'Deens', value: 'da-dk', icon: FlagDK, subLabel: 'Denemarken' },
-      { label: 'Portugees', value: 'pt-pt', icon: FlagPT, subLabel: 'Portugal', popular: market.market_code === 'PT' },
+      { label: 'Vlaams', value: 'Vlaams', icon: FlagBE, subLabel: 'Belgi', popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
+      { label: 'Nederlands', value: 'Nederlands', icon: FlagNL, subLabel: 'Nederland', popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
+      { label: 'Frans', value: 'Frans (BE)', icon: FlagBE, subLabel: 'Belgi', popular: market.market_code === 'BE' },
+      { label: 'Frans', value: 'Frans (FR)', icon: FlagFR, subLabel: 'Frankrijk', popular: market.market_code === 'FR' || market.market_code === 'BE' },
+      { label: 'Engels', value: 'Engels (UK)', icon: FlagUK, subLabel: 'United Kingdom', popular: true },
+      { label: 'Engels', value: 'Engels (US)', icon: FlagUS, subLabel: 'United States', popular: true },
+      { label: 'Duits', value: 'Duits', icon: FlagDE, subLabel: 'Duitsland', popular: market.market_code === 'DE' || market.market_code === 'BE' || market.market_code === 'NLNL' },
+      { label: 'Spaans', value: 'Spaans', icon: FlagES, subLabel: 'Spanje', popular: market.market_code === 'ES' },
+      { label: 'Italiaans', value: 'Italiaans', icon: FlagIT, subLabel: 'Itali', popular: market.market_code === 'IT' },
+      { label: 'Pools', value: 'Pools', icon: FlagPL, subLabel: 'Polen' },
+      { label: 'Deens', value: 'Deens', icon: FlagDK, subLabel: 'Denemarken' },
+      { label: 'Portugees', value: 'Portugees', icon: FlagPT, subLabel: 'Portugal', popular: market.market_code === 'PT' },
+      { label: 'Zweeds', value: 'Zweeds', icon: Globe, subLabel: 'Zweden' },
     ].map(lang => ({
       ...lang,
-      availableExtraLangs: state.journey === 'telephony' ? getExtraLangsFor(lang.value) : []
+      availableExtraLangs: state.journey === 'telephony' ? getExtraLangsFor(lang.label, lang.value) : []
     }));
 
     const popularLangs = languageConfig.filter(l => l.popular);
@@ -245,7 +263,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
     const sortFn = (a: any, b: any) => {
       const getBaseLang = (label: string) => label.split(' ')[0];
       const baseA = getBaseLang(a.label);
-      const baseB = getBaseLang(getBaseLang(b.label)); // Fixed potential double split
+      const baseB = getBaseLang(b.label); // Fixed double split typo
 
       if (market.market_code === 'BE') {
         if (a.label === 'Vlaams') return -1;
@@ -272,13 +290,23 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
     ];
 
     return result;
-  }, [state.journey]);
+  }, [state.journey, actors]);
 
 
+
+  const handleJourneySwitch = (id: any) => {
+    try {
+      playSwell();
+    } catch (e) {
+      console.warn('SonicDNA playSwell failed:', e);
+    }
+    playClick('pro');
+    updateJourney(id);
+  };
 
   return (
     <ContainerInstrument className="w-full max-w-7xl mx-auto space-y-8">
-      {/* 🏗️ THE MASTER CONTROL BOX */}
+      {/*  THE MASTER CONTROL BOX */}
       <ContainerInstrument plain className="bg-white border border-black/10 rounded-[40px] p-3 shadow-aura group/master">
         
         {/* 1. Journey Selector (Top Row) */}
@@ -290,7 +318,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
             return (
               <button
                 key={j.id}
-                onClick={() => updateJourney(j.id)}
+                onClick={() => handleJourneySwitch(j.id)}
                 className={cn(
                   "flex-1 flex items-center justify-start gap-4 px-6 py-3 rounded-[28px] transition-all duration-500 group/btn text-left",
                   isActive 
@@ -330,7 +358,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
                 value={state.filters.language}
                 selectedExtraLangs={state.filters.languages || []}
                 onExtraLangToggle={(lang) => {
-                  const currentLangs = state.filters.languages || [state.filters.language!.toLowerCase()];
+                  const currentLangs = state.filters.languages || [state.filters.language?.toLowerCase() || ''];
                   const lowLang = lang.toLowerCase();
                   if (currentLangs.includes(lowLang)) {
                     updateFilters({ languages: currentLangs.filter(l => l !== lowLang) });
@@ -339,7 +367,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
                   }
                 }}
                 onChange={(val) => {
-                  // 🛡️ CHRIS-PROTOCOL: When changing primary language, reset polyglot selection
+                  //  CHRIS-PROTOCOL: When changing primary language, reset polyglot selection
                   updateFilters({ 
                     language: val || undefined,
                     languages: val ? [val.toLowerCase()] : undefined 
@@ -371,14 +399,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
                   rounding="right"
                   isTelephony={state.journey === 'telephony'}
                   isVideo={state.journey === 'video'}
-                  value={state.filters.words || (state.journey === 'telephony' ? 25 : 200)}
+                  value={state.filters.words && state.filters.words >= 5 ? state.filters.words : (state.journey === 'telephony' ? 25 : 200)}
                   onChange={(val) => updateFilters({ words: val })}
+                  livePrice={state.currentStep === 'script' ? PricingEngine.format(checkoutState.pricing.wordSurcharge) : undefined}
                   label="Hoeveelheid?"
                   className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
                 />
               )}
 
-              {/* Media Segment (Commercial only) - 🛡️ AIRBNB STEPPER MODE */}
+              {/* Media Segment (Commercial only) -  AIRBNB STEPPER MODE */}
               {state.journey === 'commercial' && (
                 <VoicesDropdown 
                   stepperMode
@@ -405,6 +434,11 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
                       media: media.length > 0 ? media as any : undefined
                     });
                   }}
+                  yearsValue={state.filters.yearsDetail || {}}
+                  onYearsChange={(val) => {
+                    updateFilters({ yearsDetail: val });
+                  }}
+                  livePrice={state.currentStep === 'script' ? PricingEngine.format(checkoutState.pricing.mediaSurcharge) : undefined}
                   placeholder="Kies type(s)"
                   label="Mediatype?"
                   className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
@@ -415,9 +449,9 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
               {state.journey === 'commercial' && (
                 <VoicesDropdown 
                   searchable
-                  rounding="right"
+                  rounding="none"
                   options={[
-                    { label: 'België', value: 'BE' },
+                    { label: 'Belgi', value: 'BE' },
                     { label: 'Nederland', value: 'NL' },
                     { label: 'Frankrijk', value: 'FR' },
                     { label: 'Duitsland', value: 'DE' },
@@ -425,7 +459,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
                     { label: 'United States', value: 'US' },
                     { label: 'Spanje', value: 'ES' },
                     { label: 'Portugal', value: 'PT' },
-                    { label: 'Italië', value: 'IT' },
+                    { label: 'Itali', value: 'IT' },
                   ]}
                   value={state.filters.countries || [state.filters.country || 'BE']}
                   onChange={(val) => {
@@ -433,11 +467,26 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
                     updateFilters({ countries: countries as any });
                   }}
                   placeholder="Kies land(en)"
-                  label="Welk land?"
+                  label="Uitzendgebied?"
                   className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
                   multiSelect={true}
                 />
               )}
+
+              {/* Sorting Segment (Airbnb Style) */}
+              <VoicesDropdown 
+                rounding="right"
+                options={[
+                  { label: 'Populariteit', value: 'popularity', icon: Star },
+                  { label: 'Levertijd', value: 'delivery', icon: Clock },
+                  { label: 'Alfabetisch', value: 'alphabetical', icon: Type },
+                ]}
+                value={state.filters.sortBy || 'popularity'}
+                onChange={(val) => updateFilters({ sortBy: val as any })}
+                placeholder="Sorteer op"
+                label="Sorteren?"
+                className="flex-1 h-full"
+              />
             </ContainerInstrument>
 
           </div>
@@ -476,8 +525,25 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ filter
       )}
 
       {/* 3. Order Progress (Bottom Row - Subtle) */}
-      <ContainerInstrument plain className="pt-4 relative z-0">
+      <ContainerInstrument plain className="pt-4 relative z-0 flex items-center justify-between">
         <OrderStepsInstrument currentStep={state.currentStep} className="!mb-0" />
+        
+        {state.currentStep !== 'voice' && (
+          <button 
+            onClick={() => {
+              updateStep('voice');
+              // Scroll to top of anchor
+              const element = document.getElementById('master-control-anchor');
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }}
+            className="text-[11px] font-bold tracking-widest text-primary uppercase hover:opacity-70 transition-opacity flex items-center gap-2"
+          >
+            <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            Terug naar Casting
+          </button>
+        )}
       </ContainerInstrument>
     </ContainerInstrument>
   );

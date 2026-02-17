@@ -16,10 +16,10 @@ interface VoiceglotTextProps {
 }
 
 /**
- * 🌐 VOICEGLOT INLINE EDITOR & SELF-HEALING
+ *  VOICEGLOT INLINE EDITOR & SELF-HEALING
  * 500% Intuitief: Klikken & Typen.
  * 
- * 🩹 SELF-HEALING: Als een vertaling ontbreekt, wordt deze live 
+ *  SELF-HEALING: Als een vertaling ontbreekt, wordt deze live 
  * gegenereerd via AI en wordt Johfrah genotificeerd.
  */
 export const VoiceglotText: React.FC<VoiceglotTextProps> = ({ 
@@ -38,7 +38,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   const [isHealing, setIsHealing] = useState(false);
   const textRef = useRef<HTMLSpanElement>(null);
 
-  // 🩹 SELF-HEALING LOGIC
+  //  SELF-HEALING LOGIC
   useEffect(() => {
     if (noTranslate || language === 'nl') return;
 
@@ -64,7 +64,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
             setContent(data.text);
           }
         } catch (e) {
-          console.error('🩹 Self-healing failed:', e);
+          console.error(' Self-healing failed:', e);
         } finally {
           setIsHealing(false);
         }

@@ -34,7 +34,7 @@ export const VoicyBridge: React.FC = () => {
         router.push(`/agency?search=${encodeURIComponent(query)}`);
       },
       
-      // 🛒 Checkout Controls (AI-Native)
+      //  Checkout Controls (AI-Native)
       checkout: {
         setBriefing: (text: string) => {
           playClick('deep');

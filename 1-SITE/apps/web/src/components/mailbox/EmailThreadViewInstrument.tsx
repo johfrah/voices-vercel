@@ -48,7 +48,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
   const [focusedAttachmentId, setFocusedAttachmentId] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // 🍎 SPOTLIGHT SHORTCUT (SPATIE)
+  //  SPOTLIGHT SHORTCUT (SPATIE)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && focusedAttachmentId) {
@@ -87,10 +87,10 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
         body: JSON.stringify({ vaultFileId: fileId })
       });
       if (res.ok) {
-        alert('💰 Voicy heeft een concept-offerte klaargezet in de Approval Queue!');
+        alert(' Voicy heeft een concept-offerte klaargezet in de Approval Queue!');
       }
     } catch (error) {
-      console.error('❌ Drafting Error:', error);
+      console.error(' Drafting Error:', error);
     } finally {
       setIsDrafting(null);
     }
@@ -110,7 +110,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
             {thread.subject}
           </HeadingInstrument>
           <ButtonInstrument onClick={onClose} className="p-1.5 hover:bg-black/5 rounded-[20px] transition-colors">
-            <TextInstrument as="span" className="text-[15px] font-light">✕</TextInstrument>
+            <TextInstrument as="span" className="text-[15px] font-light"></TextInstrument>
           </ButtonInstrument>
         </ContainerInstrument>
         
@@ -257,7 +257,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
         })}
       </ContainerInstrument>
 
-      {/* 🍎 SPOTLIGHT OVERLAY */}
+      {/*  SPOTLIGHT OVERLAY */}
       <AnimatePresence>
         {spotlightFile && (
           <motion.div 
@@ -281,7 +281,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
               <ContainerInstrument className="w-full flex justify-between items-center text-white/80">
                 <ContainerInstrument className="flex flex-col">
                   <TextInstrument className="text-2xl font-light">{spotlightFile.filename}</TextInstrument>
-                  <TextInstrument className="text-[15px] tracking-widest opacity-50 font-light">{spotlightFile.category} • {(spotlightFile.size / 1024 / 1024).toFixed(2)} MB</TextInstrument>
+                  <TextInstrument className="text-[15px] tracking-widest opacity-50 font-light">{spotlightFile.category}  {(spotlightFile.size / 1024 / 1024).toFixed(2)} MB</TextInstrument>
                 </ContainerInstrument>
                 <a 
                   href={`/api/admin/photo-matcher/serve?path=${encodeURIComponent(spotlightFile.path)}`} 

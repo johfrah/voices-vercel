@@ -104,7 +104,7 @@ export default function MusicLibraryPage() {
                           )}>
                             <Music strokeWidth={1.5} size={20} />
                           </ContainerInstrument>
-                          <TextInstrument className="text-[15px] font-black text-primary tracking-widest">€59</TextInstrument>
+                          <TextInstrument className="text-[15px] font-black text-primary tracking-widest">59</TextInstrument>
                         </ContainerInstrument>
                         <HeadingInstrument level={3} className="text-xl font-light tracking-tight">{track.title}</HeadingInstrument>
                         <TextInstrument className="text-[15px] font-bold text-va-black/30 tracking-widest">{track.vibe}</TextInstrument>
@@ -135,7 +135,7 @@ export default function MusicLibraryPage() {
                 ))}
               </ContainerInstrument>
 
-              {/* 🛒 SELECTION PANEL */}
+              {/*  SELECTION PANEL */}
               <ContainerInstrument className="relative">
                 <ContainerInstrument className="sticky top-32 space-y-6">
                   <ContainerInstrument className="bg-va-black text-white rounded-[40px] p-8 shadow-2xl border-b-8 border-primary overflow-hidden relative">
@@ -195,7 +195,7 @@ export default function MusicLibraryPage() {
                         </ContainerInstrument>
 
                         <ContainerInstrument className="pt-6 border-t border-white/10 flex items-center justify-between">
-                          <TextInstrument className="text-2xl font-black text-primary">€59.00</TextInstrument>
+                          <TextInstrument className="text-2xl font-black text-primary">59.00</TextInstrument>
                           <button 
                             disabled={!options.asBackground && !options.asHoldMusic}
                             onClick={() => handleAddToCart(tracks.find(t => t.id === selectedTrackId))}
@@ -217,8 +217,8 @@ export default function MusicLibraryPage() {
                   <ContainerInstrument className="p-6 bg-white rounded-[32px] border border-black/5">
                     <p className="text-[15px] font-medium text-va-black/60 leading-relaxed">
                       <TextInstrument className="font-black text-va-black block mb-1 tracking-widest"><VoiceglotText  translationKey="auto.page.inbegrepen_bij_elke_.b8ac49" defaultText="Inbegrepen bij elke licentie:" /></TextInstrument>
-                      • Onbeperkt gebruik (rechtenvrij)<br />
-                      • Professionele mix door technicus<br /><VoiceglotText  translationKey="auto.page.__hd_wav___8khz_tele.c13eb4" defaultText="• HD WAV & 8kHz Telefoon formaat" /></p>
+                       Onbeperkt gebruik (rechtenvrij)<br />
+                       Professionele mix door technicus<br /><VoiceglotText  translationKey="auto.page.__hd_wav___8khz_tele.c13eb4" defaultText=" HD WAV & 8kHz Telefoon formaat" /></p>
                   </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>

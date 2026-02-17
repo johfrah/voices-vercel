@@ -6,7 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
-// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
         .orderBy(desc(faq.helpfulCount))
         .limit(limit);
     } catch (dbError) {
-      console.warn('⚠️ FAQ Drizzle failed, falling back to SDK');
+      console.warn(' FAQ Drizzle failed, falling back to SDK');
       const { data, error } = await supabase
         .from('faq')
         .select('*')
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(results || []);
   } catch (error: any) {
-    console.error('❌ FAQ API FAILURE:', {
+    console.error(' FAQ API FAILURE:', {
       message: error.message,
       journey,
       limit

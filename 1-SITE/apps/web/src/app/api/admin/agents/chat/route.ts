@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 
 /**
- * 🛡️ AGENT GOVERNANCE & SAFETY PROTOCOL (2026)
+ *  AGENT GOVERNANCE & SAFETY PROTOCOL (2026)
  * 
  * Dit systeem bepaalt de strikte schrijfrechten en wetten per agent.
  * Elke actie wordt getoetst aan het Chris-Protocol om de site-integriteit te bewaken.
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Unknown Agent' }, { status: 400 });
         }
 
-        // 🛡️ SAFETY CHECK: Mag deze agent dit doen?
+        //  SAFETY CHECK: Mag deze agent dit doen?
         let actionType = "READ_ONLY";
         if (message.toLowerCase().includes('wijzig') || message.toLowerCase().includes('maak') || message.toLowerCase().includes('update')) {
             actionType = "WRITE_OP";
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        // 🤖 UITVOERING (Met Wetten Context)
+        //  UITVOERING (Met Wetten Context)
         let toolOutput = "";
         let actionTaken = "";
 

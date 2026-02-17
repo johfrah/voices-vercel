@@ -75,7 +75,7 @@ export default function SkyggeArticlePage() {
               <HeadingInstrument level={2} className="text-4xl font-light italic leading-tight text-va-black">
                 <VoiceglotText 
                   translationKey="story.skygge.quote1" 
-                  defaultText="Dat was een no-brainer. Je kunt privé van zakelijk scheiden en je 100% focussen op de klant." 
+                  defaultText="Dat was een no-brainer. Je kunt priv van zakelijk scheiden en je 100% focussen op de klant." 
                 />
               </HeadingInstrument>
               <TextInstrument className="text-va-black/60 font-light text-lg leading-relaxed">
@@ -94,7 +94,7 @@ export default function SkyggeArticlePage() {
               className="w-full h-full"
               subtitles={[
                 { src: '/assets/content/blog/videos/voor-ons-was-dit-een-no-brainer-nl.vtt', label: 'Nederlands', srcLang: 'nl' },
-                { src: '/assets/content/blog/videos/voor-ons-was-dit-een-no-brainer-fr.vtt', label: 'Français', srcLang: 'fr' },
+                { src: '/assets/content/blog/videos/voor-ons-was-dit-een-no-brainer-fr.vtt', label: 'Franais', srcLang: 'fr' },
                 { src: '/assets/content/blog/videos/voor-ons-was-dit-een-no-brainer-en.vtt', label: 'English', srcLang: 'en' }
               ]}
             />

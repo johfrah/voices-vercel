@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       return new NextResponse('Missing photo path', { status: 400 });
     }
 
-    // 🎯 ARCHIVE PROTOCOL: Verplaats naar /ARCHIVE/ op de server
+    //  ARCHIVE PROTOCOL: Verplaats naar /ARCHIVE/ op de server
     // We gebruiken de timestamp 1770880690000 (of de huidige) voor uniekheid
     const archiveRoot = './ARCHIVE/photo-matcher-cleanup';
     const timestamp = Date.now();

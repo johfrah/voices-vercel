@@ -3,7 +3,7 @@ import { pageLayouts } from "@db/schema";
 import { eq } from "drizzle-orm";
 
 /**
- * 🚀 PURE GOD MODE: Haalt de Bento Blueprint op voor een dynamische pagina
+ *  PURE GOD MODE: Haalt de Bento Blueprint op voor een dynamische pagina
  */
 export async function getPageLayout(slug: string): Promise<any> {
   const [layout] = await db.select().from(pageLayouts).where(eq(pageLayouts.slug, slug)).limit(1);

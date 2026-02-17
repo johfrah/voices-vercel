@@ -65,7 +65,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(actionLink);
 
   } catch (error: any) {
-    console.error('🚀 MAGIC LOGIN ERROR:', error);
+    console.error(' MAGIC LOGIN ERROR:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

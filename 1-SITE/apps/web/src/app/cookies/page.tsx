@@ -12,7 +12,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Cookie, Shield, Eye, Settings } from 'lucide-react';
 
 /**
- * 🍪 COOKIE POLICY PAGE (NUCLEAR 2026)
+ *  COOKIE POLICY PAGE (NUCLEAR 2026)
  */
 export default function CookiesPage() {
   return (

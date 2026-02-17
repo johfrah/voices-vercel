@@ -1,9 +1,10 @@
 import { db } from "@db";
-import { sql, eq, and } from "drizzle-orm";
+import { sql, eq, and, asc } from "drizzle-orm";
 import { useSonicDNA } from "./sonic-dna";
+import { languages, voiceTones, countries } from "@db/schema";
 
 /**
- * ☢️ ATOMIC CRUD ENGINE - MASTER SERVICE
+ *  ATOMIC CRUD ENGINE - MASTER SERVICE
  * 
  * Deze service garandeert dat alle data-mutaties:
  * 1. Gewikkeld zijn in een database transactie.
@@ -12,6 +13,29 @@ import { useSonicDNA } from "./sonic-dna";
  */
 
 export class DbService {
+  /**
+   *  ATOMIC TAXONOMY ENGINE
+   * Haalt alle beschikbare taxonomies op voor formulieren en filters.
+   */
+  static async getTaxonomies() {
+    try {
+      const [allLangs, allTones, allCountries] = await Promise.all([
+        db.select().from(languages).orderBy(asc(languages.label)),
+        db.select().from(voiceTones).orderBy(asc(voiceTones.label)),
+        db.select().from(countries).orderBy(asc(countries.label))
+      ]);
+
+      return {
+        languages: allLangs,
+        tones: allTones,
+        countries: allCountries
+      };
+    } catch (error) {
+      console.error(' DbService.getTaxonomies failed:', error);
+      return { languages: [], tones: [], countries: [] };
+    }
+  }
+
   /**
    * Voert een atomische update uit op een willekeurige tabel
    */

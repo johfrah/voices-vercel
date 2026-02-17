@@ -20,7 +20,7 @@ export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('⚠️ Supabase env vars missing – skipping session refresh')
+    console.warn(' Supabase env vars missing  skipping session refresh')
     return response
   }
 
@@ -33,7 +33,7 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          // request.cookies is readonly – alleen response mag .set() aanroepen
+          // request.cookies is readonly  alleen response mag .set() aanroepen
           response = NextResponse.next({
             request: { headers: request.headers },
           })
@@ -51,7 +51,7 @@ export async function updateSession(request: NextRequest) {
     const { data } = await supabase.auth.getUser()
     user = data.user
   } catch (err) {
-    console.warn('⚠️ Supabase auth.getUser failed:', err)
+    console.warn(' Supabase auth.getUser failed:', err)
   }
 
   // 2. System CONTEXT DETECTION (De Vier-Eenheid)
@@ -60,7 +60,7 @@ export async function updateSession(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || ''
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1'
   
-  // 🚪 MAT: VISITOR INTELLIGENCE (Server-Side Fingerprinting)
+  //  MAT: VISITOR INTELLIGENCE (Server-Side Fingerprinting)
   // We genereren een deterministische hash op basis van IP en User Agent.
   // Dit is de 'Mat-Signature'.
   const visitorHash = request.cookies.get('voices_visitor_hash')?.value || 
@@ -92,7 +92,7 @@ export async function updateSession(request: NextRequest) {
   response.headers.set('x-voices-user-id', user?.id || 'guest')
   response.headers.set('x-voices-visitor-hash', visitorHash)
 
-  // 🚪 MAT: Set visitor cookie if missing
+  //  MAT: Set visitor cookie if missing
   if (!request.cookies.has('voices_visitor_hash')) {
     response.cookies.set('voices_visitor_hash', visitorHash, {
       path: '/',

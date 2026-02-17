@@ -41,10 +41,10 @@ export default function SkyggeStoryPage() {
             <HeadingInstrument level={2} className="text-4xl font-light italic leading-tight mb-8">
               <VoiceglotText  
                 translationKey="story.skygge.quote1" 
-                defaultText="Dat was een no-brainer. Je kunt privé van zakelijk scheiden en je 100% focussen op de klant. Geen telefoontjes meer om tien uur 's avonds." 
+                defaultText="Dat was een no-brainer. Je kunt priv van zakelijk scheiden en je 100% focussen op de klant. Geen telefoontjes meer om tien uur 's avonds." 
               />
               <TextInstrument className="text-va-black/40 font-light tracking-widest text-[15px]">
-                <VoiceglotText  translationKey="auto.page.__an_casters__mede_z.974595" defaultText="— An Casters, Mede-zaakvoerder SKYGGE" />
+                <VoiceglotText  translationKey="auto.page.__an_casters__mede_z.974595" defaultText=" An Casters, Mede-zaakvoerder SKYGGE" />
               </TextInstrument>
             </HeadingInstrument>
           </BentoCard>

@@ -4,7 +4,7 @@ import { eq, sql, desc, and } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 /**
- * 🕰️ TIME-TRAVEL API (2026)
+ *  TIME-TRAVEL API (2026)
  * 
  * Doel: Haalt de emotionele geschiedenis en 'Vibe Check' op van een klant.
  */
@@ -44,7 +44,7 @@ export async function GET(request: Request, { params }: { params: { userId: stri
       totalInteractions: totalMails
     });
   } catch (error) {
-    console.error('❌ Time-Travel API Error:', error);
+    console.error(' Time-Travel API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

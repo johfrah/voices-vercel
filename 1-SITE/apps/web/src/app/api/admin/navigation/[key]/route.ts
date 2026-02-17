@@ -3,7 +3,7 @@ import { requireAdmin } from '@/lib/auth/api-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * 🎙️ API: ADMIN NAVIGATION (2026)
+ *  API: ADMIN NAVIGATION (2026)
  * GET: Haalt de config op voor een specifieke journey
  * POST: Slaat de config op voor een specifieke journey
  */

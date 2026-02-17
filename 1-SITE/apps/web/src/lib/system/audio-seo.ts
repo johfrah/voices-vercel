@@ -3,7 +3,7 @@ import { actorDemos, actors } from "@db/schema";
 import { eq } from "drizzle-orm";
 
 /**
- * 🔍 NUCLEAR AUDIO SEO SERVICE (2026)
+ *  NUCLEAR AUDIO SEO SERVICE (2026)
  * 
  * Genereert voorspelbare URL's en JSON-LD metadata voor audio demo's.
  * Vervangt de PHP Audio Demo Structure SEO.

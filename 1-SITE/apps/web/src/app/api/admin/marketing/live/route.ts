@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { type NextRequest, NextResponse } from 'next/server'
 
 /**
- * 🚪 MAT: RADER LIVE API (2026)
+ *  MAT: RADER LIVE API (2026)
  * 
  * Haalt real-time visitor data op uit de Mat-proof tabellen.
  */
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString()
     })
   } catch (err) {
-    console.error('❌ MAT RADAR API ERROR:', err)
+    console.error(' MAT RADAR API ERROR:', err)
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 })
   }
 }

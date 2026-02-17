@@ -7,6 +7,7 @@ import { GlobalAudioOrchestrator } from "@/components/ui/GlobalAudioOrchestrator
 import GlobalNav from "@/components/ui/GlobalNav";
 import { LoadingScreenInstrument, PageWrapperInstrument, RootLayoutInstrument } from "@/components/ui/LayoutInstruments";
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
+import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
 import { MobileFloatingDock } from "@/components/ui/MobileFloatingDock";
 import { SonicDNAHandler } from "@/components/ui/SonicDNA";
@@ -109,7 +110,9 @@ export default async function RootLayout({
 }>) {
   const headersList = headers();
   const host = headersList.get("host") || "voices.be";
-  const isUnderConstruction = headersList.get('x-voices-under-construction') === 'true' || headersList.get('x-voices-pathname') === '/under-construction';
+  const isUnderConstruction = headersList.get('x-voices-under-construction') === 'true' || 
+    headersList.get('x-voices-pathname') === '/under-construction' ||
+    headersList.get('x-voices-pathname') === '/under-construction/';
   const market = getMarketSafe(host);
   const isAdeming = market.market_code === 'ADEMING';
   
@@ -177,6 +180,7 @@ export default async function RootLayout({
             <VoicyBridge />
           </Suspense>
           <VoicyChat />
+          <GlobalModalManager />
           <PageWrapperInstrument>
             <Suspense fallback={<LoadingScreenInstrument />}>
               {children}

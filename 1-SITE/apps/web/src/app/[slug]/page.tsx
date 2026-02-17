@@ -79,7 +79,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
       };
     };
 
-    // 🎭 RENDER LOGIC PER BLOK TYPE
+    //  RENDER LOGIC PER BLOK TYPE
     const renderBlock = (block: any, index: number) => {
       const { title, body } = extractTitle(block.content || '');
 
@@ -137,7 +137,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
                   const { title: itemTitle, body: itemBody } = extractTitle(cleanItem);
                   const isLarge = i === 0;
                   
-                  // 🌍 Intelligent Market-Aware Subtitle Logic
+                  //  Intelligent Market-Aware Subtitle Logic
                   // We bepalen de taal op basis van de IAP context van de pagina
                   const currentLang = (page.iapContext as { lang?: string } | null)?.lang || 'nl';
                   const subtitleUrl = videoUrl ? videoUrl.replace('.mp4', `-${currentLang}.vtt`) : null;
@@ -279,7 +279,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
         <LiquidBackground strokeWidth={1.5} />
         
         <ContainerInstrument className="py-48 relative z-10">
-          {/* 🚀 GLOBAL HERO MANDATE */}
+          {/*  GLOBAL HERO MANDATE */}
           <header className="mb-64 max-w-5xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
               <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-12 block">
                 {journey}
@@ -288,12 +288,12 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
               <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
             </header>
 
-            {/* 🏗️ SECTIONAL ORCHESTRATION */}
+            {/*  SECTIONAL ORCHESTRATION */}
             <ContainerInstrument className="space-y-24">
               {page.blocks.map((block: any, index: number) => renderBlock(block, index))}
             </ContainerInstrument>
 
-            {/* 🕸️ SUZY'S SCHEMA INJECTION: CMS Article Authority */}
+            {/*  SUZY'S SCHEMA INJECTION: CMS Article Authority */}
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
@@ -325,7 +325,7 @@ export default async function DynamicCmsPage({ params }: { params: { slug: strin
               }}
             />
 
-            {/* 🏁 GLOBAL SIGNATURE CTA MANDATE */}
+            {/*  GLOBAL SIGNATURE CTA MANDATE */}
             <footer className="mt-80 text-center">
               <ContainerInstrument className="bg-va-black text-white p-32 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
                 <ContainerInstrument className="relative z-10">

@@ -73,12 +73,12 @@ export default function PhotoCropPage() {
 
       const result = await response.json();
       if (result.success) {
-        alert('✅ Crop opgeslagen naar optimised!');
+        alert(' Crop opgeslagen naar optimised!');
       } else {
-        alert('❌ Fout bij opslaan: ' + result.error);
+        alert(' Fout bij opslaan: ' + result.error);
       }
     } catch (e) {
-      alert('❌ Netwerkfout');
+      alert(' Netwerkfout');
     } finally {
       setSaving(false);
     }
@@ -98,7 +98,7 @@ export default function PhotoCropPage() {
   return (
     <PageWrapperInstrument>
       <ContainerInstrument className="py-20">
-        <HeadingInstrument level={1} className="mb-10">📸 Photo-Crop Masterclass</HeadingInstrument>
+        <HeadingInstrument level={1} className="mb-10"> Photo-Crop Masterclass</HeadingInstrument>
         
         <div className="grid grid-cols-12 gap-10">
           {/* Sidebar */}

@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { type NextRequest, NextResponse } from 'next/server'
 
 /**
- * 🚪 MAT: RADER STATS API (2026)
+ *  MAT: RADER STATS API (2026)
  * 
  * Berekent marketing-intelligence stats voor het dashboard.
  */
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString()
     })
   } catch (err) {
-    console.error('❌ MAT STATS API ERROR:', err)
+    console.error(' MAT STATS API ERROR:', err)
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 })
   }
 }

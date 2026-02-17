@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { DbService } from "../db-service";
 
 /**
- * 🏦 INVOICE SERVICE (2026)
+ *  INVOICE SERVICE (2026)
  * 
  * Verantwoordelijk voor het genereren van facturen en synchronisatie met Yuki.
  */
@@ -29,7 +29,7 @@ export class InvoiceService {
    * Genereert een factuur voor een specifieke order.
    */
   static async createInvoiceFromOrder(orderId: number) {
-    console.log(`🧾 Generating Invoice for Order #${orderId}...`);
+    console.log(` Generating Invoice for Order #${orderId}...`);
 
     try {
       // 1. Haal de order en items op
@@ -73,7 +73,7 @@ export class InvoiceService {
         }
       });
 
-      console.log(`✅ Invoice #${yukiResponse.invoiceNumber} created and synced to Yuki.`);
+      console.log(` Invoice #${yukiResponse.invoiceNumber} created and synced to Yuki.`);
       
       return {
         success: true,
@@ -82,7 +82,7 @@ export class InvoiceService {
       };
 
     } catch (error) {
-      console.error(`❌ Invoice Generation Failed for Order #${orderId}:`, error);
+      console.error(` Invoice Generation Failed for Order #${orderId}:`, error);
       return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }

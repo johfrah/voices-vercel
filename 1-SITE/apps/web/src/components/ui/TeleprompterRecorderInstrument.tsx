@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * 🎤 TELEPROMPTER RECORDER INSTRUMENT (2026)
+ *  TELEPROMPTER RECORDER INSTRUMENT (2026)
  * 
  * Een geavanceerd instrument voor DIY opnames met teleprompter en multi-format export.
  */

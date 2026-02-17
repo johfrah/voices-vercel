@@ -128,7 +128,7 @@ export const MediaLibrary: React.FC = () => {
       if (res.ok) {
         await fetchMedia();
         playClick('light');
-        alert('YouTube video is succesvol geconverteerd naar een lokale asset! 🚀');
+        alert('YouTube video is succesvol geconverteerd naar een lokale asset! ');
       } else {
         const err = await res.json();
         alert(`Fout bij conversie: ${err.error}`);
@@ -251,7 +251,7 @@ export const MediaLibrary: React.FC = () => {
 
   return (
     <ContainerInstrument className="flex flex-col lg:flex-row gap-8">
-      {/* 👤 ACTOR SIDEBAR */}
+      {/*  ACTOR SIDEBAR */}
       <ContainerInstrument className="w-full lg:w-64 space-y-6">
         <ContainerInstrument className="bg-white rounded-[20px] shadow-aura p-6 space-y-4 border border-va-black/5">
           <ContainerInstrument className="flex items-center gap-2 text-va-black font-light tracking-widest text-[15px] ">
@@ -333,9 +333,9 @@ export const MediaLibrary: React.FC = () => {
         )}
       </ContainerInstrument>
 
-      {/* 🖼️ MAIN GRID AREA */}
+      {/*  MAIN GRID AREA */}
       <ContainerInstrument className="flex-1 space-y-8">
-        {/* 🚀 NUCLEAR HEADER */}
+        {/*  NUCLEAR HEADER */}
         <ContainerInstrument className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-3 mb-2">
@@ -388,7 +388,7 @@ export const MediaLibrary: React.FC = () => {
           </ContainerInstrument>
         </ContainerInstrument>
 
-        {/* 🛠️ BULK ACTIONS BAR */}
+        {/*  BULK ACTIONS BAR */}
         {selectedIds.length > 0 && (
           <ContainerInstrument className="bg-va-black text-white p-4 rounded-[20px] shadow-aura flex items-center justify-between animate-in slide-in-from-top duration-500">
             <ContainerInstrument className="flex items-center gap-4 ml-4">
@@ -408,7 +408,7 @@ export const MediaLibrary: React.FC = () => {
                 <Eye size={14} strokeWidth={1.5} /> <VoiceglotText  translationKey="common.public" defaultText="Publiek" />
               </ButtonInstrument>
               <ButtonInstrument onClick={() => handleBulkVisibility(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-[10px] transition-all text-[15px] font-light tracking-widest bg-transparent text-white border border-white/10">
-                <EyeOff size={14} strokeWidth={1.5} /> <VoiceglotText  translationKey="common.private" defaultText="Privé" />
+                <EyeOff size={14} strokeWidth={1.5} /> <VoiceglotText  translationKey="common.private" defaultText="Priv" />
               </ButtonInstrument>
               <ButtonInstrument onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-[10px] transition-all text-[15px] font-light tracking-widest text-white">
                 <Trash2 size={14} strokeWidth={1.5} /> <VoiceglotText  translationKey="common.delete" defaultText="Verwijderen" />
@@ -417,7 +417,7 @@ export const MediaLibrary: React.FC = () => {
           </ContainerInstrument>
         )}
 
-        {/* 📂 FILTERS */}
+        {/*  FILTERS */}
         {!selectedActorId && (
           <ContainerInstrument className="flex flex-wrap items-center justify-between gap-4">
             <ContainerInstrument className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
@@ -447,7 +447,7 @@ export const MediaLibrary: React.FC = () => {
           </ContainerInstrument>
         )}
 
-        {/* 🖼️ BENTO GRID */}
+        {/*  BENTO GRID */}
         <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isLoading ? (
             Array.from({ length: 8 }).map((_, i) => (

@@ -12,7 +12,7 @@ const openai = new OpenAI({
 export const dynamic = 'force-dynamic';
 
 /**
- * 🧠 REAL FAQ PROPOSAL API (2026)
+ *  REAL FAQ PROPOSAL API (2026)
  * 
  * Doel: Scant de mailbox op patronen van vragen en antwoorden.
  * Gebruikt AI om uit de echte mail-content FAQ suggesties te extraheren.
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
       sender: m.sender
     }));
 
-    // 3. AI Analyse met GPT-4o-mini voor efficiëntie
+    // 3. AI Analyse met GPT-4o-mini voor efficintie
     const response = await (openai.chat.completions as any).create({
       model: "gpt-4o-mini",
       messages: [
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(Array.isArray(proposals) ? proposals : []);
   } catch (error) {
-    console.error('❌ FAQ Proposal API Error:', error);
+    console.error(' FAQ Proposal API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

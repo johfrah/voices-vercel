@@ -13,7 +13,7 @@ interface SpatialOrderTrackerProps {
 }
 
 /**
- * ⚡ SPATIAL ORDER TRACKER INSTRUMENT
+ *  SPATIAL ORDER TRACKER INSTRUMENT
  * 
  * Visualiseert de voortgang van een order via Spatial Growth.
  * Volgt de "Vriendelijke Autoriteit" ToV.

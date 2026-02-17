@@ -23,7 +23,7 @@ interface DynamicActorFeedProps {
 }
 
 /**
- * 🎙️ DYNAMIC ACTOR FEED WIDGET
+ *  DYNAMIC ACTOR FEED WIDGET
  * 500% Beheer-modus: Haalt live stemmen op en rendert ze in een Bento-stijl.
  * AI-Native: Kan filters accepteren van Voicy.
  */
@@ -78,7 +78,7 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
         <div className="flex items-center gap-2">
           <Sparkles strokeWidth={1.5} size={14} className="text-primary" />
           <span className="text-[15px] font-black tracking-widest text-va-black/40">
-            Live Actor Feed • {filter}
+            Live Actor Feed  {filter}
           </span>
         </div>
       </div>
@@ -113,7 +113,7 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
 
           <div className="text-right">
             <p className="text-[15px] font-black text-va-black/20 tracking-widest">Vanaf</p>
-            <p className="text-[15px] font-black tracking-tighter">€{actor.startingPrice}</p>
+            <p className="text-[15px] font-black tracking-tighter">{actor.startingPrice}</p>
           </div>
 
           <button 

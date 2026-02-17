@@ -83,7 +83,7 @@ export default function BookMeetingPage() {
                   date: new Date(selectedSlot.start).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
                 }}
                 onComplete={(data) => {
-                  console.log('🚀 Meeting booked:', data, selectedSlot);
+                  console.log(' Meeting booked:', data, selectedSlot);
                   setIsCompleted(true);
                 }}
               />

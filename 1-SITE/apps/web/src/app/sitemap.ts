@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { MetadataRoute } from 'next';
 
 /**
- * 🗺️ NUCLEAR SITEMAP (2026)
+ *  NUCLEAR SITEMAP (2026)
  * 
  * Doel: Een dynamische, meertalige sitemap die zoekmachines en LLM's 
  * direct naar de Gouden Bron leidt.
@@ -77,7 +77,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     });
 
-    // 🎓 Academy routes
+    //  Academy routes
     academyLessons.forEach(lesson => {
       sitemapEntries.push({
         url: `${baseUrl}${lang}/academy/lesson/${lesson.id}/`,

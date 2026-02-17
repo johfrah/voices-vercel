@@ -1,5 +1,5 @@
 /**
- * 🛡️ SERVER-SIDE AUTH (NUCLEAR 2026)
+ *  SERVER-SIDE AUTH (NUCLEAR 2026)
  *
  * Voor Server Components en layouts. Gebruikt Supabase + users table.
  */
@@ -11,7 +11,7 @@ import { users } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 
-// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
@@ -40,7 +40,7 @@ export async function getServerUser(): Promise<ServerUser | null> {
     if (!dbUser) return null;
     return { id: dbUser.id, email: dbUser.email, role: dbUser.role };
   } catch (dbError) {
-    console.warn('⚠️ Auth Drizzle failed, falling back to SDK');
+    console.warn(' Auth Drizzle failed, falling back to SDK');
     const { data, error } = await sdkClient
       .from('users')
       .select('id, email, role')

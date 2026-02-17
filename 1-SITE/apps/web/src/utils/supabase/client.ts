@@ -16,7 +16,7 @@ function hasValidSupabaseConfig(): boolean {
 let cachedClient: SupabaseClient | null = null
 
 /**
- * Maakt een Supabase-browserclient. Retourneert null wanneer env vars ontbreken –
+ * Maakt een Supabase-browserclient. Retourneert null wanneer env vars ontbreken 
  * voorkomt crash bij deploy zonder Supabase-config.
  */
 export function createClient(): SupabaseClient | null {
@@ -37,7 +37,7 @@ export function createClient(): SupabaseClient | null {
 
   console.log('[Voices] Initializing Supabase Browser Client (lockSession: false)')
   
-  // 🛡️ Global patch for AbortError in locks.js
+  //  Global patch for AbortError in locks.js
   if (typeof window !== 'undefined') {
     const originalErrorHandler = window.onerror;
     window.onerror = function(message, source, lineno, colno, error) {
@@ -54,14 +54,14 @@ export function createClient(): SupabaseClient | null {
 
   cachedClient = createBrowserClient(url!, key!, {
     auth: {
-      // 🔒 Voorkomt 'AbortError: signal is aborted without reason' en deadlocks bij gelijktijdige requests.
+      //  Voorkomt 'AbortError: signal is aborted without reason' en deadlocks bij gelijktijdige requests.
       // lockSession: false schakelt de Web Locks API uit (bron: supabase/supabase-js#1594).
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
       // @ts-expect-error - lockSession is geldig in auth-js maar niet in @supabase/ssr types
       lockSession: false,
-      // 🛡️ Extra beveiliging tegen AbortError
+      //  Extra beveiliging tegen AbortError
       storageKey: 'voices-auth-token',
       storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     },

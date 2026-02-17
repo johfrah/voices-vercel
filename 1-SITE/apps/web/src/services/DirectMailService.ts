@@ -6,7 +6,7 @@ import Imap from 'node-imap';
 import nodemailer from 'nodemailer';
 
 /**
- * 📧 DIRECT MAIL SERVICE (2026)
+ *  DIRECT MAIL SERVICE (2026)
  * 
  * Doel: Directe verbinding met de mailserver (IMAP & SMTP) zonder WordPress bridge.
  * Gebruikt voor maximale snelheid en betrouwbaarheid.
@@ -105,7 +105,7 @@ export class DirectMailService {
     
     // Als het een gmail adres is en we hebben OAuth credentials, gebruik XOAUTH2
     if (targetUser.endsWith('@gmail.com') && this.oauth2Client) {
-      console.log(`🔑 Generating XOAUTH2 token for ${targetUser}...`);
+      console.log(` Generating XOAUTH2 token for ${targetUser}...`);
       const xoauth2 = await this.getXOAuth2Token(targetUser);
       return {
         ...this.config,
@@ -137,7 +137,7 @@ export class DirectMailService {
     let smtpUser = from;
     let smtpPass = this.config.password;
 
-    // 🛡️ Intelligence Layer: SMTP Routing
+    //  Intelligence Layer: SMTP Routing
     if (from.includes('voices.be')) {
       smtpHost = process.env.SMTP_SERVER_VOICES || 'smtp-auth.mailprotect.be';
       smtpPass = process.env.IMAP_PASS_VOICES || this.config.password;
@@ -168,7 +168,7 @@ export class DirectMailService {
       attachments: options.attachments
     });
 
-    console.log(`🚀 Mail succesvol verzonden naar ${options.to} via ${from} (${market.market_code})`);
+    console.log(` Mail succesvol verzonden naar ${options.to} via ${from} (${market.market_code})`);
   }
 
   async fetchFolders(user?: string, pass?: string, host?: string): Promise<string[]> {
@@ -203,10 +203,10 @@ export class DirectMailService {
   }
 
   async fetchInbox(limit: number = 20, folder: string = 'INBOX', user?: string, pass?: string, host?: string): Promise<MailHeader[]> {
-    // 🛡️ CHRIS-PROTOCOL: Lucide sanity check
+    //  CHRIS-PROTOCOL: Lucide sanity check
     const _icons = { Mail, ShieldCheck }; 
-    const _strokeWidth = { strokeWidth: 1.5 }; // 🛡️ CHRIS-PROTOCOL: Force strokeWidth awareness
-    console.log(`📬 DirectMailService: Fetching folder ${folder} for ${user || this.config.user}...`);
+    const _strokeWidth = { strokeWidth: 1.5 }; //  CHRIS-PROTOCOL: Force strokeWidth awareness
+    console.log(` DirectMailService: Fetching folder ${folder} for ${user || this.config.user}...`);
     const config = await this.getImapConfig(user, pass, host);
     
     return new Promise((resolve, reject) => {
@@ -214,7 +214,7 @@ export class DirectMailService {
         const imap = new Imap({
           ...config,
           debug: (msg: string) => {
-            // process.stdout.write('📬 DirectMailService [IMAP DEBUG]: ' + msg + '\n');
+            // process.stdout.write(' DirectMailService [IMAP DEBUG]: ' + msg + '\n');
           }
         });
 
@@ -296,12 +296,12 @@ export class DirectMailService {
                 }
                 const attachments: MailAttachment[] = (parsed.attachments || [])
                   .filter((att: Attachment) => {
-                    // 🛡️ CHRIS-PROTOCOL: Filter signature slop
+                    //  CHRIS-PROTOCOL: Filter signature slop
                     const isSmall = att.size < 15360; // < 15KB
                     const isSignatureName = /logo|facebook|linkedin|twitter|instagram|icon|sign|banner|header|image00/i.test(att.filename || '');
                     
                     if (isSmall && isSignatureName) {
-                      console.log(`🧹 Filtering signature attachment: ${att.filename} (${att.size} bytes)`);
+                      console.log(` Filtering signature attachment: ${att.filename} (${att.size} bytes)`);
                       return false;
                     }
                     return true;

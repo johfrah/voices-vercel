@@ -3,7 +3,7 @@ import { quizSteps } from "@db/schema";
 import { eq, asc } from "drizzle-orm";
 
 /**
- * 🧠 NUCLEAR QUIZ SERVICE (2026)
+ *  NUCLEAR QUIZ SERVICE (2026)
  * 
  * Beheert de logica voor interactieve quizen en funnels.
  * Vervangt de PHP Quiz System en Quiz Provider.

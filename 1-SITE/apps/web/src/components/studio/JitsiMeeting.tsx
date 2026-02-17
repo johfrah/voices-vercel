@@ -80,7 +80,7 @@ export const JitsiMeeting: React.FC<JitsiMeetingProps> = ({ roomName, userName }
             SHOW_BRAND_WATERMARK: false,
             BRAND_WATERMARK_LINK: '',
             JITSI_WATERMARK_LINK: '',
-            WAITING_MESSAGE: `Hé ${userName}! Johfrah laat je zo dadelijk binnen in het gesprek. Bereid je alvast voor!`,
+            WAITING_MESSAGE: `H ${userName}! Johfrah laat je zo dadelijk binnen in het gesprek. Bereid je alvast voor!`,
             APP_NAME: 'Voices Studio',
             NATIVE_APP_NAME: 'Voices Studio',
             DISPLAY_WELCOME_PAGE_CONTENT: false,

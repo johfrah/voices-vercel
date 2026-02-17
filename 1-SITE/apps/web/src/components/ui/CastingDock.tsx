@@ -50,7 +50,7 @@ export const CastingDock = () => {
             plain
             className="bg-va-black shadow-[0_32px_128px_rgba(0,0,0,0.8)] rounded-full p-2 border border-white/10 pointer-events-auto relative overflow-hidden flex items-center gap-4 backdrop-blur-2xl bg-va-black/90"
           >
-            {/* 👥 ACTOR AVATARS (Liquid Stack) */}
+            {/*  ACTOR AVATARS (Liquid Stack) */}
             <div className="flex items-center pl-2 shrink-0">
               <div className="flex -space-x-3">
                 {selectedActors.slice(0, 5).map((actor, idx) => (
@@ -81,7 +81,7 @@ export const CastingDock = () => {
               </div>
             </div>
 
-            {/* 📝 SELECTION INFO */}
+            {/*  SELECTION INFO */}
             <div className="flex-1 min-w-0 py-1">
               <div className="flex items-center gap-2">
                 <Users size={14} className="text-primary" />
@@ -94,7 +94,7 @@ export const CastingDock = () => {
               </TextInstrument>
             </div>
 
-            {/* 🕹️ ACTION BUTTON */}
+            {/*  ACTION BUTTON */}
             <button 
               onClick={startCasting}
               className="bg-primary hover:bg-primary/90 text-white h-14 px-6 rounded-full flex items-center gap-3 transition-all hover:scale-105 active:scale-95 shadow-xl group/btn shrink-0"

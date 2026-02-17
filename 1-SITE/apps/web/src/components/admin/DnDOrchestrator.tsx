@@ -29,7 +29,7 @@ interface DnDOrchestratorProps {
 }
 
 /**
- * 🏗️ BENTO DND ORCHESTRATOR
+ *  BENTO DND ORCHESTRATOR
  * Beheer-modus Drag-and-Drop: Beheert de interactie tussen de Architect en de Pagina.
  */
 export const DnDOrchestrator: React.FC<DnDOrchestratorProps> = ({ 

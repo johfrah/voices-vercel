@@ -14,7 +14,7 @@ import { ArrowRight, Mic, Music, Phone, Settings } from 'lucide-react';
 import Link from 'next/link';
 
 /**
- * 📞 IVR PAGE (NUCLEAR 2026)
+ *  IVR PAGE (NUCLEAR 2026)
  * 
  * Volgt de Zero Laws:
  * - HTML ZERO: Geen rauwe HTML tags.
@@ -101,7 +101,7 @@ export default function IVRPage() {
         </BentoGrid>
       </SectionInstrument>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

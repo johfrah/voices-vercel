@@ -4,9 +4,9 @@ import { db } from '@db';
 import { systemEvents } from '@db/schema';
 
 /**
- * 🚀 PONTO PAYOUT API (GODMODE)
+ *  PONTO PAYOUT API (GODMODE)
  * 
- * Doel: Het initiëren van bulk-betalingen naar stemacteurs op basis van 
+ * Doel: Het initiren van bulk-betalingen naar stemacteurs op basis van 
  * goedgekeurde Yuki-facturen.
  */
 

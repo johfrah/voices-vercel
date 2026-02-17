@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 /**
- * 🏺 NUCLEAR VOICEJAR API (2026)
+ *  NUCLEAR VOICEJAR API (2026)
  * 
  * Verwerkt rrweb chunks en slaat ze op in de database.
  * Voldoet aan het Master Voices Protocol: Data-only, System-aware.
@@ -13,7 +13,7 @@ import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
-// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
         await db.insert(voicejarEvents).values(eventInserts);
       }
     } catch (dbError) {
-      console.warn('⚠️ Voicejar Drizzle failed, falling back to SDK');
+      console.warn(' Voicejar Drizzle failed, falling back to SDK');
       
       // SDK Fallback voor sessie
       const { data: existingSession, error: sessionError } = await supabase
@@ -105,11 +105,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('❌ VOICEJAR API FAILURE:', {
+    console.error(' VOICEJAR API FAILURE:', {
       message: error.message,
       error: error
     });
-    // 🛡️ Graceful Fallback: Don't crash the client if DB write fails
+    //  Graceful Fallback: Don't crash the client if DB write fails
     return NextResponse.json({ success: false, message: 'Recording buffered' }, { status: 200 });
   }
 }

@@ -17,7 +17,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 
 /**
- * 🛡️ ADMIN APPROVALS (NUCLEAR 2026)
+ *  ADMIN APPROVALS (NUCLEAR 2026)
  * 
  * "Nooit acties vanuit het systeem zonder human in de loop."
  */
@@ -96,7 +96,7 @@ export default function AdminApprovalsPage() {
                   <ContainerInstrument className={`px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
                     item.priority === 'nuclear' ? 'bg-red-500 text-white animate-pulse' : 'bg-va-off-white text-va-black/40'
                   }`}>
-                    {item.type} • {item.priority}
+                    {item.type}  {item.priority}
                   </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-bold text-va-black/20">{new Date(item.createdAt).toLocaleString('nl-BE')}</TextInstrument>
                 </ContainerInstrument>

@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    // 🚀 Gebruik async exec om de event loop niet te blokkeren
+    //  Gebruik async exec om de event loop niet te blokkeren
     // We proberen verschillende paden (legacy, transfer, kelder)
     const possiblePaths = [
       filePath,
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       filePath.replace('./_STORAGE_LEGACY_/', './TRANSFER/_STORAGE_LEGACY_/')
     ].filter(Boolean);
 
-    // 🚀 CHRIS-PROTOCOL: Cache-First strategy for SSH connections
+    //  CHRIS-PROTOCOL: Cache-First strategy for SSH connections
     // We gebruiken een simpele cache om te onthouden welk pad werkte voor deze sessie
     // (Optioneel: implementeer een global cache als dit vaker voorkomt)
 

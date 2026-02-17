@@ -18,7 +18,7 @@ import { AlertCircle, CheckCircle2, Loader2, Mail, MapPin, MessageSquare, Phone,
 import React, { useState } from 'react';
 
 /**
- * 📞 CONTACT PAGE (NUCLEAR 2026)
+ *  CONTACT PAGE (NUCLEAR 2026)
  *
  * Een hybride contactpagina: Directe formulieren + Voicy integratie.
  * Chatty mandate: Form integrity, Safe Harbor errors, VoiceglotText.
@@ -98,7 +98,7 @@ export default function ContactPage() {
         </SectionInstrument>
 
         <BentoGrid strokeWidth={1.5} columns={3}>
-          {/* 📬 CONTACT FORM */}
+          {/*  CONTACT FORM */}
           <BentoCard span="lg" className="bg-white shadow-aura p-12 relative overflow-hidden">
             {isSent ? (
               <ContainerInstrument className="h-full flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in duration-500">
@@ -201,7 +201,7 @@ export default function ContactPage() {
             )}
           </BentoCard>
 
-          {/* 🤖 VOICY SIDEKICK */}
+          {/*  VOICY SIDEKICK */}
           <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between relative overflow-hidden group rounded-[20px]">
             <ContainerInstrument className="relative z-10">
               <ContainerInstrument className="w-12 h-12 bg-primary rounded-[10px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
@@ -226,7 +226,7 @@ export default function ContactPage() {
             <ContainerInstrument className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[80px]" aria-hidden="true" />
           </BentoCard>
 
-          {/* 📍 INFO CARDS */}
+          {/*  INFO CARDS */}
           <ContainerInstrument className="col-span-full grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
             <ContainerInstrument className="bg-white/50 backdrop-blur-md p-8 rounded-[20px] border border-black/5 flex items-center gap-6">
               <ContainerInstrument className="w-12 h-12 bg-va-black rounded-[10px] flex items-center justify-center text-white shrink-0">
@@ -252,13 +252,13 @@ export default function ContactPage() {
               </ContainerInstrument>
               <ContainerInstrument>
                 <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText  translationKey="contact.info.address_label" defaultText="Bezoek ons" /></TextInstrument>
-                <TextInstrument className="text-lg font-light"><VoiceglotText  translationKey="contact.info.address_value" defaultText="Gent, België" /></TextInstrument>
+                <TextInstrument className="text-lg font-light"><VoiceglotText  translationKey="contact.info.address_value" defaultText="Gent, Belgi" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </BentoGrid>
 
-        {/* 🧠 LLM CONTEXT (Compliance) */}
+        {/*  LLM CONTEXT (Compliance) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -7,7 +7,7 @@ import { triggerWorkflow } from '@/lib/github-api';
 const execAsync = promisify(exec);
 
 /**
- * 🚀 NUCLEAR PUSH API (2026)
+ *  NUCLEAR PUSH API (2026)
  * 
  * Stelt de site in staat om Cody wijzigingen direct naar Git te pushen.
  * 
@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
     const isProduction = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
 
     if (isProduction) {
-      // ☁️ CLOUD MODE: Trigger Bob via GitHub Actions
-      console.log(`☁️ Cloud Push: Triggering Bob Concert (Agent: Bob)...`);
+      //  CLOUD MODE: Trigger Bob via GitHub Actions
+      console.log(` Cloud Push: Triggering Bob Concert (Agent: Bob)...`);
       
       // We gebruiken de 'bob' agent als generieke 'fix & deploy' commando
       await triggerWorkflow('bob-concert.yml', { agent: 'bob' });
@@ -40,25 +40,25 @@ export async function POST(request: NextRequest) {
       });
 
     } else {
-      // 💻 LOCAL MODE: Git Commando's
-      console.log(`🚀 [NUCLEAR PUSH] Start ${isSuperPush ? 'Super-Push' : 'Git sync'}...`);
+      //  LOCAL MODE: Git Commando's
+      console.log(` [NUCLEAR PUSH] Start ${isSuperPush ? 'Super-Push' : 'Git sync'}...`);
 
       // 1. Linting (Alleen bij Super-Push)
       if (isSuperPush) {
-        console.log('🔍 [NUCLEAR PUSH] Running Lint...');
+        console.log(' [NUCLEAR PUSH] Running Lint...');
         await execAsync('npm run lint --prefix apps/web');
       }
 
       // 2. Database Sync (Alleen bij Super-Push)
       if (isSuperPush) {
-        console.log('🗄️ [NUCLEAR PUSH] Syncing Database...');
+        console.log(' [NUCLEAR PUSH] Syncing Database...');
         await execAsync('npm run db:push');
       }
 
       // 3. Git Add & Commit
       const commitMsg = isSuperPush 
-        ? `🚀 SUPER-PUSH: Vibe & System update via Cody - ${new Date().toISOString()}`
-        : `⚡ Cody: Vibe update via in-app engine - ${new Date().toISOString()}`;
+        ? ` SUPER-PUSH: Vibe & System update via Cody - ${new Date().toISOString()}`
+        : ` Cody: Vibe update via in-app engine - ${new Date().toISOString()}`;
       
       await execAsync(`git add .`); // Bij super-push voegen we alles toe
       
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       });
     }
   } catch (error: any) {
-    console.error('❌ [NUCLEAR PUSH] Error:', error);
+    console.error(' [NUCLEAR PUSH] Error:', error);
     return NextResponse.json({ 
       success: false, 
       error: error.message || 'Push mislukt.' 

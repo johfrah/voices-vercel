@@ -3,7 +3,7 @@ import { centralLeads, orders, systemEvents } from '@db/schema';
 import { desc, gte, sql } from 'drizzle-orm';
 
 /**
- * 🌅 NUCLEAR INTELLIGENCE BRIEF (2026)
+ *  NUCLEAR INTELLIGENCE BRIEF (2026)
  * 
  * Genereert de dagelijkse ochtend-mail voor de Founder.
  * Focus op actie, omzet en kritieke systeem-status.
@@ -35,22 +35,22 @@ export async function generateMorningBrief() {
 
   // 4. De Brief (Markdown/HTML)
   const brief = `
-# 🌅 Goeiemorgen Johfrah,
+#  Goeiemorgen Johfrah,
 
 Hier is je Core Intelligence Brief voor vandaag.
 
-## 💰 Omzet & Performance
-- **Omzet gisteren:** €${totalRevenue.toFixed(2)}
+##  Omzet & Performance
+- **Omzet gisteren:** ${totalRevenue.toFixed(2)}
 - **Nieuwe orders:** ${dailyOrders.length}
-- **Status:** ${totalRevenue > 1000 ? '🔥 Burning' : '✨ Steady'}
+- **Status:** ${totalRevenue > 1000 ? ' Burning' : ' Steady'}
 
-## 🎯 Hot Leads (Top 5)
+##  Hot Leads (Top 5)
 ${newLeads.map(l => `- **${l.firstName || 'Anoniem'}**: ${l.leadVibe} vibe uit ${l.sourceType}`).join('\n')}
 
-## 🛡️ Watchdog Status
+##  Watchdog Status
 ${criticalEvents.length > 0 
-  ? `🚨 **Kritieke meldingen:** ${criticalEvents.length}\n${criticalEvents.map(e => `- ${e.message}`).join('\n')}`
-  : '✅ Alle systemen ademen normaal.'}
+  ? ` **Kritieke meldingen:** ${criticalEvents.length}\n${criticalEvents.map(e => `- ${e.message}`).join('\n')}`
+  : ' Alle systemen ademen normaal.'}
 
 ---
 *Gegenereerd door het Voices Platform.*

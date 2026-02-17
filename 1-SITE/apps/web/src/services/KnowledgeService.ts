@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 /**
- * 📚 KNOWLEDGE SERVICE (NUCLEAR 2026)
+ *  KNOWLEDGE SERVICE (NUCLEAR 2026)
  * 
  * Doel: Maakt de "Bijbels" en documentatie toegankelijk voor de Intelligence Layer.
  * Hierdoor is de site (en Vibecode) altijd gebriefd op de laatste afspraken.
@@ -12,7 +12,7 @@ export class KnowledgeService {
   private bijbelPath: string;
 
   constructor() {
-    // 🎯 NUCLEAR FIX: Gebruik het absolute pad naar de WETTEN/docs/1-BIJBEL map
+    //  NUCLEAR FIX: Gebruik het absolute pad naar de WETTEN/docs/1-BIJBEL map
     this.bijbelPath = '/Users/voices/Library/CloudStorage/Dropbox/voices-headless/3-WETTEN/docs/1-BIJBEL';
   }
 

@@ -1,7 +1,7 @@
 import { VumeMasterWrapper } from './VumeMasterWrapper';
 
 /**
- * 🧾 VUME INVOICE REPLY TEMPLATE (2026)
+ *  VUME INVOICE REPLY TEMPLATE (2026)
  * 
  * DNA: Mark (Warmte), Lex (Fact-checking), Johfrah (Luxe).
  */
@@ -21,25 +21,25 @@ export function VumeInvoiceReplyTemplate(options: InvoiceReplyOptions) {
     nl: {
       title: 'Ontvangstbevestiging',
       greeting: userName ? `Beste ${userName},` : 'Beste,',
-      body: `Wij bevestigen de goede ontvangst van factuur <strong style="color: #000;">${invoiceNumber || ''}</strong> ${amount ? `voor een totaalbedrag van <strong style="color: #000;">€${amount.toFixed(2)}</strong>` : ''}.`,
+      body: `Wij bevestigen de goede ontvangst van factuur <strong style="color: #000;">${invoiceNumber || ''}</strong> ${amount ? `voor een totaalbedrag van <strong style="color: #000;">${amount.toFixed(2)}</strong>` : ''}.`,
       processing: 'Deze wordt momenteel verwerkt voor onze boekhouding.',
       thanks: 'Bedankt voor de fijne samenwerking!',
       button: 'BEKIJK IN DASHBOARD',
       footer: 'Dit is een automatische bevestiging. Je hoeft niet te antwoorden op deze mail.'
     },
     fr: {
-      title: 'Confirmation de réception',
+      title: 'Confirmation de rception',
       greeting: userName ? `Cher ${userName},` : 'Cher,',
-      body: `Nous confirmons la bonne réception de la facture <strong style="color: #000;">${invoiceNumber || ''}</strong> ${amount ? `pour un montant total de <strong style="color: #000;">€${amount.toFixed(2)}</strong>` : ''}.`,
-      processing: 'Celle-ci est en cours de traitement pour notre comptabilité.',
-      thanks: 'Merci pour cette agréable collaboration !',
+      body: `Nous confirmons la bonne rception de la facture <strong style="color: #000;">${invoiceNumber || ''}</strong> ${amount ? `pour un montant total de <strong style="color: #000;">${amount.toFixed(2)}</strong>` : ''}.`,
+      processing: 'Celle-ci est en cours de traitement pour notre comptabilit.',
+      thanks: 'Merci pour cette agrable collaboration !',
       button: 'VOIR DANS LE TABLEAU DE BORD',
-      footer: 'Ceci est une confirmation automatique. Vous n\'avez pas besoin de répondre à cet e-mail.'
+      footer: 'Ceci est une confirmation automatique. Vous n\'avez pas besoin de rpondre  cet e-mail.'
     },
     en: {
       title: 'Receipt confirmation',
       greeting: userName ? `Dear ${userName},` : 'Dear,',
-      body: `We confirm the successful receipt of invoice <strong style="color: #000;">${invoiceNumber || ''}</strong> ${amount ? `for a total amount of <strong style="color: #000;">€${amount.toFixed(2)}</strong>` : ''}.`,
+      body: `We confirm the successful receipt of invoice <strong style="color: #000;">${invoiceNumber || ''}</strong> ${amount ? `for a total amount of <strong style="color: #000;">${amount.toFixed(2)}</strong>` : ''}.`,
       processing: 'This is currently being processed for our accounting.',
       thanks: 'Thank you for the pleasant cooperation!',
       button: 'VIEW IN DASHBOARD',

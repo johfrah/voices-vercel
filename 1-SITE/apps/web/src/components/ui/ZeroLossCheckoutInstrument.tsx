@@ -16,7 +16,7 @@ import { User, Mail, Phone, Briefcase, ArrowRight, CheckCircle2, ShieldCheck } f
 import { BentoCard } from '@/components/ui/BentoGrid';
 
 /**
- * ⚡ ZERO-LOSS CHECKOUT INSTRUMENT
+ *  ZERO-LOSS CHECKOUT INSTRUMENT
  * 
  * Een frictieloze, intelligente checkout flow.
  * ToV: Vriendelijke Autoriteit.
@@ -198,18 +198,18 @@ export const ZeroLossCheckoutInstrument = ({
                   Basisbedrag
                   <PricingTooltipInstrument pricingKey="checkout_base" isUnpaid={true} />
                 </TextInstrument>
-                <TextInstrument as="span">€ {item.price.toFixed(2)}</TextInstrument>
+                <TextInstrument as="span"> {item.price.toFixed(2)}</TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex justify-between items-center text-[15px] font-light">
                 <TextInstrument as="span" className="text-white/40 font-light">BTW (21%)</TextInstrument>
-                <TextInstrument as="span">€ {vatAmount.toFixed(2)}</TextInstrument>
+                <TextInstrument as="span"> {vatAmount.toFixed(2)}</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
 
             <ContainerInstrument className="pt-6 border-t border-white/10 flex justify-between items-end">
               <TextInstrument as="span" className="text-[15px] font-light tracking-widest text-white/20"><VoiceglotText  translationKey="auto.zerolosscheckoutinstrument.totaal.e28895" defaultText="Totaal" /></TextInstrument>
               <TextInstrument as="span" className="text-4xl font-light tracking-tighter text-primary">
-                € {totalAmount.toFixed(2)}
+                 {totalAmount.toFixed(2)}
               </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

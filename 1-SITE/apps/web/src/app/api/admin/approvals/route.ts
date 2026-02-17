@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🛡️ API: ADMIN APPROVALS (2026)
+ *  API: ADMIN APPROVALS (2026)
  */
 
 export async function GET(request: NextRequest) {

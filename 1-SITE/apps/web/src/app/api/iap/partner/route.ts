@@ -4,7 +4,7 @@ import { partnerWidgets, actors, orders, orderItems } from '@db/schema';
 import { eq, inArray } from 'drizzle-orm';
 
 /**
- * 🤝 System (INTEGRATED AGENCY PORTAL) PARTNER API
+ *  System (INTEGRATED AGENCY PORTAL) PARTNER API
  * 
  * Doel: Partners (resellers, studio's) toegang geven tot hun eigen ecosysteem.
  * Core CRUD voor partner-specifieke entiteiten.

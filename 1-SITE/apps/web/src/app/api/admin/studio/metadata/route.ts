@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🎙️ API: ADMIN STUDIO METADATA (2026)
+ *  API: ADMIN STUDIO METADATA (2026)
  * GET: Haalt alle locaties en instructeurs op voor de editor
  */
 

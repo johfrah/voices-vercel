@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
 /**
- * 🪄 MAGIC LINK SERVICE (VOICES 2026)
+ *  MAGIC LINK SERVICE (VOICES 2026)
  * 
  * Beheert de generatie en validatie van tijdelijke tokens voor
  * wachtwoordloze toegang tot het dashboard.
@@ -51,7 +51,7 @@ export class MagicLinkService {
   }
 
   /**
-   * Verbruikt een token (éénmalig gebruik).
+   * Verbruikt een token (nmalig gebruik).
    */
   static async consumeToken(token: string): Promise<void> {
     await db.update(users)

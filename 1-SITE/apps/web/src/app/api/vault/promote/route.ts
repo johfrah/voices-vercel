@@ -6,9 +6,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /**
- * 🚀 PROMOTION SLUIS API (2026)
+ *  PROMOTION SLUIS API (2026)
  * 
- * Verplaatst een inbound demo van de privé Kluis naar de publieke Dropbox van een acteur.
+ * Verplaatst een inbound demo van de priv Kluis naar de publieke Dropbox van een acteur.
  */
 export async function POST(request: Request) {
   try {
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     const targetFileName = `${Date.now()}_${vaultFile.originalName}`;
     const targetPath = path.join(targetDir, targetFileName);
 
-    // 4. Fysiek kopiëren
+    // 4. Fysiek kopiren
     fs.copyFileSync(vaultFile.filePath, targetPath);
 
     // 5. Database Transactie
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('❌ Promotion API Error:', error);
+    console.error(' Promotion API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

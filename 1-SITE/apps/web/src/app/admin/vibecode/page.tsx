@@ -19,18 +19,18 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 /**
- * ⚡ VIBECODE BACKEND (NUCLEAR 2026)
+ *  VIBECODE BACKEND (NUCLEAR 2026)
  * 
  * "Code schrijven op basis van de vibe van het project."
  */
 export default function VibecodePage() {
-  const [code, setCode] = useState(`// ⚡ VIBECODE: Pas de logica van de Freedom Machine aan
+  const [code, setCode] = useState(`//  VIBECODE: Pas de logica van de Freedom Machine aan
 // Intent: "Versnel de checkout vibe"
 
 export async function onBeforeCheckout(context) {
   if (context.urgency > 0.8) {
     context.applyVibe('express-delivery');
-    console.log("🚀 Express vibe toegepast!");
+    console.log(" Express vibe toegepast!");
   }
 }`);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -41,9 +41,9 @@ export async function onBeforeCheckout(context) {
 
   const templates = [
     { title: 'Nieuwe Pagina', description: 'Maak een nieuwe content pagina aan.', code: '# Nieuwe Pagina\n\nSchrijf hier je content in Markdown...', type: 'page' },
-    { title: 'Urgentie Boost', description: 'Verhoogt de focus op snelheid bij hoge urgentie.', code: '// ⚡ VIBECODE: Urgentie Boost\nexport async function onInteraction(ctx) {\n  if (ctx.intent === "quote" && ctx.urgency > 0.7) {\n    ctx.showSmartChip("Directe Auditie");\n  }\n}', type: 'vibe' },
-    { title: 'Vriendelijke Voicy', description: 'Maakt de AI-assistent extra behulpzaam en informeel.', code: '// ⚡ VIBECODE: Vriendelijke Vibe\nexport async function onAiResponse(ctx) {\n  ctx.setTone("warm-informal");\n  ctx.addEmoji("👋");\n}', type: 'vibe' },
-    { title: 'Pricing Guard', description: 'Voegt extra validatie toe aan complexe offertes.', code: '// ⚡ VIBECODE: Pricing Guard\nexport async function onPriceCalculate(price) {\n  if (price < 50) return price * 1.2; // Nuclear Margin Protection\n  return price;\n}', type: 'vibe' },
+    { title: 'Urgentie Boost', description: 'Verhoogt de focus op snelheid bij hoge urgentie.', code: '//  VIBECODE: Urgentie Boost\nexport async function onInteraction(ctx) {\n  if (ctx.intent === "quote" && ctx.urgency > 0.7) {\n    ctx.showSmartChip("Directe Auditie");\n  }\n}', type: 'vibe' },
+    { title: 'Vriendelijke Voicy', description: 'Maakt de AI-assistent extra behulpzaam en informeel.', code: '//  VIBECODE: Vriendelijke Vibe\nexport async function onAiResponse(ctx) {\n  ctx.setTone("warm-informal");\n  ctx.addEmoji("");\n}', type: 'vibe' },
+    { title: 'Pricing Guard', description: 'Voegt extra validatie toe aan complexe offertes.', code: '//  VIBECODE: Pricing Guard\nexport async function onPriceCalculate(price) {\n  if (price < 50) return price * 1.2; // Nuclear Margin Protection\n  return price;\n}', type: 'vibe' },
   ];
 
   const handlePreview = () => {
@@ -235,7 +235,7 @@ export async function onBeforeCheckout(context) {
                   <Code2 size={12} strokeWidth={1.5} /> <VoiceglotText  translationKey="admin.vibecode.filename" defaultText="shadow-logic.cody" />
                 </TextInstrument>
                 <TextInstrument className="text-[15px] font-black text-primary tracking-widest animate-pulse">
-                  ● <VoiceglotText  translationKey="admin.vibecode.live_connection" defaultText="Live Connection" />
+                   <VoiceglotText  translationKey="admin.vibecode.live_connection" defaultText="Live Connection" />
                 </TextInstrument>
               </ContainerInstrument>
 

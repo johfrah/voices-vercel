@@ -4,7 +4,7 @@ import { orders, orderItems, orderNotes } from '@db/schema';
 import { MollieService } from '@/lib/payments/mollie';
 
 /**
- * ⚡ HEADLESS CHECKOUT API - V2 (NUCLEAR)
+ *  HEADLESS CHECKOUT API - V2 (NUCLEAR)
  * 
  * Doel: Volledige order-creatie inclusief line items en Mollie betaling.
  * Geen WordPress, 100% Native Engine.
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No items in cart' }, { status: 400 });
     }
 
-    // 🚀 ATOMIC TRANSACTION: Order + Items + Notes
+    //  ATOMIC TRANSACTION: Order + Items + Notes
     const result = await db.transaction(async (tx) => {
       // 1. Maak de Master Order aan
       const [order] = await tx.insert(orders).values({
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('🚀 NUCLEAR CHECKOUT ERROR:', error);
+    console.error(' NUCLEAR CHECKOUT ERROR:', error);
     return NextResponse.json({ 
       success: false, 
       error: error instanceof Error ? error.message : 'Checkout failed' 

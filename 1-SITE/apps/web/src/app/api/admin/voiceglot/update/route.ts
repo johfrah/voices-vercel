@@ -6,7 +6,7 @@ import { requireAdmin } from '@/lib/auth/api-auth';
 import { workshops } from '@db/schema';
 
 /**
- * 🚀 VOICEGLOT ADMIN API
+ *  VOICEGLOT ADMIN API
  * Slaat handmatige wijzigingen direct op in de database.
  */
 export async function POST(req: Request) {
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // 🎙️ WORKSHOP TITLE/DESC SYNC MANDATE
+    //  WORKSHOP TITLE/DESC SYNC MANDATE
     // Als de key begint met 'studio.workshop.', synchroniseren we direct naar de workshops tabel
     if (key.startsWith('studio.workshop.')) {
       const parts = key.split('.');
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       const field = parts[3]; // 'title' of 'description'
 
       if (!isNaN(workshopId) && (field === 'title' || field === 'description')) {
-        console.log(`🛠️ SYNCING WORKSHOP ${workshopId} FIELD ${field} TO SUPABASE...`);
+        console.log(` SYNCING WORKSHOP ${workshopId} FIELD ${field} TO SUPABASE...`);
         await db.update(workshops)
           .set({ [field]: text })
           .where(eq(workshops.id, workshopId));

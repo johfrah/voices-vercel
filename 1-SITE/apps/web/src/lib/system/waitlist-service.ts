@@ -4,9 +4,9 @@ import { eq, sql } from "drizzle-orm";
 import { DbService } from "../db-service";
 
 /**
- * ⏳ NUCLEAR WAITLIST SERVICE (2026)
+ *  NUCLEAR WAITLIST SERVICE (2026)
  * 
- * Beheert de wachtlijst en geïnteresseerden voor workshops.
+ * Beheert de wachtlijst en genteresseerden voor workshops.
  * Vervangt de PHP Workshop Waitlist en Interest functions.
  */
 
@@ -24,7 +24,7 @@ export class WaitlistService {
    * Registreert interesse voor een workshop.
    */
   static async registerInterest(data: InterestRegistration) {
-    console.log(`⏳ Registering interest for ${data.email}...`);
+    console.log(` Registering interest for ${data.email}...`);
 
     return await db.transaction(async (tx) => {
       // 1. Maak de registratie aan via DbService (simulatie)

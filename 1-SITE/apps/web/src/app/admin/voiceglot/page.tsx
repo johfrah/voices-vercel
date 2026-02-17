@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 /**
- * 🌍 VOICEGLOT ADMIN DASHBOARD (NUCLEAR 2026)
+ *  VOICEGLOT ADMIN DASHBOARD (NUCLEAR 2026)
  * 
  * "De taal van de Freedom Machine."
  */
@@ -192,7 +192,7 @@ export default function VoiceglotAdminPage() {
         </ContainerInstrument>
       </ContainerInstrument>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

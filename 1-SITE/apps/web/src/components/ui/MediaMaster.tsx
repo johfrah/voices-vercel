@@ -1,6 +1,7 @@
 "use client";
 
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { cn } from '@/lib/utils';
 import { Demo } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -9,6 +10,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
     ButtonInstrument,
     ContainerInstrument,
+    FlagBE,
+    FlagDE,
+    FlagDK,
+    FlagES,
+    FlagFR,
+    FlagIT,
+    FlagNL,
+    FlagPL,
+    FlagPT,
+    FlagUK,
+    FlagUS,
     TextInstrument
 } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
@@ -18,14 +30,36 @@ interface MediaMasterProps {
   onClose?: () => void;
 }
 
+/**
+ *  CHRIS-PROTOCOL: Flag Orchestrator (Synced with VoiceCard)
+ */
+const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
+  if (!lang) return null;
+  const lowLang = lang.toLowerCase();
+  
+  if (lowLang.includes('be') || lowLang === 'vlaams') return <FlagBE size={size} />;
+  if (lowLang.includes('nl') || lowLang === 'nederlands') return <FlagNL size={size} />;
+  if (lowLang.includes('fr') || lowLang === 'frans') return <FlagFR size={size} />;
+  if (lowLang.includes('de') || lowLang === 'duits') return <FlagDE size={size} />;
+  if (lowLang.includes('gb') || lowLang.includes('uk') || lowLang === 'engels') return <FlagUK size={size} />;
+  if (lowLang.includes('us')) return <FlagUS size={size} />;
+  if (lowLang.includes('es') || lowLang === 'spaans') return <FlagES size={size} />;
+  if (lowLang.includes('it') || lowLang === 'italiaans') return <FlagIT size={size} />;
+  if (lowLang.includes('pl') || lowLang === 'pools') return <FlagPL size={size} />;
+  if (lowLang.includes('dk') || lowLang === 'deens') return <FlagDK size={size} />;
+  if (lowLang.includes('pt') || lowLang === 'portugees') return <FlagPT size={size} />;
+  
+  return null;
+};
+
 export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const { playClick } = useSonicDNA();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { isPlaying, setIsPlaying } = useGlobalAudio();
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // 🛡️ CHRIS-PROTOCOL: Clean demo titles for display
+  //  CHRIS-PROTOCOL: Clean demo titles for display
   const cleanDemoTitle = (title: string) => {
     if (!title) return '';
     let clean = title.replace(/\.(mp3|wav|ogg|m4a)$/i, '');
@@ -39,7 +73,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   useEffect(() => {
     if (audioRef.current) {
       const audio = audioRef.current;
-      setIsPlaying(false);
+      // Don't reset isPlaying here, let the context handle it
       setProgress(0);
       
       const playAudio = () => {
@@ -54,17 +88,28 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       const timer = setTimeout(playAudio, 100);
       return () => clearTimeout(timer);
     }
-  }, [demo.audio_url]);
+  }, [demo.audio_url, setIsPlaying]);
+
+  // Sync audio element with context isPlaying state
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying && audioRef.current.paused) {
+        audioRef.current.play().catch(err => console.error("Sync play failed:", err));
+      } else if (!isPlaying && !audioRef.current.paused) {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
 
   const togglePlay = () => {
     if (audioRef.current) {
-      if (audioRef.current.paused) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
         audioRef.current.play()
           .then(() => setIsPlaying(true))
           .catch(err => console.error("Playback failed:", err));
-      } else {
-        audioRef.current.pause();
-        setIsPlaying(false);
       }
     }
   };
@@ -76,10 +121,23 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       if (total > 0) {
         setProgress((current / total) * 100);
       }
-      if (audioRef.current.paused !== !isPlaying) {
-        setIsPlaying(!audioRef.current.paused);
+      
+      //  CHRIS-PROTOCOL: Force sync state if audio element and context differ
+      if (!audioRef.current.paused && !isPlaying) {
+        setIsPlaying(true);
+      } else if (audioRef.current.paused && isPlaying) {
+        setIsPlaying(false);
       }
     }
+  };
+
+  const handleError = (e: any) => {
+    console.error(" MediaMaster: Audio error", {
+      url: demo.audio_url,
+      error: e.target.error,
+      code: e.target.error?.code
+    });
+    setIsPlaying(false);
   };
 
   const handleLoadedMetadata = () => {
@@ -99,7 +157,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
         plain 
         className="max-w-3xl mx-auto bg-va-black shadow-[0_32px_128px_rgba(0,0,0,0.8)] rounded-full p-2 border border-white/10 pointer-events-auto relative overflow-hidden flex items-center gap-4"
       >
-        {/* 🌊 LIQUID PROGRESS BACKGROUND */}
+        {/*  LIQUID PROGRESS BACKGROUND */}
         <motion.div 
           className="absolute inset-0 bg-primary/20 pointer-events-none origin-left"
           initial={{ scaleX: 0 }}
@@ -113,25 +171,35 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           onTimeUpdate={handleTimeUpdate} 
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => setIsPlaying(false)}
+          onError={handleError}
         />
         
-        {/* 📸 ACTOR PHOTO */}
-        <div className="relative w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-white/10 shadow-lg z-10 ml-1">
-          {demo.actor_photo ? (
-            <VoiceglotImage  
-              src={demo.actor_photo} 
-              alt={demo.actor_name} 
-              fill
-              className="object-cover" 
-            />
-          ) : (
-            <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary">
-              <Volume2 size={24} />
+        {/*  ACTOR PHOTO */}
+        <div className="relative w-14 h-14 rounded-full shrink-0 border-2 border-white/10 shadow-lg z-10 ml-1">
+          <div className="w-full h-full rounded-full overflow-hidden relative">
+            {demo.actor_photo ? (
+              <VoiceglotImage  
+                src={demo.actor_photo} 
+                alt={demo.actor_name} 
+                fill
+                className="object-cover" 
+              />
+            ) : (
+              <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary">
+                <Volume2 size={24} />
+              </div>
+            )}
+          </div>
+          
+          {/*  COUNTRY FLAG BADGE */}
+          {demo.actor_lang && (
+            <div className="absolute -bottom-1 -right-1 z-20 scale-75 border-2 border-va-black rounded-full overflow-hidden shadow-md">
+              <VoiceFlag lang={demo.actor_lang} size={20} />
             </div>
           )}
         </div>
 
-        {/* 📝 INFO BLOCK */}
+        {/*  INFO BLOCK */}
         <div className="flex-1 min-w-0 z-10 py-1">
           <TextInstrument className="text-white font-light text-[18px] tracking-tight truncate leading-tight block">
             {demo.actor_name || 'Stemacteur'}
@@ -141,7 +209,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           </TextInstrument>
         </div>
 
-        {/* 🕹️ CONTROLS */}
+        {/*  CONTROLS */}
         <div className="flex items-center gap-2 z-10 pr-2">
           {/* PLAY/PAUSE */}
           <button 
@@ -170,7 +238,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           </button>
         </div>
 
-        {/* 📏 INTERACTIVE PROGRESS OVERLAY */}
+        {/*  INTERACTIVE PROGRESS OVERLAY */}
         <div 
           className="absolute inset-0 cursor-pointer opacity-0 hover:opacity-100 transition-opacity"
           onClick={(e) => {

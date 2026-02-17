@@ -3,7 +3,7 @@ import { orders, users, approvalQueue } from "@db/schema";
 import { eq, inArray, sql } from "drizzle-orm";
 
 /**
- * 🏦 PONTO BRIDGE (NUCLEAR EDITION 2026)
+ *  PONTO BRIDGE (NUCLEAR EDITION 2026)
  * 
  * Verantwoordelijk voor de directe communicatie met de Ponto API (Ibanity).
  * Handelt Payment Initiation en Account Information af.
@@ -23,7 +23,7 @@ export class PontoBridge {
   private static CLIENT_SECRET = process.env.PONTO_CLIENT_SECRET;
 
   /**
-   * 🏦 BANK RECONCILIATION: Haalt banktransacties op via Ponto
+   *  BANK RECONCILIATION: Haalt banktransacties op via Ponto
    * voor automatische aflettering in Yuki.
    */
   static async getTransactions(accountId: string, fromDate: string) {
@@ -40,11 +40,11 @@ export class PontoBridge {
   }
 
   /**
-   * 🛡️ ATOMIC HITL: Stelt een betaling voor aan de Approval Queue.
+   *  ATOMIC HITL: Stelt een betaling voor aan de Approval Queue.
    * Voicy doet het voorwerk, jij doet de regie.
    */
   static async suggestPayout(recipient: PayoutRecipient, reasoning: string) {
-    console.log(`🛡️ [Ponto HITL] Suggesting payout for ${recipient.name}: €${recipient.amount}`);
+    console.log(` [Ponto HITL] Suggesting payout for ${recipient.name}: ${recipient.amount}`);
 
     await db.insert(approvalQueue).values({
       type: 'payment',
@@ -64,7 +64,7 @@ export class PontoBridge {
   }
 
   /**
-   * Creëert een bulk-betaling (Payment Initiation) in Ponto.
+   * Creert een bulk-betaling (Payment Initiation) in Ponto.
    * Dit zet de betalingen klaar voor jouw finale akkoord in de bank-app.
    * WORDT PAS AANGEROEPEN NA JOUW APPROVAL IN HET DASHBOARD.
    */
@@ -88,7 +88,7 @@ export class PontoBridge {
 
   static async createBulkPayment(recipients: PayoutRecipient[]) {
     // ... bestaande createBulkPayment logica ...
-    console.log(`[Ponto 🏦] Initiating bulk payment for ${recipients.length} recipients...`);
+    console.log(`[Ponto ] Initiating bulk payment for ${recipients.length} recipients...`);
 
     try {
       // 1. Verkrijg Access Token

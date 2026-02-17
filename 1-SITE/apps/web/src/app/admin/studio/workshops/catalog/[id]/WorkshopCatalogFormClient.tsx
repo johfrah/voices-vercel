@@ -110,7 +110,7 @@ export default function WorkshopCatalogFormClient({ workshop, instructors }: { w
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-2">
-            <label className="text-[11px] font-black tracking-widest text-black/30 uppercase">Standaard Prijs (€)</label>
+            <label className="text-[11px] font-black tracking-widest text-black/30 uppercase">Standaard Prijs ()</label>
             <input 
               type="number" 
               step="0.01"

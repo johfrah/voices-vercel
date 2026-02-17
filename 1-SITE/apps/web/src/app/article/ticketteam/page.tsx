@@ -156,7 +156,7 @@ export default function TicketTeamStoryPage() {
               <TextInstrument className="text-va-black/60 font-light text-lg leading-relaxed">
                 <VoiceglotText 
                   translationKey="story.ticketteam.text" 
-                  defaultText="Ticket Team wilde af van het 'rommeltje' aan verschillende stemmen en volumes. Door te kiezen voor één uniforme, professionele stem van Voices.be, hebben ze nu een visitekaartje dat rust en vertrouwen uitstraalt." 
+                  defaultText="Ticket Team wilde af van het 'rommeltje' aan verschillende stemmen en volumes. Door te kiezen voor n uniforme, professionele stem van Voices.be, hebben ze nu een visitekaartje dat rust en vertrouwen uitstraalt." 
                 />
               </TextInstrument>
             </ContainerInstrument>
@@ -183,7 +183,7 @@ export default function TicketTeamStoryPage() {
                 <TextInstrument className="text-va-black/60 font-light leading-relaxed">
                   <VoiceglotText 
                     translationKey="story.ticketteam.uniformity_text" 
-                    defaultText="Voorheen moesten klanten schakelen in belvolume door de verschillende zelf-opgenomen stemmen. Nu is er één eenduidige aanpak die zorgt voor een professionele en rustige klantbeleving." 
+                    defaultText="Voorheen moesten klanten schakelen in belvolume door de verschillende zelf-opgenomen stemmen. Nu is er n eenduidige aanpak die zorgt voor een professionele en rustige klantbeleving." 
                   />
                 </TextInstrument>
               </ContainerInstrument>

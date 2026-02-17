@@ -3,7 +3,7 @@ import { runAudioMapping } from '@/lib/audio-mapper';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * ⚡ NUCLEAR SYNC API
+ *  NUCLEAR SYNC API
  * Trigger voor de audio mapping fase.
  */
 

@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 /**
- * 🔒 NUCLEAR SECURITY CENTER (2026)
+ *  NUCLEAR SECURITY CENTER (2026)
  * 
  * Doel: Beheer van 2FA, Admin Escalation en Mailbox Protection.
  */

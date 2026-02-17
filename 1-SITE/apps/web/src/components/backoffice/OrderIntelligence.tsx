@@ -43,7 +43,7 @@ interface OrderIntelligenceProps {
 }
 
 /**
- * ⚛️ ORDER INTELLIGENCE (NUCLEAR 2026)
+ *  ORDER INTELLIGENCE (NUCLEAR 2026)
  * Orchestrator voor order-inzichten.
  * HTML Zero, CSS Zero, Text Zero.
  */

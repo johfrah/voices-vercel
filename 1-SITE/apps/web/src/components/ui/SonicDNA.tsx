@@ -62,7 +62,7 @@ export function useSonicDNA() {
       osc.start(now);
       osc.stop(now + 0.05);
     } else if (type === 'success') {
-      // 🚀 NUCLEAR SUCCESS: Rising perfect fifth
+      //  NUCLEAR SUCCESS: Rising perfect fifth
       osc.type = 'sine';
       osc.frequency.setValueAtTime(440, now);
       osc.frequency.exponentialRampToValueAtTime(660, now + 0.2);
@@ -71,7 +71,7 @@ export function useSonicDNA() {
       osc.start(now);
       osc.stop(now + 0.3);
     } else if (type === 'error') {
-      // ⚠️ NUCLEAR ERROR: Low dissonant drop
+      //  NUCLEAR ERROR: Low dissonant drop
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(110, now);
       osc.frequency.linearRampToValueAtTime(55, now + 0.3);
@@ -80,7 +80,7 @@ export function useSonicDNA() {
       osc.start(now);
       osc.stop(now + 0.3);
     } else if (type === 'swell') {
-      // 🌊 NUCLEAR SWELL: Airy hover effect
+      //  NUCLEAR SWELL: Airy hover effect
       osc.type = 'sine';
       osc.frequency.setValueAtTime(880, now);
       gain.gain.setValueAtTime(0, now);
@@ -89,7 +89,7 @@ export function useSonicDNA() {
       osc.start(now);
       osc.stop(now + 0.3);
     } else if (type === 'startup') {
-      // ✨ STARTUP CHIME: Bright, welcoming rising sequence
+      //  STARTUP CHIME: Bright, welcoming rising sequence
       const osc2 = audioCtx.current.createOscillator();
       const gain2 = audioCtx.current.createGain();
       osc2.connect(gain2);
@@ -127,7 +127,7 @@ export function SonicDNAHandler() {
   const { playClick } = useSonicDNA();
 
   useEffect(() => {
-    // ✨ STARTUP CHIME: Play when the engine is ready
+    //  STARTUP CHIME: Play when the engine is ready
     const handleFirstInteraction = () => {
       playClick('startup');
     };

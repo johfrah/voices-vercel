@@ -15,7 +15,7 @@ import { ChevronDown, ChevronUp, Search, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
 /**
- * ❓ FAQ PAGE (NUCLEAR 2026)
+ *  FAQ PAGE (NUCLEAR 2026)
  * 
  * Een high-end FAQ ervaring met progressieve onthulling en Voicy fallback.
  */
@@ -131,7 +131,7 @@ export default function FAQPage() {
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
         </ContainerInstrument>
 
-        {/* 🧠 LLM CONTEXT (Compliance) */}
+        {/*  LLM CONTEXT (Compliance) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -12,7 +12,7 @@ const openai = new OpenAI({
 export const dynamic = 'force-dynamic';
 
 /**
- * 📈 REAL MAILBOX INSIGHTS API (2026)
+ *  REAL MAILBOX INSIGHTS API (2026)
  * 
  * Doel: Genereert trends, SWOT en sentiment analyses op basis van echte mailbox data.
  * Inclusief bron-verwijzingen en actiepunten.
@@ -135,7 +135,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(insights);
   } catch (error) {
-    console.error('❌ Mailbox Insights API Error:', error);
+    console.error(' Mailbox Insights API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

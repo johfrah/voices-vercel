@@ -14,9 +14,9 @@ interface VoicesWordSliderProps {
   min?: number;
   max?: number;
   livePrice?: string;
-  rounding?: 'left' | 'right' | 'none'; // 🛡️ Fix for pill rounding
-  isTelephony?: boolean; // 🛡️ New prop for telephony context
-  isVideo?: boolean; // 🛡️ New prop for video context
+  rounding?: 'left' | 'right' | 'none'; //  Fix for pill rounding
+  isTelephony?: boolean; //  New prop for telephony context
+  isVideo?: boolean; //  New prop for video context
 }
 
 export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
@@ -24,7 +24,7 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
   onChange,
   label,
   className,
-  min = 1,
+  min = 5,
   max = 5000,
   livePrice,
   rounding = 'none',
@@ -34,25 +34,25 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 🛡️ CHRIS-PROTOCOL: Suggestive Prompt Calculation (approx. 20 words per prompt)
+  //  CHRIS-PROTOCOL: Suggestive Prompt Calculation (approx. 20 words per prompt)
   const promptSuggestion = useMemo(() => {
     if (!isTelephony) return null;
     const count = Math.max(1, Math.round(value / 20));
-    return `± ${count} ${count === 1 ? 'prompt' : 'prompts'}`;
+    return ` ${count} ${count === 1 ? 'prompt' : 'prompts'}`;
   }, [value, isTelephony]);
 
-  // 🛡️ CHRIS-PROTOCOL: Suggestive Video Duration Calculation (approx. 155 words per minute)
+  //  CHRIS-PROTOCOL: Suggestive Video Duration Calculation (approx. 155 words per minute)
   const videoSuggestion = useMemo(() => {
     if (!isVideo) return null;
     const minutes = value / 155;
     if (minutes < 1) {
       const seconds = Math.round(minutes * 60);
-      return `± ${seconds} sec`;
+      return ` ${seconds} sec`;
     }
     const mins = Math.floor(minutes);
     const secs = Math.round((minutes - mins) * 60);
-    if (mins === 0) return `± ${secs} sec`;
-    return `± ${mins}m ${secs.toString().padStart(2, '0')}s`;
+    if (mins === 0) return ` ${secs} sec`;
+    return ` ${mins}m ${secs.toString().padStart(2, '0')}s`;
   }, [value, isVideo]);
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
             </span>
             {livePrice && (
               <span className="text-[14px] font-medium text-primary bg-primary/5 px-2 py-0.5 rounded-full animate-in fade-in zoom-in-95 duration-300">
-                €{livePrice}
+                {livePrice}
               </span>
             )}
           </div>

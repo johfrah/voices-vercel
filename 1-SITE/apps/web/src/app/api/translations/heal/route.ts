@@ -6,12 +6,12 @@ import { and, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * 🩹 API: SELF-HEALING TRANSLATIONS (GOD MODE 2026)
+ *  API: SELF-HEALING TRANSLATIONS (GOD MODE 2026)
  * 
  * Doel: Automatisch ontbrekende vertalingen registreren, vertalen via AI,
  * en de admin notificeren.
  * 
- * 🚀 UPDATE: Switched to OpenAI (GPT-4o mini) for higher rate limits and stability.
+ *  UPDATE: Switched to OpenAI (GPT-4o mini) for higher rate limits and stability.
  */
 
 export const dynamic = 'force-dynamic';
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Key and originalText required' }, { status: 400 });
     }
 
-    // 🌍 NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
+    //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
     const host = request.headers.get('host') || 'voices.be';
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Already exists', text: existing.translatedText });
     }
 
-    console.log(`🩹 SELF-HEALING (OpenAI): New key detected [${key}] for lang [${currentLang}]`);
+    console.log(` SELF-HEALING (OpenAI): New key detected [${key}] for lang [${currentLang}]`);
 
     // 2. Live AI Vertaling via OpenAI
     let cleanTranslation = '';
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       cleanTranslation = await OpenAIService.generateText(prompt);
       cleanTranslation = cleanTranslation.trim().replace(/^"|"$/g, '');
     } catch (aiErr: any) {
-      console.error('❌ OpenAI Self-Heal Error:', aiErr.message);
+      console.error(' OpenAI Self-Heal Error:', aiErr.message);
       return NextResponse.json({ 
         success: false, 
         message: 'AI engine error',
@@ -95,10 +95,10 @@ export async function POST(request: NextRequest) {
       const mailService = DirectMailService.getInstance();
       await mailService.sendMail({
         to: adminEmail,
-        subject: `🩹 Voicy Self-Heal LIVE: Nieuwe vertaling [${key}]`,
+        subject: ` Voicy Self-Heal LIVE: Nieuwe vertaling [${key}]`,
         html: `
           <div style="font-family: sans-serif; padding: 40px; background: #f9f9f9; border-radius: 24px;">
-            <h2 style="letter-spacing: -0.02em; color: #ff4f00;">🩹 Self-Healing Live</h2>
+            <h2 style="letter-spacing: -0.02em; color: #ff4f00;"> Self-Healing Live</h2>
             <p>Er is een ontbrekende vertaling live gefixed op de frontend.</p>
             <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
             <p><strong>Key:</strong> <code>${key}</code></p>
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
         `
       });
     } catch (mailErr) {
-      console.error('❌ Failed to send self-heal notification:', mailErr);
+      console.error(' Failed to send self-heal notification:', mailErr);
     }
 
     return NextResponse.json({ 

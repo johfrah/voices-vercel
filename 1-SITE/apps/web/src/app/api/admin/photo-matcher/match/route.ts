@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     // 2. Verplaatsen en opschonen op de server
     execSSH(`mkdir -p "${targetSubDir}" && cp "${photoPath}" "${targetPath}"`);
     
-    // 🛡️ CHRIS-PROTOCOL: Alleen strippen als het geen transparante PNG is om corruptie te voorkomen
+    //  CHRIS-PROTOCOL: Alleen strippen als het geen transparante PNG is om corruptie te voorkomen
     if (ext !== '.png') {
       try {
         execSSH(`mogrify -strip "${targetPath}"`);

@@ -4,7 +4,7 @@ import { sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 /**
- * 🔍 SEMANTIC SEARCH API (2026)
+ *  SEMANTIC SEARCH API (2026)
  * 
  * Doel: Zoekt mails op basis van betekenis ipv trefwoorden.
  * Gebruikt pgvector cosine similarity.
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Could not generate vector' }, { status: 500 });
     }
 
-    // 🔢 PGVECTOR COSINE SIMILARITY SEARCH
+    //  PGVECTOR COSINE SIMILARITY SEARCH
     // We gebruiken de <=> operator voor cosine distance (kleiner is beter)
     const formattedVector = `[${queryVector.join(',')}]`;
     
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(results);
   } catch (error) {
-    console.error('❌ Semantic Search API Error:', error);
+    console.error(' Semantic Search API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

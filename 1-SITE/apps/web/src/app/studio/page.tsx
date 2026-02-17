@@ -27,10 +27,10 @@ import Link from "next/link";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "Voices Studio - Plezante voice-over workshops in België",
+  title: "Voices Studio - Plezante voice-over workshops in Belgi",
   description: "Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden. Leer van de experts in onze fysieke studio in Gent.",
   openGraph: {
-    title: "Voices Studio - Plezante voice-over workshops in België",
+    title: "Voices Studio - Plezante voice-over workshops in Belgi",
     description: "Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden.",
     type: "website",
   },
@@ -40,10 +40,10 @@ export const metadata: Metadata = {
 };
 
 export default async function StudioPage() {
-  // 🎙️ Fetch Workshops with Fallback for DB errors
+  //  Fetch Workshops with Fallback for DB errors
   const activeWorkshops = await getWorkshops();
 
-  // 📅 VOLGORDE MANDATE: Eerstvolgende workshop eerst, daarna alfabetisch zonder datum
+  //  VOLGORDE MANDATE: Eerstvolgende workshop eerst, daarna alfabetisch zonder datum
   activeWorkshops.sort((a, b) => {
     const nextA = a.editions?.[0]?.date;
     const nextB = b.editions?.[0]?.date;
@@ -106,7 +106,7 @@ export default async function StudioPage() {
           </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🎙️ WORKSHOP UITLEG & CAROUSEL */}
+      {/*  WORKSHOP UITLEG & CAROUSEL */}
       <SectionInstrument id="workshops" className="py-40 bg-white border-y border-black/[0.03]">
         <ContainerInstrument plain className="max-w-6xl mx-auto px-4 md:px-6">
           <ContainerInstrument plain className="max-w-3xl mb-24 space-y-8 mx-auto text-center">
@@ -123,7 +123,7 @@ export default async function StudioPage() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🧩 DRIE PIJLERS SECTIE */}
+      {/*  DRIE PIJLERS SECTIE */}
       <SectionInstrument className="py-40 bg-white">
         <ContainerInstrument className="max-w-[1140px]">
           <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -136,7 +136,7 @@ export default async function StudioPage() {
                 <VoiceglotText translationKey="studio.pillars.uitspraak.title" defaultText="1. Uitspraak" />
               </HeadingInstrument>
               <TextInstrument className="text-lg text-black/50 font-light leading-relaxed">
-                <VoiceglotText translationKey="studio.pillars.uitspraak.text" defaultText="Leer alles over correct stemgebruik, perfecte uitspraak en intonatie, 3 essentiële vaardigheden voor elke professionele spreker." />
+                <VoiceglotText translationKey="studio.pillars.uitspraak.text" defaultText="Leer alles over correct stemgebruik, perfecte uitspraak en intonatie, 3 essentile vaardigheden voor elke professionele spreker." />
               </TextInstrument>
             </ContainerInstrument>
 
@@ -169,7 +169,7 @@ export default async function StudioPage() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🎓 ONTMOET JE INSTRUCTEURS (Kennismaking) */}
+      {/*  ONTMOET JE INSTRUCTEURS (Kennismaking) */}
       <SectionInstrument className="py-48 bg-va-off-white/30 relative overflow-hidden">
         <ContainerInstrument className="max-w-[1140px] relative z-10">
           <ContainerInstrument className="text-center max-w-3xl mx-auto mb-32 space-y-6">
@@ -255,7 +255,7 @@ export default async function StudioPage() {
         <ContainerInstrument className="absolute top-1/2 left-0 w-full h-px bg-black/[0.03] -z-10" />
       </SectionInstrument>
 
-      {/* 📅 KALENDER BENTO */}
+      {/*  KALENDER BENTO */}
       <SectionInstrument className="py-40 bg-white">
         <ContainerInstrument className="max-w-[1140px]">
           <BentoGrid columns={3}>
@@ -281,7 +281,7 @@ export default async function StudioPage() {
               </ContainerInstrument>
             </BentoCard>
 
-            {/* 🎯 DE GIDS BENTO (Quiz) */}
+            {/*  DE GIDS BENTO (Quiz) */}
             <BentoCard span="sm" className="bg-blue-600 p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[500px] rounded-[20px]">
               <ContainerInstrument className="relative z-10">
                 <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-white/20 backdrop-blur-md flex items-center justify-center mb-8">
@@ -308,7 +308,7 @@ export default async function StudioPage() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🌟 REVIEWS BENTO */}
+      {/*  REVIEWS BENTO */}
       <SectionInstrument className="py-48 bg-va-off-white border-t border-black/[0.03]">
         <ContainerInstrument className="max-w-[1140px]">
           <BentoCard span="full" className="bg-white rounded-[20px] border border-black/[0.02] p-16 shadow-aura">
@@ -334,7 +334,7 @@ export default async function StudioPage() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🕸️ SUZY'S SCHEMA INJECTION */}
+      {/*  SUZY'S SCHEMA INJECTION */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -361,7 +361,7 @@ export default async function StudioPage() {
         }}
       />
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

@@ -16,7 +16,7 @@ interface VoiceglotImageProps extends Omit<ImageProps, 'src'> {
 }
 
 /**
- * 🖼️ VOICEGLOT IMAGE EDITOR
+ *  VOICEGLOT IMAGE EDITOR
  * Maakt afbeeldingen vervangbaar in Beheer-modus.
  */
 export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({ 
@@ -45,11 +45,12 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     if (error) return; // Prevent infinite loop
     setError(true);
     
-    // 🛡️ CHRIS-PROTOCOL: Fallback logic for actor photos
-    // If a path contains 'visuals/active/voicecards' or 'visuals/active/photos' or 'agency/voices', it might be a missing photo
+    //  CHRIS-PROTOCOL: Fallback logic for actor photos
+    // If a path contains 'visuals/active/voicecards' or 'visuals/active/photos' or 'agency/voices' or 'active/voicecards', it might be a missing photo
     if (currentSrc.includes('visuals/active/voicecards') || 
         currentSrc.includes('visuals/active/photos') || 
-        currentSrc.includes('agency/voices')) {
+        currentSrc.includes('agency/voices') ||
+        currentSrc.includes('active/voicecards')) {
       
       // If we are in the new structure but it failed, try the ID-based fallback if we can extract it
       const idMatch = currentSrc.match(/(\d+)-/);
@@ -109,6 +110,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
 
   const isFill = !!props.fill;
   const isProxied = currentSrc?.includes('/api/proxy');
+  const isLocal = currentSrc?.startsWith('/') && !isProxied;
 
   return (
     <div className={cn(
@@ -123,7 +125,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
           onError={handleError}
           width={!isFill ? (props.width || 500) : undefined}
           height={!isFill ? (props.height || 500) : undefined}
-          unoptimized={isProxied}
+          unoptimized={isProxied || isLocal}
           className={cn(
             className,
             isEditMode && "ring-2 ring-primary/0 hover:ring-primary/50 transition-all duration-300"

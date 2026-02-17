@@ -5,7 +5,7 @@ import { eq, desc } from 'drizzle-orm';
 import { VoicyPatternEngine } from '@/lib/intelligence/pattern-engine';
 
 /**
- * 👁️ ZERO LAWS INTELLIGENCE API
+ *  ZERO LAWS INTELLIGENCE API
  * 
  * Doel: Voorspellende inzichten en AI-aanbevelingen ontsluiten.
  * "Zero Laws" = Geen handmatige input nodig, data vertelt het verhaal.
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     const uid = parseInt(userId);
 
     if (type === 'patterns') {
-      // 1. Haal orderhistorie op met items en categorieën
+      // 1. Haal orderhistorie op met items en categorien
       const userOrders = await db.query.orders.findMany({
         where: eq(orders.userId, uid),
         with: {
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === 'recommendations') {
-      // 💡 Simpele AI Recommendation: Stemmen die lijken op eerder bestelde stemmen
+      //  Simpele AI Recommendation: Stemmen die lijken op eerder bestelde stemmen
       const previousActors = await db
         .select({ actorId: orderItems.actorId })
         .from(orderItems)

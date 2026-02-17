@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 /**
- * 🎊 CHECKOUT SUCCESS PAGE (NUCLEAR)
+ *  CHECKOUT SUCCESS PAGE (NUCLEAR)
  * 
  * Doel: Bevestiging van betaling, vieren van vakmanschap, 
  * en direct doorsturen naar de volgende stap in de journey.

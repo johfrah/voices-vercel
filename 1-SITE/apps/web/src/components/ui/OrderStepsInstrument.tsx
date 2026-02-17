@@ -11,7 +11,7 @@ interface OrderStepsInstrumentProps {
 }
 
 /**
- * ⚡ ORDER STEPS INSTRUMENT (2026 MASTERCLASS)
+ *  ORDER STEPS INSTRUMENT (2026 MASTERCLASS)
  * 
  * Een strak, gecentreerd instrument dat de voortgang van de klant toont.
  * Voldoet aan het Chris-Protocol: Minimalistisch, geen layout shifts, 100ms feedback.

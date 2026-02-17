@@ -5,7 +5,7 @@ import { desc, gt, and, eq } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * 🏺 LIVE VISITORS API (2026)
+ *  LIVE VISITORS API (2026)
  * 
  * Haalt alle actieve sessies op van de laatste 15 minuten.
  * Gekoppeld aan Voicejar data.
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Live Visitors API Error:', error);
+    console.error(' Live Visitors API Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

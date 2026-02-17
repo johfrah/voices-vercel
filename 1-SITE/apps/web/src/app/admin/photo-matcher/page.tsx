@@ -36,7 +36,7 @@ interface PhotoItem {
   };
 }
 
-// 🛒 Picnic-style Swipe Card Component (Voices Hero Left Style)
+//  Picnic-style Swipe Card Component (Voices Hero Left Style)
 const SwipeCard = ({ 
   item, 
   groupName, 
@@ -108,7 +108,7 @@ const SwipeCard = ({
             <ContainerInstrument plain className="voices-hero-badge mb-4">
               <TextInstrument className="w-1.5 h-1.5 rounded-full bg-va-primary/40 animate-pulse font-light" />
               <TextInstrument as="span" className="text-[15px] font-bold tracking-wider text-va-black/40">
-                {item.source || 'Auto'} • {groupName}
+                {item.source || 'Auto'}  {groupName}
               </TextInstrument>
             </ContainerInstrument>
             
@@ -161,7 +161,7 @@ const SwipeCard = ({
                       <ContainerInstrument>
                         <TextInstrument className="text-[15px] font-medium text-black">{s.name}</TextInstrument>
                         <TextInstrument className="text-[15px] text-gray-400 font-bold tracking-tighter">
-                          {s.confidence === 'verified' ? '✓ Verified Match' : `${s.confidence} confidence`}
+                          {s.confidence === 'verified' ? ' Verified Match' : `${s.confidence} confidence`}
                         </TextInstrument>
                       </ContainerInstrument>
                       <ChevronRight strokeWidth={1.5} size={18} className="text-va-primary/40 group-hover:translate-x-1 transition-transform" />
@@ -319,7 +319,7 @@ export default function PhotoMatcherPage() {
   const currentItem = filteredUnprocessedItems[0];
   const nextItem = filteredUnprocessedItems[1];
 
-  // 🧠 Pre-load next images (aggressive)
+  //  Pre-load next images (aggressive)
   useEffect(() => {
     if (filteredUnprocessedItems.length > 1) {
       // Pre-load de volgende 5 images
@@ -365,7 +365,7 @@ export default function PhotoMatcherPage() {
         setLoading(false);
       })
       .catch(err => {
-        console.error('❌ error loading manifest:', err);
+        console.error(' error loading manifest:', err);
         setLoading(false);
       });
   }, []);
@@ -420,7 +420,7 @@ export default function PhotoMatcherPage() {
     setScanning(false);
   };
 
-  // ⌨️ Keyboard Speed Workflow
+  //  Keyboard Speed Workflow
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
@@ -461,7 +461,7 @@ export default function PhotoMatcherPage() {
       item.path === lastAction.path ? { ...item, processed: false } : item
     ));
 
-    console.log('🔄 Undo performed for:', lastAction.path);
+    console.log(' Undo performed for:', lastAction.path);
   }, [undoStack]);
 
   const handleAction = useCallback(async (action: 'match' | 'ignore' | 'archive', photoPath: string, actorId?: string, category?: string) => {
@@ -502,7 +502,7 @@ export default function PhotoMatcherPage() {
     <PageWrapperInstrument className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white overflow-x-hidden">
       <LiquidBackground />
       
-      {/* 📊 Minimal Floating Stats Overlay */}
+      {/*  Minimal Floating Stats Overlay */}
       <ContainerInstrument className="fixed top-8 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-xl rounded-full px-8 py-4 shadow-aura border border-black/5 flex items-center gap-12 pointer-events-none">
         <ContainerInstrument className="flex items-center gap-4">
           <TextInstrument className="text-[15px] text-va-black/40 tracking-[0.2em] font-bold">Progress</TextInstrument>
@@ -568,7 +568,7 @@ export default function PhotoMatcherPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="text-center space-y-6"
             >
-              <TextInstrument className="text-6xl font-light">🎉</TextInstrument>
+              <TextInstrument className="text-6xl font-light"></TextInstrument>
               <HeadingInstrument level={2} className="text-3xl font-light">Alles verwerkt!</HeadingInstrument>
               <ButtonInstrument onClick={() => window.location.reload()} className="va-btn-pro px-8 py-4">Herladen</ButtonInstrument>
             </motion.div>

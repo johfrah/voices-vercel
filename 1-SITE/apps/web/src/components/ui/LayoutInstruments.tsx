@@ -351,7 +351,7 @@ export const LabelInstrument = ({
 };
 
 /**
- * 🛡️ CHRIS-PROTOCOL: Circular Flag Components (Centralized)
+ *  CHRIS-PROTOCOL: Circular Flag Components (Centralized)
  */
 export const FlagBE = ({ size = 20 }: { size?: number }) => (
   <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0">

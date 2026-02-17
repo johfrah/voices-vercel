@@ -44,7 +44,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('❌ Feedback submission failed:', error);
+    console.error(' Feedback submission failed:', error);
     return NextResponse.json({ error: 'Submission failed' }, { status: 500 });
   }
 }

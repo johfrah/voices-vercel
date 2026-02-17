@@ -14,7 +14,7 @@ import { notFound } from "next/navigation";
 
 /**
  * EDITION DETAIL PAGE (INSTRUCTOR VIEW)
- * 🛡️ VOICES OS: Deelnemerslijst met User DNA voor de instructeur.
+ *  VOICES OS: Deelnemerslijst met User DNA voor de instructeur.
  * Privacy-first: Geen e-mailadressen of telefoonnummers.
  */
 export default async function EditionParticipantsPage({ params }: { params: { id: string } }) {
@@ -31,7 +31,7 @@ export default async function EditionParticipantsPage({ params }: { params: { id
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">
-      {/* 🔙 BACK BUTTON */}
+      {/*  BACK BUTTON */}
       <Link  
         href="/studio/inschrijvingen" 
         className="inline-flex items-center gap-2 text-[15px] font-black tracking-widest text-black/40 hover:text-primary transition-colors mb-12 group"

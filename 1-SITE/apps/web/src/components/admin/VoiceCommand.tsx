@@ -5,7 +5,7 @@ import { Check, Mic, Play, X } from 'lucide-react';
 import { useState } from 'react';
 
 /**
- * 🎙️ VOICE-TO-UI COMMAND (Shadow Mode)
+ *  VOICE-TO-UI COMMAND (Shadow Mode)
  * 
  * Prototype voor conversational edits.
  * Veiligheid: Human-in-the-loop (Shadow Command).
@@ -30,7 +30,7 @@ export default function VoiceCommand() {
   };
 
   const confirmCommand = () => {
-    console.log("🚀 Shadow Command Geactiveerd:", draft);
+    console.log(" Shadow Command Geactiveerd:", draft);
     setDraft(null);
     // Hier triggeren we de echte database mutatie
   };

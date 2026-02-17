@@ -1,7 +1,7 @@
 import TermsPage from '../terms/page';
 
 /**
- * 🇳🇱 VOORWAARDEN (DUTCH SLUG)
+ *  VOORWAARDEN (DUTCH SLUG)
  * 
  * "Directe route voor de Nederlandse markt."
  */

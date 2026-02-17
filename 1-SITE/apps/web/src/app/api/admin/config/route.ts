@@ -5,12 +5,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getActor, getActors, getMusicLibrary } from '@/lib/api-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
-// 🚀 NUCLEAR CACHE BUSTER
+//  NUCLEAR CACHE BUSTER
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 /**
- * ⚙️ API: ADMIN CONFIG (2026)
+ *  API: ADMIN CONFIG (2026)
  * 
  * Beheer van globale systeeminstellingen, bedrijfsinformatie en vakantieregelingen.
  * Nu ook als bridge voor client-side data fetching van server-only resources.
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // 🛡️ BRIDGE LOGIC: Handle client-side requests for server-only data
+    //  BRIDGE LOGIC: Handle client-side requests for server-only data
     if (type === 'actor') {
       const slug = searchParams.get('slug');
       const lang = searchParams.get('lang') || 'nl';

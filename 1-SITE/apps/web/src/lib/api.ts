@@ -25,7 +25,7 @@ export type {
 };
 
 /**
- * 🚀 CLIENT-SAFE API (2026)
+ *  CLIENT-SAFE API (2026)
  * 
  * Bevat alleen functies die veilig in de browser kunnen draaien.
  * Database-interacties zijn verplaatst naar api-server.ts.
@@ -50,7 +50,7 @@ export async function getMusicLibrary(category: string = 'music'): Promise<any[]
 }
 
 /**
- * 🛡️ CONTENT MODERATION: Controleert tekst op verboden content voor AI-generatie
+ *  CONTENT MODERATION: Controleert tekst op verboden content voor AI-generatie
  */
 export async function validateAiText(text: string): Promise<{ allowed: boolean; reason?: string }> {
   const forbiddenKeywords = [

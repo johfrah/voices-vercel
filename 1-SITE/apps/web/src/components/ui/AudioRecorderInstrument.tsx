@@ -6,7 +6,7 @@ import { CheckCircle2, Loader2, Mic, Square, Trash2 } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 
 /**
- * 🎙️ AUDIO RECORDER INSTRUMENT (2026)
+ *  AUDIO RECORDER INSTRUMENT (2026)
  * 
  * Een intelligent instrument voor het opnemen van audiobriefings.
  * Vervangt de PHP [audiorecorder] shortcode.
@@ -71,7 +71,7 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
     playClick('pro');
 
     try {
-      // 🚀 ATOMIC UPLOAD: Hier zou de upload naar Supabase Storage komen
+      //  ATOMIC UPLOAD: Hier zou de upload naar Supabase Storage komen
       // Simulatie:
       await new Promise(resolve => setTimeout(resolve, 1500));
       
@@ -158,9 +158,9 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
           <VoiceglotText  translationKey="recorder.tips.title" defaultText="Tips voor succes" />
         </h4>
         <ul className="text-[15px] text-va-black/50 space-y-1.5 font-light">
-          <li>• <VoiceglotText  translationKey="recorder.tips.1" defaultText="Spreek namen en vaktermen duidelijk uit." /></li>
-          <li>• <VoiceglotText  translationKey="recorder.tips.2" defaultText="Geef aan welk tempo of welke toon je wenst." /></li>
-          <li>• <VoiceglotText  translationKey="recorder.tips.3" defaultText="Maximaal 2 minuten per opname." /></li>
+          <li> <VoiceglotText  translationKey="recorder.tips.1" defaultText="Spreek namen en vaktermen duidelijk uit." /></li>
+          <li> <VoiceglotText  translationKey="recorder.tips.2" defaultText="Geef aan welk tempo of welke toon je wenst." /></li>
+          <li> <VoiceglotText  translationKey="recorder.tips.3" defaultText="Maximaal 2 minuten per opname." /></li>
         </ul>
       </div>
     </div>

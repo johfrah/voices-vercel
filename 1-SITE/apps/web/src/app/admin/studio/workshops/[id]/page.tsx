@@ -71,11 +71,11 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
         <ContainerInstrument className="flex gap-4">
             <div className="bg-va-off-white px-6 py-4 rounded-2xl border border-black/5">
                 <TextInstrument className="text-[11px] font-black tracking-widest text-black/30 uppercase">Netto Omzet</TextInstrument>
-                <TextInstrument className="text-2xl font-light">€{stats.netRevenue.toFixed(2)}</TextInstrument>
+                <TextInstrument className="text-2xl font-light">{stats.netRevenue.toFixed(2)}</TextInstrument>
             </div>
             <div className="bg-va-black text-white px-6 py-4 rounded-2xl border border-white/5">
                 <TextInstrument className="text-[11px] font-black tracking-widest text-white/30 uppercase">Winst</TextInstrument>
-                <TextInstrument className={cn("text-2xl font-light", profit < 0 ? "text-red-400" : "text-green-400")}>€{profit.toFixed(2)}</TextInstrument>
+                <TextInstrument className={cn("text-2xl font-light", profit < 0 ? "text-red-400" : "text-green-400")}>{profit.toFixed(2)}</TextInstrument>
             </div>
             <div className="bg-va-off-white px-6 py-4 rounded-2xl border border-black/5">
                 <TextInstrument className="text-[11px] font-black tracking-widest text-black/30 uppercase">Bezetting</TextInstrument>
@@ -125,7 +125,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                         <div>
                             <div className="flex items-center justify-end gap-2 mb-1">
                                 {isRefunded ? <AlertTriangle className="text-amber-500" size={16} /> : <CheckCircle2 className="text-green-500" size={16} />}
-                                <TextInstrument className={cn("text-[13px] font-black", isRefunded ? "text-amber-600" : "text-green-600")}>€{parseFloat(p.price || '0').toFixed(2)}</TextInstrument>
+                                <TextInstrument className={cn("text-[13px] font-black", isRefunded ? "text-amber-600" : "text-green-600")}>{parseFloat(p.price || '0').toFixed(2)}</TextInstrument>
                             </div>
                             <Link href={`/admin/orders/${order.id}`} className="text-[11px] font-black tracking-widest text-black/20 hover:text-primary flex items-center justify-end gap-1">WC #{order.wpOrderId} <ExternalLink size={10} /></Link>
                         </div>

@@ -1,5 +1,5 @@
 /**
- * ⚡ NUCLEAR CACHE MANAGER (2026)
+ *  NUCLEAR CACHE MANAGER (2026)
  * 
  * Beheert de performance en caching voor de Next.js Core-laag.
  * Vervangt het PHP VoicesNitro system en OPCACHE resets.
@@ -14,7 +14,7 @@ export interface CacheStats {
 }
 
 /**
- * 🚀 NUCLEAR FLUSH
+ *  NUCLEAR FLUSH
  * Wist alle relevante caches voor de Next.js app.
  */
 export async function flushCoreCache(path?: string) {
@@ -30,7 +30,7 @@ export async function flushCoreCache(path?: string) {
   revalidateTag('voices');
   revalidateTag('translations');
 
-  console.log(`☢️ NUCLEAR CACHE FLUSHED: ${path || 'FULL SITE'}`);
+  console.log(` NUCLEAR CACHE FLUSHED: ${path || 'FULL SITE'}`);
   
   return {
     success: true,
@@ -40,7 +40,7 @@ export async function flushCoreCache(path?: string) {
 }
 
 /**
- * ⏱️ PERFORMANCE MONITOR
+ *  PERFORMANCE MONITOR
  * Meet de execution time van kritieke operaties (conform Protocol 2026).
  */
 export function startPerformanceTimer(label: string) {
@@ -50,7 +50,7 @@ export function startPerformanceTimer(label: string) {
       const end = performance.now();
       const duration = (end - start).toFixed(2);
       if (parseFloat(duration) > 500) {
-        console.warn(`🐢 SLOW OPERATION DETECTED: ${label} took ${duration}ms`);
+        console.warn(` SLOW OPERATION DETECTED: ${label} took ${duration}ms`);
       }
       return duration;
     }
@@ -58,7 +58,7 @@ export function startPerformanceTimer(label: string) {
 }
 
 /**
- * 🖼️ IMAGE OPTIMIZATION HINTS
+ *  IMAGE OPTIMIZATION HINTS
  * Genereert de juiste aspect-ratio en loading hints voor de UI.
  */
 export function getImagePerformanceHints(index: number) {

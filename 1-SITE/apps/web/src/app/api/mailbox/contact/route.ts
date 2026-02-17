@@ -3,7 +3,7 @@ import { centralLeads, chatConversations, chatMessages } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * 📩 CONTACT & LEAD CAPTURE API (2026)
+ *  CONTACT & LEAD CAPTURE API (2026)
  * 
  * Doel: Verwerkt contactformulieren vanuit Voicy en andere instrumenten.
  * - Slaat lead op in central_leads voor profiling.
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     return await db.transaction(async (tx) => {
-      // 1. 🧲 Capture Lead for Profiling
+      // 1.  Capture Lead for Profiling
       const [lead] = await tx.insert(centralLeads).values({
         email,
         sourceType: source,
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         createdAt: new Date()
       }).returning();
 
-      // 2. 💬 Create Conversation in Mailbox
+      // 2.  Create Conversation in Mailbox
       const [conv] = await tx.insert(chatConversations).values({
         guestEmail: email,
         status: 'open',
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
         updatedAt: new Date()
       }).returning();
 
-      // 3. ✉️ Add the message
+      // 3.  Add the message
       await tx.insert(chatMessages).values({
         conversationId: conv.id,
         senderType: 'user',

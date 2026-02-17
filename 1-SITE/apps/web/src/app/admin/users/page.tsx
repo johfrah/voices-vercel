@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 /**
- * 👥 ADMIN USERS (NUCLEAR 2026)
+ *  ADMIN USERS (NUCLEAR 2026)
  * 
  * "Beheer van de Freedom Machine community."
  */

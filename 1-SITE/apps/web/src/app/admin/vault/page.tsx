@@ -9,9 +9,9 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 /**
- * 🏛️ THE VAULT BROWSER
+ *  THE VAULT BROWSER
  * 
- * De centrale interface voor alle privé documenten en inbound assets.
+ * De centrale interface voor alle priv documenten en inbound assets.
  * Relationeel gelinkt aan Projecten, Klanten en Stemmen.
  */
 export default function VaultBrowserPage() {
@@ -35,7 +35,7 @@ export default function VaultBrowserPage() {
         setFiles(data);
       }
     } catch (error) {
-      console.error('❌ Vault Fetch Error:', error);
+      console.error(' Vault Fetch Error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +106,7 @@ export default function VaultBrowserPage() {
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
             >
-              <OptionInstrument value="all"><VoiceglotText  translationKey="admin.vault.filter.all" defaultText="Alle Categorieën" /></OptionInstrument>
+              <OptionInstrument value="all"><VoiceglotText  translationKey="admin.vault.filter.all" defaultText="Alle Categorien" /></OptionInstrument>
               <OptionInstrument value="script"><VoiceglotText  translationKey="admin.vault.filter.scripts" defaultText="Scripts" /></OptionInstrument>
               <OptionInstrument value="briefing"><VoiceglotText  translationKey="admin.vault.filter.briefings" defaultText="Briefings" /></OptionInstrument>
               <OptionInstrument value="demo_inbound"><VoiceglotText  translationKey="admin.vault.filter.demos" defaultText="Inbound Demo's" /></OptionInstrument>

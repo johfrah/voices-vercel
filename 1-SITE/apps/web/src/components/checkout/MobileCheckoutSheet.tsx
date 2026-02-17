@@ -43,7 +43,7 @@ const AnimatedPrice: React.FC<{ value: number; label?: string }> = ({ value, lab
           animate={{ y: 0, opacity: 1 }}
           className="text-5xl font-black tracking-tighter text-primary"
         >
-          €{displayValue.toFixed(2)}
+          {displayValue.toFixed(2)}
         </motion.span>
         {label && (
           <span className="text-[15px] font-bold text-white/20 tracking-widest">{label}</span>
@@ -132,7 +132,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                 <VoiceglotText  translationKey="checkout.mobile.order_title" defaultText="Jouw Bestelling" />
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-xl font-black text-primary">€{total.toFixed(2)}</span>
+                <span className="text-xl font-black text-primary">{total.toFixed(2)}</span>
                 <ChevronUp strokeWidth={1.5} className="text-primary animate-bounce" size={20} />
               </div>
             </div>
@@ -199,7 +199,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                   >
-                    €{subtotal.toFixed(2)}
+                    {subtotal.toFixed(2)}
                   </motion.span>
                 </div>
               </BentoCard>

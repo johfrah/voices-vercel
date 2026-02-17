@@ -24,7 +24,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from 'react';
 
-// 🛡️ CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
@@ -83,7 +83,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
       const [dbUser] = await db.select().from(users).where(eq(users.email, supabaseUser.email!)).limit(1);
       user = dbUser;
     } catch (dbError) {
-      console.warn('⚠️ Academy Lesson Drizzle failed, falling back to SDK');
+      console.warn(' Academy Lesson Drizzle failed, falling back to SDK');
       const { data: sdkUser } = await sdkClient
         .from('users')
         .select('*')
@@ -96,11 +96,11 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
   const isAdmin = user?.role === 'admin';
   const isPreviewMode = isAdmin && searchParams.preview === 'student';
 
-  // 🛡️ SECURITY CHECK: Heeft de gebruiker toegang?
+  //  SECURITY CHECK: Heeft de gebruiker toegang?
   const hasAccess = user ? await SecurityService.checkAccess(user.id, 1) : false; // 1 is placeholder voor courseId
   const isLessonOne = params.id === "1";
 
-  // 💧 DRIP CONTENT LOGIC (Per-user progression)
+  //  DRIP CONTENT LOGIC (Per-user progression)
   const lessonOrder = parseInt(params.id);
   let isLockedByDrip = false;
   let availableDate = null;
@@ -243,7 +243,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
       onContextMenu={(e) => !isAdmin && e.preventDefault()} 
       onCopy={(e) => !isAdmin && e.preventDefault()}
     >
-      {/* 🕸️ SUZY'S SCHEMA INJECTION: Course, VideoObject & Breadcrumbs */}
+      {/*  SUZY'S SCHEMA INJECTION: Course, VideoObject & Breadcrumbs */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -331,7 +331,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           ])
         }}
       />
-      {/* 🛡️ ANTI-SCREENSHOT OVERLAY (Only for non-admins) */}
+      {/*  ANTI-SCREENSHOT OVERLAY (Only for non-admins) */}
       {!isAdmin && (
         <style dangerouslySetInnerHTML={{ __html: `
           @media screen {
@@ -414,7 +414,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           <AcademyRecorder strokeWidth={1.5} lessonId={params.id} initialText={data.exercise} />
         </ContainerInstrument>
 
-          {/* 📊 NULMETING REFLECTIE (Alleen voor Les 1) */}
+          {/*  NULMETING REFLECTIE (Alleen voor Les 1) */}
           {isLessonOne && (
             <BentoCard span="xl" className="bg-va-off-white p-12 border border-black/5">
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tighter mb-8"><VoiceglotText  translationKey="academy.lesson1.nulmeting.title" defaultText="Zelfreflectie: Jouw Nulmeting" /></HeadingInstrument>
@@ -450,7 +450,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
             </BentoCard>
           )}
 
-          {/* 🛡️ ADMIN ONLY: Video Scripts Section */}
+          {/*  ADMIN ONLY: Video Scripts Section */}
           {isAdmin && (
             <BentoGrid strokeWidth={1.5} columns={2} className="mt-12">
               <BentoCard span="md" className="bg-va-black text-white p-8">

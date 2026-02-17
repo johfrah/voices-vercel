@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * 🧹 CLEAN TEXT (VOICES 2026)
+ *  CLEAN TEXT (VOICES 2026)
  * Verwijdert HTML tags, \r\n, en andere rommel uit database teksten.
  */
 export function cleanText(text: string | null | undefined): string {

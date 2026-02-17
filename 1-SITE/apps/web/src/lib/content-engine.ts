@@ -10,7 +10,7 @@ import { VoiceglotBridge } from "./voiceglot-bridge";
 import md5 from "md5";
 
 /**
- * ⚛️ NUCLEAR CONTENT ENGINE (2026)
+ *  NUCLEAR CONTENT ENGINE (2026)
  * 
  * De motor die de "Gouden Bron" (Database-First) verbindt met de Next.js Experience Layer.
  * Ondersteunt Fragments, 84-Matrix Mapping, en Smart Placeholders.
@@ -93,13 +93,13 @@ export class ContentEngine {
 
   /**
    * Haalt een pagina of story op en injecteert fragments en placeholders.
-   * 🛡️ GOD MODE: Kijkt eerst in de database, valt terug op Markdown.
-   * 🌐 VOICEGLOT: Vertaalt alle content on-the-fly via de database.
+   *  GOD MODE: Kijkt eerst in de database, valt terug op Markdown.
+   *  VOICEGLOT: Vertaalt alle content on-the-fly via de database.
    */
   static async getPage(slug: string, locale: string = "nl", type: "pages" | "stories" = "pages"): Promise<PageContent | null> {
     let rawPage: PageContent | null = null;
 
-    // 1. 🚀 DATABASE-FIRST (GOD MODE)
+    // 1.  DATABASE-FIRST (GOD MODE)
     try {
       const [dbArticle] = await db.select()
         .from(contentArticles)
@@ -107,7 +107,7 @@ export class ContentEngine {
         .limit(1);
 
       if (dbArticle) {
-        console.log(`⚛️ CONTENT ENGINE: Loaded [${slug}] from Database`);
+        console.log(` CONTENT ENGINE: Loaded [${slug}] from Database`);
         const iapContext = (dbArticle.iapContext as any) || {};
         const seoData = (dbArticle.seoData as any) || {};
 
@@ -129,16 +129,16 @@ export class ContentEngine {
         };
       }
     } catch (dbError) {
-      console.error('❌ CONTENT ENGINE: Database fetch failed, falling back to FS:', dbError);
+      console.error(' CONTENT ENGINE: Database fetch failed, falling back to FS:', dbError);
     }
 
-    // 2. 🛡️ FALLBACK TO MARKDOWN (LEGACY/BACKUP)
+    // 2.  FALLBACK TO MARKDOWN (LEGACY/BACKUP)
     if (!rawPage) {
       const basePath = type === "stories" ? this.STORIES_PATH : this.PAGES_PATH;
       const filePath = path.join(basePath, `${slug}.md`);
       if (!fs.existsSync(filePath)) return null;
 
-      console.log(`⚛️ CONTENT ENGINE: Falling back to Markdown for [${slug}]`);
+      console.log(` CONTENT ENGINE: Falling back to Markdown for [${slug}]`);
       const fileContent = fs.readFileSync(filePath, "utf-8");
       const { data, content } = matter(fileContent);
 
@@ -163,9 +163,9 @@ export class ContentEngine {
       };
     }
 
-    // 3. 🌐 VOICEGLOT TRANSLATION LAYER
+    // 3.  VOICEGLOT TRANSLATION LAYER
     if (locale !== 'nl' && !rawPage.noTranslate) {
-      console.log(`🌐 CONTENT ENGINE: Translating [${slug}] to [${locale}] via Voiceglot...`);
+      console.log(` CONTENT ENGINE: Translating [${slug}] to [${locale}] via Voiceglot...`);
       
       // Vertaal Titel en Beschrijving
       const originalTitle = rawPage.title;
@@ -185,7 +185,7 @@ export class ContentEngine {
           section.title = await VoiceglotBridge.t(section.title, locale);
           section.content = await VoiceglotBridge.t(section.content, locale);
 
-          // 🛡️ REGISTER FOR ADMIN (If translation is missing)
+          //  REGISTER FOR ADMIN (If translation is missing)
           if (section.title === originalSecTitle || section.content === originalSecContent) {
             this.registerMissingTranslation(originalSecTitle, slug);
             this.registerMissingTranslation(originalSecContent, slug);
@@ -371,7 +371,7 @@ export class ContentEngine {
         return `${format(start, "h:mm a")} to ${format(end, "h:mm a")}`;
       }
       if (lang === "fr") {
-        return `${format(start, "HH'h'mm")} à ${format(end, "HH'h'mm")}`;
+        return `${format(start, "HH'h'mm")}  ${format(end, "HH'h'mm")}`;
       }
       // Default / NL / DE
       const separator = lang === "de" ? " bis " : " tot ";

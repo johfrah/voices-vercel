@@ -4,7 +4,7 @@ import { ademingTracks, ademingStats, ademingReflections } from '@db/schema';
 import { eq, desc } from 'drizzle-orm';
 
 /**
- * 🧘 ADEMING (MEDITATIE) API
+ *  ADEMING (MEDITATIE) API
  * 
  * Doel: Ontsluiten van de meditatie-schatkist voor de app of portal.
  */

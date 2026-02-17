@@ -6,7 +6,7 @@ import * as rrweb from 'rrweb';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
- * 🏺 VOICEJAR TRACKER - EXPERIENCE LAYER (2026)
+ *  VOICEJAR TRACKER - EXPERIENCE LAYER (2026)
  * 
  * Legt user interacties vast conform het Master Voices Protocol.
  * Gebruikt rrweb voor sessie-opnames zonder externe cookies.
@@ -20,12 +20,12 @@ export const VoicejarTracker: React.FC = () => {
   const visitorHashRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // 🛡️ CHRIS-PROTOCOL: Wacht tot auth geladen is
+    //  CHRIS-PROTOCOL: Wacht tot auth geladen is
     if (isLoading) return;
 
-    // 🛡️ CHRIS-PROTOCOL: Disable Voicejar voor admins
+    //  CHRIS-PROTOCOL: Disable Voicejar voor admins
     if (isAdmin) {
-      console.log('🏺 Voicejar: Recording disabled for admin');
+      console.log(' Voicejar: Recording disabled for admin');
       return;
     }
 
@@ -39,9 +39,9 @@ export const VoicejarTracker: React.FC = () => {
 
     // 2. Start recording
     const startRecording = () => {
-      // 🛡️ CHRIS-PROTOCOL: Disable Voicejar in development to save Disk IO budget
+      //  CHRIS-PROTOCOL: Disable Voicejar in development to save Disk IO budget
       if (process.env.NODE_ENV === 'development') {
-        console.log('🏺 Voicejar: Recording disabled in development');
+        console.log(' Voicejar: Recording disabled in development');
         return;
       }
 
@@ -79,7 +79,7 @@ export const VoicejarTracker: React.FC = () => {
 
       try {
         const body = JSON.stringify(payload);
-        // 🛡️ CHRIS-PROTOCOL: Voorkom 'Failed to fetch' door payload grootte te checken voor keepalive
+        //  CHRIS-PROTOCOL: Voorkom 'Failed to fetch' door payload grootte te checken voor keepalive
         const useKeepAlive = body.length < 60000; 
 
         await fetch('/api/voicejar/record', {
@@ -89,9 +89,9 @@ export const VoicejarTracker: React.FC = () => {
           keepalive: useKeepAlive
         });
       } catch (e) {
-        // 🛡️ CHRIS-PROTOCOL: SILENCE IN DEV
+        //  CHRIS-PROTOCOL: SILENCE IN DEV
         if (process.env.NODE_ENV !== 'development') {
-          console.error('🏺 Voicejar Flush Error:', e);
+          console.error(' Voicejar Flush Error:', e);
         }
       }
     };

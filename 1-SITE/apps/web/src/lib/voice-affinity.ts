@@ -3,14 +3,14 @@ import { orderItems, voiceAffinity, actors } from '@db/schema';
 import { sql, eq, and, or } from 'drizzle-orm';
 
 /**
- * 🧠 VOICE AFFINITY ENGINE (2026)
+ *  VOICE AFFINITY ENGINE (2026)
  * 
  * Scant historische orders om te zien welke stemmen vaak samen worden geboekt.
  * Dit activeert de "Anderen kozen ook deze stem" logica in de Bento Grid.
  */
 
 export async function runVoiceAffinityScan() {
-    console.log('🔍 Starting Voice Affinity Deep Scan...');
+    console.log(' Starting Voice Affinity Deep Scan...');
     
     try {
         // 1. Haal alle orders op die meer dan 1 stem bevatten
@@ -22,7 +22,7 @@ export async function runVoiceAffinityScan() {
             HAVING COUNT(actor_id) > 1
         `);
 
-        console.log(`📊 Found ${multiVoiceOrders.length} multi-voice orders to analyze.`);
+        console.log(` Found ${multiVoiceOrders.length} multi-voice orders to analyze.`);
 
         const pairs: Record<string, number> = {};
 
@@ -38,7 +38,7 @@ export async function runVoiceAffinityScan() {
         }
 
         // 3. Atomic Update van de voice_affinity tabel
-        console.log(`🧬 Mapping ${Object.keys(pairs).length} unique voice relationships...`);
+        console.log(` Mapping ${Object.keys(pairs).length} unique voice relationships...`);
 
         for (const [pair, count] of Object.entries(pairs)) {
             const [idA, idB] = pair.split('-').map(Number);
@@ -61,7 +61,7 @@ export async function runVoiceAffinityScan() {
             }
         };
     } catch (error) {
-        console.error('❌ Voice Affinity Scan Failed:', error);
+        console.error(' Voice Affinity Scan Failed:', error);
         return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
 }

@@ -40,7 +40,7 @@ async function LessonGrid() {
     ];
     return (
       <ContainerInstrument className="space-y-24">
-        {/* 💡 ACADEMY TIPS FOR STUDENTS */}
+        {/*  ACADEMY TIPS FOR STUDENTS */}
         <ContainerInstrument className="px-8 mb-12">
           <ContainerInstrument className="max-w-xl">
             <AcademyTipWidget strokeWidth={1.5} userId={0} />
@@ -76,7 +76,7 @@ async function LessonGrid() {
 
   return (
     <ContainerInstrument className="space-y-24">
-      {/* 💡 ACADEMY TIPS FOR STUDENTS */}
+      {/*  ACADEMY TIPS FOR STUDENTS */}
       <ContainerInstrument className="px-8 mb-12">
         <ContainerInstrument className="max-w-xl">
           <AcademyTipWidget strokeWidth={1.5} userId={0} />
@@ -113,7 +113,7 @@ async function LessonGrid() {
         ))}
       </BentoGrid>
       
-      {/* 🌟 ACADEMY REVIEWS */}
+      {/*  ACADEMY REVIEWS */}
       <AcademyReviews strokeWidth={1.5} />
     </ContainerInstrument>
   );
@@ -141,7 +141,7 @@ async function AcademyReviews() {
             <ContainerInstrument key={i} className="p-8 bg-white rounded-[20px] shadow-aura border border-black/5">
               <ContainerInstrument className="flex gap-1 mb-4">
                 {Array.from({ length: 5 }).map((_, j) => (
-                  <TextInstrument key={j} className={j < review.rating ? "text-yellow-400" : "text-va-black/10"}>★</TextInstrument>
+                  <TextInstrument key={j} className={j < review.rating ? "text-yellow-400" : "text-va-black/10"}></TextInstrument>
                 ))}
               </ContainerInstrument>
               <TextInstrument className="text-lg font-light mb-6 italic leading-relaxed">
@@ -171,7 +171,7 @@ export default async function AcademyPage() {
   const market = headerList.get('x-voices-market') || 'NL';
   const lang = headerList.get('x-voices-lang') || 'nl';
 
-  // 🚀 NUCLEAR CONTENT: Haal pagina data uit de database via Page Architect
+  //  NUCLEAR CONTENT: Haal pagina data uit de database via Page Architect
   const pageData = await getArticle('academy', lang);
 
   return (
@@ -191,7 +191,7 @@ export default async function AcademyPage() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🚀 DYNAMIC BLOCKS FROM PAGE ARCHITECT */}
+      {/*  DYNAMIC BLOCKS FROM PAGE ARCHITECT */}
       {pageData?.blocks?.map((block: any, i: number) => (
         <SectionInstrument key={i} className="mb-12">
           <ContainerInstrument className="max-w-4xl prose prose-va font-light"><VoiceglotText  
@@ -206,7 +206,7 @@ export default async function AcademyPage() {
         <LessonGrid strokeWidth={1.5} />
       </Suspense>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -227,7 +227,7 @@ export default async function AcademyPage() {
         }}
       />
 
-      {/* 🚀 ACADEMY CTA AREA */}
+      {/*  ACADEMY CTA AREA */}
       <SectionInstrument className="px-8 mt-24">
         <BentoCard span="xl" className="bg-va-black p-16 text-white text-center space-y-8 overflow-hidden relative rounded-[60px] shadow-aura-lg">
           <ContainerInstrument className="relative z-10 space-y-6">
@@ -236,7 +236,7 @@ export default async function AcademyPage() {
               <TextInstrument className="text-xl md:text-2xl text-white/40 font-light max-w-2xl mx-auto block mt-4">
                 <VoiceglotText  
                   translationKey="academy.cta.text" 
-                  defaultText={`Krijg toegang tot de volledige 20 lessen, de professionele workflow en persoonlijke feedback op al je opnames voor €149.`} 
+                  defaultText={`Krijg toegang tot de volledige 20 lessen, de professionele workflow en persoonlijke feedback op al je opnames voor 149.`} 
                 />
               </TextInstrument>
             </HeadingInstrument>

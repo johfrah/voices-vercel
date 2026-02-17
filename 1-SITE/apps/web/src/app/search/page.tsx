@@ -15,7 +15,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 /**
- * 🔍 GLOBAL SEARCH PAGE (NUCLEAR 2026)
+ *  GLOBAL SEARCH PAGE (NUCLEAR 2026)
  */
 export default function SearchPage() {
   const searchParams = useSearchParams();

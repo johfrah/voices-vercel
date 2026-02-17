@@ -8,7 +8,7 @@ import { eq, and, or, sql } from 'drizzle-orm';
 import md5 from 'md5';
 
 /**
- * 🎙️ JOHFRAI PREVIEW API
+ *  JOHFRAI PREVIEW API
  * Focus: Snelheid & Frictieloze ervaring.
  */
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Configuratiefout' }, { status: 500 });
     }
 
-    // 🛡️ ABUSE PREVENTION CHECK
+    //  ABUSE PREVENTION CHECK
     const wordCount = text.split(/\s+/).filter(Boolean).length;
     const isFreeTier = wordCount <= 25;
     const isSubscribed = request.headers.get('X-Johfrai-Subscription') === 'true';
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 🚀 ELEVENLABS DIRECT STREAM
+    //  ELEVENLABS DIRECT STREAM
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${JOHFRAI_VOICE_ID}?optimize_streaming_latency=3`,
       {
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     const audioArrayBuffer = await response.arrayBuffer();
     const audioBuffer = Buffer.from(audioArrayBuffer);
 
-    // 🛡️ WATERMARK & FORMAT LOGIC
+    //  WATERMARK & FORMAT LOGIC
     const finalWatermark = shouldApplyWatermark && !isSubscribed;
     const finalTelephony = forceTelephony || audioMode === 'telephony';
 

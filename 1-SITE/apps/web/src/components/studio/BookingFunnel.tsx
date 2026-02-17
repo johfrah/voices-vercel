@@ -19,7 +19,7 @@ interface WorkshopDate {
   price: string;
   location: string;
   capacity: number;
-  filled?: number; // 👥 Aantal deelnemers
+  filled?: number; //  Aantal deelnemers
   time?: string;
   includes_lunch?: boolean;
   includes_certificate?: boolean;
@@ -133,7 +133,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
 
   return (
     <ContainerInstrument plain className="space-y-8">
-      {/* 📅 DATE SELECTOR (Alleen tonen als er data zijn) */}
+      {/*  DATE SELECTOR (Alleen tonen als er data zijn) */}
       {hasDates && (
         <ContainerInstrument plain className="space-y-4">
         <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/60 ">
@@ -177,11 +177,11 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                     )}
                   </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-light opacity-60 tracking-widest mt-1 text-inherit">
-                    {date.location} • {date.time}
+                    {date.location}  {date.time}
                   </TextInstrument>
                 </ContainerInstrument>
                 <TextInstrument className="text-[15px] font-light tracking-tighter ml-4 text-inherit">
-                  €{parseFloat(date.price || String(priceExclVatValue))}
+                  {parseFloat(date.price || String(priceExclVatValue))}
                 </TextInstrument>
               </ButtonInstrument>
             ))}
@@ -189,7 +189,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
         </ContainerInstrument>
       )}
 
-      {/* 👤 REGISTRATION FORM */}
+      {/*  REGISTRATION FORM */}
       <ContainerInstrument plain className="space-y-4">
         <HeadingInstrument level={4} className="text-[15px] font-light tracking-[0.2em] text-va-black/60 ">
           {hasDates ? (
@@ -250,7 +250,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
               <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-va-black/60 mb-1 ">
                 <VoiceglotText translationKey="studio.booking.total_investment" defaultText="Totaal Investering" />
               </TextInstrument>
-              <TextInstrument className="text-4xl font-light tracking-tighter text-va-black">€{priceExclVatValue}</TextInstrument>
+              <TextInstrument className="text-4xl font-light tracking-tighter text-va-black">{priceExclVatValue}</TextInstrument>
               <TextInstrument className="text-[15px] font-light opacity-60 tracking-widest mt-1">
                 <VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" />
               </TextInstrument>
@@ -296,7 +296,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
         
         {hasDates && (
           <TextInstrument className="text-[15px] text-center text-va-black/60 font-light tracking-[0.2em] ">
-            <VoiceglotText translationKey="studio.booking.security_info" defaultText="Veilig betalen via Mollie • Directe bevestiging" />
+            <VoiceglotText translationKey="studio.booking.security_info" defaultText="Veilig betalen via Mollie  Directe bevestiging" />
           </TextInstrument>
         )}
       </ContainerInstrument>

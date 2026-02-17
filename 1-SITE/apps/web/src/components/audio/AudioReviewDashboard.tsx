@@ -5,7 +5,7 @@ import React, { useRef, useState } from 'react';
 import { VoiceglotText } from '../ui/VoiceglotText';
 
 /**
- * 🎙️ AUDIO REVIEW DASHBOARD (Bento Spotlight 2026)
+ *  AUDIO REVIEW DASHBOARD (Bento Spotlight 2026)
  * 
  * Een interactieve interface voor klanten om audio te reviewen,
  * de muziekbalans aan te passen en feedback te geven.
@@ -32,7 +32,7 @@ export const AudioReviewDashboard: React.FC<AudioReviewProps> = ({
   
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // 🛡️ System: Optimistic UI voor balans aanpassingen
+  //  System: Optimistic UI voor balans aanpassingen
   const handleBalanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value);
     setMusicBalance(val);

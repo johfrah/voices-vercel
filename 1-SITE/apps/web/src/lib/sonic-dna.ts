@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * ⚡ SONIC DNA ENGINE - 2026 EDITION
+ *  SONIC DNA ENGINE - 2026 EDITION
  * 
  * Doel: Live gesynthetiseerde audio-feedback voor elke interactie.
  * Pijler: Tactile Digitalism & Sonic Identity.

@@ -6,7 +6,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 /**
- * ⚡ NUCLEAR MEDIA API (2026) - INTELLIGENT VERSION
+ *  NUCLEAR MEDIA API (2026) - INTELLIGENT VERSION
  */
 
 export async function GET(request: NextRequest) {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const filterOrphans = searchParams.get('filter') === 'orphans';
     const actorId = searchParams.get('actorId');
 
-    // 🕵️ RELATION TRACKING LOGIC
+    //  RELATION TRACKING LOGIC
     const [actorsData, demosData, articlesData, ademingData] = await Promise.all([
       db.select({ id: actors.id, name: actors.firstName, photoId: actors.photoId, logoId: actors.logoId, youtubeUrl: actors.youtubeUrl }).from(actors),
       db.select({ id: actorDemos.id, name: actorDemos.name, mediaId: actorDemos.mediaId, actorId: actorDemos.actorId }).from(actorDemos),
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // 🎯 ACTOR-SPECIFIC FILTERING
+    //  ACTOR-SPECIFIC FILTERING
     if (actorId) {
       const id = parseInt(actorId);
       const actor = actorsData.find(a => a.id === id);

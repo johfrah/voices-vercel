@@ -18,7 +18,7 @@ interface AgencyHeroInstrumentProps {
 }
 
 /**
- * ⚡ AGENCY HERO INSTRUMENT (GOD MODE 2026)
+ *  AGENCY HERO INSTRUMENT (GOD MODE 2026)
  * 
  * Voldoet aan de Zero Laws:
  * - HTML ZERO: Geen rauwe tags in de page layer.

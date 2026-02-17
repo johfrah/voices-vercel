@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * ⚡ API: TRANSLATIONS (2026)
+ *  API: TRANSLATIONS (2026)
  * 
  * Doel: Haalt vertalingen direct uit de Supabase TranslationRegistry.
  * Vervangt de WordPress /wp-json/voices/v2/translations endpoint.
@@ -30,9 +30,9 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // 🏥 SELF-HEALING: Als er geen vertalingen zijn voor deze taal, trigger een 'Heal' event
+    //  SELF-HEALING: Als er geen vertalingen zijn voor deze taal, trigger een 'Heal' event
     if (results.length === 0 && lang !== 'nl') {
-      console.log(`🏥 [HEAL] Triggering translation generation for: ${lang}`);
+      console.log(` [HEAL] Triggering translation generation for: ${lang}`);
       // We doen dit async zodat de gebruiker niet hoeft te wachten
       // In een server context gebruiken we de interne URL
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('[API Translations Error]:', error);
-    // 🛡️ STABILITEIT: Geef nooit een 500, maar een lege map zodat de site blijft draaien
+    //  STABILITEIT: Geef nooit een 500, maar een lege map zodat de site blijft draaien
     return NextResponse.json({ 
       success: false, 
       lang, 

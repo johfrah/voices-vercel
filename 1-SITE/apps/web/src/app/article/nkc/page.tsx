@@ -82,7 +82,7 @@ const SUBTITLE_DATA = [
   {
     "start": 55.44,
     "end": 59.6,
-    "text": "Je levert de tekst aan en binnen 1 à 2 dagen hebben we de tekst en dan kunnen we het meteen"
+    "text": "Je levert de tekst aan en binnen 1  2 dagen hebben we de tekst en dan kunnen we het meteen"
   },
   {
     "start": 59.6,
@@ -181,13 +181,13 @@ export default function NkcStoryPage() {
                 <ContainerInstrument className="flex items-center gap-4 text-primary">
                   <TrendingUp size={24} strokeWidth={1.5} />
                   <HeadingInstrument level={3} className="text-xl font-light tracking-widest ">
-                    <VoiceglotText translationKey="story.nkc.efficiency_label" defaultText="Efficiëntie" />
+                    <VoiceglotText translationKey="story.nkc.efficiency_label" defaultText="Efficintie" />
                   </HeadingInstrument>
                 </ContainerInstrument>
                 <TextInstrument className="text-va-black/60 font-light leading-relaxed">
                   <VoiceglotText 
                     translationKey="story.nkc.efficiency_text" 
-                    defaultText="Sinds de inhaalbeweging qua professionalisering werkt NKC efficiënter en wordt iedereen meteen correct doorverbonden. De leden reageren razend enthousiast op het nieuwe, professionele onthaal." 
+                    defaultText="Sinds de inhaalbeweging qua professionalisering werkt NKC efficinter en wordt iedereen meteen correct doorverbonden. De leden reageren razend enthousiast op het nieuwe, professionele onthaal." 
                   />
                 </TextInstrument>
               </ContainerInstrument>

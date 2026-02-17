@@ -43,7 +43,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
         }, 2000);
       }
     } catch (error) {
-      console.error('❌ Promotion Error:', error);
+      console.error(' Promotion Error:', error);
     } finally {
       setIsPromoting(false);
     }
@@ -66,7 +66,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
             Promoot naar Profiel
           </HeadingInstrument>
           <TextInstrument className="text-gray-500 text-[15px] mb-8 font-light">
-            Verplaats deze demo van de privé kluis naar het publieke profiel van de stem.
+            Verplaats deze demo van de priv kluis naar het publieke profiel van de stem.
           </TextInstrument>
 
           {isSuccess ? (
@@ -115,7 +115,7 @@ export const PromotionModal = ({ file, actorId, onClose, onSuccess }: PromotionM
                   )}
                 </ButtonInstrument>
                 {!actorId && (
-                  <TextInstrument className="text-[15px] text-red-500 mt-2 text-center font-bold">⚠️ Geen acteur gekoppeld aan deze mail.</TextInstrument>
+                  <TextInstrument className="text-[15px] text-red-500 mt-2 text-center font-bold"> Geen acteur gekoppeld aan deze mail.</TextInstrument>
                 )}
               </ContainerInstrument>
             </ContainerInstrument>

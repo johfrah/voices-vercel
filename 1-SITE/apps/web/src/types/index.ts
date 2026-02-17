@@ -104,6 +104,13 @@ export interface Actor {
   bio?: string;
   tagline?: string;
   extra_langs?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  status?: string;
+  experienceLevel?: string;
+  holiday_from?: string | null;
+  holiday_till?: string | null;
 }
 
 export interface Demo {
@@ -113,6 +120,7 @@ export interface Demo {
   category: string;
   actor_name?: string;
   actor_photo?: string;
+  actor_lang?: string; //  New field for flag display
 }
 
 export interface SearchFilters {

@@ -30,7 +30,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     isQuote: state.isQuoteRequest || false
   });
 
-  // 🛡️ SYNC QUOTE MODE: Als de context zegt dat het een offerte-aanvraag is, dwingen we dit af
+  //  SYNC QUOTE MODE: Als de context zegt dat het een offerte-aanvraag is, dwingen we dit af
   useEffect(() => {
     if (state.isQuoteRequest) {
       setFormData(prev => ({ ...prev, isQuote: true }));
@@ -49,8 +49,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
     const gateways = [
-    { id: 'mollie', name: 'Direct betalen', icon: '💳' },
-    { id: 'banktransfer', name: 'Betalen op factuur', icon: '🏦' }
+    { id: 'mollie', name: 'Direct betalen', icon: '' },
+    { id: 'banktransfer', name: 'Betalen op factuur', icon: '' }
   ];
 
   useEffect(() => {
@@ -417,7 +417,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
               <VoiceglotText  
                 translationKey="checkout.ready_to_send.desc" 
-                defaultText={`Je staat op het punt een officiële offerte te sturen naar ${formData.email}. In de volgende stap kun je de begeleidende e-mail personaliseren.`} 
+                defaultText={`Je staat op het punt een officile offerte te sturen naar ${formData.email}. In de volgende stap kun je de begeleidende e-mail personaliseren.`} 
               />
             </TextInstrument>
           </ContainerInstrument>

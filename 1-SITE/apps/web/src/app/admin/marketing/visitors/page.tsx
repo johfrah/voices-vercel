@@ -21,7 +21,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 /**
- * 🏺 LIVE VISITOR COCKPIT (2026)
+ *  LIVE VISITOR COCKPIT (2026)
  * 
  * Real-time monitoring van website bezoekers.
  * Gekoppeld aan Voicejar (rrweb) en Customer DNA.
@@ -48,7 +48,7 @@ export default function LiveVisitorCockpit() {
         setLogs(liveData.logs || []);
         setStats(statsData.stats || null);
       } catch (err) {
-        console.error('❌ Failed to fetch Mat Radar data:', err);
+        console.error(' Failed to fetch Mat Radar data:', err);
       } finally {
         setLoading(false);
       }

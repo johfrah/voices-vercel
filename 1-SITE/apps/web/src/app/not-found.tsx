@@ -15,7 +15,7 @@ import { Home, Search, ArrowLeft, Heart, Sparkles, Loader2 } from 'lucide-react'
 import Link from 'next/link';
 
 /**
- * 🕵️ 404: SMART RECOVERY PAGE
+ *  404: SMART RECOVERY PAGE
  * 
  * Doel: Een vriendelijke opvang voor kapotte links, 
  * terwijl de Self-Healing Service op de achtergrond Johfrah verwittigt.
@@ -26,7 +26,7 @@ export default function NotFound() {
   const [ghostContent, setGhostContent] = useState<string | null>(null);
 
   useEffect(() => {
-    // 🩹 SELF-HEALING: Log de 404 silent op de achtergrond
+    //  SELF-HEALING: Log de 404 silent op de achtergrond
     const path = window.location.pathname;
     const referrer = document.referrer;
     setHealingStatus('searching');
@@ -38,7 +38,7 @@ export default function NotFound() {
     })
     .then(res => res.json())
     .then(data => {
-      // 🚀 AUTOMATIC REDIRECT: Als er een match is gevonden, stuur direct door
+      //  AUTOMATIC REDIRECT: Als er een match is gevonden, stuur direct door
       if (data.type === 'redirect' && data.destination) {
         router.push(data.destination);
       } else if (data.type === 'ghost' && data.content) {
@@ -46,7 +46,7 @@ export default function NotFound() {
         setHealingStatus('ghost-generated');
       } else {
         setHealingStatus('voicy-offered');
-        // 🤖 VOICY INTERVENTION: Alleen als er GEEN automatische redirect is
+        //  VOICY INTERVENTION: Alleen als er GEEN automatische redirect is
         const timer = setTimeout(() => {
           const event = new CustomEvent('voicy:suggestion', {
             detail: {
@@ -92,7 +92,7 @@ export default function NotFound() {
 
             {healingStatus === 'voicy-offered' && (
               <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-[15px] font-bold tracking-widest animate-pulse">
-                <Heart strokeWidth={1.5} size={12} /> <VoiceglotText  translationKey="404.voicy_help" defaultText="Voicy helpt je verder →" />
+                <Heart strokeWidth={1.5} size={12} /> <VoiceglotText  translationKey="404.voicy_help" defaultText="Voicy helpt je verder " />
               </ContainerInstrument>
             )}
 
@@ -119,7 +119,7 @@ export default function NotFound() {
         )}
       </ContainerInstrument>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

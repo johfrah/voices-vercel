@@ -3,7 +3,7 @@ import { academyTips, courseProgress } from "@db/schema";
 import { eq, and, sql } from "drizzle-orm";
 
 /**
- * 💡 ACADEMY TIPS SERVICE
+ *  ACADEMY TIPS SERVICE
  * 
  * Beheert de dagelijkse reminders en vakgerichte tips voor studenten.
  */

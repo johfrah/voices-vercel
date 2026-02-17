@@ -6,9 +6,9 @@ import { InvoiceReceivedTemplate } from '@legacy/php-codebase/backend-services/e
 import { MarketManager } from '@config/market-manager';
 
 /**
- * 🤖 AUTO-REPLY SERVICE v2.3 (2026)
+ *  AUTO-REPLY SERVICE v2.3 (2026)
  * 
- * Doel: Genereert zakelijke antwoorden voor facturen in het officiële Voices HTML template.
+ * Doel: Genereert zakelijke antwoorden voor facturen in het officile Voices HTML template.
  */
 export class AutoReplyService {
   private openai: OpenAI;
@@ -28,7 +28,7 @@ export class AutoReplyService {
   }
 
   /**
-   * Verstuurt direct een bevestiging van ontvangst in het officiële HTML template.
+   * Verstuurt direct een bevestiging van ontvangst in het officile HTML template.
    */
   async sendInstantInvoiceConfirmation(options: {
     to: string, 
@@ -44,12 +44,12 @@ export class AutoReplyService {
   }): Promise<void> {
     const { to, subject, originalBody, firstName, language = 'nl', invoiceNumber, amount, host } = options;
     
-    // 🌍 Intelligence Layer: Haal markt-specifieke info op
+    //  Intelligence Layer: Haal markt-specifieke info op
     const market = MarketManager.getCurrentMarket(host);
     const accountId = options.accountId || market.email;
     const senderName = market.company_name === 'Voices' ? `Johfrah van ${market.name}` : market.company_name;
 
-    console.log(`🚀 Instant HTML autoreply verzenden naar ${to} voor markt ${market.market_code}...`);
+    console.log(` Instant HTML autoreply verzenden naar ${to} voor markt ${market.market_code}...`);
 
     try {
       const { VumeEngine } = await import('@/lib/mail/VumeEngine');
@@ -68,9 +68,9 @@ export class AutoReplyService {
         host: host
       });
 
-      console.log(`✅ VUME HTML Template autoreply verzonden naar ${to}`);
+      console.log(` VUME HTML Template autoreply verzonden naar ${to}`);
     } catch (error) {
-      console.error('❌ VUME HTML Template AutoReply Error:', error);
+      console.error(' VUME HTML Template AutoReply Error:', error);
     }
   }
 

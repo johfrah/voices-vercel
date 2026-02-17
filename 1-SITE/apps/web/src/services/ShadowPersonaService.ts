@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 
 /**
- * 🎭 SHADOW PERSONA SERVICE (2026)
+ *  SHADOW PERSONA SERVICE (2026)
  * 
  * Doel: Leert de schrijfstijl van de gebruiker en genereert concept-antwoorden.
  */
@@ -38,7 +38,7 @@ export class ShadowPersonaService {
             ---
             ${userStyleSample}
             ---
-            Wees zakelijk maar vriendelijk, to-the-point, en gebruik de 'Voices.be' tone-of-voice (vrijheidsmachine, efficiëntie).`
+            Wees zakelijk maar vriendelijk, to-the-point, en gebruik de 'Voices.be' tone-of-voice (vrijheidsmachine, efficintie).`
           },
           { 
             role: "user", 
@@ -50,7 +50,7 @@ export class ShadowPersonaService {
 
       return response.choices[0].message.content || '';
     } catch (error) {
-      console.error('❌ Shadow Persona Error:', error);
+      console.error(' Shadow Persona Error:', error);
       return '';
     }
   }

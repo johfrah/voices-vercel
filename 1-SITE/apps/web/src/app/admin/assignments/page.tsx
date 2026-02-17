@@ -71,7 +71,7 @@ async function getAssignments() {
       };
     });
   } catch (error) {
-    console.error('❌ Error in getAssignments:', error);
+    console.error(' Error in getAssignments:', error);
     return [];
   }
 }
@@ -104,11 +104,11 @@ export default async function ActorAssignmentCockpit() {
                 <ContainerInstrument className="min-w-[200px]">
                   <TextInstrument className="text-[15px] font-light"><VoiceglotText  translationKey={`actor.${item.actorId}.name`} defaultText={item.actorName} noTranslate={true} /></TextInstrument>
                   <TextInstrument className="text-[15px] text-black/40 font-light tracking-wider">
-                    <VoiceglotText  translationKey="common.order" defaultText="Order" />#{item.displayOrderId} • <VoiceglotText  translationKey={`user.${item.userId}.name`} defaultText={item.customerName} noTranslate={true} />
+                    <VoiceglotText  translationKey="common.order" defaultText="Order" />#{item.displayOrderId}  <VoiceglotText  translationKey={`user.${item.userId}.name`} defaultText={item.customerName} noTranslate={true} />
                     {item.customerCompany && ` (${item.customerCompany})`}
                   </TextInstrument>
                   <TextInstrument className="text-[15px] text-va-primary font-light mt-1">
-                    <VoiceglotText  translationKey="common.budget" defaultText="Budget" />: € {item.budget}
+                    <VoiceglotText  translationKey="common.budget" defaultText="Budget" />:  {item.budget}
                   </TextInstrument>
                 </ContainerInstrument>
 

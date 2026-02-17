@@ -1,7 +1,7 @@
 import { VOICES_CONFIG } from '@config/config';
 
 /**
- * ⚡ MOLLIE NUCLEAR SERVICE (2026)
+ *  MOLLIE NUCLEAR SERVICE (2026)
  * 
  * Deze service vervangt de PHP voices_mollie_request logica.
  * Het handelt alle betalingen af via de Mollie API.

@@ -26,12 +26,12 @@ export async function POST(req: NextRequest) {
     // sips --cropArea <top> <left> <height> <width>
     const sipsCmd = `sips --cropArea ${Math.round(crop.y)} ${Math.round(crop.x)} ${Math.round(crop.height)} ${Math.round(crop.width)} -Z ${isSquare ? 800 : 1200} "${sourcePath}" --out "${targetPath}"`;
     
-    console.log(`🚀 Executing sips: ${sipsCmd}`);
+    console.log(` Executing sips: ${sipsCmd}`);
     execSync(sipsCmd);
 
     return NextResponse.json({ success: true, path: targetPath });
   } catch (error: any) {
-    console.error('❌ Error saving crop:', error);
+    console.error(' Error saving crop:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

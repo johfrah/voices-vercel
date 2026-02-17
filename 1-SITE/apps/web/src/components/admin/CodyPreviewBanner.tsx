@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
- * 🧪 CODY PREVIEW BANNER
+ *  CODY PREVIEW BANNER
  * 
  * Verschijnt alleen voor admins wanneer er een actieve Live Preview draait.
  */

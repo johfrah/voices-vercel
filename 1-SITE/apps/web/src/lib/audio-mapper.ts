@@ -3,20 +3,20 @@ import { actors } from '@db/schema';
 import path from 'path';
 
 /**
- * 🎙️ NUCLEAR AUDIO MAPPER (2026)
+ *  NUCLEAR AUDIO MAPPER (2026)
  * 
  * Scant de /assets/agency/voices mappenstructuur en koppelt audio aan acteurs in Supabase.
  * Dit is de "Sonic DNA" activator voor de Next.js Cockpit.
  */
 
 async function mapAudioDemos() {
-  console.log('🚀 Starting Core Audio Mapping...');
+  console.log(' Starting Core Audio Mapping...');
 
   const voicesDir = path.join(process.cwd(), '../assets/agency/voices');
   
   // 1. Haal alle acteurs op uit de database
   const allActors = await db.select().from(actors);
-  console.log(`📊 Found ${allActors.length} actors in database.`);
+  console.log(` Found ${allActors.length} actors in database.`);
 
   for (const actor of allActors) {
     // We zoeken naar mappen die de naam of ID van de acteur bevatten
@@ -30,7 +30,7 @@ async function mapAudioDemos() {
     // Scan de mappen (dit is een gesimplificeerde versie, in realiteit zou je globben)
     // Voor nu focussen we op de logica van het mappen naar de database
     
-    console.log(`🔎 Scanning for actor: ${actor.firstName} (ID: ${actor.id}, WP: ${actor.wpProductId})`);
+    console.log(` Scanning for actor: ${actor.firstName} (ID: ${actor.id}, WP: ${actor.wpProductId})`);
     
     // TODO: Implementeer recursieve folder search voor actorFolderPattern
     // Voor deze demo/script focus ik op de database injectie logica
@@ -43,7 +43,7 @@ export async function runAudioMapping() {
         await mapAudioDemos();
         return { success: true, message: 'Audio mapping voltooid' };
     } catch (error: any) {
-        console.error('❌ Audio Mapping Failed:', error);
+        console.error(' Audio Mapping Failed:', error);
         return { success: false, error: error.message };
     }
 }

@@ -91,7 +91,7 @@ export default function FostPlusStoryPage() {
               className="w-full h-full"
               subtitles={[
                 { src: '/assets/content/blog/videos/review-fostplus-nl.vtt', label: 'Nederlands', srcLang: 'nl' },
-                { src: '/assets/content/blog/videos/review-fostplus-fr.vtt', label: 'Français', srcLang: 'fr' },
+                { src: '/assets/content/blog/videos/review-fostplus-fr.vtt', label: 'Franais', srcLang: 'fr' },
                 { src: '/assets/content/blog/videos/review-fostplus-en.vtt', label: 'English', srcLang: 'en' }
               ]}
             />

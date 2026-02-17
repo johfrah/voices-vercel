@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SelfHealingService } from '@/lib/system/self-healing-service';
 
 /**
- * 🩹 API: BROKEN ASSET WATCHDOG
+ *  API: BROKEN ASSET WATCHDOG
  * 
  * Doel: Ontvangen van meldingen over kapotte assets (audio/video/images)
  * en de Self-Healing Service triggeren.
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('🚀 WATCHDOG ERROR:', error);
+    console.error(' WATCHDOG ERROR:', error);
     return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
   }
 }

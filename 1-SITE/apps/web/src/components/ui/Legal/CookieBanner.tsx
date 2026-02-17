@@ -10,7 +10,7 @@ import { VoiceglotText } from '../VoiceglotText';
 const CONSENT_VERSION = '2026.1';
 
 /**
- * 🍪 NUCLEAR COOKIE BANNER (2026)
+ *  NUCLEAR COOKIE BANNER (2026)
  *
  * Voldoet aan de Zero Laws en het Master Voices Protocol.
  * LEX: Policy link, consent metadata (timestamp, version).

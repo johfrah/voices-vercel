@@ -25,7 +25,7 @@ import { redirect } from "next/navigation";
 
 /**
  * INSTRUCTOR DASHBOARD (BEHEER)
- * 🛡️ VOICES OS: De cockpit voor de ondernemende instructeur.
+ *  VOICES OS: De cockpit voor de ondernemende instructeur.
  * Alleen voor ingelogde instructeurs (of admins die als instructeur doorgaan).
  */
 export default async function InstructorDashboardPage() {
@@ -184,7 +184,7 @@ export default async function InstructorDashboardPage() {
         </BentoCard>
       </BentoGrid>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

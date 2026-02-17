@@ -79,7 +79,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                       <h4 className="text-[15px] font-light tracking-tight mb-1">{item.title}</h4>
                       <div className="flex justify-between items-center">
                         <span className="text-[15px] font-bold text-va-black/30 tracking-widest">Aantal: {item.quantity}</span>
-                        <span className="font-black text-va-black">€{item.price}</span>
+                        <span className="font-black text-va-black">{item.price}</span>
                       </div>
                     </div>
                     <button className="self-start p-2 opacity-0 group-hover:opacity-100 text-va-black/20 hover:text-red-500 transition-all">
@@ -109,15 +109,15 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               <div className="space-y-3">
                 <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
                   <span><VoiceglotText  translationKey="auto.cartdrawer.subtotaal.e48026" defaultText="Subtotaal" /></span>
-                  <span className="text-va-black">€{subtotal.toFixed(2)}</span>
+                  <span className="text-va-black">{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
                   <span>BTW (21%)</span>
-                  <span className="text-va-black">€{vat.toFixed(2)}</span>
+                  <span className="text-va-black">{vat.toFixed(2)}</span>
                 </div>
                 <div className="pt-4 border-t border-black/5 flex justify-between items-center">
                   <span className="text-[15px] font-black tracking-widest"><VoiceglotText  translationKey="auto.cartdrawer.totaal.e28895" defaultText="Totaal" /></span>
-                  <span className="text-3xl font-black text-primary tracking-tighter">€{total.toFixed(2)}</span>
+                  <span className="text-3xl font-black text-primary tracking-tighter">{total.toFixed(2)}</span>
                 </div>
               </div>
 

@@ -5,7 +5,7 @@ import { GeminiService } from '@/services/GeminiService';
 import { NextResponse } from 'next/server';
 
 /**
- * 🚀 API: TURBO HEAL (GOD MODE 2026)
+ *  API: TURBO HEAL (GOD MODE 2026)
  * 
  * Doel: Forceer AI vertalingen voor alle ontbrekende keys in alle talen.
  */

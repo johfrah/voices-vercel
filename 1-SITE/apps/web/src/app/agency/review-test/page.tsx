@@ -12,7 +12,7 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 /**
- * 🚀 SPOTLIGHT PREVIEW: AUDIO PIPELINE (2026)
+ *  SPOTLIGHT PREVIEW: AUDIO PIPELINE (2026)
  * 
  * Deze pagina dient als test-omgeving voor de nieuwe Audio Pipeline interface.
  * Hier kunnen we de Smart Mix, Waveform en Feedback tools live bekijken.

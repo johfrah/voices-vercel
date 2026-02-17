@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
- * 🧠 GEMINI INTELLIGENCE SERVICE (2026)
+ *  GEMINI INTELLIGENCE SERVICE (2026)
  * 
  * Doel: Snelle, bulk-analyse van mails op sentiment, intentie en klant-DNA.
  * Gebruikt Google Gemini 1.5 Flash voor optimale snelheid/kosten ratio.
@@ -25,7 +25,7 @@ export class GeminiService {
    * Helper om het model op te halen met de juiste v1beta compatibiliteit
    */
   private getModel() {
-    // 🚀 GEMINI 2026 UPGRADE: Gebruik gemini-flash-latest voor maximale stabiliteit en snelheid
+    //  GEMINI 2026 UPGRADE: Gebruik gemini-flash-latest voor maximale stabiliteit en snelheid
     return this.genAI.getGenerativeModel({ model: "gemini-flash-latest" });
   }
 
@@ -35,10 +35,19 @@ export class GeminiService {
   async generateText(prompt: string): Promise<string> {
     try {
       const model = this.getModel();
-      const result = await model.generateContent(prompt);
+      
+      //  CHRIS-PROTOCOL: Voeg een timeout toe aan de Gemini call (Next.js Edge compatibel)
+      const result = await Promise.race([
+        model.generateContent(prompt),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Gemini Timeout')), 25000))
+      ]) as any;
+
       return result.response.text();
     } catch (error: any) {
-      console.error('❌ Gemini Text Generation Error:', error);
+      console.error(' Gemini Text Generation Error:', error);
+      if (error.message === 'Gemini Timeout') {
+        return "Ik heb even wat meer tijd nodig om na te denken. Probeer je het zo nog eens?";
+      }
       throw error; // Throw error so caller can handle fallback/retry
     }
   }
@@ -83,7 +92,7 @@ export class GeminiService {
       const jsonStr = text.replace(/```json|```/g, '').trim();
       return JSON.parse(jsonStr);
     } catch (error) {
-      console.error('❌ Gemini Analysis Error:', error);
+      console.error(' Gemini Analysis Error:', error);
       return {
         sentiment: 'neutral',
         intent: 'other',
@@ -147,7 +156,7 @@ export class GeminiService {
       const jsonStr = text.replace(/```json|```/g, '').trim();
       return JSON.parse(jsonStr);
     } catch (error) {
-      console.error('❌ Gemini Vision Error:', error);
+      console.error(' Gemini Vision Error:', error);
       return {
         description: 'Geen beschrijving beschikbaar',
         labels: [],

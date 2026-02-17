@@ -12,11 +12,12 @@ export type JourneyType = 'telephony' | 'video' | 'commercial';
 interface MasterControlState {
   journey: JourneyType;
   usage: UsageType;
-  filters: {
+    filters: {
     language: string | null;
-    languages?: string[]; // 🛡️ Support for multi-language selection (Telephony)
+    languages?: string[]; //  Support for multi-language selection (Telephony)
     gender: string | null;
     style: string | null;
+    sortBy: 'popularity' | 'delivery' | 'alphabetical'; //  NEW: Sorting options
     words?: number;
     media?: string[];
     countries?: string[];
@@ -54,16 +55,23 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
 
     // Initialize state from URL or contexts
     const [state, setState] = useState<MasterControlState>(() => {
-      // 🌍 MARKET-AWARE INITIALIZATION
+      //  MARKET-AWARE INITIALIZATION
       const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
       const market = MarketManager.getCurrentMarket(host);
 
       const journey = (searchParams.get('journey') as JourneyType) || 
                      (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
       
-      const initialLanguage = searchParams.get('language') || market.primary_language;
-      const initialLanguages = searchParams.get('languages') ? searchParams.get('languages')?.split(',') : [initialLanguage];
-      const initialWords = searchParams.get('words') ? parseInt(searchParams.get('words')!) : (journey === 'telephony' ? 25 : 200);
+      const initialLanguageParam = searchParams.get('language');
+      const initialLanguage = initialLanguageParam 
+        ? MarketManager.getLanguageLabel(initialLanguageParam) 
+        : MarketManager.getLanguageLabel(MarketManager.getLanguageCode(market.primary_language));
+        
+      const initialLanguages = searchParams.get('languages') ? searchParams.get('languages')?.split(',') : [initialLanguage.toLowerCase()];
+      const initialWordsParam = searchParams.get('words');
+      const initialWords = (initialWordsParam && parseInt(initialWordsParam) > 0) 
+        ? parseInt(initialWordsParam) 
+        : (journey === 'telephony' ? 25 : 200);
       const initialCountries = searchParams.get('countries') ? searchParams.get('countries')?.split(',') : [market.market_code];
       
       let initialSpotsDetail = undefined;
@@ -90,6 +98,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
           languages: initialLanguages as string[],
           gender: searchParams.get('gender') || null,
           style: searchParams.get('style') || null,
+          sortBy: (searchParams.get('sortBy') as any) || 'popularity',
           words: initialWords,
           media: (searchParams.get('media') ? searchParams.get('media')?.split(',') : ['online']),
           countries: initialCountries as string[],
@@ -104,10 +113,10 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       };
     });
 
-  // 🛡️ CHRIS-PROTOCOL: Force initial sync of voicesState to ensure grid matches filters immediately
+  //  CHRIS-PROTOCOL: Force initial sync of voicesState to ensure grid matches filters immediately
   useEffect(() => {
     if (state.filters.language) {
-      // We forceren een update om de grid te synchroniseren met de initiële market taal
+      // We forceren een update om de grid te synchroniseren met de initile market taal
       const params = new URLSearchParams(window.location.search);
       if (!params.get('language')) {
         params.set('language', state.filters.language);
@@ -116,10 +125,14 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     }
   }, [state.filters.language]);
 
-  // 💰 PRICING SYNC: Recalculate pricing whenever journey or filters change
+  //  PRICING SYNC: Recalculate pricing whenever journey or filters change
   useEffect(() => {
     const targetUsage = JOURNEY_USAGE_MAP[state.journey];
+    
+    //  CHRIS-PROTOCOL: Only update if the target usage is different from current checkout usage
+    // This prevents the "reset" effect when the configurator updates usage directly.
     if (checkoutState.usage !== targetUsage) {
+      console.log(`[MasterControl] Syncing checkout usage to journey: ${state.journey} -> ${targetUsage}`);
       updateUsage(targetUsage);
     }
     
@@ -131,9 +144,6 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
 
     // If it's a commercial journey, sync the media type and details
     if (state.journey === 'commercial') {
-      if (state.filters.country && checkoutState.country !== state.filters.country) {
-        // updateCountry is not in the context type but country is in state
-      }
       if (state.filters.media && JSON.stringify(checkoutState.media) !== JSON.stringify(state.filters.media)) {
         updateMedia(state.filters.media);
       }
@@ -144,7 +154,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
         updateYearsDetail(state.filters.yearsDetail);
       }
     }
-  }, [state.journey, state.filters.media, state.filters.words, state.filters.spots, state.filters.years, state.filters.spotsDetail, state.filters.yearsDetail, state.filters.liveSession, state.filters.country, checkoutState.usage, checkoutState.media, checkoutState.briefing, checkoutState.spotsDetail, checkoutState.yearsDetail, checkoutState.country, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateBriefing]);
+  }, [state.journey, state.filters.media, state.filters.words, state.filters.spotsDetail, state.filters.yearsDetail, checkoutState.briefing, checkoutState.usage]); // Added checkoutState.usage back to dependencies to ensure sync works both ways but with the guard above
 
   // Sync with URL and other contexts
   const updateJourney = useCallback((journey: JourneyType) => {
@@ -153,17 +163,17 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     setState(prev => {
       const newFilters = { ...prev.filters };
       
-      // 🛡️ CHRIS-PROTOCOL: Update default words based on journey
+      //  CHRIS-PROTOCOL: Update default words based on journey
       if (journey === 'telephony') newFilters.words = 25;
       else if (journey === 'video') newFilters.words = 200;
       else if (journey === 'commercial') newFilters.words = 100;
 
-      // 🛡️ CHRIS-PROTOCOL: Enforce at least one media type for commercial journey
+      //  CHRIS-PROTOCOL: Enforce at least one media type for commercial journey
       if (journey === 'commercial' && (!newFilters.media || newFilters.media.length === 0)) {
         newFilters.media = ['online'];
       }
       
-      // 🛡️ CHRIS-PROTOCOL: Update URL silently (replaceState)
+      //  CHRIS-PROTOCOL: Update URL silently (replaceState)
       const params = new URLSearchParams(window.location.search);
       params.set('journey', journey);
       if (journey === 'commercial' && !params.get('media')) {
@@ -184,6 +194,11 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     setState(prev => {
       const updatedFilters = { ...prev.filters, ...newFilters };
       
+      //  CHRIS-PROTOCOL: Sanity check for words
+      if (updatedFilters.words !== undefined && updatedFilters.words < 5) {
+        updatedFilters.words = prev.journey === 'telephony' ? 25 : 200;
+      }
+      
       // Sync with CheckoutContext
       if (newFilters.media) updateMedia(newFilters.media);
       if (newFilters.spots) updateSpots(newFilters.spots);
@@ -192,7 +207,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       if (newFilters.yearsDetail) updateYearsDetail(newFilters.yearsDetail);
       if (newFilters.liveSession !== undefined) updateLiveSession(newFilters.liveSession);
 
-      // 🛡️ CHRIS-PROTOCOL: Update URL silently (replaceState) to keep it clean
+      //  CHRIS-PROTOCOL: Update URL silently (replaceState) to keep it clean
       // but still allow sharing/refreshing.
       const params = new URLSearchParams(window.location.search);
       Object.entries(newFilters).forEach(([key, value]) => {
@@ -226,17 +241,20 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
     const market = MarketManager.getCurrentMarket(host);
     
+    const defaultLang = MarketManager.getLanguageLabel(MarketManager.getLanguageCode(market.primary_language));
+    
     const defaultFilters = {
-      language: market.primary_language,
+      language: defaultLang,
       gender: null,
       style: null,
+      sortBy: 'popularity',
       words: state.journey === 'telephony' ? 25 : (state.journey === 'video' ? 200 : 100),
     };
     setState(prev => ({ ...prev, filters: { ...prev.filters, ...defaultFilters } }));
     
-    // 🛡️ CHRIS-PROTOCOL: Update URL silently (replaceState)
+    //  CHRIS-PROTOCOL: Update URL silently (replaceState)
     const params = new URLSearchParams(window.location.search);
-    params.set('language', market.primary_language);
+    params.set('language', defaultLang);
     ['gender', 'style', 'words'].forEach(k => params.delete(k));
     const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
     window.history.replaceState(null, '', newUrl);

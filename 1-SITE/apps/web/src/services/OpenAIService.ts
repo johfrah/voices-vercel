@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
 /**
- * 🧠 OPENAI INTELLIGENCE SERVICE (2026)
+ *  OPENAI INTELLIGENCE SERVICE (2026)
  * 
  * Doel: Betrouwbare vertalingen en analyses via GPT-4o.
  * Wordt ingezet als Gemini rate-limits raakt of voor complexere taken.
@@ -37,7 +37,7 @@ export class OpenAIService {
 
       return response.choices[0]?.message?.content || '';
     } catch (error: any) {
-      console.error('❌ OpenAI Text Generation Error:', error);
+      console.error(' OpenAI Text Generation Error:', error);
       throw error;
     }
   }

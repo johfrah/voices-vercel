@@ -76,7 +76,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
       />
       
       <ContainerInstrument className={cn(isYoussef ? 'max-w-6xl mx-auto px-6 py-20' : '')}>
-        {/* 🎭 STORY LAYOUT HERO */}
+        {/*  STORY LAYOUT HERO */}
         <SectionInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-32 items-start">
           <ContainerInstrument className="lg:col-span-5">
             <ContainerInstrument className="relative aspect-[4/5] rounded-[20px] overflow-hidden shadow-aura-lg group">
@@ -147,8 +147,8 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
                     </TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="text-right">
-                    <TextInstrument className="text-2xl font-light text-primary">€{artistData.donation_current}</TextInstrument>
-                    <TextInstrument className="text-[15px] text-white/20 font-light ml-1 inline">/ €{artistData.donation_goal}</TextInstrument>
+                    <TextInstrument className="text-2xl font-light text-primary">{artistData.donation_current}</TextInstrument>
+                    <TextInstrument className="text-[15px] text-white/20 font-light ml-1 inline">/ {artistData.donation_goal}</TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-8">
@@ -183,7 +183,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params }: { artistDa
           </ContainerInstrument>
         </SectionInstrument>
 
-        {/* 🎞️ VIDEO SECTION */}
+        {/*  VIDEO SECTION */}
         {isYoussef && (
           <SectionInstrument className="mb-32">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-12 text-center text-white">

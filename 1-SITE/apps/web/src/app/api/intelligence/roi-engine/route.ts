@@ -4,7 +4,7 @@ import { utmTouchpoints, orders } from '@db/schema';
 import { eq, sql, desc } from 'drizzle-orm';
 
 /**
- * 📈 UTM ATTRIBUTION & ROI ENGINE
+ *  UTM ATTRIBUTION & ROI ENGINE
  * 
  * Doel: Marketing journey koppelen aan orderwaarde.
  */

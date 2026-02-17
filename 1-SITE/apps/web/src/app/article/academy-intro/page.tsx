@@ -61,9 +61,9 @@ export default function AcademyIntroArticlePage() {
               <VoiceglotText translationKey="academy.features.title" defaultText="Wat leer je?" />
             </HeadingInstrument>
             <ul className="space-y-4 text-white/60 text-[15px] font-light">
-              <li>• Stemtechniek & Ademhaling</li>
-              <li>• Audio-editing & Mastering</li>
-              <li>• Business skills voor stemmen</li>
+              <li> Stemtechniek & Ademhaling</li>
+              <li> Audio-editing & Mastering</li>
+              <li> Business skills voor stemmen</li>
             </ul>
           </BentoCard>
 

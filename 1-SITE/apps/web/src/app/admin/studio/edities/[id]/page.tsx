@@ -16,7 +16,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 /**
  * STUDIO ADMIN EDITION DETAIL
- * 🛡️ VOICES OS: Beheer van uploads, deelnemers en financiën per editie.
+ *  VOICES OS: Beheer van uploads, deelnemers en financin per editie.
  */
 export default async function AdminEditionDetailPage({ params }: { params: { id: string } }) {
   const editionId = parseInt(params.id);
@@ -39,12 +39,12 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
       <ContainerInstrument className="mb-12">
         <TextInstrument className="text-[15px] font-light tracking-widest text-black/40 mb-2"><VoiceglotText  translationKey="auto.page.editie_beheer.b65194" defaultText="Editie Beheer" /></TextInstrument>
         <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
-          {edition.workshop?.title} <TextInstrument className="text-primary font-light">— {new Date(edition.date).toLocaleDateString('nl-BE')}</TextInstrument>
+          {edition.workshop?.title} <TextInstrument className="text-primary font-light"> {new Date(edition.date).toLocaleDateString('nl-BE')}</TextInstrument>
         </HeadingInstrument>
       </ContainerInstrument>
 
       <BentoGrid strokeWidth={1.5} columns={3} className="gap-8">
-        {/* 🛠️ EDITION EDITOR (Step 1) */}
+        {/*  EDITION EDITOR (Step 1) */}
         <BentoCard span="full" className="bg-white shadow-aura border border-black/5 p-12">
           <div className="flex items-center gap-3 mb-10">
             <Settings strokeWidth={1.5} size={24} className="text-primary" />
@@ -106,22 +106,22 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
         <ContainerInstrument className="space-y-8">
           <BentoCard span="sm" className="bg-va-black text-white p-10">
             <DollarSign strokeWidth={1.5} className="text-primary mb-6" size={24} />
-            <HeadingInstrument level={3} className="text-xl font-light tracking-tighter mb-6"><VoiceglotText  translationKey="auto.page.financi_le_afwikkeli.b40783" defaultText="Financiële Afwikkeling" /></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-xl font-light tracking-tighter mb-6"><VoiceglotText  translationKey="auto.page.financi_le_afwikkeli.b40783" defaultText="Financile Afwikkeling" /></HeadingInstrument>
             
             <ContainerInstrument className="space-y-4 border-b border-white/5 pb-6 mb-6">
               <ContainerInstrument className="flex justify-between items-center">
                 <TextInstrument className="text-[15px] font-light text-white/30 tracking-widest"><VoiceglotText  translationKey="auto.page.bruto_omzet.dad5d3" defaultText="Bruto Omzet" /></TextInstrument>
-                <TextInstrument className="text-[15px] font-light">€{(participants.length * parseFloat(edition.price || '0')).toLocaleString('nl-BE')}</TextInstrument>
+                <TextInstrument className="text-[15px] font-light">{(participants.length * parseFloat(edition.price || '0')).toLocaleString('nl-BE')}</TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="flex justify-between items-center">
                 <TextInstrument className="text-[15px] font-light text-white/30 tracking-widest"><VoiceglotText  translationKey="auto.page.platform_fee__30__.21d3ea" defaultText="Platform Fee (30%)" /></TextInstrument>
-                <TextInstrument className="text-[15px] font-light text-primary">- €{(participants.length * parseFloat(edition.price || '0') * 0.3).toLocaleString('nl-BE')}</TextInstrument>
+                <TextInstrument className="text-[15px] font-light text-primary">- {(participants.length * parseFloat(edition.price || '0') * 0.3).toLocaleString('nl-BE')}</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
 
             <ContainerInstrument className="flex justify-between items-center">
               <TextInstrument className="text-[15px] font-light text-white/30 tracking-widest"><VoiceglotText  translationKey="auto.page.uitbetaling_instruct.1cb7e8" defaultText="Uitbetaling Instructeur" /></TextInstrument>
-              <TextInstrument className="text-xl font-light text-white">€{(participants.length * parseFloat(edition.price || '0') * 0.7).toLocaleString('nl-BE')}</TextInstrument>
+              <TextInstrument className="text-xl font-light text-white">{(participants.length * parseFloat(edition.price || '0') * 0.7).toLocaleString('nl-BE')}</TextInstrument>
             </ContainerInstrument>
 
             <ButtonInstrument className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-xl text-[15px] font-light tracking-widest transition-all mt-10"><VoiceglotText  translationKey="auto.page.bevestig_uitbetaling.386eea" defaultText="Bevestig Uitbetaling" /></ButtonInstrument></BentoCard>

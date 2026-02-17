@@ -18,7 +18,7 @@ interface GlossaryTerm {
 }
 
 /**
- * 🎓 ACADEMY CONTENT RENDERER
+ *  ACADEMY CONTENT RENDERER
  * 
  * Scant de tekst op begrippen uit de glossary en voegt automatisch tooltips toe.
  * Werkt samen met Voiceglot voor vertalingen en ondersteunt variabelen (zoals {{firstName}}).

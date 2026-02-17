@@ -12,7 +12,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Shield, Lock, Eye, FileText } from 'lucide-react';
 
 /**
- * 🛡️ PRIVACY POLICY PAGE (NUCLEAR 2026)
+ *  PRIVACY POLICY PAGE (NUCLEAR 2026)
  */
 export default function PrivacyPage() {
   return (

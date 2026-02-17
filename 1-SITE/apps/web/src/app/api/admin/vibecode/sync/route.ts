@@ -4,7 +4,7 @@ import path from 'path';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
- * ⚡ API: VIBECODE SYNC (NUCLEAR 2026)
+ *  API: VIBECODE SYNC (NUCLEAR 2026)
  * 
  * Doel: Synchroniseert de "Gouden Bron" (Bijbels, Rules, Blueprints) 
  * naar de Vibecode Engine zodat de Shadow Layer volledig gebriefd is.

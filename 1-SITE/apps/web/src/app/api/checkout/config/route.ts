@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MollieService } from '@/lib/payments/mollie';
 
 /**
- * ⚡ API: CHECKOUT CONFIG (2026)
+ *  API: CHECKOUT CONFIG (2026)
  * 
  * Doel: Haalt alle configuratie op voor de checkout pagina (betaalmethodes, tax rates, etc.)
  * Vervangt de WordPress /wp-json/voices/v2/checkout/config endpoint.

@@ -67,7 +67,7 @@ async function JohfrahContent() {
     <>
       <LiquidBackground strokeWidth={1.5} />
       
-      {/* 🎭 JOHFRAH-STIJL HERO (7/5 SPLIT, BOXED) */}
+      {/*  JOHFRAH-STIJL HERO (7/5 SPLIT, BOXED) */}
       <SectionInstrument className="relative pt-40 pb-32 overflow-hidden">
         <ContainerInstrument className="max-w-5xl mx-auto px-6">
           <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -121,7 +121,7 @@ async function JohfrahContent() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🧩 BENTO GRID (Boxed & Soft) */}
+      {/*  BENTO GRID (Boxed & Soft) */}
       <SectionInstrument className="max-w-5xl mx-auto px-6 py-20">
         <BentoGrid strokeWidth={1.5} columns={3}>
           <HostCardLink strokeWidth={1.5} span="lg" className="hblue text-white p-12 relative overflow-hidden group cursor-pointer rounded-[20px] shadow-aura-lg min-h-[500px] flex flex-col justify-between border border-white/10">
@@ -166,7 +166,7 @@ async function JohfrahContent() {
                   <ContainerInstrument key={i} className="group">
                     <ContainerInstrument className="flex justify-between items-end mb-2">
                       <TextInstrument as="span" className="font-bold text-[15px] tracking-[0.2em] text-va-black/20 group-hover:text-primary transition-colors"><VoiceglotText  translationKey={`portfolio.johfrah.rates.${i}.label`} defaultText={rate.label} /></TextInstrument>
-                      <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black">€{rate.price}</TextInstrument>
+                      <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black">{rate.price}</TextInstrument>
                     </ContainerInstrument>
                     <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText  translationKey={`portfolio.johfrah.rates.${i}.desc`} defaultText={rate.desc} /></TextInstrument>
                   </ContainerInstrument>
@@ -176,7 +176,7 @@ async function JohfrahContent() {
             
             <ContainerInstrument className="pt-10 border-t border-black/[0.03] mt-10">
               <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/20 mb-2"><VoiceglotText  translationKey="auto.page.studio_setup.89f58a" defaultText="Studio Setup" /></TextInstrument>
-              <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="auto.page.neumann_tlm_103___ap.41b21a" defaultText="Neumann TLM 103 • Apollo Interface • SourceConnect" /></TextInstrument>
+              <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="auto.page.neumann_tlm_103___ap.41b21a" defaultText="Neumann TLM 103  Apollo Interface  SourceConnect" /></TextInstrument>
             </ContainerInstrument>
           </BentoCard>
 
@@ -184,7 +184,7 @@ async function JohfrahContent() {
             <PricingCalculator   />
           </ContainerInstrument>
 
-          {/* 🎙️ DEMOS SECTIE (Overzichtelijk) */}
+          {/*  DEMOS SECTIE (Overzichtelijk) */}
           <BentoCard id="demos" span="full" className="bg-white p-16 rounded-[20px] shadow-aura border border-black/[0.02]">
             <ContainerInstrument className="max-w-2xl mb-16">
               <HeadingInstrument level={2} className="text-5xl md:text-6xl font-light tracking-tighter leading-none mb-8 text-va-black">
@@ -218,7 +218,7 @@ async function JohfrahContent() {
         </BentoGrid>
       </SectionInstrument>
 
-      {/* 🏆 LIGHT SIGNATURE CTA */}
+      {/*  LIGHT SIGNATURE CTA */}
       <SectionInstrument id="contact" className="py-32 bg-white relative overflow-hidden border-t border-black/[0.03]">
         <ContainerInstrument className="absolute inset-0 opacity-5 pointer-events-none hmagic" />
         <ContainerInstrument className="max-w-4xl mx-auto px-6 text-center relative z-10">
@@ -234,7 +234,7 @@ async function JohfrahContent() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* 🧠 LLM CONTEXT (Compliance) */}
+      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

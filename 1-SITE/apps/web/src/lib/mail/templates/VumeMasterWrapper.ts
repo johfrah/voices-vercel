@@ -1,10 +1,10 @@
 import { MarketManager } from '@config/market-manager';
 
 /**
- * 🏛️ VUME MASTER WRAPPER (2026) - MARK & LAYA EDITION
+ *  VUME MASTER WRAPPER (2026) - MARK & LAYA EDITION
  * 
  * DNA: De perfecte balans tussen de krachtige legacy (Mark) en de moderne esthetiek (Laya).
- * 🛡️ Chris-Protocol: Volledig inline styling voor maximale compatibiliteit.
+ *  Chris-Protocol: Volledig inline styling voor maximale compatibiliteit.
  */
 
 interface WrapperOptions {
@@ -22,7 +22,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const { title, previewText, journey = 'agency', host = 'voices.be', showSignature = true, headerImage, optOutUrl } = options;
   const market = MarketManager.getCurrentMarket(host);
   
-  // 🎨 Laya's Refined Gradients (Voices 2.0 - Liquid DNA)
+  //  Laya's Refined Gradients (Voices 2.0 - Liquid DNA)
   const gradients = {
     agency: 'linear-gradient(135deg, #FBFBF9 0%, #E8F4F1 50%, #E1EEF3 100%)', // Liquid Agency 2.0
     studio: 'linear-gradient(135deg, #FFFBF2 0%, #FFF3E0 100%)', // Warm Studio 2.0
@@ -35,7 +35,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const isDark = journey === 'artist';
   const isAgency20 = journey === 'agency' || journey === 'auth';
 
-  // 🖼️ Header Logic: Specific image or dynamic banner
+  //  Header Logic: Specific image or dynamic banner
   const headerHtml = headerImage ? `
     <tr>
       <td align="center" style="padding: 0; overflow: hidden; border-radius: 20px 20px 0 0;">

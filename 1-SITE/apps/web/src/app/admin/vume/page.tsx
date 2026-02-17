@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 
 /**
- * 🏛️ VUME ADMIN PREVIEW (2026)
+ *  VUME ADMIN PREVIEW (2026)
  * 
  * DNA: Live beheer voor alle mailtemplates met interactieve feedback.
  * Chris-Protocol: Volledig instrument-based.

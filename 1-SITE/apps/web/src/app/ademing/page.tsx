@@ -23,7 +23,7 @@ import { Suspense } from 'react';
  */
 
 async function TrackGrid() {
-  // 🚀 Native Fetch from Supabase
+  //  Native Fetch from Supabase
   const tracks = await db.select().from(ademingTracks).where(eq(ademingTracks.isPublic, true)).limit(6);
 
   return (
@@ -68,7 +68,7 @@ export default async function AdemingPage() {
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-32 pb-32 bg-va-off-white relative overflow-hidden">
-      {/* 🧪 LIQUID BACKGROUND LAYER (Soft & Airy) */}
+      {/*  LIQUID BACKGROUND LAYER (Soft & Airy) */}
       <ContainerInstrument className="fixed inset-0 -z-10 opacity-[0.08] pointer-events-none">
         <ContainerInstrument className="absolute inset-0 hmagic animate-slow-rotate" />
       </ContainerInstrument>
@@ -93,7 +93,7 @@ export default async function AdemingPage() {
         <TrackGrid strokeWidth={1.5} />
       </Suspense>
 
-      {/* 🧘 DE GIDSEN VAN ADEMING */}
+      {/*  DE GIDSEN VAN ADEMING */}
       <SectionInstrument className="max-w-7xl mx-auto px-8 mt-40">
         <ContainerInstrument className="mb-16">
           <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-black/20"><VoiceglotText  translationKey="ademing.guides.title" defaultText="De Gidsen" /></HeadingInstrument>
