@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@voices/database";
 import { costs } from "@voices/database/src/schema";
 import { NextRequest, NextResponse } from "next/server";
 

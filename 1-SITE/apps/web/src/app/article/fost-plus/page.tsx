@@ -11,7 +11,7 @@ import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { Quote, ArrowLeft, Recycle } from "lucide-react";
 import Link from "next/link";
-import { VideoPlayer } from "@/components/ui/VideoPlayer";
+import { VideoPlayer } from "@/components/academy/VideoPlayer";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

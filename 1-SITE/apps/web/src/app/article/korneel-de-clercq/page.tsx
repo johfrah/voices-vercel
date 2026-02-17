@@ -12,7 +12,7 @@ import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { Quote, ArrowLeft, Radio, Youtube, Play } from "lucide-react";
 import Link from "next/link";
-import { VideoPlayer } from "@/components/ui/VideoPlayer";
+import { VideoPlayer } from "@/components/academy/VideoPlayer";
 
 /**
  * ARTICLE: KORNEEL-DE-CLERCQ (PHYSICAL FALLBACK)

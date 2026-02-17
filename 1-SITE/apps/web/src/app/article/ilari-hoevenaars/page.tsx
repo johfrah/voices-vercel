@@ -11,7 +11,7 @@ import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { Mic2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { VideoPlayer } from "@/components/ui/VideoPlayer";
+import { VideoPlayer } from "@/components/academy/VideoPlayer";
 
 /**
  * ARTICLE: ILARI-HOEVENAARS (PHYSICAL FALLBACK)
