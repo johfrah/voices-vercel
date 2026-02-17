@@ -47,7 +47,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
             <div key={actor.id} className={cn(featured && "w-[85vw] md:w-auto snap-center")}>
               <VoiceCard 
                 voice={actor} 
-                onSelect={onSelect ? () => handleSelect(actor) : undefined}
+                onSelect={onSelect}
               />
             </div>
           ))}
