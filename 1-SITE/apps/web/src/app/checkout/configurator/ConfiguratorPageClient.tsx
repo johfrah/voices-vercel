@@ -27,7 +27,7 @@ import { useMasterControl, JourneyType } from '@/contexts/VoicesMasterControlCon
 import { MusicSelector } from '@/components/studio/MusicSelector';
 import { BriefingSelector } from '@/components/studio/BriefingSelector';
 import { TelephonySmartSuggestions } from '@/components/checkout/TelephonySmartSuggestions';
-import { Sparkles, Brain, Wand2, Zap } from 'lucide-react';
+import { Sparkles, Brain, Zap } from 'lucide-react';
 
 /**
  *  CHRIS-PROTOCOL: Count-Up Component for Pricing
@@ -640,31 +640,62 @@ export default function ConfiguratorPageClient({
 
               {state.usage === 'telefonie' && (
                 <div className="space-y-4">
-                  <button 
-                    onClick={() => {
-                      const isActive = state.music.asBackground || state.music.asHoldMusic;
-                      if (isActive) {
-                        updateMusic({ asBackground: false, asHoldMusic: false, trackId: null });
-                      } else {
-                        updateMusic({ asBackground: true, trackId: state.music.trackId || 'corporate-growth' });
-                      }
-                    }} 
-                    className={cn(
-                      "w-full flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", 
-                      (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10"
-                    )}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
-                        {(state.music.asBackground || state.music.asHoldMusic) ? <Check size={18} strokeWidth={3} /> : <Music size={18} strokeWidth={1.5} />}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button 
+                      onClick={() => {
+                        const isActive = state.music.asBackground || state.music.asHoldMusic;
+                        if (isActive) {
+                          updateMusic({ asBackground: false, asHoldMusic: false, trackId: null });
+                        } else {
+                          updateMusic({ asBackground: true, trackId: state.music.trackId || 'corporate-growth' });
+                        }
+                      }} 
+                      className={cn(
+                        "w-full flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", 
+                        (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10"
+                      )}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
+                          {(state.music.asBackground || state.music.asHoldMusic) ? <Check size={18} strokeWidth={3} /> : <Music size={18} strokeWidth={1.5} />}
+                        </div>
+                        <div>
+                          <div className={cn("text-[13px] font-bold transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black")}>Muziek & Mixage</div>
+                          <div className="text-[11px] text-va-black/40 font-light">Kies muziek als aparte wachtmuziek of laat mixen onder de stem</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className={cn("text-[13px] font-bold transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black")}>Muziek & Mixage</div>
-                        <div className="text-[11px] text-va-black/40 font-light">Kies muziek als aparte wachtmuziek of laat mixen onder de stem</div>
-                      </div>
+                      <div className={cn("text-[13px] font-medium transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black/40")}>+ €59</div>
+                    </button>
+
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => updateMusic({ asBackground: !state.music.asBackground })}
+                        disabled={!state.music.asBackground && !state.music.asHoldMusic}
+                        className={cn(
+                          "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all text-[10px] font-bold uppercase tracking-widest",
+                          state.music.asBackground ? "bg-primary text-white border-primary" : "bg-white border-black/5 text-va-black/40 hover:border-black/10 disabled:opacity-30"
+                        )}
+                      >
+                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center mb-1", state.music.asBackground ? "bg-white/20" : "bg-va-black/5")}>
+                          <Check size={12} strokeWidth={3} className={state.music.asBackground ? "opacity-100" : "opacity-0"} />
+                        </div>
+                        Mixen
+                      </button>
+                      <button 
+                        onClick={() => updateMusic({ asHoldMusic: !state.music.asHoldMusic })}
+                        disabled={!state.music.asBackground && !state.music.asHoldMusic}
+                        className={cn(
+                          "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all text-[10px] font-bold uppercase tracking-widest",
+                          state.music.asHoldMusic ? "bg-primary text-white border-primary" : "bg-white border-black/5 text-va-black/40 hover:border-black/10 disabled:opacity-30"
+                        )}
+                      >
+                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center mb-1", state.music.asHoldMusic ? "bg-white/20" : "bg-va-black/5")}>
+                          <Check size={12} strokeWidth={3} className={state.music.asHoldMusic ? "opacity-100" : "opacity-0"} />
+                        </div>
+                        Wachtmuziek
+                      </button>
                     </div>
-                    <div className={cn("text-[13px] font-medium transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black/40")}>+ €59</div>
-                  </button>
+                  </div>
 
                   <AnimatePresence>
                     {(state.music.asBackground || state.music.asHoldMusic) && (
