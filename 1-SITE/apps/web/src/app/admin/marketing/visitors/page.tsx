@@ -31,7 +31,7 @@ import { useEffect, useState } from 'react';
  * Gekoppeld aan Voicejar (rrweb) en Customer DNA.
  */
 
-export default function LiveVisitorCockpit() {
+export default function LiveVisitorDashboard() {
   const { logAction } = useAdminTracking();
   const [visitors, setVisitors] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
@@ -79,7 +79,7 @@ export default function LiveVisitorCockpit() {
             </TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter ">
-            <VoiceglotText  translationKey="admin.visitors.title" defaultText="Visitor Cockpit" />
+            <VoiceglotText  translationKey="admin.visitors.title" defaultText="Visitor Dashboard" />
           </HeadingInstrument>
         </ContainerInstrument>
         
@@ -253,14 +253,14 @@ export default function LiveVisitorCockpit() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "AdminPage",
-            "name": "Visitor Cockpit",
+            "name": "Visitor Dashboard",
             "description": "Real-time monitoring van website bezoekers.",
             "_llm_context": {
               "persona": "Architect",
               "journey": "admin",
               "intent": "visitor_intelligence",
               "capabilities": ["view_visitors", "view_stats", "analyze_behavior"],
-              "lexicon": ["Visitor Cockpit", "Live Intelligence", "Mat Radar"],
+              "lexicon": ["Visitor Dashboard", "Live Intelligence", "Mat Radar"],
               "visual_dna": ["Bento Grid", "Liquid DNA"]
             }
           })

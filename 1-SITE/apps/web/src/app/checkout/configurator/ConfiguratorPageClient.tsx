@@ -619,6 +619,22 @@ export default function ConfiguratorPageClient({
     });
     
     setAddedToCart(true);
+    
+    //  HITL-TRIGGER: Stuur een mailtje naar de admin bij add-to-cart
+    fetch('/api/admin/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'add_to_cart',
+        data: {
+          actorName: state.selectedActor.display_name,
+          price: currentItemPrice,
+          email: state.customer.email || localStorage.getItem('voices_customer_email'),
+          usage: state.usage
+        }
+      })
+    }).catch(err => console.warn('[Admin Notify] Failed:', err));
+
     setTimeout(() => setAddedToCart(false), 3000);
     return itemId;
   };

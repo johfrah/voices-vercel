@@ -25,13 +25,27 @@ export async function GET(request: NextRequest) {
     if (countError) throw countError
 
     // 2. Journey verdeling
-    const { data: journeyData, error: journeyError } = await supabase
-      .from('visitors')
-      .select('journey_state')
-      .gte('last_visit_at', today.toISOString())
-
-    if (journeyError) {
-      console.error(' Journey Error:', journeyError)
+    let journeyData: any[] = []
+    try {
+      const { data, error: journeyError } = await supabase
+        .from('visitors')
+        .select('journey_state')
+        .gte('last_visit_at', today.toISOString())
+      
+      if (journeyError) {
+        // If the column doesn't exist, we fallback to selecting everything or just skipping this part
+        console.warn(' Journey column missing or error, falling back:', journeyError.message)
+        const { data: fallbackData } = await supabase
+          .from('visitors')
+          .select('*')
+          .gte('last_visit_at', today.toISOString())
+          .limit(100)
+        journeyData = fallbackData || []
+      } else {
+        journeyData = data || []
+      }
+    } catch (e) {
+      console.error(' Journey fetch failed:', e)
     }
 
     const journeyStats = (journeyData || []).reduce((acc: any, curr: any) => {

@@ -59,7 +59,7 @@ export default async function InstructorDashboardPage() {
       {/* HEADER */}
       <ContainerInstrument className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <ContainerInstrument>
-          <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2"><VoiceglotText  translationKey="studio.beheer.cockpit_badge" defaultText="Instructor Cockpit" /></TextInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2"><VoiceglotText  translationKey="studio.beheer.dashboard_badge" defaultText="Instructor Dashboard" /></TextInstrument>
           <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter inline-block">
             <VoiceglotText  translationKey="studio.beheer.welcome" defaultText="Welkom," />
           </HeadingInstrument>
@@ -191,14 +191,14 @@ export default async function InstructorDashboardPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "InstructorDashboard",
-            "name": "Instructor Cockpit",
+            "name": "Instructor Dashboard",
             "description": "Beheer-omgeving voor Voices Studio instructeurs.",
             "_llm_context": {
               "persona": "Ondernemende Instructeur",
               "journey": "studio",
               "intent": "workshop_management",
               "capabilities": ["manage_editions", "view_participants", "read_reviews", "update_profile"],
-              "lexicon": ["Cockpit", "Editie", "Bezetting", "Impact"],
+              "lexicon": ["Dashboard", "Editie", "Bezetting", "Impact"],
               "visual_dna": ["Bento Grid", "Liquid DNA", "Spatial Growth"]
             }
           })

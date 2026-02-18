@@ -36,19 +36,19 @@ export default function SuccessPageClient() {
       playClick('success');
       
       // CHRIS-PROTOCOL: Zero-Friction Redirection
-      // We sturen de gebruiker na 3 seconden automatisch door naar hun account/bestelling
+      // We sturen de gebruiker direct door naar hun account/bestelling
       const timer = setTimeout(() => {
         const targetUrl = secureToken 
           ? `/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${orderId}` 
           : `/account/orders?orderId=${orderId}`;
         
         router.push(targetUrl);
-      }, 3000);
+      }, 500);
       
       // Simuleer korte verificatie voor de UI
       const verifyTimer = setTimeout(() => {
         setIsVerifying(false);
-      }, 1000);
+      }, 300);
       
       return () => {
         clearTimeout(timer);

@@ -28,8 +28,11 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
   const { playClick } = useSonicDNA();
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  const [activeTab, setActiveTab] = useState<'base' | 'media' | 'program'>('base');
+  const [activeTab, setActiveTab] = useState<'base' | 'media' | 'program' | 'editions'>('base');
   const [instructors, setInstructors] = useState<any[]>([]);
+  const [locations, setLocations] = useState<any[]>([]);
+  const [editions, setEditions] = useState<any[]>([]);
+  const [isLoadingEditions, setIsLoadingEditions] = useState(false);
 
   const [formData, setFormData] = useState({
     title: workshop.title || "",
@@ -38,6 +41,8 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
     price: workshop.price || "0",
     duration: workshop.duration || "",
     instructorId: workshop.instructorId || "",
+    mediaId: workshop.mediaId || "",
+    media: workshop.media || null,
     program: workshop.program || [],
     meta: workshop.meta || {
       aftermovie_url: "",
@@ -46,6 +51,21 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
       benefits: []
     }
   });
+
+  const [mediaSearch, setMediaSearch] = useState("");
+  const [mediaResults, setMediaResults] = useState<any[]>([]);
+  const [isSearchingMedia, setIsSearchingMedia] = useState(false);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+  const [previewVideo, setPreviewVideo] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (formData.media?.filePath) {
+      setPreviewVideo(`/api/proxy?path=${encodeURIComponent(formData.media.filePath)}`);
+    } else {
+      setPreviewVideo(null);
+    }
+  }, [formData.media]);
 
   useEffect(() => {
     if (isOpen) {
@@ -56,6 +76,8 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
         price: workshop.price || "0",
         duration: workshop.duration || "",
         instructorId: workshop.instructorId || "",
+        mediaId: workshop.mediaId || "",
+        media: workshop.media || null,
         program: workshop.program || [],
         meta: workshop.meta || {
           aftermovie_url: "",
@@ -64,14 +86,54 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
           benefits: []
         }
       });
-      
+// ...
       // Load instructors
       fetch('/api/admin/studio/instructors')
         .then(res => res.json())
         .then(data => setInstructors(data))
         .catch(err => console.error("Failed to load instructors", err));
+
+      // Load locations
+      fetch('/api/admin/studio/locations')
+        .then(res => res.json())
+        .then(data => setLocations(data))
+        .catch(err => console.error("Failed to load locations", err));
+
+      // Load editions for this workshop
+      setIsLoadingEditions(true);
+      fetch(`/api/admin/studio/editions?workshopId=${workshop.id}`)
+        .then(res => res.json())
+        .then(data => {
+          setEditions(data);
+          setIsLoadingEditions(false);
+        })
+        .catch(err => {
+          console.error("Failed to load editions", err);
+          setIsLoadingEditions(false);
+        });
     }
   }, [isOpen, workshop]);
+
+  useEffect(() => {
+    if (mediaSearch.length > 2) {
+      setIsSearchingMedia(true);
+      const timer = setTimeout(() => {
+        fetch(`/api/admin/media/search?q=${mediaSearch}&type=video`)
+          .then(res => res.json())
+          .then(data => {
+            setMediaResults(data);
+            setIsSearchingMedia(false);
+          })
+          .catch(err => {
+            console.error("Media search failed", err);
+            setIsSearchingMedia(false);
+          });
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setMediaResults([]);
+    }
+  }, [mediaSearch]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -79,10 +141,11 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
     playClick('deep');
 
     try {
+      const { media, ...saveData } = formData;
       const response = await fetch(`/api/admin/studio/workshops/catalog/${workshop.id}`, {
         method: 'POST', // The existing API uses POST for updates
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(saveData)
       });
 
       if (!response.ok) throw new Error('Failed to update workshop');
@@ -122,6 +185,114 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
     const newProgram = formData.program.filter((_: any, i: number) => i !== index);
     setFormData({ ...formData, program: newProgram });
     playClick('light');
+  };
+
+  const handleUpdateEdition = async (editionId: number, data: any) => {
+    try {
+      const response = await fetch(`/api/admin/studio/editions/${editionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (response.ok) {
+        const updated = await response.json();
+        setEditions(prev => prev.map(e => e.id === editionId ? { ...e, ...updated } : e));
+        playClick('success');
+      }
+    } catch (err) {
+      console.error("Failed to update edition", err);
+      playClick('error');
+    }
+  };
+
+  const handleDuplicateEdition = async (edition: any) => {
+    try {
+      const { id, participantCount, ...duplicateData } = edition;
+      const response = await fetch('/api/admin/studio/create-edition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...duplicateData,
+          workshopId: workshop.id,
+          date: new Date(edition.date).toISOString(), // Zelfde datum als basis, admin kan aanpassen
+          status: 'upcoming'
+        })
+      });
+      if (response.ok) {
+        // Refresh editions
+        const refreshRes = await fetch(`/api/admin/studio/editions?workshopId=${workshop.id}`);
+        const newData = await refreshRes.json();
+        setEditions(newData);
+        playClick('success');
+      }
+    } catch (err) {
+      console.error("Failed to duplicate edition", err);
+      playClick('error');
+    }
+  };
+
+  const handleAddEdition = async () => {
+    try {
+      const response = await fetch('/api/admin/studio/create-edition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workshopId: workshop.id,
+          date: new Date().toISOString(),
+          status: 'upcoming',
+          capacity: 8
+        })
+      });
+      if (response.ok) {
+        const res = await response.json();
+        // Refresh editions
+        const refreshRes = await fetch(`/api/admin/studio/editions?workshopId=${workshop.id}`);
+        const newData = await refreshRes.json();
+        setEditions(newData);
+        playClick('success');
+      }
+    } catch (err) {
+      console.error("Failed to create edition", err);
+      playClick('error');
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    const file = e.target.files[0];
+    setIsUploadingMedia(true);
+    playClick('pro');
+
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+    formDataUpload.append('journey', 'studio');
+    formDataUpload.append('category', 'workshops');
+
+    try {
+      const response = await fetch('/api/admin/studio/workshops/upload', {
+        method: 'POST',
+        body: formDataUpload
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const data = await response.json();
+      setFormData({ ...formData, mediaId: data.mediaId });
+      playClick('success');
+      
+      // Fetch full media object for UI
+      const res = await fetch(`/api/admin/media/${data.mediaId}`);
+      if (res.ok) {
+        const fullMedia = await res.json();
+        setFormData(prev => ({ ...prev, media: fullMedia }));
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      playClick('error');
+    } finally {
+      setIsUploadingMedia(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -180,6 +351,15 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
                 )}
               >
                 Programma
+              </button>
+              <button 
+                onClick={() => setActiveTab('editions')}
+                className={cn(
+                  "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all",
+                  activeTab === 'editions' ? "bg-va-black text-white" : "text-va-black/40 hover:text-va-black"
+                )}
+              >
+                Edities
               </button>
             </div>
             <button 
@@ -278,8 +458,124 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
 
             {activeTab === 'media' && (
               <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
+                {/* Hero Video Selection */}
+                <div className="space-y-4 p-6 bg-va-off-white rounded-[20px] border border-black/5">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Video size={18} className="text-primary" />
+                      <label className="text-[11px] font-bold text-va-black uppercase tracking-widest">Hoofd Video (Carousel)</label>
+                    </div>
+                    
+                    <button 
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploadingMedia}
+                      className="text-[10px] font-bold text-primary uppercase tracking-widest flex items-center gap-1 hover:opacity-70 transition-opacity disabled:opacity-50"
+                    >
+                      {isUploadingMedia ? <Loader2 size={12} className="animate-spin" /> : <Plus size={14} />} 
+                      Uploaden
+                    </button>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileUpload} 
+                      accept="video/*" 
+                      className="hidden" 
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <input 
+                        type="text" 
+                        value={mediaSearch}
+                        onChange={(e) => setMediaSearch(e.target.value)}
+                        className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-sm"
+                        placeholder="Zoek video op bestandsnaam..."
+                      />
+                      {isSearchingMedia && (
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          <Loader2 size={16} className="animate-spin text-va-black/20" />
+                        </div>
+                      )}
+                    </div>
+
+                    {mediaResults.length > 0 && (
+                      <div className="bg-white rounded-xl border border-black/5 overflow-hidden shadow-sm max-h-48 overflow-y-auto">
+                        {mediaResults.map((m: any) => (
+                          <button
+                            key={m.id}
+                            onClick={async () => {
+                              setFormData({ ...formData, mediaId: m.id });
+                              setMediaSearch("");
+                              setMediaResults([]);
+                              playClick('light');
+                              
+                              // Fetch full media object to update UI immediately
+                              try {
+                                const res = await fetch(`/api/admin/media/${m.id}`);
+                                if (res.ok) {
+                                  const fullMedia = await res.json();
+                                  setFormData(prev => ({ ...prev, media: fullMedia }));
+                                }
+                              } catch (err) {
+                                console.error("Failed to fetch media details", err);
+                              }
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-va-off-white transition-colors flex justify-between items-center border-b border-black/[0.02] last:border-0"
+                          >
+                            <span className="truncate flex-1">{m.fileName}</span>
+                            <span className="text-[10px] font-bold text-va-black/20 uppercase ml-2">{m.id}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {formData.mediaId && (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-primary/20 shadow-sm">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                              <Video size={20} />
+                            </div>
+                            <div>
+                              <div className="text-xs font-bold text-va-black">Geselecteerde Video ID: {formData.mediaId}</div>
+                              <div className="text-[10px] text-va-black/40 truncate max-w-[200px]">
+                                {workshop.mediaId === formData.mediaId ? (workshop.media?.fileName || 'Huidige video') : (formData.media?.fileName || 'Nieuwe selectie')}
+                              </div>
+                            </div>
+                          </div>
+                          <button 
+                            onClick={() => {
+                              setFormData({ ...formData, mediaId: "", media: null });
+                              setPreviewVideo(null);
+                            }}
+                            className="p-2 text-va-black/20 hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+
+                        {previewVideo && (
+                          <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-va-black shadow-inner border border-black/5 group/preview">
+                            <video 
+                              src={previewVideo} 
+                              className="w-full h-full object-cover"
+                              controls
+                              muted
+                              playsInline
+                            />
+                            <div className="absolute top-3 left-3 bg-va-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[9px] font-bold text-white uppercase tracking-widest opacity-0 group-hover/preview:opacity-100 transition-opacity">
+                              Preview
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Intro Video URL</label>
+                  <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Intro Video URL (YouTube/Vimeo)</label>
                   <input 
                     type="text" 
                     value={formData.meta?.intro_video_url || ""}
@@ -342,6 +638,127 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
                     </div>
                   ))}
                 </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'editions' && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Actieve Edities</label>
+                  <button onClick={handleAddEdition} className="text-[10px] font-bold text-primary uppercase tracking-widest flex items-center gap-1 hover:opacity-70 transition-opacity">
+                    <Plus size={14} /> Nieuwe Editie
+                  </button>
+                </div>
+
+                {isLoadingEditions ? (
+                  <div className="space-y-4">
+                    {[1, 2].map(i => (
+                      <div key={i} className="p-6 bg-va-off-white rounded-[20px] border border-black/5 space-y-4 animate-pulse">
+                        <div className="h-10 bg-white/50 rounded-xl w-full" />
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="h-12 bg-white/50 rounded-xl" />
+                          <div className="h-12 bg-white/50 rounded-xl" />
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="h-12 bg-white/50 rounded-xl" />
+                          <div className="h-12 bg-white/50 rounded-xl" />
+                          <div className="h-12 bg-white/50 rounded-xl" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {editions.length === 0 ? (
+                      <div className="text-center py-12 bg-va-off-white rounded-2xl border border-dashed border-black/5">
+                        <TextInstrument className="text-sm text-va-black/40">Geen edities gevonden voor deze workshop.</TextInstrument>
+                      </div>
+                    ) : (
+                      editions.map((edition: any) => (
+                        <div key={edition.id} className="p-6 bg-va-off-white rounded-[20px] border border-black/5 space-y-4">
+                          <div className="flex justify-between items-center bg-white/50 p-3 rounded-xl border border-black/[0.03]">
+                            <div className="flex items-center gap-2">
+                              <User size={14} className="text-primary" />
+                              <span className="text-xs font-bold text-va-black">
+                                Bezetting: {edition.participantCount || 0} / {edition.capacity || 0}
+                              </span>
+                              {edition.participantCount >= edition.capacity && (
+                                <span className="bg-red-500 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full">Volzet</span>
+                              )}
+                            </div>
+                            <button 
+                              onClick={() => handleDuplicateEdition(edition)}
+                              className="text-[9px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity"
+                            >
+                              Dupliceer Editie
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                              <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-widest">Datum & Tijd</label>
+                              <input 
+                                type="datetime-local" 
+                                value={edition.date ? new Date(edition.date).toISOString().slice(0, 16) : ""}
+                                onChange={(e) => handleUpdateEdition(edition.id, { date: e.target.value })}
+                                className="w-full px-3 py-2 bg-white rounded-lg border border-black/5 text-sm"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-widest">Locatie</label>
+                              <select 
+                                value={edition.locationId || ""}
+                                onChange={(e) => handleUpdateEdition(edition.id, { locationId: e.target.value ? parseInt(e.target.value) : null })}
+                                className="w-full px-3 py-2 bg-white rounded-lg border border-black/5 text-sm"
+                              >
+                                <option value="">Selecteer locatie</option>
+                                {locations.map(loc => (
+                                  <option key={loc.id} value={loc.id}>{loc.name}</option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-black/[0.03]">
+                            <div className="space-y-1">
+                              <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-widest">Capaciteit</label>
+                              <input 
+                                type="number" 
+                                value={edition.capacity || 0}
+                                onChange={(e) => handleUpdateEdition(edition.id, { capacity: parseInt(e.target.value) })}
+                                className="w-full px-3 py-2 bg-white rounded-lg border border-black/5 text-sm"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-widest">Status</label>
+                              <select 
+                                value={edition.status || "upcoming"}
+                                onChange={(e) => handleUpdateEdition(edition.id, { status: e.target.value })}
+                                className="w-full px-3 py-2 bg-white rounded-lg border border-black/5 text-sm"
+                              >
+                                <option value="upcoming">Upcoming</option>
+                                <option value="active">Active</option>
+                                <option value="full">Volzet</option>
+                                <option value="completed">Afgerond</option>
+                                <option value="cancelled">Geannuleerd</option>
+                              </select>
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-widest">Prijs (Afwijkend)</label>
+                              <input 
+                                type="number" 
+                                value={edition.price || ""}
+                                placeholder={formData.price}
+                                onChange={(e) => handleUpdateEdition(edition.id, { price: e.target.value })}
+                                className="w-full px-3 py-2 bg-white rounded-lg border border-black/5 text-sm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </motion.div>
             )}
           </div>

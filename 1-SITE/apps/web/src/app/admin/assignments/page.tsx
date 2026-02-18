@@ -76,7 +76,7 @@ async function getAssignments() {
   }
 }
 
-export default async function ActorAssignmentCockpit() {
+export default async function ActorAssignmentDashboard() {
   const assignments = await getAssignments();
 
   return (

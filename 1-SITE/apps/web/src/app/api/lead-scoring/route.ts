@@ -7,7 +7,7 @@ import { eq, count } from 'drizzle-orm';
  * PREDICTIVE LEAD SCORING (NUCLEAR LOGIC 2026)
  * 
  * Analyseert user behavior en UTM touchpoints om de 'koopbereidheid' te scoren.
- * Direct gekoppeld aan de Backoffice Cockpit.
+ * Direct gekoppeld aan het Backoffice Dashboard.
  */
 
 export async function POST(request: Request) {

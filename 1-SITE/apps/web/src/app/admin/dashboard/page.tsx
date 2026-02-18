@@ -50,7 +50,7 @@ export default function AdminDashboard() {
   const stats = [
     { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '12', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },
     { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Approval Queue" />, value: '5', icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
-    { label: <VoiceglotText  translationKey="admin.stats.finance" defaultText="Financieel" />, value: 'Cockpit', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: 'Journeys', color: 'text-green-500', href: '/admin/finance' },
+    { label: <VoiceglotText  translationKey="admin.stats.finance" defaultText="Financieel" />, value: 'Dashboard', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: 'Journeys', color: 'text-green-500', href: '/admin/finance' },
     { label: <VoiceglotText  translationKey="admin.stats.workshops" defaultText="Workshops" />, value: '114', icon: <Calendar strokeWidth={1.5} size={20} />, trend: 'Studio', color: 'text-purple-500', href: '/admin/studio/workshops' },
     { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Actieve Stemmen" />, value: '142', icon: <Mic strokeWidth={1.5} size={20} />, trend: '+12%', color: 'text-va-black/40', href: '/admin/voices' },
     { label: <VoiceglotText  translationKey="admin.stats.agents" defaultText="AI Agents" />, value: 'Actief', icon: <Bot strokeWidth={1.5} size={20} />, trend: 'Control', color: 'text-primary', href: '/admin/agents' },
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
         <ContainerInstrument className="space-y-2">
           <ContainerInstrument className="flex items-center gap-2 text-primary">
             <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-            <TextInstrument as="span" className="text-[15px] font-bold tracking-[0.15em] uppercase"><VoiceglotText  translationKey="admin.badge" defaultText="Voices Cockpit" /></TextInstrument>
+            <TextInstrument as="span" className="text-[15px] font-bold tracking-[0.15em] uppercase"><VoiceglotText  translationKey="admin.badge" defaultText="Voices Admin" /></TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="admin.title" defaultText="Beheer-dashboard" /></HeadingInstrument>
         </ContainerInstrument>
@@ -193,14 +193,14 @@ export default function AdminDashboard() {
           <ContainerInstrument className="relative z-10">
             <Calendar strokeWidth={1.5} className="text-primary mb-8" size={32} />
             <HeadingInstrument level={2} className="text-2xl font-light tracking-tighter mb-4">
-              <VoiceglotText translationKey="admin.studio.cockpit_title" defaultText="Workshop Cockpit" />
+              <VoiceglotText translationKey="admin.studio.dashboard_title" defaultText="Workshop Dashboard" />
             </HeadingInstrument>
             <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">
               <VoiceglotText translationKey="admin.studio.cockpit_text" defaultText="Beheer edities, deelnemers en bezettingsgraad voor de Studio-tak." />
             </TextInstrument>
           </ContainerInstrument>
           <Link href="/admin/studio/workshops" className="relative z-10 va-btn-pro !bg-primary w-fit">
-            <VoiceglotText translationKey="admin.studio.cockpit_cta" defaultText="Open Cockpit" />
+            <VoiceglotText translationKey="admin.studio.dashboard_cta" defaultText="Open Dashboard" />
           </Link>
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-60 h-60 bg-primary/10 rounded-full blur-[60px]" />
         </BentoCard>
@@ -266,14 +266,14 @@ export default function AdminDashboard() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "AdminDashboard",
-            "name": "Voices Cockpit",
+            "name": "Voices Admin",
             "description": "Centraal beheer-dashboard voor het Voices platform.",
             "_llm_context": {
               "persona": "Architect",
               "journey": "admin",
               "intent": "system_management",
               "capabilities": ["manage_database", "view_logs", "user_dna", "page_architect"],
-              "lexicon": ["Cockpit", "Self-Healing", "User DNA", "Bento Blueprint"],
+              "lexicon": ["Admin", "Self-Healing", "User DNA", "Bento Blueprint"],
               "visual_dna": ["Bento Grid", "Liquid DNA", "Spatial Growth"]
             }
           })

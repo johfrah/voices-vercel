@@ -57,7 +57,7 @@ export const SpotlightDashboard: React.FC<{ isOpen: boolean; onClose: () => void
                 <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                   <BarChart3 strokeWidth={1.5} size={18} className="text-white" />
                 </div>
-                <h2 className="text-[15px] font-light tracking-[0.2em] text-white Raleway">Spotlight Cockpit</h2>
+                <h2 className="text-[15px] font-light tracking-[0.2em] text-white Raleway">Spotlight Dashboard</h2>
               </div>
               <button 
                 onClick={() => { playClick('soft'); onClose(); }}

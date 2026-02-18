@@ -7,7 +7,7 @@ import { VoiceglotText } from '../ui/VoiceglotText';
 /**
  * IVR CONFIGURATOR (GOD MODE 2026)
  * Persona: 'Gastvrije Expert'
- * UI: Professional Telephony Cockpit
+ * UI: Professional Telephony Dashboard
  */
 
 interface IVRStep {

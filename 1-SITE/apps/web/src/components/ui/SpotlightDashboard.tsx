@@ -88,7 +88,7 @@ const menuItems: MenuItem[] = [
   //  CORE & OPERATIONS
   { title: 'Command Center', icon: Zap, href: '/admin/dashboard', color: 'text-yellow-500', group: 'Core', journey: 'all' },
   { title: 'Mailbox', icon: MessageSquare, href: '/admin/mailbox', color: 'text-primary', group: 'Core', badge: 3, journey: 'all' },
-  { title: 'Workshop Cockpit', icon: Calendar, href: '/admin/studio/workshops', color: 'text-purple-500', group: 'Core', journey: 'studio' },
+  { title: 'Workshop Dashboard', icon: Calendar, href: '/admin/studio/workshops', color: 'text-purple-500', group: 'Core', journey: 'studio' },
   { title: 'Datamatch Monitor', icon: Activity, href: '/admin/datamatch', color: 'text-blue-400', group: 'Core', journey: 'all' },
   { title: 'Analytics Hub', icon: TrendingUp, href: '/admin/analytics', color: 'text-orange-500', group: 'Core', journey: 'all' },
   { title: 'Klant Inzichten', icon: Brain, href: '/admin/insights', color: 'text-pink-500', group: 'Core', journey: 'all' },
@@ -118,7 +118,7 @@ const menuItems: MenuItem[] = [
   { title: 'Product Catalogus', icon: Database, href: '/admin/catalog', color: 'text-va-black', group: 'Agency', journey: 'agency' },
   { title: 'Demo Beheer', icon: Music, href: '/admin/demos', color: 'text-blue-500', group: 'Agency', journey: 'agency' },
   { title: 'Vakanties', icon: Clock, href: '/admin/vacations', color: 'text-red-400', group: 'Agency', journey: 'agency' },
-  { title: 'Artist Cockpit', icon: Briefcase, href: '/admin/artists', color: 'text-slate-600', group: 'Agency', journey: 'agency' },
+  { title: 'Artist Dashboard', icon: Briefcase, href: '/admin/artists', color: 'text-slate-600', group: 'Agency', journey: 'agency' },
 
   //  STUDIO & WORKSHOPS
   { title: 'Workshop Manager', icon: Calendar, href: '/admin/workshops', color: 'text-primary', group: 'Studio', journey: 'studio' },

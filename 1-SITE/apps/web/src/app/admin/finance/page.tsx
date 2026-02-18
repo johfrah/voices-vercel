@@ -32,7 +32,7 @@ export const metadata = {
   description: 'Een centraal overzicht van alle inkomsten en kosten.',
 };
 
-export default async function FinancialCockpitPage() {
+export default async function FinancialDashboardPage() {
   const user = await getServerUser();
   if (!user || !isAdminUser(user)) redirect('/studio');
 
