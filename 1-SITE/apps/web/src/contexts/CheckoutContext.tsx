@@ -377,10 +377,14 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
   }), []);
 
-  const removeItem = useCallback((itemId: string) => setState(prev => ({
-    ...prev,
-    items: prev.items.filter((i: { id?: string }) => i.id !== itemId)
-  })), []);
+  const removeItem = useCallback((itemId: string) => setState(prev => {
+    const newItems = prev.items.filter((i: { id?: string }) => i.id !== itemId);
+    console.log(`[CheckoutContext] Removing item: ${itemId}. Remaining items: ${newItems.length}`);
+    return {
+      ...prev,
+      items: newItems
+    };
+  }), []);
 
   const restoreItem = useCallback((item: any) => {
     console.log('[CheckoutContext] Restoring item for editing:', item.id, item);

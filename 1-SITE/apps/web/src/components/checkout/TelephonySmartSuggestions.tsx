@@ -151,7 +151,10 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
     const langs = new Set<string>(['nl']); // Altijd NL als basis
     if (state.selectedActor) {
       const actor = state.selectedActor;
-      if (actor.native_lang) langs.add(actor.native_lang.split('-')[0].toLowerCase());
+      if (actor.native_lang) {
+        const nativeCode = actor.native_lang.split('-')[0].toLowerCase();
+        langs.add(nativeCode);
+      }
       if (actor.extra_langs) {
         actor.extra_langs.split(',').forEach(l => {
           const code = l.trim().toLowerCase();
@@ -161,6 +164,16 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
     }
     return Array.from(langs);
   }, [state.selectedActor]);
+
+  // Effect: Zet de geselecteerde taal op de moedertaal van de acteur als die beschikbaar is
+  React.useEffect(() => {
+    if (state.selectedActor?.native_lang) {
+      const nativeCode = state.selectedActor.native_lang.split('-')[0].toLowerCase();
+      if (nativeCode !== selectedLang && availableLangs.includes(nativeCode)) {
+        setSelectedLang(nativeCode);
+      }
+    }
+  }, [state.selectedActor, availableLangs]);
 
   // Sherlock: Vertaal openingsuren op basis van geselecteerde taal
   const translatedHours = useMemo(() => {
@@ -196,15 +209,23 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
   }, [selectedLang]);
 
   const handleApplyTemplate = (templateText: string, id: string) => {
+    const templates = TELEPHONY_TEMPLATES[selectedLang] || TELEPHONY_TEMPLATES['en'] || [];
+    const template = templates.find(t => t.id === id);
+    
+    if (!template) return;
+
     const processedText = templateText
       .replace(/\[Bedrijf\]/g, companyName || '[Bedrijfsnaam]')
       .replace(/\[Email\]/g, email || '[Email]')
       .replace(/\[Uren\]/g, translatedHours);
     
     const currentBriefing = state.briefing.trim();
+    const templateTitle = template.title || 'Script';
+    const processedTextWithTitle = `(${templateTitle})\n${processedText}`;
+    
     const newBriefing = currentBriefing 
-      ? `${currentBriefing}\n\n(${processedLangLabel})\n${processedText}`
-      : processedText;
+      ? `${currentBriefing}\n\n${processedTextWithTitle}`
+      : processedTextWithTitle;
     
     if (setLocalBriefing) {
       setLocalBriefing(newBriefing);
