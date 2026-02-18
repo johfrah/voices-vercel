@@ -13,6 +13,10 @@ export async function POST(request: NextRequest) {
     }
     const { data: { user } } = await supabase.auth.getUser();
 
+    //  LEX-MANDATE: Only allow learning from authenticated users or specific anonymous paths
+    // For now, we allow anonymous but tag them as such. 
+    // In the future, we might want to rate-limit this to prevent spam.
+
     // Haal de numerieke userId op uit onze eigen users tabel
     let numericUserId: number | undefined;
     if (user?.email) {

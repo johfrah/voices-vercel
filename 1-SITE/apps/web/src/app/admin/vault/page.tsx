@@ -1,10 +1,11 @@
 "use client";
 
-import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, OptionInstrument, PageWrapperInstrument, SectionInstrument, SelectInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, OptionInstrument, PageWrapperInstrument, SectionInstrument, SelectInstrument, TextInstrument, FixedActionDockInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { ArrowLeft, Calendar, Download, FileText, Hash, Mic, Search, Shield, User, Video } from 'lucide-react';
+import { ArrowLeft, Calendar, Download, FileText, Hash, Mic, Search, Shield, User, Video, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
@@ -16,6 +17,7 @@ import React, { useEffect, useState } from 'react';
  */
 export default function VaultBrowserPage() {
   const router = useRouter();
+  const { logAction } = useAdminTracking();
   const [files, setFiles] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -136,7 +138,7 @@ export default function VaultBrowserPage() {
                       {getCategoryIcon(file.category)}
                     </ContainerInstrument>
                     <ContainerInstrument className="flex gap-2">
-                      <ButtonInstrument className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/20 hover:text-va-black">
+                      <ButtonInstrument onClick={() => logAction('vault_download', { fileId: file.id })} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/20 hover:text-va-black">
                         <Download strokeWidth={1.5} size={16} />
                       </ButtonInstrument>
                     </ContainerInstrument>
@@ -177,6 +179,39 @@ export default function VaultBrowserPage() {
 
         </ContainerInstrument>
       </SectionInstrument>
+
+      <FixedActionDockInstrument>
+        <ButtonInstrument 
+          onClick={() => {
+            logAction('vault_refresh');
+            fetchFiles();
+          }}
+          className="va-btn-pro !bg-va-black flex items-center gap-2"
+        >
+          <RefreshCw strokeWidth={1.5} size={16} className={isLoading ? 'animate-spin' : ''} />
+          <VoiceglotText translationKey="admin.vault.refresh" defaultText="Kluis Vernieuwen" />
+        </ButtonInstrument>
+      </FixedActionDockInstrument>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AdminPage",
+            "name": "The Vault",
+            "description": "Beveiligde Documenten & Inbound Assets.",
+            "_llm_context": {
+              "persona": "Architect",
+              "journey": "admin",
+              "intent": "vault_management",
+              "capabilities": ["view_files", "download_files", "manage_assets"],
+              "lexicon": ["Vault", "Kluis", "Assets", "DNA"],
+              "visual_dna": ["Bento Grid", "Liquid DNA"]
+            }
+          })
+        }}
+      />
     </PageWrapperInstrument>
   );
 }

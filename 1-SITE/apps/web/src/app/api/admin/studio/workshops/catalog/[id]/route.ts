@@ -22,6 +22,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         price: data.price,
         duration: data.duration,
         instructorId: data.instructorId || null,
+        mediaId: data.mediaId || null,
         program: data.program,
         meta: data.meta
       })

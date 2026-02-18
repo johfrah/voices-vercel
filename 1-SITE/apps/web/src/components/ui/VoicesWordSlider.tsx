@@ -1,10 +1,12 @@
 "use client";
 
+import { useTranslation } from '@/contexts/TranslationContext';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { ContainerInstrument } from './LayoutInstruments';
+import { VoiceglotText } from './VoiceglotText';
 
 interface VoicesWordSliderProps {
   value: number;
@@ -33,6 +35,7 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
   isTelephony = false,
   isVideo = false
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -40,8 +43,8 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
   const promptSuggestion = useMemo(() => {
     if (!isTelephony) return null;
     const count = Math.max(1, Math.round(value / 20));
-    return ` ${count} ${count === 1 ? 'prompt' : 'prompts'}`;
-  }, [value, isTelephony]);
+    return ` ${count} ${count === 1 ? t('common.prompt', 'prompt') : t('common.prompts', 'prompts')}`;
+  }, [value, isTelephony, t]);
 
   //  CHRIS-PROTOCOL: Suggestive Video Duration Calculation (approx. 155 words per minute)
   const videoSuggestion = useMemo(() => {
@@ -49,13 +52,13 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
     const minutes = value / 155;
     if (minutes < 1) {
       const seconds = Math.round(minutes * 60);
-      return ` ${seconds} sec`;
+      return ` ${seconds} ${t('common.sec', 'sec')}`;
     }
     const mins = Math.floor(minutes);
     const secs = Math.round((minutes - mins) * 60);
-    if (mins === 0) return ` ${secs} sec`;
-    return ` ${mins}m ${secs.toString().padStart(2, '0')}s`;
-  }, [value, isVideo]);
+    if (mins === 0) return ` ${secs} ${t('common.sec', 'sec')}`;
+    return ` ${mins}${t('common.min_short', 'm')} ${secs.toString().padStart(2, '0')}${t('common.sec_short', 's')}`;
+  }, [value, isVideo, t]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,7 +91,7 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
         <div className="flex items-center justify-between gap-2 w-full">
           <div className="flex items-center gap-3 min-w-0">
             <span className={cn("text-[16px] font-bold truncate text-va-black")}>
-              {value} woorden {(promptSuggestion || videoSuggestion) && (
+              {value} {value === 1 ? t('common.word', 'woord') : t('common.words', 'woorden')} {(promptSuggestion || videoSuggestion) && (
                 <span className="text-va-black/30 font-light text-[14px] ml-1">({promptSuggestion || videoSuggestion})</span>
               )}
             </span>
@@ -118,7 +121,9 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
           >
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-[13px] font-bold text-va-black/40 uppercase tracking-widest">Aantal woorden</span>
+                <span className="text-[13px] font-bold text-va-black/40 uppercase tracking-widest">
+                  <VoiceglotText translationKey="filter.word_count" defaultText="Aantal woorden" />
+                </span>
                 <span className="text-[18px] font-bold text-primary">{value}</span>
               </div>
               

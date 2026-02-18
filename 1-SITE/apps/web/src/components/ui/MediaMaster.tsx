@@ -104,15 +104,28 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
         audioRef.current.play().catch(err => console.error("Sync play failed:", err));
       } else if (!isPlaying && !audioRef.current.paused) {
         audioRef.current.pause();
+        
+        // CHRIS-PROTOCOL: If the user manually pauses, and we want the player to disappear,
+        // we should trigger the onClose callback.
+        const timer = setTimeout(() => {
+          if (audioRef.current?.paused && !isPlaying) {
+            onClose?.();
+          }
+        }, 300); // Small delay for a "soft" disappearance
+        return () => clearTimeout(timer);
       }
     }
-  }, [isPlaying]);
+  }, [isPlaying, onClose]);
 
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
+        // CHRIS-PROTOCOL: Automatically trigger close when paused
+        setTimeout(() => {
+          onClose?.();
+        }, 300);
       } else {
         audioRef.current.play()
           .then(() => setIsPlaying(true))

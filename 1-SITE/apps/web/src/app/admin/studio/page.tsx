@@ -22,17 +22,37 @@ import Link from "next/link";
  */
 export default async function StudioAdminPage() {
   // 1. Haal alle edities op (voor overzicht)
-  const allEditions = await db.query.workshopEditions.findMany({
-    with: {
-      workshop: true,
-      location: true,
-      instructor: true
-    },
-    orderBy: [desc(workshopEditions.date)]
-  });
+  let allEditions: any[] = [];
+  try {
+    allEditions = await db.query.workshopEditions.findMany({
+      with: {
+        workshop: true,
+        location: true,
+        instructor: true
+      },
+      orderBy: [desc(workshopEditions.date)]
+    });
+  } catch (dbError) {
+    console.error('Studio Admin DB Error (Editions):', dbError);
+  }
 
   // 2. Haal financile stats op (Nuclear Logic)
-  const financeStats = await StudioDataBridge.getFinanceStats();
+  let financeStats = {
+    totalRevenue: 0,
+    pendingRevenue: 0,
+    externalCosts: 0,
+    partnerPayouts: 0,
+    netProfit: 0,
+    partnerShare: 0,
+    marginPercentage: 0,
+    forecastProfit: 0
+  };
+  
+  try {
+    financeStats = await StudioDataBridge.getFinanceStats();
+  } catch (statsError) {
+    console.error('Studio Admin Stats Error:', statsError);
+  }
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">

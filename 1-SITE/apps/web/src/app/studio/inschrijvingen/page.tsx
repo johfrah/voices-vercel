@@ -30,7 +30,7 @@ import { redirect } from "next/navigation";
  */
 export default async function InstructorDashboardPage() {
   const user = await getServerUser();
-  if (!user) redirect('/auth/login');
+  if (!user) redirect('/account');
 
   // Admin mag door; anders moet user een instructeur zijn
   const isAdmin = isAdminUser(user);

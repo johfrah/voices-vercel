@@ -49,6 +49,11 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     if (currentTranslation === defaultText && language !== 'nl' && !isHealing) {
       const healTranslation = async () => {
         setIsHealing(true);
+        
+        //  ANNA-PROTOCOL: Small random delay to prevent "request storms" 
+        // when many translations are missing on a single page.
+        await new Promise(resolve => setTimeout(resolve, Math.random() * 2000));
+
         try {
           const res = await fetch('/api/translations/heal', {
             method: 'POST',

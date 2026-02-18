@@ -318,12 +318,13 @@ export class StudioDataBridge {
    */
   static async getParticipants(workshopId: number) {
     try {
-      const [workshop] = await db.select().from(workshops).where(eq(workshops.id, workshopId)).limit(1);
+      const [workshop] = await db.select().from(workshops).where(eq(workshops.id, workshopId)).limit(1).catch(() => []);
       if (!workshop) return [];
 
       return await db.select()
         .from(workshopInterest)
-        .where(sql`${workshopInterest.productIds} LIKE ${'%' + workshop.id.toString() + '%'}`);
+        .where(sql`${workshopInterest.productIds} LIKE ${'%' + workshop.id.toString() + '%'}`)
+        .catch(() => []);
     } catch (error) {
       console.error("Core Logic Error (Participants):", error);
       return [];

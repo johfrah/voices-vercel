@@ -1,11 +1,13 @@
 "use client";
 
+import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronDown, Globe, Minus, Plus, Search } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
+import { VoiceglotText } from './VoiceglotText';
 
 interface VoicesDropdownProps {
   options: (string | { 
@@ -33,6 +35,9 @@ interface VoicesDropdownProps {
   searchable?: boolean; 
   rounding?: 'left' | 'right' | 'none'; 
   livePrice?: string;
+  disabled?: boolean;
+  mediaRegion?: Record<string, string>;
+  onMediaRegionChange?: (mediaId: string, region: string) => void;
 }
 
 export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
@@ -52,8 +57,12 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
   onYearsChange,
   searchable = false,
   rounding = 'none',
-  livePrice
+  livePrice,
+  disabled = false,
+  mediaRegion = {},
+  onMediaRegionChange
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchSearchQuery] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -69,14 +78,21 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
   }, []);
 
   const filteredOptions = useMemo(() => {
-    if (!searchable || !searchQuery) return options;
-    return options.filter(opt => {
+    // CHRIS-PROTOCOL: Filter out options explicitly marked as hidden
+    const visibleOptions = options.filter(opt => {
+      if (typeof opt === 'object' && (opt as any).hidden) return false;
+      return true;
+    });
+
+    if (!searchable || !searchQuery) return visibleOptions;
+    return visibleOptions.filter(opt => {
       const optLabel = typeof opt === 'string' ? opt : opt.label;
       return optLabel.toLowerCase().includes(searchQuery.toLowerCase());
     });
   }, [options, searchQuery, searchable]);
 
   const handleSelect = (itemValue: string) => {
+    if (disabled) return;
     if (stepperMode) return; // Steppers handle their own logic
 
     if (multiSelect) {
@@ -106,6 +122,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
   };
 
   const updateStepper = (itemValue: string, delta: number) => {
+    if (disabled) return;
     const currentMap = (value && typeof value === 'object' && !Array.isArray(value)) ? value : {};
     const currentValue = currentMap[itemValue] || 0;
     const nextValue = Math.max(0, currentValue + delta);
@@ -133,6 +150,18 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
     if (nextValue === 0) delete nextMap[itemValue];
     
     onChange(nextMap);
+
+    // CHRIS-PROTOCOL: Force immediate pricing recalculation globally
+    // This ensures that all components (including VoiceCards in the overview)
+    // react immediately to the change in spots/media.
+    const event = new CustomEvent('voices_pricing_update', { 
+      detail: { 
+        spotsDetail: nextMap,
+        yearsDetail: yearsValue, // Include years to ensure full context
+        media: Object.keys(nextMap) // Explicitly pass media types
+      } 
+    });
+    window.dispatchEvent(event);
   };
 
   const displayValue = () => {
@@ -142,11 +171,21 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
       const activeKeys = Object.keys(value);
       if (activeKeys.length === 0) return placeholder;
       if (activeKeys.length === 1) {
-        const opt = options.find(o => (typeof o === 'string' ? o : o.value) === activeKeys[0]);
-        const label = typeof opt === 'string' ? opt : opt?.label || activeKeys[0];
-        return `${value[activeKeys[0]]}x ${label}`;
+        const key = activeKeys[0];
+        const count = value[key];
+        const opt = options.find(o => (typeof o === 'string' ? o : o.value) === key);
+        const label = typeof opt === 'string' ? opt : opt?.label || key;
+        
+        // CHRIS-PROTOCOL: Human-friendly full labels for single selection
+        let humanLabel = label;
+        if (key.startsWith('radio_')) humanLabel = count === 1 ? `radiospot (${label.toLowerCase()})` : `radiospots (${label.toLowerCase()})`;
+        else if (key.startsWith('tv_')) humanLabel = count === 1 ? `tv-spot (${label.toLowerCase()})` : `tv-spots (${label.toLowerCase()})`;
+        else if (key === 'online') humanLabel = count === 1 ? 'online spot' : 'online spots';
+        else if (key === 'podcast') humanLabel = count === 1 ? 'podcast spot' : 'podcast spots';
+
+        return `${count}x ${humanLabel}`;
       }
-      return `${activeKeys.length} types`;
+      return `${activeKeys.length} ${t('common.channels', 'kanalen')}`;
     }
 
     if (Array.isArray(value)) {
@@ -157,7 +196,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
         });
         return typeof opt === 'string' ? opt : opt?.label || value[0];
       }
-      return `${value.length} geselecteerd`;
+      return `${value.length} ${t('common.selected', 'geselecteerd')}`;
     }
     
     const opt = options.find(o => {
@@ -166,15 +205,17 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
     });
     const label = typeof opt === 'string' ? opt : opt?.label || value;
     if (!label) return placeholder;
-    return label.charAt(0).toUpperCase() + label.slice(1);
+    return label;
   };
 
   return (
     <ContainerInstrument plain ref={containerRef} className={cn("relative z-20", className)}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
         className={cn(
-          "w-full h-full bg-transparent border-none py-3 px-8 text-left transition-all cursor-pointer hover:bg-va-off-white group/dropdown flex flex-col justify-center",
+          "w-full h-full bg-transparent border-none py-3 px-8 text-left transition-all flex flex-col justify-center",
+          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-va-off-white group/dropdown",
           isOpen && "bg-va-off-white",
           rounding === 'left' && "rounded-l-full",
           rounding === 'right' && "rounded-r-full"
@@ -221,7 +262,11 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-            className="absolute top-full left-0 mt-2 min-w-[320px] bg-white border border-black/10 rounded-[24px] shadow-2xl overflow-hidden z-[100]"
+            className={cn(
+              "absolute top-full mt-2 bg-white border border-black/10 rounded-[24px] shadow-2xl overflow-hidden z-[100]",
+              stepperMode ? "min-w-[440px]" : "min-w-[320px]",
+              rounding === 'right' ? "right-0" : "left-0"
+            )}
           >
             {searchable && (
               <div className="p-4 border-b border-black/5">
@@ -271,12 +316,21 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                   const count = value?.[item.value] || 0;
                   const StepperIcon = item.icon;
                   const isPodcast = item.value === 'podcast';
+                  const hasRegions = (item as any).hasRegions;
                   const years = yearsValue?.[item.value] || 1;
 
                   return (
-                    <div key={idx} className="px-6 py-4 flex flex-col group hover:bg-va-off-white transition-colors border-b border-black/[0.03] last:border-0 gap-4">
-                      
-                      <div className="flex items-center justify-between">
+                    <div 
+                      key={idx} 
+                      className={cn(
+                        "px-6 py-4 flex flex-col transition-colors border-b border-black/[0.03] last:border-0 gap-4",
+                        count > 0 ? "bg-primary/[0.02]" : "hover:bg-va-off-white"
+                      )}
+                    >
+                      <div 
+                        className="flex items-center justify-between cursor-pointer"
+                        onClick={() => updateStepper(item.value, count > 0 ? -count : 1)}
+                      >
                         <div className="flex items-center gap-4 min-w-0">
                           {StepperIcon && (
                             <div className={cn("shrink-0", count > 0 ? "text-primary" : "text-va-black/30")}>
@@ -300,58 +354,145 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-3">
-                          <button 
-                            onClick={() => updateStepper(item.value, -1)}
-                            disabled={count === 0}
-                            className={cn(
-                              "w-8 h-8 rounded-full border flex items-center justify-center transition-all",
-                              count > 0 ? "border-black/10 text-va-black hover:border-black/30" : "border-black/5 text-va-black/10 cursor-not-allowed"
-                            )}
-                          >
-                            <Minus size={14} strokeWidth={2.5} />
-                          </button>
-                          <span className={cn("text-[15px] font-bold w-4 text-center tabular-nums", count > 0 ? "text-va-black" : "text-va-black/20")}>
-                            {count}
-                          </span>
-                          <button 
-                            onClick={() => updateStepper(item.value, 1)}
-                            className="w-8 h-8 rounded-full border border-black/10 text-va-black flex items-center justify-center hover:border-black/30 transition-all"
-                          >
-                            <Plus size={14} strokeWidth={2.5} />
-                          </button>
+                        <div className="w-5 flex justify-end shrink-0 ml-4">
+                          {count > 0 ? (
+                            <Check size={16} strokeWidth={3} className="text-primary animate-in zoom-in duration-300" />
+                          ) : (
+                            <Plus size={16} strokeWidth={2} className="text-va-black/10 group-hover:text-va-black/30" />
+                          )}
                         </div>
                       </div>
 
-                      {/* KELLY'S DURATION SYNC */}
-                      {count > 0 && onYearsChange && (
-                        <div className="flex items-center justify-between pl-12 pr-2 animate-in fade-in slide-in-from-top-1 duration-300">
-                          <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
-                            {isPodcast ? 'Licentie' : 'Looptijd'}
-                          </span>
-                          <div className="flex items-center gap-3">
-                            <button 
-                              onClick={() => {
-                                const next = Math.max(isPodcast ? 0.25 : 1, years - (isPodcast ? 0.25 : 1));
-                                onYearsChange({ ...yearsValue, [item.value]: next });
-                              }}
-                              className="text-va-black/40 hover:text-primary transition-colors"
-                            >
-                              <Minus size={12} strokeWidth={2.5} />
-                            </button>
-                            <span className="text-[11px] font-bold text-primary min-w-[40px] text-center">
-                              {isPodcast ? `${years * 4} units` : `${years}j`}
+                      {/* KELLY'S DURATION & SPOTS SYNC */}
+                      {count > 0 && (
+                        <div className="space-y-3 pl-12 pr-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                          {/* Uitzendgebied */}
+                          {hasRegions && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
+                                Uitzendgebied
+                              </span>
+                              <div className="flex items-center gap-3 bg-va-off-white p-1 rounded-lg border border-black/5">
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const current = mediaRegion[item.value] || 'national';
+                                    const regions = ['local', 'regional', 'national'];
+                                    const currentIndex = regions.indexOf(current);
+                                    const nextIndex = Math.max(0, currentIndex - 1);
+                                    onMediaRegionChange?.(item.value, regions[nextIndex]);
+                                  }}
+                                  className="text-va-black/40 hover:text-primary transition-colors"
+                                >
+                                  <Minus size={12} strokeWidth={2.5} />
+                                </button>
+                                <span className="text-[11px] font-bold text-primary min-w-[65px] text-center uppercase tracking-tight">
+                                  {(() => {
+                                    const r = mediaRegion[item.value] || 'national';
+                                    if (r === 'national') return 'Nationaal';
+                                    if (r === 'regional') return 'Regionaal';
+                                    return 'Lokaal';
+                                  })()}
+                                </span>
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const current = mediaRegion[item.value] || 'national';
+                                    const regions = ['local', 'regional', 'national'];
+                                    const currentIndex = regions.indexOf(current);
+                                    const nextIndex = Math.min(regions.length - 1, currentIndex + 1);
+                                    onMediaRegionChange?.(item.value, regions[nextIndex]);
+                                  }}
+                                  className="text-va-black/40 hover:text-primary transition-colors"
+                                >
+                                  <Plus size={12} strokeWidth={2.5} />
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Aantal Spots */}
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
+                              {t('common.spots', 'Aantal spots')}
                             </span>
-                            <button 
-                              onClick={() => {
-                                const next = Math.min(5, years + (isPodcast ? 0.25 : 1));
-                                onYearsChange({ ...yearsValue, [item.value]: next });
-                              }}
-                              className="text-va-black/40 hover:text-primary transition-colors"
-                            >
-                              <Plus size={12} strokeWidth={2.5} />
-                            </button>
+                            <div className="flex items-center gap-3">
+                              <button 
+                                onClick={() => updateStepper(item.value, -1)}
+                                className="text-va-black/40 hover:text-primary transition-colors"
+                              >
+                                <Minus size={12} strokeWidth={2.5} />
+                              </button>
+                              <span className="text-[11px] font-bold text-primary min-w-[40px] text-center">
+                                {count} {count === 1 ? t('common.spot', 'spot') : t('common.spots', 'spots')}
+                              </span>
+                              <button 
+                                onClick={() => updateStepper(item.value, 1)}
+                                className="text-va-black/40 hover:text-primary transition-colors"
+                              >
+                                <Plus size={12} strokeWidth={2.5} />
+                              </button>
+                            </div>
                           </div>
+
+                          {/* Looptijd */}
+                          {onYearsChange && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
+                                {isPodcast ? t('common.license', 'Licentie') : t('common.duration', 'Looptijd')}
+                              </span>
+                              <div className="flex items-center gap-3">
+                                  <button 
+                                    onClick={() => {
+                                      const next = Math.max(isPodcast ? 0.25 : 1, years - (isPodcast ? 0.25 : 1));
+                                      const nextMap = { ...yearsValue, [item.value]: next };
+                                      onYearsChange(nextMap);
+                                      
+                                      // CHRIS-PROTOCOL: Force immediate pricing update
+                                      window.dispatchEvent(new CustomEvent('voices_pricing_update', { 
+                                        detail: { 
+                                          yearsDetail: nextMap,
+                                          spotsDetail: value, // Include spots to ensure full context
+                                          media: Object.keys(value || {}) // Explicitly pass media types
+                                        } 
+                                      }));
+                                    }}
+                                    className="text-va-black/40 hover:text-primary transition-colors"
+                                  >
+                                    <Minus size={12} strokeWidth={2.5} />
+                                  </button>
+                                  <span className="text-[11px] font-bold text-primary min-w-[40px] text-center">
+                                    {isPodcast ? (
+                                      years === 0.25 ? "3 maanden" :
+                                      years === 0.5 ? "6 maanden" :
+                                      years === 0.75 ? "9 maanden" :
+                                      `${years} jaar`
+                                    ) : (
+                                      years === 1 ? "1 jaar" : `${years} jaar`
+                                    )}
+                                  </span>
+                                  <button 
+                                    onClick={() => {
+                                      const next = Math.min(5, years + (isPodcast ? 0.25 : 1));
+                                      const nextMap = { ...yearsValue, [item.value]: next };
+                                      onYearsChange(nextMap);
+
+                                      // CHRIS-PROTOCOL: Force immediate pricing update
+                                      window.dispatchEvent(new CustomEvent('voices_pricing_update', { 
+                                        detail: { 
+                                          yearsDetail: nextMap,
+                                          spotsDetail: value, // Include spots to ensure full context
+                                          media: Object.keys(value || {}) // Explicitly pass media types
+                                        } 
+                                      }));
+                                    }}
+                                    className="text-va-black/40 hover:text-primary transition-colors"
+                                  >
+                                    <Plus size={12} strokeWidth={2.5} />
+                                  </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -411,7 +552,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                         >
                           <div className="px-6 py-4 flex flex-col gap-3">
                             <span className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                              Combineer met:
+                              <VoiceglotText translationKey="filter.combine_with" defaultText="Combineer met:" />
                             </span>
                             <div className="flex flex-wrap gap-2">
                               {item.availableExtraLangs.map((extraLang) => {

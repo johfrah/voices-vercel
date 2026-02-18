@@ -11,10 +11,11 @@ import {
 import { EmailComposerInstrument } from '@/components/mailbox/EmailComposerInstrument';
 import { EmailListItemInstrument } from '@/components/mailbox/EmailListItemInstrument';
 import { EmailThreadViewInstrument } from '@/components/mailbox/EmailThreadViewInstrument';
-import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, LoadingScreenInstrument, SectionInstrument, TextInstrument, SelectInstrument, OptionInstrument, LabelInstrument, FormInstrument } from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, LoadingScreenInstrument, SectionInstrument, TextInstrument, SelectInstrument, OptionInstrument, LabelInstrument, FormInstrument, FixedActionDockInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { useHotkeys } from '@/hooks/useHotkeys';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
@@ -34,6 +35,7 @@ type MailboxTab = 'inbox' | 'insights' | 'faq';
 export default function MailboxPage() {
   const { isAdmin, isLoading } = useAuth();
   const { t } = useTranslation();
+  const { logAction } = useAdminTracking();
   const router = useRouter();
   const [mails, setMails] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -363,7 +365,10 @@ export default function MailboxPage() {
                 </ContainerInstrument>
               )}
               <ButtonInstrument 
-                onClick={startFullSync}
+                onClick={() => {
+                  logAction('mailbox_sync_start');
+                  startFullSync();
+                }}
                 disabled={isSyncing}
                 className="bg-va-black text-white px-6 py-3 rounded-[10px] text-[15px] font-light tracking-widest flex items-center gap-2 transition-all disabled:opacity-50"
               >
@@ -381,7 +386,10 @@ export default function MailboxPage() {
               >
                 <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className={sortByValue ? 'brightness-0 invert' : ''} style={!sortByValue ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 } : {}} />
               </ButtonInstrument>
-              <ButtonInstrument onClick={() => refreshInbox()} disabled={isRefreshing} className={`p-3 rounded-[10px] bg-va-off-white border border-black/5 transition-all ${isRefreshing ? 'opacity-50 cursor-not-allowed' : ''}`} title="Synchroniseren">
+              <ButtonInstrument onClick={() => {
+                logAction('mailbox_refresh');
+                refreshInbox();
+              }} disabled={isRefreshing} className={`p-3 rounded-[10px] bg-va-off-white border border-black/5 transition-all ${isRefreshing ? 'opacity-50 cursor-not-allowed' : ''}`} title="Synchroniseren">
                 <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className={isRefreshing ? 'animate-spin' : ''} style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
               </ButtonInstrument>
             </ContainerInstrument>
@@ -427,8 +435,11 @@ export default function MailboxPage() {
                       return (
                         <ButtonInstrument 
                           key={folder.id} 
-                          onClick={folder.onClick || (() => refreshInbox(true, false, folder.id))} 
-                          className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-[15px] transition-all ${isSelected ? 'bg-white shadow-sm ring-1 ring-black/5 font-light text-va-black' : 'text-gray-500 hover:text-va-black hover:bg-gray-50'}`}
+                          onClick={folder.onClick || (() => {
+                            logAction('mailbox_switch_folder', { folder: folder.id });
+                            refreshInbox(true, false, folder.id);
+                          })} 
+                          className={`w-full flex items-center justify-between px-4 py-2.5 rounded-[10px] text-[15px] transition-all ${isSelected ? 'bg-white shadow-sm ring-1 ring-black/5 font-light text-va-black' : 'text-gray-500 hover:text-va-black hover:bg-gray-50'}`}
                         >
                           {folder.name}
                           {displayCount > 0 && <TextInstrument as="span" className="text-[15px] font-mono opacity-50">{displayCount.toLocaleString()}</TextInstrument>}
@@ -447,7 +458,13 @@ export default function MailboxPage() {
                     { name: 'Trends & SWOT', id: 'insights', icon: <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> },
                     { name: 'FAQ proposals', id: 'faq', icon: <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> },
                   ].map((tag) => (
-                    <ButtonInstrument key={tag.id} onClick={() => { if (tag.id === 'insights' || tag.id === 'faq') { setActiveTab(tag.id as MailboxTab); setSelectedThread(null); } }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[15px] transition-all ${activeTab === tag.id ? 'bg-white shadow-sm ring-1 ring-black/5 font-light text-va-black' : 'text-gray-500 hover:text-va-black hover:bg-gray-50'}`}>
+                    <ButtonInstrument key={tag.id} onClick={() => { 
+                      if (tag.id === 'insights' || tag.id === 'faq') { 
+                        logAction('mailbox_switch_tab', { tab: tag.id });
+                        setActiveTab(tag.id as MailboxTab); 
+                        setSelectedThread(null); 
+                      } 
+                    }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[15px] transition-all ${activeTab === tag.id ? 'bg-white shadow-sm ring-1 ring-black/5 font-light text-va-black' : 'text-gray-500 hover:text-va-black hover:bg-gray-50'}`}>
                       {tag.icon}
                       <VoiceglotText  translationKey={`mailbox.tag.${tag.id}`} defaultText={tag.name} />
                     </ButtonInstrument>
@@ -661,6 +678,40 @@ export default function MailboxPage() {
           </motion.div>
         )}
       </AnimatePresence>
+      <FixedActionDockInstrument>
+        <ContainerInstrument plain className="flex items-center gap-4">
+          <ButtonInstrument onClick={handleCompose} className="va-btn-pro !bg-va-black flex items-center gap-2">
+            <Image src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" className="brightness-0 invert" />
+            <VoiceglotText translationKey="mailbox.compose" defaultText="Nieuw bericht" />
+          </ButtonInstrument>
+          <ButtonInstrument onClick={() => {
+            logAction('mailbox_refresh');
+            refreshInbox();
+          }} className="va-btn-secondary !p-4 !rounded-[10px]">
+             <RefreshCw strokeWidth={1.5} size={16} className={isRefreshing ? 'animate-spin' : ''} />
+          </ButtonInstrument>
+        </ContainerInstrument>
+      </FixedActionDockInstrument>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AdminPage",
+            "name": "Mailbox",
+            "description": "Beheer van e-mail communicatie en klantcontact.",
+            "_llm_context": {
+              "persona": "Architect",
+              "journey": "admin",
+              "intent": "communication_management",
+              "capabilities": ["read_mail", "send_mail", "archive", "customer_dna"],
+              "lexicon": ["Mailbox", "Inbox", "Customer DNA", "Intelligence"],
+              "visual_dna": ["Bento Grid", "Liquid DNA"]
+            }
+          })
+        }}
+      />
     </SectionInstrument>
   );
 }

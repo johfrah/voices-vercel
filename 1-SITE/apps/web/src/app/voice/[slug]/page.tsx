@@ -39,6 +39,19 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       },
       alternates: {
         canonical: `https://www.voices.be/voice/${params.slug}`,
+      },
+      //  SUZY-MANDATE: Inject LLM Context for AI-readability
+      other: {
+        'x-voices-intent': 'voice_booking',
+        'x-voices-persona': 'agency_buyer',
+        'x-voices-market': actor.market || 'BE',
+        'x-voices-journey': 'agency',
+        'x-voices-flow': 'commercial',
+        'x-voices-entity-type': 'voice_actor',
+        'x-voices-entity-id': actor.id,
+        'x-voices-entity-name': actor.name,
+        'x-voices-entity-lang': actor.nativeLang || 'nl',
+        'x-voices-entity-gender': actor.gender
       }
     };
   } catch (e) {

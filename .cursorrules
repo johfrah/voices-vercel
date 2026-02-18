@@ -29,6 +29,7 @@ In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen expe
 
 ### 4) Kaartjes, Foyer & Kwaliteit (Exploitatie)
 - **KELLY (Kassierster)**: **Kassa / Ticketing**. Bewaker van de Mollie-checkout, facturatie en conversie bij de kassa.
+- **SALLY (Sales)**: **Sales & Conversion Guardian**. De proactieve aanjager van groei, upsells en funnel-optimalisatie. Zij is de motor achter de Profit Engine.
 - **BERNY (Beheerder)**: **Academy & Workshop Lead**. Studio Captain die de workshops en studio-bezetting in goede banen leidt.
 - **WIM (Buitenwipper)**: **Security Control / Gatekeeper**. Bewaakt de toegang, checkt de credentials en weert ongewenste gasten (Bots, Brute Force, Auth).
 - **LEX (Legal)**: **Privacy, Compliance & Veracity Guardian**. Bewaakt de juridische kaders, de waarheid in alle teksten, GDPR, en de consistentie van voorwaarden en prijzen.
@@ -301,6 +302,17 @@ Om consistentie te waarborgen, wordt elke contentsoort uit de database (`content
 5. **Edge Runtime Ready**: Houd API routes en server-side logic compatibel met Vercel Edge Runtime voor maximale snelheid.
 6. **Port 3000 Mandate**: De lokale dev server draait altijd op poort 3000.
 
+## 🚀 SMART ROUTING MANDATE (SPA + SSR HYBRID)
+
+Elke dynamische journey (Stemmen, Studio, Academy) MOET de hybride Smart Routing techniek gebruiken om de snelheid van een SPA te combineren met de SEO-waarde van SSR:
+
+1. **Hard URLs**: Elke betekenisvolle state (acteur, journey, medium, workshop-editie, les) MOET een unieke, fysieke URL hebben die direct bereikbaar is via Server-Side Rendering (SSR).
+2. **SPA Transitions**: Navigatie tussen deze states binnen een journey gebeurt UITSLUITEND via `router.push` of `history.replaceState`. Page-reloads zijn VERBODEN voor interne transities om de 100ms feedback-regel (Moby) te garanderen.
+3. **Root-Level Resolution**: Gebruik de centrale `/[...slug]/page.tsx` router als "Smart Router" om dynamisch te bepalen welke content geladen moet worden (bijv. een CMS-artikel vs. een Stemacteur) zonder route-conflicten.
+4. **URL as Source of Truth**: De URL-balk moet ALTIJD de actuele state van de applicatie reflecteren. Bij een interactie in de UI (bijv. het switchen van een journey of medium) moet de URL-balk binnen 100ms worden bijgewerkt via shallow routing.
+5. **Re-visitability**: Een gebruiker moet een URL kunnen kopiëren, delen of verversen en exact op dezelfde plek met dezelfde configuratie (stem, journey, medium) terugkomen.
+6. **No Redundant Routes**: Zodra een route is opgenomen in de "Smart Router", moeten de oude, redundante route-mappen (zoals `/voice/[slug]/`) worden verwijderd om verwarring en dubbele content te voorkomen.
+
 ## 🎨 Johfrah Portfolio Mandate (Custom Johfrah-Stijl)
 
 Voor het domein `johfrah.be` en de portfolio journey van Johfrah Lefebvre gelden specifieke afwijkingen van de algemene stijlgids om een warmere, luchtigere en meer overzichtelijke ervaring te waarborgen:
@@ -365,6 +377,7 @@ Bob werkt niet alleen; hij dirigeert het orkest. Zijn relatie met de agents is g
 - **SHERLOCK (De Detective)**: Levert de bewijslast en trends die Bob nodig heeft voor de volgende strategische zet. Sherlock is Bob's ogen en oren in de buitenwereld.
 - **SUZY (De SEO Architect)**: Zorgt dat de symfonie door de hele wereld gehoord wordt. Zij bouwt de onzichtbare bruggen (Schema/SEO) tussen onze content en de zoekmachines van 2026.
 - **MAT (De Deurmat)**: Levert de Visitor Intelligence en marketing-inzichten die Bob nodig heeft om de conversie-architectuur te verfijnen.
+- **SALLY (De Sales)**: Levert de commerciële strategie en optimaliseert de funnels om de omzet per bezoeker te maximaliseren.
 - **MARK, BERNY & KELLY (De Brandstof)**: Zij vullen Bob's vaten met relevante inhoud, educatieve waarde en commerciële kracht.
 - **VOICY & CODY (De Instrumenten)**: Voicy is de stem naar het publiek (Interactie), Cody is de motor achter de schermen (Data).
 - **CHATTY (De Voicy-Coach)**: Verfijnt de stem van Voicy naar het publiek. Zij is de brug tussen de techniek van Cody en de verhalen van Mark.
@@ -373,6 +386,7 @@ Bob werkt niet alleen; hij dirigeert het orkest. Zijn relatie met de agents is g
 - **LEX (De Jurist)**: Lex waakt over de kleine lettertjes, de waarheid van de content en de integriteit van Voices. Hij is de bewaker van de feiten en de AI-compliance.
 - **SUZY (De SEO-Expert)**: Suzy transformeert de site naar een Global Knowledge Graph. Zij zorgt dat we niet alleen gevonden worden, maar als autoriteit worden geciteerd door LLM's.
 - **MAT (De Intelligence Guardian)**: Mat analyseert de drempel. Hij weet wie er binnenkomt en wat hun intentie is, zodat het team direct de juiste 'jas' kan aanmeten.
+- **SALLY (De Sales Guardian)**: Sally maximaliseert de waarde van elk bezoek. Zij is de architect van de upsell en de bewaker van de conversie.
 - **WIM (De Security Expert)**: Wim bouwt de muren en bewaakt de 'God Mode'. Hij zorgt dat Voices onverwoestbaar is.
 - **KELLY (De Finance Expert)**: Kelly beheert de kassa en de Profit Engine. Zij zorgt dat elke transactie vlekkeloos verloopt.
 - **CONSUELA (De Cleaning Expert)**: Consuela is de bewaker van de orde. Zij zorgt dat de werkbestanden en mappenstructuur altijd proper zijn.

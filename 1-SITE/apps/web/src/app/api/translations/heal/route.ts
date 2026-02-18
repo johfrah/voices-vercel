@@ -18,7 +18,20 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    const { key, originalText, currentLang } = await request.json();
+    //  ANNA-PROTOCOL: Safe body parsing to prevent "Unexpected end of JSON input"
+    const bodyText = await request.text();
+    if (!bodyText) {
+      return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
+    }
+
+    let body;
+    try {
+      body = JSON.parse(bodyText);
+    } catch (e) {
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
+
+    const { key, originalText, currentLang = 'nl' } = body;
 
     if (!key || !originalText) {
       return NextResponse.json({ error: 'Key and originalText required' }, { status: 400 });

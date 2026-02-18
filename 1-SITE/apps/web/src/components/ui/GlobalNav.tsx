@@ -1,8 +1,10 @@
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { MarketManager } from '@config/market-manager';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -94,7 +96,7 @@ const HeaderIcon = ({
             as={motion.span}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg border border-white leading-none z-10 "
+            className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow-lg border border-white leading-none z-10 "
           >
             {badgeText || badge}
           </TextInstrument>
@@ -184,9 +186,11 @@ const DropdownItem = ({
 
 export default function GlobalNav() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const { playClick, playSwell } = useSonicDNA();
   const { isEditMode, toggleEditMode, canEdit } = useEditMode();
   const { state: voicesState } = useVoicesState();
+  const { state: checkoutState } = useCheckout();
   const auth = useAuth();
   const isAdmin = auth.isAdmin;
   const market = MarketManager.getCurrentMarket(); 
@@ -194,13 +198,13 @@ export default function GlobalNav() {
 
   // Live data voor badges
   const favoritesCount = voicesState.selected_actors?.length || 0;
-  const cartCount = 0; // Wordt later gekoppeld aan de echte cart context
+  const cartCount = checkoutState.items?.length || 0;
   
   //  NOTIFICATION LOGIC
   const [notifications, setNotifications] = useState([
-    { id: 1, title: 'Nieuwe stem beschikbaar', message: 'Johfrah heeft een nieuwe demo gepload.', time: '2 min geleden', read: false, type: 'voice' },
-    { id: 2, title: 'Bestelling voltooid', message: 'Je opname voor "Project X" is klaar.', time: '1 uur geleden', read: false, type: 'order' },
-    { id: 3, title: 'Voicy Tip', message: 'Wist je dat we nu ook AI-stemmen aanbieden?', time: '3 uur geleden', read: false, type: 'tip' }
+    { id: 1, title: t('nav.notification.1.title', 'Nieuwe stem beschikbaar'), message: t('nav.notification.1.message', 'Johfrah heeft een nieuwe demo gepload.'), time: t('nav.notification.1.time', '2 min geleden'), read: false, type: 'voice' },
+    { id: 2, title: t('nav.notification.2.title', 'Bestelling voltooid'), message: t('nav.notification.2.message', 'Je opname voor "Project X" is klaar.'), time: t('nav.notification.2.time', '1 uur geleden'), read: false, type: 'order' },
+    { id: 3, title: t('nav.notification.3.title', 'Voicy Tip'), message: t('nav.notification.3.message', 'Wist je dat we nu ook AI-stemmen aanbieden?'), time: t('nav.notification.3.time', '3 uur geleden'), read: false, type: 'tip' }
   ]);
   const notificationsCount = notifications.filter(n => !n.read).length;
 
@@ -269,6 +273,9 @@ export default function GlobalNav() {
   const showLanguage = navConfig?.icons?.language ?? true;
   const showAccount = navConfig?.icons?.account ?? !isSpecialJourney;
   const showMenu = navConfig?.icons?.menu ?? true;
+
+  // BOB-DEBUG: Ensure nav is always visible in dev
+  const isDev = process.env.NODE_ENV === 'development';
 
   return (
     <ContainerInstrument as="nav" className="absolute top-0 left-0 right-0 z-[200] px-4 md:px-6 py-1.5 md:py-2 flex items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve">
@@ -364,7 +371,7 @@ export default function GlobalNav() {
         {/*  FAVORITES ICON */}
         {showFavorites && (
           <HeaderIcon strokeWidth={1.5} icon={Heart} 
-            alt="Favorieten"
+            alt={t('nav.favorites_alt', 'Favorieten')}
         badge={favoritesCount}
         href="/account/favorites/" />
     )}
@@ -372,16 +379,106 @@ export default function GlobalNav() {
     {/*  CART ICON */}
     {showCart && (
       <HeaderIcon strokeWidth={1.5} icon={ShoppingCart} 
-        alt="Winkelmandje" 
+        alt={t('nav.cart_alt', 'Winkelmandje')} 
         badge={cartCount}
-        href="/checkout/" />
+        href="/checkout/"
+        // CHRIS-PROTOCOL: On checkout page, don't show the dropdown, just link to checkout
+        children={pathname === '/checkout' ? undefined : (
+          <ContainerInstrument plain className="p-1 space-y-1">
+            <ContainerInstrument plain className="px-4 py-2 border-b border-black/5 mb-1 flex justify-between items-center">
+              <TextInstrument className="text-[13px] font-light text-va-black/30 tracking-[0.2em] uppercase">
+                <VoiceglotText translationKey="nav.cart_title" defaultText="Winkelmandje" />
+              </TextInstrument>
+              <TextInstrument className="text-[11px] font-light text-va-black/40">
+                {cartCount} {cartCount === 1 ? 'item' : 'items'}
+              </TextInstrument>
+            </ContainerInstrument>
+
+            <ContainerInstrument plain className="max-h-[320px] overflow-y-auto no-scrollbar px-1">
+              {checkoutState.items.length > 0 ? (
+                <ContainerInstrument plain className="space-y-1">
+                  {checkoutState.items.map((item: any, idx: number) => (
+                    <ContainerInstrument
+                      key={item.id || idx}
+                      plain
+                      className="flex items-center gap-3 p-2 rounded-xl hover:bg-va-black/5 transition-all group border border-transparent hover:border-black/5"
+                    >
+                      <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
+                        {item.actor?.photo_url || item.actor?.image_url ? (
+                          <Image src={item.actor.photo_url || item.actor.image_url} alt={item.actor.name || item.actor.display_name} fill className="object-cover" />
+                        ) : (
+                          <Mic2 size={18} strokeWidth={1.5} className="text-va-black/20" />
+                        )}
+                      </ContainerInstrument>
+                      <ContainerInstrument plain className="flex-1 min-w-0">
+                        <TextInstrument className="text-[14px] font-medium text-va-black truncate">
+                          {item.actor?.display_name || item.actor?.name || 'Stemopname'}
+                        </TextInstrument>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <TextInstrument className="text-[11px] text-va-black/40 font-light truncate uppercase tracking-widest">
+                            {item.usage === 'commercial' ? 'Commercial' : item.usage === 'telefonie' ? 'Telefonie' : 'Corporate'}
+                          </TextInstrument>
+                          {item.country && (
+                            <>
+                              <span className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
+                              <TextInstrument className="text-[11px] text-va-black/40 font-light uppercase tracking-widest">
+                                {Array.isArray(item.country) ? item.country[0] : item.country}
+                              </TextInstrument>
+                            </>
+                          )}
+                        </div>
+                      </ContainerInstrument>
+                      <div className="text-right flex flex-col items-end gap-0.5">
+                        <TextInstrument className="text-[14px] font-medium text-va-black">
+                          €{item.pricing?.total || item.pricing?.subtotal || 0}
+                        </TextInstrument>
+                        <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-tighter">
+                          Excl. BTW
+                        </TextInstrument>
+                      </div>
+                    </ContainerInstrument>
+                  ))}
+                </ContainerInstrument>
+              ) : (
+                <ContainerInstrument plain className="p-8 text-center">
+                  <ShoppingCart strokeWidth={1.5} size={32} className="text-va-black/10 mx-auto mb-3" />
+                  <TextInstrument className="text-[15px] text-va-black/40 font-light">
+                    <VoiceglotText translationKey="nav.cart_empty" defaultText="Je winkelmandje is leeg." />
+                  </TextInstrument>
+                </ContainerInstrument>
+              )}
+            </ContainerInstrument>
+
+            {checkoutState.items.length > 0 && (
+              <ContainerInstrument plain className="p-2 pt-3 border-t border-black/5 mt-1">
+                <div className="flex justify-between items-center mb-3 px-2">
+                  <TextInstrument className="text-[13px] font-light text-va-black/40">Subtotaal</TextInstrument>
+                  <TextInstrument className="text-[15px] font-medium text-va-black">
+                    €{checkoutState.items.reduce((sum: number, item: any) => sum + (item.pricing?.total || item.pricing?.subtotal || 0), 0)}
+                  </TextInstrument>
+                </div>
+                <ButtonInstrument 
+                  as={Link}
+                  href="/checkout/"
+                  variant="default"
+                  className="w-full py-2.5 bg-va-black text-white rounded-xl text-[12px] font-light tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2"
+                >
+                  <VoiceglotText translationKey="nav.cart_checkout" defaultText="Afrekenen" />
+                  <ChevronRight size={14} strokeWidth={1.5} />
+                </ButtonInstrument>
+              </ContainerInstrument>
+            )}
+          </ContainerInstrument>
+        )}
+      >
+      </HeaderIcon>
     )}
 
         {/*  NOTIFICATIONS ICON */}
         {showNotifications && (
           <HeaderIcon strokeWidth={1.5} 
             icon={Bell} 
-            alt="Notificaties"
+            alt={t('nav.notifications_alt', 'Notificaties')}
             badge={notificationsCount}
           >
             <ContainerInstrument plain className="p-1 space-y-1">
@@ -452,7 +549,7 @@ export default function GlobalNav() {
         {showAccount && (
           <HeaderIcon strokeWidth={1.5} 
             icon={User} 
-            alt="Account"
+            alt={t('nav.account_alt', 'Account')}
             isActive={auth.isAuthenticated}
           >
             {auth.isAuthenticated ? (
@@ -463,15 +560,15 @@ export default function GlobalNav() {
                 </ContainerInstrument>
             {isAdmin && (
               <DropdownItem strokeWidth={1.5} icon={LayoutDashboard} 
-                label="Admin Dashboard" 
+                label={<VoiceglotText translationKey="nav.admin_dashboard" defaultText="Admin Dashboard" />} 
                 href="/admin/dashboard/" 
                 variant="primary" 
                 badge="God Mode" />
             )}
-            <DropdownItem strokeWidth={1.5} icon={User} label="Mijn profiel" href="/account/" />
-            <DropdownItem strokeWidth={1.5} icon={ShoppingBag} label="Bestellingen" href="/account/orders/" />
-            <DropdownItem strokeWidth={1.5} icon={Heart} label="Favorieten" href="/account/favorites/" badge={favoritesCount > 0 ? favoritesCount : undefined} />
-            <DropdownItem strokeWidth={1.5} icon={Info} label="Instellingen" href="/account/settings/" />
+            <DropdownItem strokeWidth={1.5} icon={User} label={<VoiceglotText translationKey="nav.my_profile" defaultText="Mijn profiel" />} href="/account/" />
+            <DropdownItem strokeWidth={1.5} icon={ShoppingBag} label={<VoiceglotText translationKey="nav.orders" defaultText="Bestellingen" />} href="/account/orders/" />
+            <DropdownItem strokeWidth={1.5} icon={Heart} label={<VoiceglotText translationKey="nav.favorites" defaultText="Favorieten" />} href="/account/favorites/" badge={favoritesCount > 0 ? favoritesCount : undefined} />
+            <DropdownItem strokeWidth={1.5} icon={Info} label={<VoiceglotText translationKey="nav.settings" defaultText="Instellingen" />} href="/account/settings/" />
                 <DropdownItem strokeWidth={1.5} icon={LogOut} 
                   label={<VoiceglotText  translationKey="nav.logout" defaultText="Uitloggen" />} 
                   onClick={() => { auth.logout(); }} 
@@ -494,16 +591,16 @@ export default function GlobalNav() {
             <ContainerInstrument plain className="space-y-1 px-1.5 pb-1.5">
               <ButtonInstrument 
                 as={Link}
-                href="/auth/login/" 
-                variant="default"
-                className="block w-full py-2 bg-va-black text-white rounded-[10px] text-[11px] font-light tracking-widest hover:bg-primary transition-all "
+                href="/account/" 
+                variant="pure"
+                className="block w-full py-2 bg-va-black text-white rounded-[10px] text-[11px] font-light tracking-widest hover:bg-va-black/80 transition-all "
               >
                 <VoiceglotText  translationKey="nav.login_cta" defaultText="Inloggen" />
               </ButtonInstrument>
               <ButtonInstrument 
                 as={Link}
-                href="/auth/register/" 
-                variant="outline"
+                href="/account/" 
+                variant="ghost"
                 className="block w-full py-2 border border-black/10 text-va-black rounded-[10px] text-[11px] font-light tracking-widest hover:bg-va-black/5 transition-all "
               >
                 <VoiceglotText  translationKey="nav.register_cta" defaultText="Account aanmaken" />
@@ -518,7 +615,7 @@ export default function GlobalNav() {
         {showMenu && (
           <HeaderIcon strokeWidth={1.5} 
             icon={Menu} 
-            alt="Menu"
+            alt={t('nav.menu_alt', 'Menu')}
           >
             <ContainerInstrument plain className="p-1 space-y-1">
               <ContainerInstrument plain className="px-4 py-2 border-b border-black/5 mb-1">
@@ -527,7 +624,7 @@ export default function GlobalNav() {
               {links.map((link) => (
                 <DropdownItem strokeWidth={1.5} key={link.name}
                   icon={ChevronRight} 
-                  label={link.name} 
+                  label={<VoiceglotText translationKey={link.key || `nav.${(link.name || '').toLowerCase().replace(/\s+/g, '_')}`} defaultText={link.name || ''} />} 
                   href={link.href !== '#' ? link.href : undefined}
                   onClick={link.onClick} />
               ))}

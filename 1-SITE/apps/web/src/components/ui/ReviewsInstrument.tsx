@@ -4,6 +4,7 @@ import { Star, Check } from "lucide-react";
 import React from 'react';
 import { BentoCard } from "./BentoGrid";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
+import { VoiceglotImage } from "./VoiceglotImage";
 import { VoiceglotText } from "./VoiceglotText";
 
 /**
@@ -84,20 +85,25 @@ export const ReviewsInstrument: React.FC<{
                 <Star key={i} size={16} className="text-[#fabc05]" fill="currentColor" />
               ))}
             </div>
-            <TextInstrument className="text-[15px] font-bold text-va-black">
-              {averageRating} <span className="text-va-black/40 font-medium ml-1">/ 5</span>
-            </TextInstrument>
-          </div>
-          <a 
-            href="https://www.google.com/search?q=voices.be+reviews" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-[13px] font-bold text-primary hover:underline tracking-widest uppercase flex items-center gap-2"
-          >
-            <VoiceglotText translationKey="home.reviews.google_link" defaultText="Bekijk alle reviews op Google" />
-            <span className="px-2 py-0.5 bg-primary/10 rounded text-[10px]">{totalReviews}+</span>
-          </a>
-        </ContainerInstrument>
+                  <TextInstrument className="text-[15px] font-bold text-va-black">
+                    {averageRating} <span className="text-va-black/40 font-medium ml-1">/ 5</span>
+                  </TextInstrument>
+                </div>
+                <div className="flex flex-col items-start md:items-end gap-1">
+                  <a 
+                    href="https://www.google.com/search?q=voices.be+reviews" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[13px] font-bold text-primary hover:underline tracking-widest uppercase flex items-center gap-2"
+                  >
+                    <VoiceglotText translationKey="home.reviews.google_link" defaultText="Bekijk alle reviews op Google" />
+                    <span className="px-2 py-0.5 bg-primary/10 rounded text-[10px]">{totalReviews}+</span>
+                  </a>
+                  <p className="text-[11px] font-medium text-va-black/30 uppercase tracking-widest">
+                    <VoiceglotText translationKey="home.reviews.verified_customer" defaultText="Geverifieerde klanten" />
+                  </p>
+                </div>
+              </ContainerInstrument>
       </ContainerInstrument>
 
       <ContainerInstrument plain className="flex overflow-x-auto pb-12 -mx-6 px-6 snap-x snap-mandatory no-scrollbar gap-8">
@@ -132,9 +138,14 @@ export const ReviewsInstrument: React.FC<{
               
               <ContainerInstrument plain className="mt-10 pt-8 border-t border-black/5 flex items-center gap-5">
                 <div className="relative">
-                  <ContainerInstrument plain className="w-14 h-14 rounded-full bg-va-off-white flex items-center justify-center font-bold text-va-black/40 text-lg border border-black/5 overflow-hidden">
+                  <ContainerInstrument plain className="w-14 h-14 rounded-full bg-va-off-white flex items-center justify-center font-bold text-va-black/40 text-lg border border-black/5 overflow-hidden relative">
                     {review.authorPhoto ? (
-                      <img src={review.authorPhoto} alt={review.name || review.authorName} className="w-full h-full object-cover" />
+                      <VoiceglotImage 
+                        src={review.authorPhoto} 
+                        alt={review.name || review.authorName} 
+                        fill
+                        className="w-full h-full object-cover" 
+                      />
                     ) : (
                       (review.name || review.authorName || "V").charAt(0)
                     )}

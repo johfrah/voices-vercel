@@ -9,12 +9,14 @@ import {
   TextInstrument, 
   ButtonInstrument, 
   InputInstrument,
-  LabelInstrument
+  LabelInstrument,
+  FixedActionDockInstrument
 } from '@/components/ui/LayoutInstruments';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { useEditMode } from '@/contexts/EditModeContext';
+import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { 
   Settings, 
   Building2, 
@@ -36,12 +38,13 @@ import toast from 'react-hot-toast';
 export default function AdminSettingsPage() {
   const { playClick } = useSonicDNA();
   const { isEditMode, toggleEditMode } = useEditMode();
+  const { logAction } = useAdminTracking();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [configs, setConfigs] = useState<any>({
     company_info: {
       name: 'Voices.be',
-      address: 'Gent, Belgi',
+      address: 'Gent, België',
       email: 'hello@voices.be',
       phone: '+32 9 000 00 00',
       vat: 'BE0000.000.000',
@@ -93,6 +96,7 @@ export default function AdminSettingsPage() {
       if (res.ok) {
         toast.success('Instellingen opgeslagen!');
         playClick('success');
+        logAction('save_settings', { section: key });
       } else {
         throw new Error('Save failed');
       }
@@ -124,11 +128,13 @@ export default function AdminSettingsPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText  translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.settings.title" defaultText="Instellingen" /></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter ">
+            <VoiceglotText  translationKey="admin.settings.title" defaultText="Instellingen" />
+          </HeadingInstrument>
         </ContainerInstrument>
 
         <ButtonInstrument 
@@ -136,137 +142,130 @@ export default function AdminSettingsPage() {
             playClick('pro');
             toggleEditMode();
           }}
-          className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[15px] font-black uppercase tracking-widest transition-all shadow-lg ${
+          className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[15px] font-light uppercase tracking-widest transition-all shadow-lg ${
             isEditMode 
               ? 'bg-primary text-white shadow-primary/20 scale-105' 
               : 'bg-va-black text-white hover:bg-va-black/80'
           }`}
         >
           {isEditMode ? <Shield strokeWidth={1.5} size={14} /> : <Settings strokeWidth={1.5} size={14} />}
-          {isEditMode ? 'Beheer Modus Actief' : 'Systeem Beheer'}
+          {isEditMode ? (
+            <VoiceglotText translationKey="admin.settings.mode_active" defaultText="Beheer-modus actief" />
+          ) : (
+            <VoiceglotText translationKey="admin.settings.mode_inactive" defaultText="Systeem-beheer" />
+          )}
         </ButtonInstrument>
       </SectionInstrument>
 
       <BentoGrid strokeWidth={1.5} columns={3}>
         {/*  BEDRIJFSINFORMATIE */}
-        <BentoCard span="lg" className="bg-white border border-black/5 p-10 space-y-8">
+        <BentoCard span="lg" className="bg-white border border-black/5 p-10 space-y-8 rounded-[20px]">
           <ContainerInstrument className="flex items-center gap-4 border-b border-black/5 pb-6">
-            <ContainerInstrument className="w-12 h-12 bg-blue-500/10 text-blue-600 rounded-2xl flex items-center justify-center">
+            <ContainerInstrument className="w-12 h-12 bg-blue-500/10 text-blue-600 rounded-[10px] flex items-center justify-center">
               <Building2 strokeWidth={1.5} size={24} />
             </ContainerInstrument>
             <ContainerInstrument>
               <HeadingInstrument level={2} className="text-xl font-light tracking-tight"><VoiceglotText  translationKey="auto.page.bedrijfsinformatie.9a8f1d" defaultText="Bedrijfsinformatie" /></HeadingInstrument>
-              <TextInstrument className="text-[15px] text-va-black/40 font-medium"><VoiceglotText  translationKey="auto.page.algemene_bedrijfsgeg.3e57b1" defaultText="Algemene bedrijfsgegevens voor facturatie en contact." /></TextInstrument>
+              <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="auto.page.algemene_bedrijfsgeg.3e57b1" defaultText="Algemene bedrijfsgegevens voor facturatie en contact." /></TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
 
           <ContainerInstrument className="grid grid-cols-2 gap-8">
             <ContainerInstrument className="space-y-4">
               <ContainerInstrument className="space-y-1">
-                <LabelInstrument><VoiceglotText  translationKey="auto.page.bedrijfsnaam.c3f52f" defaultText="Bedrijfsnaam" /></LabelInstrument>
+                <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase"><VoiceglotText  translationKey="auto.page.bedrijfsnaam.c3f52f" defaultText="Bedrijfsnaam" /></LabelInstrument>
                 <InputInstrument 
                   value={configs.company_info.name} 
                   onChange={(e) => updateConfig('company_info', 'name', e.target.value)}
                   disabled={!isEditMode}
-                  className="w-full bg-va-off-white border-none rounded-xl py-3 px-6 text-[15px] font-bold"
+                  className="w-full bg-va-off-white border-none rounded-[10px] py-3 px-6 text-[15px] font-light"
                 />
               </ContainerInstrument>
               <ContainerInstrument className="space-y-1">
-                <LabelInstrument><VoiceglotText  translationKey="auto.page.e_mailadres.e1486d" defaultText="E-mailadres" /></LabelInstrument>
+                <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase"><VoiceglotText  translationKey="auto.page.e_mailadres.e1486d" defaultText="E-mailadres" /></LabelInstrument>
                 <InputInstrument 
                   value={configs.company_info.email} 
                   onChange={(e) => updateConfig('company_info', 'email', e.target.value)}
                   disabled={!isEditMode}
-                  className="w-full bg-va-off-white border-none rounded-xl py-3 px-6 text-[15px] font-bold"
+                  className="w-full bg-va-off-white border-none rounded-[10px] py-3 px-6 text-[15px] font-light"
                 />
               </ContainerInstrument>
               <ContainerInstrument className="space-y-1">
-                <LabelInstrument><VoiceglotText  translationKey="auto.page.telefoon.fe260f" defaultText="Telefoon" /></LabelInstrument>
+                <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase"><VoiceglotText  translationKey="auto.page.telefoon.fe260f" defaultText="Telefoon" /></LabelInstrument>
                 <InputInstrument 
                   value={configs.company_info.phone} 
                   onChange={(e) => updateConfig('company_info', 'phone', e.target.value)}
                   disabled={!isEditMode}
-                  className="w-full bg-va-off-white border-none rounded-xl py-3 px-6 text-[15px] font-bold"
+                  className="w-full bg-va-off-white border-none rounded-[10px] py-3 px-6 text-[15px] font-light"
                 />
               </ContainerInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="space-y-4">
               <ContainerInstrument className="space-y-1">
-                <LabelInstrument><VoiceglotText  translationKey="auto.page.btw_nummer.8dc896" defaultText="BTW Nummer" /></LabelInstrument>
+                <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase"><VoiceglotText  translationKey="auto.page.btw_nummer.8dc896" defaultText="BTW Nummer" /></LabelInstrument>
                 <InputInstrument 
                   value={configs.company_info.vat} 
                   onChange={(e) => updateConfig('company_info', 'vat', e.target.value)}
                   disabled={!isEditMode}
-                  className="w-full bg-va-off-white border-none rounded-xl py-3 px-6 text-[15px] font-bold"
+                  className="w-full bg-va-off-white border-none rounded-[10px] py-3 px-6 text-[15px] font-light"
                 />
               </ContainerInstrument>
               <ContainerInstrument className="space-y-1">
-                <LabelInstrument>IBAN</LabelInstrument>
+                <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase">IBAN</LabelInstrument>
                 <InputInstrument 
                   value={configs.company_info.iban} 
                   onChange={(e) => updateConfig('company_info', 'iban', e.target.value)}
                   disabled={!isEditMode}
-                  className="w-full bg-va-off-white border-none rounded-xl py-3 px-6 text-[15px] font-bold"
+                  className="w-full bg-va-off-white border-none rounded-[10px] py-3 px-6 text-[15px] font-light"
                 />
               </ContainerInstrument>
               <ContainerInstrument className="space-y-1">
-                <LabelInstrument><VoiceglotText  translationKey="auto.page.adres.475f66" defaultText="Adres" /></LabelInstrument>
+                <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase"><VoiceglotText  translationKey="auto.page.adres.475f66" defaultText="Adres" /></LabelInstrument>
                 <InputInstrument 
                   value={configs.company_info.address} 
                   onChange={(e) => updateConfig('company_info', 'address', e.target.value)}
                   disabled={!isEditMode}
-                  className="w-full bg-va-off-white border-none rounded-xl py-3 px-6 text-[15px] font-bold"
+                  className="w-full bg-va-off-white border-none rounded-[10px] py-3 px-6 text-[15px] font-light"
                 />
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
-
-          {isEditMode && (
-            <ButtonInstrument 
-              onClick={() => handleSave('company_info')}
-              disabled={saving}
-              className="va-btn-pro !bg-va-black w-full flex items-center justify-center gap-2"
-            >
-              {saving ? <Loader2 strokeWidth={1.5} className="animate-spin" size={16} /> : <Save strokeWidth={1.5} size={16} />}
-              <VoiceglotText  translationKey="admin.settings.save_company" defaultText="Bedrijfsinfo Opslaan" />
-            </ButtonInstrument>
-          )}
         </BentoCard>
 
         {/*  ALGEMENE INSTELLINGEN */}
-        <BentoCard span="sm" className="bg-white border border-black/5 p-10 space-y-8">
+        <BentoCard span="sm" className="bg-white border border-black/5 p-10 space-y-8 rounded-[20px]">
           <ContainerInstrument className="flex items-center gap-4 border-b border-black/5 pb-6">
-            <ContainerInstrument className="w-12 h-12 bg-orange-500/10 text-orange-600 rounded-2xl flex items-center justify-center">
+            <ContainerInstrument className="w-12 h-12 bg-orange-500/10 text-orange-600 rounded-[10px] flex items-center justify-center">
               <Clock strokeWidth={1.5} size={24} />
             </ContainerInstrument>
             <ContainerInstrument>
               <HeadingInstrument level={2} className="text-xl font-light tracking-tight"><VoiceglotText  translationKey="auto.page.algemeen.c132c7" defaultText="Algemeen" /></HeadingInstrument>
-              <TextInstrument className="text-[15px] text-va-black/40 font-medium"><VoiceglotText  translationKey="auto.page.systeem_brede_parame.6a6443" defaultText="Systeem-brede parameters." /></TextInstrument>
+              <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="auto.page.systeem_brede_parame.6a6443" defaultText="Systeem-brede parameters." /></TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
 
           <ContainerInstrument className="space-y-6">
             <ContainerInstrument className="space-y-1">
-              <LabelInstrument><VoiceglotText  translationKey="auto.page.openingsuren.f8b4ae" defaultText="Openingsuren" /></LabelInstrument>
+              <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase"><VoiceglotText  translationKey="auto.page.openingsuren.f8b4ae" defaultText="Openingsuren" /></LabelInstrument>
               <InputInstrument 
                 value={configs.general_settings.opening_hours} 
                 onChange={(e) => updateConfig('general_settings', 'opening_hours', e.target.value)}
                 disabled={!isEditMode}
-                className="w-full bg-va-off-white border-none rounded-xl py-3 px-6 text-[15px] font-bold"
+                className="w-full bg-va-off-white border-none rounded-[10px] py-3 px-6 text-[15px] font-light"
               />
             </ContainerInstrument>
             <ContainerInstrument className="space-y-1">
-              <LabelInstrument><VoiceglotText  translationKey="auto.page.standaard_levertijd_.6d07f2" defaultText="Standaard Levertijd (Dagen)" /></LabelInstrument>
+              <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase"><VoiceglotText  translationKey="auto.page.standaard_levertijd_.6d07f2" defaultText="Standaard Levertijd (Dagen)" /></LabelInstrument>
               <InputInstrument 
                 type="number"
                 value={configs.general_settings.default_delivery_days} 
                 onChange={(e) => updateConfig('general_settings', 'default_delivery_days', parseInt(e.target.value))}
                 disabled={!isEditMode}
-                className="w-full bg-va-off-white border-none rounded-xl py-3 px-6 text-[15px] font-bold"
+                className="w-full bg-va-off-white border-none rounded-[10px] py-3 px-6 text-[15px] font-light"
               />
             </ContainerInstrument>
-            <ContainerInstrument className="flex items-center justify-between p-4 bg-va-off-white rounded-2xl">
-              <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-va-black/60"><VoiceglotText  translationKey="auto.page.ai_assistent_actief.5e9340" defaultText="AI Assistent Actief" /></TextInstrument>
+            <ContainerInstrument className="flex items-center justify-between p-4 bg-va-off-white rounded-[10px]">
+              <TextInstrument as="span" className="text-[13px] font-light tracking-widest text-va-black/60 uppercase"><VoiceglotText  translationKey="auto.page.ai_assistent_actief.5e9340" defaultText="AI Assistent Actief" /></TextInstrument>
               <ButtonInstrument 
                 onClick={() => updateConfig('general_settings', 'ai_enabled', !configs.general_settings.ai_enabled)}
                 disabled={!isEditMode}
@@ -276,37 +275,34 @@ export default function AdminSettingsPage() {
               </ButtonInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
-
-          {isEditMode && (
-            <ButtonInstrument 
-              onClick={() => handleSave('general_settings')}
-              disabled={saving}
-              className="va-btn-pro !bg-va-black w-full flex items-center justify-center gap-2"
-            >
-              {saving ? <Loader2 strokeWidth={1.5} className="animate-spin" size={16} /> : <Save strokeWidth={1.5} size={16} />}
-              <VoiceglotText  translationKey="admin.settings.save_general" defaultText="Instellingen Opslaan" />
-            </ButtonInstrument>
-          )}
         </BentoCard>
 
         {/*  VAKANTIEREGELING */}
-        <BentoCard span="full" className="bg-va-black text-white p-12 relative overflow-hidden group">
+        <BentoCard span="full" className="bg-va-black text-white p-12 relative overflow-hidden group rounded-[20px]">
           <ContainerInstrument className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12">
             <ContainerInstrument className="space-y-6">
               <ContainerInstrument className="flex items-center gap-4">
-                <ContainerInstrument className="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center text-va-black shadow-lg shadow-primary/20">
+                <ContainerInstrument className="w-14 h-14 bg-primary rounded-[10px] flex items-center justify-center text-va-black shadow-lg shadow-primary/20">
                   <Palmtree strokeWidth={1.5} size={28} />
                 </ContainerInstrument>
                 <ContainerInstrument>
                   <HeadingInstrument level={2} className="text-2xl font-light tracking-tighter"><VoiceglotText  translationKey="auto.page.vakantieregeling.020a59" defaultText="Vakantieregeling" /></HeadingInstrument>
-                  <TextInstrument className="text-white/40 text-[15px] font-medium"><VoiceglotText  translationKey="auto.page.zet_het_hele_platfor.ef4021" defaultText="Zet het hele platform in &apos;Vakantie-modus&apos;." /></TextInstrument>
+                  <TextInstrument className="text-white/40 text-[15px] font-light"><VoiceglotText  translationKey="auto.page.zet_het_hele_platfor.ef4021" defaultText="Zet het hele platform in &apos;Vakantie-modus&apos;." /></TextInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
 
-              <ContainerInstrument className="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/10">
+              <ContainerInstrument className="flex items-center justify-between p-6 bg-white/5 rounded-[10px] border border-white/10">
                 <ContainerInstrument>
-                  <TextInstrument className="text-[15px] font-black tracking-widest text-primary"><VoiceglotText  translationKey="auto.page.status.ec53a8" defaultText="Status" /></TextInstrument>
-                  <TextInstrument className="text-[15px] font-bold">{configs.vacation_rules.is_active ? 'Vakantie Modus ACTIEF' : 'Platform Operationeel'}</TextInstrument>
+                  <TextInstrument className="text-[11px] font-light tracking-widest text-primary uppercase">
+                    <VoiceglotText translationKey="admin.settings.status_label" defaultText="Status" />
+                  </TextInstrument>
+                  <TextInstrument className="text-[15px] font-light">
+                    {configs.vacation_rules.is_active ? (
+                      <VoiceglotText translationKey="admin.settings.vacation_active" defaultText="Vakantie-modus actief" />
+                    ) : (
+                      <VoiceglotText translationKey="admin.settings.platform_operational" defaultText="Platform operationeel" />
+                    )}
+                  </TextInstrument>
                 </ContainerInstrument>
                 <ButtonInstrument 
                   onClick={() => updateConfig('vacation_rules', 'is_active', !configs.vacation_rules.is_active)}
@@ -320,66 +316,78 @@ export default function AdminSettingsPage() {
 
             <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <ContainerInstrument className="space-y-1">
-                <LabelInstrument className="text-white/30">Van</LabelInstrument>
+                <LabelInstrument className="text-[11px] font-light tracking-widest text-white/30 uppercase">Van</LabelInstrument>
                 <InputInstrument 
                   type="text"
                   placeholder="Bijv. 1 juli"
                   value={configs.vacation_rules.start_date} 
                   onChange={(e) => updateConfig('vacation_rules', 'start_date', e.target.value)}
                   disabled={!isEditMode}
-                  className="w-full bg-white/5 border-none rounded-xl py-3 px-6 text-[15px] font-bold text-white"
+                  className="w-full bg-white/5 border-none rounded-[10px] py-3 px-6 text-[15px] font-light text-white"
                 />
               </ContainerInstrument>
               <ContainerInstrument className="space-y-1">
-                <LabelInstrument className="text-white/30">Tot</LabelInstrument>
+                <LabelInstrument className="text-[11px] font-light tracking-widest text-white/30 uppercase">Tot</LabelInstrument>
                 <InputInstrument 
                   type="text"
                   placeholder="Bijv. 15 juli"
                   value={configs.vacation_rules.end_date} 
                   onChange={(e) => updateConfig('vacation_rules', 'end_date', e.target.value)}
                   disabled={!isEditMode}
-                  className="w-full bg-white/5 border-none rounded-xl py-3 px-6 text-[15px] font-bold text-white"
+                  className="w-full bg-white/5 border-none rounded-[10px] py-3 px-6 text-[15px] font-light text-white"
                 />
               </ContainerInstrument>
               <ContainerInstrument className="space-y-1">
-                <LabelInstrument className="text-white/30"><VoiceglotText  translationKey="auto.page.terug_op.606b13" defaultText="Terug op" /></LabelInstrument>
+                <LabelInstrument className="text-[11px] font-light tracking-widest text-white/30 uppercase"><VoiceglotText  translationKey="auto.page.terug_op.606b13" defaultText="Terug op" /></LabelInstrument>
                 <InputInstrument 
                   type="text"
                   placeholder="Bijv. 16 juli"
                   value={configs.vacation_rules.return_date} 
                   onChange={(e) => updateConfig('vacation_rules', 'return_date', e.target.value)}
                   disabled={!isEditMode}
-                  className="w-full bg-white/5 border-none rounded-xl py-3 px-6 text-[15px] font-bold text-white"
+                  className="w-full bg-white/5 border-none rounded-[10px] py-3 px-6 text-[15px] font-light text-white"
                 />
               </ContainerInstrument>
             </ContainerInstrument>
 
             <ContainerInstrument className="space-y-6">
               <ContainerInstrument className="space-y-1">
-                <LabelInstrument className="text-white/30"><VoiceglotText  translationKey="auto.page.bericht__nl_.88db3f" defaultText="Bericht (NL)" /></LabelInstrument>
+                <LabelInstrument className="text-[11px] font-light tracking-widest text-white/30 uppercase"><VoiceglotText  translationKey="auto.page.bericht__nl_.88db3f" defaultText="Bericht (NL)" /></LabelInstrument>
                 <textarea 
                   value={configs.vacation_rules.message_nl} 
                   onChange={(e) => updateConfig('vacation_rules', 'message_nl', e.target.value)}
                   disabled={!isEditMode}
-                  className="w-full bg-white/5 border-none rounded-2xl py-4 px-6 text-[15px] font-medium min-h-[80px] text-white resize-none outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full bg-white/5 border-none rounded-[10px] py-4 px-6 text-[15px] font-light min-h-[80px] text-white resize-none outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </ContainerInstrument>
-              {isEditMode && (
-                <ButtonInstrument 
-                  onClick={() => handleSave('vacation_rules')}
-                  disabled={saving}
-                  className="va-btn-pro !bg-primary !text-va-black w-full flex items-center justify-center gap-2"
-                >
-                  {saving ? <Loader2 strokeWidth={1.5} className="animate-spin" size={16} /> : <Save strokeWidth={1.5} size={16} />}
-                  <VoiceglotText  translationKey="admin.settings.activate_vacation" defaultText="Vakantieregeling Activeren" />
-                </ButtonInstrument>
-              )}
             </ContainerInstrument>
           </ContainerInstrument>
           
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-[100px] group-hover:bg-primary/20 transition-all duration-1000" />
         </BentoCard>
       </BentoGrid>
+
+      {isEditMode && (
+        <FixedActionDockInstrument>
+          <ContainerInstrument plain className="flex items-center gap-4">
+            <ButtonInstrument 
+              onClick={() => handleSave('company_info')}
+              disabled={saving}
+              className="va-btn-pro !bg-va-black flex items-center gap-2"
+            >
+              {saving ? <Loader2 strokeWidth={1.5} className="animate-spin" size={16} /> : <Save strokeWidth={1.5} size={16} />}
+              <VoiceglotText translationKey="admin.settings.save_all" defaultText="Alle instellingen opslaan" />
+            </ButtonInstrument>
+            <ButtonInstrument 
+              onClick={() => toggleEditMode()}
+              variant="outline"
+              className="border-black/10 text-va-black hover:bg-va-black/5"
+            >
+              <VoiceglotText translationKey="common.cancel" defaultText="Annuleren" />
+            </ButtonInstrument>
+          </ContainerInstrument>
+        </FixedActionDockInstrument>
+      )}
     </PageWrapperInstrument>
   );
 }

@@ -193,12 +193,20 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     updateIsSubmitting(true);
 
     try {
+    const cartSubtotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
+    const currentSubtotal = state.selectedActor ? state.pricing.total : 0;
+    const grandSubtotal = cartSubtotal + currentSubtotal;
+
     const res = await fetch('/api/checkout/mollie', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...state,
         ...formData,
+        pricing: {
+          ...state.pricing,
+          total: grandSubtotal
+        },
         quoteMessage,
         payment_method: state.paymentMethod,
         country: formData.country || 'BE',

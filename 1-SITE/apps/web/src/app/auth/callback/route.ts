@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     const supabase = createClient()
     if (!supabase) {
       console.error('[Auth] Supabase niet geconfigureerd  kan sessie niet uitwisselen')
-      return NextResponse.redirect(`${origin}/auth/login?error=config`)
+      return NextResponse.redirect(`${origin}/account?error=config`)
     }
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     
@@ -35,5 +35,5 @@ export async function GET(request: Request) {
   }
 
   // Bij een fout of ontbrekende code sturen we de gebruiker terug naar de login met een foutmelding
-  return NextResponse.redirect(`${origin}/auth/login?error=auth-callback-failed`)
+  return NextResponse.redirect(`${origin}/account?error=auth-callback-failed`)
 }

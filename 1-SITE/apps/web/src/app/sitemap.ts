@@ -31,13 +31,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // 2. Dynamische Routes: Actors, Articles, Academy & Studio
-  let allActors: { slug: string }[] = [];
+  let allActors: { slug: string | null }[] = [];
   let allArticles: { slug: string }[] = [];
   const academyLessons = Array.from({ length: 20 }, (_, i) => ({ id: (i + 1).toString() })); // 20 lessen
 
   try {
-    allActors = await db.select({ slug: actors.slug }).from(actors).where(eq(actors.status, 'live'));
-    allArticles = await db.select({ slug: contentArticles.slug }).from(contentArticles);
+    allActors = await db.select({ slug: actors.slug }).from(actors).where(eq(actors.status, 'live')).catch(() => []);
+    allArticles = await db.select({ slug: contentArticles.slug }).from(contentArticles).catch(() => []);
   } catch (error) {
     console.error('Sitemap generation error (database unreachable):', error);
     // We gaan door met alleen de core routes als de database niet bereikbaar is
@@ -59,12 +59,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Actor routes
     allActors.forEach(actor => {
-      sitemapEntries.push({
-        url: `${baseUrl}${lang}/voice/${actor.slug}/`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.7,
-      });
+      if (actor.slug) {
+        sitemapEntries.push({
+          url: `${baseUrl}${lang}/voice/${actor.slug}/`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.7,
+        });
+      }
     });
 
     // Article routes

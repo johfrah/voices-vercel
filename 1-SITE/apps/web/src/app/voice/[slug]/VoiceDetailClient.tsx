@@ -10,6 +10,7 @@ import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useTranslation } from "@/contexts/TranslationContext";
+import { VoiceCard } from "@/components/ui/VoiceCard";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from 'react';
@@ -17,19 +18,107 @@ import { useRouter } from 'next/navigation';
 
 import ConfiguratorPageClient from "../../checkout/configurator/ConfiguratorPageClient";
 
-export function VoiceDetailClient({ actor }: { actor: any }) {
+export function VoiceDetailClient({ 
+  actor, 
+  initialJourney, 
+  initialMedium 
+}: { 
+  actor: any, 
+  initialJourney?: string, 
+  initialMedium?: string 
+}) {
   const { t } = useTranslation();
-  const { selectActor } = useCheckout();
+  const { selectActor, updateUsage, updateMedia, updateBriefing } = useCheckout();
   const router = useRouter();
 
   // Sync with checkout context on mount and when actor changes
   useEffect(() => {
     selectActor(actor);
+    
+    //  BOB-METHODE: URL-gebaseerde configuratie sync
+    const syncFromUrl = async () => {
+      // 1. Check voor Token (Deep Persistence)
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('t');
+      
+      if (token) {
+        try {
+          const res = await fetch(`/api/config/token?t=${token}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.briefing) updateBriefing(data.briefing);
+            if (data.usage) updateUsage(data.usage);
+            if (data.media) updateMedia(data.media);
+            // Voeg hier meer sync toe indien nodig
+            return; // Token heeft prioriteit over segmenten
+          }
+        } catch (e) {
+          console.error("Token sync failed:", e);
+        }
+      }
+
+      // 2. Fallback naar Segmenten (Mooie URL's)
+      // CHRIS-PROTOCOL: De slug (segment 1) is onvertaalbaar (ID/Naam).
+      // Segment 2 (Journey) en Segment 3 (Medium) zijn WEL vertaalbaar via Voiceglot mapping.
+      if (initialJourney) {
+        const journeyMap: Record<string, any> = {
+          // Nederlands
+          'telefoon': 'telefonie',
+          'telefooncentrale': 'telefonie',
+          'video': 'unpaid',
+          'commercial': 'commercial',
+          'reclame': 'commercial',
+          // Engels (Voiceglot fallback)
+          'telephony': 'telefonie',
+          'phone': 'telefonie',
+          'ad': 'commercial',
+          'advertisement': 'commercial'
+        };
+        const usage = journeyMap[initialJourney.toLowerCase()];
+        if (usage) {
+          updateUsage(usage);
+          
+          if (usage === 'commercial' && initialMedium) {
+            const mediumMap: Record<string, string> = {
+              // Nederlands
+              'online': 'online',
+              'social': 'online',
+              'radio': 'radio_national',
+              'tv': 'tv_national',
+              'televisie': 'tv_national',
+              'podcast': 'podcast',
+              // Engels
+              'web': 'online',
+              'television': 'tv_national'
+            };
+            const mediaType = mediumMap[initialMedium.toLowerCase()];
+            if (mediaType) {
+              updateMedia([mediaType]);
+            }
+          }
+        }
+      }
+    };
+
+    syncFromUrl();
+
     return () => selectActor(null); // Cleanup on unmount
-  }, [actor, selectActor]);
+  }, [actor, initialJourney, initialMedium, selectActor, updateUsage, updateMedia, updateBriefing]);
 
   return (
-    <ContainerInstrument className="max-w-7xl mx-auto px-6 pt-10 pb-20 relative z-10">
+    <ContainerInstrument className="max-w-[1440px] mx-auto px-4 md:px-6 pt-32 pb-20 relative z-10">
+      <div className="mb-12">
+        <Link  
+          href="/agency" 
+          className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors group"
+        >
+          <div className="w-8 h-8 rounded-full bg-va-black/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+            <ArrowLeft size={14} strokeWidth={1.5} />
+          </div>
+          <VoiceglotText  translationKey="voice.detail.back_to_agency" defaultText="Terug naar alle stemmen" />
+        </Link>
+      </div>
+
       {/*  SUZY'S SCHEMA INJECTION: VoiceActor Knowledge Graph & Breadcrumbs */}
       <script
         type="application/ld+json"
@@ -133,9 +222,34 @@ export function VoiceDetailClient({ actor }: { actor: any }) {
         }}
       />
       {/*  HET MAAKPROCES: Direct naar de 3-koloms configurator */}
-      <SectionInstrument id="order-engine" className="mb-20">
-        <ConfiguratorPageClient isEmbedded={true} />
-      </SectionInstrument>
+      <div id="order-engine" className="mb-20">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
+          {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
+          <div className="order-1 lg:order-2 lg:col-span-9 w-full">
+            <ConfiguratorPageClient 
+              isEmbedded={true} 
+              hideMediaSelector={true} 
+              minimalMode={true} 
+            />
+          </div>
+
+          {/* VoiceCard (3 kolommen breed) - LATER op mobiel, compact */}
+          <div className="order-2 lg:order-1 lg:col-span-3 w-full">
+            <div className="lg:sticky lg:top-10">
+              {actor && (
+                <VoiceCard 
+                  voice={actor} 
+                  onSelect={() => {}} 
+                  hideButton
+                  hidePrice={true}
+                  isCornered
+                  compact={true}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/*  REVIEWS */}
       {actor.reviews && actor.reviews.length > 0 && (

@@ -20,12 +20,12 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
  */
 
 async function StatsGrid() {
-  const [orderCount] = await db.select({ value: count() }).from(orders);
-  const [userCount] = await db.select({ value: count() }).from(users);
-  const [actorCount] = await db.select({ value: count() }).from(actors);
+  const [orderCount] = await db.select({ value: count() }).from(orders).catch(() => [{ value: 0 }]);
+  const [userCount] = await db.select({ value: count() }).from(users).catch(() => [{ value: 0 }]);
+  const [actorCount] = await db.select({ value: count() }).from(actors).catch(() => [{ value: 0 }]);
   
   // Mock revenue logic for now (will be replaced by Pricing Engine)
-  const totalRevenue = (orderCount.value * 245.50).toLocaleString('nl-BE', { style: 'currency', currency: 'EUR' });
+  const totalRevenue = ((orderCount?.value || 0) * 245.50).toLocaleString('nl-BE', { style: 'currency', currency: 'EUR' });
 
   return (
     <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-8">
@@ -39,21 +39,21 @@ async function StatsGrid() {
       {/* Orders Card */}
       <ContainerInstrument className="bg-white rounded-[40px] p-6 border border-black/[0.03] shadow-sm">
         <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-2"><VoiceglotText  translationKey="admin.cockpit.orders_label" defaultText="Bestellingen" /></TextInstrument>
-        <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{orderCount.value}</HeadingInstrument>
+        <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{orderCount?.value || 0}</HeadingInstrument>
         <TextInstrument className="text-[15px] text-green-600 font-light mt-2"> 12%</TextInstrument>
       </ContainerInstrument>
 
       {/* Users Card */}
       <ContainerInstrument className="bg-white rounded-[40px] p-6 border border-black/[0.03] shadow-sm">
         <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-2"><VoiceglotText  translationKey="admin.cockpit.users_label" defaultText="Gebruikers" /></TextInstrument>
-        <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{userCount.value}</HeadingInstrument>
+        <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{userCount?.value || 0}</HeadingInstrument>
         <TextInstrument className="text-[15px] text-va-black/40 font-light mt-2"><VoiceglotText  translationKey="admin.cockpit.users_subtitle" defaultText="Geverifieerd" /></TextInstrument>
       </ContainerInstrument>
 
       {/* Actors Card */}
       <ContainerInstrument className="bg-white rounded-[40px] p-6 border border-black/[0.03] shadow-sm">
         <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-2"><VoiceglotText  translationKey="admin.cockpit.voices_label" defaultText="Stemmen" /></TextInstrument>
-        <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{actorCount.value}</HeadingInstrument>
+        <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{actorCount?.value || 0}</HeadingInstrument>
         <TextInstrument className="text-[15px] text-va-black/40 font-light mt-2"><VoiceglotText  translationKey="admin.cockpit.voices_subtitle" defaultText="Totaal" /></TextInstrument>
       </ContainerInstrument>
     </ContainerInstrument>
@@ -61,13 +61,18 @@ async function StatsGrid() {
 }
 
 async function RecentActivity() {
-  const recentOrders = await db.query.orders.findMany({
-    limit: 5,
-    orderBy: [desc(orders.createdAt)],
-    with: {
-      user: true
-    }
-  });
+  let recentOrders: any[] = [];
+  try {
+    recentOrders = await db.query.orders.findMany({
+      limit: 5,
+      orderBy: [desc(orders.createdAt)],
+      with: {
+        user: true
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching recent activity:', error);
+  }
 
   return (
     <ContainerInstrument className="bg-white rounded-[40px] m-8 p-8 border border-black/[0.03] shadow-sm">

@@ -19,15 +19,20 @@ export async function GET() {
     const deadlineThreshold = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // 24 uur geleden
 
     // 1. Zoek bestellingen die over de deadline zijn
-    const delayedOrders = await db.query.orders.findMany({
-      where: and(
-        eq(orders.status, 'processing'),
-        lt(orders.createdAt, deadlineThreshold)
-      ),
-      with: {
-        user: true
-      }
-    });
+    let delayedOrders: any[] = [];
+    try {
+      delayedOrders = await db.query.orders.findMany({
+        where: and(
+          eq(orders.status, 'processing'),
+          lt(orders.createdAt, deadlineThreshold)
+        ),
+        with: {
+          user: true
+        }
+      });
+    } catch (dbError) {
+      console.error(' Watchdog DB Error:', dbError);
+    }
 
     console.log(` Watchdog: Found ${delayedOrders.length} delayed orders.`);
 

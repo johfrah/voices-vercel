@@ -34,51 +34,55 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
 }) => {
   const { state } = useMasterControl();
 
-  // JOURNEY-AWARE TITLES
-  const journeyTitles: Record<string, string> = {
-    telephony: 'Telefoonstemmen',
-    video: 'Video Voice-overs',
-    commercial: 'Advertentie Stemmen'
+  // CHRIS-PROTOCOL: Hide hero entirely during checkout phase to focus on conversion
+  if (state.currentStep === 'checkout') return null;
+
+  // JOURNEY-AWARE TITLES (SALLY-MANDATE: Sync with Frontpage for consistency)
+  const journeyTitles: Record<string, { p1: string, h: string, p2: string }> = {
+    telephony: { p1: "Maak jouw", h: "telefooncentrale", p2: "menselijk." },
+    video: { p1: "Geef jouw", h: "video", p2: "een eigen stem." },
+    commercial: { p1: "Scoor met", h: "high-end", p2: "commercials." }
   };
 
   const journeySubtitles: Record<string, string> = {
-    telephony: 'IVR, wachtmuziek en voicemail berichten.',
-    video: 'Geef jouw video een eigen stem. Bedrijfsfilms, explanimations of documentaires.',
-    commercial: 'Radio, TV en online video advertenties.'
+    telephony: 'Van welkomstboodschap tot wachtmuziek. Professionele stemmen die jouw klanten direct vertrouwen geven.',
+    video: 'Bedrijfsfilms, explanimations of documentaires. Vind de perfecte match voor jouw visuele verhaal.',
+    commercial: 'Radio, TV of Online. Stemmen met autoriteit die jouw merkwaarde en conversie direct verhogen.'
   };
 
-  const activeTitle = title || journeyTitles[state.journey] || 'Vlaamse Voice-overs';
-  const activeSubtitle = subtitle || journeySubtitles[state.journey] || 'De beste stemmen voor uw project.';
+  const activeTitle = journeyTitles[state.journey] || { p1: "Vind de", h: "stem", p2: "voor jouw verhaal." };
+  const activeSubtitle = subtitle || journeySubtitles[state.journey] || 'Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap.';
+
+  // CHRIS-PROTOCOL: Use specific agency keys to avoid conflict with homepage and ensure reactivity
+  const titleKeyPart1 = `agency.hero.title_part1_${state.journey}`;
+  const titleKeyHighlight = `agency.hero.title_highlight_${state.journey}`;
+  const titleKeyPart2 = `agency.hero.title_part2_${state.journey}`;
+  const subtitleKey = `agency.hero.subtitle_${state.journey}`;
 
   return (
     <header className="va-agency-hero pb-0">
       <div className="va-container">
-        <div className="va-hero-content mb-12">
-          {/* Badge */}
-          <div className="va-badge-container">
-            <div className="va-badge">
-              <Image  
-                src="/assets/common/branding/icons/INFO.svg" 
-                alt="Info" 
-                width={12} 
-                height={12} 
-                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-              /> 
-              <VoiceglotText  
-                translationKey="agency.hero.badge" 
-                defaultText={market === 'BE' ? 'De beste Vlaamse en internationale stemmen' : 'De beste Nederlandse en internationale stemmen'} 
-              />
-            </div>
-          </div>
-
-          {/* Title */}
-          <h1 className="va-hero-title font-light">
-            <VoiceglotText translationKey={`agency.hero.title.${state.journey}`} defaultText={activeTitle} />
+        <div className="va-hero-content mb-20 text-center max-w-4xl mx-auto space-y-8">
+          {/* Title (SALLY-MANDATE: Airbnb Style matching Frontpage) */}
+          <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
+            {title ? (
+              <VoiceglotText translationKey="agency.hero.custom_title" defaultText={title} />
+            ) : (
+              <>
+                <VoiceglotText key={`t1-${state.journey}`} translationKey={titleKeyPart1} defaultText={activeTitle.p1} />
+                {" "}
+                <span className="text-primary italic">
+                  <VoiceglotText key={`th-${state.journey}`} translationKey={titleKeyHighlight} defaultText={activeTitle.h} />
+                </span>
+                <br />
+                <VoiceglotText key={`t2-${state.journey}`} translationKey={titleKeyPart2} defaultText={activeTitle.p2} />
+              </>
+            )}
           </h1>
           
           {/* Subtitle */}
-          <p className="text-xl text-va-black/40 font-light tracking-tight max-w-2xl mx-auto mt-4">
-            <VoiceglotText translationKey={`agency.hero.subtitle.${state.journey}`} defaultText={activeSubtitle} />
+          <p className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
+            <VoiceglotText key={`sub-${state.journey}`} translationKey={subtitleKey} defaultText={activeSubtitle} />
           </p>
         </div>
       </div>

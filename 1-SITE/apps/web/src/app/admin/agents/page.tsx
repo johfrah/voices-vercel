@@ -1,312 +1,300 @@
 "use client";
 
 import { 
+  PageWrapperInstrument, 
+  SectionInstrument, 
   ContainerInstrument, 
   HeadingInstrument, 
-  PageWrapperInstrument, 
-  TextInstrument,
+  TextInstrument, 
   ButtonInstrument,
-  SectionInstrument
+  FixedActionDockInstrument,
+  LoadingScreenInstrument,
+  InputInstrument,
+  LabelInstrument
 } from '@/components/ui/LayoutInstruments';
-import { useAuth } from '@/contexts/AuthContext';
-import {
-    Activity,
-    AlertCircle,
-    Brain,
-    CheckCircle2,
-    Clock,
-    Globe,
-    Layout,
-    Music,
-    Search,
-    Send,
-    ShieldCheck,
-    Smartphone,
-    Zap
-} from 'lucide-react';
-import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { cn } from '@/lib/utils';
+import { useAdminTracking } from '@/hooks/useAdminTracking';
+import { 
+  ArrowLeft, 
+  Bot, 
+  Save, 
+  History, 
+  ShieldCheck, 
+  Zap, 
+  MessageSquare, 
+  Code, 
+  Activity,
+  RefreshCw,
+  ChevronRight,
+  AlertCircle,
+  CheckCircle2,
+  Loader2
+} from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 
-const AGENTS = [
-    { id: 'bob', name: 'Bob', role: 'Architect', avatar: '/assets/bob-avatar-voicy.png', color: '#FFBE00', icon: Zap, description: 'Bewaakt de antifragile architectuur en de Bob-methode.' },
-    { id: 'chris', name: 'Chris', role: 'Inspecteur', avatar: '/assets/chris-avatar-voicy.png', color: '#c134f9', icon: ShieldCheck, description: 'Bewaker van de wet, code-integriteit en het Chris-Protocol.' },
-    { id: 'laya', name: 'Laya', role: 'Estheet', avatar: '/assets/laya-avatar-voicy.png', color: '#5CAED1', icon: Layout, description: 'Bewaakt de visuele ziel, de Voices-Mix en de Ademing-feel.' },
-    { id: 'moby', name: 'Moby', role: 'Regisseur', avatar: '/assets/moby-avatar-voicy.png', color: '#83CBBC', icon: Smartphone, description: 'Meester van de thumb-zone en mobile-first interactie.' },
-    { id: 'suzy', name: 'Suzy', role: 'SEO/LLM', avatar: '/assets/suzy-avatar-voicy.png', color: '#eb3683', icon: Search, description: 'Architect van vindbaarheid en Knowledge Graph orkestratie.' },
-    { id: 'anna', name: 'Anna', role: 'Stage Manager', avatar: '/assets/anna-avatar-voicy.png', color: '#5CAED1', icon: Music, description: 'Zorgt dat de show "Altijd Aan" is en orkestreert de flow.' },
-    { id: 'mark', name: 'Mark', role: 'Marketing', avatar: '/assets/mark-avatar-voicy.png', color: '#eb3683', icon: Globe, description: 'Bewaakt de Tone of Voice en psychologische conversie.' },
-    { id: 'sherlock', name: 'Sherlock', role: 'Detective', avatar: '/assets/sherlock-avatar-voicy.png', color: '#83CBBC', icon: Brain, description: 'Trend detective en opportunity scout in de buitenwereld.' },
-    { id: 'cody', name: 'Cody', role: 'Backend', avatar: '/assets/cody-avatar-voicy.png', color: '#FFBE00', icon: Zap, description: 'Zorgt dat alles achter de schermen werkt (Data, API\'s, Auth, Latency).' },
-];
+interface AgentPrompt {
+  id: number;
+  agentSlug: string;
+  name: string;
+  description: string | null;
+  systemPrompt: string;
+  version: number;
+  isActive: boolean;
+  metadata: any;
+  updatedAt: string;
+}
 
-export default function AgentCommandCenter() {
-    const { isAdmin } = useAuth();
-    const [selectedAgent, setSelectedAgent] = useState(AGENTS[0]);
-    const [messages, setMessages] = useState<{role: 'user' | 'agent', content: string, timestamp: Date}[]>([]);
-    const [inputValue, setInputValue] = useState('');
-    const [isExecuting, setIsExecuting] = useState(false);
-    const [tasks, setTasks] = useState<{id: string, name: string, status: 'running' | 'completed' | 'failed', time: string}[]>([]);
-    const scrollRef = useRef<HTMLDivElement>(null);
+export default function AgentControlCenter() {
+  const { logAction } = useAdminTracking();
+  const [agents, setAgents] = useState<AgentPrompt[]>([]);
+  const [selectedAgent, setSelectedItem] = useState<AgentPrompt | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editPrompt, setEditPrompt] = useState('');
+  const [changeNote, setChangeNote] = useState('');
 
-    useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  const fetchAgents = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/admin/agents');
+      if (res.ok) {
+        const data = await res.json();
+        setAgents(data);
+        if (data.length > 0 && !selectedAgent) {
+          setSelectedItem(data[0]);
+          setEditPrompt(data[0].systemPrompt);
         }
-    }, [messages]);
+      }
+    } catch (e) {
+      console.error('Failed to fetch agents:', e);
+      toast.error('Kon agents niet laden.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedAgent]);
 
-    if (!isAdmin) return null;
+  useEffect(() => {
+    fetchAgents();
+  }, [fetchAgents]);
 
-    const handleSendMessage = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!inputValue.trim()) return;
+  const handleSave = async () => {
+    if (!selectedAgent || !editPrompt) return;
+    
+    setIsSaving(true);
+    try {
+      const res = await fetch('/api/admin/agents', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedAgent.id,
+          systemPrompt: editPrompt,
+          changeNote: changeNote || 'Handmatige update via Control Center'
+        })
+      });
 
-        const userMsg = { role: 'user' as const, content: inputValue, timestamp: new Date() };
-        setMessages(prev => [...prev, userMsg]);
-        setInputValue('');
-        setIsExecuting(true);
+      if (res.ok) {
+        const updated = await res.json();
+        toast.success(`${selectedAgent.name} geüpdatet naar v${updated.version}`);
+        logAction('agent_prompt_update', { slug: selectedAgent.agentSlug, version: updated.version });
+        setChangeNote('');
+        await fetchAgents();
+      } else {
+        throw new Error('Save failed');
+      }
+    } catch (e) {
+      toast.error('Fout bij opslaan van prompt.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
-        try {
-            const res = await fetch('/api/admin/agents/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    agentId: selectedAgent.id, 
-                    message: userMsg.content 
-                })
-            });
-            
-            const data = await res.json();
-            
-            if (data.error) throw new Error(data.error);
+  if (isLoading) return <LoadingScreenInstrument message="AI Intelligentie initialiseren..." />;
 
-            const agentMsg = { 
-                role: 'agent' as const, 
-                content: data.content, 
-                timestamp: new Date(data.timestamp) 
-            };
-            setMessages(prev => [...prev, agentMsg]);
-            
-            if (data.action) {
-                const newTask = {
-                    id: Math.random().toString(36).substr(2, 9),
-                    name: `${selectedAgent.name}: ${data.action}`,
-                    status: 'completed' as const,
-                    time: 'Zojuist'
-                };
-                setTasks(prev => [newTask, ...prev]);
-                toast.success(`Actie uitgevoerd: ${data.action}`);
+  return (
+    <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
+      <ContainerInstrument className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <SectionInstrument className="mb-12">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest mb-8">
+            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug naar Cockpit" />
+          </Link>
+          
+          <div className="flex justify-between items-end">
+            <div className="space-y-4">
+              <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-light px-3 py-1 rounded-full tracking-widest">
+                <VoiceglotText translationKey="admin.agents.badge" defaultText="Intelligence Hub" />
+              </ContainerInstrument>
+              <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
+                <VoiceglotText translationKey="admin.agents.title" defaultText="Agent Control" />
+              </HeadingInstrument>
+              <TextInstrument className="text-xl text-black/40 font-light tracking-tight max-w-2xl">
+                <VoiceglotText translationKey="admin.agents.subtitle" defaultText="Beheer de kern-intelligentie en instructies van alle AI-agents in het Voices ecosysteem." />
+              </TextInstrument>
+            </div>
+          </div>
+        </SectionInstrument>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-8 items-start">
+          {/* Sidebar: Agent List */}
+          <div className="space-y-4">
+            <HeadingInstrument level={3} className="text-[11px] font-medium tracking-[0.2em] text-va-black/20 uppercase px-4">Actieve Agents</HeadingInstrument>
+            <div className="space-y-2">
+              {agents.map((agent) => (
+                <button
+                  key={agent.id}
+                  onClick={() => {
+                    setSelectedItem(agent);
+                    setEditPrompt(agent.systemPrompt);
+                  }}
+                  className={`w-full flex items-center justify-between p-5 rounded-[20px] transition-all group ${
+                    selectedAgent?.id === agent.id 
+                      ? 'bg-va-black text-white shadow-aura-lg scale-[1.02]' 
+                      : 'bg-white border border-black/[0.03] hover:border-primary/30 text-va-black'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-[10px] flex items-center justify-center ${
+                      selectedAgent?.id === agent.id ? 'bg-primary text-va-black' : 'bg-va-off-white text-va-black/20 group-hover:text-primary transition-colors'
+                    }`}>
+                      <Bot size={20} strokeWidth={1.5} />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-[15px] font-light tracking-tight">{agent.name}</div>
+                      <div className={`text-[11px] font-light tracking-widest uppercase ${
+                        selectedAgent?.id === agent.id ? 'text-white/40' : 'text-va-black/30'
+                      }`}>v{agent.version} • {agent.agentSlug}</div>
+                    </div>
+                  </div>
+                  <ChevronRight size={14} className={selectedAgent?.id === agent.id ? 'text-primary' : 'text-va-black/10'} />
+                </button>
+              ))}
+            </div>
+
+            {/* System Status Card */}
+            <div className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-sm mt-8 space-y-6">
+              <div className="flex items-center gap-3 text-green-600">
+                <Activity size={18} strokeWidth={1.5} />
+                <span className="text-[13px] font-bold tracking-widest uppercase">Systeem Status</span>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-[14px] font-light text-va-black/40">OpenAI API</span>
+                  <span className="flex items-center gap-1.5 text-[12px] font-medium text-green-600"><CheckCircle2 size={12} /> Live</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-[14px] font-light text-va-black/40">Prompt Sync</span>
+                  <span className="flex items-center gap-1.5 text-[12px] font-medium text-green-600"><CheckCircle2 size={12} /> 100%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main: Editor */}
+          <div className="space-y-8">
+            <AnimatePresence mode="wait">
+              {selectedAgent ? (
+                <motion.div
+                  key={selectedAgent.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="bg-white rounded-[20px] border border-black/[0.03] shadow-sm overflow-hidden flex flex-col min-h-[700px]"
+                >
+                  {/* Editor Header */}
+                  <div className="p-8 border-b border-black/[0.03] flex justify-between items-center bg-va-off-white/30">
+                    <div className="flex items-center gap-6">
+                      <div className="w-14 h-14 bg-va-black text-white rounded-[15px] flex items-center justify-center shadow-lg">
+                        <Code size={24} strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <HeadingInstrument level={2} className="text-2xl font-light tracking-tight">System Prompt: {selectedAgent.name}</HeadingInstrument>
+                        <TextInstrument className="text-[14px] text-va-black/40 font-light">{selectedAgent.description || 'Geen beschrijving beschikbaar.'}</TextInstrument>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="px-4 py-2 bg-va-black text-white rounded-full text-[11px] font-bold tracking-widest uppercase">Version {selectedAgent.version}</div>
+                      {selectedAgent.isActive ? (
+                        <div className="px-4 py-2 bg-green-50 text-green-600 rounded-full text-[11px] font-bold tracking-widest uppercase flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                          Active
+                        </div>
+                      ) : (
+                        <div className="px-4 py-2 bg-red-50 text-red-600 rounded-full text-[11px] font-bold tracking-widest uppercase">Inactive</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Editor Content */}
+                  <div className="flex-1 p-8 space-y-6">
+                    <div className="space-y-2">
+                      <LabelInstrument className="text-[11px] font-medium tracking-[0.2em] text-va-black/20 uppercase ml-1">Instructies (System Message)</LabelInstrument>
+                      <textarea
+                        value={editPrompt}
+                        onChange={(e) => setEditPrompt(e.target.value)}
+                        className="w-full h-[400px] p-8 bg-va-off-white/50 border border-black/[0.03] rounded-[20px] text-[15px] font-mono leading-relaxed focus:ring-2 focus:ring-primary/20 outline-none resize-none transition-all custom-scrollbar"
+                        placeholder="Voer hier de system prompt in..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <LabelInstrument className="text-[11px] font-medium tracking-[0.2em] text-va-black/20 uppercase ml-1">Wijzigingsnotitie</LabelInstrument>
+                      <InputInstrument
+                        value={changeNote}
+                        onChange={(e) => setChangeNote(e.target.value)}
+                        placeholder="Wat heb je aangepast in deze versie?"
+                        className="w-full bg-va-off-white/50 border-none rounded-[15px] py-4 px-6 text-[15px] font-light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Editor Footer */}
+                  <div className="p-8 border-t border-black/[0.03] bg-va-off-white/30 flex justify-between items-center">
+                    <div className="flex items-center gap-4 text-va-black/30">
+                      <History size={16} strokeWidth={1.5} />
+                      <span className="text-[13px] font-light italic">Laatste wijziging: {new Date(selectedAgent.updatedAt).toLocaleString('nl-BE')}</span>
+                    </div>
+                    <ButtonInstrument
+                      onClick={handleSave}
+                      disabled={isSaving || editPrompt === selectedAgent.systemPrompt}
+                      className="va-btn-pro !bg-va-black flex items-center gap-3 px-10 py-4"
+                    >
+                      {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} strokeWidth={1.5} />}
+                      <span className="font-bold tracking-widest text-[12px] uppercase">Update Intelligence</span>
+                    </ButtonInstrument>
+                  </div>
+                </motion.div>
+              ) : (
+                <div className="flex items-center justify-center h-full text-va-black/20 italic font-light">Selecteer een agent om te beheren.</div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </ContainerInstrument>
+
+      {/* LLM Context Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AdminPage",
+            "name": "Agent Control Center",
+            "description": "Beheer van AI-agent intelligentie en system prompts.",
+            "_llm_context": {
+              "persona": "Architect",
+              "journey": "admin",
+              "intent": "agent_management",
+              "capabilities": ["edit_prompts", "version_control", "system_monitoring"],
+              "lexicon": ["Agent", "Prompt", "Intelligence", "HITL"],
+              "visual_dna": ["Code Editor", "Sidebar Navigation", "Chris-Protocol"]
             }
-        } catch (error) {
-            toast.error('Agent verbinding verbroken');
-            console.error(error);
-        } finally {
-            setIsExecuting(false);
-        }
-    };
-
-    return (
-        <PageWrapperInstrument className="bg-va-off-white min-h-screen">
-            <ContainerInstrument className="max-w-7xl mx-auto py-12 px-6">
-                <SectionInstrument className="mb-12 flex justify-between items-end">
-                    <ContainerInstrument>
-                        <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">
-                            <VoiceglotText  translationKey="admin.agents.title" defaultText="Agent Command Center" />
-                        </HeadingInstrument>
-                        <TextInstrument className="text-lg text-va-black/40 font-light">
-                            <VoiceglotText  translationKey="admin.agents.subtitle" defaultText="Stuur je team van AI-specialisten aan en bewaak Voices." />
-                        </TextInstrument>
-                    </ContainerInstrument>
-                    <ContainerInstrument className="flex items-center gap-4 bg-white p-4 rounded-[20px] shadow-aura">
-                        <Activity strokeWidth={1.5} className="text-primary animate-pulse" size={20} />
-                        <ContainerInstrument className="text-right">
-                            <TextInstrument className="text-[15px] font-light tracking-widest block ">
-                                <VoiceglotText  translationKey="admin.agents.system_status" defaultText="SYSTEM STATUS" />
-                            </TextInstrument>
-                            <TextInstrument className="text-[15px] font-light text-green-500 ">
-                                <VoiceglotText  translationKey="admin.agents.all_online" defaultText="All Agents Online" />
-                            </TextInstrument>
-                        </ContainerInstrument>
-                    </ContainerInstrument>
-                </SectionInstrument>
-
-                <SectionInstrument className="grid grid-cols-12 gap-8">
-                    {/* Agent Sidebar */}
-                    <ContainerInstrument className="col-span-3 space-y-4">
-                        <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/20 mb-6 ">
-                            <VoiceglotText  translationKey="admin.agents.orchestra" defaultText="Het Orkest" />
-                        </HeadingInstrument>
-                        {AGENTS.map((agent) => (
-                            <ButtonInstrument
-                                key={agent.id}
-                                onClick={() => setSelectedAgent(agent)}
-                                className={cn(
-                                    "w-full p-4 rounded-[20px] transition-all flex items-center gap-4 text-left group",
-                                    selectedAgent.id === agent.id 
-                                        ? 'bg-va-black text-white shadow-aura-lg scale-105' 
-                                        : 'bg-white text-va-black hover:bg-va-off-white'
-                                )}
-                            >
-                                <ContainerInstrument className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary/20 transition-all">
-                                    <Image  src={agent.avatar} alt={agent.name} fill className="object-cover" />
-                                </ContainerInstrument>
-                                <ContainerInstrument>
-                                    <TextInstrument className="text-[15px] font-light block">{agent.name}</TextInstrument>
-                                    <TextInstrument className={cn(
-                                        "text-[15px] font-light opacity-40 uppercase tracking-widest",
-                                        selectedAgent.id === agent.id ? 'text-white' : ''
-                                    )}>
-                                        {agent.role}
-                                    </TextInstrument>
-                                </ContainerInstrument>
-                                {selectedAgent.id === agent.id && (
-                                    <ContainerInstrument className="ml-auto w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                )}
-                            </ButtonInstrument>
-                        ))}
-                    </ContainerInstrument>
-
-                    {/* Main Chat/Control Area */}
-                    <ContainerInstrument className="col-span-6 flex flex-col h-[700px] bg-white rounded-[20px] shadow-aura overflow-hidden border border-black/5">
-                        {/* Agent Header */}
-                        <ContainerInstrument className="p-8 border-b border-black/5 flex items-center gap-6 bg-va-off-white/30">
-                            <ContainerInstrument className="w-16 h-16 rounded-full overflow-hidden shadow-aura relative">
-                                <Image  src={selectedAgent.avatar} alt={selectedAgent.name} width={64} height={64} className="object-cover" />
-                            </ContainerInstrument>
-                            <ContainerInstrument>
-                                <HeadingInstrument level={2} className="text-2xl font-light tracking-tighter">
-                                    {selectedAgent.name} <TextInstrument className="text-va-black/20 inline font-light">/</TextInstrument> {selectedAgent.role}
-                                </HeadingInstrument>
-                                <TextInstrument className="text-[15px] font-light text-va-black/40">
-                                    {selectedAgent.description}
-                                </TextInstrument>
-                            </ContainerInstrument>
-                        </ContainerInstrument>
-
-                        {/* Messages */}
-                        <ContainerInstrument ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
-                            {messages.length === 0 ? (
-                                <ContainerInstrument className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-20">
-                                    <selectedAgent.icon size={48} strokeWidth={1.5} />
-                                    <TextInstrument className="text-lg font-light">
-                                        <VoiceglotText  
-                                            translationKey="admin.agents.command_prompt" 
-                                            defaultText={`Geef ${selectedAgent.name} een opdracht...`} 
-                                        />
-                                    </TextInstrument>
-                                </ContainerInstrument>
-                            ) : (
-                                messages.map((msg, i) => (
-                                    <ContainerInstrument key={i} className={cn("flex", msg.role === 'user' ? 'justify-end' : 'justify-start')}>
-                                        <ContainerInstrument className={cn(
-                                            "max-w-[80%] p-5 rounded-[20px] text-[15px] font-light leading-relaxed shadow-sm",
-                                            msg.role === 'user' 
-                                                ? 'bg-va-black text-white rounded-tr-none' 
-                                                : 'bg-va-off-white text-va-black rounded-tl-none'
-                                        )}>
-                                            <TextInstrument>{msg.content}</TextInstrument>
-                                            <TextInstrument className={cn(
-                                                "text-[15px] mt-2 opacity-30 font-light uppercase tracking-widest",
-                                                msg.role === 'user' ? 'text-right' : 'text-left'
-                                            )}>
-                                                {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </TextInstrument>
-                                        </ContainerInstrument>
-                                    </ContainerInstrument>
-                                ))
-                            )}
-                            {isExecuting && (
-                                <ContainerInstrument className="flex justify-start">
-                                    <ContainerInstrument className="bg-va-off-white p-5 rounded-[20px] rounded-tl-none flex items-center gap-3">
-                                        <ContainerInstrument className="flex gap-1">
-                                            <ContainerInstrument className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" />
-                                            <ContainerInstrument className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.2s]" />
-                                            <ContainerInstrument className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.4s]" />
-                                        </ContainerInstrument>
-                                    </ContainerInstrument>
-                                </ContainerInstrument>
-                            )}
-                        </ContainerInstrument>
-
-                        {/* Input */}
-                        <ContainerInstrument className="p-8 bg-va-off-white/30 border-t border-black/5">
-                            <form onSubmit={handleSendMessage} className="relative">
-                                <input
-                                    type="text"
-                                    value={inputValue}
-                                    onChange={(e) => setInputValue(e.target.value)}
-                                    placeholder={`Vraag ${selectedAgent.name} om een taak uit te voeren...`}
-                                    className="w-full bg-white border-none rounded-[10px] py-5 px-8 pr-16 text-[15px] font-light shadow-aura focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                                />
-                                <ButtonInstrument
-                                    type="submit"
-                                    disabled={isExecuting}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-va-black text-white rounded-full flex items-center justify-center hover:bg-primary transition-all disabled:opacity-50"
-                                >
-                                    <Send strokeWidth={1.5} size={20} />
-                                </ButtonInstrument>
-                            </form>
-                        </ContainerInstrument>
-                    </ContainerInstrument>
-
-                    {/* Task Monitor */}
-                    <ContainerInstrument className="col-span-3 space-y-8">
-                        <ContainerInstrument>
-                            <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/20 mb-6 ">
-                                <VoiceglotText  translationKey="admin.agents.task_monitor" defaultText="Task Monitor" />
-                            </HeadingInstrument>
-                            <ContainerInstrument className="bg-white rounded-[20px] p-6 shadow-aura border border-black/5 space-y-4">
-                                {tasks.length === 0 ? (
-                                    <TextInstrument className="text-[15px] font-light text-va-black/30 text-center py-8 block">
-                                        <VoiceglotText  translationKey="admin.agents.no_tasks" defaultText="Geen actieve taken." />
-                                    </TextInstrument>
-                                ) : (
-                                    tasks.map((task) => (
-                                        <ContainerInstrument key={task.id} className="p-4 rounded-[10px] bg-va-off-white/50 flex items-center gap-4">
-                                            {task.status === 'running' ? (
-                                                <Clock className="text-primary animate-spin" size={18} strokeWidth={1.5} />
-                                            ) : task.status === 'completed' ? (
-                                                <CheckCircle2 strokeWidth={1.5} className="text-green-500" size={18} />
-                                            ) : (
-                                                <AlertCircle className="text-red-500" size={18} strokeWidth={1.5} />
-                                            )}
-                                            <ContainerInstrument className="flex-1 min-w-0">
-                                                <TextInstrument className="text-[15px] font-light block truncate">{task.name}</TextInstrument>
-                                                <TextInstrument className="text-[15px] font-light opacity-40 tracking-widest ">
-                                                    {task.status}  {task.time}
-                                                </TextInstrument>
-                                            </ContainerInstrument>
-                                        </ContainerInstrument>
-                                    ))
-                                )}
-                            </ContainerInstrument>
-                        </ContainerInstrument>
-
-                        <ContainerInstrument className="bg-va-black text-white rounded-[20px] p-8 shadow-aura-lg relative overflow-hidden">
-                            <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest opacity-40 mb-4 ">
-                                <VoiceglotText  translationKey="admin.agents.quick_stats" defaultText="Quick Stats" />
-                            </HeadingInstrument>
-                            <ContainerInstrument className="space-y-4 relative z-10">
-                                <ContainerInstrument className="flex justify-between items-end">
-                                    <TextInstrument className="text-[15px] font-light opacity-60 tracking-widest">
-                                        <VoiceglotText  translationKey="admin.agents.uptime" defaultText="Uptime" />
-                                    </TextInstrument>
-                                    <TextInstrument className="text-2xl font-light">99.9%</TextInstrument>
-                                </ContainerInstrument>
-                                <ContainerInstrument className="flex justify-between items-end">
-                                    <TextInstrument className="text-[15px] font-light opacity-60 tracking-widest">
-                                        <VoiceglotText  translationKey="admin.agents.tasks_today" defaultText="Tasks Today" />
-                                    </TextInstrument>
-                                    <TextInstrument className="text-2xl font-light">{tasks.length + 12}</TextInstrument>
-                                </ContainerInstrument>
-                            </ContainerInstrument>
-                            <ContainerInstrument className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16" />
-                        </ContainerInstrument>
-                    </ContainerInstrument>
-                </SectionInstrument>
-            </ContainerInstrument>
-        </PageWrapperInstrument>
-    );
+          })
+        }}
+      />
+    </PageWrapperInstrument>
+  );
 }

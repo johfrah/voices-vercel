@@ -1,4 +1,4 @@
-import soap from 'soap';
+import * as soap from 'soap';
 import { create } from 'xmlbuilder2';
 
 /**
@@ -22,6 +22,8 @@ export interface YukiInvoiceData {
     zipCode?: string;
     countryCode: string;
     phone?: string;
+    billing_po?: string;
+    financial_email?: string;
   };
   lines: Array<{
     description: string;
@@ -151,19 +153,20 @@ export class YukiService {
           .ele('SalesInvoice')
             .ele('Reference').txt(`Order-${data.orderId}`).up()
             //  LEGACY: Subject bevat nu ook "Factuur" of "Creditnota"
-            .ele('Subject').txt(`${data.isCreditNote ? 'Creditnota' : 'Factuur'} - Order-${data.orderId}${data.poNumber ? ' - PO-' + data.poNumber : ''}`).up()
+            .ele('Subject').txt(`${data.isCreditNote ? 'Creditnota' : 'Factuur'} - Order-${data.orderId}${data.customer.billing_po ? ' - PO-' + data.customer.billing_po : ''}`).up()
             .ele('Process').txt('true').up()
             .ele('EmailToCustomer').txt('false').up()
             .ele('SentToPeppol').txt(data.customer.countryCode === 'BE' ? 'true' : 'false').up()
             .ele('Date').txt(data.invoiceDate || new Date().toISOString().split('T')[0]).up()
             .ele('DueDate').txt(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]).up()
             .ele('Currency').txt('EUR').up()
-            .ele('PaymentID').txt(data.paymentId || data.poNumber || '').up()
+            .ele('PaymentID').txt(data.paymentId || data.customer.billing_po || '').up()
             //  LEGACY: Uitgebreide Remarks met payment info en credit referentie
             .ele('Remarks').txt(
               `Ordernumber-${data.orderId}` +
-              `${data.poNumber ? ' | Customer-PO-' + data.poNumber : ''}` +
+              `${data.customer.billing_po ? ' | Customer-PO-' + data.customer.billing_po : ''}` +
               `${data.paymentId ? ' | Payment-' + data.paymentId : ''}` +
+              `${data.customer.financial_email ? ' | Fin-Email-' + data.customer.financial_email : ''}` +
               `${data.isCreditNote && data.originalInvoiceNumber ? ' | Ref-Factuur-' + data.originalInvoiceNumber : ''}` +
               ` | Voices-OS-2026`
             ).up()

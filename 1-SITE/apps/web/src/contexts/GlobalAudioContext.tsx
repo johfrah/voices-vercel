@@ -23,8 +23,11 @@ export function GlobalAudioProvider({ children }: { children: ReactNode }) {
   };
 
   const stopDemo = () => {
-    setActiveDemo(null);
     setIsPlaying(false);
+    // CHRIS-PROTOCOL: Delay clearing activeDemo to allow for exit animations
+    setTimeout(() => {
+      setActiveDemo(null);
+    }, 500);
   };
 
   return (

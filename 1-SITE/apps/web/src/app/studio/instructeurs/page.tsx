@@ -13,11 +13,16 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default async function InstructorsPage() {
-  const allInstructors = await db.query.instructors.findMany({
-    with: {
-      photo: true
-    }
-  });
+  let allInstructors: any[] = [];
+  try {
+    allInstructors = await db.query.instructors.findMany({
+      with: {
+        photo: true
+      }
+    });
+  } catch (dbError) {
+    console.error('Instructors Page DB Error:', dbError);
+  }
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-32 pb-40 px-6">

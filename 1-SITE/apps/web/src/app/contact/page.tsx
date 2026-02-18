@@ -252,7 +252,7 @@ export default function ContactPage() {
               </ContainerInstrument>
               <ContainerInstrument>
                 <TextInstrument className="text-[15px] tracking-widest text-va-black/30 mb-1 font-light "><VoiceglotText  translationKey="contact.info.address_label" defaultText="Bezoek ons" /></TextInstrument>
-                <TextInstrument className="text-lg font-light"><VoiceglotText  translationKey="contact.info.address_value" defaultText="Gent, Belgi" /></TextInstrument>
+                <TextInstrument className="text-lg font-light"><VoiceglotText  translationKey="contact.info.address_value" defaultText="Gent, België" /></TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>

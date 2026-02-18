@@ -186,10 +186,29 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         try {
           const parsed = JSON.parse(saved);
           console.log(`[CheckoutContext] Restoring state from localStorage: ${parsed.items?.length || 0} items`);
+          
+          //  KELLY-MANDATE: Clean up items during hydration (remove 0 prices and duplicates)
+          const cleanItems = (parsed.items || []).filter((item: any, index: number, self: any[]) => {
+            const price = item.pricing?.total ?? item.pricing?.subtotal ?? 0;
+            if (price <= 0) return false;
+            
+            // Check if this is the first occurrence of this configuration
+            return index === self.findIndex((t) => (
+              t.actor?.id === item.actor?.id &&
+              t.briefing === item.briefing &&
+              t.usage === item.usage &&
+              JSON.stringify(t.media) === JSON.stringify(item.media) &&
+              JSON.stringify(t.spots) === JSON.stringify(item.spots) &&
+              JSON.stringify(t.years) === JSON.stringify(item.years) &&
+              t.liveSession === item.liveSession &&
+              t.music?.trackId === item.music?.trackId
+            ));
+          });
+
           setState(prev => ({
             ...initialState,
             ...parsed,
-            items: parsed.items || [],
+            items: cleanItems,
             customer: { ...initialState.customer, ...parsed.customer },
             paymentMethods: prev.paymentMethods // Keep default methods until API loads
           }));
@@ -327,10 +346,36 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const updateIsSubmitting = useCallback((isSubmitting: boolean) =>
     setState(prev => ({ ...prev, isSubmitting })), []);
 
-  const addItem = useCallback((item: any) => setState(prev => ({
-    ...prev,
-    items: [...prev.items, item]
-  })), []);
+  const addItem = useCallback((item: any) => setState(prev => {
+    //  KELLY-MANDATE: Prevent adding items with 0 price
+    const itemPrice = item.pricing?.total ?? item.pricing?.subtotal ?? 0;
+    if (itemPrice <= 0) {
+      console.warn('[CheckoutContext] Attempted to add item with 0 price. Blocked.', item);
+      return prev;
+    }
+
+    //  CHRIS-PROTOCOL: Prevent duplicate items (exact same configuration)
+    const isDuplicate = prev.items.some(existing => 
+      existing.actor?.id === item.actor?.id &&
+      existing.briefing === item.briefing &&
+      existing.usage === item.usage &&
+      JSON.stringify(existing.media) === JSON.stringify(item.media) &&
+      JSON.stringify(existing.spots) === JSON.stringify(item.spots) &&
+      JSON.stringify(existing.years) === JSON.stringify(item.years) &&
+      existing.liveSession === item.liveSession &&
+      existing.music?.trackId === item.music?.trackId
+    );
+
+    if (isDuplicate) {
+      console.warn('[CheckoutContext] Attempted to add duplicate item. Blocked.');
+      return prev;
+    }
+
+    return {
+      ...prev,
+      items: [...prev.items, item]
+    };
+  }), []);
 
   const removeItem = useCallback((itemId: string) => setState(prev => ({
     ...prev,
@@ -412,9 +457,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     console.log(`[CheckoutContext] Calculating pricing for journey: ${state.journey}, usage: ${state.usage}`);
 
-    //  CHRIS-PROTOCOL: Calculate the sum of all items in the cart (per-item price only)
-    const cartSubtotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
-
     // Academy pricing logic
     if (state.journey === 'academy') {
       let academySubtotal = 149;
@@ -426,7 +468,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         ...prev,
         pricing: {
           ...prev.pricing,
-          total: cartSubtotal + academySubtotal, //  KELLY-MANDATE: Sum of cart + current academy selection
+          total: academySubtotal, //  KELLY-MANDATE: Only current selection total
         }
       }));
       return;
@@ -439,7 +481,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         ...prev,
         pricing: {
           ...prev.pricing,
-          total: cartSubtotal + workshopPrice,
+          total: workshopPrice,
         }
       }));
       return;
@@ -447,8 +489,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     const wordCount = state.briefing.trim().split(/\s+/).filter(Boolean).length;
     const promptCount = state.briefing.trim().split(/\n+/).filter(Boolean).length;
-
-    // ... (rest of the logic)
 
     //  COMMERCIAL LOGIC: Apply spots/years to ALL selected media types
     // If detail maps exist, use those. Otherwise fall back to global spots/years.
@@ -510,12 +550,12 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           mediaBreakdown: result.mediaBreakdown,
           musicSurcharge: result.musicSurcharge,
           radioReadySurcharge: result.radioReadySurcharge,
-          total: cartSubtotal + result.subtotal, //  KELLY-MANDATE: Always include cart total
+          total: result.subtotal, //  KELLY-MANDATE: Only current selection total
           legalDisclaimer: result.legalDisclaimer
         }
       };
     });
-  }, [state.briefing, state.usage, state.plan, state.journey, state.upsells, state.music, state.customer.vat_number, state.customer.country, state.customer.vat_verified, state.isLocked, state.editionId, state.media, state.country, state.selectedActor, state.spots, state.years, state.spotsDetail, state.yearsDetail, state.liveSession, state.items]);
+  }, [state.briefing, state.usage, state.plan, state.journey, state.upsells, state.music, state.customer.vat_number, state.customer.country, state.customer.vat_verified, state.isLocked, state.editionId, state.media, state.country, state.selectedActor, state.spots, state.years, state.spotsDetail, state.yearsDetail, state.liveSession]);
 
   //  KELLY'S SYNC: Re-calculate pricing whenever usage, briefing or other key factors change
   // This effect is the primary driver for price updates in the configurator.

@@ -3,6 +3,7 @@ import { db } from '@db';
 import { orders, orderItems, actors } from '@db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { VoicyPatternEngine } from '@/lib/intelligence/pattern-engine';
+import { createClient } from '@/utils/supabase/server';
 
 /**
  *  ZERO LAWS INTELLIGENCE API
@@ -18,8 +19,31 @@ export async function GET(request: NextRequest) {
 
   if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 });
 
+  //  LEX-MANDATE: Ensure user can only access their own patterns
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const uid = parseInt(userId);
+
+    // Check if user is admin or requesting their own data
+    const { requireAdmin } = await import('@/lib/auth/api-auth');
+    const auth = await requireAdmin();
+    const isAdmin = !(auth instanceof NextResponse);
+
+    // If not admin, check if the email matches the requested userId
+    if (!isAdmin) {
+      const { users } = await import('@db/schema');
+      const [dbUser] = await db.select({ email: users.email }).from(users).where(eq(users.id, uid)).limit(1);
+      
+      if (!dbUser || dbUser.email !== user.email) {
+        return NextResponse.json({ error: 'Forbidden: You can only access your own patterns' }, { status: 403 });
+      }
+    }
 
     if (type === 'patterns') {
       // 1. Haal orderhistorie op met items en categorien

@@ -65,7 +65,8 @@ export const MobileCheckoutSheet: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [transcription, setTranscription] = useState('');
 
-  const subtotal = state.pricing.total;
+  const cartSubtotal = state.items.reduce((sum, i) => sum + (i.pricing?.total ?? i.pricing?.subtotal ?? 0), 0);
+  const subtotal = cartSubtotal + state.pricing.total;
   const total = subtotal * 1.21; // Excl. BTW wet
 
   const handleToggle = () => {
@@ -302,7 +303,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                 <VoiceglotText  translationKey="checkout.mobile.success_desc" defaultText="Je ontvangt direct een pushbericht zodra de opname start." />
               </p>
               <BentoCard className="bg-primary text-va-black p-6 font-black tracking-widest text-[15px] cursor-pointer hover:scale-105 transition-all">
-                <VoiceglotText  translationKey="checkout.mobile.view_cockpit" defaultText="Bekijk Status in Cockpit" />
+                <VoiceglotText  translationKey="checkout.mobile.view_account" defaultText="Bekijk Status in Account" />
               </BentoCard>
             </motion.div>
           )}

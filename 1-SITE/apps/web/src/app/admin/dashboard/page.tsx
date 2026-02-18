@@ -10,6 +10,7 @@ import {
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { useAdminTracking } from '@/hooks/useAdminTracking';
 import {
     Activity,
     ArrowRight,
@@ -26,7 +27,8 @@ import {
     Sparkles,
     TrendingUp,
     Users,
-    Zap
+    Zap,
+    Bot
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -34,6 +36,7 @@ import { useEffect, useState } from 'react';
 
 export default function AdminDashboard() {
   const [recentHeals, setRecentHeals] = useState<any[]>([]);
+  const { logAction } = useAdminTracking();
 
   useEffect(() => {
     fetch('/api/admin/godmode/heals')
@@ -49,8 +52,8 @@ export default function AdminDashboard() {
     { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Approval Queue" />, value: '5', icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
     { label: <VoiceglotText  translationKey="admin.stats.finance" defaultText="Financieel" />, value: 'Cockpit', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: 'Journeys', color: 'text-green-500', href: '/admin/finance' },
     { label: <VoiceglotText  translationKey="admin.stats.workshops" defaultText="Workshops" />, value: '114', icon: <Calendar strokeWidth={1.5} size={20} />, trend: 'Studio', color: 'text-purple-500', href: '/admin/studio/workshops' },
-    { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Actieve Stemmen" />, value: '142', icon: <Mic strokeWidth={1.5} size={20} />, trend: '+12%', color: 'text-va-black/40' },
-    { label: <VoiceglotText  translationKey="admin.stats.ai_status" defaultText="AI Sync Status" />, value: 'Live', icon: <Activity strokeWidth={1.5} size={20} />, trend: '100%', color: 'text-green-500' },
+    { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Actieve Stemmen" />, value: '142', icon: <Mic strokeWidth={1.5} size={20} />, trend: '+12%', color: 'text-va-black/40', href: '/admin/voices' },
+    { label: <VoiceglotText  translationKey="admin.stats.agents" defaultText="AI Agents" />, value: 'Actief', icon: <Bot strokeWidth={1.5} size={20} />, trend: 'Control', color: 'text-primary', href: '/admin/agents' },
   ];
 
   const notifications = [
@@ -66,12 +69,26 @@ export default function AdminDashboard() {
         <ContainerInstrument className="space-y-2">
           <ContainerInstrument className="flex items-center gap-2 text-primary">
             <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-            <TextInstrument as="span" className="text-[15px] font-light tracking-[0.2em]"><VoiceglotText  translationKey="admin.badge" defaultText="Voices Cockpit" /></TextInstrument>
+            <TextInstrument as="span" className="text-[15px] font-bold tracking-[0.15em] uppercase"><VoiceglotText  translationKey="admin.badge" defaultText="Voices Cockpit" /></TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="admin.title" defaultText="Beheer-dashboard" /></HeadingInstrument>
         </ContainerInstrument>
         <ContainerInstrument className="flex gap-4">
-          <ButtonInstrument className="va-btn-nav !rounded-[10px]"><VoiceglotText  translationKey="admin.cta.snapshot" defaultText="Snapshot maken" /></ButtonInstrument>
+          <ButtonInstrument 
+            onClick={() => {
+              const snapshot = {
+                timestamp: new Date().toISOString(),
+                stats: stats.map(s => ({ label: s.label, value: s.value })),
+                notifications: notifications.map(n => ({ title: n.title, user: n.user }))
+              };
+              console.log('Snapshot created:', snapshot);
+              logAction('create_dashboard_snapshot');
+              import('react-hot-toast').then(toast => toast.default.success('Snapshot opgeslagen in console!'));
+            }}
+            className="va-btn-nav !rounded-[10px]"
+          >
+            <VoiceglotText  translationKey="admin.cta.snapshot" defaultText="Snapshot maken" />
+          </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
@@ -175,10 +192,16 @@ export default function AdminDashboard() {
         <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between h-[400px] group relative overflow-hidden rounded-[20px]">
           <ContainerInstrument className="relative z-10">
             <Calendar strokeWidth={1.5} className="text-primary mb-8" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-light tracking-tighter mb-4">Workshop Cockpit</HeadingInstrument>
-            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">Beheer edities, deelnemers en bezettingsgraad voor de Studio-tak.</TextInstrument>
+            <HeadingInstrument level={2} className="text-2xl font-light tracking-tighter mb-4">
+              <VoiceglotText translationKey="admin.studio.cockpit_title" defaultText="Workshop Cockpit" />
+            </HeadingInstrument>
+            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">
+              <VoiceglotText translationKey="admin.studio.cockpit_text" defaultText="Beheer edities, deelnemers en bezettingsgraad voor de Studio-tak." />
+            </TextInstrument>
           </ContainerInstrument>
-          <Link href="/admin/studio/workshops" className="relative z-10 va-btn-pro !bg-primary w-fit">Open Cockpit</Link>
+          <Link href="/admin/studio/workshops" className="relative z-10 va-btn-pro !bg-primary w-fit">
+            <VoiceglotText translationKey="admin.studio.cockpit_cta" defaultText="Open Cockpit" />
+          </Link>
           <ContainerInstrument className="absolute -bottom-20 -right-20 w-60 h-60 bg-primary/10 rounded-full blur-[60px]" />
         </BentoCard>
 
@@ -214,29 +237,25 @@ export default function AdminDashboard() {
               <Link  href="/admin/marketing/visitors" className="px-4 py-2 bg-green-500/10 text-green-500 rounded-[20px] text-[15px] font-light hover:bg-green-500/20 transition-all"><VoiceglotText  translationKey="admin.users.online_count" defaultText="8 online" /></Link>
             </ContainerInstrument>
           </ContainerInstrument>
-          <ButtonInstrument className="va-btn-pro !bg-va-black w-fit !rounded-[10px]"><VoiceglotText  translationKey="admin.users.cta" defaultText="Gebruikers beheren" /></ButtonInstrument>
+          <ButtonInstrument as={Link} href="/admin/users" className="va-btn-pro !bg-va-black w-fit !rounded-[10px]"><VoiceglotText  translationKey="admin.users.cta" defaultText="Gebruikers beheren" /></ButtonInstrument>
         </BentoCard>
 
         {/*  GOD MODE: SELF-HEALING LOGS */}
         <BentoCard span="sm" className="bg-va-black text-white p-10 h-[400px] flex flex-col justify-between relative overflow-hidden group rounded-[20px]">
           <ContainerInstrument className="relative z-10">
-            <Image  src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" className="text-primary mb-8 brightness-0 invert opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-6 text-white"><VoiceglotText  translationKey="admin.self_healing.title" defaultText="Self-healing logs" /></HeadingInstrument>
-            
-            <ContainerInstrument className="space-y-4">
-              {recentHeals.length > 0 ? recentHeals.map((heal, i) => (
-                <ContainerInstrument key={heal.id} className="flex items-center gap-3 text-[15px] font-light text-white/40 tracking-widest border-b border-white/5 pb-2">
-                  <TextInstrument className="text-primary font-light">{heal.source.split('-')[0]}</TextInstrument>
-                  <TextInstrument className="truncate flex-1 font-light">{heal.message}</TextInstrument>
-                </ContainerInstrument>
-              )) : (
-                <TextInstrument className="text-[15px] tracking-widest text-white/20 font-light"><VoiceglotText  translationKey="admin.self_healing.empty" defaultText="Geen recente herstelacties." /></TextInstrument>
-              )}
-            </ContainerInstrument>
+            <Bot strokeWidth={1.5} className="text-primary mb-8" size={32} />
+            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4 text-white">
+              <VoiceglotText translationKey="admin.agents.title" defaultText="Agent Control" />
+            </HeadingInstrument>
+            <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed">
+              <VoiceglotText translationKey="admin.agents.desc" defaultText="Beheer de prompts en intelligentie van Voicy, Chris, Moby en de andere agents." />
+            </TextInstrument>
           </ContainerInstrument>
           
-          <Link  href="/admin/security" className="relative z-10 text-[15px] font-light tracking-widest text-primary hover:underline"><VoiceglotText  translationKey="admin.self_healing.view_all" defaultText="Bekijk alle logs" /></Link>
-          <ContainerInstrument className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/5 rounded-[20px] blur-[40px]" />
+          <Link href="/admin/agents" className="relative z-10 va-btn-pro !bg-primary w-fit !text-va-black font-bold tracking-widest text-[11px] uppercase">
+            <VoiceglotText translationKey="admin.agents.cta" defaultText="Open Control Center" />
+          </Link>
+          <ContainerInstrument className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/10 rounded-[20px] blur-[40px]" />
         </BentoCard>
       </BentoGrid>
 

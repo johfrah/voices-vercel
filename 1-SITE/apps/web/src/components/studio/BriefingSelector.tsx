@@ -1,27 +1,70 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Upload, FileText, X, Play, Pause, Trash2, Check, AlertCircle } from 'lucide-react';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
+import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
-import { ContainerInstrument, TextInstrument, ButtonInstrument } from '../ui/LayoutInstruments';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check, FileText, Mic, Pause, Play, Trash2, Upload } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ButtonInstrument } from '../ui/LayoutInstruments';
+import { VoiceglotText } from '../ui/VoiceglotText';
 
 export const BriefingSelector: React.FC = () => {
+  const { t } = useTranslation();
   const { state, addBriefingFile, removeBriefingFile } = useCheckout();
   const { playClick } = useSonicDNA();
+  const { activeDemo, isPlaying: globalIsPlaying, playDemo, stopDemo, setIsPlaying: setGlobalIsPlaying } = useGlobalAudio();
   
   const [mode, setMode] = useState<'none' | 'record' | 'upload' | 'text'>('none');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [visualizerData, setVisualizerData] = useState<number[]>(new Array(20).fill(2));
+  
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (audioContextRef.current) audioContextRef.current.close();
+    };
+  }, []);
 
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      // Setup Visualizer
+      const audioContext = new AudioContext();
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 64;
+      source.connect(analyser);
+      
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+
+      const updateVisualizer = () => {
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(dataArray);
+        
+        // Map to 20 bars
+        const bars = [];
+        for (let i = 0; i < 20; i++) {
+          const val = dataArray[i] || 0;
+          bars.push(Math.max(2, (val / 255) * 40));
+        }
+        setVisualizerData(bars);
+        animationFrameRef.current = requestAnimationFrame(updateVisualizer);
+      };
+      updateVisualizer();
+
       const recorder = new MediaRecorder(stream);
       mediaRecorderRef.current = recorder;
       
@@ -30,10 +73,9 @@ export const BriefingSelector: React.FC = () => {
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: 'audio/webm' });
         setAudioBlob(blob);
-        // In a real app, you would upload this to Supabase Storage here
         const fakeUrl = URL.createObjectURL(blob);
         addBriefingFile({
-          name: `Audio Briefing ${new Date().toLocaleTimeString()}`,
+          name: `Audio Briefing ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
           type: 'audio',
           url: fakeUrl
         });
@@ -56,8 +98,27 @@ export const BriefingSelector: React.FC = () => {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
       setIsRecording(false);
+      
       if (timerRef.current) clearInterval(timerRef.current);
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (audioContextRef.current) audioContextRef.current.close();
+      
+      setVisualizerData(new Array(20).fill(2));
       playClick('light');
+    }
+  };
+
+  const togglePlayback = (file: any) => {
+    if (activeDemo?.id === file.id) {
+      setGlobalIsPlaying(!globalIsPlaying);
+    } else {
+      playDemo({
+        id: file.id,
+        title: file.name,
+        audio_url: file.url,
+        category: 'briefing',
+        actor_name: 'Briefing'
+      });
     }
   };
 
@@ -87,9 +148,9 @@ export const BriefingSelector: React.FC = () => {
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
-      className="mt-4 space-y-4 overflow-hidden"
+      className="mt-4 p-6 bg-va-off-white/50 rounded-[24px] border border-black/[0.03] shadow-inner-sm space-y-6 overflow-hidden"
     >
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-3">
         <button 
           onClick={() => setMode(mode === 'record' ? 'none' : 'record')}
           className={cn(
@@ -98,7 +159,9 @@ export const BriefingSelector: React.FC = () => {
           )}
         >
           <Mic size={18} />
-          <span className="text-[10px] font-bold uppercase tracking-widest">Opnemen</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest">
+            <VoiceglotText translationKey="briefing.mode.record" defaultText="Opnemen" />
+          </span>
         </button>
         <button 
           onClick={() => setMode(mode === 'upload' ? 'none' : 'upload')}
@@ -108,7 +171,9 @@ export const BriefingSelector: React.FC = () => {
           )}
         >
           <Upload size={18} />
-          <span className="text-[10px] font-bold uppercase tracking-widest">Upload</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest">
+            <VoiceglotText translationKey="briefing.mode.upload" defaultText="Upload" />
+          </span>
         </button>
         <button 
           onClick={() => setMode(mode === 'text' ? 'none' : 'text')}
@@ -118,7 +183,9 @@ export const BriefingSelector: React.FC = () => {
           )}
         >
           <FileText size={18} />
-          <span className="text-[10px] font-bold uppercase tracking-widest">Extra Tekst</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest">
+            <VoiceglotText translationKey="briefing.mode.text" defaultText="Extra Tekst" />
+          </span>
         </button>
       </div>
 
@@ -128,20 +195,40 @@ export const BriefingSelector: React.FC = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="p-6 bg-va-off-white/50 rounded-2xl border border-black/5 flex flex-col items-center gap-4"
+            className="p-6 bg-va-off-white/50 rounded-2xl border border-black/5 flex flex-col items-center gap-6"
           >
-            <div className="flex items-center gap-4">
-              <div className={cn(
-                "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500",
-                isRecording ? "bg-red-500 animate-pulse scale-110" : "bg-va-black/5"
-              )}>
-                <Mic size={20} className={isRecording ? "text-white" : "text-va-black/20"} />
+            <div className="flex flex-col items-center gap-4 w-full">
+              {/* Live Waveform Visualizer */}
+              <div className="flex items-end justify-center gap-[3px] h-12 w-full max-w-[200px]">
+                {visualizerData.map((height, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ height }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    className={cn(
+                      "w-1.5 rounded-full transition-colors duration-300",
+                      isRecording ? "bg-primary" : "bg-va-black/10"
+                    )}
+                  />
+                ))}
               </div>
-              <div className="flex flex-col">
-                <span className="text-2xl font-light tracking-tighter tabular-nums">{formatTime(recordingTime)}</span>
-                <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">{isRecording ? 'Aan het opnemen...' : 'Klaar om op te nemen'}</span>
+
+              <div className="flex items-center gap-4">
+                <div className={cn(
+                  "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500",
+                  isRecording ? "bg-red-500 animate-pulse scale-110" : "bg-va-black/5"
+                )}>
+                  <Mic size={20} className={isRecording ? "text-white" : "text-va-black/20"} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-light tracking-tighter tabular-nums">{formatTime(recordingTime)}</span>
+                  <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">
+                    {isRecording ? t('briefing.recording_status', 'Aan het opnemen...') : t('briefing.ready_status', 'Klaar om op te nemen')}
+                  </span>
+                </div>
               </div>
             </div>
+
             <ButtonInstrument 
               onClick={isRecording ? stopRecording : startRecording}
               className={cn(
@@ -149,7 +236,7 @@ export const BriefingSelector: React.FC = () => {
                 isRecording ? "bg-va-black text-white" : "bg-primary text-white shadow-lg shadow-primary/20"
               )}
             >
-              {isRecording ? 'Stop Opname' : 'Start Opname'}
+              {isRecording ? t('briefing.action.stop', 'Stop Opname') : t('briefing.action.start', 'Start Opname')}
             </ButtonInstrument>
           </motion.div>
         )}
@@ -169,8 +256,12 @@ export const BriefingSelector: React.FC = () => {
             />
             <div className="p-8 border-2 border-dashed border-black/5 rounded-2xl bg-white flex flex-col items-center gap-3 text-va-black/20 hover:border-primary/20 hover:text-primary/40 transition-all">
               <Upload size={32} strokeWidth={1} />
-              <span className="text-[13px] font-light italic">Sleep een bestand hierheen of klik om te bladeren</span>
-              <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">Audio, Video of Documenten</span>
+              <span className="text-[13px] font-light italic">
+                <VoiceglotText translationKey="briefing.upload.instruction" defaultText="Sleep een bestand hierheen of klik om te bladeren" />
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">
+                <VoiceglotText translationKey="briefing.upload.types" defaultText="Audio, Video of Documenten" />
+              </span>
             </div>
           </motion.div>
         )}
@@ -182,7 +273,7 @@ export const BriefingSelector: React.FC = () => {
             exit={{ opacity: 0, y: 10 }}
           >
             <textarea 
-              placeholder="Voeg hier extra instructies, uitspraak-hulp of context toe..."
+              placeholder={t('briefing.text.placeholder', "Voeg hier extra instructies, uitspraak-hulp of context toe...")}
               className="w-full h-32 p-4 bg-white border border-black/[0.03] rounded-xl text-[14px] font-light focus:ring-2 focus:ring-primary/10 transition-all outline-none resize-none"
               onBlur={(e) => {
                 if (e.target.value.trim()) {
@@ -204,15 +295,31 @@ export const BriefingSelector: React.FC = () => {
         <div className="space-y-2">
           <div className="flex items-center gap-2 px-2">
             <Check size={12} className="text-green-500" />
-            <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">Toegevoegde briefing ({state.briefingFiles.length})</span>
+            <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
+              <VoiceglotText translationKey="briefing.added_count" defaultText={`Toegevoegde briefing (${state.briefingFiles.length})`} />
+            </span>
           </div>
           <div className="flex flex-col gap-2">
             {state.briefingFiles.map((file) => (
               <div key={file.id} className="flex items-center justify-between p-3 bg-white rounded-xl border border-black/[0.03] shadow-sm animate-in slide-in-from-left-2 duration-300">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-va-off-white flex items-center justify-center text-va-black/20">
-                    {file.type === 'audio' ? <Mic size={14} /> : file.type === 'video' ? <Play size={14} /> : <FileText size={14} />}
-                  </div>
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <button 
+                    onClick={() => file.type === 'audio' && togglePlayback(file)}
+                    className={cn(
+                      "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
+                      activeDemo?.id === file.id && globalIsPlaying 
+                        ? "bg-primary text-white" 
+                        : "bg-va-off-white text-va-black/20 hover:text-primary"
+                    )}
+                  >
+                    {file.type === 'audio' ? (
+                      activeDemo?.id === file.id && globalIsPlaying ? <Pause size={14} /> : <Play size={14} />
+                    ) : file.type === 'video' ? (
+                      <Play size={14} />
+                    ) : (
+                      <FileText size={14} />
+                    )}
+                  </button>
                   <span className="text-[12px] font-medium truncate text-va-black/60">{file.name}</span>
                 </div>
                 <button 
