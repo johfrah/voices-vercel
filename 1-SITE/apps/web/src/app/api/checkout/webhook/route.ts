@@ -33,10 +33,10 @@ export async function POST(request: NextRequest) {
 
     // 2. Update de order status op basis van Mollie
     let newStatus = 'pending';
-    if (payment.isPaid()) newStatus = 'paid';
-    if (payment.isCanceled()) newStatus = 'cancelled';
-    if (payment.isExpired()) newStatus = 'expired';
-    if (payment.isFailed()) newStatus = 'failed';
+    if (payment.status === 'paid') newStatus = 'paid';
+    if (payment.status === 'canceled') newStatus = 'cancelled';
+    if (payment.status === 'expired') newStatus = 'expired';
+    if (payment.status === 'failed') newStatus = 'failed';
 
     //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
     const host = request.headers.get('host') || 'voices.be';

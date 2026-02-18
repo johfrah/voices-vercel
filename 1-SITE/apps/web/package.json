@@ -74,6 +74,9 @@
     "xmlbuilder2": "^4.0.3",
     "ytdl-core": "^4.11.5"
   },
+  "overrides": {
+    "get-stream": "6.0.1"
+  },
   "devDependencies": {
     "@types/mailparser": "^3.4.6",
     "@types/md5": "^2.3.6",
