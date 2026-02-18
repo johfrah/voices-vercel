@@ -63,8 +63,8 @@ export default function CheckoutPageClient() {
 
   return (
     <ContainerInstrument className="min-h-screen bg-va-off-white pb-24 relative z-10">
-      <SectionInstrument className="max-w-6xl mx-auto px-6 pt-20">
-        <ContainerInstrument className="mb-16 flex flex-col items-center justify-center gap-8 text-center">
+      <SectionInstrument className="max-w-6xl mx-auto px-0 md:px-6 pt-20">
+        <ContainerInstrument className="mb-16 flex flex-col items-center justify-center gap-8 text-center px-6 md:px-0">
           <ContainerInstrument className="space-y-4 w-full flex flex-col items-center">
             <OrderStepsInstrument currentStep="checkout" className="opacity-100 mb-4" />
             <Link  
@@ -77,9 +77,9 @@ export default function CheckoutPageClient() {
           </ContainerInstrument>
         </ContainerInstrument>
 
-        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Summary Area - On mobile we only want to see the items first */}
-          <ContainerInstrument className="lg:col-span-6 lg:order-2">
+          <ContainerInstrument className="lg:col-span-6 lg:order-2 px-4 md:px-0">
             <ContainerInstrument className="lg:sticky lg:top-24">
               {/* Desktop: Show everything | Mobile: Show only items at the top */}
               <PricingSummary strokeWidth={1.5} onlyItems={true} className="lg:hidden" />
@@ -88,7 +88,7 @@ export default function CheckoutPageClient() {
           </ContainerInstrument>
 
           {/* Form Area */}
-          <ContainerInstrument className="lg:col-span-6 lg:order-1">
+          <ContainerInstrument className="lg:col-span-6 lg:order-1 px-4 md:px-0">
             <CheckoutForm strokeWidth={1.5} />
             
             {/* Mobile: Show totals and CTA at the very bottom, after the form */}

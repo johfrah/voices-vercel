@@ -20,6 +20,9 @@ import { PricingEngine } from '@/lib/pricing-engine';
 export async function POST(request: Request) {
   try {
     const headersList = headers();
+    const host = headersList.get('host') || 'www.voices.be';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const baseUrl = `${protocol}://${host}`;
     const ip = headersList.get('x-forwarded-for') || 'unknown';
 
     const body = await request.json();
@@ -159,7 +162,14 @@ export async function POST(request: Request) {
         createdAt: new Date()
       }).returning();
 
-      // 3. Handle Response (Mollie vs Banktransfer vs Quote)
+      // 3. Generate Secure One-Time Token for Post-Purchase Euphoria (Magic Access)
+      const secureToken = sign(
+        { orderId: newOrder.id, userId, journey: newOrder.journey, email },
+        process.env.JWT_SECRET || 'voices-secret-2026',
+        { expiresIn: '24h' }
+      );
+
+      // 4. Handle Response (Mollie vs Banktransfer vs Quote)
       const selectedGateway = payment_method || gateway;
       if (isQuote || selectedGateway === 'banktransfer') {
         //  YUKI SYNC: Bij overschrijving maken we direct een factuur in Yuki aan
@@ -206,7 +216,13 @@ export async function POST(request: Request) {
                 orderId: newOrder.id,
                 email: email,
                 amount: isQuote ? subtotal : amount,
-                company: company
+                company: company,
+                items: body.items,
+                customer: {
+                  firstName: first_name,
+                  lastName: last_name,
+                  phone: phone
+                }
               }
             })
           });
@@ -217,19 +233,13 @@ export async function POST(request: Request) {
         return NextResponse.json({
           success: true,
           orderId: newOrder.id,
+          token: secureToken,
           isBankTransfer: payment_method === 'banktransfer',
           message: selectedGateway === 'banktransfer' 
             ? 'Bestelling ontvangen. We sturen je de factuur voor de overschrijving.'
             : 'Offerte succesvol aangemaakt en verzonden.'
         });
       }
-
-      // 4. Generate Secure One-Time Token for Post-Purchase Euphoria (Magic Access)
-      const secureToken = sign(
-        { orderId: newOrder.id, userId, journey: newOrder.journey, email },
-        process.env.JWT_SECRET || 'voices-secret-2026',
-        { expiresIn: '24h' }
-      );
 
     // 5. Initialize Mollie Order (REAL API 2026)
     // CHRIS-PROTOCOL: Orders API is superior for reporting and Klarna support
@@ -342,7 +352,7 @@ export async function POST(request: Request) {
           familyName: last_name || '',
           email: email
         },
-        redirectUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/success?orderId=${newOrder.id}&token=${secureToken}`,
+        redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}`,
         webhookUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout/webhook`,
         locale: country === 'BE' ? 'nl_BE' : (country === 'NL' ? 'nl_NL' : (country === 'FR' ? 'fr_FR' : 'en_US')),
         method: selectedGateway || undefined,

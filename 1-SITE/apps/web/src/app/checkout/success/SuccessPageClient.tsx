@@ -38,7 +38,8 @@ export default function SuccessPageClient() {
       // CHRIS-PROTOCOL: Zero-Friction Redirection
       // We sturen de gebruiker direct door naar hun account/bestelling
       const timer = setTimeout(() => {
-        const targetUrl = secureToken 
+        const isValidToken = secureToken && secureToken !== 'undefined';
+        const targetUrl = isValidToken 
           ? `/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${orderId}` 
           : `/account/orders?orderId=${orderId}`;
         

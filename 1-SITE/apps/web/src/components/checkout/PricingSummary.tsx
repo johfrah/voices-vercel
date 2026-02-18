@@ -97,7 +97,11 @@ export const PricingSummary: React.FC<{
           updateIsSubmitting(false);
           
           // Redirect to success page for all non-Mollie successes
-          window.location.href = `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}`;
+          const redirectUrl = data.token 
+            ? `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}`
+            : `/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}`;
+          
+          window.location.href = redirectUrl;
         } else if (data.checkoutUrl) {
           window.location.href = data.checkoutUrl;
         }
@@ -155,9 +159,9 @@ export const PricingSummary: React.FC<{
   const total = subtotalAfterDiscount + tax;
 
   return (
-    <ContainerInstrument className={cn("space-y-6 w-full", className)}>
+    <ContainerInstrument className={cn("space-y-6 w-full max-w-full", className)}>
       {(!onlyTotals) && (
-        <ContainerInstrument className="space-y-4 w-full">
+        <ContainerInstrument className="space-y-4 w-full max-w-full">
           {/* Cart items list */}
           <ContainerInstrument className="space-y-4">
             {isSubscription && (

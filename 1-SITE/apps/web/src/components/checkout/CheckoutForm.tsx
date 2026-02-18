@@ -228,11 +228,17 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           setIsPreviewOpen(false);
           updateIsSubmitting(false);
           if (data.isBankTransfer) {
-            window.location.href = `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}`;
+            const redirectUrl = data.token 
+              ? `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}`
+              : `/account/orders?orderId=${data.orderId}`;
+            window.location.href = redirectUrl;
           } else {
             // Offerte succesvol - direct naar de bestelling/offerte pagina
             if (data.orderId) {
-              window.location.href = `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}&type=quote`;
+              const redirectUrl = data.token 
+                ? `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}&type=quote`
+                : `/account/orders?orderId=${data.orderId}&type=quote`;
+              window.location.href = redirectUrl;
             }
           }
         } else if (data.checkoutUrl) {
@@ -311,8 +317,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const methodLabel = selectedMethodObj?.description || (selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1));
 
   return (
-    <ContainerInstrument className="space-y-8 w-full">
-      <ContainerInstrument className="bg-white p-8 rounded-[20px] border border-va-black/5 shadow-aura space-y-6 w-full">
+    <ContainerInstrument className="space-y-8 w-full max-w-full">
+      <ContainerInstrument className="bg-white p-8 rounded-[20px] border border-va-black/5 shadow-aura space-y-6 w-full max-w-full">
         <ContainerInstrument className="flex items-center gap-3 mb-2">
           <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
             <User size={20} strokeWidth={1.5} />

@@ -397,16 +397,23 @@ export default function ConfiguratorPageClient({
     const words = localBriefing.split(/\s+/);
     const difficultWords: string[] = [];
     
+    // Woorden die we ALTIJD negeren (whitelist)
+    const whitelist = ['Welkom', 'Johfrah', 'Voices', 'Bedrijf', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
+    
     words.forEach((word, i) => {
       const cleanWord = word.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g,"");
       if (cleanWord.length > 3 && /^[A-Z]/.test(cleanWord)) {
         const isStartOfSentence = i === 0 || /[.!?]$/.test(words[i-1]);
-        if (!isStartOfSentence) {
+        if (!isStartOfSentence && !whitelist.includes(cleanWord)) {
           difficultWords.push(cleanWord);
         }
       }
       if (/[0-9]/.test(cleanWord) || /[\\/]/.test(word)) {
-        difficultWords.push(word);
+        // Negeren simpele tijdsaanduidingen zoals 9u, 17u
+        const isSimpleTime = /^[0-9]{1,2}u$/.test(cleanWord);
+        if (!isSimpleTime) {
+          difficultWords.push(word);
+        }
       }
     });
 
@@ -628,9 +635,11 @@ export default function ConfiguratorPageClient({
         type: 'add_to_cart',
         data: {
           actorName: state.selectedActor.display_name,
+          actorPhoto: state.selectedActor.photo_url,
           price: currentItemPrice,
           email: state.customer.email || localStorage.getItem('voices_customer_email'),
-          usage: state.usage
+          usage: state.usage,
+          briefing: localBriefing
         }
       })
     }).catch(err => console.warn('[Admin Notify] Failed:', err));
@@ -1074,8 +1083,9 @@ export default function ConfiguratorPageClient({
               
               <div className="relative min-h-[400px]">
                 <div 
-                  className="absolute inset-0 p-8 text-xl font-light leading-relaxed whitespace-pre-wrap break-words pointer-events-none text-va-black"
+                  className="absolute inset-0 p-8 text-xl font-light leading-relaxed whitespace-pre-wrap break-words pointer-events-none text-va-black overflow-y-auto no-scrollbar"
                   aria-hidden="true"
+                  style={{ top: textareaRef.current?.scrollTop ? -textareaRef.current.scrollTop : 0 }}
                 >
                   {renderHighlightedText()}
                   {showAiAssistant && aiSuggestion && (
@@ -1090,9 +1100,16 @@ export default function ConfiguratorPageClient({
                   ref={textareaRef}
                   value={localBriefing}
                   onChange={(e) => handleBriefingChange(e.target.value)}
+                  onScroll={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    const highlightDiv = target.previousElementSibling as HTMLDivElement;
+                    if (highlightDiv) {
+                      highlightDiv.style.top = `-${target.scrollTop}px`;
+                    }
+                  }}
                   onKeyDown={handleKeyDown}
                   placeholder={scriptPlaceholder}
-                  className="w-full h-[400px] p-8 text-xl font-light leading-relaxed bg-transparent border-none focus:ring-0 outline-none resize-none placeholder:text-va-black/10 relative z-10 text-transparent caret-va-black"
+                  className="w-full h-[400px] p-8 text-xl font-light leading-relaxed bg-transparent border-none focus:ring-0 outline-none resize-none placeholder:text-va-black/10 relative z-10 text-transparent caret-va-black overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40 transition-colors"
                   spellCheck={false}
                 />
                 
@@ -1133,7 +1150,12 @@ export default function ConfiguratorPageClient({
                           <button onClick={() => handleUsageSwitch('commercial')} className="text-[11px] font-bold uppercase tracking-widest text-primary hover:text-white transition-colors whitespace-nowrap">Switch naar Commercial</button>
                         )}
                         {insight.action === 'add_audio_briefing' && (
-                          <button onClick={() => setShowBriefingSelector(true)} className="text-[11px] font-bold uppercase tracking-widest text-primary hover:text-white transition-colors whitespace-nowrap">Audio toevoegen</button>
+                          <button 
+                            onClick={() => setShowBriefingSelector(true)} 
+                            className="px-4 py-2 bg-primary text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-primary/90 transition-all shadow-lg active:scale-95 whitespace-nowrap"
+                          >
+                            Audio toevoegen
+                          </button>
                         )}
                       </div>
                     ))}

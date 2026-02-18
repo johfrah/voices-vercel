@@ -11,9 +11,9 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
-    const redirectPath = searchParams.get('redirect') || '/cockpit';
+    const redirectPath = searchParams.get('redirect') || '/account';
 
-    if (!token) {
+    if (!token || token === 'undefined') {
       return NextResponse.json({ error: 'Token is required' }, { status: 400 });
     }
 
@@ -45,12 +45,16 @@ export async function GET(request: Request) {
     }
     const supabaseAdmin = createClient(url, key);
 
+    const host = request.headers.get('host') || 'www.voices.be';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const currentBaseUrl = `${protocol}://${host}`;
+
     // 4. Generate Magic Link (Action Link)
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
       email: user.email,
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}${redirectPath}`,
+        redirectTo: `${currentBaseUrl}${redirectPath}`,
       }
     });
 
