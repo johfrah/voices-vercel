@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Music, Play, Pause, Check, Search, X } from 'lucide-react';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
-import { ContainerInstrument, TextInstrument } from '../ui/LayoutInstruments';
+import { motion } from 'framer-motion';
+import { Check, Music, Pause, Play, Search, Upload, X } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { TextInstrument } from '../ui/LayoutInstruments';
+import { VoiceglotText } from '../ui/VoiceglotText';
 
 interface MusicItem {
   id: string;
@@ -17,6 +19,7 @@ interface MusicItem {
 }
 
 export const MusicSelector: React.FC = () => {
+  const { t } = useTranslation();
   const { state, updateMusic } = useCheckout();
   const { activeDemo, isPlaying: globalIsPlaying, playDemo, stopDemo, setIsPlaying: setGlobalIsPlaying } = useGlobalAudio();
   const { playClick } = useSonicDNA();
@@ -24,6 +27,8 @@ export const MusicSelector: React.FC = () => {
   const [tracks, setTracks] = useState<MusicItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isUploading, setIsRecording] = useState(false); // Reusing state for simplicity or adding new
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchMusic = async () => {
@@ -39,6 +44,26 @@ export const MusicSelector: React.FC = () => {
     };
     fetchMusic();
   }, []);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      playClick('pro');
+      const fakeUrl = URL.createObjectURL(file);
+      const customTrackId = `custom-${Date.now()}`;
+      
+      // Voeg toe aan de lijst als tijdelijk item
+      const customTrack: MusicItem = {
+        id: customTrackId,
+        title: `Eigen muziek: ${file.name}`,
+        vibe: 'Eigen upload',
+        preview: fakeUrl
+      };
+      
+      setTracks(prev => [customTrack, ...prev]);
+      handleTrackSelect(customTrack);
+    }
+  };
 
   const filteredTracks = useMemo(() => {
     if (!searchQuery) return tracks;
@@ -88,22 +113,41 @@ export const MusicSelector: React.FC = () => {
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
-      className="mt-4 space-y-4 overflow-hidden"
+      className="mt-4 p-6 bg-va-off-white/50 rounded-[24px] border border-black/[0.03] shadow-inner-sm space-y-6 overflow-hidden"
     >
-      <div className="relative group">
-        <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" />
-        <input 
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Zoek op vibe of titel (bijv. 'corporate', 'rustig')..."
-          className="w-full bg-white border border-black/[0.03] rounded-xl py-3 pl-10 pr-4 text-[13px] font-light focus:ring-2 focus:ring-primary/10 transition-all outline-none"
-        />
-        {searchQuery && (
-          <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-va-black/20 hover:text-va-black">
-            <X size={14} />
-          </button>
-        )}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative group flex-1">
+          <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" />
+          <input 
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t('music.search_placeholder', "Zoek in bibliotheek...")}
+            className="w-full bg-white border border-black/[0.03] rounded-xl py-3 pl-10 pr-4 text-[13px] font-light focus:ring-2 focus:ring-primary/10 transition-all outline-none"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-va-black/20 hover:text-va-black">
+              <X size={14} />
+            </button>
+          )}
+        </div>
+
+        <button 
+          onClick={() => fileInputRef.current?.click()}
+          className="flex items-center gap-2 px-4 py-3 bg-white border border-dashed border-black/10 rounded-xl text-[12px] font-bold uppercase tracking-widest text-va-black/40 hover:text-primary hover:border-primary/20 transition-all shrink-0"
+        >
+          <Upload size={14} />
+          <span>
+            <VoiceglotText translationKey="music.own_music" defaultText="Eigen muziek" />
+          </span>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileUpload} 
+            className="hidden" 
+            accept="audio/*" 
+          />
+        </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[300px] overflow-y-auto no-scrollbar pr-1">
@@ -155,7 +199,9 @@ export const MusicSelector: React.FC = () => {
       {filteredTracks.length === 0 && (
         <div className="py-12 text-center bg-va-off-white/50 rounded-2xl border border-dashed border-black/5">
           <Music size={24} className="mx-auto text-va-black/10 mb-2" />
-          <TextInstrument className="text-[13px] text-va-black/40 italic">Geen muziek gevonden voor deze zoekopdracht.</TextInstrument>
+          <TextInstrument className="text-[13px] text-va-black/40 italic">
+            <VoiceglotText translationKey="music.no_results" defaultText="Geen muziek gevonden voor deze zoekopdracht." />
+          </TextInstrument>
         </div>
       )}
     </motion.div>

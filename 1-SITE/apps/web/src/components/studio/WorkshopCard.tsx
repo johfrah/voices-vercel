@@ -2,6 +2,7 @@
 
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { WorkshopEditModal } from "@/components/ui/WorkshopEditModal";
 import { useEditMode } from "@/contexts/EditModeContext";
 import { useSonicDNA } from "@/lib/sonic-dna";
 import { Settings } from "lucide-react";
@@ -12,15 +13,17 @@ import { useEffect, useRef, useState } from "react";
 
 interface WorkshopCardProps {
   workshop: any;
+  onUpdate?: (updatedWorkshop: any) => void;
 }
 
-export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
+export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }) => {
   const { playClick } = useSonicDNA();
   const { isEditMode } = useEditMode();
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeSubtitle, setActiveSubtitle] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
   const nextEdition = workshop.editions?.length > 0 ? workshop.editions[0] : null;
   const videoPath = workshop.media?.filePath || workshop.media?.file_path;
@@ -99,8 +102,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
   const handleAdminClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     playClick('pro');
-    // Open admin modal or navigate to admin page
-    router.push(`/admin/workshops/${workshop.id}`);
+    setIsEditModalOpen(true);
   };
   
   const togglePlay = (e: React.MouseEvent) => {
@@ -140,7 +142,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
     <ContainerInstrument 
       onClick={handleCardClick}
       plain
-      className={`group relative bg-white rounded-[20px] overflow-hidden shadow-aura hover:scale-[1.01] active:scale-[0.99] transition-all duration-500 border border-black/[0.02] flex flex-col cursor-pointer touch-manipulation h-full ${isEditMode ? 'ring-2 ring-primary ring-inset' : ''}`}
+      className={`group relative bg-white rounded-[20px] overflow-hidden shadow-aura hover:shadow-aura-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-500 border border-black/[0.02] flex flex-col cursor-pointer touch-manipulation h-full ${isEditMode ? 'ring-2 ring-primary ring-inset' : ''}`}
     >
       {/* ADMIN EDIT BUTTON */}
       {isEditMode && (
@@ -194,19 +196,19 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
             onClick={togglePlay}
             className="absolute inset-0 flex items-center justify-center bg-black/10 transition-opacity duration-500 z-10"
           >
-            <ContainerInstrument 
-              plain 
-              className={`w-16 h-16 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center hover:scale-110 transition-all duration-300 ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
-            >
-              <Image 
-                src={`/assets/common/branding/icons/${isPlaying ? 'INFO' : 'FORWARD'}.svg`} 
-                width={24} 
-                height={24} 
-                alt={isPlaying ? "Pause" : "Play"} 
-                className="brightness-0 invert object-contain"
-                style={!isPlaying ? { marginLeft: '4px' } : {}}
-              />
-            </ContainerInstrument>
+          <ContainerInstrument 
+            plain 
+            className={`w-16 h-16 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center hover:scale-110 transition-all duration-300 ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
+          >
+            <Image 
+              src={`/assets/common/branding/icons/${isPlaying ? 'INFO' : 'PLAY'}.svg`} 
+              width={24} 
+              height={24} 
+              alt={isPlaying ? "Pause" : "Play"} 
+              className="brightness-0 invert object-contain"
+              style={!isPlaying ? { marginLeft: '4px' } : {}}
+            />
+          </ContainerInstrument>
           </ContainerInstrument>
           <ContainerInstrument plain className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
           
@@ -222,10 +224,10 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
       )}
 
       <ContainerInstrument plain className="p-0 flex flex-col flex-grow">
-        <ContainerInstrument plain className="flex flex-col gap-4 mb-8 px-8 pt-8">
+        <ContainerInstrument plain className="flex flex-col gap-4 px-8 pt-8">
           {workshop.editions?.length > 0 && (
             <ContainerInstrument plain className="flex flex-col gap-3">
-              {workshop.editions.map((edition: any, index: number) => (
+              {workshop.editions.slice(0, 2).map((edition: any, index: number) => (
                 <ContainerInstrument key={edition.id} plain className="flex flex-wrap gap-x-6 gap-y-2">
                   {/* Datum */}
                   <ContainerInstrument plain className="flex items-center gap-2">
@@ -235,7 +237,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
                     </TextInstrument>
                   </ContainerInstrument>
                   
-                  {/* Tijd & Locatie (alleen voor de eerste editie om rust te bewaren, of compact voor alle) */}
+                  {/* Tijd & Locatie */}
                   <ContainerInstrument plain className="flex items-center gap-4">
                     <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest">
                       {new Date(edition.date).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}
@@ -252,7 +254,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
           )}
         </ContainerInstrument>
 
-        <ContainerInstrument plain className="px-8 pb-8 flex flex-col flex-grow">
+        <ContainerInstrument plain className="px-8 pt-8 pb-8 flex flex-col flex-grow">
           <HeadingInstrument level={3} className="text-3xl font-light tracking-tighter leading-tight mb-1 group-hover:text-primary transition-colors">
             <VoiceglotText translationKey={`studio.workshop.${workshop.id}.title`} defaultText={workshop.title} />
           </HeadingInstrument>
@@ -273,7 +275,10 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
             </TextInstrument>
           </ContainerInstrument>
 
-          <ContainerInstrument plain className="flex justify-between items-end pt-6 border-t border-black/[0.03]">
+          {/* Spacer to push price/cta to bottom */}
+          <div className="flex-grow" />
+
+          <ContainerInstrument plain className="flex justify-between items-end pt-6 border-t border-black/[0.03] mt-auto">
             <ContainerInstrument plain>
               <TextInstrument className="text-[15px] text-va-black/30 font-light tracking-widest mb-1">
                 <VoiceglotText translationKey="studio.investment" defaultText="Investering" />
@@ -294,6 +299,13 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop }) => {
           </ContainerInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
+
+      <WorkshopEditModal 
+        workshop={workshop}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onUpdate={onUpdate}
+      />
     </ContainerInstrument>
   );
 };

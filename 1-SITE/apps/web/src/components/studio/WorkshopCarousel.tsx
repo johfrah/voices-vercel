@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { ContainerInstrument } from "@/components/ui/LayoutInstruments";
 import { WorkshopCard } from './WorkshopCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -10,9 +10,14 @@ interface WorkshopCarouselProps {
   workshops: any[];
 }
 
-export const WorkshopCarousel: React.FC<WorkshopCarouselProps> = ({ workshops }) => {
+export const WorkshopCarousel: React.FC<WorkshopCarouselProps> = ({ workshops: initialWorkshops }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { playClick } = useSonicDNA();
+  const [workshops, setWorkshops] = useState(initialWorkshops);
+
+  const handleUpdate = (updatedWorkshop: any) => {
+    setWorkshops(prev => prev.map(w => w.id === updatedWorkshop.id ? updatedWorkshop : w));
+  };
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -45,7 +50,7 @@ export const WorkshopCarousel: React.FC<WorkshopCarouselProps> = ({ workshops })
       <ContainerInstrument 
         ref={scrollRef}
         plain
-        className="flex gap-[30px] overflow-x-auto snap-x snap-mandatory no-scrollbar pb-12"
+        className="flex gap-[30px] overflow-x-auto snap-x snap-mandatory no-scrollbar pb-12 px-4 -mx-4"
       >
         {workshops.map((workshop) => (
           <ContainerInstrument 
@@ -53,7 +58,7 @@ export const WorkshopCarousel: React.FC<WorkshopCarouselProps> = ({ workshops })
             plain
             className="min-w-[300px] md:min-w-[400px] snap-start self-stretch"
           >
-            <WorkshopCard workshop={workshop} />
+            <WorkshopCard workshop={workshop} onUpdate={handleUpdate} />
           </ContainerInstrument>
         ))}
       </ContainerInstrument>

@@ -51,8 +51,16 @@ export async function POST(request: Request) {
     
     //  CHRIS-PROTOCOL: Trust the Frontend ("Mandje is Truth")
     // We skip server-side re-calculation and VAT re-verification as requested.
-    const amount = pricing?.total || 0;
+    // pricing.total is the EXCL VAT grand total from the context.
+    const subtotal = pricing?.total || 0;
     const isVatExempt = !!submittedIsVatExempt;
+    const taxRate = isVatExempt ? 0 : 0.21;
+    
+    // Calculate INCL VAT total for Mollie
+    const totalInclVat = subtotal * (1 + taxRate);
+    const amount = totalInclVat;
+
+    console.log(`[Checkout] Processing order for ${email}, subtotal: ${subtotal}, totalInclVat: ${totalInclVat}, gateway: ${gateway}, payment_method: ${payment_method}`);
 
     //  LEX: AUDIT & NOTIFY (Non-blocking)
     // We still log the attempt for security and transparency
@@ -152,9 +160,10 @@ export async function POST(request: Request) {
       }).returning();
 
       // 3. Handle Response (Mollie vs Banktransfer vs Quote)
-      if (isQuote || payment_method === 'banktransfer') {
+      const selectedGateway = payment_method || gateway;
+      if (isQuote || selectedGateway === 'banktransfer') {
         //  YUKI SYNC: Bij overschrijving maken we direct een factuur in Yuki aan
-        if (payment_method === 'banktransfer') {
+        if (selectedGateway === 'banktransfer') {
           try {
             const { YukiService } = await import('@/services/YukiService');
             await YukiService.createInvoice({
@@ -189,7 +198,7 @@ export async function POST(request: Request) {
           success: true,
           orderId: newOrder.id,
           isBankTransfer: payment_method === 'banktransfer',
-          message: payment_method === 'banktransfer' 
+          message: selectedGateway === 'banktransfer' 
             ? 'Bestelling ontvangen. We sturen je de factuur voor de overschrijving.'
             : 'Offerte succesvol aangemaakt en verzonden.'
         });
@@ -214,24 +223,22 @@ export async function POST(request: Request) {
         });
       }
 
-      const taxRate = isVatExempt ? 0 : 0.21;
-      
       // Map cart items to Mollie lines
-      const mollieLines = body.items.map((item: any) => {
-        const itemTotal = item.pricing?.total || 0;
-        const vatAmount = itemTotal * (taxRate / (1 + taxRate));
-        const unitPrice = itemTotal; // Mollie unitPrice is including VAT
+      const mollieLines = (body.items || []).map((item: any) => {
+        const itemSubtotal = item.pricing?.total || item.pricing?.subtotal || 0;
+        const vatAmount = itemSubtotal * taxRate;
+        const totalAmount = itemSubtotal + vatAmount;
 
         return {
           name: item.actor?.display_name ? `Stemopname: ${item.actor.display_name}` : (item.type || 'Product'),
           quantity: 1,
           unitPrice: {
             currency: 'EUR',
-            value: unitPrice.toFixed(2)
+            value: totalAmount.toFixed(2)
           },
           totalAmount: {
             currency: 'EUR',
-            value: itemTotal.toFixed(2)
+            value: totalAmount.toFixed(2)
           },
           vatRate: (taxRate * 100).toFixed(0),
           vatAmount: {
@@ -245,9 +252,43 @@ export async function POST(request: Request) {
         };
       });
 
+      // Add current selection if present
+      if (body.selectedActor) {
+        // Calculate current selection subtotal by subtracting cart items from grand subtotal
+        const cartItemsSubtotal = (body.items || []).reduce((sum: number, i: any) => sum + (i.pricing?.total || i.pricing?.subtotal || 0), 0);
+        const currentSubtotal = subtotal - cartItemsSubtotal;
+
+        if (currentSubtotal > 0.01) {
+          const vatAmount = currentSubtotal * taxRate;
+          const totalAmount = currentSubtotal + vatAmount;
+
+          mollieLines.push({
+            name: `Stemopname: ${body.selectedActor.display_name}`,
+            quantity: 1,
+            unitPrice: {
+              currency: 'EUR',
+              value: totalAmount.toFixed(2)
+            },
+            totalAmount: {
+              currency: 'EUR',
+              value: totalAmount.toFixed(2)
+            },
+            vatRate: (taxRate * 100).toFixed(0),
+            vatAmount: {
+              currency: 'EUR',
+              value: vatAmount.toFixed(2)
+            },
+            metadata: {
+              actorId: body.selectedActor.id,
+              type: 'current_selection'
+            }
+          });
+        }
+      }
+
       // Add Academy/Studio if present but not in items (legacy fallback)
       if (mollieLines.length === 0 && amount > 0) {
-        const vatAmount = amount * (taxRate / (1 + taxRate));
+        const vatAmount = amount - (amount / (1 + taxRate));
         mollieLines.push({
           name: `Voices.be ${newOrder.journey.charAt(0).toUpperCase() + newOrder.journey.slice(1)}`,
           quantity: 1,
@@ -256,6 +297,23 @@ export async function POST(request: Request) {
           vatRate: (taxRate * 100).toFixed(0),
           vatAmount: { currency: 'EUR', value: vatAmount.toFixed(2) }
         });
+      }
+
+      // Final check: ensure sum of lines matches main amount exactly
+      const linesSum = mollieLines.reduce((sum, line) => sum + parseFloat(line.totalAmount.value), 0);
+      const diff = Math.abs(linesSum - amount);
+      
+      // If there's a tiny rounding difference, adjust the last line
+      if (diff > 0 && diff < 0.1 && mollieLines.length > 0) {
+        const lastLine = mollieLines[mollieLines.length - 1];
+        const currentVal = parseFloat(lastLine.totalAmount.value);
+        const adjustedVal = currentVal + (amount - linesSum);
+        lastLine.totalAmount.value = adjustedVal.toFixed(2);
+        lastLine.unitPrice.value = adjustedVal.toFixed(2);
+        
+        // Also adjust VAT amount for the last line to keep it consistent
+        const adjustedVat = adjustedVal - (adjustedVal / (1 + taxRate));
+        lastLine.vatAmount.value = adjustedVat.toFixed(2);
       }
 
       const mollieOrder = await MollieService.createOrder({
@@ -277,7 +335,7 @@ export async function POST(request: Request) {
         redirectUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/success?orderId=${newOrder.id}&token=${secureToken}`,
         webhookUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout/webhook`,
         locale: country === 'BE' ? 'nl_BE' : (country === 'NL' ? 'nl_NL' : (country === 'FR' ? 'fr_FR' : 'en_US')),
-        method: payment_method || undefined,
+        method: selectedGateway || undefined,
         metadata: {
           orderId: newOrder.id,
           userId: userId,

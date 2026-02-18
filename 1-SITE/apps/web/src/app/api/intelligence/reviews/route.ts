@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@db';
 import { reviews, actors } from '@db/schema';
 import { eq, sql, desc } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
  *  REVIEW INTELLIGENCE API (GODMODE)
@@ -11,6 +12,10 @@ import { eq, sql, desc } from 'drizzle-orm';
  */
 
 export async function GET(request: NextRequest) {
+  //  LEX-MANDATE: Admin only access for intelligence data
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
   const { searchParams } = new URL(request.url);
   const actorId = searchParams.get('actorId');
   const category = searchParams.get('category');

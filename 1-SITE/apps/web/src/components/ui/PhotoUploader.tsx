@@ -1,10 +1,13 @@
 "use client";
 
+import { useTranslation } from '@/contexts/TranslationContext';
 import React, { useState, useCallback, useRef } from 'react';
 import Cropper from 'react-easy-crop';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, X, Check, Camera, Loader2, Image as ImageIcon } from 'lucide-react';
 import { ButtonInstrument, ContainerInstrument, TextInstrument, HeadingInstrument } from './LayoutInstruments';
+import { VoiceglotImage } from './VoiceglotImage';
+import { VoiceglotText } from './VoiceglotText';
 import { cn } from '@/lib/utils';
 
 interface PhotoUploaderProps {
@@ -18,6 +21,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   onUploadSuccess,
   actorName 
 }) => {
+  const { t } = useTranslation();
   const [image, setImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -97,7 +101,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
       setImage(null);
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Fout bij het uploaden van de foto.');
+      alert(t('admin.photo.upload_error', 'Fout bij het uploaden van de foto.'));
     } finally {
       setIsUploading(false);
     }
@@ -107,7 +111,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
     <div className="space-y-4">
       <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
         <Camera size={14} className="text-primary" />
-        Profielfoto
+        <VoiceglotText translationKey="admin.photo.label" defaultText="Profielfoto" />
       </label>
 
       <div className="relative group">
@@ -117,15 +121,18 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
           className="relative aspect-square w-48 rounded-[30px] overflow-hidden bg-va-off-white border-2 border-dashed border-black/5 cursor-pointer hover:border-primary/20 transition-all shadow-inner group"
         >
           {currentPhotoUrl ? (
-            <img 
+            <VoiceglotImage 
               src={currentPhotoUrl} 
               alt={actorName} 
+              fill
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-va-black/20">
               <ImageIcon size={48} strokeWidth={1} />
-              <span className="text-[10px] font-bold uppercase tracking-widest mt-2">Upload Foto</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest mt-2">
+                <VoiceglotText translationKey="admin.photo.upload_cta" defaultText="Upload Foto" />
+              </span>
             </div>
           )}
           
@@ -155,7 +162,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
             <ContainerInstrument plain className="relative w-full max-w-xl bg-white rounded-[40px] overflow-hidden shadow-2xl flex flex-col h-[80vh]">
               <div className="p-8 border-b border-black/5 flex justify-between items-center">
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter">
-                  Foto <span className="text-primary italic">Kadreren</span>
+                  <VoiceglotText translationKey="admin.photo.crop_title" defaultText="Foto" /> <span className="text-primary italic"><VoiceglotText translationKey="admin.photo.crop_subtitle" defaultText="Kadreren" /></span>
                 </HeadingInstrument>
                 <button onClick={() => setImage(null)} className="p-2 hover:bg-va-off-white rounded-full transition-colors">
                   <X size={20} />
@@ -177,7 +184,9 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
               <div className="p-8 space-y-6">
                 <div className="space-y-2">
                   <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-va-black/40">
-                    <span>Zoom</span>
+                    <span>
+                      <VoiceglotText translationKey="admin.photo.zoom" defaultText="Zoom" />
+                    </span>
                     <span>{Math.round(zoom * 100)}%</span>
                   </div>
                   <input
@@ -198,7 +207,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
                     onClick={() => setImage(null)}
                     className="flex-1 rounded-2xl py-4"
                   >
-                    Annuleren
+                    {t('action.cancel', 'Annuleren')}
                   </ButtonInstrument>
                   <ButtonInstrument 
                     onClick={handleUpload}
@@ -210,7 +219,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
                     ) : (
                       <>
                         <Check size={20} />
-                        Bevestigen & Opslaan
+                        {t('action.confirm_save', 'Bevestigen & Opslaan')}
                       </>
                     )}
                   </ButtonInstrument>

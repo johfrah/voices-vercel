@@ -1,16 +1,15 @@
+import { MarketManager } from "@config/market-manager";
 import { db } from "@db";
-import { actorDemos, actors, contentArticles, contentBlocks, lessons, media, reviews, languages, actorLanguages } from "@db/schema";
+import { actors, contentArticles, contentBlocks, lessons, media, reviews } from "@db/schema";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import fs from 'fs';
-import path from 'path';
 import { promisify } from 'util';
 import {
     Actor,
     SearchResults,
 } from "../types";
 import { VoiceglotBridge } from "./voiceglot-bridge";
-import { MarketManager } from "@config/market-manager";
 
 const readFile = promisify(fs.readFile);
 
@@ -59,6 +58,22 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     try {
       console.log(' API: Querying all live actors with relations...');
       
+      //  CHRIS-PROTOCOL: Build filter conditions
+      const conditions = [eq(actors.status, 'live')];
+      
+      if (dbLang) {
+        //  KELLY-MANDATE: Support both exact match and prefix (e.g. 'fr' matches 'fr-fr')
+        //  CHRIS-PROTOCOL: Use ilike for case-insensitive matching (fixes nl-BE vs nl-be issues)
+        conditions.push(or(
+          ilike(actors.nativeLang, dbLang),
+          ilike(actors.nativeLang, `${dbLang}-%`)
+        ) as any);
+      }
+      
+      if (dbGender) {
+        conditions.push(eq(actors.gender, dbGender));
+      }
+
       //  CHRIS-PROTOCOL: Use relational query builder for clean joins
       dbResults = await db.query.actors.findMany({
         columns: {
@@ -115,7 +130,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           aiTags: true
           // holidayFrom and holidayTill are excluded as they don't exist in DB
         },
-        where: eq(actors.status, 'live'),
+        where: and(...conditions),
         orderBy: [asc(actors.voiceScore)],
         limit: 200,
         with: {
@@ -158,8 +173,22 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         throw error;
       }
       
+      //  KELLY-MANDATE: Filter results manually if Drizzle failed and we're using SDK
+      // (The SDK query above doesn't have the language/gender filters yet)
+      let filteredData = data || [];
+      if (dbLang) {
+        const lowDbLang = dbLang.toLowerCase();
+        filteredData = filteredData.filter(item => {
+          const actorLang = item.native_lang?.toLowerCase();
+          return actorLang === lowDbLang || actorLang?.startsWith(`${lowDbLang}-`);
+        });
+      }
+      if (dbGender) {
+        filteredData = filteredData.filter(item => item.gender === dbGender);
+      }
+
       // Map SDK field names to Drizzle field names if they differ
-      dbResults = (data || []).map(item => {
+      dbResults = filteredData.map(item => {
         const mapped = {
           ...item,
           firstName: item.first_name,
@@ -219,36 +248,40 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     try {
       //  CHRIS-PROTOCOL: Batch all secondary requests to avoid sequential blocking
       const [reviewsRes, transRes, mediaRes] = await Promise.all([
-        db.select().from(reviews).where(sql`length(text_nl) > 10`).orderBy(desc(reviews.createdAt)).limit(12),
+        db.select().from(reviews).orderBy(desc(reviews.createdAt)).limit(20),
         VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang),
         photoIds.length > 0
           ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`)
           : Promise.resolve([])
       ]);
       
-      dbReviews = reviewsRes;
+      // Filter out empty reviews in JS instead of SQL for easier debugging
+      dbReviews = reviewsRes.filter(r => r.textNl || r.textEn || r.textFr || r.textDe).slice(0, 12);
       translationMap = transRes;
       mediaResults = mediaRes;
     } catch (relError: any) {
       console.warn(' Drizzle relation fetch failed, falling back to SDK:', relError.message);
       const [reviewsRes, transRes, mediaRes] = await Promise.all([
-        supabase.from('reviews').select('*').gt(sql`length(text_nl)`, 10).order('created_at', { ascending: false }).limit(12),
+        supabase.from('reviews').select('*').order('created_at', { ascending: false }).limit(20),
         VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang),
         photoIds.length > 0
           ? supabase.from('media').select('*').in('id', photoIds)
           : Promise.resolve({ data: [] })
       ]);
       
-      dbReviews = (reviewsRes.data || []).map(r => ({
-        ...r,
-        authorName: r.author_name,
-        authorUrl: r.author_url,
-        textNl: r.text_nl,
-        textEn: r.text_en,
-        textFr: r.text_fr,
-        textDe: r.text_de,
-        createdAt: r.created_at
-      }));
+      dbReviews = (reviewsRes.data || [])
+        .map(r => ({
+          ...r,
+          authorName: r.author_name,
+          authorUrl: r.author_url,
+          textNl: r.text_nl,
+          textEn: r.text_en,
+          textFr: r.text_fr,
+          textDe: r.text_de,
+          createdAt: r.created_at
+        }))
+        .filter(r => r.textNl || r.textEn || r.textFr || r.textDe)
+        .slice(0, 12);
       translationMap = transRes;
       mediaResults = (mediaRes.data || []).map(m => ({ ...m, filePath: m.file_path }));
     }
@@ -349,8 +382,17 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         photo_url: proxiedPhotoWithFallback,
         starting_price: parseFloat(actor.priceUnpaid || '0'),
         price_unpaid_media: parseFloat(actor.priceUnpaid || '0'),
-        price_ivr: parseFloat(actor.priceIvr || '0'),
-        price_online: parseFloat(actor.priceOnline || '0'),
+        price_ivr: actor.priceIvr ? parseFloat(actor.priceIvr) : undefined,
+        price_online: actor.priceOnline ? parseFloat(actor.priceOnline) : undefined,
+        price_tv_national: (actor.price_tv_national || (actor as any).price_tv_national) ? parseFloat(actor.price_tv_national || (actor as any).price_tv_national) : undefined,
+        price_tv_regional: (actor.price_tv_regional || (actor as any).price_tv_regional) ? parseFloat(actor.price_tv_regional || (actor as any).price_tv_regional) : undefined,
+        price_tv_local: (actor.price_tv_local || (actor as any).price_tv_local) ? parseFloat(actor.price_tv_local || (actor as any).price_tv_local) : undefined,
+        price_radio_national: (actor.price_radio_national || (actor as any).price_radio_national) ? parseFloat(actor.price_radio_national || (actor as any).price_radio_national) : undefined,
+        price_radio_regional: (actor.price_radio_regional || (actor as any).price_radio_regional) ? parseFloat(actor.price_radio_regional || (actor as any).price_radio_regional) : undefined,
+        price_radio_local: (actor.price_radio_local || (actor as any).price_radio_local) ? parseFloat(actor.price_radio_local || (actor as any).price_radio_local) : undefined,
+        price_podcast: (actor.price_podcast || (actor as any).price_podcast) ? parseFloat(actor.price_podcast || (actor as any).price_podcast) : undefined,
+        price_social_media: (actor.price_social_media || (actor as any).price_social_media) ? parseFloat(actor.price_social_media || (actor as any).price_social_media) : undefined,
+        rates: actor.rates || {},
         rates_raw: actor.rates || {},
         voice_score: actor.voiceScore || 10,
         ai_enabled: actor.isAi,
@@ -668,26 +710,64 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
 }
 
 export async function getMusicLibrary(category: string = 'music'): Promise<any[]> {
-  let results: any[] = [];
   try {
-    results = await db.select().from(media).where(eq(media.category, category)).orderBy(media.fileName);
+    // CHRIS-PROTOCOL: De media tabel is de enige Source of Truth voor muziek.
+    // We filteren strikt op 'Onze eigen muziek' via de metadata die we tijdens de migratie hebben gezet.
+    const musicMedia = await db.select().from(media).where(
+      and(
+        eq(media.category, category),
+        sql`${media.metadata}->>'vibe' = 'Onze eigen muziek'`
+      )
+    ).orderBy(media.fileName);
+
+    // Map de media items naar het juiste formaat voor de UI
+    const mappedMedia = musicMedia.map(m => {
+      let title = m.altText;
+      if (!title) {
+        title = m.fileName
+          .replace('.mp3', '')
+          .replace('.wav', '')
+          .replace(/-/g, ' ')
+          .replace(/_preview/gi, '')
+          .replace(/music-/gi, '')
+          .trim();
+        title = title.charAt(0).toUpperCase() + title.slice(1);
+      }
+
+      // Sherlock: We halen het genre/vibe uit de labels of metadata
+      // In onze SQL migratie hebben we de vibe op 'Onze eigen muziek' gezet, 
+      // maar we kunnen hier specifieker filteren op genre indien beschikbaar.
+      const genre = m.labels?.find(l => !['audio', 'music', 'auto-migrated', 'filesystem-sync'].includes(l)) || 'Algemeen';
+
+      return {
+        id: m.id.toString(),
+        title: title,
+        vibe: genre,
+        preview: m.filePath.startsWith('http') ? m.filePath : `/${m.filePath}`
+      };
+    });
+
+    // Verwijder duplicaten op basis van titel
+    const unique = mappedMedia.filter((item, index, self) =>
+      index === self.findIndex((t) => t.title.toLowerCase() === item.title.toLowerCase())
+    );
+
+    return unique.sort((a, b) => a.title.localeCompare(b.title));
+
   } catch (dbError) {
     console.warn(' getMusicLibrary Drizzle failed, falling back to SDK');
-    const { data } = await supabase.from('media').select('*').eq('category', category).order('file_name');
-    results = (data || []).map(m => ({
-      ...m,
-      fileName: m.file_name,
-      filePath: m.file_path,
-      altText: m.alt_text
+    const { data } = await supabase.from('media')
+      .select('*')
+      .eq('category', category)
+      .order('file_name');
+      
+    return (data || []).map(m => ({
+      id: m.id.toString(),
+      title: m.alt_text || m.file_name,
+      vibe: (m.metadata as any)?.vibe || 'Onze eigen muziek',
+      preview: m.file_path.startsWith('http') ? m.file_path : `/${m.file_path}`
     }));
   }
-
-  return results.map(m => ({
-    id: m.id.toString(),
-    title: m.altText || m.fileName,
-    vibe: (m.metadata as any)?.vibe || '',
-    preview: m.filePath.startsWith('http') ? m.filePath : `/${m.filePath}`
-  }));
 }
 
 export async function getAcademyLesson(id: string): Promise<any> {

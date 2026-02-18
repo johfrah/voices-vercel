@@ -13,6 +13,7 @@ import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { StudioVideoPlayer } from "@/components/ui/StudioVideoPlayer";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { JourneyCta } from "@/components/ui/JourneyCta";
 import { getWorkshops } from "@/lib/api-server";
 import { ArrowRight, BookOpen, MessageSquare, Mic } from 'lucide-react';
 import { Metadata } from 'next';
@@ -27,10 +28,10 @@ import Link from "next/link";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "Voices Studio - Plezante voice-over workshops in Belgi",
+  title: "Voices Studio - Plezante voice-over workshops in België",
   description: "Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden. Leer van de experts in onze fysieke studio in Gent.",
   openGraph: {
-    title: "Voices Studio - Plezante voice-over workshops in Belgi",
+    title: "Voices Studio - Plezante voice-over workshops in België",
     description: "Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden.",
     type: "website",
   },
@@ -331,6 +332,13 @@ export default async function StudioPage() {
               translationKeyPrefix="studio.general.reviews"
             />
           </BentoCard>
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      {/* SALLY-MANDATE: Signature CTA for Studio Journey */}
+      <SectionInstrument className="py-20 bg-va-off-white">
+        <ContainerInstrument className="max-w-[1140px]">
+          <JourneyCta journey="studio" />
         </ContainerInstrument>
       </SectionInstrument>
 

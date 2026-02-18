@@ -73,11 +73,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           try {
             const { data: userData } = await supabase
               .from('users')
-              .select('role')
+              .select('role, preferences')
               .eq('email', authUser.email)
               .single();
             if (mountedRef.current) {
-              safeSetUser({ ...authUser, role: userData?.role } as any);
+              safeSetUser({ 
+                ...authUser, 
+                role: userData?.role,
+                preferences: userData?.preferences 
+              } as any);
             }
           } catch (dbErr) {
             if (isAbortError(dbErr)) return;

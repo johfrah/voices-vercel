@@ -7,12 +7,14 @@ import {
   ContainerInstrument, 
   HeadingInstrument, 
   TextInstrument, 
-  ButtonInstrument 
+  ButtonInstrument,
+  FixedActionDockInstrument
 } from '@/components/ui/LayoutInstruments';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { Bell, Check, X, Edit3, ArrowLeft, Loader2, ShieldAlert, Sparkles } from 'lucide-react';
+import { useAdminTracking } from '@/hooks/useAdminTracking';
+import { Bell, Check, X, Edit3, ArrowLeft, Loader2, ShieldAlert, Sparkles, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
@@ -23,6 +25,7 @@ import toast from 'react-hot-toast';
  */
 export default function AdminApprovalsPage() {
   const { playClick } = useSonicDNA();
+  const { logAction } = useAdminTracking();
   const [pending, setPending] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -72,16 +75,16 @@ export default function AdminApprovalsPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText  translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.approvals.title" defaultText="Approval Queue" /></HeadingInstrument>
         </ContainerInstrument>
         
-        <ContainerInstrument className="flex items-center gap-3 px-6 py-3 bg-va-black text-white rounded-2xl shadow-lg">
+        <ContainerInstrument className="flex items-center gap-3 px-6 py-3 bg-va-black text-white rounded-[20px] shadow-lg">
           <Bell strokeWidth={1.5} size={16} className={pending.length > 0 ? 'animate-bounce text-primary' : 'opacity-20'} />
-          <TextInstrument className="text-[15px] font-black tracking-widest">
+          <TextInstrument className="text-[15px] font-light tracking-widest">
             {pending.length} <VoiceglotText  translationKey="admin.approvals.pending_count" defaultText="Wachtende Acties" />
           </TextInstrument>
         </ContainerInstrument>
@@ -90,22 +93,22 @@ export default function AdminApprovalsPage() {
       {pending.length > 0 ? (
         <BentoGrid strokeWidth={1.5} columns={3}>
           {pending.map((item) => (
-            <BentoCard key={item.id} span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between group hover:shadow-aura transition-all">
+            <BentoCard key={item.id} span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between group hover:shadow-aura transition-all rounded-[20px]">
               <ContainerInstrument className="space-y-6">
                 <ContainerInstrument className="flex justify-between items-start">
-                  <ContainerInstrument className={`px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
+                  <ContainerInstrument className={`px-3 py-1 rounded-full text-[15px] font-light tracking-widest ${
                     item.priority === 'nuclear' ? 'bg-red-500 text-white animate-pulse' : 'bg-va-off-white text-va-black/40'
                   }`}>
                     {item.type}  {item.priority}
                   </ContainerInstrument>
-                  <TextInstrument className="text-[15px] font-bold text-va-black/20">{new Date(item.createdAt).toLocaleString('nl-BE')}</TextInstrument>
+                  <TextInstrument className="text-[15px] font-light text-va-black/20">{new Date(item.createdAt).toLocaleString('nl-BE')}</TextInstrument>
                 </ContainerInstrument>
 
                 <ContainerInstrument className="space-y-2">
                   <HeadingInstrument level={3} className="text-lg font-light tracking-tight leading-tight">
                     {item.payload?.subject || item.payload?.title || 'Geen onderwerp'}
                   </HeadingInstrument>
-                  <TextInstrument className="text-[15px] text-va-black/40 font-medium line-clamp-3">
+                  <TextInstrument className="text-[15px] text-va-black/40 font-light line-clamp-3">
                     {item.reasoning}
                   </TextInstrument>
                 </ContainerInstrument>
@@ -116,13 +119,13 @@ export default function AdminApprovalsPage() {
                     {item.isValueSensitive && (
                       <ContainerInstrument className="flex items-center gap-2 p-2 bg-red-500/5 border border-red-500/10 rounded-[20px]">
                         <ShieldAlert strokeWidth={1.5} size={12} className="text-red-500" />
-                        <TextInstrument className="text-[15px] font-black text-red-500 tracking-widest"><VoiceglotText  translationKey="auto.page.waarde_alarm__kortin.381129" defaultText="Waarde-Alarm (Korting)" /></TextInstrument>
+                        <TextInstrument className="text-[15px] font-light text-red-500 tracking-widest"><VoiceglotText  translationKey="auto.page.waarde_alarm__kortin.381129" defaultText="Waarde-Alarm (Korting)" /></TextInstrument>
                       </ContainerInstrument>
                     )}
                     {item.isBrandSensitive && (
                       <ContainerInstrument className="flex items-center gap-2 p-2 bg-primary/5 border border-primary/10 rounded-[20px]">
                         <Sparkles strokeWidth={1.5} size={12} className="text-primary" />
-                        <TextInstrument className="text-[15px] font-black text-primary tracking-widest"><VoiceglotText  translationKey="auto.page.fame_alarm__topmerk_.dc7782" defaultText="Fame-Alarm (Topmerk)" /></TextInstrument>
+                        <TextInstrument className="text-[15px] font-light text-primary tracking-widest"><VoiceglotText  translationKey="auto.page.fame_alarm__topmerk_.dc7782" defaultText="Fame-Alarm (Topmerk)" /></TextInstrument>
                       </ContainerInstrument>
                     )}
                   </ContainerInstrument>
@@ -132,13 +135,13 @@ export default function AdminApprovalsPage() {
               <ContainerInstrument className="mt-8 pt-6 border-t border-black/5 flex gap-2">
                 <ButtonInstrument 
                   onClick={() => handleAction(item.id, 'approve')}
-                  className="flex-1 py-3 bg-green-500 text-white rounded-xl text-[15px] font-black tracking-widest hover:bg-green-600 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 py-3 bg-green-500 text-white rounded-[10px] text-[15px] font-light tracking-widest hover:bg-green-600 transition-all flex items-center justify-center gap-2"
                 >
                   <Check strokeWidth={1.5} size={14} /><VoiceglotText  translationKey="auto.page.goedkeuren.f6b131" defaultText="Goedkeuren" />
                 </ButtonInstrument>
                 <ButtonInstrument 
                   onClick={() => handleAction(item.id, 'reject')}
-                  className="w-12 py-3 bg-va-off-white text-va-black/20 rounded-xl hover:text-red-500 transition-all flex items-center justify-center"
+                  className="w-12 py-3 bg-va-off-white text-va-black/20 rounded-[10px] hover:text-red-500 transition-all flex items-center justify-center"
                 >
                   <X strokeWidth={1.5} size={14} />
                 </ButtonInstrument>
@@ -147,13 +150,46 @@ export default function AdminApprovalsPage() {
           ))}
         </BentoGrid>
       ) : (
-        <ContainerInstrument className="bg-white border border-black/5 p-20 rounded-[40px] text-center space-y-4">
+        <ContainerInstrument className="bg-white border border-black/5 p-20 rounded-[20px] text-center space-y-4">
           <ContainerInstrument className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
             <Check strokeWidth={1.5} size={40} />
           </ContainerInstrument>
-          <HeadingInstrument level={2} className="text-2xl font-light tracking-tight"><VoiceglotText  translationKey="auto.page.alles_clean.817d14" defaultText="Alles Clean" /><TextInstrument className="text-va-black/40 font-medium"><VoiceglotText  translationKey="auto.page.er_zijn_momenteel_ge.56e606" defaultText="Er zijn momenteel geen acties die op goedkeuring wachten." /></TextInstrument></HeadingInstrument>
+          <HeadingInstrument level={2} className="text-2xl font-light tracking-tight"><VoiceglotText  translationKey="auto.page.alles_clean.817d14" defaultText="Alles Clean" /><TextInstrument className="text-va-black/40 font-light"><VoiceglotText  translationKey="auto.page.er_zijn_momenteel_ge.56e606" defaultText="Er zijn momenteel geen acties die op goedkeuring wachten." /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
       )}
+
+      <FixedActionDockInstrument>
+        <ButtonInstrument 
+          onClick={() => {
+            logAction('approvals_refresh');
+            fetchPending();
+          }}
+          className="va-btn-pro !bg-va-black flex items-center gap-2"
+        >
+          <RefreshCw strokeWidth={1.5} size={16} className={loading ? 'animate-spin' : ''} />
+          <VoiceglotText translationKey="admin.approvals.refresh" defaultText="Vernieuwen" />
+        </ButtonInstrument>
+      </FixedActionDockInstrument>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AdminPage",
+            "name": "Approval Queue",
+            "description": "Beheer van acties die goedkeuring vereisen.",
+            "_llm_context": {
+              "persona": "Architect",
+              "journey": "admin",
+              "intent": "approval_management",
+              "capabilities": ["approve_item", "reject_item", "view_pending"],
+              "lexicon": ["Approval", "Queue", "Human in the loop"],
+              "visual_dna": ["Bento Grid", "Liquid DNA"]
+            }
+          })
+        }}
+      />
     </PageWrapperInstrument>
   );
 }

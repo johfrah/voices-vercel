@@ -1,27 +1,26 @@
 "use client";
 
-import { BentoShowcaseInstrument } from "@/components/ui/BentoShowcaseInstrument";
 import { ContainerInstrument, HeadingInstrument, LoadingScreenInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { VoiceGrid } from "@/components/ui/VoiceGrid";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEditMode } from "@/contexts/EditModeContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
-import { useEditMode } from "@/contexts/EditModeContext";
+import { PricingEngine } from '@/lib/pricing-engine';
 import { Actor } from "@/types";
 import { MarketManager } from "@config/market-manager";
-import { PricingEngine } from '@/lib/pricing-engine';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 
-import { useRouter } from 'next/navigation';
+import ConfiguratorPageClient from '@/app/checkout/configurator/ConfiguratorPageClient';
+import { VoiceCard } from "@/components/ui/VoiceCard";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useSonicDNA } from "@/lib/sonic-dna";
-import ConfiguratorPageClient from '@/app/checkout/configurator/ConfiguratorPageClient';
-import { motion, AnimatePresence } from 'framer-motion';
-import { VoiceCard } from "@/components/ui/VoiceCard";
+import { AnimatePresence, motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 /**
  * HOME CONTENT (GOD MODE 2026 - AIRBNB STYLE)
@@ -39,7 +38,7 @@ import { VoiceCard } from "@/components/ui/VoiceCard";
 function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number } }) {
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
-  const { state: masterControlState, updateStep } = useMasterControl();
+  const { state: masterControlState, updateStep, resetFilters } = useMasterControl();
   const { selectActor, state: checkoutState } = useCheckout();
   const { playClick } = useSonicDNA();
   const router = useRouter();
@@ -100,7 +99,9 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
       journey: masterControlState.journey,
       media: masterControlState.filters.media,
       country: masterControlState.filters.country,
-      languages: masterControlState.filters.languages
+      languages: masterControlState.filters.languages,
+      language: masterControlState.filters.language,
+      currentStep: masterControlState.currentStep
     });
 
     if (masterControlState.journey === 'commercial' && Array.isArray(masterControlState.filters.media) && masterControlState.filters.media.length > 0) {
@@ -108,7 +109,11 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
       
       result = result.filter(actor => {
         //  KORNEEL RULE: Use Centralized PricingEngine Logic
-        const isAvailable = PricingEngine.isAvailable(actor, selectedMedia as any, masterControlState.filters.country);
+        const status = PricingEngine.getAvailabilityStatus(
+          actor, 
+          selectedMedia as any, 
+          masterControlState.filters.country || 'BE'
+        );
         
         // CHRIS-PROTOCOL: If the currently selected actor becomes unavailable due to filters,
         // we don't want them to disappear from the sidebar if we are already in the script step.
@@ -116,7 +121,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
           return true;
         }
         
-        return isAvailable;
+        return status === 'available';
       });
     }
 
@@ -219,7 +224,10 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
         case 'popularity':
         default:
           // Sort by voiceScore (lower is better/more popular)
-          return (a.voice_score || 10) - (b.voice_score || 10);
+          // CHRIS-PROTOCOL: Christina (1), Mark (2), Birgit (3), Johfrah (4)
+          const aScore = a.voice_score || 100;
+          const bScore = b.voice_score || 100;
+          return aScore - bScore;
       }
     });
 
@@ -230,12 +238,12 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
 
   //  POLYGLOT CHIPS LOGIC: Calculate available extra languages for the selected primary language
   const availableExtraLangs = useMemo(() => {
-    if (masterControlState.journey !== 'telephony' || !masterControlState.filters.language) return [];
+    if (masterControlState.journey !== 'telephony' || !masterControlState.filters.language || !actors) return [];
     
     const primaryLang = masterControlState.filters.language.toLowerCase();
     const primaryCode = MarketManager.getLanguageCode(primaryLang);
 
-    const relevantActors = actors.filter(a => {
+    const relevantActors = (actors || []).filter(a => {
       const actorNative = a.native_lang?.toLowerCase();
       return actorNative === primaryLang || 
              actorNative === primaryCode ||
@@ -276,8 +284,17 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
 
   // Mock filters voor de homepage (of haal ze op via API indien nodig)
   const filters = {
-    languages: ['Vlaams', 'Nederlands', 'Frans', 'Engels', 'Duits'],
-    genders: ['Mannelijk', 'Vrouwelijk'],
+    languages: [
+      t('language.vlaams', 'Vlaams'), 
+      t('language.nederlands', 'Nederlands'), 
+      t('language.frans', 'Frans'), 
+      t('language.engels', 'Engels'), 
+      t('language.duits', 'Duits')
+    ],
+    genders: [
+      t('gender.mannelijk', 'Mannelijk'), 
+      t('gender.vrouwelijk', 'Vrouwelijk')
+    ],
     styles: [],
     categories: []
   };
@@ -377,10 +394,20 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                       }}
                     />
                   ) : (
-                    <div className="py-20 text-center w-full">
+                    <div className="py-20 text-center w-full space-y-6">
                       <TextInstrument className="text-va-black/20 text-xl font-light italic">
-                        Geen stemmen gevonden voor deze selectie.
+                        <VoiceglotText translationKey="home.voicegrid.no_results" defaultText="Geen stemmen gevonden voor deze selectie." />
                       </TextInstrument>
+                      {actors && actors.length > 0 && (
+                        <button 
+                          onClick={() => {
+                            resetFilters();
+                          }}
+                          className="px-6 py-3 bg-va-black text-white rounded-full text-sm font-bold tracking-widest uppercase hover:bg-primary transition-all"
+                        >
+                          Filters herstellen
+                        </button>
+                      )}
                     </div>
                   )}
                 </motion.div>
@@ -574,6 +601,16 @@ export default function Home() {
             bio: actor.bio,
             price_ivr: actor.price_ivr,
             price_online: actor.price_online,
+            price_bsf: actor.price_bsf,
+            price_tv_national: actor.price_tv_national,
+            price_radio_national: actor.price_radio_national,
+            price_podcast: actor.price_podcast,
+            price_social_media: actor.price_social_media,
+            price_tv_regional: actor.price_tv_regional,
+            price_tv_local: actor.price_tv_local,
+            price_radio_regional: actor.price_radio_regional,
+            price_radio_local: actor.price_radio_local,
+            rates: actor.rates || {},
             holiday_from: actor.holiday_from,
             holiday_till: actor.holiday_till,
             rates_raw: actor.rates_raw || {} // CHRIS-PROTOCOL: Pass rates for filtering
@@ -596,11 +633,11 @@ export default function Home() {
   }, [mounted, searchParamsKey]);
 
   if (!mounted || (!data && isLoading)) {
-    return <LoadingScreenInstrument text="Voices..." />;
+    return <LoadingScreenInstrument text="" />;
   }
   
   return (
-    <Suspense  fallback={<LoadingScreenInstrument text="Voices..." />}>
+    <Suspense  fallback={<LoadingScreenInstrument text="" />}>
       {data && <HomeContent strokeWidth={1.5} actors={data.actors} reviews={data.reviews} reviewStats={data.reviewStats} />}
       {isLoading && data && (
         <div className="fixed top-0 left-0 w-full h-1 bg-primary/20 z-[9999]">

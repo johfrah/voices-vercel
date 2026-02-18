@@ -96,7 +96,16 @@ export interface Actor {
   clients?: string;
   demos: Demo[];
   reviews?: any[];
+  rates?: Record<string, any>;
   rates_raw?: Record<string, any>;
+  price_tv_national?: number;
+  price_tv_regional?: number;
+  price_tv_local?: number;
+  price_radio_national?: number;
+  price_radio_regional?: number;
+  price_radio_local?: number;
+  price_podcast?: number;
+  price_social_media?: number;
   delivery_days_min?: number;
   delivery_days_max?: number;
   cutoff_time?: string;
@@ -111,6 +120,8 @@ export interface Actor {
   experienceLevel?: string;
   holiday_from?: string | null;
   holiday_till?: string | null;
+  video_url?: string;
+  actor_videos?: Array<{ url: string; name: string }>;
 }
 
 export interface Demo {

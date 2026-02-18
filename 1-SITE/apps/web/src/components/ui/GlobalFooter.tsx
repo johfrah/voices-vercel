@@ -69,7 +69,7 @@ export default function GlobalFooter() {
       links: [
         { name: t('nav.studio', 'Voices Studio (workshops)'), href: '/studio/' },
         { name: t('nav.academy', 'Academy (online leertraject)'), href: '/academy/' },
-        { name: t('nav.signup', 'Aanmelden als stemacteur'), href: '/auth/signup/' },
+        { name: t('nav.signup', 'Aanmelden als stemacteur'), href: '/account' },
       ]
     },
     {
@@ -106,7 +106,7 @@ export default function GlobalFooter() {
         { name: market.phone, href: `tel:${market.phone.replace(/\s+/g, '')}` },
         { name: market.email, href: `mailto:${market.email}` },
         { name: t('footer.contact', 'Contact'), href: '/contact' },
-        { name: t('footer.edit_portfolio', 'Bewerk portfolio'), href: '/auth/login' },
+        { name: t('footer.edit_portfolio', 'Bewerk portfolio'), href: '/account' },
       ]
     }
   ];
@@ -175,6 +175,21 @@ export default function GlobalFooter() {
   const isStudio = typeof window !== 'undefined' && (window.location.pathname.startsWith('/studio') || window.location.pathname.startsWith('/academy'));
   const isOrdering = masterControlState.currentStep !== 'voice';
 
+  [
+    ademingSections,
+    standardSections,
+    portfolioSections,
+    youssefSections,
+    studioSections
+  ].flat().forEach(section => {
+    section.links.forEach(link => {
+      if (link.name && typeof link.name === 'string' && !link.name.includes('@')) {
+        // We don't wrap emails/phones, but we could wrap other names if needed.
+        // For now, the standard sections already use t() in their definitions.
+      }
+    });
+  });
+
   return (
     <ContainerInstrument as="footer" className="bg-va-off-white text-va-black pt-24 pb-12 overflow-hidden relative border-t border-black/5 !px-0">
       {/* Liquid Gradient Background */}
@@ -215,15 +230,21 @@ export default function GlobalFooter() {
               }
             </TextInstrument>
             <ContainerInstrument className="flex gap-4 justify-start">
-              {[Instagram, Twitter, Linkedin, Facebook].map((Icon, i) => (
+              {[
+                { icon: Instagram, href: '#', alt: t('social.instagram', 'Instagram') },
+                { icon: Twitter, href: '#', alt: t('social.twitter', 'Twitter') },
+                { icon: Linkedin, href: '#', alt: t('social.linkedin', 'LinkedIn') },
+                { icon: Facebook, href: '#', alt: t('social.facebook', 'Facebook') }
+              ].map((social, i) => (
                 <ButtonInstrument 
                   key={i} 
                   as="a"
-                  href="#"
+                  href={social.href}
+                  aria-label={social.alt}
                   onClick={() => playClick('light')}
                   className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
                 >
-                  <Icon size={18} strokeWidth={1.5} className="shrink-0" />
+                  <social.icon size={18} strokeWidth={1.5} className="shrink-0" />
                 </ButtonInstrument>
               ))}
             </ContainerInstrument>
@@ -260,7 +281,7 @@ export default function GlobalFooter() {
           <TextInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/20 ">
              2026 {isPortfolio ? 'Johfrah Lefebvre' : isArtist ? 'Youssef Zaki' : 'Voices'}. {isSpecial && (
               <TextInstrument as="span">
-                Powered by 
+                <VoiceglotText translationKey="footer.powered_by" defaultText="Powered by" />
                 <ButtonInstrument as="a" href="https://voices.be" variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
                   <VoiceglotText  translationKey="auto.globalfooter.voices_be.46435e" defaultText="Voices.be" />
                 </ButtonInstrument>

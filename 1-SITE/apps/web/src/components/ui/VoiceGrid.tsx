@@ -3,6 +3,7 @@
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { cn } from '@/lib/utils';
 import { Actor } from '@/types';
+import { motion, AnimatePresence } from 'framer-motion';
 import React from 'react';
 import { VoiceCard } from './VoiceCard';
 
@@ -39,18 +40,38 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
         "w-full",
         featured && "md:block flex overflow-x-auto pb-12 -mx-6 px-6 snap-x snap-mandatory no-scrollbar"
       )}>
-        <div className={cn(
-          featured ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 min-w-max md:min-w-full" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-        )}>
-          {actors.map((actor) => (
-            <div key={actor.id} className={cn(featured && "w-[85vw] md:w-auto snap-center")}>
-              <VoiceCard 
-                voice={actor} 
-                onSelect={onSelect ? () => handleSelect(actor) : undefined}
-              />
-            </div>
-          ))}
-        </div>
+        <motion.div 
+          layout
+          className={cn(
+            featured ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 min-w-max md:min-w-full items-stretch" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch"
+          )}
+        >
+          <AnimatePresence mode="popLayout">
+            {actors.filter(Boolean).map((actor) => (
+              <motion.div 
+                key={actor.id}
+                layoutId={`actor-${actor.id}`}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                transition={{ 
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 30,
+                  mass: 1,
+                  opacity: { duration: 0.2 }
+                }}
+                className={cn("flex", featured && "w-[85vw] md:w-auto snap-center")}
+              >
+                <VoiceCard 
+                  voice={actor} 
+                  onSelect={onSelect ? () => handleSelect(actor) : undefined}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </>
   );

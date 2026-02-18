@@ -137,7 +137,7 @@ export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumen
   ariaLabel,
   ...props
 }, ref) => {
-  const Tag = `h${level}` as any;
+  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
   return (
     <Tag 
       ref={ref} 
@@ -227,7 +227,8 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
   const { href, ...otherProps } = props;
   
   const variantClasses = {
-    default: "bg-primary text-white hover:bg-primary/90",
+    default: "bg-va-black text-white hover:bg-va-black/90",
+    primary: "bg-primary text-white hover:bg-primary/90",
     outline: "border border-primary/20 bg-transparent hover:bg-primary/5 text-primary",
     ghost: "bg-transparent border-none shadow-none",
     link: "bg-transparent underline-offset-4 hover:underline text-primary p-0 h-auto justify-start inline-flex",
@@ -285,7 +286,7 @@ export const InputInstrument = forwardRef<HTMLInputElement, InputHTMLAttributes<
     <input 
       ref={ref}
       className={cn(
-        "bg-va-off-white border-none rounded-[10px] px-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-va-black/20",
+        "bg-va-off-white border-none rounded-[10px] px-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/20",
         className
       )}
       {...props}
@@ -303,7 +304,7 @@ export const SelectInstrument = forwardRef<HTMLSelectElement, SelectHTMLAttribut
   ...props
 }, ref) => {
   return (
-    <select ref={ref} className={cn(className, "rounded-[10px] bg-va-off-white border-none px-4 py-3 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all")} {...props}>
+    <select ref={ref} className={cn(className, "rounded-[10px] bg-va-off-white border-none px-4 py-3 text-[15px] font-medium focus:ring-2 focus:ring-va-black/10 transition-all")} {...props}>
       {children}
     </select>
   );
@@ -350,7 +351,7 @@ export const LabelInstrument = ({
 }: HTMLAttributes<HTMLLabelElement>) => {
   return (
     <label 
-      className={cn("text-[15px] font-light tracking-widest text-va-black/40 ml-4 mb-2 block", className)} 
+      className={cn("text-[13px] font-light tracking-widest text-va-black/40 ml-4 mb-2 block", className)} 
       {...props}
     >
       {children}
@@ -481,10 +482,33 @@ export const FlagPT = ({ size = 20 }: { size?: number }) => (
 );
 
 /**
+ * FIXED ACTION DOCK INSTRUMENT
+ * Een zwevend paneel onderaan voor primaire acties (Thumb-Zone optimized)
+ */
+export const FixedActionDockInstrument = ({ 
+  children, 
+  className = '' 
+}: { 
+  children: ReactNode; 
+  className?: string;
+}) => {
+  return (
+    <div className={cn(
+      "fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-bottom-4 duration-500",
+      className
+    )}>
+      <div className="bg-white/80 backdrop-blur-2xl border border-black/5 p-2 rounded-[24px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] flex items-center gap-2">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+/**
  * LOADING SCREEN INSTRUMENT
  */
 export const LoadingScreenInstrument = ({ 
-  text = 'Laden...' 
+  text = '' 
 }: { 
   text?: string;
 }) => {
@@ -517,15 +541,20 @@ export const LoadingScreenInstrument = ({
               50% { transform: scaleY(1.2) scaleX(1.05); opacity: 1; }
             }
           `}</style>
-          <g transform="matrix(0.750336088 0 0 0.750336088 168.565295 51.760476)">
-            <rect x="402.21" y="117.60" width="79.85" height="959.57" rx="39.92" ry="39.92" className="loader-bar lb1"/>
-            <rect x="207.63" y="358.58" width="89.02" height="478.73" rx="44.51" ry="44.51" className="loader-bar lb2"/>
-            <rect x="585.09" y="358.58" width="89.02" height="478.73" rx="44.51" ry="44.51" className="loader-bar lb3"/>
-            <rect x="760.47" y="484.62" width="82.79" height="258.44" rx="41.40" ry="41.40" className="loader-bar lb4"/>
-            <rect x="40.17" y="484.62" width="82.79" height="258.44" rx="41.39" ry="41.39" className="loader-bar lb5"/>
+          <g transform="translate(500, 500) scale(0.8)">
+            <rect x="-40" y="-300" width="80" height="600" rx="40" ry="40" className="loader-bar lb1"/>
+            <rect x="-240" y="-150" width="90" height="300" rx="45" ry="45" className="loader-bar lb2"/>
+            <rect x="150" y="-150" width="90" height="300" rx="45" ry="45" className="loader-bar lb3"/>
+            <rect x="330" y="-50" width="80" height="100" rx="40" ry="40" className="loader-bar lb4"/>
+            <rect x="-410" y="-50" width="80" height="100" rx="40" ry="40" className="loader-bar lb5"/>
           </g>
         </svg>
       </div>
+      {text && (
+        <TextInstrument className="mt-12 text-[13px] font-bold text-va-black/20 uppercase tracking-[0.3em] animate-pulse">
+          {text}
+        </TextInstrument>
+      )}
     </ContainerInstrument>
   );
 };

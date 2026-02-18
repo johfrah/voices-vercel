@@ -12,11 +12,16 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     // 1. Haal recente mails op die antwoorden bevatten (bijv. van Johfrah)
-    const recentReplies = await db.query.mailContent.findMany({
-      where: sql`${mailContent.sender} LIKE '%johfrah@voices.be%'`,
-      orderBy: [desc(mailContent.date)],
-      limit: 20
-    });
+    let recentReplies: any[] = [];
+    try {
+      recentReplies = await db.query.mailContent.findMany({
+        where: sql`${mailContent.sender} LIKE '%johfrah@voices.be%'`,
+        orderBy: [desc(mailContent.date)],
+        limit: 20
+      });
+    } catch (dbError) {
+      console.error(' FAQ Engine DB Error:', dbError);
+    }
 
     // 2.  AI PATTERN RECOGNITION (Simulatie)
     // In Beheer-modus zou een LLM hier de 'thread' analyseren.

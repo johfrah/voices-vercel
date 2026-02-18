@@ -111,7 +111,7 @@ export async function updateSession(request: NextRequest) {
   ]
   const isProtected = protectedPaths.some(p => url.pathname.startsWith(p))
   if (!user && isProtected) {
-    return NextResponse.redirect(new URL('/auth/login', request.url))
+    return NextResponse.redirect(new URL('/account', request.url))
   }
 
   return response

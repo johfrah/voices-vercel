@@ -84,51 +84,39 @@ export function LoginPageClient() {
     setError('');
     setMessage('');
 
+    if (supabaseUnavailable) {
+      setError('De inlogservice is tijdelijk niet beschikbaar.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      if (!password) {
-        try {
-          const res = await fetch('/api/auth/magic-link', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, redirect }),
-          });
-
-          const data = await res.json();
-
-          if (data.error) {
-            if (data.error.includes('Database error') || data.error.includes('fetch')) {
-              setError('Onze excuses, er is een tijdelijke storing in de mail-service. Probeer het over een moment opnieuw.');
-            } else {
-              setError(data.error);
-            }
-          } else {
-            document.cookie = `voices_remembered_email=${encodeURIComponent(email)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-            setMessage('Check je inbox! We hebben een magische inloglink gestuurd.');
-          }
-        } catch (fetchError) {
-          console.error('Email service fetch failed:', fetchError);
-          setError('We konden geen verbinding maken met de inlog-service. Controleer je internetverbinding of probeer het later nog eens.');
-        }
-        return;
-      }
-
-      if (supabaseUnavailable) {
-        setError('De inlogservice is tijdelijk niet beschikbaar.');
-        return;
-      }
-      const { error: authError } = await supabase!.auth.signInWithPassword({
-        email,
-        password,
+      // CHRIS-PROTOCOL: Gebruik onze eigen custom auth API voor 100% controle
+      const response = await fetch('/api/auth/send-magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, redirect }),
       });
 
-      if (authError) {
-        setError(authError.message);
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('[LoginPage] API Error:', result);
+        // CHRIS-PROTOCOL: Vertaal bekende fouten
+        if (result.error?.includes('rate limit') || result.error?.includes('security purposes')) {
+          setError('Om veiligheidsredenen kun je pas over enkele seconden een nieuwe link aanvragen.');
+        } else if (result.error?.includes('Service role key')) {
+          setError('Systeemfout: Auth configuratie ontbreekt (Service role key).');
+        } else {
+          setError(`Fout: ${result.error || 'Onbekende fout'}`);
+        }
       } else {
         document.cookie = `voices_remembered_email=${encodeURIComponent(email)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-        router.push(redirect);
+        setMessage('Check je inbox! We hebben een magische inloglink gestuurd.');
       }
     } catch (err) {
-      setError('Er is een fout opgetreden bij het inloggen.');
+      console.error('[LoginPage] Custom auth failed:', err);
+      setError('Er is een fout opgetreden bij het versturen van de inloglink.');
     } finally {
       setIsLoading(false);
     }
@@ -136,44 +124,64 @@ export function LoginPageClient() {
 
   return (
     <ContainerInstrument className="min-h-[80vh] flex items-center justify-center p-6 relative overflow-hidden">
-      <ContainerInstrument className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
-        <ContainerInstrument className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary rounded-full hred blur-[120px] animate-pulse" />
-        <ContainerInstrument className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-secondary rounded-full hblue blur-[120px] animate-pulse delay-1000" />
+      <ContainerInstrument className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-30">
+        <ContainerInstrument className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-primary/20 rounded-full hred blur-[150px] animate-pulse" />
+        <ContainerInstrument className="absolute bottom-[-20%] left-[-10%] w-[800px] h-[800px] bg-secondary/20 rounded-full hblue blur-[150px] animate-pulse delay-1000" />
       </ContainerInstrument>
 
-      <ContainerInstrument className="w-full max-w-xl relative z-10">
+      <ContainerInstrument className="w-full max-w-md relative z-10">
         <ContainerInstrument className="text-center mb-12 space-y-4">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[15px] font-light tracking-widest shadow-sm border border-gray-100/50 ">
-            <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText  translationKey="auth.login.secure_access" defaultText="Toegang" />
+          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[13px] font-bold tracking-[0.2em] uppercase shadow-sm border border-gray-100/50 text-va-black/40">
+            <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText  translationKey="auth.login.secure_access" defaultText="Secure Access" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
+          <HeadingInstrument level={1} className="text-5xl md:text-6xl font-light tracking-tighter leading-tight">
             <VoiceglotText  translationKey="auth.login.title_prefix" defaultText="Toegang tot" />
-            <TextInstrument as="span" className="text-primary font-extralight">
+            <br />
+            <span className="text-primary font-extralight italic">
               <VoiceglotText  translationKey="auto.loginpageclient.voices.d342f8" defaultText="Voices" />
-            </TextInstrument>
+            </span>
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-light max-w-sm mx-auto">
-            <VoiceglotText  translationKey="auth.login.subtitle" defaultText="Vul je e-mailadres in. Je ontvangt direct een magische link in je inbox om veilig in te loggen." />
+          <TextInstrument className="text-va-black/40 font-light max-w-xs mx-auto leading-relaxed">
+            <VoiceglotText  translationKey="auth.login.subtitle" defaultText="Vul je e-mailadres in voor een magische inloglink." />
           </TextInstrument>
         </ContainerInstrument>
 
-        <BentoCard span="full" className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-12">
-          {supabaseUnavailable && (
-            <ContainerInstrument className="mb-6 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-800 text-[15px] font-light tracking-widest rounded-r-xl">
-              <VoiceglotText  translationKey="auto.loginpageclient.de_inlogservice_is_t.ea33a3" defaultText="De inlogservice is tijdelijk niet beschikbaar. Probeer het later opnieuw." />
+        <BentoCard span="full" className="bg-white/80 backdrop-blur-xl border-white/20 shadow-aura p-10 rounded-[40px]">
+          {message ? (
+            <ContainerInstrument className="text-center py-8 space-y-6 animate-in zoom-in-95 duration-500">
+              <ContainerInstrument className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Mail size={40} strokeWidth={1.5} className="animate-bounce" />
+              </ContainerInstrument>
+              <ContainerInstrument className="space-y-2">
+                <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter">
+                  Check je inbox!
+                </HeadingInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
+                  We hebben een magische inloglink gestuurd naar <span className="text-va-black font-medium">{email}</span>.<br />
+                  Klik op de link in de e-mail om direct toegang te krijgen.
+                </TextInstrument>
+              </ContainerInstrument>
+              <ButtonInstrument 
+                onClick={() => setMessage('')}
+                variant="ghost"
+                className="text-[13px] text-va-black/30 hover:text-va-black transition-colors"
+              >
+                Opnieuw proberen met een ander e-mailadres
+              </ButtonInstrument>
             </ContainerInstrument>
-          )}
-          <FormInstrument onSubmit={handleSubmit} className="space-y-8">
-            {error && (
-              <ContainerInstrument className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-[15px] font-light tracking-widest rounded-r-xl animate-in fade-in slide-in-from-top-2">
-                {error}
-              </ContainerInstrument>
-            )}
-            {message && (
-              <ContainerInstrument className="p-4 bg-green-50 border-l-4 border-green-500 text-green-700 text-[15px] font-light tracking-widest rounded-r-xl animate-in fade-in slide-in-from-top-2">
-                {message}
-              </ContainerInstrument>
-            )}
+          ) : (
+            <>
+              {supabaseUnavailable && (
+                <ContainerInstrument className="mb-6 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-800 text-[15px] font-light tracking-widest rounded-r-xl">
+                  <VoiceglotText  translationKey="auto.loginpageclient.de_inlogservice_is_t.ea33a3" defaultText="De inlogservice is tijdelijk niet beschikbaar. Probeer het later opnieuw." />
+                </ContainerInstrument>
+              )}
+              <FormInstrument onSubmit={handleSubmit} className="space-y-8">
+                {error && (
+                  <ContainerInstrument className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-[15px] font-light tracking-widest rounded-r-xl animate-in fade-in slide-in-from-top-2">
+                    {error}
+                  </ContainerInstrument>
+                )}
 
             <ContainerInstrument className="space-y-6">
               <ContainerInstrument className="relative group">
@@ -183,76 +191,46 @@ export function LoginPageClient() {
                   name="email"
                   autoComplete="email"
                   placeholder="E-mailadres"
-                  className="w-full !py-5 !pl-16 !pr-6"
+                  className="w-full !py-6 !pl-16 !pr-6 !rounded-2xl bg-va-off-white/50 border-transparent focus:bg-white transition-all shadow-inner"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </ContainerInstrument>
 
-              {showPassword ? (
-                <ContainerInstrument className="relative group animate-in fade-in slide-in-from-top-2">
-                  <Lock strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={20} />
-                  <InputInstrument 
-                    type="password"
-                    name="password"
-                    autoComplete="current-password"
-                    placeholder="Wachtwoord"
-                    className="w-full !py-5 !pl-16 !pr-6"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <ButtonInstrument 
-                    onClick={() => {
-                      setShowPassword(false);
-                      setPassword('');
-                    }}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-[15px] font-light tracking-widest text-primary hover:opacity-70 transition-opacity "
-                  >
-                    <VoiceglotText  translationKey="auto.loginpageclient.gebruik_magic_link.e10a3c" defaultText="Gebruik Magic Link" />
-                  </ButtonInstrument>
-                </ContainerInstrument>
-              ) : (
-                <ContainerInstrument className="flex justify-center">
-                  <ButtonInstrument 
-                    onClick={() => setShowPassword(true)}
-                    className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors "
-                  >
-                    Ik wil inloggen met een wachtwoord
-                  </ButtonInstrument>
-                </ContainerInstrument>
-              )}
-
               <ButtonInstrument 
                 type="submit" 
+                variant="pure"
                 disabled={isLoading || supabaseUnavailable}
-                className="va-btn-pro w-full flex flex-col items-center justify-center gap-1 group !py-6"
+                className="va-btn-pro w-full flex flex-col items-center justify-center gap-1 group !py-8 !rounded-2xl shadow-lg hover:shadow-primary/10 transition-all"
               >
                 {isLoading ? (
-                  <Loader2 strokeWidth={1.5} className="animate-spin" size={20} />
+                  <Loader2 strokeWidth={1.5} className="animate-spin" size={24} />
                 ) : (
                   <>
                     <ContainerInstrument className="flex items-center gap-3">
-                      <VoiceglotText  translationKey="auth.login.submit" defaultText={password ? "Inloggen" : "Stuur Magische Link"} /> 
+                      <span className="text-lg font-light tracking-widest uppercase">Stuur Magische Link</span>
                       <ArrowRight strokeWidth={1.5} size={20} className="group-hover:translate-x-1 transition-transform" />
                     </ContainerInstrument>
-                    {!password && (
-                      <TextInstrument as="span" className="text-[15px] opacity-50 font-normal normal-case tracking-normal">
-                        <VoiceglotText  translationKey="auto.loginpageclient.je_ontvangt_een_eenm.b03532" defaultText="Je ontvangt een eenmalige inloglink per e-mail" />
-                      </TextInstrument>
-                    )}
                   </>
                 )}
               </ButtonInstrument>
+              
+              {!isLoading && (
+                <TextInstrument className="text-[12px] text-va-black/30 text-center font-light leading-relaxed px-4">
+                  <VoiceglotText  translationKey="auto.loginpageclient.je_ontvangt_een_eenm.b03532" defaultText="Je ontvangt binnen enkele seconden een eenmalige inloglink per e-mail." />
+                </TextInstrument>
+              )}
             </ContainerInstrument>
-          </FormInstrument>
+              </FormInstrument>
+            </>
+          )}
         </BentoCard>
 
-        <ContainerInstrument className="mt-12 text-center">
-          <ContainerInstrument className="flex items-center justify-center gap-2 text-primary">
-            <Star strokeWidth={1.5} size={12} fill="currentColor" />
-            <TextInstrument as="span" className="text-[15px] font-light tracking-widest ">
+        <ContainerInstrument className="mt-16 text-center opacity-20 hover:opacity-40 transition-opacity duration-1000">
+          <ContainerInstrument className="flex items-center justify-center gap-2 text-va-black">
+            <Star strokeWidth={1.5} size={10} fill="currentColor" />
+            <TextInstrument as="span" className="text-[11px] font-bold tracking-[0.3em] uppercase">
               <VoiceglotText  translationKey="auth.login.footer" defaultText="Voices" />
             </TextInstrument>
           </ContainerInstrument>

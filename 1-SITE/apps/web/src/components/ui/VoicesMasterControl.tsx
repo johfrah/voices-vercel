@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from 'react';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
+import { CommercialMediaType, PricingEngine } from '@/lib/pricing-engine';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { MarketManager } from '@config/market-manager';
-import { PricingEngine } from '@/lib/pricing-engine';
-import { ArrowUpDown, Check, Globe, Megaphone, Mic2, Phone, Radio, Tv, User, Users, Video, Clock, Star, Type } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Clock, Globe, Megaphone, Mic2, Phone, Radio, Star, Tv, Type, User, Users, Video } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
 import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
 import { OrderStepsInstrument } from './OrderStepsInstrument';
@@ -245,19 +246,19 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
     };
 
     const languageConfig = [
-      { label: 'Vlaams', value: 'Vlaams', icon: FlagBE, subLabel: 'Belgi', popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
-      { label: 'Nederlands', value: 'Nederlands', icon: FlagNL, subLabel: 'Nederland', popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
-      { label: 'Frans', value: 'Frans (BE)', icon: FlagBE, subLabel: 'Belgi', popular: market.market_code === 'BE' },
-      { label: 'Frans', value: 'Frans (FR)', icon: FlagFR, subLabel: 'Frankrijk', popular: market.market_code === 'FR' || market.market_code === 'BE' },
-      { label: 'Engels', value: 'Engels (UK)', icon: FlagUK, subLabel: 'United Kingdom', popular: true },
-      { label: 'Engels', value: 'Engels (US)', icon: FlagUS, subLabel: 'United States', popular: true },
-      { label: 'Duits', value: 'Duits', icon: FlagDE, subLabel: 'Duitsland', popular: market.market_code === 'DE' || market.market_code === 'BE' || market.market_code === 'NLNL' },
-      { label: 'Spaans', value: 'Spaans', icon: FlagES, subLabel: 'Spanje', popular: market.market_code === 'ES' },
-      { label: 'Italiaans', value: 'Italiaans', icon: FlagIT, subLabel: 'Itali', popular: market.market_code === 'IT' },
-      { label: 'Pools', value: 'Pools', icon: FlagPL, subLabel: 'Polen' },
-      { label: 'Deens', value: 'Deens', icon: FlagDK, subLabel: 'Denemarken' },
-      { label: 'Portugees', value: 'Portugees', icon: FlagPT, subLabel: 'Portugal', popular: market.market_code === 'PT' },
-      { label: 'Zweeds', value: 'Zweeds', icon: Globe, subLabel: 'Zweden' },
+      { label: t('language.vlaams', 'Vlaams'), value: 'Vlaams', icon: FlagBE, subLabel: t('country.be.sub', 'België'), popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
+      { label: t('language.nederlands', 'Nederlands'), value: 'Nederlands', icon: FlagNL, subLabel: t('country.nl.sub', 'Nederland'), popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
+      { label: t('language.frans', 'Frans'), value: 'Frans (BE)', icon: FlagBE, subLabel: t('country.be.sub', 'België'), popular: market.market_code === 'BE' },
+      { label: t('language.frans', 'Frans'), value: 'Frans (FR)', icon: FlagFR, subLabel: t('country.fr.sub', 'Frankrijk'), popular: market.market_code === 'FR' || market.market_code === 'BE' },
+      { label: t('language.engels', 'Engels'), value: 'Engels (UK)', icon: FlagUK, subLabel: t('country.uk.sub', 'United Kingdom'), popular: true },
+      { label: t('language.engels', 'Engels'), value: 'Engels (US)', icon: FlagUS, subLabel: t('country.us.sub', 'United States'), popular: true },
+      { label: t('language.duits', 'Duits'), value: 'Duits', icon: FlagDE, subLabel: t('country.de.sub', 'Duitsland'), popular: market.market_code === 'DE' || market.market_code === 'BE' || market.market_code === 'NLNL' },
+      { label: t('language.spaans', 'Spaans'), value: 'Spaans', icon: FlagES, subLabel: t('country.es.sub', 'Spanje'), popular: market.market_code === 'ES' },
+      { label: t('language.italiaans', 'Italiaans'), value: 'Italiaans', icon: FlagIT, subLabel: t('country.it.sub', 'Italië'), popular: market.market_code === 'IT' },
+      { label: t('language.pools', 'Pools'), value: 'Pools', icon: FlagPL, subLabel: t('country.pl.sub', 'Polen') },
+      { label: t('language.deens', 'Deens'), value: 'Deens', icon: FlagDK, subLabel: t('country.dk.sub', 'Denemarken') },
+      { label: t('language.portugees', 'Portugees'), value: 'Portugees', icon: FlagPT, subLabel: t('country.pt.sub', 'Portugal'), popular: market.market_code === 'PT' },
+      { label: t('language.zweeds', 'Zweeds'), value: 'Zweeds', icon: Globe, subLabel: t('country.se.sub', 'Zweden') },
     ].map(lang => ({
       ...lang,
       availableExtraLangs: state.journey === 'telephony' ? getExtraLangsFor(lang.label, lang.value) : []
@@ -272,17 +273,17 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
       const baseB = getBaseLang(b.label); // Fixed double split typo
 
       if (market.market_code === 'BE') {
-        if (a.label === 'Vlaams') return -1;
-        if (b.label === 'Vlaams') return 1;
-        if (a.label === 'Nederlands') return -1;
-        if (b.label === 'Nederlands') return 1;
+        if (a.value === 'Vlaams') return -1;
+        if (b.value === 'Vlaams') return 1;
+        if (a.value === 'Nederlands') return -1;
+        if (b.value === 'Nederlands') return 1;
       }
 
       if (market.market_code === 'NLNL') {
-        if (a.label === 'Nederlands') return -1;
-        if (b.label === 'Nederlands') return 1;
-        if (a.label === 'Vlaams') return -1;
-        if (b.label === 'Vlaams') return 1;
+        if (a.value === 'Nederlands') return -1;
+        if (b.value === 'Nederlands') return 1;
+        if (a.value === 'Vlaams') return -1;
+        if (b.value === 'Vlaams') return 1;
       }
 
       if (baseA !== baseB) return baseA.localeCompare(baseB);
@@ -291,12 +292,12 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
 
     const result = [
       ...popularLangs.sort(sortFn),
-      { label: 'OVERIGE TALEN', value: '', isHeader: true },
+      { label: t('filter.other_languages', 'OVERIGE TALEN'), value: '', isHeader: true },
       ...otherLangs.sort(sortFn)
     ];
 
     return result;
-  }, [state.journey, actors]);
+  }, [state.journey, actors, t]);
 
 
 
@@ -312,14 +313,38 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
 
   return (
     <ContainerInstrument className="w-full max-w-[1440px] mx-auto space-y-8 px-0">
-      {/*  THE MASTER CONTROL BOX */}
-      <ContainerInstrument plain className="w-full bg-white border border-black/10 rounded-[40px] p-3 shadow-aura group/master">
+      {/*  THE MASTER CONTROL BOX - CHRIS-PROTOCOL: Always show journey selector in script phase as it influences input style */}
+      <ContainerInstrument plain className={cn(
+        "w-full bg-white border border-black/10 rounded-[40px] p-3 shadow-aura group/master transition-all duration-500",
+        // CHRIS-PROTOCOL: Reduce bottom padding when no filters are visible (Telephony/Video in script phase)
+        state.currentStep !== 'voice' && state.journey !== 'commercial' && "pb-3"
+      )}>
         
         {/* 1. Journey Selector (Top Row) */}
-        <ContainerInstrument plain className="flex items-center justify-center p-1.5 bg-va-off-white/50 rounded-[32px] mb-3">
+        <ContainerInstrument plain className={cn(
+          "flex items-center justify-center p-1.5 bg-va-off-white/50 rounded-[32px]",
+          (state.currentStep === 'voice' || state.journey === 'commercial') && "mb-3"
+        )}>
           {journeys.map((j) => {
             const isActive = state.journey === j.id;
             const Icon = j.icon;
+
+            // CHRIS-PROTOCOL: Check if selected actor supports this journey (especially for 'commercial')
+            // We use the PricingEngine to determine if the actor has ANY available commercial rates.
+            const isCommercialJourney = j.id === 'commercial';
+            let isUnsupported = false;
+            
+            if (state.currentStep !== 'voice' && checkoutState.selectedActor && isCommercialJourney) {
+              const commercialTypes: CommercialMediaType[] = ['online', 'radio_national', 'tv_national', 'podcast', 'radio_regional', 'radio_local', 'tv_regional', 'tv_local'];
+              // If the actor has NO rates for ANY of these, they don't do commercial
+              const hasAnyCommercialRate = commercialTypes.some(type => 
+                PricingEngine.getAvailabilityStatus(checkoutState.selectedActor, [type], state.filters.country || 'BE') === 'available'
+              );
+              isUnsupported = !hasAnyCommercialRate;
+            }
+
+            // CHRIS-PROTOCOL: If unsupported, we hide the button entirely to avoid confusion
+            if (isUnsupported) return null;
 
             return (
               <button
@@ -341,7 +366,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
                     "text-[10px] font-medium tracking-wider uppercase opacity-60",
                     isActive ? "text-white/80" : "text-va-black/40 group-hover/btn:text-va-black/60"
                   )}>
-                    {j.subLabel}
+                    <VoiceglotText translationKey={`${j.key}.sub`} defaultText={j.subLabel} />
                   </span>
                 </div>
                 {isActive && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-auto" />}
@@ -351,154 +376,253 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
         </ContainerInstrument>
 
         {/* 2. Primary Filter Pill (Airbnb Style) */}
-        <ContainerInstrument plain className="p-1.5">
-          <div className="flex flex-col">
-            <ContainerInstrument plain className="flex items-center bg-white rounded-full shadow-md border border-black/10 divide-x divide-black/10 h-20">
-              
-            {/* Language Segment */}
-            <div className="flex-1 h-full flex flex-col justify-center relative group/lang">
-              <VoicesDropdown 
-                searchable
-                rounding="left"
-                options={sortedLanguages}
-                value={state.filters.language}
-                selectedExtraLangs={state.filters.languages || []}
-                onExtraLangToggle={(lang) => {
-                  const currentLangs = state.filters.languages || [state.filters.language?.toLowerCase() || ''];
-                  const lowLang = lang.toLowerCase();
-                  if (currentLangs.includes(lowLang)) {
-                    updateFilters({ languages: currentLangs.filter(l => l !== lowLang) });
-                  } else {
-                    updateFilters({ languages: [...currentLangs, lowLang] });
-                  }
-                }}
-                onChange={(val) => {
-                  //  CHRIS-PROTOCOL: When changing primary language, reset polyglot selection
-                  updateFilters({ 
-                    language: val || undefined,
-                    languages: val ? [val.toLowerCase()] : undefined 
-                  });
-                }}
-                placeholder="Alle talen"
-                label="Welke taal?"
-                className="h-full"
-              />
-            </div>
-
-              {/* Gender Segment */}
-              <VoicesDropdown 
-                options={[
-                  { label: 'Iedereen', value: '', icon: Users },
-                  { label: 'Mannelijk', value: 'Mannelijk', icon: User },
-                  { label: 'Vrouwelijk', value: 'Vrouwelijk', icon: User },
-                ]}
-                value={state.filters.gender || ''}
-                onChange={(val) => updateFilters({ gender: val || undefined })}
-                placeholder="Iedereen"
-                label="Wie?"
-                className="flex-1 h-full"
-              />
-
-              {/* Words Segment (Telephony & Video) */}
-              {(state.journey === 'telephony' || state.journey === 'video') && (
-                <VoicesWordSlider 
-                  rounding="right"
-                  isTelephony={state.journey === 'telephony'}
-                  isVideo={state.journey === 'video'}
-                  value={state.filters.words && state.filters.words >= 5 ? state.filters.words : (state.journey === 'telephony' ? 25 : 200)}
-                  onChange={(val) => updateFilters({ words: val })}
-                  disabled={state.currentStep === 'script'} // CHRIS-PROTOCOL: Inactive in script state
-                  label="Hoeveelheid?"
-                  className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
-                />
-              )}
-
-              {/* Media Segment (Commercial only) -  AIRBNB STEPPER MODE */}
-              {state.journey === 'commercial' && (
-                <VoicesDropdown 
-                  stepperMode
-                  options={[
-                    { label: 'Online & Socials', value: 'online', icon: Globe, subLabel: 'YouTube, Meta, LinkedIn' },
-                    { label: 'Podcast', value: 'podcast', icon: Mic2, subLabel: 'Pre-roll, Mid-roll' },
+        <AnimatePresence>
+          {(state.currentStep === 'voice' || state.journey === 'commercial') && (
+            <motion.div
+              initial={{ height: 0, opacity: 0, marginTop: 0 }}
+              animate={{ height: 'auto', opacity: 1, marginTop: 0 }}
+              exit={{ height: 0, opacity: 0, marginTop: 0 }}
+              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+              className="overflow-visible"
+            >
+              <ContainerInstrument plain className="p-1.5">
+                <div className="flex flex-col">
+                  <ContainerInstrument plain className="flex items-center bg-white rounded-full shadow-md border border-black/10 divide-x divide-black/10 h-20">
                     
-                    { label: 'RADIO', value: '', isHeader: true },
-                    { label: 'Nationaal', value: 'radio_national', icon: Radio, isSub: true },
-                    { label: 'Regionaal', value: 'radio_regional', icon: Radio, isSub: true },
-                    { label: 'Lokaal', value: 'radio_local', icon: Radio, isSub: true },
+                  {/* Language Segment - CHRIS-PROTOCOL: Hide in script flow */}
+                  {state.currentStep === 'voice' ? (
+                    <div className="flex-1 h-full flex flex-col justify-center relative group/lang">
+                      <VoicesDropdown 
+                        searchable
+                        rounding="left"
+                        options={sortedLanguages}
+                        value={state.filters.language}
+                        selectedExtraLangs={state.filters.languages || []}
+                        onExtraLangToggle={(lang) => {
+                          const currentLangs = state.filters.languages || [state.filters.language?.toLowerCase() || ''];
+                          const lowLang = lang.toLowerCase();
+                          if (currentLangs.includes(lowLang)) {
+                            updateFilters({ languages: currentLangs.filter(l => l !== lowLang) });
+                          } else {
+                            updateFilters({ languages: [...currentLangs, lowLang] });
+                          }
+                        }}
+                        onChange={(val) => {
+                          updateFilters({ 
+                            language: val || undefined,
+                            languages: val ? [val.toLowerCase()] : undefined 
+                          });
+                        }}
+                        placeholder="Alle talen"
+                        label="Welke taal?"
+                        className="w-full h-full"
+                      />
+                    </div>
+                  ) : null}
 
-                    { label: 'TELEVISIE', value: '', isHeader: true },
-                    { label: 'Nationaal', value: 'tv_national', icon: Tv, isSub: true },
-                    { label: 'Regionaal', value: 'tv_regional', icon: Tv, isSub: true },
-                    { label: 'Lokaal', value: 'tv_local', icon: Tv, isSub: true },
-                  ]}
-                  value={state.filters.spotsDetail || {}}
-                  onChange={(val) => {
-                    // Update spotsDetail and also the main media array for filtering
-                    const media = Object.keys(val);
-                    updateFilters({ 
-                      spotsDetail: val,
-                      media: media.length > 0 ? media as any : undefined
-                    });
-                  }}
-                  yearsValue={state.filters.yearsDetail || {}}
-                  onYearsChange={(val) => {
-                    updateFilters({ yearsDetail: val });
-                  }}
-                  livePrice={state.currentStep === 'script' ? PricingEngine.format(checkoutState.pricing.mediaSurcharge) : undefined}
-                  placeholder="Kies type(s)"
-                  label="Mediatype?"
-                  className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
-                />
-              )}
+                    {/* Gender Segment - CHRIS-PROTOCOL: Hide in script flow */}
+                    {state.currentStep === 'voice' ? (
+                      <div className="flex-1 h-full flex flex-col justify-center relative group/gender">
+                        <VoicesDropdown 
+                          options={[
+                            { label: t('gender.everyone', 'Iedereen'), value: '', icon: Users },
+                            { label: t('gender.male', 'Mannelijk'), value: 'Mannelijk', icon: User },
+                            { label: t('gender.female', 'Vrouwelijk'), value: 'Vrouwelijk', icon: User },
+                          ]}
+                          value={state.filters.gender || ''}
+                          onChange={(val) => updateFilters({ gender: val || undefined })}
+                          placeholder={t('gender.everyone', 'Iedereen')}
+                          label={t('filter.who', 'Wie?')}
+                          className="w-full h-full"
+                        />
+                      </div>
+                    ) : null}
 
-              {/* Country Segment (Commercial only) */}
-              {state.journey === 'commercial' && (
-                <VoicesDropdown 
-                  searchable
-                  rounding="none"
-                  options={[
-                    { label: 'Belgi', value: 'BE' },
-                    { label: 'Nederland', value: 'NL' },
-                    { label: 'Frankrijk', value: 'FR' },
-                    { label: 'Duitsland', value: 'DE' },
-                    { label: 'United Kingdom', value: 'UK' },
-                    { label: 'United States', value: 'US' },
-                    { label: 'Spanje', value: 'ES' },
-                    { label: 'Portugal', value: 'PT' },
-                    { label: 'Itali', value: 'IT' },
-                  ]}
-                  value={state.filters.countries || [state.filters.country || 'BE']}
-                  onChange={(val) => {
-                    const countries = Array.isArray(val) ? val : (val ? [val] : []);
-                    updateFilters({ countries: countries as any });
-                  }}
-                  placeholder="Kies land(en)"
-                  label="Uitzendgebied?"
-                  className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
-                  multiSelect={true}
-                />
-              )}
+                    {/* Words Segment (Telephony & Video) - CHRIS-PROTOCOL: Hide in script flow */}
+                    {state.currentStep === 'voice' && (state.journey === 'telephony' || state.journey === 'video') ? (
+                      <VoicesWordSlider 
+                        rounding="right"
+                        isTelephony={state.journey === 'telephony'}
+                        isVideo={state.journey === 'video'}
+                        value={state.filters.words && state.filters.words >= 5 ? state.filters.words : (state.journey === 'telephony' ? 25 : 200)}
+                        onChange={(val) => updateFilters({ words: val })}
+                        disabled={state.currentStep === 'script'}
+                        label="Hoeveelheid?"
+                        className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
+                      />
+                    ) : null}
 
-              {/* Sorting Segment (Airbnb Style) */}
-              {state.currentStep === 'voice' && (
-                <VoicesDropdown 
-                  rounding="right"
-                  options={[
-                    { label: 'Populariteit', value: 'popularity', icon: Star },
-                    { label: 'Levertijd', value: 'delivery', icon: Clock },
-                    { label: 'Alfabetisch', value: 'alphabetical', icon: Type },
-                  ]}
-                  value={state.filters.sortBy || 'popularity'}
-                  onChange={(val) => updateFilters({ sortBy: val as any })}
-                  placeholder="Sorteer op"
-                  label="Sorteren?"
-                  className="flex-1 h-full"
-                />
-              )}
-            </ContainerInstrument>
+                    {/* Media Segment (Commercial only) -  AIRBNB STEPPER MODE */}
+                    {state.journey === 'commercial' && (
+                      <div className="flex-1 h-full flex flex-col justify-center relative group/media">
+                        <VoicesDropdown 
+                          stepperMode
+                          rounding={state.currentStep !== 'voice' ? 'left' : 'none'}
+                          options={[
+                            { id: 'online', label: t('media.online_socials', 'Online & Socials'), value: 'online', icon: Globe, subLabel: t('media.online_socials.sub', 'YouTube, Meta, LinkedIn') },
+                            { id: 'podcast', label: t('media.podcast', 'Podcast'), value: 'podcast', icon: Mic2, subLabel: t('media.podcast.sub', 'Pre-roll, Mid-roll') },
+                            { id: 'radio', label: t('media.radio', 'Radio'), value: 'radio', icon: Radio, subLabel: t('media.radio.sub', 'Landelijke of regionale zenders'), hasRegions: true },
+                            { id: 'tv', label: t('media.television', 'TV'), value: 'tv', icon: Tv, subLabel: t('media.television.sub', 'Landelijke of regionale zenders'), hasRegions: true }
+                          ] as any}
+                          value={(() => {
+                            const val = state.filters.spotsDetail || {};
+                            const mappedVal: Record<string, number> = {};
+                            Object.keys(val).forEach(k => {
+                              if (k.startsWith('radio_')) mappedVal['radio'] = val[k];
+                              else if (k.startsWith('tv_')) mappedVal['tv'] = val[k];
+                              else mappedVal[k] = val[k];
+                            });
+                            return mappedVal;
+                          })()}
+                          onChange={(val) => {
+                            const mediaKeys = Object.keys(val);
+                            
+                            //  KELLY-MANDATE: Always require at least one media type for commercial journey
+                            if (mediaKeys.length === 0) {
+                              console.warn("[MasterControl] Attempted to clear all media types. Reverting to 'online'.");
+                              updateFilters({ 
+                                spotsDetail: { online: 1 },
+                                media: ['online']
+                              });
+                              return;
+                            }
 
-          </div>
-        </ContainerInstrument>
+                            const mappedMedia = mediaKeys.map(k => {
+                              if (k === 'radio' || k === 'tv') {
+                                const region = state.filters.mediaRegion?.[k] || 'national';
+                                return `${k}_${region}`;
+                              }
+                              return k;
+                            });
+
+                            console.log("[MasterControl] Mapped Media:", mappedMedia);
+
+                            // Map the spots detail to the new keys
+                            const newSpotsDetail: Record<string, number> = {};
+                            mediaKeys.forEach(k => {
+                              if (k === 'radio' || k === 'tv') {
+                                const region = state.filters.mediaRegion?.[k] || 'national';
+                                newSpotsDetail[`${k}_${region}`] = val[k];
+                              } else {
+                                newSpotsDetail[k] = val[k];
+                              }
+                            });
+
+                            updateFilters({ 
+                              spotsDetail: newSpotsDetail,
+                              media: mappedMedia as string[]
+                            });
+                          }}
+                          yearsValue={state.filters.yearsDetail || {}}
+                          onYearsChange={(val) => {
+                            const newYearsDetail: Record<string, number> = {};
+                            Object.keys(val).forEach(k => {
+                              if (k === 'radio' || k === 'tv') {
+                                const region = state.filters.mediaRegion?.[k] || 'national';
+                                newYearsDetail[`${k}_${region}`] = val[k];
+                              } else {
+                                newYearsDetail[k] = val[k];
+                              }
+                            });
+                            updateFilters({ yearsDetail: newYearsDetail });
+                          }}
+                          mediaRegion={state.filters.mediaRegion || {}}
+                          onMediaRegionChange={(mediaId, region) => {
+                            const newMediaRegion = { ...state.filters.mediaRegion, [mediaId]: region };
+                            
+                            // Update media array and details with the new region
+                            const currentMedia = state.filters.media || [];
+                            const newMedia = currentMedia.map(m => {
+                              if (m.startsWith(mediaId + '_')) return `${mediaId}_${region}`;
+                              return m;
+                            });
+
+                            const newSpotsDetail = { ...state.filters.spotsDetail };
+                            const newYearsDetail = { ...state.filters.yearsDetail };
+
+                            // Move values to new keys
+                            Object.keys(newSpotsDetail).forEach(k => {
+                              if (k.startsWith(mediaId + '_')) {
+                                const val = newSpotsDetail[k];
+                                delete newSpotsDetail[k];
+                                newSpotsDetail[`${mediaId}_${region}`] = val;
+                              }
+                            });
+                            Object.keys(newYearsDetail).forEach(k => {
+                              if (k.startsWith(mediaId + '_')) {
+                                const val = newYearsDetail[k];
+                                delete newYearsDetail[k];
+                                newYearsDetail[`${mediaId}_${region}`] = val;
+                              }
+                            });
+
+                            updateFilters({ 
+                              mediaRegion: newMediaRegion,
+                              media: newMedia as any,
+                              spotsDetail: newSpotsDetail,
+                              yearsDetail: newYearsDetail
+                            });
+                          }}
+                          placeholder={t('filter.select_types', 'Kies type(s)')}
+                          label={t('filter.media_type', 'Mediatype?')}
+                          className="h-full animate-in fade-in slide-in-from-left-4 duration-500"
+                        />
+                      </div>
+                    )}
+
+                    {/* Country Segment (Commercial only) */}
+                    {state.journey === 'commercial' && (
+                      <div className="flex-1 h-full flex flex-col justify-center relative group/country">
+                        <VoicesDropdown 
+                          searchable
+                          rounding="right"
+                          options={[
+                            { label: t('country.be', 'België'), value: 'BE' },
+                            { label: t('country.nl', 'Nederland'), value: 'NL' },
+                            { label: t('country.fr', 'Frankrijk'), value: 'FR' },
+                            { label: t('country.de', 'Duitsland'), value: 'DE' },
+                            { label: t('country.uk', 'United Kingdom'), value: 'UK' },
+                            { label: t('country.us', 'United States'), value: 'US' },
+                            { label: t('country.es', 'Spanje'), value: 'ES' },
+                            { label: t('country.pt', 'Portugal'), value: 'PT' },
+                            { label: t('country.it', 'Italië'), value: 'IT' },
+                          ]}
+                          value={state.filters.countries || [state.filters.country || 'BE']}
+                          onChange={(val) => {
+                            const countries = Array.isArray(val) ? val : (val ? [val] : []);
+                            updateFilters({ countries: countries as any });
+                          }}
+                          placeholder={t('filter.select_countries', 'Kies land(en)')}
+                          label={t('filter.broadcast_area', 'Uitzendgebied?')}
+                          className="h-full animate-in fade-in slide-in-from-left-4 duration-500"
+                          multiSelect={true}
+                        />
+                      </div>
+                    )}
+
+                    {/* Sorting Segment (Airbnb Style) */}
+                    {state.currentStep === 'voice' && (
+                      <VoicesDropdown 
+                        rounding="right"
+                        options={[
+                          { label: t('sort.popularity', 'Populariteit'), value: 'popularity', icon: Star },
+                          { label: t('sort.delivery', 'Levertijd'), value: 'delivery', icon: Clock },
+                          { label: t('sort.alphabetical', 'Alfabetisch'), value: 'alphabetical', icon: Type },
+                        ]}
+                        value={state.filters.sortBy || 'popularity'}
+                        onChange={(val) => updateFilters({ sortBy: val as any })}
+                        placeholder={t('sort.placeholder', 'Sorteer op')}
+                        label={t('filter.sort', 'Sorteren?')}
+                        className="flex-1 h-full"
+                      />
+                    )}
+                  </ContainerInstrument>
+
+                </div>
+              </ContainerInstrument>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </ContainerInstrument>
 
       {/* De Filter Sheet (Mobile & Advanced) */}
@@ -531,7 +655,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
             className="absolute right-0 text-[11px] font-bold tracking-widest text-primary uppercase hover:opacity-70 transition-opacity flex items-center gap-2"
           >
             <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-            Terug naar Casting
+            <VoiceglotText translationKey="action.back_to_casting" defaultText="Terug naar Casting" />
           </button>
         )}
       </ContainerInstrument>
@@ -539,11 +663,16 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ actors
   );
 };
 
-const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => (
-  <ContainerInstrument className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-black/5 rounded-full text-[14px] font-light tracking-widest shadow-sm hover:border-primary/20 transition-colors group">
-    <TextInstrument className="text-va-black/60 group-hover:text-va-black">{label}</TextInstrument>
-    <button onClick={onRemove} className="hover:text-primary transition-colors p-0.5">
-      <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="Remove" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
-    </button>
-  </ContainerInstrument>
-);
+const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => {
+  const { t } = useTranslation();
+  return (
+    <ContainerInstrument className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-black/5 rounded-full text-[14px] font-light tracking-widest shadow-sm hover:border-primary/20 transition-colors group">
+      <TextInstrument className="text-va-black/60 group-hover:text-va-black">
+        {t(`language.${label.toLowerCase()}`, label)}
+      </TextInstrument>
+      <button onClick={onRemove} aria-label={t('action.remove', 'Verwijder')} className="hover:text-primary transition-colors p-0.5">
+        <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
+      </button>
+    </ContainerInstrument>
+  );
+};

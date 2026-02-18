@@ -475,6 +475,17 @@ export const voicejarSessions = pgTable("voicejar_sessions", {
 	unique("voicejar_sessions_visitor_hash_unique").on(table.visitorHash),
 ]);
 
+export const visitorLogs = pgTable("visitor_logs", {
+	id: serial().primaryKey().notNull(),
+	visitorId: text("visitor_id").notNull(),
+	path: text().notNull(),
+	referrer: text(),
+	userAgent: text("user_agent"),
+	ipAddress: text("ip_address"),
+	metadata: jsonb().default({}),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
 export const voicejarEvents = pgTable("voicejar_events", {
 	id: serial().primaryKey().notNull(),
 	sessionId: text("session_id").notNull(),
@@ -907,6 +918,12 @@ export const orders = pgTable("orders", {
 	displayOrderId: text("display_order_id"),
 	expectedDeliveryDate: timestamp("expected_delivery_date", { withTimezone: true, mode: 'string' }),
 	isManuallyEdited: boolean("is_manually_edited").default(false),
+	viesValidatedAt: timestamp("vies_validated_at", { mode: 'string' }),
+	viesCountryCode: text("vies_country_code"),
+	ipAddress: text("ip_address"),
+	isQuote: boolean("is_quote").default(false),
+	quoteMessage: text("quote_message"),
+	quoteSentAt: timestamp("quote_sent_at", { mode: 'string' }),
 }, (table) => [
 	foreignKey({
 			columns: [table.userId],

@@ -3,9 +3,10 @@
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { MediaChannel, PricingEngine, Region } from '@/lib/pricing-engine';
 import { cn } from '@/lib/utils';
-import { Check, ChevronRight, Megaphone, Music, Phone, Video } from 'lucide-react';
+import { Check, ChevronRight, Megaphone, Music, Phone, Video, Radio, Tv, Globe, Mic2, Plus, Minus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { BentoCard } from './BentoGrid';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, OptionInstrument, SelectInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
@@ -23,8 +24,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
   const [words, setWords] = useState(25);
   const [country, setCountry] = useState('BE');
   const [media, setMedia] = useState<MediaChannel[]>(['online']);
-  const [tvRegion, setTvRegion] = useState<Region>('Nationaal');
-  const [radioRegion, setRadioRegion] = useState<Region>('Nationaal');
+  const [mediaRegion, setMediaRegion] = useState<Record<string, Region>>({ tv: 'Nationaal', radio: 'Nationaal' });
   const [spots, setSpots] = useState(1);
   const [years, setYears] = useState(1);
   const [language, setLanguage] = useState('nl-BE');
@@ -42,17 +42,17 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
         const allActors = data.results || [];
         
         // Filter op taal en of ze tarieven hebben voor de geselecteerde usage
-        const relevant = allActors.filter((a: any) => {
-          const hasLang = a.languages?.some((l: any) => l.code === language || l.code === language.split('-')[0]);
-          if (!hasLang) return false;
+    const relevant = allActors.filter((a: Actor) => {
+      const hasLang = (a as Record<string, any>).languages?.some((l: { code: string }) => l.code === language || l.code === language.split('-')[0]);
+      if (!hasLang) return false;
 
-          if (state.usage === 'paid') {
-            // Voor commercials moeten ze minimaal n paid rate hebben
-            const rates = a.rates_raw || {};
-            return Object.values(rates).some((r: any) => r.price_online_media || r.price_tv_national || r.price_radio_national);
-          }
-          return true;
-        });
+      if (state.usage === 'paid') {
+        // Voor commercials moeten ze minimaal n paid rate hebben
+        const rates = a.rates_raw || {};
+        return Object.values(rates).some((r: any) => (r as Record<string, any>).price_online_media || (r as Record<string, any>).price_tv_national || (r as Record<string, any>).price_radio_national);
+      }
+      return true;
+    });
 
         setFilteredActors(relevant.slice(0, 3)); // Toon top 3 voor snelle vergelijking
       } catch (err) {
@@ -83,13 +83,13 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
     const wordCount = Number(words) || 0;
 
     const result = PricingEngine.calculatePrice(actorRates, {
-      usage: state.usage as any,
+      usage: state.usage as MediaChannel,
       words: wordCount,
       prompts: state.usage === 'telefonie' ? 1 : 0,
       countries: [country],
       media: media,
-      tvRegion,
-      radioRegion,
+      tvRegion: mediaRegion.tv || 'Nationaal',
+      radioRegion: mediaRegion.radio || 'Nationaal',
       spots: Number(spots) || 1,
       years: Number(years) || 1,
       useEntryPricing: mode === 'ai',
@@ -111,7 +111,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
     const formattedPrice = result.formatted;
 
     setPricing({ ...result, formatted: formattedPrice });
-  }, [state.usage, words, country, media, tvRegion, radioRegion, spots, years, mode, actor, filteredActors, state.music.asBackground, state.music.asHoldMusic]);
+  }, [state.usage, words, country, media, mediaRegion, spots, years, mode, actor, filteredActors, state.music.asBackground, state.music.asHoldMusic]);
 
   const handleBookNow = () => {
     //  AVAILABILITY PROTECTION
@@ -169,7 +169,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
     { id: 'paid', label: 'Advertentie', translationKey: 'pricing.usage.ad', icon: Megaphone },
   ];
 
-  const handleUsageChange = (newUsage: any) => {
+  const handleUsageChange = (newUsage: MediaChannel) => {
     updateUsage(newUsage);
     if (newUsage === 'telefonie') {
       setWords(25); // Default to 25 words for Telephony
@@ -193,7 +193,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
               {usageTypes.map((type) => (
                 <ButtonInstrument
                   key={type.id}
-                  onClick={() => handleUsageChange(type.id as any)}
+                  onClick={() => handleUsageChange(type.id as MediaChannel)}
                   className={`flex flex-col items-center gap-4 p-6 rounded-[32px] border-2 transition-all ${
                     state.usage === type.id 
                       ? 'border-primary bg-primary/5 text-primary' 
@@ -203,7 +203,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   {(() => {
                     const Icon = type.icon;
                     if (!Icon) return null;
-                    return (typeof Icon === 'function' || (typeof Icon === 'object' && (Icon as any).$$typeof)) 
+                    return (typeof Icon === 'function' || (typeof Icon === 'object' && (Icon as Record<string, any>).$$typeof)) 
                       ? <Icon strokeWidth={1.5} size={24} /> 
                       : Icon;
                   })()}
@@ -245,7 +245,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                 >
-                  <OptionInstrument value="BE"><VoiceglotText  translationKey="common.country.be" defaultText="Belgi" /></OptionInstrument>
+                  <OptionInstrument value="BE"><VoiceglotText  translationKey="common.country.be" defaultText="België" /></OptionInstrument>
                   <OptionInstrument value="NL"><VoiceglotText  translationKey="common.country.nl" defaultText="Nederland" /></OptionInstrument>
                   <OptionInstrument value="FR"><VoiceglotText  translationKey="common.country.fr" defaultText="Frankrijk" /></OptionInstrument>
                   <OptionInstrument value="EU"><VoiceglotText  translationKey="common.country.eu" defaultText="Europa" /></OptionInstrument>
@@ -261,24 +261,109 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                 <HeadingInstrument level={3} className="text-[15px] font-medium text-va-black/30">
                   <VoiceglotText  translationKey="pricing.media_buyout" defaultText="4. Media & Buyout" />
                 </HeadingInstrument>
-                <ContainerInstrument className="flex flex-wrap gap-2">
-                  {['online', 'radio', 'tv', 'podcast'].map((m) => (
-                    <ButtonInstrument
-                      key={m}
-                      onClick={() => {
-                        if (media.includes(m as any)) {
-                          if (media.length > 1) setMedia(media.filter(item => item !== m));
-                        } else {
-                          setMedia([...media, m as any]);
-                        }
-                      }}
-                      className={`px-6 py-3 rounded-full text-[15px] font-medium border-2 transition-all ${
-                        media.includes(m as any) ? 'bg-primary border-primary text-white' : 'bg-white border-black/5 text-va-black/40'
-                      }`}
-                    >
-                      <VoiceglotText  translationKey={`common.media.${m}`} defaultText={m} />
-                    </ButtonInstrument>
-                  ))}
+                <ContainerInstrument className="flex flex-col gap-4">
+                  <div className="grid grid-cols-1 gap-3">
+                    {[
+                      { id: 'online', label: 'Online & Socials', sub: 'YouTube, Meta, LinkedIn', icon: Globe },
+                      { id: 'podcast', label: 'Podcast', sub: 'Pre-roll, Mid-roll', icon: Mic2 },
+                      { id: 'radio', label: 'Radio', sub: 'Landelijke of regionale zenders', icon: Radio, hasRegions: true },
+                      { id: 'tv', label: 'TV', sub: 'Landelijke of regionale zenders', icon: Tv, hasRegions: true }
+                    ].map((m) => {
+                      const isActive = media.includes(m.id as MediaChannel);
+                      return (
+                        <div key={m.id} className="space-y-3">
+                          <button
+                            onClick={() => {
+                              const mId = m.id as MediaChannel;
+                              if (isActive) {
+                                if (media.length > 1) setMedia(media.filter(item => item !== mId));
+                              } else {
+                                setMedia([...media, mId]);
+                              }
+                            }}
+                            className={cn(
+                              "w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-500",
+                              isActive ? "border-primary bg-primary/[0.02] shadow-sm" : "border-black/5 bg-va-off-white/30 hover:border-black/10"
+                            )}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className={cn(
+                                "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                                isActive ? "bg-primary text-white" : "bg-white text-va-black/20 shadow-sm border border-black/5"
+                              )}>
+                                <m.icon size={20} />
+                              </div>
+                              <div className="text-left">
+                                <div className={cn("text-[14px] font-bold tracking-tight", isActive ? "text-va-black" : "text-va-black/40")}>{m.label}</div>
+                                <div className="text-[11px] text-va-black/20 font-medium">{m.sub}</div>
+                              </div>
+                            </div>
+                            <div className={cn(
+                              "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
+                              isActive ? "bg-primary border-primary text-white" : "border-black/10"
+                            )}>
+                              {isActive && <Check size={14} />}
+                            </div>
+                          </button>
+
+                          {isActive && m.hasRegions && (
+                            <motion.div 
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              className="px-4 pb-4 space-y-4 border-l-2 border-primary/10 ml-5"
+                            >
+                              <div className="bg-va-off-white/50 p-6 rounded-[32px] border border-black/5 space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-sm">
+                                      {m.id === 'radio' ? <Radio size={20} /> : <Tv size={20} />}
+                                    </div>
+                                    <div>
+                                      <TextInstrument className="text-[14px] font-bold tracking-tight text-va-black">
+                                        {m.label} Commercial
+                                      </TextInstrument>
+                                      <TextInstrument className="text-[11px] text-va-black/30 font-medium uppercase tracking-widest">
+                                        Uitzendgebied
+                                      </TextInstrument>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-3 bg-white p-1 rounded-2xl border border-black/5 shadow-inner">
+                                  <button 
+                                    onClick={() => {
+                                      const current = mediaRegion[m.id] || 'Nationaal';
+                                      const regions = ['Lokaal', 'Regionaal', 'Nationaal'];
+                                      const currentIndex = regions.indexOf(current);
+                                      const nextIndex = Math.max(0, currentIndex - 1);
+                                      setMediaRegion(prev => ({ ...prev, [m.id]: regions[nextIndex] as Region }));
+                                    }}
+                                    className="w-10 h-10 flex items-center justify-center text-va-black/40 hover:text-primary transition-colors"
+                                  >
+                                    <Minus size={16} strokeWidth={2.5} />
+                                  </button>
+                                  <span className="flex-1 text-[14px] font-bold text-primary text-center uppercase tracking-tight">
+                                    {mediaRegion[m.id] || 'Nationaal'}
+                                  </span>
+                                  <button 
+                                    onClick={() => {
+                                      const current = mediaRegion[m.id] || 'Nationaal';
+                                      const regions = ['Lokaal', 'Regionaal', 'Nationaal'];
+                                      const currentIndex = regions.indexOf(current);
+                                      const nextIndex = Math.min(regions.length - 1, currentIndex + 1);
+                                      setMediaRegion(prev => ({ ...prev, [m.id]: regions[nextIndex] as Region }));
+                                    }}
+                                    className="w-10 h-10 flex items-center justify-center text-va-black/40 hover:text-primary transition-colors"
+                                  >
+                                    <Plus size={16} strokeWidth={2.5} />
+                                  </button>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </ContainerInstrument>
                 
                 <ContainerInstrument className="grid grid-cols-2 gap-8">
@@ -299,14 +384,29 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ mode = 'hu
                     <TextInstrument className="text-[15px] font-medium text-va-black/30 tracking-widest">
                       <VoiceglotText  translationKey="pricing.duration_years" defaultText="Looptijd (Jaar)" />
                     </TextInstrument>
-                    <ContainerInstrument className="flex items-center gap-4">
-                      <InputInstrument 
-                        type="range" min="1" max="5" value={years} 
-                        onChange={(e) => setYears(parseInt(e.target.value))}
-                        className="flex-1 h-2 bg-black/5 rounded-[20px] appearance-none cursor-pointer accent-primary"
-                      />
-                      <TextInstrument className="text-xl font-light text-primary w-8">{years}</TextInstrument>
-                    </ContainerInstrument>
+                                        <div className="flex items-center gap-3 bg-va-off-white p-1 rounded-lg border border-black/5">
+                                          <button 
+                                            onClick={() => {
+                                              const current = years;
+                                              const next = current === 2 ? 1 : (current === 1 ? 0.25 : 0.25);
+                                              setYears(next);
+                                            }}
+                                            className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary transition-colors"
+                                          >-</button>
+                                          <span className="text-[12px] font-black text-primary min-w-[45px] text-center">
+                                            {years === 0.25 ? '3 mnd' : 
+                                             years === 0.5 ? '6 mnd' : 
+                                             `${years} jaar`}
+                                          </span>
+                                          <button 
+                                            onClick={() => {
+                                              const current = years;
+                                              const next = current === 0.25 ? 1 : (current === 1 ? 2 : 2);
+                                              setYears(next);
+                                            }}
+                                            className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary transition-colors"
+                                          >+</button>
+                                        </div>
                   </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>

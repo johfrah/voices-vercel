@@ -1,40 +1,29 @@
 "use client";
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useCheckout } from '@/contexts/CheckoutContext';
+import { PricingEngine } from '@/lib/pricing-engine';
 import { Loader2, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
-interface CartItem {
-  key: string;
-  id: number;
-  title: string;
-  price: number;
-  quantity: number;
-  metadata?: any;
-}
-
 export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { state, removeItem, isVatExempt } = useCheckout();
+  const [loading, setLoading] = useState(false);
 
-  // Mock data for now, would fetch from WC API in production
+  // CHRIS-PROTOCOL: 100ms Feedback - we don't need mock loading if we have local state
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
-      setTimeout(() => {
-        setCart([
-          { key: '1', id: 101, title: 'Vlaamse Voice-over (Commercial)', price: 450, quantity: 1 },
-          { key: '2', id: 202, title: 'Achtergrondmuziek (Corporate)', price: 59, quantity: 1 }
-        ]);
-        setLoading(false);
-      }, 500);
+      const timer = setTimeout(() => setLoading(false), 300);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
-  const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const vat = subtotal * 0.21;
+  const subtotal = state.items.reduce((acc, item) => acc + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
+  const vatRate = isVatExempt ? 0 : 0.21;
+  const vat = subtotal * vatRate;
   const total = subtotal + vat;
 
   if (!isOpen) return null;
@@ -71,18 +60,25 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 <Loader2 strokeWidth={1.5} className="animate-spin" size={32} />
                 <span className="text-[15px] font-black tracking-widest"><VoiceglotText  translationKey="auto.cartdrawer.laden___.cb4395" defaultText="Laden..." /></span>
               </div>
-            ) : cart.length > 0 ? (
+            ) : state.items.length > 0 ? (
               <div className="space-y-6">
-                {cart.map((item) => (
-                  <div key={item.key} className="flex gap-4 p-4 bg-va-off-white rounded-[24px] group border border-transparent hover:border-black/5 transition-all">
+                {state.items.map((item) => (
+                  <div key={item.id} className="flex gap-4 p-4 bg-va-off-white rounded-[24px] group border border-transparent hover:border-black/5 transition-all">
                     <div className="flex-1">
-                      <h4 className="text-[15px] font-light tracking-tight mb-1">{item.title}</h4>
+                      <h4 className="text-[15px] font-light tracking-tight mb-1">
+                        {item.type === 'voice_over' ? `${item.actor?.name} (${item.usage})` : item.title}
+                      </h4>
                       <div className="flex justify-between items-center">
-                        <span className="text-[15px] font-bold text-va-black/30 tracking-widest">Aantal: {item.quantity}</span>
-                        <span className="font-black text-va-black">{item.price}</span>
+                        <span className="text-[11px] font-bold text-va-black/30 tracking-widest uppercase">
+                          {item.type === 'voice_over' ? `${item.pricing?.words || 0} woorden` : '1 item'}
+                        </span>
+                        <span className="font-black text-va-black">{PricingEngine.format(item.pricing?.total ?? item.pricing?.subtotal ?? 0)}</span>
                       </div>
                     </div>
-                    <button className="self-start p-2 opacity-0 group-hover:opacity-100 text-va-black/20 hover:text-red-500 transition-all">
+                    <button 
+                      onClick={() => removeItem(item.id)}
+                      className="self-start p-2 opacity-0 group-hover:opacity-100 text-va-black/20 hover:text-red-500 transition-all"
+                    >
                       <Trash2 strokeWidth={1.5} size={16} />
                     </button>
                   </div>
@@ -104,20 +100,20 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           </div>
 
           {/* Footer */}
-          {cart.length > 0 && (
+          {state.items.length > 0 && (
             <div className="px-8 py-8 bg-va-off-white border-t border-black/5 space-y-6">
               <div className="space-y-3">
                 <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
                   <span><VoiceglotText  translationKey="auto.cartdrawer.subtotaal.e48026" defaultText="Subtotaal" /></span>
-                  <span className="text-va-black">{subtotal.toFixed(2)}</span>
+                  <span className="text-va-black">{PricingEngine.format(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
-                  <span>BTW (21%)</span>
-                  <span className="text-va-black">{vat.toFixed(2)}</span>
+                  <span>BTW {isVatExempt ? '(vrijgesteld)' : '(21%)'}</span>
+                  <span className="text-va-black">{PricingEngine.format(vat)}</span>
                 </div>
                 <div className="pt-4 border-t border-black/5 flex justify-between items-center">
                   <span className="text-[15px] font-black tracking-widest"><VoiceglotText  translationKey="auto.cartdrawer.totaal.e28895" defaultText="Totaal" /></span>
-                  <span className="text-3xl font-black text-primary tracking-tighter">{total.toFixed(2)}</span>
+                  <span className="text-3xl font-black text-primary tracking-tighter">{PricingEngine.format(total)}</span>
                 </div>
               </div>
 

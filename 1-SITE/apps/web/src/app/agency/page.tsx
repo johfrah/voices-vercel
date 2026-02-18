@@ -1,9 +1,10 @@
 import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
-import { ContainerInstrument, LoadingScreenInstrument, PageWrapperInstrument, SectionInstrument } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument, SectionInstrument } from "@/components/ui/LayoutInstruments";
 import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { getActors } from "@/lib/api-server";
 import { headers } from "next/headers";
 import { AgencyContent } from "./AgencyContent";
+import { JourneyCta } from "@/components/ui/JourneyCta";
 
 export const dynamic = 'force-dynamic';
 
@@ -12,19 +13,30 @@ export default async function AgencyPage() {
   const market = headerList.get('x-voices-market') || 'BE';
   const lang = headerList.get('x-voices-lang') || 'nl';
 
-  //  MARKET-FIRST FETCH: Prefill language based on market
+    //  MARKET-FIRST FETCH: Prefill language based on market
   let initialLang = undefined;
   if (market === 'FR') initialLang = 'Frans';
   else if (market === 'ES') initialLang = 'Spaans';
   else if (market === 'PT') initialLang = 'Portugees';
   else if (market === 'NL') initialLang = 'Nederlands';
   else if (market === 'DE') initialLang = 'Duits';
-  else if (market === 'BE') initialLang = 'Vlaams'; //  CHRIS-PROTOCOL: Forceer Vlaams voor Belgi
+  else if (market === 'BE') initialLang = 'Vlaams'; //  CHRIS-PROTOCOL: Forceer Vlaams voor België
 
+  console.log(`[AgencyPage] Fetching actors for market: ${market}, initialLang: ${initialLang}`);
+
+  //  LOUIS-RECOVERY: If we are on localhost, we might want to see ALL actors if the market-filter is too strict
   const searchResults = await getActors(initialLang ? { language: initialLang } : {}, lang);
-  const actors = searchResults.results;
+  let actors = searchResults?.results || [];
 
-  const mappedActors = actors.map(actor => ({
+  if (actors.length === 0 && initialLang) {
+    console.log(`[AgencyPage] No actors found for ${initialLang}, falling back to all actors`);
+    const fallbackResults = await getActors({}, lang);
+    actors = fallbackResults?.results || [];
+  }
+
+  console.log(`[AgencyPage] Found ${actors.length} actors`);
+
+  const mappedActors = actors.map((actor: any) => ({
     id: actor.id,
     display_name: actor.display_name,
     first_name: actor.first_name || actor.firstName,
@@ -57,16 +69,21 @@ export default async function AgencyPage() {
   }));
 
   return (
-    <PageWrapperInstrument>
+    <>
       <LiquidBackground strokeWidth={1.5} />
       <AgencyHeroInstrument 
         filters={searchResults.filters}
         market={market}
         searchParams={initialLang ? { language: initialLang } : {}}
       />
-      <SectionInstrument className="!pt-0 -mt-24 relative z-40">
+      <div className="!pt-0 -mt-24 relative z-40">
         <AgencyContent mappedActors={mappedActors} filters={searchResults.filters} />
-      </SectionInstrument>
+        
+        {/* SALLY-MANDATE: Signature CTA for Agency Journey */}
+        <ContainerInstrument className="mt-20">
+          <JourneyCta journey="commercial" />
+        </ContainerInstrument>
+      </div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -86,6 +103,6 @@ export default async function AgencyPage() {
           })
         }}
       />
-    </PageWrapperInstrument>
+    </>
   );
 }

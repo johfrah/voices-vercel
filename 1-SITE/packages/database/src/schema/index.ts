@@ -5,6 +5,7 @@ export * from './config';
 export * from './fame';
 export * from './mailbox';
 export * from './vault';
+export * from './agents';
 
 /**
  * VOICES OS - MASTER DATABASE SCHEMA (2026)

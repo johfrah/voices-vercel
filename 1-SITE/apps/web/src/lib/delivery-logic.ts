@@ -180,7 +180,8 @@ export function calculateDeliveryDate(
 
   // 1. Bepaal effectieve startdatum (rekening houdend met cutoff)
   let effectiveStart = new Date(baseDate);
-  const [cutoffHour, cutoffMinute] = actor.cutoffTime.split(':').map(Number);
+  const cutoff = actor.cutoffTime || '18:00';
+  const [cutoffHour, cutoffMinute] = cutoff.split(':').map(Number);
   const currentHour = baseDate.getHours();
   const currentMinute = baseDate.getMinutes();
 
@@ -214,9 +215,9 @@ export function calculateDeliveryDate(
     return date;
   };
 
-  const dateMin = calculateDate(actor.deliveryDaysMin);
-  const dateMax = actor.deliveryDaysMax > actor.deliveryDaysMin 
-    ? calculateDate(actor.deliveryDaysMax) 
+  const dateMin = calculateDate(actor.deliveryDaysMin || 1);
+  const dateMax = (actor.deliveryDaysMax || 1) > (actor.deliveryDaysMin || 1) 
+    ? calculateDate(actor.deliveryDaysMax || 1) 
     : null;
 
   // 3. Formatteren
@@ -231,7 +232,7 @@ export function calculateDeliveryDate(
     formatted,
     formattedShort: formatShortDate(dateMin),
     isRange: !!dateMax,
-    deliveryDaysMin: actor.deliveryDaysMin,
-    deliveryDaysMax: actor.deliveryDaysMax
+    deliveryDaysMin: actor.deliveryDaysMin || 1,
+    deliveryDaysMax: actor.deliveryDaysMax || 1
   };
 }

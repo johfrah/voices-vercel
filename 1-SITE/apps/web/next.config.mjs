@@ -36,6 +36,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  experimental: {
+    serverComponentsExternalPackages: ['soap', 'get-stream'],
+  },
   images: {
     remotePatterns: [
       {
@@ -49,6 +52,12 @@ const nextConfig = {
         hostname: 'vcbxyyjsxuquytcsskpj.supabase.co',
         port: '',
         pathname: '/storage/v1/object/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.mollie.com',
+        port: '',
+        pathname: '/external/icons/payment-methods/**',
       },
     ],
   },

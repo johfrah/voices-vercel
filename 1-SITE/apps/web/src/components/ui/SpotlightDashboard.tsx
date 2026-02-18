@@ -34,21 +34,31 @@ import {
     Users,
     Video,
     X,
-    Zap
+    Zap,
+    Bot
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { HeadingInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface MenuItem {
   title: string;
   icon: any;
   href: string;
   color: string;
-  group: 'Core' | 'Commerce' | 'Studio' | 'Academy' | 'Agency' | 'Marketing' | 'Systems' | 'Support' | 'Account';
+  group: 'Core' | 'Commerce' | 'Studio' | 'Academy' | 'Agency' | 'Marketing' | 'Systems' | 'Support' | 'Account' | 'Content' | 'Analytics' | 'Financieel';
   badge?: string | number;
   journey?: 'agency' | 'studio' | 'academy' | 'all';
+}
+
+interface DataResult {
+  type: 'actor' | 'order' | 'user' | 'article';
+  title: string;
+  subtitle: string;
+  href: string;
+  id: number | string;
 }
 
 const journeyInstructions: Record<string, string[]> = {
@@ -77,15 +87,21 @@ const journeyInstructions: Record<string, string[]> = {
 const menuItems: MenuItem[] = [
   //  CORE & OPERATIONS
   { title: 'Command Center', icon: Zap, href: '/admin/dashboard', color: 'text-yellow-500', group: 'Core', journey: 'all' },
+  { title: 'Mailbox', icon: MessageSquare, href: '/admin/mailbox', color: 'text-primary', group: 'Core', badge: 3, journey: 'all' },
   { title: 'Workshop Cockpit', icon: Calendar, href: '/admin/studio/workshops', color: 'text-purple-500', group: 'Core', journey: 'studio' },
   { title: 'Datamatch Monitor', icon: Activity, href: '/admin/datamatch', color: 'text-blue-400', group: 'Core', journey: 'all' },
-  { title: 'Voicy Chat', icon: MessageSquare, href: '/admin/chat', color: 'text-primary', group: 'Core', badge: 3, journey: 'all' },
   { title: 'Analytics Hub', icon: TrendingUp, href: '/admin/analytics', color: 'text-orange-500', group: 'Core', journey: 'all' },
   { title: 'Klant Inzichten', icon: Brain, href: '/admin/insights', color: 'text-pink-500', group: 'Core', journey: 'all' },
+
+  //  CONTENT & JOURNEYS
+  { title: 'Article Manager', icon: FileText, href: '/admin/articles', color: 'text-blue-500', group: 'Content', journey: 'all' },
+  { title: 'Journey Orchestrator', icon: Target, href: '/admin/journeys', color: 'text-primary', group: 'Content', journey: 'all' },
+  { title: 'Media Engine', icon: Video, href: '/admin/media', color: 'text-va-black/40', group: 'Content', journey: 'all' },
 
   //  ANALYTICS & INTELLIGENCE
   { title: 'UTM Attribution', icon: BarChart3, href: '/admin/marketing/utm', color: 'text-orange-500', group: 'Analytics', journey: 'all' },
   { title: 'Visitor Intel', icon: Activity, href: '/admin/marketing/visitors', color: 'text-emerald-500', group: 'Analytics', journey: 'all' },
+  { title: 'User DNA', icon: Users, href: '/admin/users', color: 'text-blue-400', group: 'Analytics', journey: 'all' },
   { title: 'CTA AB Test', icon: MousePointer2, href: '/admin/marketing/ab-test', color: 'text-primary', group: 'Analytics', journey: 'all' },
   { title: 'Trends & SWOT', icon: TrendingUp, href: '/admin/marketing/trends', color: 'text-indigo-500', group: 'Analytics', journey: 'all' },
 
@@ -120,8 +136,8 @@ const menuItems: MenuItem[] = [
   { title: 'Voiceglot Registry', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Systems', journey: 'all' },
   { title: 'OpenAI Intelligence', icon: Brain, href: '/admin/ai-settings', color: 'text-pink-400', group: 'Systems', journey: 'all' },
   { title: 'Core Locks', icon: Lock, href: '/admin/locks', color: 'text-red-500', group: 'Systems', journey: 'all' },
-  { title: 'Media Engine', icon: Video, href: '/admin/media', color: 'text-va-black/40', group: 'Systems', journey: 'all' },
   { title: 'Vault', icon: Database, href: '/admin/vault', color: 'text-va-black/40', group: 'Systems', journey: 'all' },
+  { title: 'AI Agent Control', icon: Bot, href: '/admin/agents', color: 'text-primary', group: 'Systems', journey: 'all' },
   { title: 'VibeCode', icon: Zap, href: '/admin/vibecode', color: 'text-primary', group: 'Systems', journey: 'all' },
   { title: 'Security', icon: ShieldCheck, href: '/admin/security', color: 'text-red-600', group: 'Systems', journey: 'all' },
 ];
@@ -129,11 +145,41 @@ const menuItems: MenuItem[] = [
 export const SpotlightDashboard: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [dataResults, setDataResults] = useState<DataResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [currentInstruction, setCurrentInstruction] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
   const router = useRouter();
   const { isAdmin } = useAuth();
   const { t } = useTranslation();
   const { playClick, playSwell } = useSonicDNA();
+
+  const performDataSearch = useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setDataResults([]);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const res = await fetch(`/api/admin/search?q=${encodeURIComponent(query)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setDataResults(data.results || []);
+      }
+    } catch (e) {
+      console.error('Spotlight search error:', e);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (debouncedSearch) {
+      performDataSearch(debouncedSearch);
+    } else {
+      setDataResults([]);
+    }
+  }, [debouncedSearch, performDataSearch]);
   
   //  JOURNEY DETECTION
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
@@ -223,8 +269,57 @@ export const SpotlightDashboard: React.FC = () => {
 
         {/* Results Grid */}
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-va-off-white/30">
-          {filteredItems.length > 0 ? (
+          {isSearching && (
+            <div className="flex items-center justify-center py-20">
+              <Activity className="animate-spin text-primary" size={32} />
+            </div>
+          )}
+
+          {!isSearching && (search.length >= 2 || filteredItems.length > 0) ? (
             <div className="space-y-10">
+              {/* 1. DATABASE RESULTS (Spotlight 2.0) */}
+              {dataResults.length > 0 && (
+                <div className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-sm space-y-8">
+                  <div className="flex items-center gap-4 px-2">
+                    <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.3em] text-primary uppercase Raleway">
+                      <VoiceglotText translationKey="admin.group.database_results" defaultText="Database Results" />
+                    </HeadingInstrument>
+                    <div className="h-[1px] flex-1 bg-black/[0.03]" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {dataResults.map((item, i) => (
+                      <button
+                        key={`data-${i}`}
+                        onMouseEnter={() => playSwell()}
+                        onClick={() => {
+                          playClick('pro');
+                          router.push(item.href);
+                          setIsOpen(false);
+                        }}
+                        className="flex items-center gap-4 p-5 rounded-[20px] bg-va-off-white/50 border border-black/[0.02] hover:border-primary/30 hover:bg-white hover:shadow-[0_15px_30px_rgba(0,0,0,0.04)] transition-all group text-left relative overflow-hidden touch-manipulation"
+                      >
+                        <div className={`w-12 h-12 rounded-[10px] bg-white flex items-center justify-center shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500`}>
+                          {item.type === 'actor' && <Mic size={20} className="text-purple-500 group-hover:text-white" />}
+                          {item.type === 'order' && <ShoppingBag size={20} className="text-blue-600 group-hover:text-white" />}
+                          {item.type === 'user' && <Users size={20} className="text-emerald-500 group-hover:text-white" />}
+                          {item.type === 'article' && <FileText size={20} className="text-orange-500 group-hover:text-white" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-light tracking-tight text-[15px] text-va-black/80 Raleway truncate">
+                            {item.title}
+                          </h4>
+                          <p className="text-[11px] font-light tracking-widest text-va-black/30 uppercase truncate">
+                            {item.subtitle}
+                          </p>
+                        </div>
+                        <ArrowRight strokeWidth={1.5} size={14} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 2. MENU ITEMS */}
               {Array.from(new Set(filteredItems.map(item => item.group))).map(group => (
                 <div key={group} className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-sm space-y-8">
                   <div className="flex items-center gap-4 px-2">
@@ -268,7 +363,7 @@ export const SpotlightDashboard: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : (
+          ) : !isSearching && search.length >= 2 ? (
             <div className="py-32 text-center space-y-6">
               <div className="w-24 h-24 bg-va-off-white rounded-[20px] flex items-center justify-center mx-auto animate-pulse">
                 <Brain strokeWidth={1.5} size={48} className="text-va-black/10" />
@@ -282,11 +377,56 @@ export const SpotlightDashboard: React.FC = () => {
                 </p>
               </div>
             </div>
+          ) : !isSearching && (
+            <div className="space-y-10">
+               {Array.from(new Set(filteredItems.map(item => item.group))).map(group => (
+                 <div key={group} className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-sm space-y-8">
+                    <div className="flex items-center gap-4 px-2">
+                      <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.3em] text-va-black/20 uppercase Raleway">
+                        <VoiceglotText translationKey={`admin.group.${group.toLowerCase()}`} defaultText={group} />
+                      </HeadingInstrument>
+                      <div className="h-[1px] flex-1 bg-black/[0.03]" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {filteredItems
+                        .filter(item => item.group === group)
+                        .map((item, i) => (
+                          <button
+                            key={i}
+                            onMouseEnter={() => playSwell()}
+                            onClick={() => {
+                              playClick('pro');
+                              router.push(item.href);
+                              setIsOpen(false);
+                            }}
+                            className="flex items-center gap-4 p-5 rounded-[20px] bg-va-off-white/50 border border-black/[0.02] hover:border-primary/30 hover:bg-white hover:shadow-[0_15px_30px_rgba(0,0,0,0.04)] transition-all group text-left relative overflow-hidden touch-manipulation"
+                          >
+                            <div className={`w-12 h-12 rounded-[10px] bg-white flex items-center justify-center ${item.color} shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500`}>
+                              {(() => {
+                                const Icon = item.icon;
+                                if (!Icon) return null;
+                                return (typeof Icon === 'function' || (typeof Icon === 'object' && Icon.$$typeof)) 
+                                  ? <Icon strokeWidth={1.5} size={20} /> 
+                                  : Icon;
+                              })()}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-light tracking-tight text-[15px] text-va-black/80 Raleway">
+                                <VoiceglotText  translationKey={`admin.menu.${item.title.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.title} />
+                              </h4>
+                            </div>
+                            <ArrowRight strokeWidth={1.5} size={14} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                          </button>
+                        ))}
+                    </div>
+                 </div>
+               ))}
+            </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center text-[15px] font-black tracking-widest text-va-black/30">
+        <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center text-[15px] font-light tracking-widest text-va-black/30">
           <div className="flex gap-8">
             <span className="flex items-center gap-2 text-va-black/60">
               <MousePointer2 strokeWidth={1.5} size={12} className="text-primary" /> 
@@ -295,7 +435,7 @@ export const SpotlightDashboard: React.FC = () => {
           </div>
           <div className="flex items-center gap-3 text-primary">
             <ShieldCheck strokeWidth={1.5} size={14} />
-            {journey.toUpperCase()} MODE
+            {journey} mode
           </div>
         </div>
       </div>

@@ -5,9 +5,12 @@ import {
     HeadingInstrument,
     PageWrapperInstrument,
     SectionInstrument,
-    TextInstrument
+    TextInstrument,
+    ButtonInstrument,
+    FixedActionDockInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { useAdminTracking } from '@/hooks/useAdminTracking';
 import {
     Activity,
     ArrowRight,
@@ -15,7 +18,8 @@ import {
     Globe,
     Monitor,
     MousePointer2,
-    Users
+    Users,
+    RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -28,32 +32,34 @@ import { useEffect, useState } from 'react';
  */
 
 export default function LiveVisitorCockpit() {
+  const { logAction } = useAdminTracking();
   const [visitors, setVisitors] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [liveRes, statsRes] = await Promise.all([
-          fetch('/api/admin/marketing/live'),
-          fetch('/api/admin/marketing/stats')
-        ]);
-        
-        const liveData = await liveRes.json();
-        const statsData = await statsRes.json();
-        
-        setVisitors(liveData.visitors || []);
-        setLogs(liveData.logs || []);
-        setStats(statsData.stats || null);
-      } catch (err) {
-        console.error(' Failed to fetch Mat Radar data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [liveRes, statsRes] = await Promise.all([
+        fetch('/api/admin/marketing/live'),
+        fetch('/api/admin/marketing/stats')
+      ]);
+      
+      const liveData = await liveRes.json();
+      const statsData = await statsRes.json();
+      
+      setVisitors(liveData.visitors || []);
+      setLogs(liveData.logs || []);
+      setStats(statsData.stats || null);
+    } catch (err) {
+      console.error(' Failed to fetch Mat Radar data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 10000); // Polling elke 10 seconden
     return () => clearInterval(interval);
@@ -77,7 +83,7 @@ export default function LiveVisitorCockpit() {
           </HeadingInstrument>
         </ContainerInstrument>
         
-        <ContainerInstrument className="flex gap-4 bg-va-black text-white p-6 rounded-[24px] border border-white/5">
+        <ContainerInstrument className="flex gap-4 bg-va-black text-white p-6 rounded-[20px] border border-white/5">
           <ContainerInstrument className="flex flex-col">
             <TextInstrument className="text-[15px] font-light tracking-widest text-white/40"><VoiceglotText  translationKey="auto.page.live_radar.71ada0" defaultText="Live Radar" /></TextInstrument>
             <TextInstrument className="text-3xl font-light text-primary">{visitors.filter(v => new Date(v.lastVisitAt).getTime() > Date.now() - 300000).length}</TextInstrument>
@@ -91,7 +97,7 @@ export default function LiveVisitorCockpit() {
       </SectionInstrument>
 
       {/* Live Table */}
-      <SectionInstrument className="bg-white border border-black/5 rounded-[40px] overflow-hidden shadow-sm">
+      <SectionInstrument className="bg-white border border-black/5 rounded-[20px] overflow-hidden shadow-sm">
         <ContainerInstrument className="p-8 border-b border-black/5 flex justify-between items-center">
           <HeadingInstrument level={2} className="text-xl font-light tracking-tight">
             <VoiceglotText  translationKey="admin.visitors.table_title" defaultText="Intelligence Playlist" />
@@ -203,7 +209,7 @@ export default function LiveVisitorCockpit() {
 
       {/* Intelligence Cards */}
       <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <ContainerInstrument className="bg-va-black text-white p-10 rounded-[40px] relative overflow-hidden">
+        <ContainerInstrument className="bg-va-black text-white p-10 rounded-[20px] relative overflow-hidden">
           <MousePointer2 strokeWidth={1.5} className="text-primary mb-6" size={32} />
           <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText  translationKey="auto.page.heatmap_insights.66123f" defaultText="Heatmap insights" /><TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText  translationKey="auto.page.meest_geklikte_eleme.7483c3" defaultText="Meest geklikte elementen in de laatste 24 uur. Focus op de &apos;Tarieven&apos; knop bij Agency." /></TextInstrument></HeadingInstrument>
           <Link  href="#" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2">
@@ -211,7 +217,7 @@ export default function LiveVisitorCockpit() {
           </Link>
         </ContainerInstrument>
 
-        <ContainerInstrument className="bg-white border border-black/5 p-10 rounded-[40px]">
+        <ContainerInstrument className="bg-white border border-black/5 p-10 rounded-[20px]">
           <Users strokeWidth={1.5} className="text-va-black/20 mb-6" size={32} />
           <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText  translationKey="auto.page.customer_dna.d578eb" defaultText="Customer DNA" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText  translationKey="auto.page.80__van_de_huidige_b.6971bf" defaultText="80% van de huidige bezoekers zijn &apos;Decision Makers&apos; binnen de Agency journey." /></TextInstrument></HeadingInstrument>
           <Link  href="/admin/users" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
@@ -219,7 +225,7 @@ export default function LiveVisitorCockpit() {
           </Link>
         </ContainerInstrument>
 
-        <ContainerInstrument className="bg-va-off-white border border-black/5 p-10 rounded-[40px]">
+        <ContainerInstrument className="bg-va-off-white border border-black/5 p-10 rounded-[20px]">
           <Eye strokeWidth={1.5} className="text-va-black/20 mb-6" size={32} />
           <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText  translationKey="auto.page.drop_off_radar.e0c6b4" defaultText="Drop-off radar" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText  translationKey="auto.page.hoge_bounce_rate_op_.61ffa3" defaultText="Hoge bounce-rate op de &apos;Over Ons&apos; pagina. AI stelt voor om de CTA te verduidelijken." /></TextInstrument></HeadingInstrument>
           <Link  href="#" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
@@ -227,6 +233,39 @@ export default function LiveVisitorCockpit() {
           </Link>
         </ContainerInstrument>
       </ContainerInstrument>
+
+      <FixedActionDockInstrument>
+        <ButtonInstrument 
+          onClick={() => {
+            logAction('visitors_refresh');
+            fetchData();
+          }}
+          className="va-btn-pro !bg-va-black flex items-center gap-2"
+        >
+          <RefreshCw strokeWidth={1.5} size={16} className={loading ? 'animate-spin' : ''} />
+          <VoiceglotText translationKey="admin.visitors.refresh" defaultText="Radar Vernieuwen" />
+        </ButtonInstrument>
+      </FixedActionDockInstrument>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AdminPage",
+            "name": "Visitor Cockpit",
+            "description": "Real-time monitoring van website bezoekers.",
+            "_llm_context": {
+              "persona": "Architect",
+              "journey": "admin",
+              "intent": "visitor_intelligence",
+              "capabilities": ["view_visitors", "view_stats", "analyze_behavior"],
+              "lexicon": ["Visitor Cockpit", "Live Intelligence", "Mat Radar"],
+              "visual_dna": ["Bento Grid", "Liquid DNA"]
+            }
+          })
+        }}
+      />
     </PageWrapperInstrument>
   );
 }

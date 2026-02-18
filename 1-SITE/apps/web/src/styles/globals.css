@@ -891,7 +891,7 @@ video::cue {
 }
 
 .va-btn-pro:hover {
-  @apply bg-va-primary shadow-xl scale-105;
+  @apply bg-va-black/90 shadow-aura-lg scale-[1.01];
 }
 
 .va-btn-secondary {
@@ -902,7 +902,7 @@ video::cue {
 }
 
 .va-btn-secondary:hover {
-  @apply border-va-primary bg-va-off-white shadow-sm;
+  @apply border-va-black/20 bg-va-off-white shadow-sm;
 }
 
 .va-btn-nav {
@@ -913,7 +913,7 @@ video::cue {
 }
 
 .va-btn-nav:hover {
-  @apply bg-va-primary;
+  @apply bg-va-black/80;
 }
 
 /* 🎨 SHIMMER EFFECT */

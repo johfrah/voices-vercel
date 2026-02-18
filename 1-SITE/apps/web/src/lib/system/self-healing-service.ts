@@ -30,7 +30,7 @@ export class SelfHealingService {
     await this.logEvent('warn', `404 Error op pad: ${path}`, { referrer });
     
     // Simpele logica voor suggesties
-    if (path.includes('login')) return { suggestion: '/auth/login' };
+    if (path.includes('login')) return { suggestion: '/account' };
     if (path.includes('studio')) return { suggestion: '/studio' };
     if (path.includes('agency')) return { suggestion: '/agency' };
     

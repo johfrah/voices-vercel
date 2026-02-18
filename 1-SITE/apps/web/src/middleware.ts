@@ -83,15 +83,18 @@ export async function middleware(request: NextRequest) {
   // 1.7 UNDER CONSTRUCTION GATE (GOD MODE)
   // Als de site in 'under construction' modus staat, laten we alleen admins door.
   // We gebruiken een environment variable of een cookie voor de bypass.
-  const isUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true' || host.includes('voices.be')
+  const forceUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true';
+  const isMainDomain = host === 'voices.be' || host === 'www.voices.be';
+  const isUnderConstruction = forceUnderConstruction || isMainDomain;
   
-  // DOMAIN BYPASS: Specifieke domeinen mogen ALTIJD door (Johfrah, Ademing, Youssef)
-  const isBypassDomain = (host.includes('johfrah.be') || 
+  // DOMAIN BYPASS: Specifieke domeinen en staging mogen ALTIJD door (Johfrah, Ademing, Youssef, Staging)
+  const isBypassDomain = host.includes('staging.voices.be') ||
+                         host.includes('johfrah.be') || 
                          host.includes('ademing.be') || 
                          host.includes('youssefzaki.eu') ||
                          host.includes('johfrai.be') ||
                          host.includes('localhost') || // LOCAL TEST BYPASS
-                         url.searchParams.get('moby') === 'true') && !host.includes('voices.be')
+                         url.searchParams.get('moby') === 'true';
 
   // LLM CONTEXT & INTENT FILTER (Project DNA-Filter)
   const intent = url.searchParams.get('intent') || 'explore'
@@ -115,14 +118,16 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
-  //  CHRIS-PROTOCOL: Signup route is now active for God Mode 2026
-  if (pathname === '/auth/signup') {
-    return response;
+  // REDIRECT OLD AUTH PATHS TO UNIVERSAL ACCOUNT PAGE
+  if (pathname === '/auth/login' || pathname === '/auth/login/') {
+    const accountUrl = url.clone()
+    accountUrl.pathname = '/account'
+    return NextResponse.redirect(accountUrl)
   }
 
-  // REDIRECT OLD SIGNUP TO UNIVERSAL LOGIN
-  if (pathname === '/auth/signup-legacy') {
-    url.pathname = '/auth/login'
+  // REDIRECT OLD SIGNUP TO UNIVERSAL ACCOUNT
+  if (pathname === '/auth/signup-legacy' || pathname === '/auth/signup') {
+    url.pathname = '/account'
     return NextResponse.redirect(url)
   }
 
@@ -192,12 +197,17 @@ export async function middleware(request: NextRequest) {
   if (langMatch) {
     detectedLang = langMatch[1].toLowerCase()
     const pathWithoutLocale = pathname.replace(/^\/(fr|en|nl|de|es|it|pt)/i, '')
+    
+    //  CHRIS-PROTOCOL: If we are on the root with a locale (e.g. /en/), 
+    // we must rewrite to / so it matches the root page.tsx.
+    const targetPath = pathWithoutLocale || '/'
+    
     // content-preview zit onder [locale]/content-preview/[slug]  de locale moet in het pad blijven
     // anders matcht de route niet en krijg je 404
     if (pathWithoutLocale.startsWith('/content-preview/')) {
       url.pathname = pathname
     } else {
-      url.pathname = pathWithoutLocale || '/'
+      url.pathname = targetPath
     }
     
     console.log(` NUCLEAR I18N: ${pathname} -> ${url.pathname} [Market: ${market}, Lang: ${detectedLang}]`)

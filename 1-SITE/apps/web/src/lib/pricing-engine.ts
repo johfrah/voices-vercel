@@ -9,22 +9,24 @@
 
 export type UsageType = 'unpaid' | 'telefonie' | 'subscription' | 'commercial' | 'non-commercial';
 export type PlanType = 'basic' | 'pro' | 'studio';
-export type CommercialMediaType = 'online' | 'tv_national' | 'radio_national' | 'podcast' | 'social_media' | 'tv_regional' | 'tv_local' | 'radio_regional' | 'radio_local';
+export type CommercialMediaType = 'online' | 'tv_national' | 'radio_national' | 'podcast' | 'tv_regional' | 'tv_local' | 'radio_regional' | 'radio_local';
 
 export interface PricingConfig {
   basePrice: number;
   wordRate: number;
   vatRate: number;
   musicSurcharge: number;
+  radioReadySurcharge: number;
   liveSessionSurcharge: number;
   aiDiscount?: number;
 }
 
 export const DEFAULT_PRICING_CONFIG: PricingConfig = {
-  basePrice: 249, //  NEW BSF (2026) - Charm Pricing
+  basePrice: 199, //  NEW BSF (2026) - Sally's Mandate (reduced from 249)
   wordRate: 0.25,
   vatRate: 0.21,
   musicSurcharge: 59,
+  radioReadySurcharge: 49,
   liveSessionSurcharge: 99, //  Charm Pricing
 };
 
@@ -41,17 +43,24 @@ export interface PricingInput {
     asBackground?: boolean;
     asHoldMusic?: boolean;
   };
-  liveSession?: boolean; //  Extra fee for live session
-  plan?: PlanType;
-  isVatExempt?: boolean;
-  actorRates?: Record<string, any>; //  Actor-specific rates from Supabase JSON
+    radioReady?: boolean; //  Extra fee for mastering (REMOVED 2026)
+    liveSession?: boolean; //  Extra fee for live session
+    plan?: PlanType;
+    isVatExempt?: boolean;
+    actorRates?: Record<string, any>; //  Actor-specific rates from Supabase JSON
 }
 
 export interface PricingResult {
   base: number;
   wordSurcharge: number;
   mediaSurcharge: number;
+  mediaBreakdown?: Record<string, {
+    subtotal: number;
+    discount: number;
+    final: number;
+  }>; // Enhanced breakdown with discounts
   musicSurcharge: number;
+  radioReadySurcharge: number; // Keep for type safety but set to 0
   subtotal: number;
   vat: number;
   total: number;
@@ -89,7 +98,7 @@ export class PricingEngine {
    * Uitzondering: Bedragen < 100 gaan ALTIJD OMHOOG naar de volgende '9' (bijv. 40 -> 49).
    */
   static charmRound(amount: number): number {
-    if (amount <= 0) return 0;
+    if (isNaN(amount) || amount <= 0) return 0;
     
     if (amount < 100) {
       // ALTIJD OMHOOG voor bedragen < 100
@@ -109,7 +118,36 @@ export class PricingEngine {
     let wordSurcharge = 0;
     let mediaSurcharge = 0;
     let musicSurcharge = 0;
+    let radioReadySurcharge = 0;
     let liveSessionSurcharge = 0;
+    let legalDisclaimer = "";
+    
+    //  KELLY-MANDATE: If no actor is selected and it's not a subscription or workshop, price is 0.
+    const isSubscription = input.usage === 'subscription';
+    const isWorkshop = (input as any).journey === 'studio' || (input as any).editionId;
+    
+    if (!input.actorRates && !isSubscription && !isWorkshop) {
+      return {
+        base: 0,
+        wordSurcharge: 0,
+        mediaSurcharge: 0,
+        musicSurcharge: 0,
+        radioReadySurcharge: 0,
+        subtotal: 0,
+        vat: 0,
+        total: 0,
+        vatRate: input.isVatExempt ? 0 : config.vatRate
+      };
+    }
+
+    if (input.usage === 'commercial') {
+      const country = input.country || 'BE';
+      if (country === 'BE') {
+        legalDisclaimer = "Tarieven geldig voor uitzending in België.";
+      } else {
+        legalDisclaimer = `Tarieven gebaseerd op uitzending in ${country}.`;
+      }
+    }
 
     // 1. Base Price Logic based on Journey/Usage
     if (input.usage === 'subscription') {
@@ -121,11 +159,16 @@ export class PricingEngine {
     } else if (input.usage === 'commercial') {
       //  COMMERCIAL LOGICA (2026): BSF + Buyout Model
       //  CHRIS-PROTOCOL: Global-First Architectuur.
-      //  MARGE-PROTOCOL: De BSF van 249 (verkoop) is zo berekend dat de stemacteur 
-      // exact 175 (inkoop) ontvangt. Onze marge is dus minimaal 74 per opdracht.
-      const BSF = parseFloat(input.actorRates?.price_bsf || input.actorRates?.bsf || 249);
+      //  MARGE-PROTOCOL: De BSF van 199 (verkoop) is zo berekend dat de stemacteur 
+      // exact 140 (inkoop) ontvangt. Onze marge is dus minimaal 59 per opdracht.
+      const rates = input.actorRates?.rates?.rates || input.actorRates?.rates || input.actorRates || {};
+      const globalRatesForBSF = rates['GLOBAL'] || rates['global'] || {};
       
-      const actorRates = input.actorRates || {};
+      //  KELLY-MANDATE: BSF should never be 0 for commercial usage. Fallback to 199.
+      let BSF = parseFloat(globalRatesForBSF.bsf || input.actorRates?.price_bsf || input.actorRates?.bsf || '199');
+      if (isNaN(BSF) || BSF <= 0) BSF = 199;
+      
+      //  CHRIS-PROTOCOL: Support both full actor object and rates JSON
       const selectedCountries = input.countries || [input.country || 'BE'];
       const nativeLang = (input.actorRates as any)?.nativeLang || (input.actorRates as any)?.native_lang || 'nl-BE';
       const nativeCountry = nativeLang.split('-')[1]?.toUpperCase() || 'BE';
@@ -139,26 +182,37 @@ export class PricingEngine {
       }
 
       let totalBuyout = 0;
-      let uniqueChannels = new Set();
+      let mediaBreakdown: Record<string, { subtotal: number; discount: number; final: number }> = {};
 
       selectedCountries.forEach(country => {
-        const countryRates = actorRates[country] || {};
-        const globalRates = actorRates['GLOBAL'] || actorRates['global'] || {};
-        const nativeRates = actorRates[nativeCountry] || {};
+        const countryRates = rates[country] || {};
+        const globalRates = rates['GLOBAL'] || rates['global'] || {};
+        const nativeRates = rates[nativeCountry] || {};
+
+        //  CHRIS-PROTOCOL: Channel Discount Logic (REMOVED 2026)
+        // Elke extra spot of kanaal telt voor 100%.
+        const channelDiscountFactor = 1;
 
         selectedMedia.forEach(m => {
-          //  GLOBAL-FIRST LOOKUP:
+          //  CHRIS-PROTOCOL: Global-First Lookup
           // Priority 1: Specifiek land (Uitzondering)
           // Priority 2: Global (Standaard)
-          // Priority 3: Native land van de stem (Fallback)
+          // Priority 3: Native land van de stem (Gegarandeerde bron)
           let fee = 0;
           if (countryRates[m] !== undefined) fee = parseFloat(countryRates[m]);
           else if (globalRates[m] !== undefined) fee = parseFloat(globalRates[m]);
           else if (nativeRates[m] !== undefined) fee = parseFloat(nativeRates[m]);
           
-          //  KELLY'S FALLBACK: Als er echt niets gevonden wordt, gebruik de BSF als basis buyout
+          //  CHRIS-PROTOCOL: Legacy Bridge (Check price_ prefix and root level)
+          if (fee === 0 || isNaN(fee)) {
+            const legacyKey = `price_${m}`;
+            if (rates[legacyKey] !== undefined) fee = parseFloat(rates[legacyKey]);
+            else if (input.actorRates?.[legacyKey] !== undefined) fee = parseFloat(input.actorRates[legacyKey]);
+          }
+
+          //  KELLY'S VALIDATION: Als er echt niets gevonden wordt, gebruik de BSF als basis
           if (fee === 0) {
-            console.warn(`[PricingEngine] No rate found for ${m} in ${country}. Using BSF fallback.`);
+            console.warn(`[PricingEngine] No rate found for ${m} in ${country}. Using BSF as base.`);
             fee = BSF; 
           }
 
@@ -166,79 +220,110 @@ export class PricingEngine {
           let finalAllIn = this.charmRound(fee);
 
           //  STRATEGIC SPLIT (2026): Landcampagnes vs Kleine Campagnes
-          const isSmallCampaign = m.includes('regional') || m.includes('local');
-          
+          const isSmallCampaign = m.includes('regional') || m.includes('local') || m === 'podcast';
+          let buyoutForType = 0;
+
           if (isSmallCampaign) {
-            //  REGIONAAL/LOKAAL: Fixed Price Model met 50% staffel op extra spots
+            //  REGIONAAL/LOKAAL/PODCAST: Fixed Price Model
+            //  BSF is hier 0 omdat het in de totaalprijs zit voor kleine campagnes
+            //  CHRIS-PROTOCOL (2026): Géén staffelkortingen meer. Elke spot telt voor 100%.
             const spots = (input.spots && input.spots[m]) || 1;
-            const smallCampaignStaffel = 1 + (0.50 * (spots - 1));
-            totalBuyout += finalAllIn * smallCampaignStaffel;
+            buyoutForType = finalAllIn * spots;
           } else {
             //  LANDCAMPAGNES: BSF + Buyout (Klassiek)
+            //  CHRIS-PROTOCOL: Calculate the extra buyout amount.
+            //  If the rate is higher than BSF, the buyout is the difference.
+            //  If the rate is equal to or lower than BSF, the buyout is 0 (included in BSF).
+            
+            //  KELLY-MANDATE: Buyout is always based on the BSF.
+            //  If the voice actor has a higher BSF, the buyout is calculated relative to that.
             const baseBuyout = Math.max(0, finalAllIn - BSF);
             const spots = (input.spots && input.spots[m]) || 1;
             const years = (input.years && input.years[m]) || 1;
             
-            let buyoutForType = 0;
-
-            if (m === 'podcast') {
-                const units = Math.max(1, years * 4); 
-                buyoutForType = baseBuyout * (1 + 0.5 * (units - 1));
-            } else if (m === 'online' || m === 'social_media') {
-                let buyoutSum = baseBuyout; 
-                if (spots > 1) {
-                  const spots2to3 = Math.min(2, spots - 1);
-                  buyoutSum += spots2to3 * (baseBuyout * 0.60);
-                }
-                if (spots > 3) {
-                  const spots4plus = spots - 3;
-                  buyoutSum += spots4plus * (baseBuyout * 0.50);
-                }
-                buyoutForType = buyoutSum;
-            } else {
-                const isSixMonths = years === 0.5;
-                const yearMultiplier = isSixMonths ? 0.8 : (1 + (0.5 * (years - 1)));
+            if (m === 'online') {
+                const yearMultiplier = years === 0.5 ? 0.8 : (1 + (0.5 * (years - 1)));
                 
-                let buyoutSum = baseBuyout; 
-                if (spots > 1) {
-                  const spots2to3 = Math.min(2, spots - 1);
-                  buyoutSum += spots2to3 * (baseBuyout * 0.60);
-                }
-                if (spots > 3) {
-                  const spots4plus = spots - 3;
-                  buyoutSum += spots4plus * (baseBuyout * 0.50);
-                }
+                //  KELLY-MANDATE (2026): Minimum buyout voor Online is €100 per spot (Sally's Mandate: +50 higher than before).
+                const effectiveBaseBuyout = Math.max(100, baseBuyout);
+                
+                //  CHRIS-PROTOCOL (2026): Géén staffelkortingen meer. 
+                //  Elke extra spot kost de volledige buyout (100%).
+                let buyoutSum = effectiveBaseBuyout * spots; 
+                
+                buyoutForType = buyoutSum * yearMultiplier;
+            } else {
+                // TV / RADIO NATIONAL
+                const yearMultiplier = years === 0.5 ? 0.8 : (1 + (0.5 * (years - 1)));
+                
+                //  KELLY-MANDATE (2026): Minimum buyout voor Nationaal is €100 per spot (Sally's Mandate: +50 higher than before).
+                const effectiveBaseBuyout = Math.max(100, baseBuyout);
+                
+                //  CHRIS-PROTOCOL (2026): Géén staffelkortingen meer.
+                let buyoutSum = effectiveBaseBuyout * spots; 
+                
                 buyoutForType = buyoutSum * yearMultiplier;
             }
-            totalBuyout += buyoutForType;
           }
           
-          // Track unique channels for channel discount
-          uniqueChannels.add(`${country}_${m}`); 
+          const finalPriceForType = buyoutForType * channelDiscountFactor;
+          const combinationDiscount = buyoutForType - finalPriceForType;
+          
+          totalBuyout += finalPriceForType;
+          
+          if (!mediaBreakdown[m]) {
+            mediaBreakdown[m] = { subtotal: 0, discount: 0, final: 0 };
+          }
+          // CHRIS-PROTOCOL: subtotal here is the price for this channel INCLUDING multiple spots/years
+          // but BEFORE combination discount.
+          mediaBreakdown[m].subtotal += buyoutForType;
+          mediaBreakdown[m].discount += combinationDiscount;
+          mediaBreakdown[m].final += finalPriceForType;
         });
       });
 
-      //  KANAAL-MIX KORTING (Multi-Land / Multi-Medium)
-      let channelDiscount = 1;
-      const totalItems = uniqueChannels.size;
-      if (totalItems === 2) channelDiscount = 0.90; // 10% korting
-      else if (totalItems >= 3) channelDiscount = 0.85; // 15% korting
-      
-      mediaSurcharge = totalBuyout * channelDiscount;
+      mediaSurcharge = totalBuyout;
 
       //  BASE LOGIC
+      //  CHRIS-PROTOCOL: If only small campaigns (regional/local) are selected, BSF is 0
+      //  because their rates are all-in. If any national/global campaign is selected,
+      //  we charge the BSF once.
       const hasNationalCampaign = selectedMedia.some(m => !(m.includes('regional') || m.includes('local')));
       base = hasNationalCampaign ? BSF : 0;
-    }
 
-    let legalDisclaimer = "";
-    if (input.usage === 'commercial') {
-      const country = input.country || 'BE';
-      if (country === 'BE') {
-        legalDisclaimer = "Tarieven geldig voor uitzending in Belgi.";
-      } else {
-        legalDisclaimer = `Tarieven gebaseerd op uitzending in ${country}.`;
+      //  LIVE SESSION & MUSIC (Added to commercial flow)
+      if (input.liveSession) {
+          const country = input.country || 'BE';
+          const rates = (input.actorRates as any)?.[country] || {};
+          let fee = 0;
+          if (rates['live_regie'] > 0) fee = parseFloat(rates['live_regie']);
+          else if (input.actorRates?.price_live_regie > 0) fee = parseFloat(input.actorRates?.price_live_regie);
+          else if (input.actorRates?.['price_live_regie'] > 0) fee = parseFloat(input.actorRates?.['price_live_regie']);
+          liveSessionSurcharge = fee;
       }
+
+      if (input.music?.asBackground || input.music?.asHoldMusic) {
+          musicSurcharge = config.musicSurcharge;
+      }
+
+      radioReadySurcharge = 0; //  REMOVED 2026
+
+      const subtotal = base + wordSurcharge + mediaSurcharge + musicSurcharge + radioReadySurcharge + liveSessionSurcharge;
+      const currentVatRate = input.isVatExempt ? 0 : config.vatRate;
+      
+      return {
+        base,
+        wordSurcharge,
+        mediaSurcharge,
+        mediaBreakdown,
+        musicSurcharge,
+        radioReadySurcharge,
+        subtotal,
+        vat: subtotal * currentVatRate,
+        total: subtotal + (subtotal * currentVatRate),
+        vatRate: currentVatRate,
+        legalDisclaimer
+      };
     }
 
     // 2. Word/Prompt Surcharge (Journey-specific thresholds)
@@ -246,25 +331,25 @@ export class PricingEngine {
       //  TELEFONIE LOGICA (LEGACY PORT 2026):
       // Gevonden in kelder/src/00-core/database/110-pricing-helpers.php
       const words = input.words || 0;
+      const prompts = input.prompts || 1;
       const telephonyBase = 89;
       
-      if (words === 0) {
+      if (words <= 25 && prompts <= 1) {
         base = telephonyBase;
         wordSurcharge = 0;
-      } else if (words <= 25) {
-        // Eerste bericht (tot 25 woorden) is GRATIS in de set
-        wordSurcharge = 0;
-        base = telephonyBase;
       } else if (words >= 750) {
         base = 915.35;
         wordSurcharge = (words - 750) * 0.25;
       } else {
-        const extraWordsPrice = (words - 25) * 1.00;
-        const baseWithExtraWords = telephonyBase + extraWordsPrice;
-        const processingFee = 19.95;
-        const adminFee = baseWithExtraWords * 0.1;
+        // CHRIS-PROTOCOL: Explicit prompt-based pricing
+        const extraPrompts = Math.max(0, prompts - 1);
+        const extraWords = Math.max(0, words - 25);
+        
+        const promptSurcharge = extraPrompts * 19.95; 
+        const wordSurchargeVal = extraWords * 1.00;
+        
         base = telephonyBase;
-        wordSurcharge = extraWordsPrice + processingFee + adminFee;
+        wordSurcharge = this.charmRound(promptSurcharge + wordSurchargeVal);
       }
     } else if (input.usage === 'unpaid') {
       //  VIDEO (NON-COMMERCIAL): 249 base (incl. 200w), daarna 0.20 per woord
@@ -279,35 +364,33 @@ export class PricingEngine {
     // 3. Live Session Surcharge
     if (input.liveSession) {
       //  CHRIS-PROTOCOL: Strict Lookup
-      // 1. Check country-specific live_regie (e.g. rates.BE.live_regie)
-      // 2. Check global live_regie (price_live_regie)
-      // 3. Fallback to config default (50) ONLY if no data exists at all? No, user said "no fallback".
-      // But we need a price for the service.
-      
-      const country = input.country || 'BE';
-      const rates = (input.actorRates as any)?.[country] || {};
-      
-      let fee = 0;
-      
-      // Try country specific first
-      if (rates['live_regie'] > 0) {
-          fee = parseFloat(rates['live_regie']);
-      } 
-      // Try global base column
-      else if (input.actorRates?.price_live_regie > 0) {
-          fee = parseFloat(input.actorRates?.price_live_regie);
-      }
-      // Try legacy key in root
-      else if (input.actorRates?.['price_live_regie'] > 0) {
-          fee = parseFloat(input.actorRates?.['price_live_regie']);
-      }
-      
-      // If fee is found, use it. If not, it is 0 (unavailable/free?).
-      // Usually live session has a cost. If 0, maybe it's included? Or not available?
-      // Let's assume 0 means "Not set", so we might need a system default if the user wants one.
-      // But user said "no fallback". So 0 it is.
-      
-      liveSessionSurcharge = fee;
+    //  CHRIS-PROTOCOL: Guaranteed Source Lookup
+    // 1. Check country-specific live_regie (e.g. rates.BE.live_regie)
+    // 2. Check global live_regie (price_live_regie)
+    // 3. No system default allowed - must be explicit data.
+    
+    const country = input.country || 'BE';
+    const rates = (input.actorRates as any)?.[country] || {};
+    
+    let fee = 0;
+    
+    // Try country specific first
+    if (rates['live_regie'] > 0) {
+        fee = parseFloat(rates['live_regie']);
+    } 
+    // Try global base column
+    else if (input.actorRates?.price_live_regie > 0) {
+        fee = parseFloat(input.actorRates?.price_live_regie);
+    }
+    // Try legacy key in root
+    else if (input.actorRates?.['price_live_regie'] > 0) {
+        fee = parseFloat(input.actorRates?.['price_live_regie']);
+    }
+    
+    // If fee is found, use it. If not, it is 0 (unavailable/free?).
+    // Usually live session has a cost. If 0, it means "Not set" in DB.
+    
+    liveSessionSurcharge = fee;
     }
 
     // 4. Music Surcharge
@@ -315,22 +398,29 @@ export class PricingEngine {
       musicSurcharge = config.musicSurcharge;
     }
 
-    const subtotal = base + wordSurcharge + mediaSurcharge + musicSurcharge + liveSessionSurcharge;
+    // 5. Radio Ready Surcharge (REMOVED 2026)
+    radioReadySurcharge = 0;
+
+    const subtotal = base + wordSurcharge + mediaSurcharge + musicSurcharge + radioReadySurcharge + liveSessionSurcharge;
     const currentVatRate = input.isVatExempt ? 0 : config.vatRate;
     const vat = subtotal * currentVatRate;
     const total = subtotal + vat;
 
-    return {
+    // CHRIS-PROTOCOL: Final result construction
+    const result: PricingResult = {
       base,
       wordSurcharge,
       mediaSurcharge,
       musicSurcharge,
+      radioReadySurcharge,
       subtotal,
       vat,
-      total,
+      total, // Keep total as subtotal + vat for backend/Mollie
       vatRate: currentVatRate,
       legalDisclaimer
     };
+
+    return result;
   }
 
     //  KORNEEL RULE: Centralized Availability Logic
@@ -346,43 +436,70 @@ export class PricingEngine {
       // the actor is available by default as long as they are live.
       if (!mediaTypes || mediaTypes.length === 0) return 'available';
 
-      const rates = actor.rates_raw || actor.rates || {};
-      const countryRates = rates[country] || {};
-      const globalRates = rates['GLOBAL'] || rates['global'] || {};
-      const nativeLang = actor.nativeLang || actor.native_lang || 'nl-BE';
-      const nativeCountry = nativeLang.split('-')[1]?.toUpperCase() || 'BE';
-      const nativeRates = rates[nativeCountry] || {};
+    const rates = actor.rates?.rates || actor.rates || actor.rates_raw || actor;
+    const countryRates = rates[country] || {};
+    const globalRates = rates['GLOBAL'] || rates['global'] || {};
+    const nativeLang = rates.nativeLang || rates.native_lang || actor.native_lang || 'nl-BE';
+    const nativeCountry = nativeLang.split('-')[1]?.toUpperCase() || 'BE';
+    const nativeRates = rates[nativeCountry] || {};
 
-      for (const media of mediaTypes) {
-        //  CHRIS-PROTOCOL: Global-First Lookup Hierarchy
-        // Priority 1: Specifiek land
-        // Priority 2: Global
-        // Priority 3: Native land van de stem
-        const specificPrice = countryRates[media] !== undefined ? countryRates[media] :
-                             (globalRates[media] !== undefined ? globalRates[media] : nativeRates[media]);
+    //  CHRIS-PROTOCOL: Debug availability
+    // console.log(`[PricingEngine] Checking availability for ${actor.display_name || actor.firstName}. Media:`, mediaTypes, "Country:", country, "Rates keys:", Object.keys(rates));
 
-        if (specificPrice === undefined || specificPrice === null || specificPrice === 0 || specificPrice === '0' || specificPrice === '') {
-          return 'unavailable';
+    // Check if ALL requested media types have a price > 0
+    const isAvailable = mediaTypes.every(m => {
+      let fee = 0;
+      if (countryRates[m] !== undefined) fee = parseFloat(countryRates[m]);
+      else if (globalRates[m] !== undefined) fee = parseFloat(globalRates[m]);
+      else if (nativeRates[m] !== undefined) fee = parseFloat(nativeRates[m]);
+      
+      // Bridge for legacy keys if directly on actor/rates
+      if (fee === 0 || isNaN(fee)) {
+        const legacyKey = `price_${m}`;
+        if (rates[legacyKey] !== undefined) fee = parseFloat(rates[legacyKey]);
+        else if (actor[legacyKey] !== undefined) fee = parseFloat(actor[legacyKey]);
+      }
+
+      //  KELLY-MANDATE: If it's a small campaign (regional/local), we also check if the voice has a general price_online or price_unpaid as fallback
+      if (fee === 0 && (m.includes('regional') || m.includes('local'))) {
+        const fallbackKeys = ['online', 'unpaid'];
+        for (const fb of fallbackKeys) {
+          if (countryRates[fb] !== undefined) fee = parseFloat(countryRates[fb]);
+          else if (globalRates[fb] !== undefined) fee = parseFloat(globalRates[fb]);
+          if (fee > 0) break;
         }
       }
 
-      return 'available';
+      //  KELLY-MANDATE: If it's a national campaign, we also check if the voice has a general price_online as fallback
+      if (fee === 0 && m.includes('national')) {
+        const fb = 'online';
+        if (countryRates[fb] !== undefined) fee = parseFloat(countryRates[fb]);
+        else if (globalRates[fb] !== undefined) fee = parseFloat(globalRates[fb]);
+      }
+
+      const isAvailableForThisMedia = fee > 0;
+      // console.log(`[PricingEngine] Availability for ${m}:`, isAvailableForThisMedia, "Fee:", fee);
+      return isAvailableForThisMedia;
+    });
+
+      return isAvailable ? 'available' : 'unavailable';
     }
 
     /**
-     * @deprecated Use getAvailabilityStatus
+     * Legacy helper for availability check
      */
     static isAvailable(actor: any, mediaTypes: CommercialMediaType[], country: string = 'BE'): boolean {
       return this.getAvailabilityStatus(actor, mediaTypes, country) === 'available';
     }
 
   /**
-   * Formatteert een bedrag naar EUR string.
+   * Formatteert een bedrag als Euro string.
    */
   static format(amount: number): string {
     return new Intl.NumberFormat('nl-BE', {
       style: 'currency',
       currency: 'EUR',
+      minimumFractionDigits: 2
     }).format(amount);
   }
 }

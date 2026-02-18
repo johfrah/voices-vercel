@@ -5,11 +5,12 @@ import { eq } from 'drizzle-orm';
 
 export async function GET() {
   try {
-    const [lesson] = await db.select().from(lessons).where(eq(lessons.displayOrder, 17)).limit(1);
+    const [lesson] = await db.select().from(lessons).where(eq(lessons.displayOrder, 17)).limit(1).catch(() => []);
     if (!lesson) return NextResponse.json([]);
 
     const terms: { term: string; definition: string }[] = [];
-    const sections = lesson.content.split('### **');
+    const content = lesson.content || '';
+    const sections = content.split('### **');
     
     sections.slice(1).forEach(section => {
       const parts = section.split('**\n');

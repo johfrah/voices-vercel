@@ -156,7 +156,10 @@ export class DirectMailService {
       }
     });
 
-    const senderDisplayName = market.company_name;
+    // 🛡️ CHRIS-PROTOCOL: Forceer "Voices.be" als afzender voor professionele uitstraling
+    // We gebruiken de company_name uit de market config, maar overriden deze naar Voices.be
+    // als het een algemene platform mail is.
+    const senderDisplayName = from.includes('voices.be') ? 'Voices.be' : market.company_name;
 
     await transporter.sendMail({
       from: `"${senderDisplayName}" <${from}>`,

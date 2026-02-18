@@ -1,4 +1,4 @@
-import soap from 'soap';
+import * as soap from 'soap';
 
 /**
  *  YUKI INBOUND MONITOR (GODMODE 2026)

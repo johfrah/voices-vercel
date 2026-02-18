@@ -4,6 +4,7 @@ import { TelephonySmartSuggestions } from '@/components/checkout/TelephonySmartS
 import { BriefingSelector } from '@/components/studio/BriefingSelector';
 import { MusicSelector } from '@/components/studio/MusicSelector';
 import { AddToCartEmailModal } from '@/components/checkout/AddToCartEmailModal';
+import { CommercialMediaSelectionModal } from '@/components/checkout/CommercialMediaSelectionModal';
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -28,6 +29,7 @@ import {
     ChevronRight,
     Clock,
     Info,
+    Loader2,
     Megaphone,
     Mic,
     Minus, Music,
@@ -140,15 +142,25 @@ export default function ConfiguratorPageClient({
   const [localBriefing, setLocalBriefing] = useState(state.briefing);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showMediaModal, setShowMediaModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<'checkout' | 'cart' | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   const { updateCustomer } = useCheckout();
 
   const handleAddToCartWithEmail = (action: 'checkout' | 'cart') => {
-    if (!state.selectedActor || effectiveWordCount === 0) return;
+    if (!state.selectedActor || effectiveWordCount === 0 || isProcessing) return;
     
+    //  KELLY-MANDATE: Enforce media selection for commercial usage
+    if (state.usage === 'commercial' && (!state.media || state.media.length === 0)) {
+      setPendingAction(action);
+      setShowMediaModal(true);
+      return;
+    }
+    
+    setIsProcessing(true);
     //  CHRIS-PROTOCOL: Persistent email check
     const savedEmail = state.customer.email || localStorage.getItem('voices_customer_email');
     
@@ -166,17 +178,22 @@ export default function ConfiguratorPageClient({
         router.push('/checkout');
       } else {
         // Terug naar overzicht (Agency)
+        setIsProcessing(false);
         router.push('/agency');
       }
       return;
     }
 
     // Anders popup tonen
+    setIsProcessing(false);
     setPendingAction(action);
     setShowEmailModal(true);
   };
 
   const onEmailConfirm = (email: string, nextAction: 'checkout' | 'continue') => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+    
     updateCustomer({ email });
     localStorage.setItem('voices_customer_email', email);
     handleAddToCart();
@@ -195,6 +212,7 @@ export default function ConfiguratorPageClient({
       }
     } else {
       // Terug naar overzicht
+      setIsProcessing(false);
       router.push('/agency');
     }
   };
@@ -555,13 +573,23 @@ export default function ConfiguratorPageClient({
   }, [state.selectedActor, state.country]);
 
   const handleAddToCart = () => {
-    if (!state.selectedActor || effectiveWordCount === 0) return;
+    if (!state.selectedActor || effectiveWordCount === 0) {
+      setIsProcessing(false);
+      return;
+    }
+
+    //  KELLY-MANDATE: Safety check for 0 price
+    if (state.pricing.total <= 0) {
+      console.error('[Configurator] Price is 0. Cannot add to cart.');
+      setIsProcessing(false);
+      alert('Er is een fout opgetreden bij de prijsberekening (0 euro). Neem contact op met support.');
+      return;
+    }
+
     const itemId = `voice-${state.selectedActor.id}-${Date.now()}`;
 
-    // KELLY-MANDATE: Store ONLY this item's price, not the cart total.
-    // state.pricing.total = cartSubtotal + currentSelection; we need just currentSelection.
-    const cartSubtotal = state.items.reduce((sum, i) => sum + (i.pricing?.total ?? i.pricing?.subtotal ?? 0), 0);
-    const currentItemPrice = Math.max(0, state.pricing.total - cartSubtotal);
+    // KELLY-MANDATE: Store ONLY this item's price (not the grand total)
+    const currentItemPrice = state.pricing.total;
 
     addItem({
       id: itemId,
@@ -722,10 +750,17 @@ export default function ConfiguratorPageClient({
         <div className="pt-4 space-y-3">
           <ButtonInstrument 
             onClick={() => handleAddToCartWithEmail('checkout')} 
-            disabled={!state.selectedActor} 
-            className="va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-lg hover:!bg-primary transition-all"
+            disabled={!state.selectedActor || isProcessing} 
+            className={cn(
+              "va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-lg hover:!bg-primary transition-all",
+              isProcessing && "opacity-50 cursor-wait"
+            )}
           >
-            Bestellen <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            {isProcessing ? (
+              <><Loader2 className="animate-spin" size={20} /> Verwerken...</>
+            ) : (
+              <>Bestellen <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" /></>
+            )}
           </ButtonInstrument>
         </div>
       </div>
@@ -1240,15 +1275,22 @@ export default function ConfiguratorPageClient({
                     <VoiceglotText translationKey="pricing.total" defaultText="Totaal" />
                   </span>
                   <span className="text-2xl font-light tracking-tighter text-va-black leading-none">
-                    <PriceCountUp value={state.pricing.total} />
+                    <PriceCountUp value={state.items.reduce((sum, i) => sum + (i.pricing?.total ?? i.pricing?.subtotal ?? 0), 0) + state.pricing.total} />
                   </span>
                 </div>
                   <button 
                     onClick={() => handleAddToCartWithEmail('checkout')}
-                    disabled={!state.selectedActor}
-                    className="bg-va-black text-white px-8 py-3 rounded-xl font-bold text-[13px] tracking-widest uppercase active:scale-95 transition-all disabled:opacity-50"
+                    disabled={!state.selectedActor || isProcessing}
+                    className={cn(
+                      "bg-va-black text-white px-8 py-3 rounded-xl font-bold text-[13px] tracking-widest uppercase active:scale-95 transition-all disabled:opacity-50",
+                      isProcessing && "cursor-wait opacity-50"
+                    )}
                   >
-                    <VoiceglotText translationKey="action.order" defaultText="Bestellen" />
+                    {isProcessing ? (
+                      <Loader2 className="animate-spin" size={18} />
+                    ) : (
+                      <VoiceglotText translationKey="action.order" defaultText="Bestellen" />
+                    )}
                   </button>
           </div>
         </div>
@@ -1260,6 +1302,21 @@ export default function ConfiguratorPageClient({
         onClose={() => setShowEmailModal(false)}
         onConfirm={onEmailConfirm}
         initialEmail={state.customer.email}
+      />
+
+      {/* COMMERCIAL MEDIA SELECTION MODAL */}
+      <CommercialMediaSelectionModal 
+        isOpen={showMediaModal}
+        onClose={() => setShowMediaModal(false)}
+        onConfirm={(selectedMedia) => {
+          updateMedia(selectedMedia);
+          setShowMediaModal(false);
+          // Wait for state to update and then proceed
+          setTimeout(() => {
+            if (pendingAction) handleAddToCartWithEmail(pendingAction);
+          }, 100);
+        }}
+        initialMedia={state.media}
       />
     </ContainerInstrument>
   );

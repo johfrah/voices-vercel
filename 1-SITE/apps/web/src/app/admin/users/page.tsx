@@ -1,16 +1,18 @@
 "use client";
 
-import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
 import {
     ButtonInstrument,
     ContainerInstrument,
     HeadingInstrument,
     PageWrapperInstrument,
     SectionInstrument,
-    TextInstrument
+    TextInstrument,
+    FixedActionDockInstrument
 } from '@/components/ui/LayoutInstruments';
+import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search, Shield, UserPlus, Users } from 'lucide-react';
+import { useAdminTracking } from '@/hooks/useAdminTracking';
+import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search, Shield, UserPlus, Users, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -20,24 +22,27 @@ import { useEffect, useState } from 'react';
  * "Beheer van de Freedom Machine community."
  */
 export default function AdminUsersPage() {
+  const { logAction } = useAdminTracking();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch('/api/admin/users');
-        if (res.ok) {
-          const data = await res.json();
-          setUsers(data);
-        }
-      } catch (e) {
-        console.error('Failed to fetch users', e);
-      } finally {
-        setLoading(false);
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/users');
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data);
       }
-    };
+    } catch (e) {
+      console.error('Failed to fetch users', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUsers();
   }, []);
 
@@ -57,7 +62,7 @@ export default function AdminUsersPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
+          <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText  translationKey="admin.back_to_cockpit" defaultText="Terug" />
           </Link>
@@ -72,10 +77,13 @@ export default function AdminUsersPage() {
               placeholder="Zoek op naam of email..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-2xl text-[15px] font-medium focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
+              className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-[10px] text-[15px] font-light focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
             />
           </ContainerInstrument>
-          <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
+          <ButtonInstrument onClick={() => {
+            logAction('users_create_new');
+            // ... logic
+          }} className="va-btn-pro !bg-va-black flex items-center gap-2">
             <UserPlus strokeWidth={1.5} size={16} /> <VoiceglotText  translationKey="admin.users.add" defaultText="Nieuwe Gebruiker" />
           </ButtonInstrument>
         </ContainerInstrument>
@@ -83,34 +91,34 @@ export default function AdminUsersPage() {
 
       {/* Stats */}
       <BentoGrid strokeWidth={1.5} columns={4}>
-        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.totaal_gebruikers.cf0db8" defaultText="Totaal Gebruikers" /></TextInstrument>
+        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2 rounded-[20px]">
+          <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.totaal_gebruikers.cf0db8" defaultText="Totaal Gebruikers" /></TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter">{users.length}</HeadingInstrument>
         </BentoCard>
-        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.nieuw__30d_.65173a" defaultText="Nieuw (30d)" /></TextInstrument>
+        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2 rounded-[20px]">
+          <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.nieuw__30d_.65173a" defaultText="Nieuw (30d)" /></TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-primary">+{users.filter(u => new Date(u.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}</HeadingInstrument>
         </BentoCard>
-        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.admins.3124e6" defaultText="Admins" /></TextInstrument>
+        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2 rounded-[20px]">
+          <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.admins.3124e6" defaultText="Admins" /></TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-va-black">{users.filter(u => u.role === 'admin').length}</HeadingInstrument>
         </BentoCard>
-        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2">
-          <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.actieve_sessies.5fbd8f" defaultText="Actieve Sessies" /></TextInstrument>
+        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2 rounded-[20px]">
+          <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.actieve_sessies.5fbd8f" defaultText="Actieve Sessies" /></TextInstrument>
           <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-green-500">24</HeadingInstrument>
         </BentoCard>
       </BentoGrid>
 
       {/* User Table */}
-      <ContainerInstrument className="bg-white border border-black/5 rounded-[40px] overflow-hidden">
+      <ContainerInstrument className="bg-white border border-black/5 rounded-[20px] overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-va-off-white/50 border-b border-black/5">
-              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.gebruiker.460471" defaultText="Gebruiker" /></th>
-              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30">Rol</th>
-              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.status.ec53a8" defaultText="Status" /></th>
-              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.laatst_actief.81b333" defaultText="Laatst Actief" /></th>
-              <th className="p-6 text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.acties.691fa4" defaultText="Acties" /></th>
+              <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.gebruiker.460471" defaultText="Gebruiker" /></th>
+              <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30">Rol</th>
+              <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.status.ec53a8" defaultText="Status" /></th>
+              <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.laatst_actief.81b333" defaultText="Laatst Actief" /></th>
+              <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.acties.691fa4" defaultText="Acties" /></th>
             </tr>
           </thead>
           <tbody>
@@ -118,17 +126,17 @@ export default function AdminUsersPage() {
               <tr key={user.id} className="border-b border-black/5 hover:bg-va-off-white/20 transition-colors group">
                 <td className="p-6">
                   <ContainerInstrument className="flex items-center gap-4">
-                    <ContainerInstrument className="w-10 h-10 bg-va-off-white rounded-full flex items-center justify-center font-black text-va-black/20 ">
+                    <ContainerInstrument className="w-10 h-10 bg-va-off-white rounded-full flex items-center justify-center font-light text-va-black/20 ">
                       {user.name?.charAt(0) || user.email?.charAt(0)}
                     </ContainerInstrument>
                     <ContainerInstrument>
-                      <TextInstrument className="font-black text-va-black tracking-tight">{user.name || 'Onbekend'}</TextInstrument>
-                      <TextInstrument className="text-[15px] text-va-black/40 font-medium">{user.email}</TextInstrument>
+                      <TextInstrument className="font-light text-va-black tracking-tight">{user.name || 'Onbekend'}</TextInstrument>
+                      <TextInstrument className="text-[15px] text-va-black/40 font-light">{user.email}</TextInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>
                 </td>
                 <td className="p-6">
-                  <ContainerInstrument className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-widest ${
+                  <ContainerInstrument className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-light tracking-widest ${
                     user.role === 'admin' ? 'bg-va-black text-white' : 'bg-va-off-white text-va-black/40'
                   }`}>
                     {user.role === 'admin' ? <Shield strokeWidth={1.5} size={10} /> : <Users strokeWidth={1.5} size={10} />}
@@ -138,23 +146,23 @@ export default function AdminUsersPage() {
                 <td className="p-6">
                   <ContainerInstrument className="flex items-center gap-2">
                     <ContainerInstrument className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText  translationKey="auto.page.actief.63cc56" defaultText="Actief" /></TextInstrument>
+                    <TextInstrument className="text-[15px] font-light tracking-widest"><VoiceglotText  translationKey="auto.page.actief.63cc56" defaultText="Actief" /></TextInstrument>
                   </ContainerInstrument>
                 </td>
                 <td className="p-6">
-                  <TextInstrument className="text-[15px] font-medium text-va-black/40">
+                  <TextInstrument className="text-[15px] font-light text-va-black/40">
                     {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('nl-BE') : 'Nooit'}
                   </TextInstrument>
                 </td>
                 <td className="p-6">
                   <ContainerInstrument className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
+                    <button onClick={() => logAction('users_edit', { userId: user.id })} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
                       <Edit3 strokeWidth={1.5} size={14} />
                     </button>
-                    <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
+                    <button onClick={() => logAction('users_mail', { userId: user.id })} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
                       <Mail strokeWidth={1.5} size={14} />
                     </button>
-                    <button className="p-2 hover:bg-va-off-white rounded-[20px] transition-colors text-va-black/40 hover:text-primary">
+                    <button className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
                       <MoreHorizontal strokeWidth={1.5} size={14} />
                     </button>
                   </ContainerInstrument>
@@ -164,6 +172,39 @@ export default function AdminUsersPage() {
           </tbody>
         </table>
       </ContainerInstrument>
+
+      <FixedActionDockInstrument>
+        <ButtonInstrument 
+          onClick={() => {
+            logAction('users_refresh');
+            fetchUsers();
+          }}
+          className="va-btn-pro !bg-va-black flex items-center gap-2"
+        >
+          <RefreshCw strokeWidth={1.5} size={16} className={loading ? 'animate-spin' : ''} />
+          <VoiceglotText translationKey="admin.users.refresh" defaultText="Vernieuwen" />
+        </ButtonInstrument>
+      </FixedActionDockInstrument>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AdminPage",
+            "name": "User DNA",
+            "description": "Beheer van de Freedom Machine community.",
+            "_llm_context": {
+              "persona": "Architect",
+              "journey": "admin",
+              "intent": "user_management",
+              "capabilities": ["view_users", "edit_users", "manage_roles"],
+              "lexicon": ["User DNA", "Freedom Machine", "Community"],
+              "visual_dna": ["Bento Grid", "Liquid DNA"]
+            }
+          })
+        }}
+      />
     </PageWrapperInstrument>
   );
 }

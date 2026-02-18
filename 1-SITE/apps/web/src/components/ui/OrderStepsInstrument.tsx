@@ -27,7 +27,7 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
   const steps = [
     { id: 'voice', label: 'Kies Stem', key: 'order_steps.voice' },
     { id: 'script', label: 'Script', key: 'order_steps.script' },
-    { id: 'checkout', label: 'Checkout', key: 'order_steps.checkout' },
+    { id: 'checkout', label: 'Afrekenen', key: 'order_steps.checkout' },
   ] as const;
 
   return (
@@ -42,20 +42,19 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
           return (
             <React.Fragment key={step.id}>
               <div className="flex items-center gap-2">
-                {isPast && isVoiceStep ? (
+                {isPast ? (
                   <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center animate-in zoom-in duration-300">
                     <Check size={10} className="text-white" strokeWidth={4} />
                   </div>
                 ) : (
                   <div className={cn(
                     "w-1.5 h-1.5 rounded-full transition-all duration-500",
-                    isActive ? "bg-primary scale-150" : isPast ? "bg-va-black" : "bg-va-black/60"
+                    isActive ? "bg-primary scale-150" : "bg-va-black/20"
                   )} />
                 )}
                 <span className={cn(
                   "text-[12px] font-bold tracking-[0.15em] uppercase transition-all duration-500",
-                  isActive ? "text-va-black" : "text-va-black/60",
-                  isPast && isVoiceStep && "text-green-600"
+                  isActive ? "text-va-black" : isPast ? "text-green-600" : "text-va-black/30"
                 )}>
                   {showActorName ? (
                     <span className="flex items-center gap-1.5">
@@ -68,7 +67,10 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
               </div>
               
               {index < steps.length - 1 && (
-                <div className="w-4 h-[1px] bg-va-black/10" />
+                <div className={cn(
+                  "w-4 h-[1px] transition-colors duration-500",
+                  isPast ? "bg-green-500/30" : "bg-va-black/10"
+                )} />
               )}
             </React.Fragment>
           );

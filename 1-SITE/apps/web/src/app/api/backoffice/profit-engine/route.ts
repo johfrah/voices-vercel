@@ -19,7 +19,11 @@ export async function GET(request: NextRequest) {
         orderCount: sql`COUNT(${orders.id})`
       })
       .from(orders)
-      .where(eq(orders.status, 'completed'));
+      .where(eq(orders.status, 'completed'))
+      .catch(err => {
+        console.error('Profit Engine Revenue Error:', err);
+        return [{ totalRevenue: '0', orderCount: 0 }];
+      });
 
     // 2. Bereken Directe Kosten (Gekoppelde Yuki Facturen)
     const costData = await db
@@ -30,7 +34,11 @@ export async function GET(request: NextRequest) {
       .where(and(
         eq(orders.status, 'completed'),
         isNotNull(orders.yukiInvoiceId)
-      ));
+      ))
+      .catch(err => {
+        console.error('Profit Engine Cost Error:', err);
+        return [{ totalCosts: '0' }];
+      });
 
     const revenue = parseFloat((revenueData[0]?.totalRevenue as string) || '0');
     const costs = parseFloat((costData[0]?.totalCosts as string) || '0');
@@ -38,17 +46,22 @@ export async function GET(request: NextRequest) {
     const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
 
     // 3. Haal Top Performers op (Meeste marge)
-    const topPerformers = await db
-      .select({
-        name: sql`${users.firstName} || ' ' || ${users.lastName}`,
-        totalProfit: sql`SUM(${orders.totalProfit})`,
-        orderCount: sql`COUNT(${orders.id})`
-      })
-      .from(orders)
-      .innerJoin(users, eq(orders.userId, users.id))
-      .groupBy(users.id)
-      .orderBy(sql`SUM(${orders.totalProfit}) DESC`)
-      .limit(5);
+    let topPerformers: any[] = [];
+    try {
+      topPerformers = await db
+        .select({
+          name: sql`${users.firstName} || ' ' || ${users.lastName}`,
+          totalProfit: sql`SUM(${orders.totalProfit})`,
+          orderCount: sql`COUNT(${orders.id})`
+        })
+        .from(orders)
+        .innerJoin(users, eq(orders.userId, users.id))
+        .groupBy(users.id)
+        .orderBy(sql`SUM(${orders.totalProfit}) DESC`)
+        .limit(5);
+    } catch (perfError) {
+      console.error('Profit Engine Top Performers Error:', perfError);
+    }
 
     return NextResponse.json({
       summary: {

@@ -36,7 +36,7 @@ export default function UnderConstruction() {
       {isAdmin && (
         <div className="fixed top-8 right-8 z-50">
           <Link  
-            href="/auth/login" 
+            href="/account" 
             className="text-[15px] font-black tracking-widest bg-va-black text-white px-6 py-3 rounded-full hover:bg-primary transition-all shadow-lg"
             onClick={() => playClick('pro')}
           >
@@ -96,7 +96,6 @@ export default function UnderConstruction() {
           </div>
         </div>
 
-        {/* SONIC DNA INDICATOR VERWIJDERD OP VERZOEK */}
       </div>
 
       {/* LLM Context Layer */}

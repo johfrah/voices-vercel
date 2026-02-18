@@ -47,6 +47,11 @@ export async function PATCH(
       extraLangs: body.extra_langs,
       dropboxUrl: body.photo_url,
       photoId: body.photo_id || undefined,
+      priceUnpaid: body.price_unpaid ? String(body.price_unpaid) : undefined,
+      priceOnline: body.price_online ? String(body.price_online) : undefined,
+      priceIvr: body.price_ivr ? String(body.price_ivr) : undefined,
+      priceLiveRegie: body.price_live_regie ? String(body.price_live_regie) : undefined,
+      rates: body.rates || undefined,
       updatedAt: new Date()
     })
       .where(or(eq(actors.id, id), eq(actors.wpProductId, id)))

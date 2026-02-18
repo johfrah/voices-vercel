@@ -25,7 +25,7 @@ import CostsManagerClient from "./CostsManagerClient";
 
 export default async function AdminEditionDetailPage({ params }: { params: { id: string } }) {
   const user = await getServerUser();
-  if (!user) redirect('/auth/login');
+  if (!user) redirect('/account');
   if (!isAdminUser(user)) redirect('/studio');
 
   const editionId = parseInt(params.id);

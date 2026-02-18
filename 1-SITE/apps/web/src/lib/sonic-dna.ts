@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback } from 'react';
+
 /**
  *  SONIC DNA ENGINE - 2026 EDITION
  * 
@@ -108,8 +110,11 @@ class SonicDNA {
 export const sonicDNA = new SonicDNA();
 
 export const useSonicDNA = () => {
+  const playClick = useCallback((type?: any) => sonicDNA.playClick(type), []);
+  const playSwell = useCallback(() => sonicDNA.playSwell(), []);
+  
   return {
-    playClick: (type?: any) => sonicDNA.playClick(type),
-    playSwell: () => sonicDNA.playSwell()
+    playClick,
+    playSwell
   };
 };

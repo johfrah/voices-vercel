@@ -30,7 +30,9 @@ export async function GET(request: NextRequest) {
       .select('journey_state')
       .gte('last_visit_at', today.toISOString())
 
-    if (journeyError) throw journeyError
+    if (journeyError) {
+      console.error(' Journey Error:', journeyError)
+    }
 
     const journeyStats = (journeyData || []).reduce((acc: any, curr: any) => {
       const j = curr.journey_state || 'unknown'
@@ -44,7 +46,9 @@ export async function GET(request: NextRequest) {
       .select('market')
       .gte('last_visit_at', today.toISOString())
 
-    if (marketError) throw marketError
+    if (marketError) {
+      console.error(' Market Error:', marketError)
+    }
 
     const marketStats = (marketData || []).reduce((acc: any, curr: any) => {
       const m = curr.market || 'unknown'

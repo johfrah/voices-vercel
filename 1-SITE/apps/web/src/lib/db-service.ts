@@ -20,9 +20,9 @@ export class DbService {
   static async getTaxonomies() {
     try {
       const [allLangs, allTones, allCountries] = await Promise.all([
-        db.select().from(languages).orderBy(asc(languages.label)),
-        db.select().from(voiceTones).orderBy(asc(voiceTones.label)),
-        db.select().from(countries).orderBy(asc(countries.label))
+        db.select().from(languages).orderBy(asc(languages.label)).catch(() => []),
+        db.select().from(voiceTones).orderBy(asc(voiceTones.label)).catch(() => []),
+        db.select().from(countries).orderBy(asc(countries.label)).catch(() => [])
       ]);
 
       return {

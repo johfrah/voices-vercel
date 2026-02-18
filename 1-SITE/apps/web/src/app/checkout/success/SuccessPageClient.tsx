@@ -35,14 +35,27 @@ export default function SuccessPageClient() {
     if (orderId) {
       playClick('success');
       
-      // Simuleer korte verificatie
+      // CHRIS-PROTOCOL: Zero-Friction Redirection
+      // We sturen de gebruiker na 3 seconden automatisch door naar hun account/bestelling
       const timer = setTimeout(() => {
-        setIsVerifying(false);
-      }, 1500);
+        const targetUrl = secureToken 
+          ? `/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${orderId}` 
+          : `/account/orders?orderId=${orderId}`;
+        
+        router.push(targetUrl);
+      }, 3000);
       
-      return () => clearTimeout(timer);
+      // Simuleer korte verificatie voor de UI
+      const verifyTimer = setTimeout(() => {
+        setIsVerifying(false);
+      }, 1000);
+      
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(verifyTimer);
+      };
     }
-  }, [orderId, playClick]);
+  }, [orderId, secureToken, router, playClick]);
 
   if (isVerifying) return <LoadingScreenInstrument message="Bestelling verifiëren..." />;
 

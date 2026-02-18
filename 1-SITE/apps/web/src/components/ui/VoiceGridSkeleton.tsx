@@ -70,7 +70,7 @@ export const VoiceGridSkeleton = ({ count = 6, featured = false }: { count?: num
       featured && "md:block flex overflow-x-auto pb-12 -mx-6 px-6 no-scrollbar"
     )}>
       <div className={cn(
-        featured ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-w-max md:min-w-full" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        featured ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 min-w-max md:min-w-full" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
       )}>
         {Array.from({ length: count }).map((_, i) => (
           <div key={i} className={cn(featured && "w-[85vw] md:w-auto")}>

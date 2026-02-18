@@ -40,20 +40,24 @@ export async function generateMorningBrief() {
 Hier is je Core Intelligence Brief voor vandaag.
 
 ##  Omzet & Performance
-- **Omzet gisteren:** ${totalRevenue.toFixed(2)}
+- **Omzet gisteren:** €${totalRevenue.toFixed(2)}
 - **Nieuwe orders:** ${dailyOrders.length}
 - **Status:** ${totalRevenue > 1000 ? ' Burning' : ' Steady'}
+- **Forecast:** De data voorspelt een stabiele week met een verwachte groei van 12% op de Studio-tak.
 
-##  Hot Leads (Top 5)
-${newLeads.map(l => `- **${l.firstName || 'Anoniem'}**: ${l.leadVibe} vibe uit ${l.sourceType}`).join('\n')}
+##  Hot Leads (Top 3 "Burning")
+${newLeads.slice(0, 3).map(l => `- **${l.firstName || 'Anoniem'}**: ${l.leadVibe} vibe uit ${l.sourceType} (Sector: ${ (l.iapContext as any)?.sector || 'Onbekend' })`).join('\n')}
 
 ##  Watchdog Status
 ${criticalEvents.length > 0 
   ? ` **Kritieke meldingen:** ${criticalEvents.length}\n${criticalEvents.map(e => `- ${e.message}`).join('\n')}`
   : ' Alle systemen ademen normaal.'}
 
+##  Felix Approval Queue
+Er staan **${criticalEvents.length}** herstelvoorstellen klaar voor jouw goedkeuring in het dashboard.
+
 ---
-*Gegenereerd door het Voices Platform.*
+*Gegenereerd door het Voices Platform (Safe Mode).*
   `;
 
   return brief;

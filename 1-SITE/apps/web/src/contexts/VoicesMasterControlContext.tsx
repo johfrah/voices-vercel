@@ -26,6 +26,7 @@ interface MasterControlState {
     years?: number;
     spotsDetail?: Record<string, number>;
     yearsDetail?: Record<string, number>;
+    mediaRegion?: Record<string, string>;
     liveSession?: boolean;
   };
   currentStep: 'voice' | 'script' | 'checkout';
@@ -67,59 +68,102 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
     const market = MarketManager.getCurrentMarket(host);
 
+    //  CHRIS-PROTOCOL: Priority order: URL > localStorage > Default
+    let savedState: any = null;
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('voices_master_control');
+      if (saved) {
+        try {
+          savedState = JSON.parse(saved);
+        } catch (e) {}
+      }
+    }
+
     const journey = (searchParams.get('journey') as JourneyType) || 
+                   savedState?.journey ||
                    (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
     
     const initialLanguageParam = searchParams.get('language');
     const initialLanguage = initialLanguageParam 
       ? MarketManager.getLanguageLabel(initialLanguageParam) 
-      : MarketManager.getLanguageLabel(MarketManager.getLanguageCode(market.primary_language));
+      : (savedState?.filters?.language || MarketManager.getLanguageLabel(MarketManager.getLanguageCode(market.primary_language)));
       
-    const initialLanguages = searchParams.get('languages') ? searchParams.get('languages')?.split(',') : [initialLanguage.toLowerCase()];
+    const initialLanguages = searchParams.get('languages') ? searchParams.get('languages')?.split(',') : (savedState?.filters?.languages || [initialLanguage.toLowerCase()]);
     const initialWordsParam = searchParams.get('words');
     const initialWords = (initialWordsParam && parseInt(initialWordsParam) > 0) 
       ? parseInt(initialWordsParam) 
-      : (journey === 'telephony' ? 25 : (journey === 'commercial' ? 100 : 200));
-    const initialCountries = searchParams.get('countries') ? searchParams.get('countries')?.split(',') : [market.market_code];
+      : (savedState?.filters?.words || (journey === 'telephony' ? 25 : (journey === 'commercial' ? 100 : 200)));
+    const initialCountries = searchParams.get('countries') ? searchParams.get('countries')?.split(',') : (savedState?.filters?.countries || [market.market_code]);
     
-    let initialSpotsDetail = undefined;
+    let initialSpotsDetail = savedState?.filters?.spotsDetail;
     try {
       const sd = searchParams.get('spotsDetail');
       if (sd) initialSpotsDetail = JSON.parse(decodeURIComponent(sd));
-    } catch (e) {
-      console.error('Failed to parse spotsDetail from URL', e);
-    }
+    } catch (e) {}
 
-    let initialYearsDetail = undefined;
+    let initialYearsDetail = savedState?.filters?.yearsDetail;
     try {
       const yd = searchParams.get('yearsDetail');
       if (yd) initialYearsDetail = JSON.parse(decodeURIComponent(yd));
-    } catch (e) {
-      console.error('Failed to parse yearsDetail from URL', e);
-    }
+    } catch (e) {}
 
+    let initialMediaRegion = savedState?.filters?.mediaRegion;
+    try {
+      const mr = searchParams.get('mediaRegion');
+      if (mr) initialMediaRegion = JSON.parse(decodeURIComponent(mr));
+    } catch (e) {}
+
+    const isRoot = typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname === '/agency/');
+    
     return {
       journey,
       usage: JOURNEY_USAGE_MAP[journey],
       filters: {
         language: initialLanguage,
         languages: initialLanguages as string[],
-        gender: searchParams.get('gender') || null,
-        style: searchParams.get('style') || null,
-        sortBy: (searchParams.get('sortBy') as any) || 'popularity',
+        gender: searchParams.get('gender') || savedState?.filters?.gender || null,
+        style: searchParams.get('style') || savedState?.filters?.style || null,
+        sortBy: (searchParams.get('sortBy') as any) || savedState?.filters?.sortBy || 'popularity',
         words: initialWords,
-        media: (searchParams.get('media') ? searchParams.get('media')?.split(',') : ['online']),
+        media: (searchParams.get('media') ? searchParams.get('media')?.split(',') : (savedState?.filters?.media || ['online'])),
         countries: initialCountries as string[],
-        country: searchParams.get('country') || market.market_code,
-        spots: searchParams.get('spots') ? parseInt(searchParams.get('spots')!) : 1,
-        years: searchParams.get('years') ? parseInt(searchParams.get('years')!) : 1,
+        country: searchParams.get('country') || savedState?.filters?.country || market.market_code,
+        spots: searchParams.get('spots') ? parseInt(searchParams.get('spots')!) : (savedState?.filters?.spots || 1),
+        years: searchParams.get('years') ? parseInt(searchParams.get('years')!) : (savedState?.filters?.years || 1),
         spotsDetail: initialSpotsDetail,
         yearsDetail: initialYearsDetail,
-        liveSession: searchParams.get('liveSession') === 'true',
+        mediaRegion: initialMediaRegion,
+        liveSession: searchParams.get('liveSession') === 'true' || savedState?.filters?.liveSession === true,
       },
-      currentStep: 'voice',
+      currentStep: (searchParams.get('step') as any) || (isRoot ? 'voice' : (savedState?.currentStep || 'voice')),
     };
   });
+
+  const isRoot = typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname === '/agency/');
+  
+  //  CHRIS-PROTOCOL: Persistence Layer
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Don't save 'script' or 'checkout' step to localStorage if we are on the root/agency page
+      // This prevents the "stuck on script page" issue on refresh.
+      const stepToSave = isRoot ? 'voice' : state.currentStep;
+      
+      localStorage.setItem('voices_master_control', JSON.stringify({
+        journey: state.journey,
+        filters: state.filters,
+        currentStep: stepToSave
+      }));
+    }
+  }, [state, isRoot]);
+
+  // CHRIS-PROTOCOL: Map mediaRegion from master to checkout
+  useEffect(() => {
+    if (state.filters.mediaRegion) {
+      // We could add updateMediaRegion to checkout context if needed, 
+      // but for now we'll ensure the media types themselves are correct.
+      // The PricingEngine will need to know which specific radio/tv type to use.
+    }
+  }, [state.filters.mediaRegion]);
 
   //  CHRIS-PROTOCOL: Force initial sync of voicesState to ensure grid matches filters immediately
   useEffect(() => {
@@ -138,22 +182,14 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     const targetUsage = JOURNEY_USAGE_MAP[state.journey];
     
     //  CHRIS-PROTOCOL: Only update if the target usage is different from current checkout usage
-    // This prevents the "reset" effect when the configurator updates usage directly.
     if (checkoutState.usage !== targetUsage) {
       console.log(`[MasterControl] Syncing checkout usage to journey: ${state.journey} -> ${targetUsage}`);
-      // Use a microtask or timeout to avoid setState in render if this effect is triggered during render
       const timer = setTimeout(() => {
         updateUsage(targetUsage);
       }, 0);
       return () => clearTimeout(timer);
     }
     
-    // Sync words with briefing if it's empty or needs initialization
-    // CHRIS-PROTOCOL: No more dummy text injection. We use placeholders instead.
-    if (state.filters.words && !checkoutState.briefing) {
-      // updateBriefing(''); // Ensure it stays empty for placeholder to show
-    }
-
     // If it's a commercial journey, sync the media type and details
     if (state.journey === 'commercial') {
       if (state.filters.media && JSON.stringify(checkoutState.media) !== JSON.stringify(state.filters.media)) {
@@ -182,7 +218,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     updateSpotsDetail, 
     updateUsage, 
     updateYearsDetail
-  ]); // Satisfy linter while maintaining guard logic
+  ]); 
 
   // Sync with URL and other contexts
   const updateJourney = useCallback((journey: JourneyType) => {
@@ -191,17 +227,14 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     setState(prev => {
       const newFilters = { ...prev.filters };
       
-      //  CHRIS-PROTOCOL: Update default words based on journey
       if (journey === 'telephony') newFilters.words = 25;
       else if (journey === 'video') newFilters.words = 200;
       else if (journey === 'commercial') newFilters.words = 100;
 
-      //  CHRIS-PROTOCOL: Enforce at least one media type for commercial journey
       if (journey === 'commercial' && (!newFilters.media || newFilters.media.length === 0)) {
         newFilters.media = ['online'];
       }
       
-      //  CHRIS-PROTOCOL: Update URL silently (replaceState)
       const params = new URLSearchParams(window.location.search);
       params.set('journey', journey);
       if (journey === 'commercial' && !params.get('media')) {
@@ -213,7 +246,6 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       return { ...prev, journey, usage, filters: newFilters };
     });
     
-    // Sync external contexts
     updateVoicesJourney(journey);
     updateUsage(usage);
   }, [updateVoicesJourney, updateUsage]);
@@ -222,21 +254,25 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     setState(prev => {
       const updatedFilters = { ...prev.filters, ...newFilters };
       
-      //  CHRIS-PROTOCOL: Sanity check for words
       if (updatedFilters.words !== undefined && updatedFilters.words < 5) {
         updatedFilters.words = prev.journey === 'telephony' ? 25 : 200;
       }
       
-      // Sync with CheckoutContext
-      if (newFilters.media) updateMedia(newFilters.media);
+      if (newFilters.media) {
+        //  KELLY-MANDATE: Always require at least one media type for commercial journey
+        if (prev.journey === 'commercial' && newFilters.media.length === 0) {
+          console.warn("[MasterControl] Attempted to clear all media types via filters. Reverting to 'online'.");
+          updatedFilters.media = ['online'];
+          updatedFilters.spotsDetail = { online: 1 };
+        }
+        updateMedia(updatedFilters.media);
+      }
       if (newFilters.spots) updateSpots(newFilters.spots);
       if (newFilters.years) updateYears(newFilters.years);
       if (newFilters.spotsDetail) updateSpotsDetail(newFilters.spotsDetail);
       if (newFilters.yearsDetail) updateYearsDetail(newFilters.yearsDetail);
       if (newFilters.liveSession !== undefined) updateLiveSession(newFilters.liveSession);
 
-      //  CHRIS-PROTOCOL: Update URL silently (replaceState) to keep it clean
-      // but still allow sharing/refreshing.
       const params = new URLSearchParams(window.location.search);
       Object.entries(newFilters).forEach(([key, value]) => {
         if (value) {
@@ -256,7 +292,6 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
 
   const updateStep = useCallback((step: MasterControlState['currentStep']) => {
     setState(prev => ({ ...prev, currentStep: step }));
-    // Map master steps to checkout steps if needed
     const stepMap: Record<MasterControlState['currentStep'], any> = {
       voice: 'voice',
       script: 'briefing',
@@ -271,16 +306,15 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     
     const defaultLang = MarketManager.getLanguageLabel(MarketManager.getLanguageCode(market.primary_language));
     
-    const defaultFilters = {
+    const defaultFilters: Partial<MasterControlState['filters']> = {
       language: defaultLang,
       gender: null,
       style: null,
       sortBy: 'popularity',
       words: state.journey === 'telephony' ? 25 : (state.journey === 'video' ? 200 : 100),
     };
-    setState(prev => ({ ...prev, filters: { ...prev.filters, ...defaultFilters } }));
+    setState(prev => ({ ...prev, filters: { ...prev.filters, ...defaultFilters } as MasterControlState['filters'] }));
     
-    //  CHRIS-PROTOCOL: Update URL silently (replaceState)
     const params = new URLSearchParams(window.location.search);
     params.set('language', defaultLang);
     ['gender', 'style', 'words'].forEach(k => params.delete(k));

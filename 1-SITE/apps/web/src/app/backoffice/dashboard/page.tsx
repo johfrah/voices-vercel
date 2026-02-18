@@ -12,48 +12,67 @@ import { count, desc, sql, sum } from 'drizzle-orm';
 import { Activity, Calendar, ShoppingCart, Users } from "lucide-react";
 
 async function getSpotlightStats() {
-  // 1. Commercial Pulse (Voices)
-  const [orderStats] = await db.select({
-    totalRevenue: sum(orders.total),
-    orderCount: count(orders.id),
-  }).from(orders);
+  try {
+    // 1. Commercial Pulse (Voices)
+    const [orderStats] = await db.select({
+      totalRevenue: sum(orders.total),
+      orderCount: count(orders.id),
+    }).from(orders).catch(() => [{ totalRevenue: "0", orderCount: 0 }]);
 
-  // 2. Engagement Pulse (Ademing)
-  const [ademingEngagement] = await db.select({
-    totalListenTime: sum(ademingStats.totalListenSeconds),
-    avgStreak: sql<number>`avg(${ademingStats.streakDays})`,
-  }).from(ademingStats);
+    // 2. Engagement Pulse (Ademing)
+    const [ademingEngagement] = await db.select({
+      totalListenTime: sum(ademingStats.totalListenSeconds),
+      avgStreak: sql<number>`avg(${ademingStats.streakDays})`,
+    }).from(ademingStats).catch(() => [{ totalListenTime: "0", avgStreak: 0 }]);
 
-  // 3. User Pulse (Unified)
-  const [userCount] = await db.select({ count: count(users.id) }).from(users);
-  
-  // 4. Real-time Interactions (Voicy)
-  const [chatCount] = await db.select({ count: count(chatConversations.id) }).from(chatConversations);
+    // 3. User Pulse (Unified)
+    const [userCount] = await db.select({ count: count(users.id) }).from(users).catch(() => [{ count: 0 }]);
+    
+    // 4. Real-time Interactions (Voicy)
+    const [chatCount] = await db.select({ count: count(chatConversations.id) }).from(chatConversations).catch(() => [{ count: 0 }]);
 
-  // 5. Content Pulse
-  const [actorCount] = await db.select({ count: count(actors.id) }).from(actors);
-  const [workshopCount] = await db.select({ count: count(workshops.id) }).from(workshops);
+    // 5. Content Pulse
+    const [actorCount] = await db.select({ count: count(actors.id) }).from(actors).catch(() => [{ count: 0 }]);
+    const [workshopCount] = await db.select({ count: count(workshops.id) }).from(workshops).catch(() => [{ count: 0 }]);
 
-  return {
-    revenue: orderStats.totalRevenue || "0",
-    orders: orderStats.orderCount || 0,
-    users: userCount.count || 0,
-    ademingListenTime: Math.round(Number(ademingEngagement.totalListenTime || 0) / 3600), // in hours
-    avgStreak: Math.round(Number(ademingEngagement.avgStreak || 0)),
-    chats: chatCount.count || 0,
-    actors: actorCount.count || 0,
-    workshops: workshopCount.count || 0
-  };
+    return {
+      revenue: orderStats?.totalRevenue || "0",
+      orders: orderStats?.orderCount || 0,
+      users: userCount?.count || 0,
+      ademingListenTime: Math.round(Number(ademingEngagement?.totalListenTime || 0) / 3600), // in hours
+      avgStreak: Math.round(Number(ademingEngagement?.avgStreak || 0)),
+      chats: chatCount?.count || 0,
+      actors: actorCount?.count || 0,
+      workshops: workshopCount?.count || 0
+    };
+  } catch (error) {
+    console.error('Error fetching spotlight stats:', error);
+    return {
+      revenue: "0",
+      orders: 0,
+      users: 0,
+      ademingListenTime: 0,
+      avgStreak: 0,
+      chats: 0,
+      actors: 0,
+      workshops: 0
+    };
+  }
 }
 
 async function RecentActivity() {
-  const recentOrders = await db.query.orders.findMany({
-    limit: 5,
-    orderBy: [desc(orders.createdAt)],
-    with: {
-      user: true
-    }
-  });
+  let recentOrders: any[] = [];
+  try {
+    recentOrders = await db.query.orders.findMany({
+      limit: 5,
+      orderBy: [desc(orders.createdAt)],
+      with: {
+        user: true
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching recent activity:', error);
+  }
 
   return (
     <ContainerInstrument className="space-y-4">
