@@ -24,7 +24,13 @@ export async function GET(request: Request) {
     // Voor nu vertrouwen we op de admin context van de aanvrager.
     
     // 2. Fetch User from DB
-    const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    let user = null;
+    try {
+      const results = await db.select().from(users).where(eq(users.email, email)).limit(1);
+      user = results[0];
+    } catch (dbError) {
+      console.error(' ADMIN LOOKUP DB ERROR:', dbError);
+    }
 
     if (!user) {
       return NextResponse.json({ user: null });

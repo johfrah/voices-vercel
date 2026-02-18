@@ -179,7 +179,7 @@ export const CommandPalette = () => {
           <Command.Group heading={<VoiceglotText  translationKey="command.palette.group.nav" defaultText="Navigatie" />} className="px-3 py-2 text-[15px] font-black tracking-widest text-gray-400">
             <Item strokeWidth={1.5} onSelect={() => runCommand(() => router.push('/admin/dashboard'))}>
               <LayoutDashboard strokeWidth={1.5} className="w-4 h-4 mr-3" />
-              <span><VoiceglotText  translationKey="admin.cockpit.title" defaultText="Voices Cockpit" /></span>
+              <span><VoiceglotText  translationKey="admin.dashboard.title" defaultText="Voices Admin" /></span>
               <Shortcut>G D</Shortcut>
             </Item>
             <Item strokeWidth={1.5} onSelect={() => runCommand(() => router.push('/backoffice/dashboard'))}>

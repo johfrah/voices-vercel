@@ -351,7 +351,7 @@ export const LabelInstrument = ({
 }: HTMLAttributes<HTMLLabelElement>) => {
   return (
     <label 
-      className={cn("text-[13px] font-light tracking-widest text-va-black/40 ml-4 mb-2 block", className)} 
+      className={cn("text-[13px] font-light tracking-widest text-va-black/40 ml-4 mb-2 block relative z-0", className)} 
       {...props}
     >
       {children}

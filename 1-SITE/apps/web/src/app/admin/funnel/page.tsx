@@ -19,7 +19,7 @@ export default function WorkshopFunnelPage() {
         <SectionInstrument className="mb-12">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest mb-8">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug naar Cockpit" />
+            <VoiceglotText translationKey="admin.back_to_dashboard" defaultText="Terug naar Dashboard" />
           </Link>
           
           <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-black px-3 py-1 rounded-full mb-6 tracking-widest uppercase">

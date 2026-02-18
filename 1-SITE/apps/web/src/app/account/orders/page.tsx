@@ -35,6 +35,15 @@ export default function OrdersPage() {
     }
   }, [isAuthenticated, user]);
 
+  useEffect(() => {
+    if (highlightedOrderId && ordersList.length > 0) {
+      const element = document.getElementById(`order-${highlightedOrderId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [highlightedOrderId, ordersList]);
+
   if (isLoading) return <LoadingScreenInstrument message="Bestellingen laden..." />;
 
   return (
@@ -65,6 +74,7 @@ export default function OrdersPage() {
             return (
               <BentoCard 
                 key={order.id}
+                id={`order-${order.id}`}
                 span="full" 
                 className={cn(
                   "bg-white shadow-aura p-12 transition-all duration-500",
@@ -87,19 +97,49 @@ export default function OrdersPage() {
                     </HeadingInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="flex gap-4">
-                    <ButtonInstrument className="p-4 rounded-2xl bg-va-off-white hover:bg-va-black hover:text-white transition-all group shadow-sm">
+                    <ButtonInstrument className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-va-off-white hover:bg-va-black hover:text-white transition-all group shadow-sm">
                       <FileText strokeWidth={1.5} size={18} className="opacity-40 group-hover:opacity-100" />
+                      <span className="text-[13px] font-bold tracking-widest uppercase"><VoiceglotText translationKey="account.orders.invoice" defaultText="Factuur" /></span>
                     </ButtonInstrument>
-                    <ButtonInstrument className="p-4 rounded-2xl bg-va-off-white hover:bg-va-black hover:text-white transition-all group shadow-sm">
+                    <ButtonInstrument className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-va-off-white hover:bg-va-black hover:text-white transition-all group shadow-sm">
                       <ExternalLink strokeWidth={1.5} size={18} className="opacity-40 group-hover:opacity-100" />
+                      <span className="text-[13px] font-bold tracking-widest uppercase"><VoiceglotText translationKey="account.orders.details" defaultText="Details" /></span>
                     </ButtonInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
 
                 <SpatialOrderTrackerInstrument 
-                  status={order.status === 'completed' ? 'delivered' : 'recording'} 
+                  status={order.status === 'completed' ? 'ready' : 'queued'} 
                   className="my-8" 
                 />
+                
+                {isHighlighted && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="bg-primary/5 border border-primary/10 p-8 rounded-[24px] mt-12 mb-8 space-y-4"
+                  >
+                    <div className="flex items-center gap-3 text-primary">
+                      <Zap size={20} fill="currentColor" />
+                      <HeadingInstrument level={4} className="text-xl font-light tracking-tight">
+                        <VoiceglotText translationKey="account.orders.next_steps.title" defaultText="Wat gebeurt er nu?" />
+                      </HeadingInstrument>
+                    </div>
+                    <TextInstrument className="text-[16px] text-va-black/60 font-light leading-relaxed">
+                      {order.paymentMethod === 'banktransfer' ? (
+                        <VoiceglotText 
+                          translationKey="account.orders.next_steps.banktransfer" 
+                          defaultText="We hebben je bestelling ontvangen. Zodra de betaling is verwerkt, gaat de stemacteur direct voor je aan de slag. Je ontvangt een pushbericht bij elke update." 
+                        />
+                      ) : (
+                        <VoiceglotText 
+                          translationKey="account.orders.next_steps.default" 
+                          defaultText="Je project is succesvol gestart! De stemacteur is op de hoogte gebracht en de opname wordt ingepland. Je kunt hier de voortgang live volgen." 
+                        />
+                      )}
+                    </TextInstrument>
+                  </motion.div>
+                )}
                 
                 <ContainerInstrument className="mt-20 pt-8 border-t border-black/5 flex flex-col md:flex-row justify-between items-center gap-4">
                   <ContainerInstrument className="flex items-center gap-3">

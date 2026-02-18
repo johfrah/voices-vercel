@@ -157,7 +157,7 @@ export default function VisitorPlayerPage() {
             ) : error ? (
               <ContainerInstrument className="bg-red-500/10 border border-red-500/20 p-8 rounded-3xl text-center max-w-md">
                 <TextInstrument className="text-red-500 font-bold mb-4">{error}</TextInstrument>
-                <Link  href="/admin/marketing/visitors" className="va-btn-pro !bg-white !text-va-black"><VoiceglotText  translationKey="auto.page.terug_naar_cockpit.dada9f" defaultText="Terug naar Cockpit" /></Link>
+                <Link  href="/admin/marketing/visitors" className="va-btn-pro !bg-white !text-va-black"><VoiceglotText  translationKey="auto.page.terug_naar_dashboard.dada9f" defaultText="Terug naar Dashboard" /></Link>
               </ContainerInstrument>
             ) : (
               <ContainerInstrument ref={playerContainerRef} className="w-full h-full" />

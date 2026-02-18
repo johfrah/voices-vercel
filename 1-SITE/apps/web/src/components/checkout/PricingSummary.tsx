@@ -92,19 +92,12 @@ export const PricingSummary: React.FC<{
 
       if (data.success) {
         if (state.isQuoteRequest || data.isBankTransfer || !data.checkoutUrl) {
-          if (data.isBankTransfer) {
-            alert('Bedankt! Je bestelling is geplaatst. We sturen je de factuur per e-mail. Je bestelling wordt verwerkt zodra de betaling is ontvangen.');
-          } else if (state.isQuoteRequest) {
-            alert('Offerte succesvol verzonden!');
-          } else {
-            alert('Bedankt! Je bestelling is succesvol verwerkt.');
-          }
-          
+          // CHRIS-PROTOCOL: Geen lelijke browser alerts. Direct doorsturen naar de succes-flow.
           setIsPreviewOpen(false);
           updateIsSubmitting(false);
           
           // Redirect to success page for all non-Mollie successes
-          window.location.href = `/checkout/success?orderId=${data.orderId}${data.isBankTransfer ? '&method=banktransfer' : ''}${data.token ? `&token=${data.token}` : ''}`;
+          window.location.href = `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}`;
         } else if (data.checkoutUrl) {
           window.location.href = data.checkoutUrl;
         }
@@ -338,7 +331,7 @@ export const PricingSummary: React.FC<{
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-xl bg-white rounded-[32px] shadow-aura overflow-hidden max-h-[90vh] flex flex-col"
+              className="relative w-full max-w-xl bg-white rounded-[32px] shadow-aura overflow-hidden max-h-[90vh] flex flex-col z-[501]"
             >
               <div className="p-10 flex-1 overflow-y-auto custom-scrollbar space-y-10">
                 <div className="flex justify-between items-start">

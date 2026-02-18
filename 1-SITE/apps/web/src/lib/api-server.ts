@@ -137,6 +137,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           demos: true,
           country: true
         }
+      }).catch(err => {
+        console.warn(' Drizzle findMany failed:', err);
+        return [];
       });
       
       console.log(' API: Drizzle returned', dbResults.length, 'results');
@@ -150,7 +153,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       
       if (dbResults.length === 0) {
         console.log('  Drizzle returned 0, checking total live actors...');
-        const totalLive = await db.select({ count: sql`count(*)` }).from(actors).where(eq(actors.status, 'live'));
+        const totalLive = await db.select({ count: sql`count(*)` }).from(actors).where(eq(actors.status, 'live')).catch(() => [{ count: 0 }]);
         console.log(' Total live actors in DB:', totalLive[0].count);
       }
     } catch (dbError) {
@@ -455,7 +458,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 export async function getArticle(slug: string, lang: string = 'nl'): Promise<any> {
   let article: any = null;
   try {
-    [article] = await db.select().from(contentArticles).where(eq(contentArticles.slug, slug)).limit(1);
+    const results = await db.select().from(contentArticles).where(eq(contentArticles.slug, slug)).limit(1).catch(() => []);
+    article = results[0];
   } catch (dbError) {
     console.warn(' getArticle Drizzle failed, falling back to SDK');
     const { data } = await supabase.from('content_articles').select('*').eq('slug', slug).single();
@@ -468,7 +472,7 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
   
   let blocks: any[] = [];
   try {
-    blocks = await db.select().from(contentBlocks).where(eq(contentBlocks.articleId, article.id)).orderBy(asc(contentBlocks.displayOrder));
+    blocks = await db.select().from(contentBlocks).where(eq(contentBlocks.articleId, article.id)).orderBy(asc(contentBlocks.displayOrder)).catch(() => []);
   } catch (blockError) {
     console.warn(' getArticle blocks Drizzle failed, falling back to SDK');
     const { data } = await supabase.from('content_blocks').select('*').eq('article_id', article.id).order('display_order', { ascending: true });
@@ -555,7 +559,7 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
         country: true,
         demos: true
       }
-    });
+    }).catch(() => null);
   } catch (dbError) {
     console.warn(' getActor Drizzle failed, falling back to SDK');
     const { data } = await supabase
@@ -718,7 +722,7 @@ export async function getMusicLibrary(category: string = 'music'): Promise<any[]
         eq(media.category, category),
         sql`${media.metadata}->>'vibe' = 'Onze eigen muziek'`
       )
-    ).orderBy(media.fileName);
+    ).orderBy(media.fileName).catch(() => []);
 
     // Map de media items naar het juiste formaat voor de UI
     const mappedMedia = musicMedia.map(m => {
@@ -776,7 +780,8 @@ export async function getAcademyLesson(id: string): Promise<any> {
 
   let lesson: any = null;
   try {
-    [lesson] = await db.select().from(lessons).where(eq(lessons.displayOrder, lessonOrder)).limit(1);
+    const results = await db.select().from(lessons).where(eq(lessons.displayOrder, lessonOrder)).limit(1).catch(() => []);
+    lesson = results[0];
   } catch (dbError) {
     console.warn(' getAcademyLesson Drizzle failed, falling back to SDK');
     const { data } = await supabase.from('lessons').select('*').eq('display_order', lessonOrder).single();
@@ -869,7 +874,7 @@ export async function getWorkshops(limit: number = 50): Promise<any[]> {
             }
           }
         }
-      });
+      }).catch(() => []);
     } catch (dbError) {
       console.warn(' Drizzle failed on getWorkshops, falling back to SDK:', dbError);
       const { data, error } = await supabase

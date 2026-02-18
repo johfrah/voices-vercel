@@ -224,13 +224,16 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
 
     if (data.success) {
         if (formData.isQuote || data.isBankTransfer) {
-          alert(data.isBankTransfer 
-            ? 'Bedankt! Je bestelling is geplaatst. We sturen je de factuur per e-mail. Je bestelling wordt verwerkt zodra de betaling is ontvangen.' 
-            : 'Offerte succesvol verzonden!');
+          // CHRIS-PROTOCOL: Geen lelijke browser alerts. Direct doorsturen.
           setIsPreviewOpen(false);
           updateIsSubmitting(false);
           if (data.isBankTransfer) {
-            window.location.href = `/checkout/success?orderId=${data.orderId}&method=banktransfer${data.token ? `&token=${data.token}` : ''}`;
+            window.location.href = `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}`;
+          } else {
+            // Offerte succesvol - direct naar de bestelling/offerte pagina
+            if (data.orderId) {
+              window.location.href = `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}&type=quote`;
+            }
           }
         } else if (data.checkoutUrl) {
           window.location.href = data.checkoutUrl;
@@ -753,7 +756,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-va-black/90 backdrop-blur-xl"
           >
-            <ContainerInstrument plain className="relative w-full max-w-md bg-white rounded-[40px] overflow-hidden shadow-2xl flex flex-col">
+            <ContainerInstrument plain className="relative w-full max-w-md bg-white rounded-[40px] overflow-hidden shadow-2xl flex flex-col z-[601]">
               <div className="p-8 border-b border-black/5 flex justify-between items-center">
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter">
                   Inloggen

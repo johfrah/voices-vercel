@@ -114,13 +114,13 @@ export default function BestellingenPage() {
         <SectionInstrument className="mb-12">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest mb-8">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug naar Cockpit" />
+            <VoiceglotText translationKey="admin.back_to_dashboard" defaultText="Terug naar Dashboard" />
           </Link>
           
           <div className="flex justify-between items-end">
             <div className="space-y-4">
               <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-light px-3 py-1 rounded-full tracking-widest">
-                <VoiceglotText translationKey="admin.orders.badge" defaultText="Order Cockpit" />
+                <VoiceglotText translationKey="admin.orders.badge" defaultText="Order Dashboard" />
               </ContainerInstrument>
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
                 <VoiceglotText translationKey="admin.orders.title" defaultText="Bestellingen" />
@@ -257,7 +257,7 @@ export default function BestellingenPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "AdminPage",
-            "name": "Bestellingen Cockpit",
+            "name": "Bestellingen Dashboard",
             "description": "Operationeel overzicht van alle transacties en producties.",
             "_llm_context": {
               "persona": "Architect",

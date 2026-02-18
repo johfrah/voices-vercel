@@ -3,7 +3,7 @@ import { LiquidBackground } from '@/components/ui/LiquidBackground';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Voices Cockpit | Admin',
+  title: 'Voices Admin | Admin',
   description: 'Centraal beheer-dashboard voor het Voices platform.',
 };
 
@@ -30,12 +30,12 @@ export default async function AdminLayout({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "AdminPage",
-            "name": "Voices Cockpit",
+            "name": "Voices Admin",
             "_llm_context": {
               "persona": "Architect",
               "journey": "admin",
               "intent": "system_management",
-              "lexicon": ["Cockpit", "Self-Healing", "User DNA", "Bento Blueprint"],
+              "lexicon": ["Admin", "Self-Healing", "User DNA", "Bento Blueprint"],
               "visual_dna": ["Bento Grid", "Liquid DNA", "Spatial Growth"]
             }
           })

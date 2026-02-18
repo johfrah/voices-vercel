@@ -45,7 +45,7 @@ export default function StudioDashboardPage() {
           <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full mb-8 shadow-sm border border-black/[0.03]">
             <ContainerInstrument as="span" className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <TextInstrument as="span" className="text-[15px] font-black tracking-widest text-black/60">
-              <VoiceglotText  translationKey="studio.dashboard.badge" defaultText="Jouw Studio Cockpit" />
+              <VoiceglotText  translationKey="studio.dashboard.badge" defaultText="Jouw Studio Dashboard" />
             </TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-4">

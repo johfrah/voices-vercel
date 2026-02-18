@@ -6,7 +6,7 @@ import path from 'path';
  *  NUCLEAR AUDIO MAPPER (2026)
  * 
  * Scant de /assets/agency/voices mappenstructuur en koppelt audio aan acteurs in Supabase.
- * Dit is de "Sonic DNA" activator voor de Next.js Cockpit.
+ * Dit is de "Sonic DNA" activator voor het Next.js Dashboard.
  */
 
 async function mapAudioDemos() {

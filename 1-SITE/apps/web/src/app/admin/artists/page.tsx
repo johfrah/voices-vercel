@@ -12,14 +12,14 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { ArrowLeft, LayoutDashboard, Construction } from 'lucide-react';
 import Link from 'next/link';
 
-export default function ArtistCockpitPage() {
+export default function ArtistDashboardPage() {
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
       <ContainerInstrument className="max-w-7xl mx-auto">
         <SectionInstrument className="mb-12">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest mb-8">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug naar Cockpit" />
+            <VoiceglotText translationKey="admin.back_to_dashboard" defaultText="Terug naar Dashboard" />
           </Link>
           
           <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-black px-3 py-1 rounded-full mb-6 tracking-widest uppercase">
@@ -27,7 +27,7 @@ export default function ArtistCockpitPage() {
           </ContainerInstrument>
           
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-4">
-            Artist Cockpit
+            Artist Dashboard
           </HeadingInstrument>
           
           <TextInstrument className="text-xl text-black/40 font-medium tracking-tight max-w-2xl">

@@ -120,7 +120,7 @@ export default function AgentControlCenter() {
         <SectionInstrument className="mb-12">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest mb-8">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText translationKey="admin.back_to_cockpit" defaultText="Terug naar Cockpit" />
+            <VoiceglotText translationKey="admin.back_to_dashboard" defaultText="Terug naar Dashboard" />
           </Link>
           
           <div className="flex justify-between items-end">

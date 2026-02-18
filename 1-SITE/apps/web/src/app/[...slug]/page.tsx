@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   try {
     const page = await db.query.contentArticles.findFirst({
       where: eq(contentArticles.slug, firstSegment),
-    });
+    }).catch(() => null);
 
     if (page) {
       const title = `${page.title} | Voices.be`;
@@ -120,7 +120,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             orderBy: (blocks, { asc }) => [asc(blocks.displayOrder)],
           },
         },
-      });
+      }).catch(() => null);
 
       if (page) {
         return <CmsPageContent page={page} slug={firstSegment} />;

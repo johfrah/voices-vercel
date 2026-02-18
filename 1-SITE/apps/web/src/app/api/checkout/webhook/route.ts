@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
                 <p><strong>Bedrag:</strong> ${payment.amount.value}</p>
                 <p><strong>Klant ID:</strong> ${payment.metadata.userId || 'Gast'}</p>
                 <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-                <p>Bekijk de details in de <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/dashboard">Voices Cockpit</a>.</p>
+                <p>Bekijk de details in het <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/dashboard">Voices Dashboard</a>.</p>
               </div>
             `
           });

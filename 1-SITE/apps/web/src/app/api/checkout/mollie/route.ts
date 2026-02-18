@@ -211,59 +211,52 @@ export async function POST(request: Request) {
         { expiresIn: '24h' }
       );
 
-      // 5. Initialize Mollie Order (REAL API 2026)
-      // CHRIS-PROTOCOL: Orders API is superior for reporting and Klarna support
-      if (amount <= 0) {
-        console.warn('[Checkout] Amount is 0 or negative, skipping Mollie and marking as completed/pending.');
-        return NextResponse.json({
-          success: true,
-          orderId: newOrder.id,
-          token: secureToken,
-          message: 'Order created (Free/Zero-amount).'
-        });
-      }
+    // 5. Initialize Mollie Order (REAL API 2026)
+    // CHRIS-PROTOCOL: Orders API is superior for reporting and Klarna support
+    
+    // Map cart items to Mollie lines
+    const mollieLines = (body.items || []).map((item: any) => {
+      const itemSubtotal = item.pricing?.total || item.pricing?.subtotal || 0;
+      const vatAmount = itemSubtotal * taxRate;
+      const totalAmount = itemSubtotal + vatAmount;
 
-      // Map cart items to Mollie lines
-      const mollieLines = (body.items || []).map((item: any) => {
-        const itemSubtotal = item.pricing?.total || item.pricing?.subtotal || 0;
-        const vatAmount = itemSubtotal * taxRate;
-        const totalAmount = itemSubtotal + vatAmount;
+      return {
+        name: item.actor?.display_name ? `Stemopname: ${item.actor.display_name}` : (item.type || 'Product'),
+        quantity: 1,
+        unitPrice: {
+          currency: 'EUR',
+          value: totalAmount.toFixed(2)
+        },
+        totalAmount: {
+          currency: 'EUR',
+          value: totalAmount.toFixed(2)
+        },
+        vatRate: (taxRate * 100).toFixed(0),
+        vatAmount: {
+          currency: 'EUR',
+          value: vatAmount.toFixed(2)
+        },
+        metadata: {
+          actorId: item.actor?.id,
+          type: item.type
+        }
+      };
+    });
 
-        return {
-          name: item.actor?.display_name ? `Stemopname: ${item.actor.display_name}` : (item.type || 'Product'),
-          quantity: 1,
-          unitPrice: {
-            currency: 'EUR',
-            value: totalAmount.toFixed(2)
-          },
-          totalAmount: {
-            currency: 'EUR',
-            value: totalAmount.toFixed(2)
-          },
-          vatRate: (taxRate * 100).toFixed(0),
-          vatAmount: {
-            currency: 'EUR',
-            value: vatAmount.toFixed(2)
-          },
-          metadata: {
-            actorId: item.actor?.id,
-            type: item.type
-          }
-        };
-      });
-
-      // Add current selection if present
-      if (body.selectedActor) {
-        // Calculate current selection subtotal by subtracting cart items from grand subtotal
-        const cartItemsSubtotal = (body.items || []).reduce((sum: number, i: any) => sum + (i.pricing?.total || i.pricing?.subtotal || 0), 0);
-        const currentSubtotal = subtotal - cartItemsSubtotal;
+    // Add current selection if present AND not already in items
+    if (body.selectedActor) {
+      const isAlreadyInItems = (body.items || []).some((item: any) => item.actor?.id === body.selectedActor.id);
+      
+      if (!isAlreadyInItems) {
+        // Calculate current selection subtotal
+        const currentSubtotal = pricing?.total_current || (subtotal - (body.items || []).reduce((sum: number, i: any) => sum + (i.pricing?.total || i.pricing?.subtotal || 0), 0));
 
         if (currentSubtotal > 0.01) {
           const vatAmount = currentSubtotal * taxRate;
           const totalAmount = currentSubtotal + vatAmount;
 
           mollieLines.push({
-            name: `Stemopname: ${body.selectedActor.display_name}`,
+            name: `Stemopname: ${body.selectedActor.display_name || body.selectedActor.firstName}`,
             quantity: 1,
             unitPrice: {
               currency: 'EUR',
@@ -285,44 +278,41 @@ export async function POST(request: Request) {
           });
         }
       }
+    }
 
-      // Add Academy/Studio if present but not in items (legacy fallback)
-      if (mollieLines.length === 0 && amount > 0) {
-        const vatAmount = amount - (amount / (1 + taxRate));
-        mollieLines.push({
-          name: `Voices.be ${newOrder.journey.charAt(0).toUpperCase() + newOrder.journey.slice(1)}`,
-          quantity: 1,
-          unitPrice: { currency: 'EUR', value: amount.toFixed(2) },
-          totalAmount: { currency: 'EUR', value: amount.toFixed(2) },
-          vatRate: (taxRate * 100).toFixed(0),
-          vatAmount: { currency: 'EUR', value: vatAmount.toFixed(2) }
-        });
-      }
+    // Add Academy/Studio if present but not in items (legacy fallback)
+    if (mollieLines.length === 0 && amount > 0) {
+      const vatAmount = amount - (amount / (1 + taxRate));
+      mollieLines.push({
+        name: `Voices.be ${newOrder.journey.charAt(0).toUpperCase() + newOrder.journey.slice(1)}`,
+        quantity: 1,
+        unitPrice: { currency: 'EUR', value: amount.toFixed(2) },
+        totalAmount: { currency: 'EUR', value: amount.toFixed(2) },
+        vatRate: (taxRate * 100).toFixed(0),
+        vatAmount: { currency: 'EUR', value: vatAmount.toFixed(2) }
+      });
+    }
 
-      // Final check: ensure sum of lines matches main amount exactly
-      const linesSum = mollieLines.reduce((sum, line) => sum + parseFloat(line.totalAmount.value), 0);
-      const diff = Math.abs(linesSum - amount);
-      
-      // If there's a tiny rounding difference, adjust the last line
-      if (diff > 0 && diff < 0.1 && mollieLines.length > 0) {
-        const lastLine = mollieLines[mollieLines.length - 1];
-        const currentVal = parseFloat(lastLine.totalAmount.value);
-        const adjustedVal = currentVal + (amount - linesSum);
-        lastLine.totalAmount.value = adjustedVal.toFixed(2);
-        lastLine.unitPrice.value = adjustedVal.toFixed(2);
-        
-        // Also adjust VAT amount for the last line to keep it consistent
-        const adjustedVat = adjustedVal - (adjustedVal / (1 + taxRate));
-        lastLine.vatAmount.value = adjustedVat.toFixed(2);
-      }
+    //  KELLY-MANDATE: Recalculate grand total from lines to ensure 100% Mollie sync
+    const finalAmountInclVat = mollieLines.reduce((sum, line) => sum + parseFloat(line.totalAmount.value), 0);
+    
+    if (finalAmountInclVat <= 0) {
+      console.warn('[Checkout] Final amount is 0 or negative, skipping Mollie.');
+      return NextResponse.json({
+        success: true,
+        orderId: newOrder.id,
+        token: secureToken,
+        message: 'Order created (Free/Zero-amount).'
+      });
+    }
 
-      const mollieOrder = await MollieService.createOrder({
-        amount: {
-          currency: 'EUR',
-          value: amount.toFixed(2)
-        },
-        orderNumber: newOrder.id.toString(),
-        lines: mollieLines,
+    const mollieOrder = await MollieService.createOrder({
+      amount: {
+        currency: 'EUR',
+        value: finalAmountInclVat.toFixed(2)
+      },
+      orderNumber: newOrder.id.toString(),
+      lines: mollieLines,
         billingAddress: {
           streetAndNumber: address_street || 'N/A',
           postalCode: postal_code || 'N/A',
