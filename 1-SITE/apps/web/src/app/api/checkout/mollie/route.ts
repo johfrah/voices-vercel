@@ -194,6 +194,26 @@ export async function POST(request: Request) {
           }
         }
 
+        //  HITL-TRIGGER: Stuur een mailtje naar de admin bij offerte of banktransfer
+        try {
+          const fetchUrl = `${process.env.NEXT_PUBLIC_BASE_URL || `https://${host}`}/api/admin/notify`;
+          await fetch(fetchUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: isQuote ? 'quote_request' : 'banktransfer_order',
+              data: {
+                orderId: newOrder.id,
+                email: email,
+                amount: isQuote ? subtotal : amount,
+                company: company
+              }
+            })
+          });
+        } catch (notifyErr) {
+          console.warn('[Admin Notify] Failed during checkout processing:', notifyErr);
+        }
+
         return NextResponse.json({
           success: true,
           orderId: newOrder.id,
