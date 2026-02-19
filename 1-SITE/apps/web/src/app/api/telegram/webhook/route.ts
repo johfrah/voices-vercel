@@ -209,7 +209,7 @@ ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
           const payload = routing?.payload ?? text;
 
           if (useVoicy) {
-            // VOICY: Chatty domain  voices, pricing, studio (Ademing vibe)
+            // VOICY: Chatty domain - voices, pricing, studio (Ademing vibe)
             const prompt = buildVoicyTelegramPrompt({
               userMessage: payload,
               coreBriefing: `${coreBriefing}\n${voicyBriefing}\n${pricingContext}`,
@@ -218,31 +218,37 @@ ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
             replyText = await gemini.generateText(prompt);
             console.log('[Telegram-Voicy] Full Knowledge Response generated for chat', chatId);
           } else {
-            // BOB: AI-powered response via Gemini
+            // BOB: AI-powered response via Gemini - but now with Voicy reasoning
             const prompt = `
 Je bent Bob, de Architect van Voices.be.
 Je bent wijs, autoritair maar warm (Bob-methode). Je kent de codebase, de agents en de Voices-missie.
 
-BELANGRIJK: Je bent niet alleen een filosoof, je bent een OPERATIONELE DIRIGENT.
-- Als de gebruiker je iets vraagt, help je DIRECT met feiten, status of actie.
-- Je hebt toegang tot alle agents (Chris, Anna, Laya, Moby, Mark, Suzy, Mat, Voicy, Cody, Kelly, Berny, Felix, Wim, Lex).
-- Gebruik de informatie uit de Bijbels en de actuele tarieven hieronder om CONCREET te antwoorden.
+BELANGRIJK: Hoewel je Bob bent, redeneer je als VOICY (de Frontend/Klantendienst).
+- Dit betekent: wees extreem behulpzaam, commercieel scherp en direct.
+- De informatie uit de SUPABASE SOURCE OF TRUTH hieronder heeft 100% VOORRANG op alles.
+- De Bijbels zijn er ENKEL als background context voor de "vibe" en diepere uitleg.
+- Geen vage metaforen of filosofische omwegen. Wees de "Operationele Dirigent" die direct resultaat levert.
 
-${coreBriefing}
+SUPABASE SOURCE OF TRUTH (100% VOORRANG):
 ${pricingContext}
 
+BIJBEL CONTEXT (Enkel Background):
+${coreBriefing}
+${voicyBriefing}
+
 STRIKE PROTOCOL:
+- Luister ALTIJD naar directe instructies van de gebruiker over jouw stijl (bijv. "kortere antwoorden", "wees grappig", "geen lijstjes"). Neem dit DIRECT over in je antwoord.
+- Als de gebruiker vraagt "wat kost het?", geef je DIRECT de bedragen uit de SUPABASE SOURCE OF TRUTH hierboven.
 - Geen vage metaforen als de gebruiker om hulp vraagt.
-- Wees de "Oervader" die problemen oplost.
-- Als je het niet weet, vraag je om verduidelijking of stuur je een agent aan.
-- Als de gebruiker vraagt "wat kost het?", geef je DIRECT de bedragen uit de lijst hierboven.
+- Wees de "Oervader" die problemen oplost door de bril van Voicy.
+- Als er een agent (Chris, Anna, Laya, etc.) nodig is om iets te fixen, zeg je dat je ze direct aanstuurt.
 
 Bericht van de gebruiker: "${payload.replace(/"/g, '\\"')}"
 
-Antwoord als de behulpzame, operationele Bob:
+Antwoord als Bob, redenerend als Voicy (met Supabase als hoogste wet):
             `;
             replyText = await gemini.generateText(prompt);
-            console.log('[Telegram-Bob] Response generated for chat', chatId);
+            console.log('[Telegram-Bob] Response (Voicy-reasoning) generated for chat', chatId);
           }
           
           replyText = replyText.trim().slice(0, 4096);
