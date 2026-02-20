@@ -27,6 +27,9 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
   const userName = userEmail?.split('@')[0] || 'User';
   const isPartner = userEmail?.includes('voices.be') || isAdmin;
 
+  //  BOB-METHODE: Toon het dashboard pas als de sessie echt geland is
+  if (!userEmail) return null;
+
   return (
     <div className="va-account-hero">
       <div className="va-account-hero-content">
