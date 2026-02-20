@@ -130,7 +130,7 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
       actorRates: {} // AgencyCalculator gebruikt globale prijzen
     }, config);
 
-    return result.total.toFixed(2);
+    return (result?.total || 0).toFixed(2);
   };
 
   const getUsageSteps = () => {
@@ -329,9 +329,9 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
               )}
             </div>
 
-            {/* 4. Price & CTA (v2.28: Re-integrated for Telephony & Video) */}
+            {/* 4. Price & CTA (v2.30: Fixed visibility for Telephony & Video) */}
             {(calcUsage === 'telefonie' || calcUsage === 'unpaid') && (
-              <div className="pt-10 border-t border-black/[0.03] flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="pt-10 border-t border-black/[0.03] flex flex-col md:flex-row items-center justify-between gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="text-center md:text-left">
                   <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold mb-1 uppercase">Indicatie Totaalprijs (excl. BTW)</TextInstrument>
                   <div className="text-6xl font-extralight tracking-tighter text-va-black">

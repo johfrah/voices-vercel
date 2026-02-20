@@ -1,6 +1,6 @@
 import { db } from '@db';
-import { appConfigs } from '@db/schema';
-import { eq } from 'drizzle-orm';
+import { appConfigs, languages } from '@db/schema';
+import { eq, asc } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { getActor, getActors, getMusicLibrary } from '@/lib/api-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
