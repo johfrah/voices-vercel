@@ -14,7 +14,7 @@ import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Search, Globe, Phone, Video, Megaphone, Radio, Tv } from "lucide-react";
+import { Search, Globe, Phone, Video, Megaphone, Radio, Tv, Zap } from "lucide-react";
 import Image from "next/image";
 import { useSonicDNA } from "@/lib/sonic-dna";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
@@ -25,8 +25,8 @@ import { SlimmeKassa } from "@/lib/pricing-engine";
 
 /**
  * AGENCY PRICE PAGE (2026)
- * Route: /price
- * Doel: Transparante prijsindicatie voor de Agency journey.
+ * Route: /tarieven
+ * Doel: Transparante prijsindicatie met direct gekoppelde stemmenlijst.
  */
 function PricePageContent() {
   const searchParams = useSearchParams();
@@ -79,9 +79,16 @@ function PricePageContent() {
         setActors(allActors);
         setDbLanguages(allLangs);
         
-        // Set default language to Vlaams by ID
-        const vlaams = allLangs.find((l: any) => l.label === 'Vlaams' || l.code === 'nl-BE');
-        if (vlaams) setSelectedLanguageId(vlaams.id);
+        // Market Awareness: Set default language based on domain
+        const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+        const market = MarketManager.getCurrentMarket(host);
+        const defaultLang = allLangs.find((l: any) => 
+          (market.market_code === 'BE' && (l.label === 'Vlaams' || l.code === 'nl-BE')) ||
+          (market.market_code === 'NLNL' && (l.label === 'Nederlands' || l.code === 'nl-NL'))
+        );
+        
+        if (defaultLang) setSelectedLanguageId(defaultLang.id);
+        else if (allLangs.length > 0) setSelectedLanguageId(allLangs[0].id);
         
       } catch (err) {
         console.error('Failed to fetch actors or languages:', err);
@@ -97,8 +104,6 @@ function PricePageContent() {
       const matchesSearch = a.display_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           a.first_name?.toLowerCase().includes(searchQuery.toLowerCase());
       
-      // CHRIS-PROTOCOL: Language filter is strictly for NATIVE language only
-      // We match on the native_lang_id from Supabase
       const matchesLang = selectedLanguageId ? a.native_lang_id === selectedLanguageId : true;
       
       return matchesSearch && matchesLang;
@@ -152,54 +157,21 @@ function PricePageContent() {
             <HeadingInstrument level={1} className="text-6xl md:text-8xl font-extralight tracking-tighter leading-tight text-va-black">
               Bereken je <span className="text-primary/30 italic">Projectprijs.</span>
             </HeadingInstrument>
-            <TextInstrument className="text-xl text-va-black/40 font-light max-w-2xl mx-auto leading-relaxed">
-              Geen offertes afwachten. Bereken direct een indicatie van de kosten voor jouw project op basis van onze standaard Agency tarieven.
-            </TextInstrument>
           </motion.div>
         </ContainerInstrument>
       </SectionInstrument>
 
       {/* Calculator Section */}
-      <SectionInstrument className="pb-32">
+      <SectionInstrument className="pb-12">
         <ContainerInstrument className="max-w-6xl mx-auto px-6">
-          <AgencyCalculator initialJourney={initialUsage as any} />
+          <AgencyCalculator initialJourney={activeTab} />
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* RATE CARD LIST SECTION */}
-      <SectionInstrument className="py-32 relative z-10 max-w-6xl mx-auto px-6 border-t border-black/5">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
-          <div className="max-w-xl">
-            <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter mb-6 text-va-black">
-              <VoiceglotText translationKey="pricing.ratecard.title" defaultText="Live Ratecard" />
-            </HeadingInstrument>
-            <TextInstrument className="text-xl text-va-black/40 font-light leading-relaxed">
-              <VoiceglotText 
-                translationKey="pricing.ratecard.subtitle" 
-                defaultText="Bekijk de individuele tarieven per stemacteur voor jouw project." 
-              />
-            </TextInstrument>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-            <div className="relative w-full sm:w-64 group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={18} />
-              <input 
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentStepPage(1);
-                }}
-                placeholder="Zoek een stemacteur..."
-                className="w-full bg-white border border-black/5 rounded-full py-4 pl-12 pr-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-sm"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* LANGUAGE FILTERS */}
-        <div className="flex flex-wrap items-center gap-3 mb-12">
+      {/* COMPACT RATE CARD SECTION (v2.21) */}
+      <SectionInstrument className="pb-32 relative z-10 max-w-6xl mx-auto px-6">
+        {/* LANGUAGE FILTERS - Market Aware */}
+        <div className="flex flex-wrap items-center gap-3 mb-8">
           <span className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest mr-2">Filter op taal:</span>
           {languageOptions.map((lang) => (
             <button
@@ -274,9 +246,6 @@ function PricePageContent() {
                   </tr>
                 ) : paginatedActors.length > 0 ? (
                   paginatedActors.map((a) => {
-                    const rates = a.rates || a.rates_raw || {};
-                    const beRates = rates['BE'] || {};
-                    
                     return (
                       <tr key={a.id} className="group hover:bg-primary/[0.02] transition-colors">
                         <td className="px-8 py-5">
