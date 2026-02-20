@@ -51,7 +51,7 @@ export const CookieBanner: React.FC = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="fixed bottom-8 left-6 right-6 md:left-auto md:right-8 md:w-[400px] z-[100]"
+          className="fixed bottom-8 left-8 md:right-auto md:w-[400px] z-[100]"
         >
           <ContainerInstrument plain className="bg-va-black text-white p-6 rounded-[24px] shadow-aura border border-white/5 relative overflow-hidden group">
             {/* Liquid Background Element */}
@@ -73,13 +73,13 @@ export const CookieBanner: React.FC = () => {
               <ContainerInstrument plain className="flex items-center gap-4">
                 <ButtonInstrument 
                   onClick={() => handleAccept('all')}
-                  className="bg-primary text-va-black px-5 py-2.5 rounded-[20px] text-[15px] font-light tracking-tight hover:scale-105 transition-all"
+                  className="bg-primary text-va-black px-5 py-2.5 rounded-[20px] text-[15px] font-bold tracking-tight hover:scale-105 transition-all"
                 >
                   <VoiceglotText  translationKey="legal.cookie.accept" defaultText="Accepteer" />
                 </ButtonInstrument>
                 <ButtonInstrument 
                   onClick={() => handleAccept('essential')}
-                  className="text-[15px] font-light tracking-tight text-white/20 hover:text-white transition-colors"
+                  className="text-[15px] font-medium tracking-tight text-white/60 hover:text-white transition-colors"
                 >
                   <VoiceglotText  translationKey="legal.cookie.essential" defaultText="Noodzakelijk" />
                 </ButtonInstrument>
