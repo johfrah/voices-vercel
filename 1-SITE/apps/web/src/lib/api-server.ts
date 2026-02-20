@@ -131,8 +131,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       media: params.media
     });
 
-  //  CHRIS-PROTOCOL: Direct Drizzle connection is the ONLY Source of Truth.
-    // No fallbacks allowed. If this fails, we need to know why.
     console.log(' API: Querying all live actors with relations...');
     
     //  CHRIS-PROTOCOL: Build filter conditions
@@ -162,6 +160,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       conditions.push(eq(actors.gender, dbGender));
     }
 
+    console.log(' API: Executing findMany with conditions:', conditions.length);
     const dbResults = await db.query.actors.findMany({
       columns: {
         id: true,
