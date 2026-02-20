@@ -85,7 +85,7 @@ export async function middleware(request: NextRequest) {
   // We gebruiken een environment variable of een cookie voor de bypass.
   const forceUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true';
   const isMainDomain = host === 'voices.be' || host === 'www.voices.be';
-  const isUnderConstruction = forceUnderConstruction; // Alleen als expliciet aangezet via ENV
+  const isUnderConstruction = false; // Bob: De gate staat nu definitief open voor de lancering! 🚀🏗️
   
   // DOMAIN BYPASS: Specifieke domeinen en staging mogen ALTIJD door (Johfrah, Ademing, Youssef, Staging)
   const isBypassDomain = host.includes('staging.voices.be') ||
