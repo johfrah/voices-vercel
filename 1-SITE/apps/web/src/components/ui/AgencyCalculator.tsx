@@ -450,7 +450,16 @@ export const AgencyCalculator = ({
                     €{calculateTotal(true)}
                   </div>
                 </div>
-                <ButtonInstrument onClick={() => router.push('/agency')} className="va-btn-pro !bg-va-black !text-white !rounded-2xl px-10 py-6 text-lg shadow-xl hover:scale-105 transition-transform flex items-center gap-3">
+                <ButtonInstrument 
+                  onClick={() => {
+                    playClick('pro');
+                    const params = new URLSearchParams();
+                    params.set('usage', calcUsage);
+                    if (calcUsage === 'paid') params.set('medium', calcType);
+                    router.push(`/agency?${params.toString()}`);
+                  }} 
+                  className="va-btn-pro !bg-va-black !text-white !rounded-2xl px-10 py-6 text-lg shadow-xl hover:scale-105 transition-transform flex items-center gap-3"
+                >
                   Bekijk alle stemmen <ArrowRight size={20} />
                 </ButtonInstrument>
               </div>
@@ -462,7 +471,18 @@ export const AgencyCalculator = ({
                 <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold uppercase">
                   {calcUsage === 'paid' ? 'Tarieven per stemacteur (excl. BTW)' : 'Beschikbare stemacteurs'}
                 </TextInstrument>
-                <button onClick={() => router.push('/agency')} className="text-[11px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity">Bekijk alle</button>
+                <button 
+                  onClick={() => {
+                    playClick('soft');
+                    const params = new URLSearchParams();
+                    params.set('usage', calcUsage);
+                    if (calcUsage === 'paid') params.set('medium', calcType);
+                    router.push(`/agency?${params.toString()}`);
+                  }} 
+                  className="text-[11px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity"
+                >
+                  Bekijk alle
+                </button>
               </div>
               
               <div className="bg-white rounded-[24px] border border-black/5 overflow-hidden shadow-sm">
