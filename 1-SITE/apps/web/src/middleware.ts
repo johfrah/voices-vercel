@@ -98,7 +98,14 @@ export async function middleware(request: NextRequest) {
                             pathname === '/price' ||
                             pathname === '/price/';
 
-  if (isLegacyAgencyPath || isOtherLegacyPath) {
+  if (isOtherLegacyPath) {
+    const tarievenUrl = url.clone();
+    tarievenUrl.pathname = '/tarieven';
+    // Behoud eventuele query params voor de calculator
+    return NextResponse.redirect(tarievenUrl, 301);
+  }
+
+  if (isLegacyAgencyPath) {
     const tarievenUrl = url.clone();
     tarievenUrl.pathname = '/tarieven';
     // Behoud eventuele query params voor de calculator

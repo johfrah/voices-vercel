@@ -19,8 +19,6 @@ const nextConfig = {
       { source: '/over-ons/', destination: '/agency/over-ons/', permanent: true },
       { source: '/about', destination: '/agency/over-ons/', permanent: true },
       { source: '/about/', destination: '/agency/over-ons/', permanent: true },
-      { source: '/tarieven', destination: '/agency/tarieven/', permanent: true },
-      { source: '/tarieven/', destination: '/agency/tarieven/', permanent: true },
       { source: '/zo-werkt-het', destination: '/agency/zo-werkt-het/', permanent: true },
       { source: '/zo-werkt-het/', destination: '/agency/zo-werkt-het/', permanent: true },
       { source: '/how-it-works', destination: '/agency/zo-werkt-het/', permanent: true },
