@@ -10,6 +10,7 @@ import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
 import { MarketManager } from "@config/market-manager";
 import { Analytics } from "@vercel/analytics/react";
+import { VercelToolbar } from "@vercel/toolbar/next";
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway } from "next/font/google";
 import { headers } from "next/headers";
@@ -204,6 +205,7 @@ export default async function RootLayout({
             </Suspense>
           </div>
           <Analytics />
+          <VercelToolbar />
           <CommandPalette />
           <SpotlightDashboard />
           <Toaster position="bottom-right" />

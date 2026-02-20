@@ -398,31 +398,32 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     
     // CHRIS-PROTOCOL: Strict URL rewrite mandate. 
     // We only touch the URL if we are in a known dynamic flow.
+    let targetUrl = '';
     if (isAgencyFilterPage) {
       const jSlug = state.journey === 'telephony' ? 'telephony' : (state.journey === 'commercial' ? 'commercial' : 'video');
       const locale = pathname.match(/^\/(nl|fr|en|de|es|it|pt)/)?.[0] || '';
-      newUrl = locale + '/agency/' + jSlug + '/';
+      targetUrl = locale + '/agency/' + jSlug + '/';
       
       if (state.journey === 'commercial' && state.filters.media) {
         state.filters.media.forEach(m => {
           const spots = state.filters.spotsDetail?.[m] || 1;
           const years = state.filters.yearsDetail?.[m] || 1;
-          newUrl += m + spots + 'x' + years + '/';
+          targetUrl += m + spots + 'x' + years + '/';
         });
       } else if ((state.journey === 'telephony' || state.journey === 'video') && state.filters.words) {
-        newUrl += state.filters.words + '/';
+        targetUrl += state.filters.words + '/';
       }
     } else if (isVoiceProfile && pathSegments.length >= 2) {
       // Update journey segment on profile pages
       const locale = pathname.match(/^\/(nl|fr|en|de|es|it|pt)/)?.[0] || '';
-      newUrl = locale + '/' + pathSegments[0] + '/' + state.journey;
+      targetUrl = locale + '/' + pathSegments[0] + '/' + state.journey;
     } else {
       // For all other pages (tarieven, contact, etc.), we NEVER touch the URL.
       return;
     }
 
     const queryString = params.toString();
-    const finalUrl = newUrl + (queryString ? '?' + queryString : '');
+    const finalUrl = targetUrl + (queryString ? '?' + queryString : '');
     
     if (window.location.pathname + window.location.search !== finalUrl) {
       window.history.replaceState(null, '', finalUrl);
