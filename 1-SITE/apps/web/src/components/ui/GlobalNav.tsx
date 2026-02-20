@@ -1043,11 +1043,28 @@ export default function GlobalNav() {
           >
             {auth.isAuthenticated ? (
               <ContainerInstrument plain className="p-1 space-y-0.5">
-                <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1">
-                  <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
-                    <VoiceglotText  translationKey="nav.logged_in_as" defaultText="Ingelogd als" />
-                  </TextInstrument>
-                  <TextInstrument className="text-[13px] font-light text-va-black truncate mt-1">{auth.user?.email}</TextInstrument>
+                <ContainerInstrument plain className="px-4 py-4 border-b border-black/5 mb-1 bg-va-off-white/30 rounded-t-[16px]">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <User size={16} />
+                    </div>
+                    <div>
+                      <TextInstrument className="text-[10px] font-bold text-va-black/30 tracking-[0.2em] uppercase leading-none">
+                        <VoiceglotText translationKey="nav.logged_in_as" defaultText="Ingelogd als" />
+                      </TextInstrument>
+                      <TextInstrument className="text-[14px] font-medium text-va-black truncate max-w-[200px] mt-0.5">{auth.user?.email}</TextInstrument>
+                    </div>
+                  </div>
+                  
+                  {/* Toegang Sectie */}
+                  <div className="mt-3 pt-3 border-t border-black/5">
+                    <TextInstrument className="text-[9px] font-bold text-va-black/20 tracking-[0.1em] uppercase mb-2">Jouw Toegang</TextInstrument>
+                    <div className="flex flex-wrap gap-1.5">
+                      <div className="px-2 py-0.5 bg-va-black text-white text-[9px] font-bold rounded-md tracking-wider uppercase">Klant</div>
+                      {isAdmin && <div className="px-2 py-0.5 bg-primary text-white text-[9px] font-bold rounded-md tracking-wider uppercase">Admin</div>}
+                      {(auth.user?.email?.includes('voices.be') || isAdmin) && <div className="px-2 py-0.5 bg-blue-500 text-white text-[9px] font-bold rounded-md tracking-wider uppercase">Partner</div>}
+                    </div>
+                  </div>
                 </ContainerInstrument>
             {isAdmin && (
               <DropdownItem icon={LayoutDashboard} 

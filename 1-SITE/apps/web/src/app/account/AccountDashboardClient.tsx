@@ -108,6 +108,7 @@ export default function AccountDashboardClient() {
       <AccountHeroInstrument 
         userEmail={user?.email || 'user@voices.be'} 
         onLogout={logout}
+        isAdmin={isAdmin}
       />
 
       <SectionInstrument className="va-section-grid">
