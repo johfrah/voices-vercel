@@ -31,7 +31,7 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       title: 'Maak impact met je campagne',
       text: 'Boek een top-stem voor je radiospot of tv-commercial inclusief live-regie en buy-out.',
       cta: 'Bereken campagne-prijs',
-      href: '/price?journey=commercial',
+      href: '/tarieven?journey=commercial',
       icon: Megaphone,
       color: 'bg-primary'
     },
@@ -39,7 +39,7 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       title: 'De perfecte stem gevonden?',
       text: 'Bereken direct je tarief of neem contact op voor advies op maat van onze experts.',
       cta: 'Bereken tarief',
-      href: '/price',
+      href: '/tarieven',
       icon: Zap,
       color: 'bg-primary'
     },
