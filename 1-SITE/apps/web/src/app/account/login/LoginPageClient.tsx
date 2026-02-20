@@ -130,18 +130,18 @@ export function LoginPageClient() {
       </ContainerInstrument>
 
       <ContainerInstrument className="w-full max-w-md relative z-10">
-        <ContainerInstrument className="text-center mb-12 space-y-4">
+        <ContainerInstrument className="text-center mb-12 space-y-8">
           <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[13px] font-bold tracking-[0.2em] uppercase shadow-sm border border-gray-100/50 text-va-black/40">
             <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText  translationKey="auth.login.secure_access" defaultText="Secure Access" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-5xl md:text-6xl font-light tracking-tighter leading-tight">
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
             <VoiceglotText  translationKey="auth.login.title_prefix" defaultText="Toegang tot" />
             <br />
-            <span className="text-primary font-extralight italic">
+            <span className="text-primary italic">
               <VoiceglotText  translationKey="auto.loginpageclient.voices.d342f8" defaultText="Voices" />
             </span>
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-light max-w-xs mx-auto leading-relaxed">
+          <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
             <VoiceglotText  translationKey="auth.login.subtitle" defaultText="Vul je e-mailadres in voor een magische inloglink." />
           </TextInstrument>
         </ContainerInstrument>
