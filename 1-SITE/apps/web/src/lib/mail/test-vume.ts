@@ -23,7 +23,7 @@ export async function sendTestMails(recipient: string) {
       template: 'magic-link',
       context: {
         name: realUser?.firstName || 'Johfrah',
-        link: 'https://voices.be/auth/callback?token=test-token',
+        link: 'https://voices.be/account/callback?token=test-token',
         language: 'nl'
       },
       host: 'voices.be'
