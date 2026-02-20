@@ -5,7 +5,6 @@ import { headers } from "next/headers";
 import { AgencyContent } from "../AgencyContent";
 import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
-import { AuthProvider } from "@/contexts/AuthContext";
 
 //  NUCLEAR LOADING MANDATE
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
@@ -82,7 +81,7 @@ export default async function AgencyDynamicPage({
   }));
 
   return (
-    <AuthProvider>
+    <>
       <Suspense fallback={null}>
         <LiquidBackground strokeWidth={1.5} />
       </Suspense>
@@ -94,6 +93,6 @@ export default async function AgencyDynamicPage({
       <div className="!pt-0 -mt-24 relative z-40">
         <AgencyContent mappedActors={mappedActors} filters={searchResults.filters} />
       </div>
-    </AuthProvider>
+    </>
   );
 }
