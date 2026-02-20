@@ -193,7 +193,7 @@ export default function VoiceglotAdminPage() {
           <TextInstrument className="text-[15px] opacity-60 font-light">
             <VoiceglotText  
               translationKey="admin.voiceglot.protocol_text" 
-              defaultText="De Freedom Machine spreekt elke taal. Zodra een nieuwe string wordt gedetecteerd in de UI, wordt deze binnen 60 seconden automatisch vertaald door de Intelligence Layer. Slugs worden automatisch 'slugified' per taal om SEO-waarde te maximaliseren." 
+              defaultText="Voiceglot ondersteunt elke taal. Zodra een nieuwe string wordt gedetecteerd in de UI, wordt deze binnen 60 seconden automatisch vertaald door de Intelligence Layer. Slugs worden automatisch 'slugified' per taal om SEO-waarde te maximaliseren." 
             />
           </TextInstrument>
         </ContainerInstrument>

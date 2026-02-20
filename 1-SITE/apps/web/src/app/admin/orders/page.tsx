@@ -105,7 +105,7 @@ export default function BestellingenPage() {
     }
   };
 
-  if (isLoading) return <LoadingScreenInstrument message="Bestellingen ophalen uit de Freedom Machine..." />;
+  if (isLoading) return <LoadingScreenInstrument message="Bestellingen ophalen..." />;
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
