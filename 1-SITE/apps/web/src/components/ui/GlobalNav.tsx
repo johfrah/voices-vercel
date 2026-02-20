@@ -308,7 +308,7 @@ export default function GlobalNav() {
           const defaultLinks = [
             { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
             { name: 'Gratis Proefopname', href: '/agency/gratis-proefopname/', key: 'nav.free_demo' },
-            { name: 'Tarieven', href: '/agency/tarieven/', key: 'nav.pricing' },
+            { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
             { name: 'Contact', href: '/contact/', key: 'nav.contact' }
           ];
           setLinks(defaultLinks);
@@ -319,7 +319,7 @@ export default function GlobalNav() {
         const defaultLinks = [
           { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
           { name: 'Gratis Proefopname', href: '/agency/gratis-proefopname/', key: 'nav.free_demo' },
-          { name: 'Tarieven', href: '/agency/tarieven/', key: 'nav.pricing' },
+          { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
           { name: 'Contact', href: '/contact/', key: 'nav.contact' }
         ];
         setLinks(defaultLinks);
@@ -1191,7 +1191,7 @@ export default function GlobalNav() {
                   </ContainerInstrument>
                   <DropdownItem icon={Home} label={<VoiceglotText translationKey="nav.home" defaultText="Home" />} href="/" />
                   <DropdownItem icon={Users} label={<VoiceglotText translationKey="nav.my_voice" defaultText="Onze Stemmen" />} href="/agency/" />
-                  <DropdownItem icon={Euro} label={<VoiceglotText translationKey="nav.pricing" defaultText="Tarieven" />} href="/tarieven" />
+                  <DropdownItem icon={Euro} label={<VoiceglotText translationKey="nav.pricing" defaultText="Tarieven" />} href="/tarieven/" />
                   <DropdownItem icon={Heart} label={<VoiceglotText translationKey="nav.favorites" defaultText="Favorieten" />} href="/account/favorites/" badge={favoritesCount > 0 ? favoritesCount : undefined} />
                   <DropdownItem icon={ShoppingCart} label={<VoiceglotText translationKey="nav.cart" defaultText="Winkelmandje" />} href="/checkout/" badge={cartCount > 0 ? cartCount : undefined} />
                   <DropdownItem icon={User} label={<VoiceglotText translationKey="nav.account" defaultText={auth.isAuthenticated ? "Mijn Account" : "Inloggen"} />} href="/account/" />
@@ -1211,7 +1211,7 @@ export default function GlobalNav() {
               <ContainerInstrument plain className="mt-1.5 pt-1.5 border-t border-black/5">
                 {[
                   { name: 'Hoe werkt het', href: '/agency/zo-werkt-het/', icon: Info },
-                  { name: 'Tarieven', href: '/agency/tarieven/', icon: Euro },
+                  { name: 'Tarieven', href: '/tarieven/', icon: Euro },
                   { name: 'Ons verhaal', href: '/agency/over-ons/', icon: Quote },
                 ].map((item) => (
                   <DropdownItem 
