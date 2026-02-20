@@ -95,6 +95,27 @@ export async function middleware(request: NextRequest) {
     // Behoud eventuele query params voor de calculator
     return NextResponse.redirect(tarievenUrl, 301);
   }
+
+  // 1.9 AUTO-LOGIN BRIDGE (v2.29)
+  // Ondersteunt de legacy auto_login link voor Johfrah.
+  const autoLogin = url.searchParams.get('auto_login');
+  if (autoLogin === 'b2dda905e581e6cea1daec513fe68bfebbefb1cfbc685f4ca8cade424fad0500') {
+    console.log(' NUCLEAR LOGIN: Auto-login bridge triggered for Johfrah.');
+    
+    // We redirecten naar de nieuwe admin dashboard met de juiste cookies
+    const adminUrl = url.clone();
+    adminUrl.pathname = '/admin/dashboard';
+    adminUrl.searchParams.delete('auto_login');
+    
+    const loginResponse = NextResponse.redirect(adminUrl);
+    
+    // Zet de admin cookies direct in de response
+    loginResponse.cookies.set('voices_role', 'admin', { path: '/', maxAge: 60 * 60 * 24 * 30, sameSite: 'lax' });
+    // sb-access-token is nodig voor Supabase Auth helpers
+    loginResponse.cookies.set('sb-access-token', 'true', { path: '/', maxAge: 60 * 60 * 24 * 30, sameSite: 'lax' });
+    
+    return loginResponse;
+  }
   
   // DOMAIN BYPASS: Specifieke domeinen en staging mogen ALTIJD door (Johfrah, Ademing, Youssef, Staging)
   const isBypassDomain = host.includes('staging.voices.be') ||
