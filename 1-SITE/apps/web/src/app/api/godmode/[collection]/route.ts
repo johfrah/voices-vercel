@@ -7,7 +7,7 @@ import { requireAdmin } from '@/lib/auth/api-auth';
 /**
  *  GODMODE API: UNIFIED CRUD (NUCLEAR EDITION)
  * 
- * Doel: Universele toegang tot alle 2026 data-entiteiten via n endpoint.
+ * Doel: Universele toegang tot alle 2026 data-entiteiten via één endpoint.
  * Ondersteunt: reviews, workshops, appointments, ademing, yuki.
  *  ENKEL voor admins.
  */

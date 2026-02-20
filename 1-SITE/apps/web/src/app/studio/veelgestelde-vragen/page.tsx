@@ -5,11 +5,15 @@ import {
   SectionInstrument,
   TextInstrument
 } from '@/components/ui/LayoutInstruments';
-import { LiquidBackground } from '@/components/ui/LiquidBackground';
 import { AccordionInstrument } from '@/components/ui/AccordionInstrument';
 import { WorkshopQuiz } from '@/components/studio/WorkshopQuiz';
 import { VoicyFaqButton } from '@/components/studio/feedback/VoicyFaqButton';
 import { getFaqs } from '@/lib/api-server';
+import nextDynamic from "next/dynamic";
+import { Suspense } from "react";
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +29,9 @@ export default async function StudioFaqPage() {
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-48 pb-40 bg-va-off-white">
-      <LiquidBackground />
+      <Suspense fallback={null}>
+        <LiquidBackground />
+      </Suspense>
       
       <ContainerInstrument className="relative z-10 max-w-6xl mx-auto px-6">
         <SectionInstrument className="mb-24 text-center">

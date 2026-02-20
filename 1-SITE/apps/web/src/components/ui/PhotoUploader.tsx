@@ -14,12 +14,14 @@ interface PhotoUploaderProps {
   currentPhotoUrl?: string;
   onUploadSuccess: (newUrl: string, mediaId: number) => void;
   actorName: string;
+  compact?: boolean;
 }
 
 export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ 
   currentPhotoUrl, 
   onUploadSuccess,
-  actorName 
+  actorName,
+  compact = false
 }) => {
   const { t } = useTranslation();
   const [image, setImage] = useState<string | null>(null);
@@ -76,7 +78,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
       canvas.toBlob((blob) => {
         if (!blob) throw new Error('Canvas is empty');
         resolve(blob);
-      }, 'image/png'); //  CHRIS-PROTOCOL: Use PNG for maximum quality and transparency support
+      }, 'image/webp', 0.85); //  CHRIS-PROTOCOL: Use WebP for optimal performance and size
     });
   };
 
@@ -87,7 +89,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
     try {
       const croppedImageBlob = await getCroppedImg(image, croppedAreaPixels);
       const formData = new FormData();
-      formData.append('file', croppedImageBlob, `${actorName.toLowerCase().replace(/\s+/g, '-')}.png`);
+      formData.append('file', croppedImageBlob, `${actorName.toLowerCase().replace(/\s+/g, '-')}.webp`);
 
       const response = await fetch('/api/admin/actors/upload', {
         method: 'POST',
@@ -97,7 +99,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
       if (!response.ok) throw new Error('Upload failed');
 
       const data = await response.json();
-      onUploadSuccess(data.url, data.mediaId);
+      onUploadSuccess(data.url, data.mediaId || 0);
       setImage(null);
     } catch (error) {
       console.error('Upload error:', error);
@@ -108,17 +110,22 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   };
 
   return (
-    <div className="space-y-4">
-      <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
-        <Camera size={14} className="text-primary" />
-        <VoiceglotText translationKey="admin.photo.label" defaultText="Profielfoto" />
-      </label>
+    <div className={cn("space-y-4", compact && "space-y-0 h-full")}>
+      {!compact && (
+        <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+          <Camera size={14} className="text-primary" />
+          <VoiceglotText translationKey="admin.photo.label" defaultText="Profielfoto" />
+        </label>
+      )}
 
-      <div className="relative group">
+      <div className={cn("relative group", compact && "h-full")}>
         {/* Current Photo or Placeholder */}
         <div 
           onClick={() => fileInputRef.current?.click()}
-          className="relative aspect-square w-48 rounded-[30px] overflow-hidden bg-va-off-white border-2 border-dashed border-black/5 cursor-pointer hover:border-primary/20 transition-all shadow-inner group"
+          className={cn(
+            "relative aspect-square rounded-[30px] overflow-hidden bg-va-off-white border-2 border-dashed border-black/5 cursor-pointer hover:border-primary/20 transition-all shadow-inner group",
+            compact ? "w-full h-full rounded-2xl" : "w-48"
+          )}
         >
           {currentPhotoUrl ? (
             <VoiceglotImage 
@@ -129,15 +136,17 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-va-black/20">
-              <ImageIcon size={48} strokeWidth={1} />
-              <span className="text-[10px] font-bold uppercase tracking-widest mt-2">
-                <VoiceglotText translationKey="admin.photo.upload_cta" defaultText="Upload Foto" />
-              </span>
+              <ImageIcon size={compact ? 24 : 48} strokeWidth={1} />
+              {!compact && (
+                <span className="text-[10px] font-bold uppercase tracking-widest mt-2">
+                  <VoiceglotText translationKey="admin.photo.upload_cta" defaultText="Upload Foto" />
+                </span>
+              )}
             </div>
           )}
           
           <div className="absolute inset-0 bg-va-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <Upload className="text-white" size={24} />
+            <Upload className="text-white" size={compact ? 18 : 24} />
           </div>
         </div>
 

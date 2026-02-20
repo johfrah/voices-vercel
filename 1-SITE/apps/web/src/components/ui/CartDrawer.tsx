@@ -2,14 +2,14 @@
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
-import { PricingEngine } from '@/lib/pricing-engine';
+import { SlimmeKassa } from '@/lib/pricing-engine';
 import { Loader2, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const { state, removeItem, isVatExempt } = useCheckout();
+  const { state, subtotal, removeItem, isVatExempt } = useCheckout();
   const [loading, setLoading] = useState(false);
 
   // CHRIS-PROTOCOL: 100ms Feedback - we don't need mock loading if we have local state
@@ -21,7 +21,6 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
     }
   }, [isOpen]);
 
-  const subtotal = state.items.reduce((acc, item) => acc + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
   const vatRate = isVatExempt ? 0 : 0.21;
   const vat = subtotal * vatRate;
   const total = subtotal + vat;
@@ -29,10 +28,10 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] overflow-hidden">
-      <div className="absolute inset-0 bg-va-black/40 backdrop-blur-sm transition-opacity" onClick={onClose} />
+    <div className="fixed inset-0 z-[10000] overflow-hidden">
+      <div className="absolute inset-0 bg-va-black/95 backdrop-blur-sm transition-opacity z-[10001]" onClick={onClose} />
       
-      <div className="absolute inset-y-0 right-0 max-w-full flex">
+      <div className="absolute inset-y-0 right-0 max-w-full flex z-[10002]">
         <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col animate-slide-in-right">
           {/* Header */}
           <div className="px-8 py-8 border-b border-black/5 flex items-center justify-between">
@@ -72,7 +71,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                         <span className="text-[11px] font-bold text-va-black/30 tracking-widest uppercase">
                           {item.type === 'voice_over' ? `${item.pricing?.words || 0} woorden` : '1 item'}
                         </span>
-                        <span className="font-black text-va-black">{PricingEngine.format(item.pricing?.total ?? item.pricing?.subtotal ?? 0)}</span>
+                        <span className="font-black text-va-black">{SlimmeKassa.format(item.pricing?.total ?? item.pricing?.subtotal ?? 0)}</span>
                       </div>
                     </div>
                     <button 
@@ -105,15 +104,15 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               <div className="space-y-3">
                 <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
                   <span><VoiceglotText  translationKey="auto.cartdrawer.subtotaal.e48026" defaultText="Subtotaal" /></span>
-                  <span className="text-va-black">{PricingEngine.format(subtotal)}</span>
+                  <span className="text-va-black">{SlimmeKassa.format(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
                   <span>BTW {isVatExempt ? '(vrijgesteld)' : '(21%)'}</span>
-                  <span className="text-va-black">{PricingEngine.format(vat)}</span>
+                  <span className="text-va-black">{SlimmeKassa.format(vat)}</span>
                 </div>
                 <div className="pt-4 border-t border-black/5 flex justify-between items-center">
                   <span className="text-[15px] font-black tracking-widest"><VoiceglotText  translationKey="auto.cartdrawer.totaal.e28895" defaultText="Totaal" /></span>
-                  <span className="text-3xl font-black text-primary tracking-tighter">{PricingEngine.format(total)}</span>
+                  <span className="text-3xl font-black text-primary tracking-tighter">{SlimmeKassa.format(total)}</span>
                 </div>
               </div>
 

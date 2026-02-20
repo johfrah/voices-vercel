@@ -62,9 +62,6 @@ export default function SuccessPageClient() {
 
   return (
     <PageWrapperInstrument className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden bg-va-off-white">
-      {/* Celebration Aura (Ademing-feel) */}
-      <ContainerInstrument className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[140px] animate-pulse pointer-events-none" />
-
       <ContainerInstrument className="max-w-4xl w-full text-center space-y-12 relative z-10 py-20">
         {/* Success Icon */}
         <motion.div 
@@ -135,9 +132,6 @@ export default function SuccessPageClient() {
                 </span>
               </Link>
             </div>
-            
-            {/* Subtle background detail */}
-            <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
           </motion.div>
         </div>
 

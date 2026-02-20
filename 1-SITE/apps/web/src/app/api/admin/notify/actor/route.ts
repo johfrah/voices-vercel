@@ -1,0 +1,64 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { VumeEngine } from '@/lib/mail/VumeEngine';
+import { db } from '@db';
+import { actors, orders, users } from '@db/schema';
+import { eq } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/auth/api-auth';
+
+/**
+ *  API: NOTIFY ACTOR (ASSIGNMENT)
+ * 
+ * Verstuurt een officile opdrachtbevestiging naar de stemacteur.
+ */
+export async function POST(request: NextRequest) {
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
+  try {
+    const body = await request.json();
+    const { actorId, orderId, itemData } = body;
+
+    if (!actorId || !orderId) {
+      return NextResponse.json({ error: 'Actor ID and Order ID are required' }, { status: 400 });
+    }
+
+    // 1. Haal actor details op
+    const [actor] = await db.select().from(actors).where(eq(actors.id, actorId)).limit(1);
+    if (!actor || !actor.email) {
+      return NextResponse.json({ error: 'Actor not found or has no email' }, { status: 404 });
+    }
+
+    // 2. Haal order details op
+    const [order] = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    // 3. Haal klant details op
+    const [customer] = await db.select().from(users).where(eq(users.id, order.userId as number)).limit(1);
+
+    // 4. Verstuur de mail via VUME
+    await VumeEngine.send({
+      to: actor.email,
+      subject: `🎙️ Nieuwe Opdracht: #${order.displayOrderId || order.wpOrderId} - Voices.be`,
+      template: 'actor-assignment',
+      context: {
+        actorName: actor.firstName,
+        orderId: order.displayOrderId || order.wpOrderId?.toString(),
+        clientName: customer ? `${customer.firstName} ${customer.lastName}` : 'Klant',
+        clientCompany: customer?.companyName,
+        usageType: itemData?.usage || 'Voice-over',
+        script: itemData?.script || 'Zie bijlage/dashboard',
+        briefing: itemData?.briefing,
+        deliveryTime: actor.deliveryTime || 'binnen 48 uur',
+        language: 'nl' // Actors are mostly NL for now
+      },
+      host: request.headers.get('host') || 'www.voices.be'
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error(' [Notify Actor] Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}

@@ -3,6 +3,7 @@
 import ConfiguratorPageClient from '@/app/checkout/configurator/ConfiguratorPageClient';
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
+import { QuoteDownloadButton } from '@/components/checkout/QuoteDownloadButton';
 import { ContainerInstrument, HeadingInstrument, LoadingScreenInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { VoiceGrid } from "@/components/ui/VoiceGrid";
@@ -13,10 +14,14 @@ import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
-import { Suspense, useEffect, useMemo } from 'react';
-import { PricingEngine } from '@/lib/pricing-engine';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { SlimmeKassa } from '@/lib/pricing-engine';
 import { MarketManager } from '@config/market-manager';
 import { useRouter } from 'next/navigation';
+import { calculateDeliveryDate } from '@/lib/delivery-logic';
+import { VoiceFilterEngine } from '@/lib/voice-filter-engine';
+
+import { RecentlyPlayedBar } from "@/components/ui/RecentlyPlayedBar";
 
 export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], filters: any }) {
   const { state, updateStep } = useMasterControl();
@@ -32,51 +37,33 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
     setMounted(true);
   }, []);
 
-  //  CHRIS-PROTOCOL: Filter actors based on journey and availability (Korneel Mandate)
-  //  This ensures the grid "slides together" and doesn't show empty gaps.
+  //  CHRIS-PROTOCOL: Filter and Sort actors using the VoiceFilterEngine (2026)
+  //  This ensures the grid "slides together" and sorting is identical across all pages.
   const filteredActors = useMemo(() => {
-    if (!mappedActors) return [];
-    let result = mappedActors;
+    if (!mappedActors || mappedActors.length === 0) return [];
+    if (!mounted) return mappedActors;
 
-    if (!mounted) return result; // Don't filter on server to match initial render
+    console.log(`[AgencyContent] Filtering ${mappedActors.length} actors. Journey: ${state.journey}, Language: ${state.filters.language}, LanguageId: ${state.filters.languageId}`);
 
-    console.log(`[AgencyContent] Filtering ${mappedActors.length} actors for journey: ${state.currentStep} / ${state.journey}`);
+    const result = VoiceFilterEngine.filter(mappedActors, {
+      journey: state.journey,
+      language: state.filters.language,
+      languageId: state.filters.languageId,
+      languages: state.filters.languages,
+      languageIds: state.filters.languageIds,
+      gender: state.filters.gender,
+      media: state.filters.media,
+      country: state.filters.country,
+      countries: state.filters.countries,
+      sortBy: state.filters.sortBy,
+      currentStep: state.currentStep,
+      selectedActorId: checkoutState.selectedActor?.id
+    });
 
-    if (state.journey === 'commercial' && Array.isArray(state.filters.media) && state.filters.media.length > 0) {
-      const selectedMedia = state.filters.media;
-      result = result.filter(actor => {
-        const status = PricingEngine.getAvailabilityStatus(
-          actor, 
-          selectedMedia as any, 
-          state.filters.countries?.[0] || state.filters.country || 'BE'
-        );
-        return status === 'available';
-      });
-      console.log(`[AgencyContent] Commercial filter result: ${result.length} actors`);
-    }
-
-    //  CHRIS-PROTOCOL: Apply other filters (Language, Gender) if they are set in MasterControl
-    if (state.filters.language) {
-      const lowLang = state.filters.language.toLowerCase();
-      const dbLang = MarketManager.getLanguageCode(lowLang);
-      result = result.filter(actor => {
-        const actorNative = actor.native_lang?.toLowerCase();
-        return actorNative === dbLang || actorNative === lowLang || actorNative?.startsWith(`${dbLang}-`);
-      });
-    }
-
-    if (state.filters.gender && state.filters.gender !== 'Iedereen') {
-      const lowGender = state.filters.gender.toLowerCase();
-      result = result.filter(actor => {
-        const g = actor.gender?.toLowerCase() || '';
-        if (lowGender.includes('man')) return g === 'male' || g === 'mannelijk';
-        if (lowGender.includes('vrouw')) return g === 'female' || g === 'vrouwelijk';
-        return true;
-      });
-    }
+    console.log(`[AgencyContent] Result: ${result.length} actors. First 3:`, result.slice(0, 3).map(a => a.display_name));
 
     return result;
-  }, [mappedActors, state.journey, state.filters, state.currentStep, isClient]);
+  }, [mappedActors, state.journey, state.filters, state.currentStep, checkoutState.selectedActor?.id, mounted]);
 
   //  CHRIS-PROTOCOL: Handle initial actor selection from URL (Homepage SPA flow)
   useEffect(() => {
@@ -100,8 +87,8 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
           cleanParams.delete('actorId');
           cleanParams.delete('step');
           const cleanSearch = cleanParams.toString();
-          const newUrl = window.location.pathname + (cleanSearch ? `?${cleanSearch}` : '');
-          window.history.replaceState(null, '', newUrl);
+          const newUrl = (typeof window !== 'undefined' ? window.location.pathname : '') + (cleanSearch ? `?${cleanSearch}` : '');
+          if (typeof window !== 'undefined') window.history.replaceState(null, '', newUrl);
         }
       } else if (!actorId && !checkoutState.selectedActor && state.currentStep === 'script') {
         // BOB-FIX: If we are in 'script' step but NO actor is selected (e.g. after refresh),
@@ -125,16 +112,18 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
       };
       const journey = journeyMap[checkoutState.usage] || 'video';
       
-      const currentPath = window.location.pathname;
-      const targetPath = `/${slug}/${journey}/`;
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+      const targetPath = `/${slug}/${journey}`;
       
       if (currentPath !== targetPath && !currentPath.includes('/checkout')) {
-        window.history.replaceState(null, '', targetPath + window.location.search);
+        //  CHRIS-PROTOCOL: Only replace if different to avoid redundant history entries
+        if (typeof window !== 'undefined') window.history.replaceState(null, '', targetPath + window.location.search);
       }
-    } else if (state.currentStep === 'voice' && window.location.pathname !== '/agency/') {
+    } else if (state.currentStep === 'voice' && (typeof window !== 'undefined' ? !window.location.pathname.startsWith('/agency') : false)) {
       // Terug naar agency overzicht in de URL als we terug gaan naar casting
-      if (!window.location.pathname.startsWith('/voice/')) {
-        window.history.replaceState(null, '', '/agency/' + window.location.search);
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+      if (typeof window !== 'undefined' && !currentPath.startsWith('/agency') && !currentPath.startsWith('/voice/')) {
+        window.history.replaceState(null, '', `/agency/${state.journey}` + window.location.search);
       }
     }
   }, [state.currentStep, checkoutState.selectedActor, checkoutState.usage]);
@@ -158,7 +147,8 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
     const slug = actor.slug || actor.firstName?.toLowerCase();
     
     // We navigeren naar de nieuwe URL, maar Next.js handelt dit af als een SPA transitie
-    router.push(`/${slug}/${journey}/`, { scroll: false });
+    // CHRIS-PROTOCOL: Ensure we use the correct hierarchy /[slug]/[journey]
+    router.push(`/${slug}/${journey}`, { scroll: false });
     
     // Scroll naar boven van de sectie voor de focus
     setTimeout(() => {
@@ -177,6 +167,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
       {state.currentStep !== 'checkout' && (
         <div className="relative z-50 w-full px-4 md:px-6">
           <VoicesMasterControl actors={mappedActors} filters={filters} />
+          <RecentlyPlayedBar />
         </div>
       )}
       
@@ -191,7 +182,13 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
               exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)", transition: { duration: 0.3 } }}
               transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
             >
-              <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center"><LoadingScreenInstrument /></div>}>
+              <Suspense fallback={
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch">
+                  {[...Array(8)].map((_, i) => (
+                    <div key={`skeleton-agency-${i}`} className="h-[400px] bg-va-off-white rounded-[20px] animate-pulse border border-black/[0.03]" />
+                  ))}
+                </div>
+              }>
                 <VoiceGrid 
                   actors={mounted ? filteredActors : mappedActors} 
                   onSelect={handleActorSelect}
@@ -217,11 +214,13 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
                   transition={{ delay: 0.3, duration: 0.5 }}
                   className="order-1 lg:order-2 lg:col-span-9 w-full"
                 >
-                  <ConfiguratorPageClient 
-                    isEmbedded={true} 
-                    hideMediaSelector={true} 
-                    minimalMode={true} 
-                  />
+            <ConfiguratorPageClient 
+              isEmbedded={true} 
+              hideMediaSelector={true} 
+              minimalMode={true} 
+              hideCampaignCTA={true}
+              hidePriceBlock={true}
+            />
                 </motion.div>
 
                 {/* VoiceCard (3 kolommen breed) - LATER op mobiel, compact */}
@@ -271,8 +270,9 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
                   <div className="lg:col-span-7">
                     <CheckoutForm strokeWidth={1.5} />
                   </div>
-                  <div className="lg:col-span-5 sticky top-10">
+                  <div className="lg:col-span-5 sticky top-10 space-y-6">
                     <PricingSummary strokeWidth={1.5} />
+                    <QuoteDownloadButton />
                   </div>
                 </div>
                 
@@ -299,7 +299,6 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
 
 // Internal wrapper to override default VoiceCard behavior for Agency page
 import { VoiceCard } from "@/components/ui/VoiceCard";
-import { useState } from 'react';
 function ConfigurableVoiceCard({ voice, onSelect, hideButton, isCornered, compact }: { voice: any, onSelect: () => void, hideButton?: boolean, isCornered?: boolean, compact?: boolean }) {
   return (
     <VoiceCard 

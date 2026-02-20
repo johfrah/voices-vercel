@@ -10,7 +10,7 @@ import {
     TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { ArrowLeft, Database, HardDrive, Loader2, RefreshCw, Search, ShieldAlert, Table, Zap } from 'lucide-react';
+import { ArrowLeft, Database, HardDrive, Loader2, RefreshCw, Search, ShieldAlert, Table, Zap, Camera } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -23,6 +23,30 @@ export default function AdminDatabasePage() {
   const [tables, setTables] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isRepairing, setIsRepairing] = useState(false);
+  const [repairLogs, setRepairLogs] = useState<string[]>([]);
+
+  const handleRepairPhotos = async () => {
+    if (!confirm('Dit herstelt alle kapotte foto-links in de database. Doorgaan?')) return;
+    
+    setIsRepairing(true);
+    setRepairLogs(['🚀 Starten van foto-herstel...']);
+    
+    try {
+      const res = await fetch('/api/admin/actors/repair-photos', { method: 'POST' });
+      const data = await res.json();
+      
+      if (data.success) {
+        setRepairLogs(prev => [...prev, `✅ Herstel voltooid! ${data.repairedCount} acteurs bijgewerkt.`, ...data.logs]);
+      } else {
+        setRepairLogs(prev => [...prev, `❌ Fout: ${data.error}`]);
+      }
+    } catch (e: any) {
+      setRepairLogs(prev => [...prev, `❌ Netwerkfout: ${e.message}`]);
+    } finally {
+      setIsRepairing(false);
+    }
+  };
 
   useEffect(() => {
     // In een echte omgeving zouden we hier een lijst van tabellen ophalen
@@ -51,7 +75,7 @@ export default function AdminDatabasePage() {
         <ContainerInstrument className="space-y-4">
           <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-black tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText  translationKey="admin.back_to_cockpit" defaultText="Terug" />
+            <VoiceglotText  translationKey="admin.back_to_dashboard" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter ">
             <VoiceglotText  translationKey="admin.database.title" defaultText="Nuclear DB" />
@@ -69,11 +93,26 @@ export default function AdminDatabasePage() {
               className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-2xl text-[15px] font-medium focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
              />
           </ContainerInstrument>
+          <ButtonInstrument 
+            onClick={handleRepairPhotos}
+            disabled={isRepairing}
+            className="va-btn-pro !bg-primary flex items-center gap-2"
+          >
+            {isRepairing ? <Loader2 className="animate-spin" size={16} /> : <Camera size={16} />}
+            <VoiceglotText translationKey="admin.database.repair_photos" defaultText="Herstel Foto's" />
+          </ButtonInstrument>
           <ButtonInstrument className="va-btn-pro !bg-va-black flex items-center gap-2">
             <RefreshCw strokeWidth={1.5} size={16} /> <VoiceglotText  translationKey="admin.database.sync" defaultText="Forceer Sync" />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
+
+      {/* Repair Logs */}
+      {repairLogs.length > 0 && (
+        <ContainerInstrument className="bg-va-black text-green-400 p-6 rounded-[20px] font-mono text-xs max-h-[300px] overflow-y-auto space-y-1 shadow-inner">
+          {repairLogs.map((log, i) => <div key={i}>{log}</div>)}
+        </ContainerInstrument>
+      )}
 
       {/* DB Stats */}
       <BentoGrid strokeWidth={1.5} columns={4}>

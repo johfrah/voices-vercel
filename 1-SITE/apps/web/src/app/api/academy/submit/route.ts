@@ -2,7 +2,7 @@ import { db } from '@db';
 import { courseSubmissions, users } from '@db/schema';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-import { DropboxExportBridge } from '@/lib/audio/dropbox-bridge';
+import { DropboxService } from '@/services/DropboxService';
 import { eq } from 'drizzle-orm';
 
 /**
@@ -65,11 +65,12 @@ export async function POST(request: Request) {
     }
 
     if (user) {
-      await DropboxExportBridge.pushToControlFolder(uploadData.path, {
-        orderId: `ACADEMY-${result.id}`,
-        customerName: `${user.firstName || user.first_name || 'Student'} ${user.lastName || user.last_name || ''}`.trim(),
-        projectName: `Les ${lessonId} Inzending`
-      });
+      const dropbox = DropboxService.getInstance();
+      await dropbox.syncToControlFolder(
+        `ACADEMY-${result.id}`,
+        `${user.firstName || user.first_name || 'Student'} ${user.lastName || user.last_name || ''}`.trim(),
+        `Les ${lessonId} Inzending`
+      );
     }
 
     console.log(` Academy Submission: ${result.filePath} by user ${userId} (Synced to Dropbox)`);

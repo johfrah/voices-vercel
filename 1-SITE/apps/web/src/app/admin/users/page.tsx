@@ -64,7 +64,7 @@ export default function AdminUsersPage() {
         <ContainerInstrument className="space-y-4">
           <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText  translationKey="admin.back_to_cockpit" defaultText="Terug" />
+            <VoiceglotText  translationKey="admin.back_to_dashboard" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.users.title" defaultText="User DNA" /></HeadingInstrument>
         </ContainerInstrument>

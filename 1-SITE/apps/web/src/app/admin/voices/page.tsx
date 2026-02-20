@@ -7,75 +7,195 @@ import { useSonicDNA } from '@/lib/sonic-dna';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import {
     ArrowLeft,
-    CheckCircle2,
-    Clock,
     Lock,
-    MoreVertical,
     Save,
     Search,
     Unlock,
-    Loader2
+    Loader2,
+    RefreshCcw
 } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { SortableActorRow } from '@/components/admin/SortableActorRow';
 
 interface ActorRecord {
   id: number;
+  wpProductId: number | null;
   firstName: string;
-  lastName: string;
-  status: 'live' | 'pending' | 'unavailable';
-  priceUnpaid: string;
-  voiceScore: number;
-  nativeLang: string;
+  lastName: string | null;
+  status: string;
+  priceUnpaid: string | null;
+  voiceScore: number | null;
+  nativeLang: string | null;
+  menuOrder: number;
+  photo_url?: string;
 }
 
 /**
- *  VOICE MANAGER
- * Beheer-modus: Alleen bewerkbaar als 'Edit Mode' aan staat.
+ *  VOICE MANAGER (GOD MODE 2026)
+ * 
+ * Beheer-modus voor stemacteurs met Drag-and-Drop sortering.
  */
 export default function VoiceManagerPage() {
   const { isEditMode, toggleEditMode } = useEditMode();
-  const { playClick, playSwell } = useSonicDNA();
+  const { playClick } = useSonicDNA();
   const { logAction } = useAdminTracking();
   const [search, setSearch] = useState('');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  
-  // Mock data - in realiteit komt dit uit de /api/backoffice/actors route
   const [actors, setActors] = useState<ActorRecord[]>([]);
+  const [hasChanges, setHasChanges] = useState(false);
 
-  useEffect(() => {
-    // Simulate loading for skeleton demo
-    const timer = setTimeout(() => {
-      setActors([
-        { id: 1, firstName: 'Johfrah', lastName: 'Voices', status: 'live', priceUnpaid: '250.00', voiceScore: 98, nativeLang: 'NL' },
-        { id: 2, firstName: 'Julie', lastName: 'Vocal', status: 'pending', priceUnpaid: '180.00', voiceScore: 85, nativeLang: 'FR' },
-        { id: 3, firstName: 'Marc', lastName: 'Studio', status: 'live', priceUnpaid: '210.00', voiceScore: 92, nativeLang: 'EN' },
-      ]);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const fetchActors = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/actors');
+      const data = await res.json();
+      if (data.success) {
+        setActors(data.actors);
+      } else {
+        toast.error('Fout bij laden acteurs');
+      }
+    } catch (error) {
+      console.error('Failed to fetch actors:', error);
+      toast.error('Netwerkfout bij laden acteurs');
+    } finally {
       setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const handleStatusToggle = (id: number) => {
-    if (!isEditMode) return;
-    playClick('pop');
-    setActors(prev => prev.map(a => 
-      a.id === id ? { ...a, status: a.status === 'live' ? 'pending' : 'live' } : a
-    ));
-    logAction('toggle_actor_status', { actorId: id });
+    }
   };
 
-  const handleSaveAll = async () => {
+  useEffect(() => {
+    fetchActors();
+  }, []);
+
+  const filteredActors = useMemo(() => {
+    return actors.filter(a => 
+      `${a.firstName} ${a.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
+      a.id.toString().includes(search) ||
+      a.wpProductId?.toString().includes(search)
+    );
+  }, [actors, search]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setActors((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over.id);
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        setHasChanges(true);
+        return newItems;
+      });
+      playClick('success');
+    }
+  };
+
+  const handleStatusToggle = async (id: number) => {
+    if (!isEditMode) return;
+    playClick('pop');
+    const actor = actors.find(a => a.id === id);
+    if (!actor) return;
+
+    const newStatus = actor.status === 'live' ? 'pending' : 'live';
+    
+    // Optimistic update
+    setActors(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
+
+    try {
+      const res = await fetch(`/api/admin/actors/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (!res.ok) throw new Error('Failed to update status');
+      toast.success(`${actor.firstName} is nu ${newStatus}`);
+    } catch (error) {
+      toast.error('Status update mislukt');
+      // Revert
+      setActors(prev => prev.map(a => a.id === id ? { ...a, status: actor.status } : a));
+    }
+    
+    logAction('toggle_actor_status', { actorId: id, status: newStatus });
+  };
+
+  const handlePriceChange = (id: number, val: string) => {
+    setActors(prev => prev.map(a => a.id === id ? { ...a, priceUnpaid: val } : a));
+    setHasChanges(true);
+  };
+
+  const handleSaveActor = async (actor: ActorRecord) => {
+    playClick('pro');
+    try {
+      const res = await fetch(`/api/admin/actors/${actor.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ price_unpaid: actor.priceUnpaid })
+      });
+      if (!res.ok) throw new Error('Failed to save actor');
+      toast.success(`${actor.firstName} opgeslagen`);
+    } catch (error) {
+      toast.error('Opslaan mislukt');
+    }
+  };
+
+  const handleSaveOrder = async () => {
     setSaving(true);
     playClick('pro');
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setSaving(false);
-    toast.success('Wijzigingen opgeslagen!');
-    playClick('success');
-    logAction('save_actors_bulk');
+    
+    const orders = actors.map((a, index) => ({
+      id: a.id,
+      menuOrder: index + 1
+    }));
+
+    try {
+      const res = await fetch('/api/admin/actors/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orders })
+      });
+      
+      if (res.ok) {
+        toast.success('Volgorde opgeslagen!');
+        setHasChanges(false);
+        playClick('success');
+      } else {
+        throw new Error('Reorder failed');
+      }
+    } catch (error) {
+      toast.error('Volgorde opslaan mislukt');
+    } finally {
+      setSaving(false);
+    }
+    
+    logAction('save_actors_reorder');
   };
 
   return (
@@ -83,12 +203,12 @@ export default function VoiceManagerPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText  translationKey="admin.back_to_cockpit" defaultText="Terug" />
+            <VoiceglotText translationKey="admin.back_to_dashboard" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter ">
-            <VoiceglotText  translationKey="admin.voice_manager.title" defaultText="Stemmen" />
+            <VoiceglotText translationKey="admin.voice_manager.title" defaultText="Stemmen" />
           </HeadingInstrument>
         </ContainerInstrument>
 
@@ -97,12 +217,20 @@ export default function VoiceManagerPage() {
             <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
             <InputInstrument 
               type="text" 
-              placeholder="Zoek..."
+              placeholder="Zoek op naam of ID..."
               className="bg-white border border-black/5 rounded-[10px] pl-12 pr-6 py-4 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all w-80 shadow-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </ContainerInstrument>
+
+          <ButtonInstrument 
+            onClick={fetchActors}
+            variant="outline"
+            className="w-12 h-12 rounded-[10px] border-black/5 flex items-center justify-center hover:bg-va-off-white transition-all"
+          >
+            <RefreshCcw size={18} strokeWidth={1.5} className={loading ? 'animate-spin' : ''} />
+          </ButtonInstrument>
           
           <ButtonInstrument 
             onClick={() => {
@@ -117,7 +245,7 @@ export default function VoiceManagerPage() {
           >
             {isEditMode ? <Unlock strokeWidth={1.5} size={14} /> : <Lock strokeWidth={1.5} size={14} />}
             {isEditMode ? (
-              <VoiceglotText translationKey="admin.edit_mode_on" defaultText="Bewerken" />
+              <VoiceglotText translationKey="admin.edit_mode_on" defaultText="Bewerken AAN" />
             ) : (
               <VoiceglotText translationKey="admin.edit_mode" defaultText="Bewerken" />
             )}
@@ -125,129 +253,68 @@ export default function VoiceManagerPage() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* Actor Grid */}
-      <ContainerInstrument className="grid grid-cols-1 gap-4">
-        {loading ? (
-          // DETERMINISTIC SKELETONS
-          [1, 2, 3].map(i => (
-            <ContainerInstrument key={i} className="bg-white border border-black/5 p-6 rounded-[20px] flex items-center gap-8 animate-pulse">
-              <ContainerInstrument className="w-16 h-16 bg-va-off-white rounded-[10px]" />
-              <ContainerInstrument className="flex-1 space-y-2">
-                <ContainerInstrument className="h-6 bg-va-off-white rounded-[10px] w-1/4" />
-                <ContainerInstrument className="h-4 bg-va-off-white rounded-[10px] w-1/6" />
-              </ContainerInstrument>
-              <ContainerInstrument className="w-24 h-8 bg-va-off-white rounded-full" />
-              <ContainerInstrument className="w-32 h-12 bg-va-off-white rounded-[10px]" />
-              <ContainerInstrument className="w-40 h-4 bg-va-off-white rounded-full" />
-            </ContainerInstrument>
-          ))
-        ) : (
-          actors.map((actor) => (
-            <ContainerInstrument 
-              key={actor.id}
-              className={`bg-white border border-black/5 p-6 rounded-[20px] flex items-center gap-8 transition-all hover:shadow-aura group ${
-                isEditMode ? 'ring-2 ring-primary/5 hover:ring-primary/20' : ''
-              }`}
-            >
-              {/* Avatar & Basic Info */}
-              <ContainerInstrument className="w-16 h-16 bg-va-off-white rounded-[10px] flex items-center justify-center font-light text-va-black/20 text-xl">
-                {actor.firstName.charAt(0)}
-              </ContainerInstrument>
-
-              <ContainerInstrument className="flex-1">
-                <ContainerInstrument className="flex items-center gap-2">
-                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight"><VoiceglotText  translationKey={`admin.actor.${actor.id}.name`} defaultText={`${actor.firstName} ${actor.lastName}`} noTranslate={true} /></HeadingInstrument>
-                  <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest">#{actor.id}</TextInstrument>
+      {/* Actor List with DND */}
+      <DndContext 
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext 
+          items={filteredActors.map(a => a.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <ContainerInstrument className="grid grid-cols-1 gap-4">
+            {loading ? (
+              [1, 2, 3, 4, 5].map(i => (
+                <ContainerInstrument key={i} className="bg-white border border-black/5 p-6 rounded-[20px] flex items-center gap-8 animate-pulse">
+                  <ContainerInstrument className="w-16 h-16 bg-va-off-white rounded-[10px]" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-6 bg-va-off-white rounded-[10px] w-1/4" />
+                    <div className="h-4 bg-va-off-white rounded-[10px] w-1/6" />
+                  </div>
+                  <div className="w-24 h-8 bg-va-off-white rounded-full" />
+                  <div className="w-32 h-12 bg-va-off-white rounded-[10px]" />
+                  <div className="w-40 h-4 bg-va-off-white rounded-full" />
                 </ContainerInstrument>
-                <TextInstrument className="text-[15px] font-light text-primary tracking-[0.2em] mt-1 uppercase"><VoiceglotText  translationKey="admin.voice_manager.native" defaultText={`${actor.nativeLang} native`} /></TextInstrument>
-              </ContainerInstrument>
+              ))
+            ) : (
+              filteredActors.map((actor) => (
+                <SortableActorRow 
+                  key={actor.id}
+                  actor={actor}
+                  isEditMode={isEditMode}
+                  onStatusToggle={handleStatusToggle}
+                  onPriceChange={handlePriceChange}
+                  onSave={handleSaveActor}
+                  playClick={playClick}
+                />
+              ))
+            )}
+          </ContainerInstrument>
+        </SortableContext>
+      </DndContext>
 
-              {/* Status - Clickable in Edit Mode */}
-              <ContainerInstrument 
-                onClick={() => handleStatusToggle(actor.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-                  isEditMode ? 'cursor-pointer hover:scale-105' : 'pointer-events-none'
-                } ${
-                  actor.status === 'live' ? 'bg-green-500/10 text-green-600' : 'bg-yellow-500/10 text-yellow-600'
-                }`}
-              >
-                {actor.status === 'live' ? <CheckCircle2 strokeWidth={1.5} size={14} /> : <Clock strokeWidth={1.5} size={14} />}
-                <TextInstrument as="span" className="text-[15px] font-light tracking-widest uppercase">{actor.status}</TextInstrument>
-              </ContainerInstrument>
-
-              {/* Price - Editable in Edit Mode */}
-              <ContainerInstrument className="w-32">
-                <TextInstrument className="text-[11px] font-light text-va-black/30 tracking-widest mb-1 uppercase"><VoiceglotText  translationKey="admin.voice_manager.rate_label" defaultText="Tarief" /></TextInstrument>
-                <ContainerInstrument className={`flex items-center gap-1 text-lg font-light tracking-tighter transition-all ${
-                  isEditMode ? 'text-primary' : 'text-va-black'
-                }`}>
-                  
-                  {isEditMode ? (
-                    <InputInstrument 
-                      type="text" 
-                      value={actor.priceUnpaid}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setActors(prev => prev.map(a => a.id === actor.id ? { ...a, priceUnpaid: val } : a));
-                      }}
-                      onBlur={() => playClick('success')}
-                      className="bg-primary/5 border-none p-0 w-20 focus:ring-0 text-lg font-light"
-                    />
-                  ) : (
-                    <TextInstrument as="span">{actor.priceUnpaid}</TextInstrument>
-                  )}
-                </ContainerInstrument>
-              </ContainerInstrument>
-
-              {/* Score */}
-              <ContainerInstrument className="text-right pr-4">
-                <TextInstrument className="text-[11px] font-light text-va-black/30 tracking-widest mb-1 uppercase"><VoiceglotText  translationKey="admin.voice_manager.score_label" defaultText="Score" /></TextInstrument>
-                <ContainerInstrument className="flex items-center gap-2 justify-end">
-                  <ContainerInstrument className="w-24 h-1.5 bg-va-off-white rounded-full overflow-hidden">
-                    <ContainerInstrument className="h-full bg-primary" style={{ width: `${actor.voiceScore}%` }} />
-                  </ContainerInstrument>
-                  <TextInstrument as="span" className="text-[15px] font-light">{actor.voiceScore}</TextInstrument>
-                </ContainerInstrument>
-              </ContainerInstrument>
-
-              {/* Actions */}
-              <ContainerInstrument className="flex gap-2">
-                {isEditMode && (
-                  <ButtonInstrument 
-                    onMouseEnter={() => playSwell()}
-                    onClick={() => playClick('success')}
-                    className="w-10 h-10 bg-primary text-white rounded-[10px] flex items-center justify-center hover:scale-110 transition-all shadow-lg shadow-primary/20"
-                  >
-                    <Save strokeWidth={1.5} size={16} />
-                  </ButtonInstrument>
-                )}
-                <ButtonInstrument className="w-10 h-10 bg-va-off-white text-va-black/20 rounded-[10px] flex items-center justify-center hover:text-va-black transition-all">
-                  <MoreVertical strokeWidth={1.5} size={16} />
-                </ButtonInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
-          ))
-        )}
-      </ContainerInstrument>
-
-      {/* Sync Indicator */}
-      {isEditMode && (
+      {/* Save Order Dock */}
+      {isEditMode && hasChanges && (
         <FixedActionDockInstrument>
           <ContainerInstrument plain className="flex items-center gap-4">
             <ButtonInstrument 
-              onClick={handleSaveAll}
+              onClick={handleSaveOrder}
               disabled={saving}
               className="va-btn-pro !bg-va-black flex items-center gap-2"
             >
               {saving ? <Loader2 strokeWidth={1.5} className="animate-spin" size={16} /> : <Save strokeWidth={1.5} size={16} />}
-              <VoiceglotText translationKey="admin.voices.save_all" defaultText="Wijzigingen opslaan" />
+              <VoiceglotText translationKey="admin.voices.save_order" defaultText="Nieuwe volgorde opslaan" />
             </ButtonInstrument>
             <ButtonInstrument 
-              onClick={() => toggleEditMode()}
+              onClick={() => {
+                setHasChanges(false);
+                fetchActors();
+              }}
               variant="outline"
               className="border-black/10 text-va-black hover:bg-va-black/5"
             >
-              <VoiceglotText translationKey="common.cancel" defaultText="Annuleren" />
+              <VoiceglotText translationKey="common.cancel" defaultText="Herstellen" />
             </ButtonInstrument>
           </ContainerInstrument>
         </FixedActionDockInstrument>

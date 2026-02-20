@@ -33,11 +33,17 @@ export const MusicSelector: React.FC = () => {
   useEffect(() => {
     const fetchMusic = async () => {
       try {
+        console.log('[MusicSelector] Fetching music library...');
         const res = await fetch('/api/media/music');
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         const data = await res.json();
-        setTracks(data);
+        console.log(`[MusicSelector] Received ${data?.length || 0} tracks`);
+        setTracks(data || []);
       } catch (err) {
         console.error('Failed to fetch music library:', err);
+        setTracks([]); // Ensure we don't stay in loading state forever
       } finally {
         setIsLoading(false);
       }

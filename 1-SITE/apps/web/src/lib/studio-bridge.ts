@@ -116,11 +116,18 @@ export class StudioDataBridge {
 
       const dbReviews = await db.select()
         .from(reviews)
-        .where(and(
-          eq(reviews.businessSlug, 'studio'),
-          sql`${reviews.iapContext}->>'workshopId' = ${dbWorkshop.id.toString()}`
+        .where(or(
+          and(
+            eq(reviews.businessSlug, 'voices-studio'),
+            sql`${reviews.iapContext}->>'workshopId' = ${dbWorkshop.id.toString()}`
+          ),
+          and(
+            eq(reviews.businessSlug, 'voices-studio'),
+            eq(reviews.sector, 'studio')
+          )
         ))
-        .limit(3);
+        .orderBy(desc(reviews.sentimentVelocity), desc(reviews.createdAt))
+        .limit(10);
 
       // In Beheer-modus zijn alle velden nu native in de workshops tabel
       return {
@@ -156,7 +163,11 @@ export class StudioDataBridge {
           name: r.authorName,
           text: r.textNl || r.textEn,
           rating: r.rating,
-          date: new Date(r.createdAt!).toLocaleDateString('nl-BE')
+          authorPhotoUrl: r.authorPhotoUrl,
+          sector: r.sector,
+          persona: r.persona,
+          date: new Date(r.createdAt!).toLocaleDateString('nl-BE'),
+          rawDate: r.createdAt
         })),
         gallery: dbWorkshop.gallery?.map(g => ({
           url: g.media?.filePath ? `/assets/${g.media.filePath}` : null,
@@ -198,6 +209,16 @@ export class StudioDataBridge {
         return acc + (total - tax);
       }, 0);
 
+      // 4. NUCLEAR CALCULATION: Real-time review statistics for Studio
+      const allStudioReviews = await db.select({
+        rating: reviews.rating
+      }).from(reviews).where(eq(reviews.businessSlug, 'voices-studio'));
+      
+      const totalReviewsCount = allStudioReviews.length;
+      const averageRating = totalReviewsCount > 0 
+        ? Math.round((allStudioReviews.reduce((sum, r) => sum + (r.rating || 5), 0) / totalReviewsCount) * 10) / 10
+        : 4.9;
+
       return {
         header: {
           title: "Studio Dashboard",
@@ -215,7 +236,7 @@ export class StudioDataBridge {
           cancelled_workshops: 0,
           // @ts-ignore
           total_revenue: totalRevenue,
-          average_rating: 4.9 // TODO: Trekken uit reviews tabel
+          average_rating: averageRating
         },
         workshops: dbWorkshops.map(w => ({
           id: w.id,
@@ -523,7 +544,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt alle deelnemers op voor een specifieke workshop editie
-   *  VOICES OS: Voor de instructeur cockpit
+   *  VOICES OS: Voor het instructeur dashboard
    */
   static async getParticipantsByEdition(editionId: number) {
     try {

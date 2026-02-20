@@ -1,0 +1,64 @@
+import { db } from '@db';
+import { marketConfigs } from '@db/schema';
+import { eq } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth/api-auth';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
+  const { searchParams } = new URL(request.url);
+  const market = searchParams.get('market') || 'BE';
+
+  try {
+    const config = await db.query.marketConfigs.findFirst({
+      where: eq(marketConfigs.market, market)
+    });
+
+    return NextResponse.json(config || {});
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch market config' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
+  try {
+    const body = await request.json();
+    const { market, ...updateData } = body;
+
+    if (!market) return NextResponse.json({ error: 'Market is required' }, { status: 400 });
+
+    const existing = await db.query.marketConfigs.findFirst({
+      where: eq(marketConfigs.market, market)
+    });
+
+    if (existing) {
+      await db.update(marketConfigs)
+        .set({ 
+          ...updateData,
+          isManuallyEdited: true,
+          updatedAt: new Date()
+        })
+        .where(eq(marketConfigs.market, market));
+    } else {
+      await db.insert(marketConfigs)
+        .values({
+          market,
+          ...updateData,
+          isManuallyEdited: true,
+          updatedAt: new Date()
+        });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('[Market Config POST Error]:', error);
+    return NextResponse.json({ error: 'Failed to update market config' }, { status: 500 });
+  }
+}

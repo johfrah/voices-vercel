@@ -102,7 +102,7 @@ export default function VisitorPlayerPage() {
       <SectionInstrument className="flex justify-between items-center">
         <ContainerInstrument className="space-y-2">
           <Link  href="/admin/marketing/visitors" className="flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[15px] font-black tracking-widest mb-4">
-            <ArrowLeft strokeWidth={1.5} size={12} /><VoiceglotText  translationKey="auto.page.terug_naar_cockpit.87606e" defaultText="Terug naar cockpit" /></Link>
+            <ArrowLeft strokeWidth={1.5} size={12} /><VoiceglotText  translationKey="auto.page.terug_naar_dashboard.87606e" defaultText="Terug naar dashboard" /></Link>
           <ContainerInstrument className="flex items-center gap-3">
             <ContainerInstrument className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
               <Activity strokeWidth={1.5} size={20} />

@@ -4,6 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { useTranslation } from '@/contexts/TranslationContext';
+import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
   import {
     Calendar,
@@ -12,6 +14,7 @@ import { AnimatePresence, motion } from 'framer-motion';
     HelpCircle,
     Info,
     LayoutDashboard,
+    Loader2,
     Maximize,
     Minimize2,
     Mail,
@@ -30,10 +33,30 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
+import { isOfficeOpen, getNextOpeningTime } from '@/lib/delivery-logic';
 import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 
 export const VoicyChatV2: React.FC = () => {
+  const { 
+    state, 
+    updateBriefing, 
+    updateUsage, 
+    updateMedia, 
+    updateCountry, 
+    updateCustomer, 
+    setStep, 
+    selectActor, 
+    addItem, 
+    resetSelection,
+    updateMusic
+  } = useCheckout();
+  const { playClick: playSonicClick } = useSonicDNA();
+  const { t } = useTranslation();
+  const { user, isAuthenticated, isAdmin } = useAuth();
+  const { isEditMode, toggleEditMode } = useEditMode();
+  const pathname = usePathname();
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -43,34 +66,307 @@ export const VoicyChatV2: React.FC = () => {
   const [mailSent, setMailSent] = useState(false);
   const [isFullMode, setIsFullMode] = useState(false);
   const [activeTab, setActiveTab] = useState<'chat' | 'mail' | 'phone' | 'faq' | 'admin'>('chat');
+  const [telephonyConfig, setTelephonyConfig] = useState<{ isLive: boolean; whisperMode: string }>({ isLive: true, whisperMode: 'robot' });
+
+  //  CHRIS-PROTOCOL: Sync telephony config from DB
+  useEffect(() => {
+    fetch('/api/admin/config?type=telephony')
+      .then(res => res.json())
+      .then(data => {
+        if (data.telephony_config) {
+          setTelephonyConfig(data.telephony_config);
+        }
+      })
+      .catch(err => console.error('Failed to fetch telephony config', err));
+  }, [isOpen]); // Re-check when chat opens
   const [chatMode, setChatMode] = useState<'ask' | 'agent'>('ask');
+  const [isCalling, setIsCalling] = useState(false);
+  const [callRequested, setCallRequested] = useState(false);
+  const [callError, setCallError] = useState<string | null>(null);
+  const [persona, setPersona] = useState<'voicy' | 'johfrah'>('voicy');
   const [customer360, setCustomer360] = useState<any>(null);
+
+  const isJohfrah = persona === 'johfrah';
+
+  useEffect(() => {
+    const handlePersonaChange = (e: any) => {
+      setPersona(e.detail);
+    };
+    const handleOpenVoicy = (e: any) => {
+      setIsOpen(true);
+      if (e.detail?.persona) setPersona(e.detail.persona);
+      if (e.detail?.tab) setActiveTab(e.detail.tab);
+      playSonicClick('deep');
+    };
+    window.addEventListener('voices:persona_change', handlePersonaChange);
+    window.addEventListener('voicy:open', handleOpenVoicy);
+    
+    // Initial sync from localStorage
+    const savedPersona = localStorage.getItem('voices_persona_preference') as 'voicy' | 'johfrah';
+    if (savedPersona) setPersona(savedPersona);
+
+    return () => {
+      window.removeEventListener('voices:persona_change', handlePersonaChange);
+      window.removeEventListener('voicy:open', handleOpenVoicy);
+    };
+  }, [playSonicClick]);
+
+  const [generalSettings, setGeneralSettings] = useState<any>(null);
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(false);
   const [clickedChips, setClickedChips] = useState<string[]>([]);
   const [isHoveringVoicy, setIsHoveringVoicy] = useState(false);
   const [showChips, setShowChips] = useState(false);
   const chipsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { state } = useCheckout();
-  const { playClick } = useSonicDNA();
-  const { user, isAuthenticated, isAdmin } = useAuth();
-  const { isEditMode, toggleEditMode } = useEditMode();
-  const pathname = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastIdRef = useRef<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  //  BUTLER BRIDGE: Execute suggested actions from Voicy
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.role === 'assistant' && lastMessage.isButlerAction) {
+      console.log(`[Voicy Butler] Executing action: ${lastMessage.action}`, lastMessage.params);
+      
+      const { action, params } = lastMessage;
+      
+      switch (action) {
+        case 'SET_CONFIGURATOR':
+          if (params.words !== undefined) {
+            //  VAKMANSCHAP REGEL: Als woorden expliciet zijn, gebruik die. 
+            // Anders, als woorden 0 zijn maar er is een script, gebruik dat.
+            updateBriefing(" ".repeat(params.words)); 
+          }
+          if (params.usage) updateUsage(params.usage);
+          if (params.media) updateMedia(params.media);
+          
+          //  MUZIEK RESTRICTIE: Alleen bij telefonie
+          if (params.music !== undefined) {
+            if (params.usage === 'telephony' || state.usage === 'telephony') {
+              updateMusic({ asBackground: !!params.music });
+              console.log("[Voicy Butler] Setting music:", params.music);
+            } else {
+              console.warn("[Voicy Butler] Music requested for non-telephony journey. Ignoring.");
+            }
+          }
+          
+          if (params.plan) {
+            // We hebben geen directe updatePlan in de context exposed via de bridge, 
+            // maar we kunnen de configurator wel sturen.
+          }
+          playSonicClick('pro');
+          break;
+          
+        case 'FILTER_VOICES':
+          // Navigeer naar de stemmenpagina met filters als query params
+          const query = new URLSearchParams();
+          if (params.language) query.set('lang', params.language);
+          if (params.vibe) query.set('vibe', params.vibe);
+          if (params.gender) query.set('gender', params.gender);
+          window.location.href = `/artist?${query.toString()}`;
+          break;
+          
+        case 'PREFILL_CHECKOUT':
+          if (params.email || params.vat_number) {
+            updateCustomer({ 
+              email: params.email || state.customer.email, 
+              vat_number: params.vat_number || state.customer.vat_number 
+            });
+          }
+          if (params.briefing) updateBriefing(params.briefing);
+          setStep('details');
+          window.location.href = '/checkout';
+          break;
+          
+        case 'NAVIGATE_JOURNEY':
+          if (params.url) window.location.href = params.url;
+          break;
+          
+        case 'PLAY_DEMO':
+          if (params.demoUrl) {
+            // Voeg een tijdelijk audio-bericht toe aan de chat
+            setMessages(prev => {
+              // Check of dit bericht al bestaat om loops te voorkomen
+              if (prev.some(m => m.id === `demo-${params.actorId}`)) return prev;
+              return [...prev, {
+                id: `demo-${params.actorId}`,
+                role: 'assistant',
+                content: `Luister hier naar de demo:`,
+                media: [{ title: 'Stem Demo', type: 'audio', url: params.demoUrl }],
+                timestamp: new Date().toISOString()
+              }];
+            });
+            playSonicClick('deep');
+          }
+          break;
+          
+        case 'VALIDATE_VAT':
+          if (params.vatNumber) {
+            // Trigger de bestaande BTW-check logica van Kelly
+            fetch(`/api/checkout/vat?number=${params.vatNumber}`)
+              .then(res => res.json())
+              .then(data => {
+                if (data.valid) {
+                  updateCustomer({ vat_number: params.vatNumber, company: data.companyName, vat_verified: true });
+                  setMessages(prev => [...prev, {
+                    id: `vat-success-${Date.now()}`,
+                    role: 'assistant',
+                    content: `Ik heb het BTW-nummer voor ${data.companyName} geverifieerd en je gegevens klaargezet.`,
+                    timestamp: new Date().toISOString()
+                  }]);
+                } else {
+                  setMessages(prev => [...prev, {
+                    id: `vat-fail-${Date.now()}`,
+                    role: 'assistant',
+                    content: `Ik kon het BTW-nummer ${params.vatNumber} helaas niet valideren. Kun je het nog eens controleren?`,
+                    timestamp: new Date().toISOString()
+                  }]);
+                }
+              });
+          }
+          break;
+          
+        case 'ANALYZE_SCRIPT':
+          if (params.text) {
+            const words = params.text.trim().split(/\s+/).length;
+            const estSeconds = Math.round((words / 160) * 60);
+            const target = params.targetDuration || 30;
+            const diff = estSeconds - target;
+            
+            let advice = `Je script heeft ${words} woorden. Dat is ongeveer ${estSeconds} seconden aan audio. `;
+            if (Math.abs(diff) <= 5) advice += "Dit past perfect!";
+            else if (diff > 0) advice += `Dat is ${diff} seconden te lang voor je doel van ${target}s. Zal ik helpen het script in te korten?`;
+            else advice += `Dat is ${Math.abs(diff)} seconden te kort. Je kunt nog wat extra informatie toevoegen.`;
+            
+            setMessages(prev => [...prev, {
+              id: `script-analysis-${Date.now()}`,
+              role: 'assistant',
+              content: advice,
+              timestamp: new Date().toISOString()
+            }]);
+            playSonicClick('pro');
+          }
+          break;
+          
+        case 'PLACE_ORDER':
+          if (params.email) {
+            updateCustomer({ email: params.email });
+            if (params.briefing) updateBriefing(params.briefing);
+            
+            //  KELLY-MANDATE: Bereid de order voor via de Mollie API
+            setIsTyping(true);
+            fetch('/api/checkout/mollie', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                customer: { ...state.customer, email: params.email },
+                pricing: state.pricing,
+                items: state.items.length > 0 ? state.items : [{
+                  type: 'voice_over',
+                  actor: state.selectedActor,
+                  briefing: params.briefing || state.briefing,
+                  pricing: state.pricing
+                }]
+              })
+            })
+            .then(res => res.json())
+            .then(data => {
+              setIsTyping(false);
+              if (data.checkoutUrl) {
+                setMessages(prev => [...prev, {
+                  id: `order-ready-${Date.now()}`,
+                  role: 'assistant',
+                  content: t('chat.checkout.ready', `Alles staat klaar voor je bestelling! Klik op de knop hieronder om veilig af te rekenen.`),
+                  actions: [{ label: t('chat.checkout.pay_now', "Nu Veilig Betalen"), action: data.checkoutUrl }],
+                  timestamp: new Date().toISOString()
+                }]);
+                playSonicClick('success');
+              } else {
+                throw new Error("Geen checkout URL ontvangen");
+              }
+            })
+            .catch(err => {
+              setIsTyping(false);
+              console.error("Butler Order Error:", err);
+              setMessages(prev => [...prev, {
+                id: `order-fail-${Date.now()}`,
+                role: 'assistant',
+                content: `Er ging iets mis bij het voorbereiden van je bestelling. Zal ik je doorverbinden met een medewerker?`,
+                timestamp: new Date().toISOString()
+              }]);
+            });
+          }
+          break;
+          
+        case 'ADD_TO_CART':
+          if (state.selectedActor && state.pricing.total > 0) {
+            //  KELLY-MANDATE: Voeg het item toe aan het mandje via de CheckoutContext
+            const itemId = `voice-${state.selectedActor.id}-${Date.now()}`;
+            addItem({
+              id: itemId,
+              type: 'voice_over',
+              actor: state.selectedActor,
+              briefing: params.briefing || state.briefing,
+              usage: params.usage || state.usage,
+              media: state.media,
+              pricing: { ...state.pricing }
+            });
+            
+            setMessages(prev => [...prev, {
+              id: `cart-add-${Date.now()}`,
+              role: 'assistant',
+              content: `Ik heb ${state.selectedActor?.first_name} toegevoegd aan je mandje. Wil je nog een stem zoeken of zal ik de checkout voorbereiden?`,
+              timestamp: new Date().toISOString()
+            }]);
+            
+            // Reset de calculator voor de volgende selectie
+            resetSelection();
+            playSonicClick('success');
+          } else {
+            setMessages(prev => [...prev, {
+              id: `cart-fail-${Date.now()}`,
+              role: 'assistant',
+              content: `Ik kon de stem niet toevoegen. Zorg dat je een stem hebt geselecteerd en de prijs is berekend.`,
+              timestamp: new Date().toISOString()
+            }]);
+          }
+          break;
+      }
+    }
+  }, [
+    messages, 
+    updateBriefing, 
+    updateUsage, 
+    updateMedia, 
+    updateCustomer, 
+    setStep, 
+    state.customer.email, 
+    state.customer.vat_number, 
+    state.briefing,
+    state.customer,
+    state.media,
+    state.usage,
+    playSonicClick, 
+    state.selectedActor, 
+    state.pricing, 
+    state.items, 
+    addItem, 
+    resetSelection,
+    updateMusic,
+    t
+  ]);
 
   //  CHRIS-PROTOCOL: Escape key support for closing the chat
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
-        playClick('light');
+        playSonicClick('light');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, playClick]);
+  }, [isOpen, playSonicClick]);
 
   //  CHRIS-PROTOCOL: Track last DB ID for SSE without triggering loops
   useEffect(() => {
@@ -97,6 +393,16 @@ export const VoicyChatV2: React.FC = () => {
       setConversationId(parsedId);
       loadHistory(parsedId);
     }
+
+    // Fetch system config for opening hours
+    fetch('/api/admin/config?type=general')
+      .then(res => res.json())
+      .then(data => {
+        if (data.general_settings) {
+          setGeneralSettings(data.general_settings);
+        }
+      })
+      .catch(err => console.error('Failed to fetch system config', err));
   }, []);
 
   const loadHistory = async (id: number) => {
@@ -123,7 +429,9 @@ export const VoicyChatV2: React.FC = () => {
   //  Determine Journey
   const isAcademyJourney = pathname?.includes('/academy');
   const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
-  const isAgencyJourney = !isStudioJourney && !isAcademyJourney;
+  const isPortfolioJourney = pathname?.includes('/portfolio') || (typeof window !== 'undefined' && window.location.hostname !== 'www.voices.be' && window.location.hostname !== 'localhost');
+  const isArtistPage = pathname?.startsWith('/artist/') || pathname?.startsWith('/voice/');
+  const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
 
   //  Get current language
   const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';
@@ -132,11 +440,15 @@ export const VoicyChatV2: React.FC = () => {
   useEffect(() => {
     const handleSuggestion = (e: any) => {
       const { title, content, type, actions, tab } = e.detail || {};
+      
+      //  CHRIS-PROTOCOL: Geen Voicy op Artist pagina's
+      if (window.location.pathname.startsWith('/artist/') || window.location.pathname.startsWith('/voice/')) return;
+
       setIsOpen(true);
       if (tab) setActiveTab(tab);
       else setActiveTab('chat');
       
-      playClick('deep');
+      playSonicClick('deep');
       
       setMessages(prev => [...prev, {
         id: `suggestion-${Date.now()}`,
@@ -151,7 +463,7 @@ export const VoicyChatV2: React.FC = () => {
 
     window.addEventListener('voicy:suggestion', handleSuggestion);
     return () => window.removeEventListener('voicy:suggestion', handleSuggestion);
-  }, [playClick]);
+  }, [playSonicClick]);
 
   //  UCI Integration: Fetch Customer 360 data when authenticated
   useEffect(() => {
@@ -168,7 +480,9 @@ export const VoicyChatV2: React.FC = () => {
               setMessages(prev => [...prev, {
                 id: 'proactive-burning',
                 role: 'assistant',
-                content: `Welkom terug, ${data.firstName}!  Ik zie dat je een trouwe klant bent. Kan ik je helpen met een nieuwe boeking voor ${data.dna.topJourneys[0] || 'je project'}?`,
+                content: isPortfolioJourney 
+                  ? `Welkom terug, ${data.firstName}! Kan ik je helpen met een nieuwe boeking of heb je een vraag over mijn tarieven?`
+                  : `Welkom terug, ${data.firstName}! Ik zie dat je een trouwe klant bent. Kan ik je helpen met een nieuwe boeking voor ${data.dna.topJourneys[0] || 'je project'}?`,
                 timestamp: new Date().toISOString()
               }]);
             }
@@ -179,7 +493,7 @@ export const VoicyChatV2: React.FC = () => {
       }
     };
     fetchUCI();
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, isPortfolioJourney]);
 
   //  Real-time SSE Integration
   useEffect(() => {
@@ -213,7 +527,7 @@ export const VoicyChatV2: React.FC = () => {
             if (newMsgs.length === 0) return prev;
             
             //  Sonic feedback alleen bij echt nieuwe berichten
-            playClick('deep');
+            playSonicClick('deep');
             
             return [...prev, ...newMsgs.map((m: any) => ({
               id: m.id.toString(),
@@ -242,7 +556,7 @@ export const VoicyChatV2: React.FC = () => {
         eventSource = null;
       }
     };
-  }, [isOpen, conversationId, playClick]); //  Removed messages from dependency array to prevent constant reconnects, logic uses functional updates
+  }, [isOpen, conversationId, playSonicClick]); //  Removed messages from dependency array to prevent constant reconnects, logic uses functional updates
 
   useEffect(() => {
     if (!isInitialLoading && messages.length === 0) {
@@ -250,12 +564,14 @@ export const VoicyChatV2: React.FC = () => {
         {
           id: 'welcome',
           role: 'assistant',
-          content: 'Hallo!  Ik ben Voicy, je AI-assistent. Hoe kan ik je vandaag helpen?',
+          content: isPortfolioJourney 
+            ? 'Hallo! Ik ben de assistent van deze stemacteur. Hoe kan ik je helpen met je project of een prijsberekening?'
+            : 'Hallo! Ik ben Voicy, je AI-assistent. Hoe kan ik je vandaag helpen?',
           timestamp: new Date().toISOString()
         }
       ]);
     }
-  }, [messages.length, isInitialLoading]);
+  }, [messages.length, isInitialLoading, isPortfolioJourney]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -290,7 +606,7 @@ export const VoicyChatV2: React.FC = () => {
   }, [isHoveringVoicy, isOpen]);
 
   const toggleChat = () => {
-    playClick(isOpen ? 'light' : 'deep');
+    playSonicClick(isOpen ? 'light' : 'deep');
     setIsOpen(!isOpen);
   };
 
@@ -309,7 +625,7 @@ export const VoicyChatV2: React.FC = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
-    playClick('light');
+    playSonicClick('light');
 
     //  CORE MESSAGE HANDLER
     // Slaat berichten direct op in Supabase en triggeert AI-logica
@@ -344,13 +660,15 @@ export const VoicyChatV2: React.FC = () => {
           message: userMessage.content,
           language: language,
           mode: chatMode,
+          persona: persona,
           previewLogic: previewLogic, //  Stuur preview code mee naar de API
           context: {
-            journey: isAcademyJourney ? 'academy' : isStudioJourney ? 'studio' : 'agency',
+            journey: isAcademyJourney ? 'academy' : isStudioJourney ? 'studio' : isPortfolioJourney ? 'portfolio' : 'agency',
             briefing: state.briefing,
             isAuthenticated,
             user: user?.email,
-            customer360: customer360
+            customer360: customer360,
+            generalSettings: generalSettings
           }
         })
       });
@@ -393,17 +711,17 @@ export const VoicyChatV2: React.FC = () => {
       }
 
       setMessages(prev => [...prev, aiResponse]);
-      playClick('deep');
+      playSonicClick('deep');
     } catch (error: any) {
       console.error("Chat API error:", error);
       
       //  CHRIS-PROTOCOL: Extract details if available
-      let errorMessage = "Oeps, er ging iets mis bij het verwerken van je bericht. Probeer het later nog eens!";
+      let errorMessage = t('chat.error.default', "Oeps, er ging iets mis bij het verwerken van je bericht. Probeer het later nog eens!");
       
       if (error.name === 'AbortError') {
-        errorMessage = "Voicy doet er iets langer over dan normaal. Ik probeer het nog eens, of stuur ons een mailtje!";
+        errorMessage = t('chat.error.slow_response', "Voicy doet er iets langer over dan normaal. Ik probeer het nog eens, of stuur ons een mailtje!");
       } else if (error.message?.includes('Network response was not ok') || error.message?.includes('Server error')) {
-        errorMessage = "Ik heb even moeite om verbinding te maken met het brein. Probeer je het nog een keer?";
+        errorMessage = t('chat.error.connection', "Ik heb even moeite om verbinding te maken met het brein. Probeer je het nog een keer?");
       }
 
       const errorResponse = {
@@ -423,7 +741,7 @@ export const VoicyChatV2: React.FC = () => {
     if (!mailForm.email || !mailForm.message) return;
 
     setIsSendingMail(true);
-    playClick('light');
+    playSonicClick('light');
 
     try {
       const response = await fetch('/api/mailbox/contact', {
@@ -442,7 +760,7 @@ export const VoicyChatV2: React.FC = () => {
 
       if (response.ok) {
         setMailSent(true);
-        playClick('success');
+        playSonicClick('success');
         setMailForm({ email: '', message: '' });
       } else {
         throw new Error('Failed to send mail');
@@ -451,6 +769,31 @@ export const VoicyChatV2: React.FC = () => {
       console.error("Mail submission error:", error);
     } finally {
       setIsSendingMail(false);
+    }
+  };
+
+  const handleCallbackRequest = async (phoneNumber: string) => {
+    setIsCalling(true);
+    setCallError(null);
+    try {
+      const response = await fetch('/api/telephony/callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setCallRequested(true);
+        playSonicClick('pro');
+      } else {
+        setCallError(data.message || 'Er ging iets mis.');
+        playSonicClick('error');
+      }
+    } catch (err) {
+      setCallError('Netwerkfout bij het opzetten van de verbinding.');
+      playSonicClick('error');
+    } finally {
+      setIsCalling(false);
     }
   };
 
@@ -495,9 +838,14 @@ export const VoicyChatV2: React.FC = () => {
     return chips.filter(chip => !clickedChips.includes(chip.label));
   };
 
+  if (isArtistPage) return null;
+
   return (
     <ContainerInstrument 
-      className="fixed bottom-8 right-8 z-[100] touch-manipulation"
+      className={cn(
+        "fixed bottom-8 right-8 z-[150] touch-manipulation",
+        isOpen && "z-[250]"
+      )}
       onMouseEnter={() => setIsHoveringVoicy(true)}
       onMouseLeave={() => setIsHoveringVoicy(false)}
     >
@@ -553,47 +901,55 @@ export const VoicyChatV2: React.FC = () => {
       </ButtonInstrument>
 
       {/* Chat Window */}
-      <ContainerInstrument plain className={`absolute bottom-20 right-0 bg-white rounded-[32px] shadow-aura flex flex-col overflow-hidden transition-all duration-500 origin-bottom-right ${
-        isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'
-      } ${
+      <ContainerInstrument plain className={cn(
+        "absolute bottom-20 right-0 bg-white rounded-[32px] shadow-aura flex flex-col overflow-hidden transition-all duration-500 origin-bottom-right",
+        isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none',
         isFullMode 
           ? 'fixed inset-8 w-auto h-auto right-8 bottom-8 z-[101]' 
-          : 'w-[400px] h-[600px]'
-      }`}>
+          : 'w-[400px] h-[600px]',
+        isJohfrah && "border border-primary/20"
+      )}>
         {/* Header */}
-        <ContainerInstrument plain className="p-6 bg-va-black text-white flex justify-between items-center relative overflow-hidden">
+        <ContainerInstrument plain className={cn(
+          "p-4 bg-va-black text-white flex justify-between items-center relative overflow-hidden",
+          isJohfrah && "bg-gradient-to-r from-va-black to-primary/20"
+        )}>
           <ContainerInstrument plain className="relative z-10">
-            <HeadingInstrument level={3} className="text-lg font-light tracking-tighter">
-              {activeTab === 'chat' && <VoiceglotText translationKey="chat.title" defaultText="Voicy" />}
+            <HeadingInstrument level={3} className="text-base font-light tracking-tighter">
+              {activeTab === 'chat' && (
+                isJohfrah 
+                  ? <VoiceglotText translationKey="chat.title.johfrah" defaultText="Johfrah Lefebvre" />
+                  : <VoiceglotText translationKey="chat.title" defaultText="Voicy" />
+              )}
               {activeTab === 'mail' && <VoiceglotText translationKey="chat.mail.title" defaultText="Mail ons" />}
               {activeTab === 'phone' && <VoiceglotText translationKey="chat.phone.title" defaultText="Bel ons" />}
-              {activeTab === 'faq' && <VoiceglotText translationKey="chat.faq.title" defaultText="Veelgestelde vragen" />}
-              {activeTab === 'admin' && <VoiceglotText translationKey="chat.admin.title" defaultText="Admin Control Panel" />}
+              {activeTab === 'faq' && <VoiceglotText translationKey="chat.faq.title" defaultText="FAQ" />}
+              {activeTab === 'admin' && <VoiceglotText translationKey="chat.admin.title" defaultText="Admin" />}
             </HeadingInstrument>
           </ContainerInstrument>
           
-          <ContainerInstrument plain className="flex items-center gap-2 relative z-10">
+          <ContainerInstrument plain className="flex items-center gap-1 relative z-10">
             <button 
               onClick={() => setIsFullMode(!isFullMode)}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/60 hover:text-white bg-transparent outline-none border-none cursor-pointer"
-              title={isFullMode ? "Verkleinen" : "Vergroten"}
+              className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-white/60 hover:text-white bg-transparent outline-none border-none cursor-pointer"
+              title={isFullMode ? t('common.minimize', "Verkleinen") : t('common.maximize', "Vergroten")}
             >
-              {isFullMode ? <Minimize2 strokeWidth={1.5} size={18} className="opacity-40" /> : <Maximize strokeWidth={1.5} size={18} className="opacity-40" />}
+              {isFullMode ? <Minimize2 strokeWidth={1.5} size={16} className="opacity-40" /> : <Maximize strokeWidth={1.5} size={16} className="opacity-40" />}
             </button>
             <button 
               onClick={() => setIsOpen(false)}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/60 hover:text-white bg-transparent outline-none border-none cursor-pointer"
-              title="Sluiten"
+              className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-white/60 hover:text-white bg-transparent outline-none border-none cursor-pointer"
+              title={t('common.close', "Sluiten")}
             >
-              <X strokeWidth={1.5} size={18} className="opacity-40" />
+              <X strokeWidth={1.5} size={16} className="opacity-40" />
             </button>
           </ContainerInstrument>
 
-          <ContainerInstrument plain className="absolute top-0 right-0 w-32 h-32 bg-va-black/20 rounded-full blur-3xl -mr-16 -mt-16" />
+          <ContainerInstrument plain className="absolute top-0 right-0 w-24 h-24 bg-va-black/20 rounded-full blur-2xl -mr-12 -mt-12" />
         </ContainerInstrument>
 
         {/* Tabs */}
-        <ContainerInstrument plain className="flex border-b border-black/5 p-2 gap-1 bg-va-off-white/30">
+        <ContainerInstrument plain className="flex border-b border-black/5 p-1.5 gap-1 bg-va-off-white/30">
           {[
             { id: 'chat', icon: MessageCircle, label: 'Chat', translationKey: 'chat.tabs.chat' },
             { id: 'mail', icon: Mail, label: 'Mail', translationKey: 'chat.tabs.mail' },
@@ -606,15 +962,15 @@ export const VoicyChatV2: React.FC = () => {
               <ButtonInstrument
                 key={tab.id}
                 onClick={() => {
-                  playClick('light');
+                  playSonicClick('light');
                   setActiveTab(tab.id as any);
                 }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all ${
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg transition-all ${
                   activeTab === tab.id ? 'bg-va-black text-white shadow-sm ring-1 ring-black/5' : 'bg-va-off-white text-va-black/30 hover:bg-black/5'
                 }`}
               >
-                <Icon size={14} strokeWidth={1.5} className={activeTab === tab.id ? 'text-white' : 'text-va-black/20'} />
-                <TextInstrument as="span" className="text-[15px] font-light tracking-widest"><VoiceglotText  translationKey={tab.translationKey} defaultText={tab.label} /></TextInstrument>
+                <Icon size={12} strokeWidth={1.5} className={activeTab === tab.id ? 'text-white' : 'text-va-black/20'} />
+                <TextInstrument as="span" className="text-[13px] font-light tracking-widest"><VoiceglotText  translationKey={tab.translationKey} defaultText={tab.label} /></TextInstrument>
               </ButtonInstrument>
             );
           })}
@@ -622,21 +978,52 @@ export const VoicyChatV2: React.FC = () => {
 
         {/* Mode Selector (Ask vs Agent) */}
         {activeTab === 'chat' && (
-          <ContainerInstrument plain className="px-6 py-3 bg-va-off-white/50 border-b border-black/5 flex justify-center">
-            <ContainerInstrument plain className="flex bg-white p-1 rounded-full border border-black/5 shadow-sm">
-              <ButtonInstrument 
-                onClick={() => { setChatMode('ask'); playClick('light'); }}
-                className={`px-6 py-1.5 rounded-full text-[15px] font-light tracking-widest transition-all ${chatMode === 'ask' ? 'bg-va-black text-white shadow-md' : 'bg-va-off-white text-va-black/30 hover:text-va-black'}`}
-              >
-                <VoiceglotText  translationKey="chat.mode.ask" defaultText="Ask" />
-              </ButtonInstrument>
-              <ButtonInstrument 
-                onClick={() => { setChatMode('agent'); playClick('pro'); }}
-                className={`px-6 py-1.5 rounded-full text-[15px] font-light tracking-widest transition-all flex items-center gap-2 ${chatMode === 'agent' ? 'bg-va-black text-white shadow-md' : 'bg-va-off-white text-va-black/30 hover:text-va-black'}`}
-              >
-                {chatMode === 'agent' && <Zap size={10} className="text-primary animate-pulse" />}
-                <VoiceglotText  translationKey="chat.mode.agent" defaultText="Agent" />
-              </ButtonInstrument>
+          <ContainerInstrument plain className="px-4 py-2 bg-va-off-white/50 border-b border-black/5 flex flex-col gap-2">
+            <ContainerInstrument plain className="flex justify-center">
+              <ContainerInstrument plain className="flex bg-white p-0.5 rounded-full border border-black/5 shadow-sm">
+                <ButtonInstrument 
+                  onClick={() => { setChatMode('ask'); playSonicClick('light'); }}
+                  className={`px-4 py-1 rounded-full text-[13px] font-light tracking-widest transition-all ${chatMode === 'ask' ? 'bg-va-black text-white shadow-md' : 'bg-va-off-white text-va-black/30 hover:text-va-black'}`}
+                >
+                  <VoiceglotText  translationKey="chat.mode.ask" defaultText="Ask" />
+                </ButtonInstrument>
+                <ButtonInstrument 
+                  onClick={() => { setChatMode('agent'); playSonicClick('pro'); }}
+                  className={`px-4 py-1 rounded-full text-[13px] font-light tracking-widest transition-all flex items-center gap-1.5 ${chatMode === 'agent' ? 'bg-va-black text-white shadow-md' : 'bg-va-off-white text-va-black/30 hover:text-va-black'}`}
+                >
+                  {chatMode === 'agent' && <Zap size={8} className="text-primary animate-pulse" />}
+                  <VoiceglotText  translationKey="chat.mode.agent" defaultText="Assistent" />
+                </ButtonInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+
+            <ContainerInstrument plain className="flex justify-center">
+              <ContainerInstrument plain className="flex bg-white p-0.5 rounded-full border border-black/5 shadow-sm">
+                <ButtonInstrument 
+                  onClick={() => { 
+                    setPersona('voicy'); 
+                    playSonicClick('light');
+                    localStorage.setItem('voices_persona_preference', 'voicy');
+                    window.dispatchEvent(new CustomEvent('voices:persona_change', { detail: 'voicy' }));
+                  }}
+                  className={`px-4 py-1 rounded-full text-[13px] font-light tracking-widest transition-all flex items-center gap-1.5 ${persona === 'voicy' ? 'bg-va-black text-white shadow-md' : 'bg-va-off-white text-va-black/30 hover:text-va-black'}`}
+                >
+                  <MessageCircle size={10} className={persona === 'voicy' ? 'text-primary' : 'text-va-black/20'} />
+                  Voicy
+                </ButtonInstrument>
+                <ButtonInstrument 
+                  onClick={() => { 
+                    setPersona('johfrah'); 
+                    playSonicClick('pro');
+                    localStorage.setItem('voices_persona_preference', 'johfrah');
+                    window.dispatchEvent(new CustomEvent('voices:persona_change', { detail: 'johfrah' }));
+                  }}
+                  className={`px-4 py-1 rounded-full text-[13px] font-light tracking-widest transition-all flex items-center gap-1.5 ${persona === 'johfrah' ? 'bg-va-black text-white shadow-md' : 'bg-va-off-white text-va-black/30 hover:text-va-black'}`}
+                >
+                  <User size={10} className={persona === 'johfrah' ? 'text-primary' : 'text-va-black/20'} />
+                  Johfrah
+                </ButtonInstrument>
+              </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         )}
@@ -649,7 +1036,9 @@ export const VoicyChatV2: React.FC = () => {
                 <ContainerInstrument plain ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 custom-scrollbar">
                   {isInitialLoading ? (
                     <ContainerInstrument plain className="h-full flex items-center justify-center">
-                      <TextInstrument className="text-[13px] tracking-widest opacity-40 animate-pulse">GESCHIEDENIS LADEN...</TextInstrument>
+                      <TextInstrument className="text-[13px] tracking-widest opacity-40 animate-pulse">
+                        <VoiceglotText translationKey="chat.loading_history" defaultText="GESCHIEDENIS LADEN..." />
+                      </TextInstrument>
                     </ContainerInstrument>
                   ) : (
                     <>
@@ -689,6 +1078,19 @@ export const VoicyChatV2: React.FC = () => {
                                 <ButtonInstrument
                                   key={i}
                                   onClick={() => {
+                                    if (action.action === 'johfrah_takeover') {
+                                      setPersona('johfrah');
+                                      playSonicClick('pro');
+                                      localStorage.setItem('voices_persona_preference', 'johfrah');
+                                      window.dispatchEvent(new CustomEvent('voices:persona_change', { detail: 'johfrah' }));
+                                      setMessages(prev => [...prev, {
+                                        id: Date.now().toString(),
+                                        role: 'assistant',
+                                        content: "Ik heb Johfrah een seintje gegeven. Hij neemt de chat zo snel mogelijk van me over!",
+                                        timestamp: new Date().toISOString()
+                                      }]);
+                                      return;
+                                    }
                                     if (action.action === 'toggle_edit_mode') {
                                       toggleEditMode();
                                       setMessages(prev => [...prev, {
@@ -891,7 +1293,7 @@ export const VoicyChatV2: React.FC = () => {
                       href="/checkout"
                       className="w-full py-4 bg-va-black text-white rounded-2xl text-[15px] font-light tracking-widest hover:opacity-80 transition-all flex items-center justify-center gap-2 shadow-lg"
                     >
-                      Direct afrekenen <ChevronRight strokeWidth={1.5} size={14} />
+                      <VoiceglotText translationKey="chat.checkout.direct" defaultText="Direct afrekenen" /> <ChevronRight strokeWidth={1.5} size={14} />
                     </ButtonInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -900,88 +1302,96 @@ export const VoicyChatV2: React.FC = () => {
           )}
 
           {activeTab === 'mail' && (
-            <ContainerInstrument plain className="flex-1 p-4 md:p-6 overflow-y-auto custom-scrollbar">
+            <ContainerInstrument plain className="flex-1 p-4 overflow-y-auto custom-scrollbar">
               <AnimatePresence  mode="wait">
                 {mailSent ? (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }} 
                     animate={{ opacity: 1, scale: 1 }} 
-                    className="h-full flex flex-col items-center justify-center text-center space-y-4"
+                    className="h-full flex flex-col items-center justify-center text-center space-y-3"
                   >
-                    <ContainerInstrument plain className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                      <Check strokeWidth={1.5} size={32} />
+                    <ContainerInstrument plain className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+                      <Check strokeWidth={1.5} size={24} />
                     </ContainerInstrument>
-                    <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
+                    <HeadingInstrument level={4} className="text-lg font-light tracking-tighter">
                       <VoiceglotText  translationKey="chat.mail.sent.title" defaultText="Bericht verzonden!" />
                     </HeadingInstrument>
-                    <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                      <VoiceglotText  translationKey="chat.mail.sent.text" defaultText="Bedankt! We hebben je bericht ontvangen en reageren zo snel mogelijk." />
+                    <TextInstrument className="text-[14px] text-va-black/40 font-light">
+                      <VoiceglotText  translationKey="chat.mail.sent.text" defaultText="Bedankt! We reageren zo snel mogelijk." />
                     </TextInstrument>
                     <ButtonInstrument 
                       onClick={() => setMailSent(false)}
-                      className="va-btn-pro px-8 py-3 text-[15px]"
+                      className="va-btn-pro px-6 py-2 text-[14px]"
                     >
-                      <VoiceglotText  translationKey="chat.mail.sent.cta" defaultText="Nog een bericht sturen" />
+                      <VoiceglotText  translationKey="chat.mail.sent.cta" defaultText="Nog een bericht" />
                     </ButtonInstrument>
                   </motion.div>
                 ) : (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }} 
                     animate={{ opacity: 1, y: 0 }} 
-                    className="space-y-6"
+                    className="space-y-4"
                   >
-                    <ContainerInstrument plain className="flex flex-col items-center text-center space-y-2">
-                      <ContainerInstrument plain className="w-12 h-12 rounded-full bg-va-black/5 flex items-center justify-center text-va-black">
-                        <Mail strokeWidth={1.5} size={24} />
+                    <ContainerInstrument plain className="flex flex-col items-center text-center space-y-1">
+                      <ContainerInstrument plain className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-600 shadow-lg mb-2">
+                        <Mail strokeWidth={1.5} size={24} className="animate-bounce" />
                       </ContainerInstrument>
-                      <HeadingInstrument level={4} className="text-lg font-light tracking-tighter">
+                      <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
                         <VoiceglotText  translationKey="chat.mail.title" defaultText="Stuur ons een bericht" />
                       </HeadingInstrument>
-                      <TextInstrument className="text-[15px] text-va-black/40 font-light">
+                      <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
                         <VoiceglotText  translationKey="chat.mail.subtitle" defaultText="We reageren meestal binnen het uur." />
                       </TextInstrument>
                     </ContainerInstrument>
 
-                    <FormInstrument onSubmit={handleMailSubmit} className="space-y-4">
-                      <ContainerInstrument plain className="space-y-1">
-                        <LabelInstrument><VoiceglotText  translationKey="chat.mail.label.email" defaultText="Jouw E-mail" /></LabelInstrument>
+                    <FormInstrument onSubmit={handleMailSubmit} className="space-y-3">
+                      <ContainerInstrument plain className="relative group">
+                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-va-black/40 group-focus-within:text-primary transition-colors">
+                          <User size={16} strokeWidth={1.5} />
+                        </div>
                         <InputInstrument 
                           type="email" 
                           required
                           value={mailForm.email}
                           onChange={(e) => setMailForm(prev => ({ ...prev, email: e.target.value }))}
                           placeholder="naam@bedrijf.be"
-                          className="w-full bg-va-off-white border-none rounded-2xl py-3 px-6 text-[15px] font-light focus:ring-2 focus:ring-va-black/10 transition-all"
+                          className="w-full bg-va-off-white border-none rounded-xl py-3 pl-12 pr-5 text-[14px] font-light focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/60"
                         />
                       </ContainerInstrument>
-                      <ContainerInstrument plain className="space-y-1">
-                        <LabelInstrument><VoiceglotText  translationKey="chat.mail.label.message" defaultText="Jouw Bericht" /></LabelInstrument>
+                      <ContainerInstrument plain className="relative group">
+                        <div className="absolute left-5 top-5 text-va-black/40 group-focus-within:text-primary transition-colors">
+                          <MessageCircle size={16} strokeWidth={1.5} />
+                        </div>
                         <textarea 
                           required
                           value={mailForm.message}
                           onChange={(e) => setMailForm(prev => ({ ...prev, message: e.target.value }))}
                           placeholder="Hoe kunnen we je helpen?"
-                          className="w-full bg-va-off-white border-none rounded-[24px] py-4 px-6 text-[15px] font-light min-h-[120px] focus:ring-2 focus:ring-va-black/10 transition-all resize-none outline-none"
+                          className="w-full bg-va-off-white border-none rounded-xl py-3 pl-12 pr-5 text-[14px] font-light min-h-[100px] focus:ring-2 focus:ring-va-black/10 transition-all resize-none outline-none placeholder:text-va-black/60"
                         />
                       </ContainerInstrument>
                       <ButtonInstrument 
                         type="submit" 
                         disabled={isSendingMail}
-                        className="w-full py-4 bg-va-black text-white rounded-2xl text-[15px] font-medium tracking-widest hover:opacity-80 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
+                        className="w-full py-4 bg-va-black text-white rounded-xl text-[14px] font-medium tracking-widest hover:opacity-80 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
                       >
-                        {isSendingMail ? <VoiceglotText  translationKey="chat.mail.sending" defaultText="Verzenden..." /> : <VoiceglotText  translationKey="chat.mail.submit" defaultText="Bericht Versturen" />}
-                        {!isSendingMail && <Send strokeWidth={1.5} size={14} />}
+                        {isSendingMail ? <Loader2 className="animate-spin" size={16} /> : <Send strokeWidth={1.5} size={14} />}
+                        <TextInstrument className="font-black tracking-widest text-[14px] uppercase">BERICHT VERSTUREN</TextInstrument>
                       </ButtonInstrument>
                     </FormInstrument>
 
-              <ContainerInstrument plain className="pt-4 border-t border-black/5 text-center">
-                <TextInstrument className="text-[15px] font-light text-va-black/20 tracking-widest">
-                  <VoiceglotText  translationKey="chat.mail.direct" defaultText="Direct contact?" />
-                  <ButtonInstrument as="a" href="mailto:johfrah@voices.be" className="text-primary hover:underline ml-2">
-                    <VoiceglotText  translationKey="auto.voicychat.johfrah_voices_be.1bbc86" defaultText="johfrah@voices.be" />
-                  </ButtonInstrument>
-                </TextInstrument>
-              </ContainerInstrument>
+                    <div className="flex items-center gap-3 py-1">
+                      <div className="flex-1 h-px bg-black/5" />
+                      <TextInstrument className="text-[10px] text-va-black/20 tracking-widest uppercase">of</TextInstrument>
+                      <div className="flex-1 h-px bg-black/5" />
+                    </div>
+
+                    <ContainerInstrument plain className="text-center">
+                      <ButtonInstrument as="a" href="mailto:johfrah@voices.be" className="w-full py-3 bg-va-off-white border border-black/5 rounded-xl flex items-center justify-center gap-2 hover:bg-black/5 transition-all group">
+                        <Mail size={14} strokeWidth={1.5} className="text-va-black/40 group-hover:text-primary transition-colors" />
+                        <TextInstrument className="text-[14px] font-light tracking-widest">johfrah@voices.be</TextInstrument>
+                      </ButtonInstrument>
+                    </ContainerInstrument>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -989,19 +1399,132 @@ export const VoicyChatV2: React.FC = () => {
           )}
 
           {activeTab === 'phone' && (
-            <ContainerInstrument plain className="flex-1 p-8 flex flex-col items-center justify-center text-center space-y-6">
-              <ContainerInstrument plain className="w-16 h-16 rounded-full bg-va-black/5 flex items-center justify-center text-va-black">
-                <Phone strokeWidth={1.5} size={32} />
-              </ContainerInstrument>
-              <ContainerInstrument plain className="space-y-2">
-                <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
-                  <VoiceglotText  translationKey="chat.phone.title" defaultText="Bel de studio" />
-                </HeadingInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-light">
-                  <VoiceglotText  translationKey="chat.phone.subtitle" defaultText="Direct contact met onze regisseurs." />
-                </TextInstrument>
-              </ContainerInstrument>
-              <ButtonInstrument as="a" href="tel:+3227931991" className="va-btn-pro w-full">+32 (0)2 793 19 91</ButtonInstrument>
+            <ContainerInstrument plain className="flex-1 p-4 flex flex-col items-center justify-center text-center space-y-4">
+              {(() => {
+                const isOfficeOpenStatus = generalSettings?.opening_hours ? isOfficeOpen(generalSettings.opening_hours) : true;
+                const isTelephonyLive = telephonyConfig.isLive !== false;
+                const isActuallyOpen = isOfficeOpenStatus && isTelephonyLive;
+                
+                if (callRequested) {
+                  return (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.9 }} 
+                      animate={{ opacity: 1, scale: 1 }} 
+                      className="space-y-3"
+                    >
+                      <ContainerInstrument plain className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 mx-auto">
+                        <Check strokeWidth={1.5} size={24} />
+                      </ContainerInstrument>
+                      <HeadingInstrument level={4} className="text-lg font-light tracking-tighter">
+                        <VoiceglotText  translationKey="chat.phone.requested.title" defaultText="Verbinding wordt opgezet!" />
+                      </HeadingInstrument>
+                      <TextInstrument className="text-[14px] text-va-black/40 font-light">
+                        <VoiceglotText  translationKey="chat.phone.requested.text" defaultText="Je telefoon gaat over over enkele seconden." />
+                      </TextInstrument>
+                      <ButtonInstrument 
+                        onClick={() => setCallRequested(false)}
+                        className="va-btn-pro px-6 py-2 text-[14px]"
+                      >
+                        <VoiceglotText  translationKey="chat.phone.requested.cta" defaultText="Terug" />
+                      </ButtonInstrument>
+                    </motion.div>
+                  );
+                }
+
+                return (
+                  <>
+                    <ContainerInstrument plain className={cn("w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-lg", isActuallyOpen ? "bg-green-500/10 text-green-600" : "bg-amber-500/10 text-amber-600")}>
+                      <Phone strokeWidth={1.5} size={24} className={cn(isActuallyOpen && "animate-bounce")} />
+                    </ContainerInstrument>
+                    <ContainerInstrument plain className="space-y-1">
+                      <HeadingInstrument level={4} className="text-lg font-light tracking-tighter">
+                        {isActuallyOpen ? (
+                          <VoiceglotText translationKey="chat.phone.title.open" defaultText="Directe Studio Lijn" />
+                        ) : (
+                          <VoiceglotText translationKey="chat.phone.title.closed" defaultText="Studio gesloten" />
+                        )}
+                      </HeadingInstrument>
+                      <TextInstrument className="text-[14px] text-va-black/40 font-light leading-relaxed">
+                        {isActuallyOpen ? (
+                          <VoiceglotText translationKey="chat.phone.subtitle.open" defaultText="We bellen je binnen 10 seconden." />
+                        ) : (
+                          <>
+                            {!isTelephonyLive ? (
+                              <VoiceglotText translationKey="chat.phone.subtitle.manual_offline" defaultText="Johfrah is momenteel in een opname en niet direct bereikbaar." />
+                            ) : (
+                              <VoiceglotText translationKey="chat.phone.subtitle.closed" defaultText="Momenteel niet bereikbaar." />
+                            )}
+                            {isTelephonyLive && (() => {
+                              const next = generalSettings?.phone_hours ? getNextOpeningTime(generalSettings.phone_hours) : null;
+                              return next ? (
+                                <span className="block mt-1 font-medium text-primary text-[12px]">
+                                  Terug vanaf {next.day} {next.time}
+                                </span>
+                              ) : null;
+                            })()}
+                          </>
+                        )}
+                      </TextInstrument>
+                    </ContainerInstrument>
+
+                    {isActuallyOpen && (
+                        <ContainerInstrument plain className="w-full space-y-3">
+                        <ContainerInstrument plain className="relative group">
+                          <div className="absolute left-5 top-1/2 -translate-y-1/2 text-va-black/40 group-focus-within:text-primary transition-colors">
+                            <Phone size={16} strokeWidth={1.5} />
+                          </div>
+                          <InputInstrument 
+                            type="tel"
+                            placeholder="0475 00 00 00"
+                            className="w-full bg-va-off-white border-none rounded-xl py-3 pl-12 pr-5 text-[14px] font-light focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/60"
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                          />
+                          {callError && (
+                            <TextInstrument className="text-red-500 text-[11px] mt-1 text-center">
+                              {callError}
+                            </TextInstrument>
+                          )}
+                        </ContainerInstrument>
+                        
+                        <ButtonInstrument 
+                          onClick={() => handleCallbackRequest(inputValue)}
+                          disabled={isCalling || !inputValue}
+                          className={cn(
+                            "va-btn-pro w-full flex flex-col items-center justify-center py-3 gap-0.5 h-auto",
+                            isCalling && "opacity-70"
+                          )}
+                        >
+                          <div className="flex items-center gap-2">
+                            {isCalling ? (
+                              <Loader2 className="animate-spin" size={16} />
+                            ) : (
+                              <Zap size={14} className="text-primary animate-pulse" />
+                            )}
+                            <TextInstrument className="font-black tracking-widest text-[14px] uppercase">BEL MIJ NU</TextInstrument>
+                          </div>
+                          <TextInstrument className="text-[9px] opacity-60 font-light tracking-widest uppercase">Je telefoon gaat direct over</TextInstrument>
+                        </ButtonInstrument>
+
+                        <div className="flex items-center gap-3 py-1">
+                          <div className="flex-1 h-px bg-black/5" />
+                          <TextInstrument className="text-[10px] text-va-black/20 tracking-widest uppercase">of</TextInstrument>
+                          <div className="flex-1 h-px bg-black/5" />
+                        </div>
+
+                        <ButtonInstrument 
+                          as="a" 
+                          href="tel:+3227931991" 
+                          className="w-full py-3 bg-va-off-white border border-black/5 rounded-xl flex items-center justify-center gap-2 hover:bg-black/5 transition-all group"
+                        >
+                          <Phone size={14} strokeWidth={1.5} className="text-va-black/40 group-hover:text-primary transition-colors" />
+                          <TextInstrument className="text-[14px] font-light tracking-widest">+32 (0)2 793 19 91</TextInstrument>
+                        </ButtonInstrument>
+                      </ContainerInstrument>
+                    )}
+                  </>
+                );
+              })()}
             </ContainerInstrument>
           )}
 
@@ -1037,7 +1560,7 @@ export const VoicyChatV2: React.FC = () => {
               <ContainerInstrument plain className="space-y-4">
                 <ButtonInstrument
                   onClick={() => {
-                    playClick('pro');
+                    playSonicClick('pro');
                     toggleEditMode();
                   }}
                   className={`w-full p-6 rounded-[24px] flex items-center justify-between transition-all ${

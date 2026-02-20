@@ -1,5 +1,5 @@
 import { db } from '@db';
-import { orders, users } from '@db/schema';
+import { orders, users, notifications } from '@db/schema';
 import { desc, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
@@ -65,6 +65,33 @@ export async function PATCH(request: NextRequest) {
       .set(updateData)
       .where(eq(orders.id, id))
       .returning();
+
+    // 🔔 NOTIFICATION ENGINE (2026)
+    // Wanneer de status verandert, maken we een notificatie aan voor de klant.
+    if (status && updatedOrder.userId) {
+      try {
+        const statusLabels: Record<string, string> = {
+          'completed': 'Bestelling voltooid',
+          'processing': 'Bestelling in behandeling',
+          'cancelled': 'Bestelling geannuleerd',
+          'shipped': 'Bestelling verzonden',
+          'on-hold': 'Bestelling in de wacht'
+        };
+
+        const title = statusLabels[status] || 'Status update';
+        const message = `De status van je bestelling #${updatedOrder.displayOrderId || updatedOrder.id} is gewijzigd naar ${status}.`;
+
+        await db.insert(notifications).values({
+          userId: updatedOrder.userId,
+          type: 'order_update',
+          title,
+          message,
+          metadata: { orderId: updatedOrder.id, status }
+        });
+      } catch (notifyError) {
+        console.error('[Admin Orders Notification Error]:', notifyError);
+      }
+    }
 
     return NextResponse.json(updatedOrder);
   } catch (error) {

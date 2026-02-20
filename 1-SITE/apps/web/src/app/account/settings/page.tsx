@@ -85,6 +85,30 @@ export default function SettingsPage() {
               <ArrowLeft strokeWidth={1.5} size={14} className="rotate-180" />
             </ButtonInstrument>
           </div>
+
+          {/*  AGENCY WORKSPACE (2026) */}
+          <div className="bg-white p-8 rounded-[40px] shadow-aura border border-black/[0.02] space-y-6">
+            <div className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center text-va-black/40">
+              <Shield strokeWidth={1.5} size={24} />
+            </div>
+            <div>
+              <HeadingInstrument level={3} className="text-xl tracking-tight mb-2">Agency Workspace</HeadingInstrument>
+              <TextInstrument className="text-va-black/40 text-[14px] leading-relaxed">
+                Nodig teamleden uit om samen te werken aan projecten en audities.
+              </TextInstrument>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-va-off-white rounded-xl border border-black/5">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-[10px] font-bold text-primary">JD</div>
+                  <TextInstrument className="text-[13px] font-medium">John Doe (Admin)</TextInstrument>
+                </div>
+              </div>
+              <ButtonInstrument className="w-full bg-va-black text-white py-3 rounded-xl text-[13px] font-bold tracking-tight hover:bg-primary transition-all">
+                Teamlid Uitnodigen
+              </ButtonInstrument>
+            </div>
+          </div>
         </div>
 
         {/*  Rechts: De Inhoud (8 kolommen) */}

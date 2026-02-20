@@ -6,15 +6,20 @@ import {
     ContainerInstrument,
     SectionInstrument,
 } from "@/components/ui/LayoutInstruments";
-import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useTranslation } from "@/contexts/TranslationContext";
+import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
 import { VoiceCard } from "@/components/ui/VoiceCard";
+import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from "next/dynamic";
+
+//  NUCLEAR LOADING MANDATE
+const ReviewsInstrument = dynamic(() => import("@/components/ui/ReviewsInstrument").then(mod => mod.ReviewsInstrument), { ssr: false });
 
 import ConfiguratorPageClient from "../../checkout/configurator/ConfiguratorPageClient";
 
@@ -29,6 +34,7 @@ export function VoiceDetailClient({
 }) {
   const { t } = useTranslation();
   const { selectActor, updateUsage, updateMedia, updateBriefing } = useCheckout();
+  const { updateJourney } = useMasterControl();
   const router = useRouter();
 
   // Sync with checkout context on mount and when actor changes
@@ -38,6 +44,8 @@ export function VoiceDetailClient({
     //  BOB-METHODE: URL-gebaseerde configuratie sync
     const syncFromUrl = async () => {
       // 1. Check voor Token (Deep Persistence)
+      if (typeof window === 'undefined') return;
+      
       const params = new URLSearchParams(window.location.search);
       const token = params.get('t');
       
@@ -63,22 +71,25 @@ export function VoiceDetailClient({
       if (initialJourney) {
         const journeyMap: Record<string, any> = {
           // Nederlands
-          'telefoon': 'telefonie',
-          'telefooncentrale': 'telefonie',
-          'video': 'unpaid',
+          'telefoon': 'telephony',
+          'telefooncentrale': 'telephony',
+          'telephony': 'telephony',
+          'video': 'video',
           'commercial': 'commercial',
           'reclame': 'commercial',
           // Engels (Voiceglot fallback)
-          'telephony': 'telefonie',
-          'phone': 'telefonie',
+          'telephony': 'telephony',
+          'phone': 'telephony',
           'ad': 'commercial',
           'advertisement': 'commercial'
         };
-        const usage = journeyMap[initialJourney.toLowerCase()];
-        if (usage) {
-          updateUsage(usage);
+        const mappedJourney = journeyMap[initialJourney.toLowerCase()] || initialJourney;
+        
+        if (mappedJourney) {
+          // BOB-METHODE: Update zowel de MasterControl (voor filters/UI) als de Checkout (voor prijs)
+          updateJourney(mappedJourney as any);
           
-          if (usage === 'commercial' && initialMedium) {
+          if (mappedJourney === 'commercial' && initialMedium) {
             const mediumMap: Record<string, string> = {
               // Nederlands
               'online': 'online',
@@ -103,7 +114,7 @@ export function VoiceDetailClient({
     syncFromUrl();
 
     return () => selectActor(null); // Cleanup on unmount
-  }, [actor, initialJourney, initialMedium, selectActor, updateUsage, updateMedia, updateBriefing]);
+  }, [actor, initialJourney, initialMedium, selectActor, updateUsage, updateMedia, updateBriefing, updateJourney]);
 
   return (
     <ContainerInstrument className="max-w-[1440px] mx-auto px-4 md:px-6 pt-32 pb-20 relative z-10">
@@ -223,13 +234,27 @@ export function VoiceDetailClient({
       />
       {/*  HET MAAKPROCES: Direct naar de 3-koloms configurator */}
       <div id="order-engine" className="mb-20">
+        {/*  BOB-METHODE: MasterControl integratie op stempagina */}
+        <div className="mb-12">
+          <VoicesMasterControl 
+            actors={[actor]} 
+            filters={{
+              languages: actor.languages?.map((l: any) => l.name) || [],
+              genders: [actor.gender],
+              styles: actor.styles || []
+            }} 
+          />
+        </div>
+
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
           {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
           <div className="order-1 lg:order-2 lg:col-span-9 w-full">
             <ConfiguratorPageClient 
               isEmbedded={true} 
-              hideMediaSelector={true} 
-              minimalMode={true} 
+              hideMediaSelector={false} 
+              minimalMode={false} 
+              hideVoiceCard={true}
+              hideUsageSelector={true}
             />
           </div>
 
@@ -253,11 +278,13 @@ export function VoiceDetailClient({
 
       {/*  REVIEWS */}
       {actor.reviews && actor.reviews.length > 0 && (
-        <ReviewsInstrument 
-          reviews={actor.reviews} 
-          title={`${t('voice.reviews.title_prefix', 'Ervaringen met')} ${actor.display_name}`}
-          subtitle={`${t('voice.reviews.subtitle_prefix', 'Lees waarom klanten kiezen voor het vakmanschap van')} ${actor.display_name}.`}
-        />
+        <Suspense fallback={null}>
+          <ReviewsInstrument 
+            reviews={actor.reviews} 
+            title={`${t('voice.reviews.title_prefix', 'Ervaringen met')} ${actor.display_name}`}
+            subtitle={`${t('voice.reviews.subtitle_prefix', 'Lees waarom klanten kiezen voor het vakmanschap van')} ${actor.display_name}.`}
+          />
+        </Suspense>
       )}
     </ContainerInstrument>
   );

@@ -3,7 +3,7 @@
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { cn } from '@/lib/utils';
 import { MarketManager } from '@config/market-manager';
-import { Check, Mail, MapPin, Clock, Sparkles, Wand2, Type, MessageSquare, Plus } from 'lucide-react';
+import { Check, Mail, MapPin, Clock, Sparkles, Wand2, Type, MessageSquare, Plus, ChevronUp, X } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { VoiceglotText } from '../ui/VoiceglotText';
 import { motion } from 'framer-motion';
@@ -138,7 +138,7 @@ const TELEPHONY_TEMPLATES: Record<string, any[]> = {
   ]
 };
 
-export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: string) => void }> = ({ setLocalBriefing }) => {
+export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: string) => void, onMinimize?: () => void }> = ({ setLocalBriefing, onMinimize }) => {
   const { state, updateBriefing, updateCustomer } = useCheckout();
   const [companyName, setCompanyName] = useState(state.customer.company || '');
   const [email, setEmail] = useState(state.customer.email || '');
@@ -173,7 +173,7 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
         setSelectedLang(nativeCode);
       }
     }
-  }, [state.selectedActor, availableLangs]);
+  }, [state.selectedActor, availableLangs, selectedLang]);
 
   // Sherlock: Vertaal openingsuren op basis van geselecteerde taal
   const translatedHours = useMemo(() => {
@@ -209,6 +209,10 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
   }, [selectedLang]);
 
   const handleApplyTemplate = (templateText: string, id: string) => {
+    // BOB-METHODE: Als de gebruiker een bouwsteen kiest, stoppen we de "Slimme Hulp" (Johfrai)
+    // om verwarring tussen de statische templates en de AI-suggesties te voorkomen.
+    if (onMinimize) onMinimize();
+
     const templates = TELEPHONY_TEMPLATES[selectedLang] || TELEPHONY_TEMPLATES['en'] || [];
     const template = templates.find(t => t.id === id);
     
@@ -253,40 +257,65 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
       <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none" />
       
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-va-black text-white rounded-[18px] flex items-center justify-center shadow-va-black/20 shadow-xl">
-            <Wand2 size={24} strokeWidth={1.5} className="text-primary animate-pulse" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-light tracking-tighter text-va-black leading-tight">
-              <VoiceglotText translationKey="checkout.telephony.suggestions.title" defaultText="Slimme Schrijfhulp" />
-            </h3>
-            <p className="text-[14px] font-light text-va-black/40 tracking-tight">
-              <VoiceglotText translationKey="checkout.telephony.suggestions.subtitle" defaultText="Kies een template en wij vullen de details voor je in." />
-            </p>
-          </div>
-        </div>
-
-        {/* Taalkeuze gebaseerd op stem */}
-        {availableLangs.length > 1 && (
-          <div className="flex flex-col gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-va-black/30 px-1">Taal van script</span>
-            <div className="flex items-center gap-1 bg-va-off-white p-1 rounded-xl border border-black/[0.03]">
-              {availableLangs.map(lang => (
-                <button
-                  key={lang}
-                  onClick={() => setSelectedLang(lang)}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all",
-                    selectedLang === lang ? "bg-white text-primary shadow-sm" : "text-va-black/30 hover:text-va-black/60"
-                  )}
-                >
-                  {lang}
-                </button>
-              ))}
+        <div className="flex items-center justify-between w-full md:w-auto gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-va-black text-white rounded-[18px] flex items-center justify-center shadow-xl shadow-va-black/20">
+              <Wand2 size={24} strokeWidth={1.5} className="text-primary animate-pulse" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-light tracking-tighter text-va-black leading-tight">
+                <VoiceglotText translationKey="checkout.telephony.suggestions.title" defaultText="Slimme Schrijfhulp" />
+              </h3>
+              <p className="text-[14px] font-light text-va-black/40 tracking-tight">
+                <VoiceglotText translationKey="checkout.telephony.suggestions.subtitle" defaultText="Kies een template en wij vullen de details voor je in." />
+              </p>
             </div>
           </div>
-        )}
+          
+          {/* Minimize Button for Mobile/Desktop */}
+          {onMinimize && (
+            <button 
+              onClick={onMinimize}
+              className="md:hidden w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-primary transition-colors"
+            >
+              <ChevronUp size={20} strokeWidth={2.5} />
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-4">
+          {/* Taalkeuze gebaseerd op stem */}
+          {availableLangs.length > 1 && (
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-va-black/30 px-1">Taal van script</span>
+              <div className="flex items-center gap-1 bg-va-off-white p-1 rounded-xl border border-black/[0.03]">
+                {availableLangs.map(lang => (
+                  <button
+                    key={lang}
+                    onClick={() => setSelectedLang(lang)}
+                    className={cn(
+                      "px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all",
+                      selectedLang === lang ? "bg-white text-primary shadow-sm" : "text-va-black/30 hover:text-va-black/60"
+                    )}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Desktop Minimize Button */}
+          {onMinimize && (
+            <button 
+              onClick={onMinimize}
+              className="hidden md:flex w-10 h-10 rounded-full bg-va-off-white items-center justify-center text-va-black/20 hover:text-primary transition-all hover:scale-110"
+              title="Minimaliseer"
+            >
+              <ChevronUp size={20} strokeWidth={2.5} />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">

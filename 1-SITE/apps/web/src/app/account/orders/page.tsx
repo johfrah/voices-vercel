@@ -6,7 +6,8 @@ import { SpatialOrderTrackerInstrument } from '@/components/ui/SpatialOrderTrack
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ExternalLink, FileText, Package, ShoppingBag } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, ExternalLink, FileText, Package, ShoppingBag, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -90,7 +91,7 @@ export default function OrdersPage() {
                       {order.status === 'completed' ? 'Voltooid' : 'In behandeling'}
                     </TextInstrument>
                     <HeadingInstrument level={3} className="text-3xl font-light tracking-tighter">
-                      {order.journey === 'agency' ? 'Voice-over Project' : 'Academy Workshop'}
+                      {order.journey === 'agency' ? 'Voice-over Project' : (order.journey === 'artist' ? 'Artist Support' : 'Academy Workshop')}
                       <TextInstrument className="text-[15px] font-light text-va-black/40 tracking-widest ml-4">
                         Order #{order.wpOrderId || order.id}
                       </TextInstrument>
@@ -106,6 +107,31 @@ export default function OrdersPage() {
                       <span className="text-[13px] font-bold tracking-widest uppercase"><VoiceglotText translationKey="account.orders.details" defaultText="Details" /></span>
                     </ButtonInstrument>
                   </ContainerInstrument>
+                </ContainerInstrument>
+
+                {/* Order Items Breakdown (CHRIS-PROTOCOL) */}
+                <ContainerInstrument className="mb-12 space-y-4">
+                  {order.orderItems?.map((item: any) => (
+                    <div key={item.id} className="flex justify-between items-center p-6 bg-va-off-white/50 rounded-[20px] border border-black/[0.03]">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center text-va-black/20">
+                          <Package size={18} strokeWidth={1.5} />
+                        </div>
+                        <div>
+                          <TextInstrument className="text-[16px] font-medium text-va-black">{item.name}</TextInstrument>
+                          {item.metaData?.usage && (
+                            <TextInstrument className="text-[12px] text-va-black/40 uppercase tracking-widest mt-0.5">
+                              {item.metaData.usage} • {Array.isArray(item.metaData.mediaTypes) ? item.metaData.mediaTypes.join(', ') : item.metaData.mediaTypes}
+                            </TextInstrument>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <TextInstrument className="text-[18px] font-light text-va-black">€ {parseFloat(item.price).toFixed(2)}</TextInstrument>
+                        <TextInstrument className="text-[10px] text-va-black/20 uppercase tracking-widest">Excl. BTW</TextInstrument>
+                      </div>
+                    </div>
+                  ))}
                 </ContainerInstrument>
 
                 <SpatialOrderTrackerInstrument 

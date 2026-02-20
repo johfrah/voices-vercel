@@ -6,12 +6,16 @@ import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, FileText, Mic, Pause, Play, Trash2, Upload } from 'lucide-react';
+import { Check, FileText, Mic, Pause, Play, Trash2, Upload, Sparkles, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { ButtonInstrument } from '../ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
 
-export const BriefingSelector: React.FC = () => {
+interface BriefingSelectorProps {
+  onScriptExtracted?: (script: string) => void;
+}
+
+export const BriefingSelector: React.FC<BriefingSelectorProps> = ({ onScriptExtracted }) => {
   const { t } = useTranslation();
   const { state, addBriefingFile, removeBriefingFile } = useCheckout();
   const { playClick } = useSonicDNA();
@@ -22,6 +26,9 @@ export const BriefingSelector: React.FC = () => {
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [visualizerData, setVisualizerData] = useState<number[]>(new Array(20).fill(2));
+  const [isExtracting, setIsExtracting] = useState<string | null>(null);
+  const [isTranscribing, setIsTranscribing] = useState<string | null>(null);
+  const [extractedPreview, setExtractedPreview] = useState<{ id: string, script: string, fileName: string } | null>(null);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -70,14 +77,19 @@ export const BriefingSelector: React.FC = () => {
       
       const chunks: BlobPart[] = [];
       recorder.ondataavailable = (e) => chunks.push(e.data);
-      recorder.onstop = () => {
+      recorder.onstop = async () => {
         const blob = new Blob(chunks, { type: 'audio/webm' });
         setAudioBlob(blob);
         const fakeUrl = URL.createObjectURL(blob);
+        
+        // BOB-METHODE: We maken een echt File object van de blob voor de Whisper API
+        const audioFile = new File([blob], `opname-${Date.now()}.webm`, { type: 'audio/webm' });
+        
         addBriefingFile({
-          name: `Audio Briefing ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+          name: `Audio opname ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
           type: 'audio',
-          url: fakeUrl
+          url: fakeUrl,
+          rawFile: audioFile
         });
       };
 
@@ -129,11 +141,90 @@ export const BriefingSelector: React.FC = () => {
       // In a real app, upload to Supabase Storage
       const fakeUrl = URL.createObjectURL(file);
       const type = file.type.startsWith('audio') ? 'audio' : file.type.startsWith('video') ? 'video' : 'text';
+      
+      const fileId = Math.random().toString(36).substring(7);
       addBriefingFile({
+        id: fileId,
         name: file.name,
         type: type as any,
-        url: fakeUrl
+        url: fakeUrl,
+        rawFile: file // Bewaar het rauwe bestand voor extractie
       });
+    }
+  };
+
+  const extractScript = async (file: any) => {
+    if (!file.rawFile || isExtracting) return;
+    
+    setIsExtracting(file.id);
+    playClick('pro');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file.rawFile);
+
+      const response = await fetch('/api/audio/extract-text', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.script) {
+        setExtractedPreview({
+          id: file.id,
+          script: data.script,
+          fileName: file.name
+        });
+        playClick('deep');
+      } else {
+        console.error('Extraction failed:', data.error);
+      }
+    } catch (err) {
+      console.error('Error extracting script:', err);
+    } finally {
+      setIsExtracting(null);
+    }
+  };
+
+  const transcribeAudio = async (file: any) => {
+    if (!file.rawFile || isTranscribing) return;
+    
+    setIsTranscribing(file.id);
+    playClick('pro');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file.rawFile);
+
+      const response = await fetch('/api/audio/transcribe', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.text) {
+        setExtractedPreview({
+          id: file.id,
+          script: data.text,
+          fileName: file.name
+        });
+        playClick('deep');
+      }
+    } catch (err) {
+      console.error('Transcription failed:', err);
+    } finally {
+      setIsTranscribing(null);
+    }
+  };
+
+  const handleConfirmExtraction = () => {
+    if (extractedPreview && onScriptExtracted) {
+      onScriptExtracted(extractedPreview.script);
+      setExtractedPreview(null);
+      setMode('none');
+      playClick('pro');
     }
   };
 
@@ -158,9 +249,9 @@ export const BriefingSelector: React.FC = () => {
             mode === 'record' ? "bg-primary/5 border-primary/20 text-primary" : "bg-white border-black/[0.03] hover:border-black/10 text-va-black/40"
           )}
         >
-          <Mic size={18} />
+            <Mic size={18} />
           <span className="text-[10px] font-bold uppercase tracking-widest">
-            <VoiceglotText translationKey="briefing.mode.record" defaultText="Opnemen" />
+            <VoiceglotText translationKey="briefing.mode.record" defaultText="Tekst opnemen" />
           </span>
         </button>
         <button 
@@ -172,7 +263,7 @@ export const BriefingSelector: React.FC = () => {
         >
           <Upload size={18} />
           <span className="text-[10px] font-bold uppercase tracking-widest">
-            <VoiceglotText translationKey="briefing.mode.upload" defaultText="Upload" />
+            <VoiceglotText translationKey="briefing.mode.upload" defaultText="Tekst uploaden" />
           </span>
         </button>
         <button 
@@ -184,13 +275,55 @@ export const BriefingSelector: React.FC = () => {
         >
           <FileText size={18} />
           <span className="text-[10px] font-bold uppercase tracking-widest">
-            <VoiceglotText translationKey="briefing.mode.text" defaultText="Extra Tekst" />
+            <VoiceglotText translationKey="briefing.mode.text" defaultText="Extra instructies" />
           </span>
         </button>
       </div>
 
       <AnimatePresence mode="wait">
-        {mode === 'record' && (
+        {extractedPreview ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="p-6 bg-white rounded-2xl border-2 border-primary/20 shadow-xl space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles size={16} className="text-primary" />
+                <span className="text-[13px] font-bold text-va-black">Preview: {extractedPreview.fileName}</span>
+              </div>
+              <button 
+                onClick={() => setExtractedPreview(null)}
+                className="text-va-black/20 hover:text-va-black transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            
+            <div className="max-h-48 overflow-y-auto p-4 bg-va-off-white rounded-xl border border-black/[0.03] text-[14px] font-light leading-relaxed whitespace-pre-wrap text-va-black/70 italic">
+              {extractedPreview.script}
+            </div>
+
+            <div className="flex gap-3">
+              <button 
+                onClick={handleConfirmExtraction}
+                className="flex-1 py-3 bg-primary text-white rounded-xl text-[12px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+              >
+                Script Invoegen
+              </button>
+              <button 
+                onClick={() => setExtractedPreview(null)}
+                className="px-6 py-3 bg-va-off-white text-va-black/40 rounded-xl text-[12px] font-bold uppercase tracking-widest hover:bg-va-black hover:text-white transition-all"
+              >
+                Annuleren
+              </button>
+            </div>
+            <p className="text-[10px] text-center text-va-black/20 font-medium uppercase tracking-widest">
+              Controleer de tekst voor je deze toevoegt aan je script
+            </p>
+          </motion.div>
+        ) : mode === 'record' && (
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -223,7 +356,7 @@ export const BriefingSelector: React.FC = () => {
                 <div className="flex flex-col">
                   <span className="text-2xl font-light tracking-tighter tabular-nums">{formatTime(recordingTime)}</span>
                   <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">
-                    {isRecording ? t('briefing.recording_status', 'Aan het opnemen...') : t('briefing.ready_status', 'Klaar om op te nemen')}
+                    {isRecording ? t('briefing.recording_status', 'Tekst aan het opnemen...') : t('briefing.ready_status', 'Klaar om op te nemen')}
                   </span>
                 </div>
               </div>
@@ -236,7 +369,7 @@ export const BriefingSelector: React.FC = () => {
                 isRecording ? "bg-va-black text-white" : "bg-primary text-white shadow-lg shadow-primary/20"
               )}
             >
-              {isRecording ? t('briefing.action.stop', 'Stop Opname') : t('briefing.action.start', 'Start Opname')}
+              {isRecording ? t('briefing.action.stop', 'Stop opname') : t('briefing.action.start', 'Start opname')}
             </ButtonInstrument>
           </motion.div>
         )}
@@ -252,15 +385,15 @@ export const BriefingSelector: React.FC = () => {
               type="file" 
               onChange={handleFileUpload}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-              accept="audio/*,video/*,.pdf,.doc,.docx,.txt"
+              accept="audio/*,video/*,.pdf,.doc,.docx,.txt,.xlsx"
             />
             <div className="p-8 border-2 border-dashed border-black/5 rounded-2xl bg-white flex flex-col items-center gap-3 text-va-black/20 hover:border-primary/20 hover:text-primary/40 transition-all">
               <Upload size={32} strokeWidth={1} />
               <span className="text-[13px] font-light italic">
-                <VoiceglotText translationKey="briefing.upload.instruction" defaultText="Sleep een bestand hierheen of klik om te bladeren" />
+                <VoiceglotText translationKey="briefing.upload.instruction" defaultText="Sleep je tekstbestand hierheen of klik om te bladeren" />
               </span>
               <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">
-                <VoiceglotText translationKey="briefing.upload.types" defaultText="Audio, Video of Documenten" />
+                <VoiceglotText translationKey="briefing.upload.types" defaultText="PDF, Word, Excel of Tekst" />
               </span>
             </div>
           </motion.div>
@@ -273,7 +406,7 @@ export const BriefingSelector: React.FC = () => {
             exit={{ opacity: 0, y: 10 }}
           >
             <textarea 
-              placeholder={t('briefing.text.placeholder', "Voeg hier extra instructies, uitspraak-hulp of context toe...")}
+              placeholder={t('briefing.text.placeholder', "Voeg hier extra instructies, uitspraak-hulp of context toe voor je tekst...")}
               className="w-full h-32 p-4 bg-white border border-black/[0.03] rounded-xl text-[14px] font-light focus:ring-2 focus:ring-primary/10 transition-all outline-none resize-none"
               onBlur={(e) => {
                 if (e.target.value.trim()) {
@@ -296,7 +429,7 @@ export const BriefingSelector: React.FC = () => {
           <div className="flex items-center gap-2 px-2">
             <Check size={12} className="text-green-500" />
             <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
-              <VoiceglotText translationKey="briefing.added_count" defaultText={`Toegevoegde briefing (${state.briefingFiles.length})`} />
+              <VoiceglotText translationKey="briefing.added_count" defaultText={`Toegevoegde bestanden (${state.briefingFiles.length})`} />
             </span>
           </div>
           <div className="flex flex-col gap-2">
@@ -322,12 +455,57 @@ export const BriefingSelector: React.FC = () => {
                   </button>
                   <span className="text-[12px] font-medium truncate text-va-black/60">{file.name}</span>
                 </div>
-                <button 
-                  onClick={() => removeBriefingFile(file.id)}
-                  className="p-2 text-va-black/20 hover:text-red-500 transition-colors"
-                >
-                  <Trash2 size={14} />
-                </button>
+                
+                <div className="flex items-center gap-2">
+                  {file.type === 'audio' && file.rawFile && (
+                    <button 
+                      onClick={() => transcribeAudio(file)}
+                      disabled={!!isTranscribing}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2",
+                        isTranscribing === file.id 
+                          ? "bg-va-black text-white animate-pulse" 
+                          : "bg-primary/10 text-primary hover:bg-primary hover:text-white"
+                      )}
+                    >
+                      {isTranscribing === file.id ? (
+                        <>Bezig...</>
+                      ) : (
+                        <>
+                          <Mic size={12} />
+                          Zet om naar tekst
+                        </>
+                      )}
+                    </button>
+                  )}
+                  {file.type === 'text' && file.rawFile && (
+                    <button 
+                      onClick={() => extractScript(file)}
+                      disabled={!!isExtracting}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2",
+                        isExtracting === file.id 
+                          ? "bg-va-black text-white animate-pulse" 
+                          : "bg-primary/10 text-primary hover:bg-primary hover:text-white"
+                      )}
+                    >
+                      {isExtracting === file.id ? (
+                        <>Bezig...</>
+                      ) : (
+                          <>
+                          <Sparkles size={12} />
+                          Upload je tekst
+                        </>
+                      )}
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => removeBriefingFile(file.id)}
+                    className="p-2 text-va-black/20 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

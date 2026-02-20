@@ -1,6 +1,8 @@
 "use client";
 
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { useTranslation } from '@/contexts/TranslationContext';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import React from 'react';
 import Image from 'next/image';
 
@@ -22,13 +24,14 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
   items
 }) => {
   const { playClick } = useSonicDNA();
-  const [message, setMessage] = React.useState(`Dag ${customerName},\n\nBedankt voor je aanvraag bij Voices.be! Hierbij ontvang je de vrijblijvende offerte voor je project.\n\nDetails:\n${items.map(item => `- ${item.name}`).join('\n')}\n\nTotaalbedrag: ${totalAmount} (excl. BTW)\n\nJe kunt deze offerte direct online bevestigen via de link in de bijlage. Heb je nog vragen? Laat het me gerust weten!\n\nMet vriendelijke groet,\n\nJohfrah\nVoices.be`);
+  const { t } = useTranslation();
+  const [message, setMessage] = React.useState(t('quote.preview.default_message', `Dag ${customerName},\n\nBedankt voor je aanvraag bij Voices.be! Hierbij ontvang je de vrijblijvende offerte voor je project.\n\nDetails:\n${items.map(item => `- ${item.name}`).join('\n')}\n\nTotaalbedrag: ${totalAmount} (excl. BTW)\n\nJe kunt deze offerte direct online bevestigen via de link in de bijlage. Heb je nog vragen? Laat het me gerust weten!\n\nMet vriendelijke groet,\n\nJohfrah\nVoices.be`));
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-va-black/60 backdrop-blur-xl animate-fade-in">
-      <div className="w-full max-w-3xl bg-white rounded-[20px] shadow-aura overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-va-black/95 backdrop-blur-xl animate-fade-in">
+      <div className="w-full max-w-3xl bg-white rounded-[20px] shadow-aura overflow-hidden flex flex-col max-h-[90vh] z-[10001]">
         {/* Header */}
         <div className="p-8 border-b border-black/5 flex justify-between items-center bg-va-off-white">
           <div className="flex items-center gap-4">
@@ -36,8 +39,12 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
               <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             </div>
             <div>
-              <h3 className="text-xl font-light tracking-tighter text-va-black">Offerte preview</h3>
-              <p className="text-[15px] font-light text-va-black/40 tracking-widest">Personaliseer je bericht voor verzending</p>
+              <h3 className="text-xl font-light tracking-tighter text-va-black">
+                <VoiceglotText translationKey="quote.preview.title" defaultText="Offerte preview" />
+              </h3>
+              <p className="text-[15px] font-light text-va-black/40 tracking-widest">
+                <VoiceglotText translationKey="quote.preview.subtitle" defaultText="Personaliseer je bericht voor verzending" />
+              </p>
             </div>
           </div>
           <button 
@@ -54,7 +61,9 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-10 space-y-8">
           <div className="space-y-4">
-            <label className="text-[15px] font-light tracking-widest text-va-black/40 ml-2">E-mail bericht</label>
+            <label className="text-[15px] font-light tracking-widest text-va-black/40 ml-2">
+              <VoiceglotText translationKey="quote.preview.label" defaultText="E-mail bericht" />
+            </label>
             <textarea 
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -67,10 +76,11 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
               <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             </div>
             <div className="flex-1">
-              <h4 className="text-[15px] font-light tracking-tight mb-1 text-va-black">Bijlage: Offerte_Voices.pdf</h4>
+              <h4 className="text-[15px] font-light tracking-tight mb-1 text-va-black">
+                <VoiceglotText translationKey="quote.preview.attachment" defaultText="Bijlage: Offerte_Voices.pdf" />
+              </h4>
               <p className="text-[15px] text-va-black/40 font-light leading-relaxed">
-                Het systeem genereert automatisch een PDF met de tarieven en voorwaarden. 
-                De klant kan deze digitaal ondertekenen.
+                <VoiceglotText translationKey="quote.preview.attachment_desc" defaultText="Het systeem genereert automatisch een PDF met de tarieven en voorwaarden. De klant kan deze digitaal ondertekenen." />
               </p>
             </div>
           </div>
@@ -80,7 +90,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
         <div className="p-8 bg-va-off-white border-t border-black/5 flex justify-between items-center">
           <div className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/30">
             <Image  src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
-            Core Admin Protocol Active
+            <VoiceglotText translationKey="quote.preview.admin_status" defaultText="Core Admin Protocol Active" />
           </div>
           <button 
             onClick={() => {
@@ -89,7 +99,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
             }}
             className="va-btn-pro !bg-primary flex items-center gap-3 !px-10"
           >
-            Offerte verzenden <Image  src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert" />
+            <VoiceglotText translationKey="quote.preview.send" defaultText="Offerte verzenden" /> <Image  src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert" />
           </button>
         </div>
       </div>

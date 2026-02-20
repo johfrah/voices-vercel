@@ -21,7 +21,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "Persoonlijke Casting"
+        "name": "Gratis proefopname"
       },
       {
         "@type": "ListItem",
@@ -81,7 +81,6 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
                 style={{ filter: 'invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)' }}
               /></Link>
           </ContainerInstrument>
-          <ContainerInstrument className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
         </BentoCard>
       ) : (
         <BentoCard span="xl" className="h-[500px] flex flex-col justify-between group overflow-hidden relative p-12 bg-white border border-black/[0.03] shadow-aura">
@@ -103,7 +102,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
                 className="brightness-0 invert"
               />
             </ContainerInstrument>
-            <HeadingInstrument level={3} className="text-5xl font-light tracking-tighter mb-6 leading-none text-va-black "><VoiceglotText  translationKey="home.showcase.casting.title" defaultText="Persoonlijke Casting" /><TextInstrument className="text-va-black/40 font-light max-w-sm text-lg leading-relaxed"><VoiceglotText  translationKey="home.showcase.casting.description" defaultText="Luister naar demo's. Filter op karakter. Vind direct de match voor jouw project." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-5xl font-light tracking-tighter mb-6 leading-none text-va-black "><VoiceglotText  translationKey="home.showcase.casting.title" defaultText="Gratis proefopname" /><TextInstrument className="text-va-black/40 font-light max-w-sm text-lg leading-relaxed"><VoiceglotText  translationKey="home.showcase.casting.description" defaultText="Luister naar demo's. Filter op karakter. Ontvang een gratis proefopname voor jouw project." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument plain className="relative z-10 flex gap-4">
             <Link  href="/agency" className="va-btn-pro flex items-center gap-3 !bg-va-dark-soft !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText  translationKey="home.showcase.casting.cta" defaultText="Start jouw zoektocht" /><Image  
@@ -114,7 +113,6 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
                 className="brightness-0 invert"
               /></Link>
           </ContainerInstrument>
-          <ContainerInstrument plain className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/3 rounded-full blur-[120px] group-hover:bg-primary/6 transition-all duration-1000" />
         </BentoCard>
       )}
 

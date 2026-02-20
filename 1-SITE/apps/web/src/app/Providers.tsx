@@ -8,6 +8,7 @@ import { EditModeProvider } from '@/contexts/EditModeContext';
 import { VoicesStateProvider } from '@/contexts/VoicesStateContext';
 import { GlobalAudioProvider } from '@/contexts/GlobalAudioContext';
 import { VoicesMasterControlProvider } from '@/contexts/VoicesMasterControlContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 import { usePathname } from 'next/navigation';
 
 export function Providers({ 
@@ -35,9 +36,11 @@ export function Providers({
           <VoicesStateProvider>
             <GlobalAudioProvider>
               <CheckoutProvider>
-                <VoicesMasterControlProvider>
-                  {children}
-                </VoicesMasterControlProvider>
+                <NotificationProvider>
+                  <VoicesMasterControlProvider>
+                    {children}
+                  </VoicesMasterControlProvider>
+                </NotificationProvider>
               </CheckoutProvider>
             </GlobalAudioProvider>
           </VoicesStateProvider>

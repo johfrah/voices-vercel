@@ -1,4 +1,4 @@
-import { getActor } from "@/lib/api-server";
+import { getArtist } from "@/lib/api-server";
 import { 
   PageWrapperInstrument, 
   LoadingScreenInstrument,
@@ -7,47 +7,91 @@ import {
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { Suspense } from "react";
 import { ArtistDetailClient } from "./ArtistDetailClient";
+import { db } from "@/lib/sync/bridge";
+import { orders } from "@db/schema";
+import { eq, desc, and } from "drizzle-orm";
+import { headers } from "next/headers";
 
 export const dynamic = 'force-dynamic';
 
 export default function ArtistDetailPage({ params }: { params: { slug: string } }) {
   return (
-    <Suspense  fallback={<LoadingScreenInstrument />}>
-      <ArtistDetailContent strokeWidth={1.5} params={params} />
+    <Suspense fallback={<LoadingScreenInstrument />}>
+      <ArtistDetailContent params={params} />
     </Suspense>
   );
 }
 
 async function ArtistDetailContent({ params }: { params: { slug: string } }) {
-  const isYoussef = params.slug === 'youssef' || params.slug === 'youssef-zaki';
-  
-  // Als het Youssef is, injecteren we de "Kelder-data" direct
-  const artistData = isYoussef ? {
-    id: '276051',
-    display_name: 'Youssef Zaki',
-    photo_url: 'https://www.voices.be/wp-content/uploads/portfolio/276051/hero.jpg',
-    bio: "Im Youssef Zaki, 30 years old, born in Casablanca, Morocco. Between the ages of six and twelve, I grew up in Italymoving between Piedmont and Tuscanyas the youngest of three brothers. Eventually, we settled in Brussels, where we truly found a sense of home. My musical influences are broad, shaped by my diverse background. I was surrounded by Italian, Arabic, French, and English music, and Im also drawn to the meditative sounds of raga from Indian music. Artists like Frank Sinatra, Nina Simone, Etta James, and Jennifer Hudson have been major inspirations for methe list goes on. Music was never a focus in my family. Growing up, survival took priority. It wasnt until I was 23 that I discovered my own voice in music. I sang Frank Sinatras My Funny Valentine at a karaoke barmy first time singing in front of anyone. Id only ever sung alone in my room, too afraid of how others might react. But that night, the response was overwhelming and deeply moving. It changed everything for me. Now, Im a street musician in Brussels, singing every Friday, Saturday, and Sunday evening. Music feels like a true gift in my life.",
-    demos: [
-      { title: 'Fix You (Live at The Voice)', category: 'Performance' },
-      { title: 'My Funny Valentine', category: 'Jazz Standard' },
-      { title: 'Street Session Brussels', category: 'Live' }
-    ],
-    socials: {
-      instagram: 'https://www.instagram.com/youssefzaki_off/',
-      tiktok: 'https://www.tiktok.com/@youssefzaki_of',
-      youtube: 'https://www.youtube.com/watch?v=_MMUUbVj6YY'
-    },
-    donation_goal: 1000,
-    donation_current: 0
-  } : await getActor(params.slug);
+  const cleanSlug = params.slug.replace(/\/$/, '');
+  const headersList = headers();
+  const lang = headersList.get('x-voices-lang') || 'nl';
+  const host = headersList.get('host') || '';
+  const pathname = headersList.get('x-voices-pathname') || '';
 
-  if (!artistData) {
+  console.log(' [ArtistDetailContent] Debug:', { cleanSlug, lang, host, pathname });
+
+  const isYoussef = cleanSlug === 'youssef' || cleanSlug === 'youssef-zaki' || host.includes('youssefzaki.eu');
+  
+  // NUCLEAR MANDATE: Fetch ALL artist data from the NEW 'artists' table.
+  let artist = await getArtist(cleanSlug, lang).catch(async (err) => {
+    console.warn(` [ArtistDetailContent] Failed to fetch artist for slug "${cleanSlug}":`, err.message);
+    if (isYoussef) {
+      console.log(' [ArtistDetailContent] Attempting fallback to slug "youssef"...');
+      return await getArtist('youssef', lang).catch(() => null);
+    }
+    return null;
+  });
+
+  if (!artist) {
+    console.error(' [ArtistDetailContent] Artist not found after all attempts.');
     return (
       <PageWrapperInstrument className="flex items-center justify-center min-h-screen">
-        <HeadingInstrument level={1}><VoiceglotText  translationKey="artist.not_found" defaultText="Artist not found" /></HeadingInstrument>
+        <HeadingInstrument level={1}><VoiceglotText translationKey="artist.not_found" defaultText="Artist not found" /></HeadingInstrument>
       </PageWrapperInstrument>
     );
   }
 
-  return <ArtistDetailClient strokeWidth={1.5} artistData={artistData} isYoussef={isYoussef} params={params} />;
+  // Transform Artist to ArtistData (Nuclear Sync)
+  const artistData = {
+    ...artist,
+    id: artist.id.toString(),
+    display_name: artist.displayName || artist.firstName,
+    photo_url: artist.photoUrl,
+    bio: artist.bio,
+    vision: (artist.iapContext as any)?.vision,
+    albums: (artist.iapContext as any)?.albums || [],
+    demos: (artist.iapContext as any)?.demos || [],
+    socials: (artist.iapContext as any)?.socials || {},
+    donation_goal: (artist.iapContext as any)?.donation_goal || 0,
+    donation_current: (artist.iapContext as any)?.donation_current || 0,
+    donor_count: (artist.iapContext as any)?.donor_count || 0
+  };
+
+  // Fetch real donors for the artist
+  const donorOrders = await db.select()
+    .from(orders)
+    .where(
+      and(
+        eq(orders.journey, 'artist_donation'),
+        eq(orders.status, 'paid')
+      )
+    )
+    .orderBy(desc(orders.createdAt))
+    .limit(50);
+
+  const donors = donorOrders.map(o => ({
+    id: o.id,
+    name: (o.iapContext as any)?.donorName || 'Anoniem',
+    amount: o.total,
+    message: (o.iapContext as any)?.message,
+    date: o.createdAt
+  }));
+
+  // Update real-time stats from DB
+  const totalDonated = donorOrders.reduce((acc, o) => acc + Number(o.total || 0), 0);
+  artistData.donation_current = totalDonated > artistData.donation_current ? totalDonated : artistData.donation_current;
+  artistData.donor_count = donorOrders.length > artistData.donor_count ? donorOrders.length : artistData.donor_count;
+
+  return <ArtistDetailClient artistData={artistData} isYoussef={isYoussef} params={params} donors={donors} />;
 }

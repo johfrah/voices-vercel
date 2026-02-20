@@ -14,7 +14,10 @@ class SonicDNA {
 
   private init() {
     if (!this.ctx && typeof window !== 'undefined') {
-      this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
+      if (AudioContextClass) {
+        this.ctx = new AudioContextClass();
+      }
     }
     return this.ctx;
   }
@@ -22,13 +25,20 @@ class SonicDNA {
   /**
    * De 'Signature Click' - Gebruikt voor knoppen en selecties.
    */
-  playClick(type: 'soft' | 'pro' | 'pop' | 'success' | 'lock' | 'unlock' = 'soft') {
+  async playClick(type: 'soft' | 'pro' | 'pop' | 'success' | 'lock' | 'unlock' = 'soft') {
     const ctx = this.init();
     if (!ctx) return;
 
     // Resume context if suspended (browser security)
-    if (ctx.state === 'suspended') ctx.resume();
-
+    if (ctx.state === 'suspended') {
+      try {
+        await ctx.resume();
+      } catch (e) {
+        return; // Silently fail if still not allowed
+      }
+    }
+    
+    if (ctx.state !== 'running') return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     
@@ -83,10 +93,19 @@ class SonicDNA {
   /**
    * De 'Liquid Swell' - Gebruikt voor hover effecten.
    */
-  playSwell() {
+  async playSwell() {
     const ctx = this.init();
     if (!ctx) return;
-    if (ctx.state === 'suspended') ctx.resume();
+    
+    if (ctx.state === 'suspended') {
+      try {
+        await ctx.resume();
+      } catch (e) {
+        return;
+      }
+    }
+
+    if (ctx.state !== 'running') return;
 
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();

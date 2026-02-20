@@ -50,7 +50,8 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     if (currentSrc.includes('visuals/active/voicecards') || 
         currentSrc.includes('visuals/active/photos') || 
         currentSrc.includes('agency/voices') ||
-        currentSrc.includes('active/voicecards')) {
+        currentSrc.includes('active/voicecards') ||
+        currentSrc.includes('/api/proxy')) {
       
       // If we are in the new structure but it failed, try the ID-based fallback if we can extract it
       const idMatch = currentSrc.match(/(\d+)-/);
@@ -64,6 +65,9 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
       }
 
       // Final fallback to a generic placeholder
+      setCurrentSrc('/assets/common/branding/voicy/voicy-avatar.png');
+    } else {
+      // Generic fallback for other images
       setCurrentSrc('/assets/common/branding/voicy/voicy-avatar.png');
     }
   };
@@ -81,18 +85,19 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     formData.append('category', category);
 
     try {
-      const response = await fetch('/api/backoffice/media', {
+      const response = await fetch('/api/admin/actors/upload', {
         method: 'POST',
         body: formData,
       });
 
       if (response.ok) {
         const data = await response.json();
-        const newSrc = `/${data.media.filePath}`;
+        const newSrc = data.url;
+        const newMediaId = data.mediaId;
         setCurrentSrc(newSrc);
         playClick('success');
         if (onUpdate) {
-          onUpdate(newSrc, data.media.id);
+          onUpdate(newSrc, newMediaId);
         }
       } else {
         console.error('Upload failed');
@@ -109,8 +114,49 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   };
 
   const isFill = !!props.fill;
+  const fillValue = props.fill === true ? true : undefined;
   const isProxied = currentSrc?.includes('/api/proxy');
-  const isLocal = currentSrc?.startsWith('/') && !isProxied;
+  const isLocal = currentSrc?.startsWith('/') && !isProxied && !currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co');
+  const isSupabase = currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co');
+
+  const isValidSrc = currentSrc && 
+    currentSrc !== 'image/' && 
+    currentSrc !== '/image/' && 
+    currentSrc !== 'undefined' && 
+    currentSrc !== '/undefined' && 
+    currentSrc !== 'NULL' && 
+    currentSrc !== '/NULL' &&
+    currentSrc !== '' &&
+    !currentSrc.endsWith('/image/');
+
+  //  CHRIS-PROTOCOL: Automatic Proxy Wrapping (2026 Mandate)
+  // Ensure all local assets go through the proxy to enable WebP optimization
+  const finalSrc = React.useMemo(() => {
+    if (!isValidSrc) return currentSrc;
+    
+    // If it's already a proxy URL, don't wrap it again
+    if (isProxied) return currentSrc;
+
+    //  FIX: Supabase URLs also through proxy to avoid 400 Bad Request from Next.js Image optimizer
+    if (isSupabase) {
+      return `/api/proxy/?path=${encodeURIComponent(currentSrc)}`;
+    }
+
+    if (currentSrc.startsWith('/assets/')) {
+      const pathOnly = currentSrc.replace('/assets/', '');
+      return `/api/proxy/?path=${encodeURIComponent(pathOnly)}`;
+    }
+
+    // If it's a relative path that doesn't start with /assets/, it might be a direct Supabase path (e.g. "active/voicecards/...")
+    if (!currentSrc.startsWith('http') && !currentSrc.startsWith('/')) {
+      return `/api/proxy/?path=${encodeURIComponent(currentSrc)}`;
+    }
+
+    return currentSrc;
+  }, [currentSrc, isProxied, isSupabase, isValidSrc]);
+
+  // Remove fill from props to avoid passing it to the DOM if it's not needed
+  const { fill, ...otherProps } = props;
 
   return (
     <div className={cn(
@@ -118,19 +164,23 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
       isEditMode && "cursor-pointer",
       isFill && "w-full h-full"
     )}>
-      {currentSrc ? (
+      {isValidSrc ? (
         <Image  
-          src={currentSrc} 
+          src={finalSrc} 
           alt={alt}
           onError={handleError}
           width={!isFill ? (props.width || 500) : undefined}
           height={!isFill ? (props.height || 500) : undefined}
+          fill={fillValue}
           unoptimized={isProxied || isLocal}
+          priority={isSupabase || props.priority}
+          sizes={isFill ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : undefined}
+          style={isFill ? { objectFit: 'cover' } : undefined}
           className={cn(
             className,
             isEditMode && "ring-2 ring-primary/0 hover:ring-primary/50 transition-all duration-300"
           )}
-          {...props}
+          {...otherProps}
         />
       ) : (
         <div className={cn("bg-va-off-white flex items-center justify-center", className)} {...(props as any)}>

@@ -9,7 +9,7 @@ import { seedFutureproofConfig } from './sync/config-seeder';
  *  NUCLEAR MASTER SYNC (2026)
  * 
  * Dit script is de 'Big Bang' activator voor Voices.
- * Het doet drie dingen in n atomaire operatie:
+ * Het doet drie dingen in één atomaire operatie:
  * 1. Audio & Foto Mapping (Sonic DNA)
  * 2. Pricing Alignment (Commerce Rules)
  * 3. Bento Activation (Live Status)

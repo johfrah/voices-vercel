@@ -1,2 +1,0 @@
-### Mens, machine of beide?
-Een digitale stem is tegenwoordig razendsnel en praktisch voor functionele meldingen. Maar voor je merkidentiteit en de echte menselijke klik blijft de studio-opname de gouden standaard. Wij geloven in een hybride aanpak: gebruik onze slimme configurator voor een snelle proever, en laat het daarna perfectioneren door een echte stemacteur. Zo combineer je de snelheid van nu met de warmte van een vakman.

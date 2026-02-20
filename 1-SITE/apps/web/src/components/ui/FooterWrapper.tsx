@@ -23,6 +23,12 @@ export default function FooterWrapper() {
     return null;
   }
 
+  //  LOUIS: Hide global footer on artist pages to allow for custom artist footer
+  // UITZONDERING: Op portfolio pagina's willen we de footer WEL zien (header/footer mandate)
+  if (window.location.pathname.startsWith('/artist/') && !window.location.pathname.includes('/portfolio/')) {
+    return null;
+  }
+
   // Verberg footer als we in "Under Construction" modus zijn
   // Maar we laten hem nu wel zien voor de navigatie naar Studio, Academy etc.
   // if (!isEditMode && window.location.pathname === '/') {

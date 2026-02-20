@@ -1,4 +1,5 @@
 import { WorkshopContent } from "@/components/studio/WorkshopContent";
+import { AudioRecorderInstrument } from "@/components/ui/AudioRecorderInstrument";
 import { AccordionInstrument } from "@/components/ui/AccordionInstrument";
 import { BentoCard } from "@/components/ui/BentoGrid";
 import {
@@ -38,7 +39,7 @@ const WORKSHOP_SUBTITLES: Record<string, { start: number; end: number; text: str
     { start: 7.68, end: 10.88, text: "en een gerichte intonatie? Dat kan." },
     { start: 11.0, end: 15.72, text: "Die drie componenten, articulatie, stem, intonatie, dat hoort bij elkaar." },
     { start: 15.84, end: 18.68, text: "Je kan zeker leren om een professionele spreker te worden." },
-    { start: 18.80, end: 22.68, text: "Dat kan in n dag. Veel oefeningen wel, maar het kan zeker." },
+    { start: 18.80, end: 22.68, text: "Dat kan in één dag. Veel oefeningen wel, maar het kan zeker." },
     { start: 22.80, end: 24.28, text: "Welkom." }
   ],
   'voice-overs-voor-beginners': [
@@ -93,7 +94,7 @@ const WORKSHOP_SUBTITLES: Record<string, { start: number; end: number; text: str
     { start: 66.16, end: 69.24, text: "Dat ging van Onder Vuur, wat iets anders is als Chantal," },
     { start: 69.32, end: 71.16, text: "als Dertigers en ook een jeugdreeks." },
     { start: 71.24, end: 73.08, text: "Die variatie was ook wel heel leuk." },
-    { start: 73.16, end: 75.08, text: "Je hebt dat in het script. Dat is n ding." },
+    { start: 73.16, end: 75.08, text: "Je hebt dat in het script. Dat is één ding." },
     { start: 75.16, end: 78.36, text: "Dat script moet goed in elkaar zitten, dat moet goed geschreven zijn," },
     { start: 78.44, end: 81.24, text: "om het daarna nog ook goed te laten bekken." },
     { start: 81.32, end: 84.24, text: "Gio trekt de vrouw Cordata haar huis uit." },
@@ -104,7 +105,7 @@ const WORKSHOP_SUBTITLES: Record<string, { start: number; end: number; text: str
     { start: 95.68, end: 97.56, text: "van iemand die daar zoveel ervaring in heeft." },
     { start: 97.64, end: 99.24, text: "Zeg, Giovra." },
     { start: 99.32, end: 101.56, text: "Met Guido Godon hadden we wel een topper in huis." },
-    { start: 101.64, end: 106.48, text: "Dat is ongelooflijk. Als er n man is die AD ademt..." },
+    { start: 101.64, end: 106.48, text: "Dat is ongelooflijk. Als er één man is die AD ademt..." },
     { start: 106.56, end: 107.56, text: "Dan is het Guido." },
     { start: 107.64, end: 112.16, text: "Ik vond het heel fijn om vandaag met deze mensen te kunnen samenwerken." },
     { start: 112.24, end: 115.76, text: "Aflevering per aflevering hebben we geleerd om een verhaal te vertellen." },
@@ -285,8 +286,26 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
 
       {/*  CONTENT SECTION (Includes Booking, Info, Program & Aftermovie) */}
       <SectionInstrument id="inschrijven" className="py-32 bg-white relative">
-        <ContainerInstrument plain className="max-w-[1140px] mx-auto">
-          <WorkshopContent workshop={workshop} />
+        <ContainerInstrument plain className="max-w-[1140px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+          <div className="lg:col-span-8">
+            <WorkshopContent workshop={workshop} />
+          </div>
+          <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-8">
+            <AudioRecorderInstrument 
+              mode="practice"
+              title="Test je stem"
+              subtitle="Benieuwd hoe je klinkt? Neem een fragment op en bereid je voor op de workshop."
+              className="shadow-aura-lg border-none"
+            />
+            <BentoCard span="full" className="bg-primary/5 border-primary/10 p-8 rounded-[24px]">
+              <HeadingInstrument level={4} className="text-lg font-light tracking-tight text-primary mb-2">
+                <VoiceglotText translationKey="workshop.sidebar.why.title" defaultText="Waarom oefenen?" />
+              </HeadingInstrument>
+              <TextInstrument className="text-[14px] text-primary/60 font-light leading-relaxed">
+                <VoiceglotText translationKey="workshop.sidebar.why.text" defaultText="Door nu al een opname te maken, krijg je tijdens de workshop gerichtere feedback van onze coaches." />
+              </TextInstrument>
+            </BentoCard>
+          </div>
         </ContainerInstrument>
       </SectionInstrument>
 

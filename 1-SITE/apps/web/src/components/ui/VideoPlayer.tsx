@@ -4,10 +4,17 @@ import React, { useRef, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Play, Pause, Volume2, VolumeX, Maximize, RotateCcw } from 'lucide-react';
 
+interface SubtitleData {
+  start: number;
+  end: number;
+  text: string;
+}
+
 interface SubtitleTrack {
-  src: string;
+  src?: string;
   label: string;
   srcLang: string;
+  data?: SubtitleData[];
 }
 
 interface VideoPlayerProps {
@@ -26,7 +33,7 @@ interface VideoPlayerProps {
  * 
  * Een high-end videospeler die video's afspeelt vanuit de lokale assetmap.
  * Volgt de Voices-stijl: zachte afronding, aura shadows en vloeiende interactie.
- * Nu met ondersteuning voor meertalige ondertitels (.vtt).
+ * Ondersteunt meertalige ondertitels via .vtt of direct via subtitleData array.
  */
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   src,
@@ -42,8 +49,64 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [isMuted, setIsMuted] = useState(muted);
   const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const [showControls, setShowControls] = useState(false);
   const [activeSubtitle, setActiveSubtitle] = useState<string | null>(subtitles.length > 0 ? subtitles[0].srcLang : null);
+  const [currentSubtitleText, setCurrentSubtitleText] = useState<string>("");
+
+  // Update active subtitle based on array data if available
+  useEffect(() => {
+    if (!activeSubtitle) {
+      setCurrentSubtitleText("");
+      return;
+    }
+
+    const activeTrack = subtitles.find(s => s.srcLang === activeSubtitle);
+    if (activeTrack?.data) {
+      const sub = activeTrack.data.find(s => currentTime >= s.start && currentTime <= s.end);
+      setCurrentSubtitleText(sub?.text || "");
+    }
+  }, [currentTime, activeSubtitle, subtitles]);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    const video = videoRef.current;
+    const tracks = video.textTracks;
+
+    const onCueChange = (event: Event) => {
+      const track = event.target as TextTrack;
+      // Skip if we are using hardcoded data for this language
+      const activeTrack = subtitles.find(s => s.srcLang === track.language);
+      if (activeTrack?.data) return;
+
+      if (track.mode === 'hidden' || track.mode === 'showing') {
+        const activeCue = track.activeCues?.[0] as VTTCue;
+        setCurrentSubtitleText(activeCue ? activeCue.text : "");
+      }
+    };
+
+    // Set initial mode and listeners
+    for (let i = 0; i < tracks.length; i++) {
+      const track = tracks[i];
+      if (track.language === activeSubtitle) {
+        track.mode = 'hidden'; // We use 'hidden' to get events but not native rendering
+        track.addEventListener('cuechange', onCueChange);
+        
+        // Check if there's already an active cue (e.g. when switching languages while playing)
+        const activeCue = track.activeCues?.[0] as VTTCue;
+        if (activeCue) setCurrentSubtitleText(activeCue.text);
+      } else {
+        track.mode = 'disabled';
+      }
+    }
+
+    return () => {
+      for (let i = 0; i < tracks.length; i++) {
+        tracks[i].removeEventListener('cuechange', onCueChange);
+      }
+    };
+  }, [activeSubtitle, subtitles]);
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -67,6 +130,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (videoRef.current) {
       const currentProgress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
       setProgress(currentProgress);
+      setCurrentTime(videoRef.current.currentTime);
     }
   };
 
@@ -127,6 +191,28 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         ))}
       </video>
 
+      {/* VOICES GLASS UI SUBTITLES (The Mark Standard) */}
+      {currentSubtitleText && (
+        <div className="absolute bottom-24 left-0 right-0 flex justify-center px-8 pointer-events-none z-20">
+          <div 
+            className={cn(
+              "bg-va-black/80 backdrop-blur-md border border-white/10 px-6 py-3 rounded-[15px] shadow-aura-lg max-w-[90%] animate-in fade-in slide-in-from-bottom-2 duration-300",
+              activeSubtitle === 'ar' ? "text-right" : "text-center"
+            )}
+            dir={activeSubtitle === 'ar' ? 'rtl' : 'ltr'}
+          >
+            <p className="text-white text-[15px] md:text-lg font-light leading-snug tracking-wide">
+              {currentSubtitleText.split('\n').map((line, i) => (
+                <React.Fragment key={i}>
+                  {line}
+                  {i < currentSubtitleText.split('\n').length - 1 && <br />}
+                </React.Fragment>
+              ))}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Overlay Play Button (Visible when paused) */}
       {!isPlaying && (
         <div 
@@ -151,15 +237,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           max="100"
           value={progress}
           onChange={handleSeek}
-          className="w-full h-1 bg-white/20 rounded-full appearance-none cursor-pointer accent-primary"
+          className="w-full h-1 bg-white/20 rounded-full appearance-none cursor-pointer accent-[#FFC421]"
         />
 
         <div className="flex items-center justify-between text-white">
           <div className="flex items-center gap-4">
-            <button onClick={togglePlay} className="hover:text-primary transition-colors">
+            <button onClick={togglePlay} className="hover:text-[#FFC421] transition-colors">
               {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
             </button>
-            <button onClick={toggleMute} className="hover:text-primary transition-colors">
+            <button onClick={toggleMute} className="hover:text-[#FFC421] transition-colors">
               {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
             </button>
             
@@ -172,7 +258,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     onClick={() => setActiveSubtitle(activeSubtitle === track.srcLang ? null : track.srcLang)}
                     className={cn(
                       "text-[15px] px-2 py-1 rounded border border-white/20 transition-all",
-                      activeSubtitle === track.srcLang ? "bg-primary border-primary text-white" : "bg-white/10 text-white/60 hover:bg-white/20"
+                      activeSubtitle === track.srcLang ? "bg-[#FFC421] border-[#FFC421] text-va-black" : "bg-white/10 text-white/60 hover:bg-white/20"
                     )}
                   >
                     {track.srcLang.toUpperCase()}
@@ -183,7 +269,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
 
           <div className="flex items-center gap-4">
-            <button onClick={toggleFullscreen} className="hover:text-primary transition-colors">
+            <button onClick={toggleFullscreen} className="hover:text-[#FFC421] transition-colors">
               <Maximize size={20} />
             </button>
           </div>

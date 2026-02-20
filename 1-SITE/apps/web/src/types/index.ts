@@ -77,6 +77,13 @@ export interface AcademyDashboardData {
   lessons: Lesson[];
 }
 
+export interface DeliveryConfig {
+  type: 'sameday' | '24h' | '48h' | '72u';
+  cutoff?: string; // e.g. "13:00"
+  weekly_on?: string[]; // e.g. ["mon", "tue", "wed", "thu", "fri"]
+  avg_turnaround_hours?: number; // For 'sameday'
+}
+
 export interface Actor {
   id: number;
   first_name: string;
@@ -88,6 +95,10 @@ export interface Actor {
   gender?: string;
   starting_price?: number;
   native_lang?: string;
+  native_lang_id?: number; //  Harde koppeling naar languages.id
+  extra_lang_ids?: number[]; //  Harde koppeling naar languages.id
+  tone_ids?: number[]; //  Harde koppeling naar voice_tones.id
+  country_id?: number; //  Harde koppeling naar countries.id
   ai_enabled?: boolean;
   ai_tags?: string;
   price_ivr?: number;
@@ -113,6 +124,7 @@ export interface Actor {
   bio?: string;
   tagline?: string;
   extra_langs?: string;
+  native_lang_label?: string;
   firstName?: string;
   lastName?: string;
   email?: string;
@@ -122,6 +134,7 @@ export interface Actor {
   holiday_till?: string | null;
   video_url?: string;
   actor_videos?: Array<{ url: string; name: string }>;
+  menu_order?: number;
 }
 
 export interface Demo {

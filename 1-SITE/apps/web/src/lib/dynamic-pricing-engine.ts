@@ -1,6 +1,6 @@
 import { db } from '@db';
 import { appConfigs, rateCards, navMenus, marketConfigs } from '@db/schema';
-import { PricingEngine } from './pricing-engine';
+import { SlimmeKassa } from './pricing-engine';
 import { eq } from 'drizzle-orm';
 
 /**
@@ -10,7 +10,7 @@ import { eq } from 'drizzle-orm';
  * 100% Cursorless & Futureproof.
  */
 
-export class DynamicPricingEngine {
+export class DynamicSlimmeKassa {
   static async calculatePrice(
     actorRates: Record<string, any>,
     params: any
@@ -18,8 +18,8 @@ export class DynamicPricingEngine {
     // 1. Haal de 'Wetten' op uit de database
     const config = await db.query.rateCards.findMany();
     
-    // 2. Fallback naar de hardcoded PricingEngine als de DB leeg is
+    // 2. Fallback naar de hardcoded SlimmeKassa als de DB leeg is
     // (Geleidelijke migratie)
-    return PricingEngine.calculatePrice(actorRates, params);
+    return SlimmeKassa.calculatePrice(actorRates, params);
   }
 }

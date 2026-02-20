@@ -3,13 +3,16 @@
  * 
  * Port van de legacy PHP delivery date helpers naar TypeScript.
  * Berekent de verwachte leverdatum op basis van:
- * - Werkdagen (ma-vr)
+ * - Werkdagen (ma-vr) of Custom Weekly Schedule
  * - Belgische feestdagen
  * - Individuele vakanties van acteurs
  * - Cutoff tijden (bijv. 18:00)
+ * - Service Levels (Direct, SameDay, 24h, 72u, Custom)
  * 
  * GEEN EXTERNE DEPENDENCIES (zoals date-fns) om build issues te voorkomen.
  */
+
+import { DeliveryConfig } from "../types";
 
 export interface DeliveryInfo {
   dateMin: Date;
@@ -48,7 +51,7 @@ function isWeekendNative(date: Date): boolean {
 /**
  * Zet een datum op het begin van de dag (00:00:00)
  */
-function startOfDayNative(date: Date): Date {
+export function startOfDayNative(date: Date): Date {
   const result = new Date(date);
   result.setHours(0, 0, 0, 0);
   return result;
@@ -99,10 +102,19 @@ export function getBelgianHolidays(year: number): string[] {
 }
 
 /**
- * Checkt of een specifieke datum een werkdag is
+ * Checkt of een specifieke datum een werkdag is voor de acteur
  */
-export function isWorkingDay(date: Date, holidays: string[]): boolean {
-  if (isWeekendNative(date)) return false;
+export function isWorkingDay(date: Date, holidays: string[], weeklyOn?: string[]): boolean {
+  // Als er een wekelijks schema is, check dat eerst
+  if (weeklyOn && weeklyOn.length > 0) {
+    const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const currentDay = days[date.getDay()];
+    if (!weeklyOn.includes(currentDay)) return false;
+  } else {
+    // Standaard: ma-vr
+    if (isWeekendNative(date)) return false;
+  }
+
   const dateStr = formatDateISO(date);
   return !holidays.includes(dateStr);
 }
@@ -110,12 +122,11 @@ export function isWorkingDay(date: Date, holidays: string[]): boolean {
 /**
  * Haalt de eerstvolgende werkdag op
  */
-export function getNextWorkingDay(startDate: Date, holidays: string[], availability: any[] = []): Date {
+export function getNextWorkingDay(startDate: Date, holidays: string[], availability: any[] = [], weeklyOn?: string[]): Date {
   let current = addDaysNative(startDate, 1);
   
   while (true) {
-    const isWeekendDay = isWeekendNative(current);
-    const isHoliday = holidays.includes(formatDateISO(current));
+    const isWorkDay = isWorkingDay(current, holidays, weeklyOn);
     
     // Check acteur beschikbaarheid (vakanties)
     const isOnHoliday = availability.some(v => {
@@ -125,7 +136,7 @@ export function getNextWorkingDay(startDate: Date, holidays: string[], availabil
       return check >= start && check <= end;
     });
 
-    if (!isWeekendDay && !isHoliday && !isOnHoliday) {
+    if (isWorkDay && !isOnHoliday) {
       return current;
     }
     current = addDaysNative(current, 1);
@@ -156,6 +167,106 @@ function formatShortDate(date: Date): string {
 }
 
 /**
+ * Checkt of het kantoor momenteel open is op basis van de gestructureerde openingstijden
+ */
+export function isOfficeOpen(
+  openingHours: Record<string, { active: boolean, start: string, end: string }>,
+  date: Date = new Date()
+): boolean {
+  const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const currentDay = days[date.getDay()];
+  const config = openingHours[currentDay];
+
+  if (!config || !config.active) return false;
+
+  const [startH, startM] = config.start.split(':').map(Number);
+  const [endH, endM] = config.end.split(':').map(Number);
+  
+  const currentH = date.getHours();
+  const currentM = date.getMinutes();
+
+  const currentTotal = currentH * 60 + currentM;
+  const startTotal = startH * 60 + startM;
+  const endTotal = endH * 60 + endM;
+
+  return currentTotal >= startTotal && currentTotal < endTotal;
+}
+
+/**
+ * Formatteert de openingstijden voor weergave
+ */
+export function formatOpeningHours(
+  openingHours: Record<string, { active: boolean, start: string, end: string }>,
+  lang: string = 'nl'
+): string {
+  const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+  const workDaysConfig = days.map(d => openingHours[d]).filter(Boolean);
+  
+  const allSame = workDaysConfig.every(c => 
+    c.active === workDaysConfig[0].active && 
+    c.start === workDaysConfig[0].start && 
+    c.end === workDaysConfig[0].end
+  );
+
+  if (allSame && workDaysConfig[0]?.active) {
+    const prefix = lang === 'nl' ? 'Ma-Vr' : 'Mon-Fri';
+    return `${prefix}: ${workDaysConfig[0].start} - ${workDaysConfig[0].end}`;
+  }
+
+  // Fallback naar een simpele lijst voor de huidige dag
+  const dayNames: Record<string, string> = lang === 'nl' 
+    ? { mon: 'Ma', tue: 'Di', wed: 'Wo', thu: 'Do', fri: 'Vr', sat: 'Za', sun: 'Zo' }
+    : { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' };
+    
+  const currentDay = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()];
+  const config = openingHours[currentDay];
+  
+  if (config?.active) {
+    return `${dayNames[currentDay]}: ${config.start} - ${config.end}`;
+  }
+  
+  return lang === 'nl' ? 'Momenteel gesloten' : 'Currently closed';
+}
+
+/**
+ * Haalt de eerstvolgende openingstijd op
+ */
+export function getNextOpeningTime(
+  openingHours: Record<string, { active: boolean, start: string, end: string }>,
+  baseDate: Date = new Date()
+): { day: string, time: string } | null {
+  const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const dayNames: Record<string, string> = { 
+    mon: 'maandag', tue: 'dinsdag', wed: 'woensdag', thu: 'donderdag', 
+    fri: 'vrijdag', sat: 'zaterdag', sun: 'zondag' 
+  };
+  
+  let current = new Date(baseDate);
+  
+  // Check de komende 7 dagen
+  for (let i = 0; i < 7; i++) {
+    const dayKey = days[current.getDay()];
+    const config = openingHours[dayKey];
+    
+    if (config?.active) {
+      const [startH, startM] = config.start.split(':').map(Number);
+      const startTotal = startH * 60 + startM;
+      const currentTotal = (i === 0) ? (current.getHours() * 60 + current.getMinutes()) : -1;
+
+      if (currentTotal < startTotal) {
+        return { 
+          day: i === 0 ? 'vandaag' : (i === 1 ? 'morgen' : dayNames[dayKey]), 
+          time: config.start 
+        };
+      }
+    }
+    current.setDate(current.getDate() + 1);
+  }
+  
+  return null;
+}
+
+/**
  * De Master Functie: Berekent de leverdatum voor een acteur
  */
 export function calculateDeliveryDate(
@@ -166,8 +277,11 @@ export function calculateDeliveryDate(
     availability?: any[];
     holidayFrom?: string | null;
     holidayTill?: string | null;
+    delivery_config?: DeliveryConfig;
+    deliveryPenaltyDays?: number; // ⚠️ Accountability penalty
   },
-  baseDate: Date = new Date()
+  baseDate: Date = new Date(),
+  systemWorkingDays: string[] = ['mon', 'tue', 'wed', 'thu', 'fri']
 ): DeliveryInfo {
   const currentYear = baseDate.getFullYear();
   const holidays = [...getBelgianHolidays(currentYear), ...getBelgianHolidays(currentYear + 1)];
@@ -178,28 +292,43 @@ export function calculateDeliveryDate(
     effectiveAvailability.push({ start: actor.holidayFrom, end: actor.holidayTill });
   }
 
+  // NUCLEAR GOD MODE: Gebruik de nieuwe delivery_config indien aanwezig
+  const config = actor.delivery_config || {
+    type: actor.deliveryDaysMin === 0 ? 'sameday' : (actor.deliveryDaysMax <= 1 ? '24h' : '72u'),
+    cutoff: actor.cutoffTime || '18:00',
+    weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri']
+  };
+
   // 1. Bepaal effectieve startdatum (rekening houdend met cutoff)
   let effectiveStart = new Date(baseDate);
-  const cutoff = actor.cutoffTime || '18:00';
+  const cutoff = config.cutoff || '18:00';
   const [cutoffHour, cutoffMinute] = cutoff.split(':').map(Number);
+  
   const currentHour = baseDate.getHours();
   const currentMinute = baseDate.getMinutes();
 
   const isAfterCutoff = currentHour > cutoffHour || (currentHour === cutoffHour && currentMinute >= cutoffMinute);
   
-  // Als het na de cutoff is, of geen werkdag, begin pas de volgende werkdag te tellen
-  if (isAfterCutoff || !isWorkingDay(effectiveStart, holidays)) {
-    effectiveStart = getNextWorkingDay(effectiveStart, holidays, effectiveAvailability);
+  // Als het na de cutoff is, of geen werkdag, begin pas de volgende werkdag te tellen.
+  if (isAfterCutoff || !isWorkingDay(effectiveStart, holidays, config.weekly_on)) {
+    effectiveStart = getNextWorkingDay(effectiveStart, holidays, effectiveAvailability, config.weekly_on);
+  } else {
+    // Voor de cutoff op een werkdag? Dan is de startdatum vandaag om 00:00 om correct te rekenen.
+    effectiveStart = startOfDayNative(effectiveStart);
   }
 
   // 2. Bereken min en max leverdatum
   const calculateDate = (days: number) => {
+    //  BOB-METHODE: Voeg accountability penalty toe aan de gevraagde dagen
+    const totalDays = days + (actor.deliveryPenaltyDays || 0);
     let date = new Date(effectiveStart);
-    let remainingDays = days;
+    let remainingDays = totalDays;
+    
+    if (remainingDays === 0) return date;
+
     while (remainingDays > 0) {
       date = addDaysNative(date, 1);
-      if (isWorkingDay(date, holidays)) {
-        // Check ook hier vakanties van de acteur
+      if (isWorkingDay(date, holidays, config.weekly_on)) {
         const isOnHoliday = effectiveAvailability.some(v => {
           const start = startOfDayNative(new Date(v.start));
           const end = startOfDayNative(new Date(v.end));
@@ -215,13 +344,59 @@ export function calculateDeliveryDate(
     return date;
   };
 
-  const dateMin = calculateDate(actor.deliveryDaysMin || 1);
-  const dateMax = (actor.deliveryDaysMax || 1) > (actor.deliveryDaysMin || 1) 
-    ? calculateDate(actor.deliveryDaysMax || 1) 
-    : null;
+  // Map config type naar dagen indien niet expliciet opgegeven
+  let daysMin = actor.deliveryDaysMin;
+  let daysMax = actor.deliveryDaysMax;
+
+  if (config.type === 'sameday') {
+    daysMin = 0;
+    daysMax = 0;
+  } else if (config.type === '24h') {
+    daysMin = 1;
+    daysMax = 1;
+  } else if (config.type === '48h') {
+    daysMin = 1;
+    daysMax = 2;
+  } else if (config.type === '72u') {
+    daysMin = 1;
+    daysMax = 3;
+  }
+
+  const dateMin = calculateDate(daysMin);
+  
+  //  BOB-METHODE: Support voor 'Same-Day' turnaround uren
+  if (config.type === 'sameday' && config.avg_turnaround_hours && daysMin === 0) {
+    dateMin.setHours(dateMin.getHours() + (config.avg_turnaround_hours || 4));
+  }
+
+  //  BOB-METHODE: Tie-breaker voor sortering
+  if (daysMin === 0) {
+    // Voor Same-Day houden we de tijd laag voor sortering
+    dateMin.setHours(1, 0, 0, 0); 
+  } else {
+    dateMin.setHours(12, 0, 0, 0); // 24u+ later
+  }
+
+  //  CHRIS-PROTOCOL: HITL (Human In The Loop) Validation
+  // Zelfs als de acteur op een weekenddag levert, kan de admin pas op de eerstvolgende 
+  // systeem-werkdag valideren en doorsturen naar de klant.
+  const systemHolidays = getBelgianHolidays(dateMin.getFullYear());
+  while (!isWorkingDay(dateMin, systemHolidays, systemWorkingDays)) {
+    const nextDate = addDaysNative(dateMin, 1);
+    dateMin.setTime(nextDate.getTime());
+    // Reset uren bij verschuiven naar volgende werkdag om sortering consistent te houden
+    dateMin.setHours(9, 0, 0, 0); 
+  }
+
+  const dateMax = daysMax > daysMin ? calculateDate(daysMax) : null;
 
   // 3. Formatteren
   let formatted = formatDutchLong(dateMin);
+  
+  const today = startOfDayNative(new Date(baseDate));
+  if (formatDateISO(dateMin) === formatDateISO(today)) {
+    formatted = "vandaag";
+  }
   if (dateMax) {
     formatted = `tussen ${formatDutchLong(dateMin)} en ${formatDutchLong(dateMax)}`;
   }
@@ -232,7 +407,7 @@ export function calculateDeliveryDate(
     formatted,
     formattedShort: formatShortDate(dateMin),
     isRange: !!dateMax,
-    deliveryDaysMin: actor.deliveryDaysMin || 1,
-    deliveryDaysMax: actor.deliveryDaysMax || 1
+    deliveryDaysMin: daysMin,
+    deliveryDaysMax: daysMax
   };
 }

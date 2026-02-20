@@ -21,6 +21,7 @@ export const GuaranteesBento = () => {
             src="/assets/service-photo.jpg" 
             alt="Service" 
             fill 
+            sizes="(max-width: 768px) 100vw, 1140px"
             className="object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-1000"
           />
         </ContainerInstrument>
@@ -30,25 +31,34 @@ export const GuaranteesBento = () => {
           </ContainerInstrument>
           <HeadingInstrument level={3} className="text-5xl font-light tracking-tighter mb-6 leading-none text-primary"><VoiceglotText  translationKey="guarantees.satisfaction.title" defaultText="100% Tevredenheid" /><TextInstrument className="text-white/40 font-medium max-w-md text-lg"><VoiceglotText  
               translationKey="guarantees.satisfaction.description" 
-              defaultText="Is de toon niet helemaal wat je zocht? Vraag met n klik een gratis retake aan. Let op: voor tekstwijzigingen achteraf rekenen we een klein supplement." 
+              defaultText="Is de toon niet helemaal wat je zocht? Vraag met één klik een gratis retake aan. Let op: voor tekstwijzigingen achteraf rekenen we een klein supplement." 
             /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
-        <ContainerInstrument className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
       </BentoCard>
 
-      {/*  Native Speakers */}
+      {/*  Native Speakers & Curated Selection */}
       <BentoCard span="sm" className="bg-white p-8 flex flex-col justify-between h-[280px] border border-black/5 shadow-sm">
         <ContainerInstrument plain>
           <Globe strokeWidth={1.5} className="text-primary mb-4" size={24} />
-          <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2 text-va-black"><VoiceglotText  translationKey="guarantees.native.title" defaultText="Native Speakers" /><TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed"><VoiceglotText  translationKey="guarantees.native.description" defaultText="Al onze stemmen wonen en werken in hun eigen land voor de juiste culturele nuance." /></TextInstrument></HeadingInstrument>
+          <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2 text-va-black">
+            <VoiceglotText  translationKey="guarantees.curated.title" defaultText="Curated Selection" />
+            <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed">
+              <VoiceglotText  translationKey="guarantees.curated.description" defaultText="Geen eindeloze lijsten, maar een handgeplukte selectie van de allerbeste native speakers." />
+            </TextInstrument>
+          </HeadingInstrument>
         </ContainerInstrument>
       </BentoCard>
 
-      {/*  Snelheid */}
+      {/*  Technical QC */}
       <BentoCard span="sm" className="bg-va-dark-soft text-white p-8 flex flex-col justify-between h-[280px] border-none">
         <ContainerInstrument plain>
           <Zap strokeWidth={1.5} className="text-primary mb-4" size={24} fill="currentColor" />
-          <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2 text-primary"><VoiceglotText  translationKey="guarantees.speed.title" defaultText="Razendsnel" /><TextInstrument className="text-white/60 text-[15px] font-medium leading-relaxed"><VoiceglotText  translationKey="guarantees.speed.description" defaultText="Vaak al binnen 24 uur geleverd. Jouw project wacht niet, wij ook niet." /></TextInstrument></HeadingInstrument>
+          <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-2 text-primary">
+            <VoiceglotText  translationKey="guarantees.qc.title" defaultText="Technical QC" />
+            <TextInstrument className="text-white/60 text-[15px] font-medium leading-relaxed">
+              <VoiceglotText  translationKey="guarantees.qc.description" defaultText="Elke opname wordt gecontroleerd op 48kHz kwaliteit, ruis en timing voor een vlekkeloos resultaat." />
+            </TextInstrument>
+          </HeadingInstrument>
         </ContainerInstrument>
       </BentoCard>
 

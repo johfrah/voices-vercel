@@ -1,5 +1,7 @@
 import * as soap from 'soap';
 import { create } from 'xmlbuilder2';
+import { db } from '@db';
+import { systemEvents } from '@db/schema';
 
 /**
  *  YUKI NUCLEAR SERVICE (2026)
@@ -213,6 +215,15 @@ export class YukiService {
       };
     } catch (error) {
       console.error('Error syncing with Yuki:', error);
+      
+      // CHRIS-PROTOCOL: Log failure to system events for forensic recovery
+      db.insert(systemEvents).values({
+        level: 'error',
+        source: 'YukiService',
+        message: `Failed to create invoice for Order-${data.orderId}`,
+        details: { error: error instanceof Error ? error.message : String(error), orderId: data.orderId }
+      }).catch(e => console.warn('[YukiService] Failed to log system event:', e));
+
       return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }

@@ -1,8 +1,10 @@
 "use client";
 
+import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { MarketManager } from '@config/market-manager';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Mic2, LucideChevronRight, Home, Users, Search, Euro, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -17,6 +19,7 @@ import { VoiceglotText } from './VoiceglotText';
 export function MobileFloatingDock() {
   const pathname = usePathname();
   const router = useRouter();
+  const { state } = useVoicesState();
   const { playClick } = useSonicDNA();
   const market = MarketManager.getCurrentMarket();
   const [mounted, setMounted] = useState(false);
@@ -27,7 +30,12 @@ export function MobileFloatingDock() {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  const isSpecialJourney = market.market_code === 'JOHFRAH' || 
+    market.market_code === 'YOUSSEF' || 
+    market.market_code === 'ADEMING' || 
+    (typeof window !== 'undefined' && (window.location.host.includes('johfrah.be') || window.location.pathname.includes('/portfolio/johfrah')));
+
+  if (!mounted || isSpecialJourney) return null;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,108 +48,109 @@ export function MobileFloatingDock() {
   };
 
   const navItems = [
-    { src: '/assets/common/branding/icons/MENU.svg', label: 'Home', href: '/', key: 'nav.home' },
-    { src: '/assets/common/branding/icons/INFO.svg', label: 'Stemmen', href: '/agency', key: 'nav.my_voice' },
-    { src: '/assets/common/branding/icons/SEARCH.svg', label: 'Zoeken', onClick: () => {
-      playClick('soft');
-      setIsSearchOpen(!isSearchOpen);
-    }, key: 'nav.search' },
-    { src: '/assets/common/branding/icons/CART.svg', label: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
-    { src: '/assets/common/branding/icons/ACCOUNT.svg', label: 'Account', href: '/account', key: 'nav.account' },
+    { icon: Home, label: 'Home', href: '/', key: 'nav.home' },
+    { icon: Users, label: 'Stemmen', href: '/agency', key: 'nav.my_voice' },
+    { icon: Euro, label: 'Tarieven', href: '/tarieven', key: 'nav.pricing' },
+    { icon: User, label: 'Account', href: '/account', key: 'nav.account' },
   ];
 
+  const hasSelection = state.selected_actors.length > 0;
+
   return (
-    <div className="fixed bottom-8 left-0 right-0 z-50 px-6 md:hidden pointer-events-none">
-      <AnimatePresence>
-        {isSearchOpen && (
-          <motion.div
-            initial={{ y: 20, opacity: 0, scale: 0.95 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 20, opacity: 0, scale: 0.95 }}
-            className="absolute bottom-24 left-6 right-6 pointer-events-auto"
-          >
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                autoFocus
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Zoek een stem..."
-                className="w-full bg-va-black/95 backdrop-blur-2xl text-white border border-white/10 rounded-[24px] py-4 pl-12 pr-4 shadow-2xl focus:ring-2 focus:ring-primary/50 outline-none transition-all"
-              />
-              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <Image  
-                  src="/assets/common/branding/icons/SEARCH.svg" 
-                  alt="Search" 
-                  width={18} 
-                  height={18} 
-                  className="opacity-40 brightness-0 invert"
-                />
-              </div>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <motion.nav 
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-        className="mx-auto max-w-sm bg-va-black/90 backdrop-blur-2xl rounded-[32px] p-2 shadow-aura-lg border border-white/10 flex justify-between items-center pointer-events-auto relative"
-      >
-        {navItems.map((item) => {
-          const isActive = item.href ? (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))) : isSearchOpen;
-
-          const content = (
-            <div className="relative flex flex-col items-center justify-center w-14 h-14 group">
-              <AnimatePresence>
-                {isActive && (
-                  <motion.div 
-                    layoutId="active-pill"
-                    className="absolute inset-0 bg-primary rounded-2xl"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-              </AnimatePresence>
-              
-              <div className={`relative z-10 transition-all duration-300 ${isActive ? 'scale-110 text-white' : 'opacity-40 group-hover:opacity-70 text-white'}`}>
-                <Image  
-                  src={item.src} 
-                  alt={item.label} 
-                  width={24} 
-                  height={24} 
-                  className="brightness-0 invert"
-                />
-              </div>
-              
-              <span className="sr-only">
-                <VoiceglotText  translationKey={item.key} defaultText={item.label} />
-              </span>
-            </div>
-          );
-
-          if (item.href) {
-            return (
-              <Link  
-                key={item.href}
-                href={item.href}
+    <div className="fixed bottom-8 left-0 right-0 z-[300] px-6 md:hidden pointer-events-none">
+      <div className="relative mx-auto max-w-sm">
+        {/*  CHRIS-PROTOCOL: Casting Action Trigger (Floating above dock when selection exists) */}
+        <AnimatePresence>
+          {hasSelection && (
+            <motion.div
+              initial={{ y: 20, opacity: 0, scale: 0.8 }}
+              animate={{ y: -12, opacity: 1, scale: 1 }}
+              exit={{ y: 20, opacity: 0, scale: 0.8 }}
+              className="absolute -top-16 left-0 right-0 flex justify-center pointer-events-auto z-[310]"
+            >
+              <button 
                 onClick={() => {
-                  playClick('soft');
-                  setIsSearchOpen(false);
+                  playClick('pro');
+                  window.location.href = '/casting/launchpad/';
                 }}
+                className="bg-primary text-white h-14 px-6 rounded-full flex items-center gap-3 shadow-[0_20px_50px_rgba(236,72,153,0.4)] hover:scale-105 active:scale-95 transition-all border border-white/20"
               >
-                {content}
-              </Link>
-            );
-          }
+                <div className="relative">
+                  <Mic2 size={20} strokeWidth={2.5} />
+                  <div className="absolute -top-2 -right-2 w-5 h-5 bg-va-black rounded-full flex items-center justify-center text-[10px] font-bold border border-white/20 shadow-sm">
+                    {state.selected_actors.length}
+                  </div>
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-[13px] font-bold tracking-widest uppercase leading-none">
+                    <VoiceglotText translationKey="auto.castingdock.proefopname" defaultText="Gratis proefopname" />
+                  </span>
+                  <span className="text-[9px] font-medium opacity-70 leading-none mt-1 uppercase tracking-wider">
+                    <VoiceglotText translationKey="auto.castingdock.start_selectie" defaultText="Bevestig selectie" />
+                  </span>
+                </div>
+                <LucideChevronRight size={18} strokeWidth={3} />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          return (
-            <button key={item.key} onClick={item.onClick}>
-              {content}
-            </button>
-          );
-        })}
-      </motion.nav>
+        <motion.nav 
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+          className="bg-va-black/90 backdrop-blur-2xl rounded-[32px] p-2 shadow-aura-lg border border-white/10 flex justify-between items-center pointer-events-auto relative z-[200]"
+        >
+          {navItems.map((item) => {
+            const isActive = item.href ? (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))) : isSearchOpen;
+            const Icon = item.icon;
+
+            const content = (
+              <div className="relative flex flex-col items-center justify-center w-[80px] h-14 group">
+                <AnimatePresence>
+                  {isActive && (
+                    <motion.div 
+                      layoutId="active-pill"
+                      className="absolute inset-0 bg-primary rounded-2xl"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </AnimatePresence>
+                
+                <div className={`relative z-10 flex flex-col items-center gap-0.5 transition-all duration-300 ${isActive ? 'scale-105 text-white' : 'opacity-40 group-hover:opacity-70 text-white'}`}>
+                  <div className="relative">
+                    <Icon size={isActive ? 20 : 18} strokeWidth={isActive ? 2.5 : 1.5} />
+                  </div>
+                  <span className="text-[9px] font-medium tracking-tight leading-none">
+                    <VoiceglotText translationKey={item.key} defaultText={item.label} />
+                  </span>
+                </div>
+              </div>
+            );
+
+            if (item.href) {
+              return (
+                <Link  
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => {
+                    playClick('soft');
+                    setIsSearchOpen(false);
+                  }}
+                >
+                  {content}
+                </Link>
+              );
+            }
+
+            return (
+              <button key={item.key} onClick={item.onClick}>
+                {content}
+              </button>
+            );
+          })}
+        </motion.nav>
+      </div>
     </div>
   );
 }

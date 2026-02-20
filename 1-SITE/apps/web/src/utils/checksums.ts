@@ -49,7 +49,7 @@ export function isValidBelgianVAT(vat: string): boolean {
 
 /**
  * Probeert een 'vervuilde' IBAN te redden door rommel aan het einde weg te snijden.
- * Handig voor OCR die 'IBAN: BE123... SWIFT' als n string ziet.
+ * Handig voor OCR die 'IBAN: BE123... SWIFT' als één string ziet.
  */
 export function rescueIBAN(raw: string): string | null {
   const clean = raw.replace(/[\s\t\n.-]/g, '').toUpperCase();

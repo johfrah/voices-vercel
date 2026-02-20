@@ -35,21 +35,25 @@ export async function GET(request: NextRequest) {
       console.log(` [HEAL] Triggering translation generation for: ${lang}`);
       // We doen dit async zodat de gebruiker niet hoeft te wachten
       // In een server context gebruiken we de interne URL
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-      fetch(`${baseUrl}/api/translations/heal`, {
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+      fetch(`${baseUrl}/api/translations/heal?bob=true`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lang, reason: 'missing_translations' })
+        body: JSON.stringify({ currentLang: lang, key: 'initial_load', originalText: 'Welkom bij Voices' })
       }).catch(err => console.error('Failed to trigger translation healing:', err));
     }
 
-    return NextResponse.json({
+    //  CHRIS-PROTOCOL: Forceer de status 200 en de correcte headers voor de lancering
+    const response = NextResponse.json({
       success: true,
       lang,
       translations: translationMap,
       _nuclear: true,
       _source: 'supabase'
     });
+
+    response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    return response;
   } catch (error) {
     console.error('[API Translations Error]:', error);
     //  STABILITEIT: Geef nooit een 500, maar een lege map zodat de site blijft draaien

@@ -17,7 +17,7 @@ interface BriefingInstrumentProps {
 export const BriefingInstrument: React.FC<BriefingInstrumentProps> = ({ script }) => {
   return (
     <BentoCard 
-      title={<VoiceglotText translationKey="order.briefing.title" defaultText="Briefing" />}
+      title={<VoiceglotText translationKey="order.briefing.title" defaultText="Tekst" />}
       icon={<FileCheck className="w-5 h-5" strokeWidth={1.5} />}
       className="col-span-1"
     >

@@ -5,6 +5,7 @@ import { BriefingSelector } from '@/components/studio/BriefingSelector';
 import { MusicSelector } from '@/components/studio/MusicSelector';
 import { AddToCartEmailModal } from '@/components/checkout/AddToCartEmailModal';
 import { CommercialMediaSelectionModal } from '@/components/checkout/CommercialMediaSelectionModal';
+import { VoicesMasterControl } from '@/components/ui/VoicesMasterControl';
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -18,8 +19,8 @@ import { VoiceCard } from '@/components/ui/VoiceCard';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { JourneyType, useMasterControl } from '@/contexts/VoicesMasterControlContext';
-import { PricingEngine } from '@/lib/pricing-engine';
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
+import { SlimmeKassa } from '@/lib/pricing-engine';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { animate, AnimatePresence, motion } from 'framer-motion';
@@ -40,7 +41,11 @@ import {
     ShoppingBag,
     Sparkles,
     Tv,
-    Video
+    Type,
+    Upload,
+    Video,
+    X,
+    Zap
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -60,7 +65,7 @@ const PriceCountUp = ({ value }: { value: number }) => {
     return () => controls.stop();
   }, [value, displayValue]);
 
-  return <span>{PricingEngine.format(displayValue)}</span>;
+  return <span>{SlimmeKassa.format(displayValue)}</span>;
 };
 
 /**
@@ -69,14 +74,25 @@ const PriceCountUp = ({ value }: { value: number }) => {
 export default function ConfiguratorPageClient({ 
   isEmbedded = false, 
   hideMediaSelector = false,
-  minimalMode = false
+  minimalMode = false,
+  hideVoiceCard = false,
+  hideUsageSelector = false
 }: { 
   isEmbedded?: boolean,
   hideMediaSelector?: boolean,
-  minimalMode?: boolean
+  minimalMode?: boolean,
+  hideVoiceCard?: boolean,
+  hideUsageSelector?: boolean,
+  hideCampaignCTA?: boolean,
+  hidePriceBlock?: boolean
 }) {
   const { state, updateBriefing, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateMusic, updateCountry, setStep, addItem, resetSelection, calculatePricing } = useCheckout();
   
+  const [isHydrated, setIsHydrated] = useState(false);
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   //  BOB-METHODE: Share Functionality
   const [isSharing, setIsSharing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -138,6 +154,29 @@ export default function ConfiguratorPageClient({
   const playClick = sonicDNA?.playClick;
   const { t } = useTranslation();
   const router = useRouter();
+
+  const usps = useMemo(() => {
+    switch (state.usage) {
+      case 'telefonie':
+        return [
+          { key: 'telephony.warm', text: 'menselijke begroeting', icon: CheckCircle2 },
+          { key: 'telephony.mix', text: 'inclusief muziek-mix', icon: Music },
+          { key: 'telephony.speed', text: '90% binnen 24 uur klaar', icon: Zap }
+        ];
+      case 'commercial':
+        return [
+          { key: 'commercial.buyout', text: 'directe buy-out calculatie', icon: CheckCircle2 },
+          { key: 'commercial.authority', text: 'stemmen met autoriteit', icon: Megaphone },
+          { key: 'commercial.master', text: 'broadcast-ready master', icon: Zap }
+        ];
+      default:
+        return [
+          { key: 'video.timing', text: 'perfecte timing & flow', icon: Clock },
+          { key: 'video.guarantee', text: 'foutloze opname-garantie', icon: CheckCircle2 },
+          { key: 'video.quality', text: 'technisch perfect (48kHz)', icon: ShieldCheck }
+        ];
+    }
+  }, [state.usage]);
   
   const [localBriefing, setLocalBriefing] = useState(state.briefing);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
@@ -147,6 +186,41 @@ export default function ConfiguratorPageClient({
   const [showMediaModal, setShowMediaModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<'checkout' | 'cart' | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  //  BUTLER-HAPER-DETECTIE: Monitor inactiviteit op de configurator
+  const lastActivityRef = useRef<number>(Date.now());
+  useEffect(() => {
+    if (isEmbedded || minimalMode) return;
+
+    const interval = setInterval(() => {
+      const inactiveTime = Date.now() - lastActivityRef.current;
+      if (inactiveTime > 30000 && !addedToCart && state.pricing.total > 0) {
+        // Trigger een proactieve suggestie via Voicy
+        window.dispatchEvent(new CustomEvent('voicy:suggestion', {
+          detail: {
+            title: "Hulp nodig met je overzicht?",
+            content: "Ik zie dat je het prijs-overzicht bekijkt. Zal ik je helpen om de briefing of de rechten te verfijnen?",
+            type: "proactive_configurator",
+            actions: [
+              { label: "Help me met schrijven", action: "ask_how_it_works" },
+              { label: "Bereken prijs", action: "calculate_price" }
+            ]
+          }
+        }));
+        lastActivityRef.current = Date.now(); // Reset om spam te voorkomen
+      }
+    }, 5000);
+
+    const recordActivity = () => { lastActivityRef.current = Date.now(); };
+    window.addEventListener('mousemove', recordActivity);
+    window.addEventListener('keydown', recordActivity);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('mousemove', recordActivity);
+      window.removeEventListener('keydown', recordActivity);
+    };
+  }, [state.pricing.total, addedToCart, isEmbedded, minimalMode, state.selectedActor?.id]);
   
   const { updateCustomer } = useCheckout();
 
@@ -160,32 +234,29 @@ export default function ConfiguratorPageClient({
       return;
     }
     
-    setIsProcessing(true);
-    //  CHRIS-PROTOCOL: Persistent email check
+    //  CHRIS-PROTOCOL: Optimistic UI - We voegen het item direct toe aan de state
+    // De admin notificatie en e-mail check doen we op de achtergrond.
     const savedEmail = state.customer.email || localStorage.getItem('voices_customer_email');
     
-    // Als e-mail al bekend is, direct doorgaan
+    // Als e-mail al bekend is, direct doorgaan zonder loader
     if (savedEmail && savedEmail.includes('@')) {
       if (!state.customer.email) {
         updateCustomer({ email: savedEmail });
       }
+      
+      // Voeg toe en navigeer direct (100ms feedback)
       handleAddToCart();
+      
       if (action === 'checkout') {
-        //  BOB-METHODE: Direct naar stap 3 (checkout) in de MasterControl
         updateStep('checkout');
-        
-        // En ook de router redirecten voor de zekerheid/URL
         router.push('/checkout');
       } else {
-        // Terug naar overzicht (Agency)
-        setIsProcessing(false);
         router.push('/agency');
       }
       return;
     }
 
-    // Anders popup tonen
-    setIsProcessing(false);
+    // Alleen als we de e-mail nog niet hebben tonen we de modal
     setPendingAction(action);
     setShowEmailModal(true);
   };
@@ -220,9 +291,53 @@ export default function ConfiguratorPageClient({
   // AI Assistant State
   const [showAiAssistant, setShowAiAssistant] = useState(false);
   const [showBriefingSelector, setShowBriefingSelector] = useState(false);
+  const aiAssistantRef = useRef<HTMLDivElement>(null);
+  const textSectionRef = useRef<HTMLDivElement>(null);
   const [aiSuggestion, setAiSuggestion] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [aiInsights, setAiInsights] = useState<any[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const suggestionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const analysisTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  //  NUCLEAR SCRIPT ANALYSIS (Gemini Context Check)
+  useEffect(() => {
+    if (!localBriefing || localBriefing.length < 20) {
+      setAiInsights([]);
+      return;
+    }
+
+    if (analysisTimeoutRef.current) clearTimeout(analysisTimeoutRef.current);
+
+    analysisTimeoutRef.current = setTimeout(async () => {
+      setIsAnalyzing(true);
+      try {
+        const res = await fetch('/api/admin/script/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            script: localBriefing,
+            usage: state.usage,
+            languages: state.secondaryLanguages,
+            actorId: state.selectedActor?.id
+          })
+        });
+        const data = await res.json();
+        if (data.insights) {
+          setAiInsights(data.insights);
+        }
+      } catch (e) {
+        console.error('Script analysis failed:', e);
+      } finally {
+        setIsAnalyzing(false);
+      }
+    }, 2000); // Debounce naar 2 seconden om API calls te beperken
+
+    return () => {
+      if (analysisTimeoutRef.current) clearTimeout(analysisTimeoutRef.current);
+    };
+  }, [localBriefing, state.usage, state.secondaryLanguages]);
 
   // Auto-Save Logic
   useEffect(() => {
@@ -231,7 +346,7 @@ export default function ConfiguratorPageClient({
       setLocalBriefing(saved);
       updateBriefing(saved);
     }
-  }, [state.briefing, updateBriefing]); // Added missing dependencies
+  }, [state.briefing, updateBriefing]);
 
   useEffect(() => {
     setIsAutoSaving(true);
@@ -253,19 +368,29 @@ export default function ConfiguratorPageClient({
   }, [state.briefing, localBriefing]);
 
   // AI Predictive Logic (Johfrai)
+  const abortControllerRef = useRef<AbortController | null>(null);
   useEffect(() => {
     if (!showAiAssistant || !localBriefing || localBriefing.length < 5) {
       setAiSuggestion("");
+      setIsAiLoading(false);
       return;
     }
 
     if (suggestionTimeoutRef.current) clearTimeout(suggestionTimeoutRef.current);
+    if (abortControllerRef.current) abortControllerRef.current.abort();
 
     suggestionTimeoutRef.current = setTimeout(async () => {
-      setIsAiLoading(true);
+      // BOB-METHODE: We tonen de loader pas als de request langer dan 150ms duurt
+      // om onrustig geflikker bij snelle verbindingen te voorkomen.
+      const loadingTimer = setTimeout(() => setIsAiLoading(true), 150);
+      
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       try {
         const res = await fetch('/api/johfrai/predictive', {
           method: 'POST',
+          signal: controller.signal,
           body: JSON.stringify({
             text: localBriefing,
             companyName: state.customer.company,
@@ -274,15 +399,20 @@ export default function ConfiguratorPageClient({
         });
         const data = await res.json();
         setAiSuggestion(data.suggestion || "");
-      } catch (err) {
-        console.error('AI Suggestion Error:', err);
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.error('AI Suggestion Error:', err);
+        }
       } finally {
+        clearTimeout(loadingTimer);
         setIsAiLoading(false);
+        abortControllerRef.current = null;
       }
     }, 800);
 
     return () => {
       if (suggestionTimeoutRef.current) clearTimeout(suggestionTimeoutRef.current);
+      if (abortControllerRef.current) abortControllerRef.current.abort();
     };
   }, [localBriefing, showAiAssistant, state.customer.company, state.usage]);
 
@@ -306,6 +436,46 @@ export default function ConfiguratorPageClient({
 
   const handleBriefingChange = (val: string) => {
     setLocalBriefing(val);
+  };
+
+  const handleFileDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+
+    // Check of het een ondersteund type is
+    const supportedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+    const isExcel = file.name.endsWith('.xlsx') || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    
+    if (!supportedTypes.includes(file.type) && !isExcel) {
+      return;
+    }
+
+    setIsAiLoading(true);
+    if (playClick) playClick('pro');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/audio/extract-text', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.script) {
+        handleBriefingChange(data.script);
+        if (playClick) playClick('deep');
+      }
+    } catch (err) {
+      console.error('Drop extraction failed:', err);
+    } finally {
+      setIsAiLoading(false);
+    }
   };
 
   const wordCount = useMemo(() => {
@@ -341,7 +511,49 @@ export default function ConfiguratorPageClient({
 
     const insights: { type: 'warning' | 'info' | 'success', message: string, action?: string }[] = [];
     const text = localBriefing.toLowerCase();
+    const wordCountVal = localBriefing.trim().split(/\s+/).length;
     
+    // 1. Contextuele Lengte Check (Bob-methode: Geen absolute waarheid, maar richtinggevend)
+    if (wordCountVal < 15) {
+      insights.push({
+        type: 'info',
+        message: t('configurator.insight.short', "Lekker kort en krachtig! Ideaal voor een snelle begroeting."),
+      });
+    } else if (wordCountVal > 150) {
+      insights.push({
+        type: 'info',
+        message: t('configurator.insight.long', "Mooi gedetailleerd script. We zorgen voor een rustig tempo."),
+      });
+    } else {
+      insights.push({
+        type: 'success',
+        message: t('configurator.insight.medium', "Dit script heeft een prettige cadans."),
+      });
+    }
+
+    // 2. Sector Intelligentie (Chris-Protocol: Voorspelbaarheid)
+    const sectors = {
+      medical: ['dokter', 'arts', 'patiënt', 'ziekenhuis', 'praktijk', 'apotheek', 'medisch'],
+      finance: ['bank', 'verzekering', 'hypotheek', 'lening', 'factuur', 'betaling'],
+      tech: ['software', 'app', 'installatie', 'update', 'support', 'online'],
+      hospitality: ['restaurant', 'tafel', 'reserveren', 'menu', 'hotel', 'kamer']
+    };
+
+    let detectedSector = null;
+    for (const [sector, keywords] of Object.entries(sectors)) {
+      if (keywords.some(k => text.includes(k))) {
+        detectedSector = sector;
+        break;
+      }
+    }
+
+    if (detectedSector === 'medical') {
+      insights.push({
+        type: 'info',
+        message: t('configurator.insight.medical', "Ik zie dat dit een medisch script is. We letten extra op een geruststellende toon."),
+      });
+    }
+
     const telephonyKeywords = ['welkom bij', 'keuzemenu', 'druk 1', 'voicemail', 'openingsuren', 'verbonden met'];
     const commercialKeywords = ['nu verkrijgbaar', 'korting', 'actie', 'tijdelijk', 'alleen vandaag', 'bestel nu'];
     
@@ -351,7 +563,7 @@ export default function ConfiguratorPageClient({
     if (state.usage !== 'telefonie' && hasTelephonySigns) {
       insights.push({
         type: 'warning',
-        message: "Dit lijkt op een telefonie-script. Heb je de juiste journey gekozen?",
+        message: t('configurator.insight.telephony_detected', "Dit lijkt op een telefonie-script. Heb je de juiste journey gekozen?"),
         action: 'switch_telephony'
       });
     }
@@ -359,7 +571,7 @@ export default function ConfiguratorPageClient({
     if (state.usage === 'telefonie' && hasCommercialSigns) {
       insights.push({
         type: 'warning',
-        message: "Dit script bevat commerciële termen. Is dit een advertentie?",
+        message: t('configurator.insight.commercial_detected', "Dit script bevat commerciële termen. Is dit een advertentie?"),
         action: 'switch_commercial'
       });
     }
@@ -376,42 +588,43 @@ export default function ConfiguratorPageClient({
       if (detectedTitles > selectedSpots) {
         insights.push({
           type: 'warning',
-          message: `Ik zie ${detectedTitles} verschillende versies (tussen haakjes), maar je hebt ${selectedSpots} ${selectedSpots === 1 ? 'spot' : 'spots'} gekozen.`,
+          message: t('configurator.insight.spots_mismatch', `Ik zie ${detectedTitles} verschillende versies (tussen haakjes), maar je hebt ${selectedSpots} ${selectedSpots === 1 ? 'spot' : 'spots'} gekozen.`),
           action: 'check_spots'
         });
       } else if (detectedTitles > 0) {
         insights.push({
           type: 'success',
-          message: `Gedetecteerd: ${detectedTitles} audiobestanden via (titels). Dit komt overeen met je selectie.`,
+          message: t('configurator.insight.spots_match', `Gedetecteerd: ${detectedTitles} audiobestanden via (titels). Dit komt overeen met je selectie.`),
         });
       }
-    }
-
-    if (state.usage === 'telefonie' && detectedTitles > 0) {
-      insights.push({
-        type: 'success',
-        message: `Gedetecteerd: ${detectedTitles} verschillende prompts via (titels).`,
-      });
     }
 
     const words = localBriefing.split(/\s+/);
     const difficultWords: string[] = [];
     
     // Woorden die we ALTIJD negeren (whitelist)
-    const whitelist = ['Welkom', 'Johfrah', 'Voices', 'Bedrijf', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
+    const whitelist = ['Welkom', 'Voices', 'Bedrijf', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'];
     
     words.forEach((word, i) => {
       const cleanWord = word.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g,"");
+      
+      // 1. Check op Hoofdletters (Namen/Merken)
       if (cleanWord.length > 3 && /^[A-Z]/.test(cleanWord)) {
         const isStartOfSentence = i === 0 || /[.!?]$/.test(words[i-1]);
-        if (!isStartOfSentence && !whitelist.includes(cleanWord)) {
+        // Johfrah is een speciale naam die we ALTIJD willen markeren als hij in het script staat
+        const isJohfrah = cleanWord.toLowerCase() === 'johfrah';
+        
+        if (isJohfrah || (!isStartOfSentence && !whitelist.includes(cleanWord))) {
           difficultWords.push(cleanWord);
         }
       }
+
+      // 2. Check op Getallen/Jargon (Alleen als het geen simpele opsomming of tijd is)
       if (/[0-9]/.test(cleanWord) || /[\\/]/.test(word)) {
-        // Negeren simpele tijdsaanduidingen zoals 9u, 17u
+        const isSimpleNumber = /^[0-9]+[.]?$/.test(cleanWord);
         const isSimpleTime = /^[0-9]{1,2}u$/.test(cleanWord);
-        if (!isSimpleTime) {
+        
+        if (!isSimpleNumber && !isSimpleTime) {
           difficultWords.push(word);
         }
       }
@@ -421,13 +634,20 @@ export default function ConfiguratorPageClient({
     if (uniqueDifficult.length > 0) {
       insights.push({
         type: 'info',
-        message: `Namen of jargon gedetecteerd: "${uniqueDifficult.join(', ')}". Voeg eventueel een audio-briefing toe voor de juiste uitspraak.`,
-        action: 'add_audio_briefing'
+        message: t('configurator.insight.difficult_words', `Namen of jargon gedetecteerd: "${uniqueDifficult.join(', ')}". Voeg eventueel een audio-voorbeeld toe voor de juiste uitspraak.`),
+        action: 'scroll_to_text_options'
       });
     }
 
-    return insights;
-  }, [localBriefing, state.usage, state.spots, state.spotsDetail]);
+    // 3. Beperk tot max 2 meest relevante tips (Geen verwarring)
+    // Prioriteit: Warnings > Success > Info
+    const sortedInsights = [...insights].sort((a, b) => {
+      const priority = { warning: 0, success: 1, info: 2 };
+      return priority[a.type] - priority[b.type];
+    });
+
+    return sortedInsights.slice(0, 2);
+  }, [localBriefing, state.usage, state.spots, state.spotsDetail, t]);
 
   const renderHighlightedText = () => {
     if (!localBriefing) return null;
@@ -445,14 +665,14 @@ export default function ConfiguratorPageClient({
   };
 
   const handleUsageSwitch = (usageId: any) => {
-    const journeyMap: Record<string, JourneyType> = {
+    const projectTypeMap: Record<string, JourneyType> = {
       'telefonie': 'telephony',
       'unpaid': 'video',
       'commercial': 'commercial'
     };
 
-    if (journeyMap[usageId]) {
-      updateJourney(journeyMap[usageId]);
+    if (projectTypeMap[usageId]) {
+      updateJourney(projectTypeMap[usageId]);
     } else {
       updateUsage(usageId);
     }
@@ -503,6 +723,10 @@ export default function ConfiguratorPageClient({
     { id: 'unpaid', label: 'Video', icon: Video, key: 'journey.video', description: 'Online, Corporate' },
     { id: 'commercial', label: 'Commercial', icon: Megaphone, key: 'journey.commercial', description: 'Radio, TV, Ads' },
   ];
+
+  const filteredUsageTypes = minimalMode 
+    ? usageTypes 
+    : usageTypes;
 
   const commercialMediaOptions = [
     { id: 'online', label: 'Online / Social', icon: Video, description: 'Web, Social Media' },
@@ -566,7 +790,10 @@ export default function ConfiguratorPageClient({
   ].sort((a, b) => a.label.localeCompare(b.label));
 
   const liveRegiePrice = useMemo(() => {
-    if (!state.selectedActor) return 99;
+    const config = state.pricingConfig || SlimmeKassa.getDefaultConfig();
+    const defaultLiveRegie = config.liveSessionSurcharge / 100;
+
+    if (!state.selectedActor) return defaultLiveRegie;
     const actorRates = state.selectedActor.rates || state.selectedActor.rates_raw || {};
     const country = Array.isArray(state.country) ? state.country[0] : (state.country || 'BE');
     const countryRates = actorRates[country] || {};
@@ -576,19 +803,17 @@ export default function ConfiguratorPageClient({
     else if (actorRates.price_live_regie > 0) fee = parseFloat(actorRates.price_live_regie);
     else if (actorRates['price_live_regie'] > 0) fee = parseFloat(actorRates['price_live_regie']);
     
-    return fee || 99;
-  }, [state.selectedActor, state.country]);
+    return fee || defaultLiveRegie;
+  }, [state.selectedActor, state.country, state.pricingConfig]);
 
   const handleAddToCart = () => {
     if (!state.selectedActor || effectiveWordCount === 0) {
-      setIsProcessing(false);
       return;
     }
 
     //  KELLY-MANDATE: Safety check for 0 price
     if (state.pricing.total <= 0) {
       console.error('[Configurator] Price is 0. Cannot add to cart.');
-      setIsProcessing(false);
       alert('Er is een fout opgetreden bij de prijsberekening (0 euro). Neem contact op met support.');
       return;
     }
@@ -628,6 +853,7 @@ export default function ConfiguratorPageClient({
     setAddedToCart(true);
     
     //  HITL-TRIGGER: Stuur een mailtje naar de admin bij add-to-cart
+    // CHRIS-PROTOCOL: Dit doen we op de achtergrond, de gebruiker merkt hier niks van.
     fetch('/api/admin/notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -651,147 +877,205 @@ export default function ConfiguratorPageClient({
   /**
    *  SALLY'S PRICE BLOCK (Refactored for 2026)
    */
-  const PriceBlock = () => (
-    <ContainerInstrument className="bg-white rounded-[20px] p-8 text-va-black shadow-aura border border-black/[0.03] relative overflow-hidden">
-      <div className="space-y-6 relative z-10">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-black/[0.03] pb-2">
-            <span className="text-[11px] font-bold tracking-widest text-va-black/30 uppercase">Opbouw prijs</span>
-          </div>
-          <div className="space-y-3">
-            <div className="flex justify-between text-[14px] items-center">
-              <span className="text-va-black/60 font-medium">
-                {state.usage === 'commercial' ? (
-                  <div className="flex flex-col">
-                    <span>Basistarief (Opname)</span>
-                    <span className="text-[9px] text-va-black/30 font-light italic -mt-1">Basis Studio Fee (BSF)</span>
-                  </div>
-                ) : 
-                 state.usage === 'telefonie' ? 'Basistarief (Telefonie)' : 
-                 'Basistarief (Video)'}
+  const PriceBlock = () => {
+    if (!isHydrated) return (
+      <ContainerInstrument className="bg-white rounded-[20px] p-8 text-va-black shadow-aura border border-black/[0.03] min-h-[400px] flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary/20" size={32} />
+      </ContainerInstrument>
+    );
+
+    return (
+      <ContainerInstrument className="bg-white rounded-[20px] p-8 text-va-black shadow-aura border border-black/[0.03] relative overflow-hidden">
+        <div className="space-y-6 relative z-10">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-black/[0.03] pb-2">
+              <span className="text-[11px] font-bold tracking-widest text-va-black/30 uppercase">
+                <VoiceglotText translationKey="configurator.price_breakdown" defaultText="Opbouw prijs" />
               </span>
-              <span className="font-bold text-va-black">{PricingEngine.format(state.pricing.base)}</span>
             </div>
-            {state.pricing.wordSurcharge > 0 && (
-              <div className="flex justify-between text-[14px] items-center">
-                <span className="text-va-black/60 font-medium">
-                  {state.usage === 'telefonie' ? (
-                    <div className="flex flex-col">
-                      <span>Extra prompts ({promptCount - 1})</span>
-                      {wordCount > 25 && <span className="text-[9px] text-va-black/30 font-light italic -mt-1">Incl. extra woorden ({wordCount - 25})</span>}
+            <div className="space-y-3">
+              <div className="space-y-3">
+                {state.usage === 'telefonie' ? (
+                  <>
+                    <div className="flex justify-between text-[14px] items-center">
+                      <span className="text-va-black/60 font-medium">
+                        <VoiceglotText translationKey="pricing.base_telephony" defaultText="Basistarief (Telefoon)" />
+                      </span>
+                      <span className="font-bold text-va-black">{SlimmeKassa.format((state.pricingConfig?.telephonyBasePrice || 8900) / 100)}</span>
                     </div>
-                  ) : 
-                   `Extra woorden (${Math.max(0, effectiveWordCount - (state.usage === 'unpaid' ? 200 : 0))})`}
-                </span>
-                <span className="font-bold text-va-black">+{PricingEngine.format(state.pricing.wordSurcharge)}</span>
-              </div>
-            )}
-            {state.usage === 'commercial' && state.pricing.mediaSurcharge > 0 && (
-              <div className="space-y-1.5 pt-1">
-                <div className="text-[10px] font-black text-va-black/20 uppercase tracking-widest mb-1">Buyouts & Licenties</div>
-                {state.media?.map((mediaId) => {
-                  const opt = commercialMediaOptions.find(o => o.id === mediaId);
-                  const detail = state.spotsDetail?.[mediaId] || 1;
-                  const years = state.yearsDetail?.[mediaId] || 1;
-                  const isPodcast = mediaId === 'podcast';
-                  
-                  let fullLabel = opt?.label || mediaId;
-                  if (mediaId.includes('_national')) fullLabel = `TV (Nationaal)`;
-                  else if (mediaId.includes('_regional')) fullLabel = `TV (Regionaal)`;
-                  else if (mediaId.includes('_local')) fullLabel = `TV (Lokaal)`;
-                  else if (mediaId.startsWith('radio_')) {
-                    if (mediaId.includes('_national')) fullLabel = `Radio (Nationaal)`;
-                    else if (mediaId.includes('_regional')) fullLabel = `Radio (Regionaal)`;
-                    else if (mediaId.includes('_local')) fullLabel = `Radio (Lokaal)`;
-                  }
-
-                  const breakdown = state.pricing.mediaBreakdown?.[mediaId];
-                  const itemPrice = typeof breakdown === 'object' ? breakdown.subtotal : (breakdown || 0);
-                  const combinationDiscount = typeof breakdown === 'object' ? breakdown.discount : 0;
-
-                  return (
-                    <div key={mediaId} className="space-y-1 pl-3 border-l-2 border-primary/20 bg-primary/[0.02] py-2 pr-2 rounded-r-lg">
-                      <div className="flex justify-between text-[13px] items-start">
-                        <span className="text-va-black font-medium leading-snug">
-                          {fullLabel} <span className="text-[10px] text-va-black/40 block font-normal tracking-wide">
-                            {detail}x {detail === 1 ? 'spot' : 'spots'} • {isPodcast ? (
-                              years === 0.25 ? "3 maanden" :
-                              years === 0.5 ? "6 maanden" :
-                              years === 0.75 ? "9 maanden" :
-                              `${years} jaar`
-                            ) : (
-                              years === 1 ? "1 jaar" : `${years} jaar`
-                            )}
-                          </span>
+                    {state.pricing.wordSurcharge > 0 && wordCount > 25 && (
+                      <div className="flex justify-between text-[14px] items-center">
+                        <span className="text-va-black/60 font-medium">
+                          <VoiceglotText translationKey="pricing.production_fee" defaultText="Productie & Verwerking" />
                         </span>
-                        <span className="font-bold text-va-black whitespace-nowrap ml-2">
-                          {itemPrice > 0 ? `+${PricingEngine.format(itemPrice)}` : PricingEngine.format(0)}
-                        </span>
+                        <span className="font-bold text-va-black">+{SlimmeKassa.format(state.pricing.wordSurcharge)}</span>
                       </div>
-                      {/* detail > 1 && (
-                        <div className="flex justify-between text-[9px] text-green-600 font-medium italic pl-1">
-                          <span>Staffelvoordeel ({detail} spots)</span>
-                          <span>In prijs verwerkt</span>
-                        </div>
-                      ) */}
-                      {combinationDiscount > 0 && (
-                        <div className="flex justify-between text-[10px] text-green-600 font-bold italic pt-1 border-t border-green-600/10">
-                          <span>Combinatiekorting</span>
-                          <span>-{PricingEngine.format(combinationDiscount)}</span>
-                        </div>
-                      )}
+                    )}
+                    {state.usage === 'telefonie' && state.pricing.musicSurcharge > 0 && (
+                      <div className="flex justify-between text-[14px] items-center">
+                        <span className="text-va-black/60 font-medium">
+                          <VoiceglotText translationKey="pricing.music_mix" defaultText="Muziek & Mixage" />
+                        </span>
+                        <span className="font-bold text-va-black">+{SlimmeKassa.format(state.pricing.musicSurcharge)}</span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="flex justify-between text-[14px] items-center">
+                      <span className="text-va-black/60 font-medium">
+                        {state.usage === 'commercial' ? (
+                          <div className="flex flex-col">
+                            <span><VoiceglotText translationKey="pricing.base_recording" defaultText="Basistarief (Opname)" /></span>
+                            <span className="text-[9px] text-va-black/30 font-light italic -mt-1">
+                              <VoiceglotText translationKey="pricing.base_recording_sub" defaultText="Vergoeding voor de opnamesessie" />
+                            </span>
+                          </div>
+                        ) : <VoiceglotText translationKey="pricing.base_video" defaultText="Basistarief (Video)" />}
+                      </span>
+                      <span className="font-bold text-va-black">{SlimmeKassa.format(state.pricing.base)}</span>
                     </div>
-                  );
-                })}
-                {state.media && state.media.length > 1 && (
-                  <div className="flex justify-between text-[13px] pt-1 mt-1 border-t border-black/[0.03]">
-                    <span className="text-va-black/40 font-light">Totaal Buyout</span>
-                    <span className="font-medium">+{PricingEngine.format(state.pricing.mediaSurcharge)}</span>
-                  </div>
+                    {state.pricing.wordSurcharge > 0 && (
+                      <div className="flex justify-between text-[14px] items-center">
+                        <span className="text-va-black/60 font-medium">
+                          <VoiceglotText translationKey="pricing.extra_words" defaultText="Extra woorden" /> ({Math.max(0, effectiveWordCount - (state.usage === 'unpaid' ? 200 : 0))})
+                        </span>
+                        <span className="font-bold text-va-black">+{SlimmeKassa.format(state.pricing.wordSurcharge)}</span>
+                      </div>
+                    )}
+                    {state.pricing.musicSurcharge > 0 && (
+                      <div className="flex justify-between text-[13px]">
+                        <span className="text-va-black/40 font-light">
+                          <VoiceglotText translationKey="pricing.music_mixing" defaultText="Music Mixing" />
+                        </span>
+                        <span className="font-medium">+{SlimmeKassa.format(state.pricing.musicSurcharge)}</span>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
-            )}
-            {state.pricing.musicSurcharge > 0 && (
-              <div className="flex justify-between text-[13px]">
-                <span className="text-va-black/40 font-light">Music Mixing</span>
-                <span className="font-medium">+{PricingEngine.format(state.pricing.musicSurcharge)}</span>
+              {state.usage === 'commercial' && state.pricing.mediaSurcharge > 0 && (
+                <div className="space-y-1.5 pt-1">
+                  <div className="text-[10px] font-black text-va-black/20 uppercase tracking-widest mb-1">
+                    <VoiceglotText translationKey="pricing.license_usage" defaultText="Licenties voor gebruik" />
+                  </div>
+                  {state.media?.map((mediaId) => {
+                    const opt = commercialMediaOptions.find(o => o.id === mediaId);
+                    const detail = state.spotsDetail?.[mediaId] || 1;
+                    const years = state.yearsDetail?.[mediaId] || 1;
+                    const isPodcast = mediaId === 'podcast';
+                    
+                    let fullLabel = opt?.label || mediaId;
+                    if (mediaId.includes('_national')) fullLabel = `TV (Nationaal)`;
+                    else if (mediaId.includes('_regional')) fullLabel = `TV (Regionaal)`;
+                    else if (mediaId.includes('_local')) fullLabel = `TV (Lokaal)`;
+                    else if (mediaId.startsWith('radio_')) {
+                      if (mediaId.includes('_national')) fullLabel = `Radio (Nationaal)`;
+                      else if (mediaId.includes('_regional')) fullLabel = `Radio (Regionaal)`;
+                      else if (mediaId.includes('_local')) fullLabel = `Radio (Lokaal)`;
+                    }
+
+                    const breakdown = state.pricing.mediaBreakdown?.[mediaId];
+                    const itemPrice = typeof breakdown === 'object' ? breakdown.subtotal : (breakdown || 0);
+                    const combinationDiscount = typeof breakdown === 'object' ? breakdown.discount : 0;
+
+                    return (
+                      <div key={mediaId} className="space-y-1 pl-3 border-l-2 border-primary/20 bg-primary/[0.02] py-2 pr-2 rounded-r-lg">
+                        <div className="flex justify-between text-[13px] items-start">
+                          <span className="text-va-black font-medium leading-snug">
+                            {fullLabel} <span className="text-[10px] text-va-black/40 block font-normal tracking-wide">
+                              {detail}x {detail === 1 ? 'spot' : 'spots'} • {isPodcast ? (
+                                years === 0.25 ? "3 maanden" :
+                                years === 0.5 ? "6 maanden" :
+                                years === 0.75 ? "9 maanden" :
+                                `${years} jaar`
+                              ) : (
+                                years === 1 ? "1 jaar" : `${years} jaar`
+                              )}
+                            </span>
+                          </span>
+                          <span className="font-bold text-va-black whitespace-nowrap ml-2">
+                            {itemPrice > 0 ? `+${SlimmeKassa.format(itemPrice)}` : SlimmeKassa.format(0)}
+                          </span>
+                        </div>
+                        {/* detail > 1 && (
+                          <div className="flex justify-between text-[9px] text-green-600 font-medium italic pl-1">
+                            <span>Staffelvoordeel ({detail} spots)</span>
+                            <span>In prijs verwerkt</span>
+                          </div>
+                        ) */}
+                        {combinationDiscount > 0 && (
+                          <div className="flex justify-between text-[10px] text-green-600 font-bold italic pt-1 border-t border-green-600/10">
+                            <span><VoiceglotText translationKey="pricing.combo_discount" defaultText="Combinatiekorting" /></span>
+                            <span>-{SlimmeKassa.format(combinationDiscount)}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  {state.media && state.media.length > 1 && (
+                    <div className="flex justify-between text-[13px] pt-1 mt-1 border-t border-black/[0.03]">
+                      <span className="text-va-black/40 font-light">
+                        <VoiceglotText translationKey="pricing.total_buyout" defaultText="Totaal Buyout" />
+                      </span>
+                      <span className="font-medium">+{SlimmeKassa.format(state.pricing.mediaSurcharge)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              {state.liveSession && (
+                <div className="flex justify-between text-[13px]">
+                  <span className="text-va-black/40 font-light">
+                    <VoiceglotText translationKey="pricing.live_direction" defaultText="Live Regie" />
+                  </span>
+                  <span className="font-medium">+{SlimmeKassa.format(liveRegiePrice)}</span>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="space-y-1 pt-4 border-t border-black/[0.03] text-right">
+            <div className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase">
+              <VoiceglotText translationKey="common.total_excl_vat" defaultText="Totaal (excl. BTW)" />
+            </div>
+            <div className="text-4xl font-light tracking-tighter text-va-black">
+              <PriceCountUp value={state.pricing.total} />
+            </div>
+            {state.pricing.legalDisclaimer && <div className="text-[10px] text-va-black/40 font-light italic mt-2 leading-tight">{state.pricing.legalDisclaimer}</div>}
+          </div>
+
+            {/* Trust Badges (Bob-methode) */}
+          <div className="pt-4 space-y-3 border-t border-black/[0.03]">
+            {usps.map((usp) => (
+              <div key={usp.key} className="flex items-center gap-3">
+                <usp.icon size={14} className="text-green-500" strokeWidth={1.5} />
+                <TextInstrument className="text-[12px] font-medium text-va-black/60">
+                  <VoiceglotText translationKey={`configurator.trust.${usp.key}`} defaultText={usp.text} />
+                </TextInstrument>
               </div>
-            )}
-            {state.liveSession && (
-              <div className="flex justify-between text-[13px]">
-                <span className="text-va-black/40 font-light">Live Regie</span>
-                <span className="font-medium">+{PricingEngine.format(liveRegiePrice)}</span>
-              </div>
-            )}
+            ))}
+          </div>
+
+          <div className="pt-4 space-y-3">
+            <button 
+              onClick={() => handleAddToCartWithEmail('checkout')} 
+              disabled={!state.selectedActor || isProcessing} 
+              className={cn(
+                "va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-lg hover:!bg-primary transition-all rounded-[20px] font-bold",
+                isProcessing && "opacity-50 cursor-wait"
+              )}
+            >
+              {isProcessing ? (
+                <><Loader2 className="animate-spin" size={20} /> <VoiceglotText translationKey="common.processing" defaultText="Verwerken..." /></>
+              ) : (
+                <><VoiceglotText translationKey="action.order" defaultText="Bestellen" /> <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" /></>
+              )}
+            </button>
           </div>
         </div>
-        <div className="space-y-1 pt-4 border-t border-black/[0.03] text-right">
-          <div className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Totaal (excl. BTW)</div>
-          <div className="text-4xl font-light tracking-tighter text-va-black">
-            <PriceCountUp value={state.pricing.total} />
-          </div>
-          {state.pricing.legalDisclaimer && <div className="text-[10px] text-va-black/40 font-light italic mt-2 leading-tight">{state.pricing.legalDisclaimer}</div>}
-        </div>
-        <div className="pt-4 space-y-3">
-          <ButtonInstrument 
-            onClick={() => handleAddToCartWithEmail('checkout')} 
-            disabled={!state.selectedActor || isProcessing} 
-            className={cn(
-              "va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-lg hover:!bg-primary transition-all",
-              isProcessing && "opacity-50 cursor-wait"
-            )}
-          >
-            {isProcessing ? (
-              <><Loader2 className="animate-spin" size={20} /> Verwerken...</>
-            ) : (
-              <>Bestellen <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" /></>
-            )}
-          </ButtonInstrument>
-        </div>
-      </div>
-      <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-primary/5 blur-[80px] rounded-full" />
-    </ContainerInstrument>
-  );
+        <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-primary/5 blur-[80px] rounded-full" />
+      </ContainerInstrument>
+    );
+  };
 
   return (
     <ContainerInstrument className={cn(
@@ -829,7 +1113,7 @@ export default function ConfiguratorPageClient({
           isEmbedded ? "pt-0" : ""
         )}>
           
-          {!minimalMode && (
+          {!minimalMode && !hideVoiceCard && (
             <div className="w-full lg:col-span-3 space-y-6 lg:sticky lg:top-24 pt-0">
               <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase px-2">
                 <VoiceglotText translationKey="configurator.step1.label" defaultText="01. De Stem" />
@@ -851,51 +1135,25 @@ export default function ConfiguratorPageClient({
 
           <div className={cn(
             "w-full pt-0 space-y-6",
-            minimalMode ? "lg:col-span-12" : "lg:col-span-6"
+            (minimalMode || hideVoiceCard) ? "lg:col-span-12" : "lg:col-span-6"
           )}>
             {!hideMediaSelector && (
               <div className="space-y-4 mb-8 relative">
-                <div className="flex items-center justify-between px-2">
-                  <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">
-                    <VoiceglotText translationKey="configurator.step2.label" defaultText="02. Gebruik & Rechten" />
-                  </LabelInstrument>
-                </div>
-                <div className="grid grid-cols-3 gap-3 relative">
-                  {usageTypes.map((type) => {
-                    const isActive = state.usage === type.id;
-                    return (
-                      <button
-                        key={type.id}
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleUsageSwitch(type.id as any);
-                        }}
-                        className={cn(
-                          "flex flex-col items-center gap-2 p-4 rounded-[15px] bg-white shadow-aura border transition-all duration-500 text-center group relative cursor-pointer w-full",
-                          isActive ? "ring-2 ring-primary bg-primary/[0.02] border-primary/20" : "border-black/[0.03] hover:scale-[1.02]"
-                        )}
-                      >
-                        <div className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center transition-colors pointer-events-none",
-                          isActive ? "bg-primary text-white" : "bg-va-off-white text-va-black/20 group-hover:text-primary"
-                        )}>
-                          <type.icon size={18} strokeWidth={1.5} />
-                        </div>
-                        <div className="pointer-events-none">
-                          <div className={cn("text-[12px] font-bold tracking-tight leading-tight transition-colors", isActive ? "text-primary" : "text-va-black")}>{type.label}</div>
-                          <div className="text-[9px] text-va-black/30 uppercase tracking-widest font-black mt-0.5">{type.description}</div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                {!hideUsageSelector && (
+                  <div className="space-y-4">
+                    <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase px-2">
+                      <VoiceglotText translationKey="configurator.step2.label" defaultText="02. Gebruik & Rechten" />
+                    </LabelInstrument>
+                    <VoicesMasterControl minimalMode={minimalMode} actors={[]} filters={{ languages: [], genders: [], styles: [] }} />
+                  </div>
+                )}
 
                 {state.usage === 'commercial' && (
                   <div className="pt-4 space-y-6 animate-in fade-in slide-in-from-top-2 duration-500">
                     <div className="space-y-3">
-                      <LabelInstrument className="text-[10px] font-bold tracking-[0.15em] text-va-black/30 uppercase px-2">Land van uitzending</LabelInstrument>
+                      <LabelInstrument className="text-[10px] font-bold tracking-[0.15em] text-va-black/30 uppercase px-2">
+                        <VoiceglotText translationKey="configurator.broadcast_country" defaultText="Land van uitzending" />
+                      </LabelInstrument>
                       <div className="flex flex-wrap gap-2">
                         {countries.map((c) => {
                           const isSelected = Array.isArray(state.country) ? state.country.includes(c.id) : state.country === c.id;
@@ -920,7 +1178,9 @@ export default function ConfiguratorPageClient({
                     </div>
 
                     <div className="space-y-3">
-                      <LabelInstrument className="text-[10px] font-bold tracking-[0.15em] text-va-black/30 uppercase px-2">Selecteer kanalen</LabelInstrument>
+                      <LabelInstrument className="text-[10px] font-bold tracking-[0.15em] text-va-black/30 uppercase px-2">
+                        <VoiceglotText translationKey="configurator.select_channels" defaultText="Selecteer kanalen" />
+                      </LabelInstrument>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {commercialMediaOptions.map((opt) => {
                           const baseId = opt.id.split('_')[0];
@@ -973,7 +1233,8 @@ export default function ConfiguratorPageClient({
                                       {regions.map(r => (
                                         <button key={r.id} onClick={() => {
                                           const baseId = mediaId.split('_')[0];
-                                          const newId = `${baseId}_${r.id.toLowerCase()}`;
+                                          const rId = r.id.toLowerCase();
+                                          const newId = `${baseId}_${rId}`;
                                           const newMedia = state.media.map(m => m === mediaId ? newId : m);
                                           updateMedia(newMedia);
                                           setTimeout(() => calculatePricing?.(), 50);
@@ -985,7 +1246,9 @@ export default function ConfiguratorPageClient({
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                   <div className="space-y-3">
                                     <div className="flex justify-between items-center">
-                                      <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">Aantal Spots</span>
+                                      <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
+                                        <VoiceglotText translationKey="configurator.spots_count" defaultText="Aantal Spots" />
+                                      </span>
                                       <span className="text-[14px] font-black text-primary">{currentSpots}</span>
                                     </div>
                                     <div className="flex items-center gap-4">
@@ -999,7 +1262,13 @@ export default function ConfiguratorPageClient({
                                   </div>
                                   <div className="space-y-3">
                                     <div className="flex justify-between items-center">
-                                      <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">{isPodcast ? 'Licentie' : 'Looptijd'}</span>
+                                      <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
+                                        {isPodcast ? (
+                                          <VoiceglotText translationKey="configurator.license" defaultText="Licentie" />
+                                        ) : (
+                                          <VoiceglotText translationKey="configurator.duration" defaultText="Looptijd" />
+                                        )}
+                                      </span>
                                       <span className="text-[14px] font-black text-primary">{isPodcast ? (currentYears === 0.25 ? "3 maanden" : currentYears === 0.5 ? "6 maanden" : currentYears === 0.75 ? "9 maanden" : `${currentYears} jaar`) : `${currentYears} jaar`}</span>
                                     </div>
                                     <div className="flex items-center gap-4">
@@ -1010,7 +1279,11 @@ export default function ConfiguratorPageClient({
                                       </div>
                                       <button onClick={() => { const next = Math.min(5, currentYears + (isPodcast ? 0.25 : 1)); updateYearsDetail({ ...state.yearsDetail, [mediaId]: next }); setTimeout(() => calculatePricing?.(), 50); }} className="w-8 h-8 rounded-xl bg-va-off-white border border-black/5 flex items-center justify-center hover:bg-va-black hover:text-white transition-all active:scale-90"><Plus size={14} strokeWidth={2.5} /></button>
                                     </div>
-                                    {isPodcast && <div className="text-[10px] text-va-black/40 font-medium italic leading-none">Buyout per kwartaal.</div>}
+                                    {isPodcast && (
+                                      <div className="text-[10px] text-va-black/40 font-medium italic leading-none">
+                                        <VoiceglotText translationKey="configurator.podcast_buyout_note" defaultText="Buyout per kwartaal." />
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -1025,20 +1298,16 @@ export default function ConfiguratorPageClient({
             )}
 
             <ContainerInstrument className="bg-white rounded-[20px] shadow-aura border border-black/[0.03] overflow-hidden group/script mb-6 relative">
-              <div className="p-4 bg-va-off-white/50 border-b border-black/[0.03] flex items-center justify-between">
+              <div className="p-4 bg-va-off-white/50 border-b border-black/[0.03] flex items-center justify-between relative z-30">
                 <div className="flex items-center gap-4">
                   <div className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase">
-                    {effectiveWordCount} {effectiveWordCount === 1 ? t('common.word', 'woord') : t('common.words', 'woorden')}
+                    {isHydrated ? effectiveWordCount : 0} {effectiveWordCount === 1 ? t('common.word', 'woord') : t('common.words', 'woorden')}
                   </div>
                   <div className="w-[1px] h-3 bg-va-black/10" />
                   <div className="flex items-center gap-2 text-va-black/40">
                     <Clock size={12} strokeWidth={1.5} />
                     <span className="text-[11px] font-medium uppercase tracking-widest">
-                      {state.usage === 'telefonie' && promptCount > 0 ? (
-                        <>{promptCount} {promptCount === 1 ? t('common.prompt', 'prompt') : t('common.prompts', 'prompts')}</>
-                      ) : (
-                        <>± {estimatedTime} min</>
-                      )}
+                      ± {isHydrated ? estimatedTime : '0:00'} min
                     </span>
                   </div>
                   {isAutoSaving && (
@@ -1053,8 +1322,19 @@ export default function ConfiguratorPageClient({
                   {state.usage === 'telefonie' && (
                     <button 
                       onClick={() => {
-                        setShowAiAssistant(!showAiAssistant);
-                        if (playClick) playClick(showAiAssistant ? 'light' : 'pro');
+                        const newState = !showAiAssistant;
+                        setShowAiAssistant(newState);
+                        if (playClick) playClick(newState ? 'pro' : 'light');
+                        
+                        // BOB-METHODE: Autoscroll naar de assistent als deze wordt geactiveerd
+                        if (newState) {
+                          setTimeout(() => {
+                            aiAssistantRef.current?.scrollIntoView({ 
+                              behavior: 'smooth', 
+                              block: 'center' 
+                            });
+                          }, 100);
+                        }
                       }}
                       className={cn(
                         "flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-500 group/ai relative overflow-hidden",
@@ -1076,14 +1356,31 @@ export default function ConfiguratorPageClient({
                     </button>
                   )}
                   <div className="flex items-center gap-2 text-[11px] text-va-black/40 font-light italic">
-                    <Info size={12} className="text-primary/40" /> Zet regie-aanwijzingen of bestandsnamen (tussen haakjes)
+                    <Info size={12} className="text-primary/40" /> 
+                    <VoiceglotText translationKey="configurator.script_instruction" defaultText="Zet regie-aanwijzingen of bestandsnamen (tussen haakjes)" />
                   </div>
                 </div>
               </div>
               
-              <div className="relative min-h-[400px]">
+              <div 
+                className={cn(
+                  "relative min-h-[400px] overflow-hidden transition-all duration-500",
+                  isDragging ? "bg-primary/5 ring-2 ring-primary ring-inset scale-[0.99] rounded-[20px]" : ""
+                )}
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleFileDrop}
+              >
+                {isDragging && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center z-30 bg-white/60 backdrop-blur-sm pointer-events-none">
+                    <div className="w-16 h-16 rounded-2xl bg-primary text-white flex items-center justify-center shadow-xl shadow-primary/20 animate-bounce">
+                      <Upload size={32} strokeWidth={2} />
+                    </div>
+                    <span className="mt-4 text-[13px] font-bold uppercase tracking-widest text-primary">Laat los om script te uploaden</span>
+                  </div>
+                )}
                 <div 
-                  className="absolute inset-0 p-8 text-xl font-light leading-relaxed whitespace-pre-wrap break-words pointer-events-none text-va-black overflow-y-auto no-scrollbar"
+                  className="absolute inset-0 p-8 text-xl font-light leading-relaxed whitespace-pre-wrap break-words pointer-events-none text-va-black overflow-y-auto no-scrollbar z-0"
                   aria-hidden="true"
                   style={{ top: textareaRef.current?.scrollTop ? -textareaRef.current.scrollTop : 0 }}
                 >
@@ -1112,6 +1409,44 @@ export default function ConfiguratorPageClient({
                   className="w-full h-[400px] p-8 text-xl font-light leading-relaxed bg-transparent border-none focus:ring-0 outline-none resize-none placeholder:text-va-black/10 relative z-10 text-transparent caret-va-black overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40 transition-colors"
                   spellCheck={false}
                 />
+
+                {/* BOB-METHODE: Empty State Choice for Telephony */}
+                {isHydrated && (!localBriefing || localBriefing.trim() === '') && state.usage === 'telefonie' && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 bg-white/80 backdrop-blur-[2px] transition-all duration-500">
+                    <div className="flex flex-col md:flex-row items-center gap-8 animate-in fade-in zoom-in duration-700">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="w-16 h-16 rounded-2xl bg-va-off-white flex items-center justify-center text-va-black/20 shadow-sm">
+                          <Type size={28} strokeWidth={1} />
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-va-black/40">Begin met typen</span>
+                          <span className="text-[10px] text-va-black/20 font-medium">Gebruik de editor</span>
+                        </div>
+                      </div>
+                      
+                      <div className="h-[1px] w-12 md:h-16 md:w-[1px] bg-va-black/10" />
+
+                      <button 
+                        onClick={() => {
+                          setShowBriefingSelector(true);
+                          if (playClick) playClick('pro');
+                          setTimeout(() => {
+                            textSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          }, 100);
+                        }}
+                        className="group pointer-events-auto flex flex-col items-center gap-4 hover:scale-105 transition-all"
+                      >
+                        <div className="w-16 h-16 rounded-2xl bg-primary/5 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center transition-all shadow-xl shadow-transparent group-hover:shadow-primary/20">
+                          <Upload size={28} strokeWidth={1.5} />
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Of upload je tekst</span>
+                          <span className="text-[10px] text-primary/40 font-medium italic">PDF, Word of Excel</span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                )}
                 
                 {isAiLoading && (
                   <div className="absolute bottom-4 right-8 z-20">
@@ -1121,44 +1456,80 @@ export default function ConfiguratorPageClient({
               </div>
 
               <AnimatePresence>
-                {scriptIntelligence && scriptIntelligence.length > 0 && (
+                {(scriptIntelligence || aiInsights.length > 0) && (
                   <motion.div 
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     className="bg-va-black text-white p-4 border-t border-white/5 flex flex-col gap-3"
                   >
-                    {scriptIntelligence.map((insight, idx) => (
-                      <div key={idx} className="flex items-center justify-between gap-4 animate-in fade-in slide-in-from-left-2 duration-500">
+                    {/* Gemini Insights (Context-aware) */}
+                    {aiInsights.map((insight, idx) => (
+                      <div key={`ai-${idx}`} className="flex items-center justify-between gap-4 animate-in fade-in slide-in-from-left-2 duration-500">
                         <div className="flex items-center gap-3">
                           <div className={cn(
                             "w-6 h-6 rounded-full flex items-center justify-center shrink-0",
-                            insight.type === 'warning' ? "bg-amber-500/20 text-amber-500" : 
                             insight.type === 'success' ? "bg-green-500/20 text-green-500" :
                             "bg-primary/20 text-primary"
                           )}>
-                            {insight.type === 'warning' ? <Info size={14} /> : 
-                             insight.type === 'success' ? <Check size={14} /> :
+                            {insight.type === 'success' ? <Check size={14} /> :
                              <Sparkles size={14} />}
                           </div>
                           <span className="text-[13px] font-medium text-white/80">{insight.message}</span>
                         </div>
-                        {insight.action === 'switch_telephony' && (
-                          <button onClick={() => handleUsageSwitch('telefonie')} className="text-[11px] font-bold uppercase tracking-widest text-primary hover:text-white transition-colors whitespace-nowrap">Switch naar Telefoon</button>
-                        )}
-                        {insight.action === 'switch_commercial' && (
-                          <button onClick={() => handleUsageSwitch('commercial')} className="text-[11px] font-bold uppercase tracking-widest text-primary hover:text-white transition-colors whitespace-nowrap">Switch naar Commercial</button>
-                        )}
-                        {insight.action === 'add_audio_briefing' && (
-                          <button 
-                            onClick={() => setShowBriefingSelector(true)} 
-                            className="px-4 py-2 bg-primary text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-primary/90 transition-all shadow-lg active:scale-95 whitespace-nowrap"
-                          >
-                            Audio toevoegen
-                          </button>
-                        )}
                       </div>
                     ))}
+
+                    {/* Rule-based Insights */}
+                    {scriptIntelligence?.map((insight, idx) => {
+                      // Voorkom dubbele meldingen als Gemini al een waarschuwing heeft gegeven
+                      if (aiInsights.some(ai => ai.type === 'warning') && insight.type === 'info') return null;
+                      
+                      return (
+                        <div key={`rule-${idx}`} className="flex items-center justify-between gap-4 animate-in fade-in slide-in-from-left-2 duration-500">
+                          <div className="flex items-center gap-3">
+                            <div className={cn(
+                              "w-6 h-6 rounded-full flex items-center justify-center shrink-0",
+                              insight.type === 'warning' ? "bg-amber-500/20 text-amber-500" : 
+                              insight.type === 'success' ? "bg-green-500/20 text-green-500" :
+                              "bg-primary/20 text-primary"
+                            )}>
+                              {insight.type === 'warning' ? <Info size={14} /> : 
+                               insight.type === 'success' ? <Check size={14} /> :
+                               <Sparkles size={14} />}
+                            </div>
+                            <span className="text-[13px] font-medium text-white/80">{insight.message}</span>
+                          </div>
+                          {insight.action === 'switch_telephony' && (
+                            <button onClick={() => handleUsageSwitch('telefonie')} className="text-[11px] font-bold uppercase tracking-widest text-primary hover:text-white transition-colors whitespace-nowrap">
+                              <VoiceglotText translationKey="configurator.action.switch_telephony" defaultText="Switch naar Telefoon" />
+                            </button>
+                          )}
+                          {insight.action === 'switch_commercial' && (
+                            <button onClick={() => handleUsageSwitch('commercial')} className="text-[11px] font-bold uppercase tracking-widest text-primary hover:text-white transition-colors whitespace-nowrap">
+                              <VoiceglotText translationKey="configurator.action.switch_commercial" defaultText="Switch naar Commercial" />
+                            </button>
+                          )}
+                          {insight.action === 'scroll_to_text_options' && (
+                            <button 
+                              onClick={() => {
+                                setShowBriefingSelector(true);
+                                if (playClick) playClick('pro');
+                                setTimeout(() => {
+                                  textSectionRef.current?.scrollIntoView({ 
+                                    behavior: 'smooth', 
+                                    block: 'center' 
+                                  });
+                                }, 100);
+                              }} 
+                              className="px-4 py-2 bg-primary text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-primary/90 transition-all shadow-lg active:scale-95 whitespace-nowrap"
+                            >
+                              <VoiceglotText translationKey="configurator.action.add_audio" defaultText="Audio toevoegen" />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1167,17 +1538,24 @@ export default function ConfiguratorPageClient({
             <AnimatePresence>
               {showAiAssistant && state.usage === 'telefonie' && (
                 <motion.div
+                  ref={aiAssistantRef}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   className="mb-6"
                 >
-                  <TelephonySmartSuggestions setLocalBriefing={setLocalBriefing} />
+                  <TelephonySmartSuggestions 
+                    setLocalBriefing={setLocalBriefing} 
+                    onMinimize={() => {
+                      setShowAiAssistant(false);
+                      if (playClick) playClick('light');
+                    }}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <div className={cn("grid grid-cols-1 gap-4", !minimalMode && "mt-8")}>
+            <div className={cn("grid grid-cols-1 gap-4", !minimalMode && "mt-8")} ref={textSectionRef}>
               <div className="space-y-4">
                 <button 
                   onClick={() => {
@@ -1195,10 +1573,10 @@ export default function ConfiguratorPageClient({
                     </div>
                     <div>
                       <div className={cn("text-[13px] font-bold transition-colors", (showBriefingSelector || state.briefingFiles.length > 0) ? "text-primary" : "text-va-black")}>
-                        <VoiceglotText translationKey="configurator.add_briefing" defaultText="Voeg briefing toe" />
+                        <VoiceglotText translationKey="configurator.add_text_options" defaultText="Extra opties voor je tekst" />
                       </div>
                       <div className="text-[11px] text-va-black/40 font-light">
-                        <VoiceglotText translationKey="configurator.add_briefing_sub" defaultText="Spreek je briefing in, upload een bestand of voeg extra tekst toe" />
+                        <VoiceglotText translationKey="configurator.add_text_options_sub" defaultText="Spreek je tekst in, upload een bestand of voeg extra instructies toe" />
                       </div>
                     </div>
                   </div>
@@ -1211,7 +1589,9 @@ export default function ConfiguratorPageClient({
 
                 <AnimatePresence>
                   {showBriefingSelector && (
-                    <BriefingSelector />
+                    <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+                      <BriefingSelector onScriptExtracted={(script) => handleBriefingChange(script)} />
+                    </div>
                   )}
                 </AnimatePresence>
               </div>
@@ -1246,37 +1626,46 @@ export default function ConfiguratorPageClient({
                           </div>
                         </div>
                       </div>
-                      <div className={cn("text-[13px] font-medium transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black/40")}>+ €59</div>
+                      <div className={cn("text-[13px] font-medium transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black/40")}>+ {SlimmeKassa.format((state.pricingConfig?.musicSurcharge || 5900) / 100)}</div>
                     </button>
 
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => updateMusic({ asBackground: !state.music.asBackground })}
-                        disabled={!state.music.asBackground && !state.music.asHoldMusic}
-                        className={cn(
-                          "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all text-[10px] font-bold uppercase tracking-widest",
-                          state.music.asBackground ? "bg-primary text-white border-primary" : "bg-white border-black/5 text-va-black/40 hover:border-black/10 disabled:opacity-30"
-                        )}
-                      >
-                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center mb-1", state.music.asBackground ? "bg-white/20" : "bg-va-black/5")}>
-                          <Check size={12} strokeWidth={3} className={state.music.asBackground ? "opacity-100" : "opacity-0"} />
-                        </div>
-                        <VoiceglotText translationKey="configurator.mix" defaultText="Mixen" />
-                      </button>
-                      <button 
-                        onClick={() => updateMusic({ asHoldMusic: !state.music.asHoldMusic })}
-                        disabled={!state.music.asBackground && !state.music.asHoldMusic}
-                        className={cn(
-                          "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all text-[10px] font-bold uppercase tracking-widest",
-                          state.music.asHoldMusic ? "bg-primary text-white border-primary" : "bg-white border-black/5 text-va-black/40 hover:border-black/10 disabled:opacity-30"
-                        )}
-                      >
-                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center mb-1", state.music.asHoldMusic ? "bg-white/20" : "bg-va-black/5")}>
-                          <Check size={12} strokeWidth={3} className={state.music.asHoldMusic ? "opacity-100" : "opacity-0"} />
-                        </div>
-                        <VoiceglotText translationKey="configurator.hold_music" defaultText="Wachtmuziek" />
-                      </button>
-                    </div>
+                    <AnimatePresence>
+                      {(state.music.asBackground || state.music.asHoldMusic) && (
+                        <motion.div 
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          className="flex gap-2"
+                        >
+                          <button 
+                            onClick={() => updateMusic({ asBackground: !state.music.asBackground })}
+                            disabled={!state.music.asBackground && !state.music.asHoldMusic}
+                            className={cn(
+                              "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all text-[10px] font-bold uppercase tracking-widest",
+                              state.music.asBackground ? "bg-primary text-white border-primary" : "bg-white border-black/5 text-va-black/40 hover:border-black/10 disabled:opacity-30"
+                            )}
+                          >
+                            <div className={cn("w-6 h-6 rounded-full flex items-center justify-center mb-1", state.music.asBackground ? "bg-white/20" : "bg-va-black/5")}>
+                              <Check size={12} strokeWidth={3} className={state.music.asBackground ? "opacity-100" : "opacity-0"} />
+                            </div>
+                            <VoiceglotText translationKey="configurator.mix" defaultText="Mixen" />
+                          </button>
+                          <button 
+                            onClick={() => updateMusic({ asHoldMusic: !state.music.asHoldMusic })}
+                            disabled={!state.music.asBackground && !state.music.asHoldMusic}
+                            className={cn(
+                              "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all text-[10px] font-bold uppercase tracking-widest",
+                              state.music.asHoldMusic ? "bg-primary text-white border-primary" : "bg-white border-black/5 text-va-black/40 hover:border-black/10 disabled:opacity-30"
+                            )}
+                          >
+                            <div className={cn("w-6 h-6 rounded-full flex items-center justify-center mb-1", state.music.asHoldMusic ? "bg-white/20" : "bg-va-black/5")}>
+                              <Check size={12} strokeWidth={3} className={state.music.asHoldMusic ? "opacity-100" : "opacity-0"} />
+                            </div>
+                            <VoiceglotText translationKey="configurator.hold_music" defaultText="Wachtmuziek" />
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   <AnimatePresence>
@@ -1287,17 +1676,63 @@ export default function ConfiguratorPageClient({
                 </div>
               )}
 
+              {state.usage !== 'telefonie' && state.selectedActor && (
+                (() => {
+                  const hasLiveRegie = state.selectedActor.price_live_regie > 0 || 
+                                     (state.selectedActor.rates_raw && Object.values(state.selectedActor.rates_raw).some((r: any) => r.live_regie > 0));
+                  
+                  if (!hasLiveRegie) return null;
+
+                  return (
+                    <div className="space-y-4">
+                      <button 
+                        onClick={() => {
+                          updateLiveSession(!state.liveSession);
+                          if (playClick) playClick(!state.liveSession ? 'pro' : 'light');
+                        }} 
+                        className={cn(
+                          "w-full flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", 
+                          state.liveSession ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10"
+                        )}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", state.liveSession ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
+                            {state.liveSession ? <Check size={18} strokeWidth={3} /> : <Zap size={18} strokeWidth={1.5} />}
+                          </div>
+                          <div>
+                            <div className={cn("text-[13px] font-bold transition-colors", state.liveSession ? "text-primary" : "text-va-black")}>
+                              <VoiceglotText translationKey="configurator.live_regie" defaultText="Live Regie (Zoom/Teams)" />
+                            </div>
+                            <div className="text-[11px] text-va-black/40 font-light">
+                              <VoiceglotText translationKey="configurator.live_regie_sub" defaultText="Regisseer de stem live tijdens de opname voor het beste resultaat" />
+                            </div>
+                          </div>
+                        </div>
+                        <div className={cn("text-[13px] font-medium transition-colors", state.liveSession ? "text-primary" : "text-va-black/40")}>+ €{liveRegiePrice}</div>
+                      </button>
+                    </div>
+                  );
+                })()
+              )}
+
               {/*  CHRIS-PROTOCOL: Render Price Block inline for minimal mode (Agency page) */}
-              {minimalMode && (
+              {minimalMode && !hidePriceBlock && (
                 <div className="mt-8">
+                  <PriceBlock />
+                </div>
+              )}
+              
+              {/*  CHRIS-PROTOCOL: Render Price Block below script for non-minimal mode too (Mobile fallback) */}
+              {!minimalMode && !hidePriceBlock && (
+                <div className="mt-8 lg:hidden">
                   <PriceBlock />
                 </div>
               )}
             </div>
           </div>
 
-          {!minimalMode && (
-            <div className="w-full space-y-8 lg:sticky lg:top-24 pt-0 z-20 mt-8 lg:mt-0 lg:col-span-3">
+          {!minimalMode && !hidePriceBlock && (
+            <div className="hidden lg:block w-full space-y-8 lg:sticky lg:top-24 pt-0 z-20 mt-8 lg:mt-0 lg:col-span-3">
               <PriceBlock />
             </div>
           )}
@@ -1313,7 +1748,7 @@ export default function ConfiguratorPageClient({
                     <VoiceglotText translationKey="pricing.total" defaultText="Totaal" />
                   </span>
                   <span className="text-2xl font-light tracking-tighter text-va-black leading-none">
-                    <PriceCountUp value={state.items.reduce((sum, i) => sum + (i.pricing?.total ?? i.pricing?.subtotal ?? 0), 0) + state.pricing.total} />
+                    <PriceCountUp value={state.items.reduce((sum, i) => sum + (i.pricing?.total ?? i.pricing?.subtotal ?? 0), 0) + (state.step === 'briefing' ? state.pricing.total : 0)} />
                   </span>
                 </div>
                   <button 

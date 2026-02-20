@@ -131,19 +131,19 @@ export class VoicesMailEngine {
       nl: {
         subject: 'Inloglink voor Voices.be',
         title: 'Welkom terug.',
-        body: 'U heeft een verzoek ingediend om in te loggen op uw account. Gebruik de onderstaande knop om direct toegang te krijgen tot uw cockpit.',
+        body: 'U heeft een verzoek ingediend om in te loggen op uw account. Gebruik de onderstaande knop om direct toegang te krijgen tot uw account.',
         buttonText: 'Direct inloggen'
       },
       en: {
         subject: 'Login link for Voices.be',
         title: 'Welcome back.',
-        body: 'You requested a login link for your account. Use the button below to gain direct access to your cockpit.',
+        body: 'You requested a login link for your account. Use the button below to gain direct access to your account.',
         buttonText: 'Log in now'
       },
       fr: {
         subject: 'Lien de connexion pour Voices.be',
         title: 'Bon retour.',
-        body: 'Vous avez demandé un lien de connexion pour votre compte. Utilisez le bouton ci-dessous pour accéder directement à votre cockpit.',
+        body: 'Vous avez demandé un lien de connexion voor uw account. Utilisez le bouton ci-dessous pour accéder directement à votre account.',
         buttonText: 'Se connecter maintenant'
       }
     };
@@ -159,6 +159,51 @@ export class VoicesMailEngine {
       buttonUrl: link,
       lang,
       host
+    });
+  }
+
+  /**
+   * Verstuurt een alert naar de stemacteur bij nieuwe interesse op hun portfolio
+   */
+  public async sendPortfolioLeadAlert(options: {
+    to: string;
+    actorName: string;
+    leadName: string;
+    vibe: string;
+    message?: string;
+    dashboardUrl: string;
+    host?: string;
+    lang?: string;
+  }) {
+    const lang = options.lang || 'nl';
+    const isBurning = options.vibe === 'burning';
+    
+    const templates: Record<string, any> = {
+      nl: {
+        subject: `${isBurning ? '🔥' : '🎯'} Nieuwe interesse op je portfolio`,
+        title: isBurning ? 'Iemand staat in lichterlaaie.' : 'Nieuwe interesse.',
+        body: `Hallo ${options.actorName}, er is zojuist een warme lead gedetecteerd op je portfolio. <strong>${options.leadName}</strong> toont veel interesse in je werk.${options.message ? `<br/><br/><em>"${options.message}"</em>` : ''}`,
+        buttonText: 'Bekijk Klant DNA'
+      },
+      en: {
+        subject: `${isBurning ? '🔥' : '🎯'} New interest on your portfolio`,
+        title: isBurning ? 'Someone is on fire.' : 'New interest.',
+        body: `Hi ${options.actorName}, a warm lead was just detected on your portfolio. <strong>${options.leadName}</strong> is showing a lot of interest in your work.${options.message ? `<br/><br/><em>"${options.message}"</em>` : ''}`,
+        buttonText: 'View Customer DNA'
+      }
+    };
+
+    const t = templates[lang] || templates.nl;
+
+    await this.sendVoicesMail({
+      to: options.to,
+      subject: t.subject,
+      title: t.title,
+      body: t.body,
+      buttonText: t.buttonText,
+      buttonUrl: options.dashboardUrl,
+      lang,
+      host: options.host
     });
   }
 }

@@ -9,9 +9,11 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 interface WorkshopDate {
@@ -45,6 +47,8 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
 }) => {
   const { playClick } = useSonicDNA();
   const { t } = useTranslation();
+  const router = useRouter();
+  const { addItem, setJourney, setStep, updateCustomer } = useCheckout();
   const [internalIndex, setInternalIndex] = useState<number>(0);
   const [isBooking, setIsBooking] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -65,17 +69,37 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
     playClick('premium');
     setIsBooking(true);
     
-    // Sherlock: Als er geen data zijn, sturen we naar de interesselijst (doe-je-mee)
-    if (!hasDates) {
-      console.log(`Interest Registration for ${title}:`, formData);
-    } else {
-      console.log(`Core Booking for ${title}:`, { date: selectedDate?.date_raw, ...formData });
-    }
+    //  NUCLEAR WORKSHOP SPA ENGINE
+    // We voegen de workshop toe aan de checkout en navigeren direct.
+    const workshopItem = {
+      id: `workshop-${workshopId}-${Date.now()}`,
+      type: 'workshop_edition',
+      name: title,
+      price: priceExclVatValue,
+      date: selectedDate?.date_raw,
+      location: selectedDate?.location,
+      pricing: {
+        total: priceExclVatValue,
+        subtotal: priceExclVatValue
+      }
+    };
+
+    // Update customer info in context
+    updateCustomer({
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      email: formData.email
+    });
+
+    // Add to cart and set journey
+    addItem(workshopItem);
+    setJourney('studio', workshopId);
+    setStep('details'); // Direct naar de details stap in de checkout
 
     setTimeout(() => {
       setIsBooking(false);
-      setIsSuccess(true);
-    }, 1500);
+      router.push('/checkout');
+    }, 800);
   };
 
   

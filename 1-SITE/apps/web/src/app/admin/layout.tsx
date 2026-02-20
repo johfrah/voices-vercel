@@ -1,6 +1,10 @@
 import { requireAdminRedirect } from '@/lib/auth/server-auth';
-import { LiquidBackground } from '@/components/ui/LiquidBackground';
 import { Metadata } from 'next';
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
 export const metadata: Metadata = {
   title: 'Voices Admin | Admin',
@@ -20,7 +24,9 @@ export default async function AdminLayout({
   await requireAdminRedirect();
   return (
     <>
-      <LiquidBackground />
+      <Suspense fallback={null}>
+        <LiquidBackground />
+      </Suspense>
       <div className="relative z-10">
         {children}
       </div>

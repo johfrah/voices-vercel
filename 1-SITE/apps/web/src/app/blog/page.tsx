@@ -100,7 +100,7 @@ export default function BlogPage() {
       id: 'ilari',
       slug: 'ilari-hoevenaars',
       title: 'In de studio bij Ilari Hoevenaars',
-      excerpt: 'Ontdek de studio van de stem van WAZE en Hornbach. Zijn gouden tip: n accent per zin.',
+      excerpt: 'Ontdek de studio van de stem van WAZE en Hornbach. Zijn gouden tip: één accent per zin.',
       theme: 'Stories',
       createdAt: new Date().toISOString(),
       icon: Mic2

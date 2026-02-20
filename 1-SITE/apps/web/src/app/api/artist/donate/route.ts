@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     const host = request.headers.get('host') || 'voices.be';
     const protocol = host.includes('localhost') ? 'http' : 'https';
     
-    const payment = await MollieService.createPayment({
+    const payment = await MollieService.request('POST', '/payments', {
       amount: {
         currency: 'EUR',
         value: parseFloat(amount).toFixed(2)

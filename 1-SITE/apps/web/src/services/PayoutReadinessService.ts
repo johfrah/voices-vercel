@@ -6,7 +6,7 @@ import { approvalQueue, orderItems, vaultFiles } from '@db/schema';
  *  PAYOUT READINESS SERVICE (NUCLEAR 2026)
  * 
  * Verantwoordelijk voor de "Closed-Loop" validatie:
- * Alleen als de klant heeft goedgekeurd n de factuur is binnen,
+ * Alleen als de klant heeft goedgekeurd én de factuur is binnen,
  * wordt de betaling klaargezet voor Ponto.
  */
 export class PayoutReadinessService {

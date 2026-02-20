@@ -17,11 +17,11 @@ interface VoicesDropdownProps {
     isSub?: boolean;
     subLabel?: string;
     icon?: React.ElementType | string;
-    availableExtraLangs?: string[]; //  Support for nested polyglot chips
+    availableExtraLangs?: string[]; //  Support for nested extra language chips
   })[];
   value: any; 
   onChange: (value: any) => void;
-  onExtraLangToggle?: (lang: string) => void; //  Callback for polyglot chips
+  onExtraLangToggle?: (lang: string) => void; //  Callback for extra language chips
   selectedExtraLangs?: string[]; //  Currently selected extra languages
   placeholder: string;
   label?: string;
@@ -97,23 +97,28 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
 
     if (multiSelect) {
       const currentValues = Array.isArray(value) ? value : (value ? [value] : []);
-      if (currentValues.some(v => v.toLowerCase() === itemValue.toLowerCase())) {
-        onChange(currentValues.filter(v => v.toLowerCase() !== itemValue.toLowerCase()));
+      if (currentValues.some(v => typeof v === 'string' && typeof itemValue === 'string' ? v.toLowerCase() === itemValue.toLowerCase() : v === itemValue)) {
+        onChange(currentValues.filter(v => typeof v === 'string' && typeof itemValue === 'string' ? v.toLowerCase() !== itemValue.toLowerCase() : v !== itemValue));
       } else {
         onChange([...currentValues, itemValue]);
       }
+      // CHRIS-PROTOCOL: For multi-select, we always keep the menu open to allow selecting more items
+      return;
     } else {
       //  CHRIS-PROTOCOL: If already selected, don't close, but also don't allow "unselecting" the primary language.
       // The primary language is the hard reference.
-      if (value?.toLowerCase() === itemValue.toLowerCase()) {
+      if (typeof value === 'string' && typeof itemValue === 'string' && value.toLowerCase() === itemValue.toLowerCase()) {
         // Already selected, just keep open
       } else {
         onChange(itemValue);
-        //  CHRIS-PROTOCOL: Always keep open in telephony journey to allow switching and polyglot selection
+        //  CHRIS-PROTOCOL: Always keep open in telephony journey or when multi-language selection is possible
+        // Also keep open in commercial journey (advertentie) to allow configuring multiple media types
         const isTelephony = typeof window !== 'undefined' && window.location.search.includes('journey=telephony');
+        const isCommercial = typeof window !== 'undefined' && window.location.search.includes('journey=commercial');
+        const hasExtraLangs = filteredOptions.some(opt => typeof opt === 'object' && (opt as any).availableExtraLangs && (opt as any).availableExtraLangs.length > 0);
         
-        if (isTelephony) {
-          // Keep open to allow immediate switching or polyglot selection
+        if (isTelephony || isCommercial || hasExtraLangs) {
+          // Keep open to allow immediate switching or extra language selection
         } else {
           setIsOpen(false);
         }
@@ -192,6 +197,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
       if (value.length === 1) {
         const opt = options.find(o => {
           const v = typeof o === 'string' ? o : o.value;
+          if (typeof v !== 'string' || typeof value[0] !== 'string') return v === value[0];
           return v.toLowerCase() === value[0].toLowerCase();
         });
         return typeof opt === 'string' ? opt : opt?.label || value[0];
@@ -201,6 +207,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
     
     const opt = options.find(o => {
       const v = typeof o === 'string' ? o : o.value;
+      if (typeof v !== 'string' || typeof value !== 'string') return v === value;
       return v.toLowerCase() === value.toLowerCase();
     });
     const label = typeof opt === 'string' ? opt : opt?.label || value;
@@ -418,7 +425,10 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                             </span>
                             <div className="flex items-center gap-3">
                               <button 
-                                onClick={() => updateStepper(item.value, -1)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateStepper(item.value, -1);
+                                }}
                                 className="text-va-black/40 hover:text-primary transition-colors"
                               >
                                 <Minus size={12} strokeWidth={2.5} />
@@ -427,7 +437,10 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                 {count} {count === 1 ? t('common.spot', 'spot') : t('common.spots', 'spots')}
                               </span>
                               <button 
-                                onClick={() => updateStepper(item.value, 1)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateStepper(item.value, 1);
+                                }}
                                 className="text-va-black/40 hover:text-primary transition-colors"
                               >
                                 <Plus size={12} strokeWidth={2.5} />
@@ -443,7 +456,8 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                               </span>
                               <div className="flex items-center gap-3">
                                   <button 
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                      e.stopPropagation();
                                       const next = Math.max(isPodcast ? 0.25 : 1, years - (isPodcast ? 0.25 : 1));
                                       const nextMap = { ...yearsValue, [item.value]: next };
                                       onYearsChange(nextMap);
@@ -472,7 +486,8 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                     )}
                                   </span>
                                   <button 
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                      e.stopPropagation();
                                       const next = Math.min(5, years + (isPodcast ? 0.25 : 1));
                                       const nextMap = { ...yearsValue, [item.value]: next };
                                       onYearsChange(nextMap);
@@ -500,7 +515,9 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                 }
 
                 
-                const isSelected = Array.isArray(value) ? value.some(v => v.toLowerCase() === item.value.toLowerCase()) : (typeof value === 'string' ? value.toLowerCase() === item.value.toLowerCase() : false);
+                const isSelected = Array.isArray(value) 
+                  ? value.some(v => typeof v === 'string' && typeof item.value === 'string' ? v.toLowerCase() === item.value.toLowerCase() : v === item.value) 
+                  : (typeof value === 'string' && typeof item.value === 'string' ? value.toLowerCase() === item.value.toLowerCase() : value === item.value);
                 const IconComponent = item.icon;
 
                 return (
@@ -539,7 +556,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                       </div>
                     </button>
 
-                    {/*  NESTED POLYGLOT CHIPS (Progressive Disclosure inside Dropdown) */}
+                    {/*  NESTED EXTRA LANGUAGES CHIPS (Progressive Disclosure inside Dropdown) */}
                     <AnimatePresence initial={false}>
                       {isSelected && item.availableExtraLangs && item.availableExtraLangs.length > 0 && (
                         <motion.div 
@@ -552,7 +569,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                         >
                           <div className="px-6 py-4 flex flex-col gap-3">
                             <span className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                              <VoiceglotText translationKey="filter.combine_with" defaultText="Combineer met:" />
+                              <VoiceglotText translationKey="filter.extra_languages" defaultText="Extra talen:" />
                             </span>
                             <div className="flex flex-wrap gap-2">
                               {item.availableExtraLangs.map((extraLang) => {

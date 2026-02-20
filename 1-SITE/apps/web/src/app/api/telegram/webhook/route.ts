@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
         //  DUAL AGENT ORCHESTRATION: Both Bob and Voicy can answer
         try {
           const { KnowledgeService } = await import('@/services/KnowledgeService');
-          const { PricingEngine } = await import('@/lib/pricing-engine');
+          const { SlimmeKassa } = await import('@/lib/pricing-engine');
           const knowledge = KnowledgeService.getInstance();
           const coreBriefing = await knowledge.getCoreBriefing();
           const voicyBriefing = await knowledge.getFullVoicyBriefing();
@@ -194,14 +194,22 @@ export async function POST(request: NextRequest) {
 
           const dbPricing = configs?.[0]?.value || {};
           
-          const pricingContext = `
+  const pricingContext = `
 ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
-- Basis Video (unpaid): ${dbPricing.unpaid_base || 239} (tot 100 woorden)
-- Telefoon/IVR: ${dbPricing.ivr_base || 89} (tot 5 prompts)
-- Commercial (paid): Vanaf 250 (afhankelijk van usage)
-- Extra woorden: ${dbPricing.bulk_word_ivr || 0.25} per woord
-- Wachtmuziek: ${dbPricing.music_mix || 59} per track
-- BTW: ${Math.round((dbPricing.vat_rate || 0.21) * 100)}%
+- Basis Video (unpaid): ${dbPricing.videoBasePrice / 100} (tot 200 woorden)
+- Telefoon/IVR: ${dbPricing.telephonyBasePrice / 100} (tot 25 woorden)
+- Academy: ${dbPricing.academyPrice / 100}
+- Studio Workshop: ${dbPricing.workshopPrice / 100}
+- Commercial (paid): Vanaf ${dbPricing.basePrice / 100} (excl. buyout)
+- Extra woorden (Video): ${dbPricing.videoWordRate / 100 || 0.20} per woord
+- Wachtmuziek: ${dbPricing.musicSurcharge / 100} per track
+- BTW: ${Math.round((dbPricing.vatRate || 0.21) * 100)}%
+
+SLIMME KASSA REGELS:
+1. Als een prijs niet in Supabase staat, bestaat hij niet (€0).
+2. Berekeningen zijn strikt lineair (Spots * Jaren * Tarief).
+3. Geen charm rounding, geen marketing-yoga.
+4. Acteur-tarieven hebben altijd voorrang op platform-standaarden.
           `;
 
           // Determine if we should use Voicy (mode or /voicy prefix)

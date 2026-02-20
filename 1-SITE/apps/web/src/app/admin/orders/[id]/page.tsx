@@ -28,7 +28,9 @@ import {
   CreditCard,
   Zap,
   ShieldCheck,
-  Play
+  Play,
+  Send,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
@@ -129,6 +131,55 @@ export default function OrderDetailPage() {
     }
   };
 
+  const [isNotifyingActor, setIsNotifyingActor] = useState<number | null>(null);
+  const [isSendingReminder, setIsSendingReminder] = useState<number | null>(null);
+
+  const sendReminder = async (actorId: number, itemData: any) => {
+    setIsSendingReminder(actorId);
+    try {
+      const res = await fetch('/api/admin/notify/actor/reminder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actorId, orderId: order?.id, itemData })
+      });
+      if (res.ok) {
+        logAction('actor_reminder_sent', { actorId, orderId: order?.id });
+        alert('Reminder succesvol verzonden naar de stemacteur.');
+      } else {
+        const err = await res.json();
+        alert(`Fout bij verzenden reminder: ${err.error}`);
+      }
+    } catch (e) {
+      console.error('Failed to send reminder:', e);
+      alert('Er is een onbekende fout opgetreden bij het verzenden van de reminder.');
+    } finally {
+      setIsSendingReminder(null);
+    }
+  };
+
+  const notifyActor = async (actorId: number, itemData: any) => {
+    setIsNotifyingActor(actorId);
+    try {
+      const res = await fetch('/api/admin/notify/actor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actorId, orderId: order?.id, itemData })
+      });
+      if (res.ok) {
+        logAction('actor_notified', { actorId, orderId: order?.id });
+        alert('Opdracht succesvol verzonden naar de stemacteur.');
+      } else {
+        const err = await res.json();
+        alert(`Fout bij verzenden: ${err.error}`);
+      }
+    } catch (e) {
+      console.error('Failed to notify actor:', e);
+      alert('Er is een onbekende fout opgetreden.');
+    } finally {
+      setIsNotifyingActor(null);
+    }
+  };
+
   if (isLoading) return <LoadingScreenInstrument message="Order details laden..." />;
   if (!order) return <div className="p-20 text-center">Order niet gevonden.</div>;
 
@@ -222,17 +273,50 @@ export default function OrderDetailPage() {
                 <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">Bestelde Items</HeadingInstrument>
                 <div className="space-y-4">
                   {order.rawMeta?.items ? order.rawMeta.items.map((item: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between p-6 rounded-[15px] border border-black/[0.02] bg-va-off-white/20">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 shadow-sm">
-                          {order.journey === 'agency' ? <Mic size={20} /> : <Calendar size={20} />}
+                    <div key={i} className="flex flex-col p-6 rounded-[15px] border border-black/[0.02] bg-va-off-white/20 gap-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 shadow-sm">
+                            {order.journey === 'agency' ? <Mic size={20} /> : <Calendar size={20} />}
+                          </div>
+                          <div>
+                            <div className="text-[16px] font-light tracking-tight">{item.name || 'Naamloos Item'}</div>
+                            <div className="text-[12px] font-light text-va-black/30 tracking-tight">Aantal: {item.quantity || 1}</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="text-[16px] font-light tracking-tight">{item.name || 'Naamloos Item'}</div>
-                          <div className="text-[12px] font-light text-va-black/30 tracking-tight">Aantal: {item.quantity || 1}</div>
-                        </div>
+                        <div className="text-[16px] font-medium tracking-tight">€{parseFloat(item.price || 0).toFixed(2)}</div>
                       </div>
-                      <div className="text-[16px] font-medium tracking-tight">€{parseFloat(item.price || 0).toFixed(2)}</div>
+                      
+                      {item.actorId && (
+                        <div className="flex justify-end gap-3 pt-4 border-t border-black/5">
+                          {item.deliveryStatus === 'waiting' && (
+                            <ButtonInstrument 
+                              onClick={() => sendReminder(item.actorId, item)}
+                              disabled={isSendingReminder === item.actorId}
+                              className="va-btn-pro !bg-va-off-white !text-va-black/60 flex items-center gap-2 py-2 px-4 text-[13px]"
+                            >
+                              {isSendingReminder === item.actorId ? (
+                                <Loader2 className="animate-spin" size={14} />
+                              ) : (
+                                <Clock size={14} />
+                              )}
+                              Stuur Reminder
+                            </ButtonInstrument>
+                          )}
+                          <ButtonInstrument 
+                            onClick={() => notifyActor(item.actorId, item)}
+                            disabled={isNotifyingActor === item.actorId}
+                            className="va-btn-pro !bg-va-black !text-white flex items-center gap-2 py-2 px-4 text-[13px]"
+                          >
+                            {isNotifyingActor === item.actorId ? (
+                              <Loader2 className="animate-spin" size={14} />
+                            ) : (
+                              <Send size={14} />
+                            )}
+                            Stuur naar Stem
+                          </ButtonInstrument>
+                        </div>
+                      )}
                     </div>
                   )) : (
                     <div className="p-6 text-center text-va-black/20 font-light italic">Geen item details beschikbaar in meta-data.</div>
