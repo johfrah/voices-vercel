@@ -187,7 +187,7 @@ export const AgencyCalculator = ({
           title: "Hoe werkt de prijs?",
           subtitle: "VOOR TELEFONIE & IVR",
           steps: [
-            { num: 1, title: "De Basis", desc: `Je betaalt een vast starttarief van €${telephonyBase} voor de eerste ${config.telephonyWordThreshold || 25} woorden.` },
+            { num: 1, title: "De Basis", desc: `Voor alle stemmen op Voices.be geldt hetzelfde vaste starttarief van €${telephonyBase} voor de eerste ${config.telephonyWordThreshold || 25} woorden.` },
             { num: 2, title: "Volume", desc: "Daarbovenop betaal je een transparante prijs per prompt. Hoe meer prompts, hoe voordeliger." },
             { num: 3, title: "Meertalig", desc: "Onze stemmen zijn meertalig inzetbaar voor een consistente merkbeleving." }
           ]
@@ -197,7 +197,7 @@ export const AgencyCalculator = ({
           title: "Hoe werkt de prijs?",
           subtitle: "VOOR ADVERTENTIES",
           steps: [
-            { num: 1, title: "De Opname", desc: `Je betaalt éénmalig €${currentBsf} voor de studiotijd. Dit is de basis voor je sessie.` },
+            { num: 1, title: "De Opname", desc: `Voor alle stemmen op Voices.be geldt hetzelfde vaste tarief van €${currentBsf} voor de studiotijd. Dit is de basis voor je sessie.` },
             { num: 2, title: "De Buyout", desc: calcType === 'social' ? "Vergoeding voor gebruik op social media kanalen." : calcType === 'podcast' ? "Vergoeding voor pre-roll of sponsoring in podcasts." : "Vergoeding voor uitzendrecht op radio/TV." },
             { num: 3, title: "Live Regie (Optioneel)", desc: `Regisseer de stem live tijdens de sessie. Het tarief hiervoor wordt bepaald door de gekozen stemacteur.` }
           ]
@@ -207,7 +207,7 @@ export const AgencyCalculator = ({
           title: "Hoe werkt de prijs?",
           subtitle: "VOOR BEDRIJFSVIDEO'S",
           steps: [
-            { num: 1, title: "De Opname", desc: `Je betaalt éénmalig €${videoBase} voor de studiotijd. Dit is de basis voor je project.` },
+            { num: 1, title: "De Opname", desc: `Voor alle stemmen op Voices.be geldt hetzelfde vaste tarief van €${videoBase} voor de studiotijd. Dit is de basis voor je project.` },
             { num: 2, title: "Het Gebruik", desc: "Voor niet-betaalde media is het gebruiksrecht onbeperkt inbegrepen." },
             { num: 3, title: "Kwaliteit", desc: "Je ontvangt een professionele opname in 48kHz, klaar voor gebruik in al je eigen kanalen." }
           ]
