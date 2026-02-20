@@ -189,7 +189,7 @@ export const AgencyCalculator = ({
           steps: [
             { num: 1, title: "De Opname", desc: `Je betaalt éénmalig €${currentBsf} voor de studiotijd. Dit is de basis voor je sessie.` },
             { num: 2, title: "De Buyout", desc: calcType === 'social' ? "Vergoeding voor gebruik op social media kanalen." : calcType === 'podcast' ? "Vergoeding voor pre-roll of sponsoring in podcasts." : "Vergoeding voor uitzendrecht op radio/TV." },
-            { num: 3, title: "Live Regie (Optioneel)", desc: `Wil je de opname live volgen via Zoom of Teams? Dat kan tegen een vast tarief van €${liveSurcharge}.` }
+            { num: 3, title: "Live Regie (Optioneel)", desc: `Regisseer de stem live tijdens de sessie. Het tarief hiervoor wordt bepaald door de gekozen stemacteur.` }
           ]
         };
       default:
@@ -199,7 +199,7 @@ export const AgencyCalculator = ({
           steps: [
             { num: 1, title: "De Opname", desc: `Je betaalt éénmalig €${videoBase} voor de studiotijd. Dit is de basis voor je project.` },
             { num: 2, title: "Het Gebruik", desc: "Voor niet-betaalde media is het gebruiksrecht onbeperkt inbegrepen." },
-            { num: 3, title: "Live Regie (Optioneel)", desc: `Regisseer de stem live tijdens de sessie voor het beste resultaat (+ €${liveSurcharge}).` }
+            { num: 3, title: "Live Regie (Optioneel)", desc: `Regisseer de stem live tijdens de sessie voor het beste resultaat. Tarief afhankelijk van de stemacteur.` }
           ]
         };
     }
@@ -357,9 +357,40 @@ export const AgencyCalculator = ({
                   </div>
                 </div>
               )}
+
+              {/* 4. Extra Options (Live Regie) */}
+              <div className="pt-8 border-t border-black/5 space-y-4">
+                <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Extra Opties</LabelInstrument>
+                <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">
+                  <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                      calcLive ? "bg-primary text-white" : "bg-va-off-white text-va-black/20"
+                    )}>
+                      <Mic2 size={20} strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <span className={cn("font-bold text-[14px] block leading-tight", calcLive ? "text-va-black" : "text-va-black/40")}>Live Regie</span>
+                      <span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">Sessie volgen via Zoom/Teams</span>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setCalcLive(!calcLive)}
+                    className={cn(
+                      "w-12 h-6 rounded-full relative transition-all duration-300",
+                      calcLive ? "bg-primary" : "bg-black/10"
+                    )}
+                  >
+                    <motion.div 
+                      animate={{ x: calcLive ? 24 : 4 }}
+                      className="absolute top-1 left-0 w-4 h-4 bg-white rounded-full shadow-sm"
+                    />
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* 4. Price & CTA (v2.30: Fixed visibility for Telephony & Video) */}
+            {/* 5. Price & CTA */}
             {(calcUsage === 'telefonie' || calcUsage === 'unpaid') && (
               <div className="pt-10 border-t border-black/[0.03] flex flex-col md:flex-row items-center justify-between gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="text-center md:text-left">
@@ -397,7 +428,13 @@ export const AgencyCalculator = ({
                       <div className="flex items-center gap-6">
                         <div className="text-right">
                           <div className="text-2xl font-extralight tracking-tighter text-va-black">€{calculateTotal(true, a)}</div>
-                          <div className="text-[9px] text-va-black/30 font-bold uppercase tracking-widest">Totaalprijs</div>
+                          <div className="text-[9px] text-va-black/30 font-bold uppercase tracking-widest">
+                            {calcLive ? (
+                              <span className="text-primary flex items-center justify-end gap-1">
+                                <CheckCircle2 size={8} /> {parseFloat(a.price_live_regie || '0') > 0 ? `Incl. Live Regie` : "Live Regie Gratis"}
+                              </span>
+                            ) : "Totaalprijs"}
+                          </div>
                         </div>
                         <ButtonInstrument 
                           variant="outline" 
