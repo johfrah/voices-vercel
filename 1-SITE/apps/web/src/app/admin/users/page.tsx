@@ -12,9 +12,11 @@ import {
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
-import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search, Shield, UserPlus, Users, RefreshCw } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search, Shield, UserPlus, Users, RefreshCw, Ghost } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 /**
  *  ADMIN USERS (NUCLEAR 2026)
@@ -23,6 +25,7 @@ import { useEffect, useState } from 'react';
  */
 export default function AdminUsersPage() {
   const { logAction } = useAdminTracking();
+  const { impersonate } = useAuth();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -156,6 +159,17 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="p-6">
                   <ContainerInstrument className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={async () => {
+                        logAction('users_impersonate', { userId: user.id });
+                        const res = await impersonate(user.id);
+                        if (!res.success) toast.error(res.error || 'Ghost Mode mislukt');
+                      }} 
+                      className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary"
+                      title="Ghost Mode: Inloggen als deze gebruiker"
+                    >
+                      <Ghost strokeWidth={1.5} size={14} />
+                    </button>
                     <button onClick={() => logAction('users_edit', { userId: user.id })} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
                       <Edit3 strokeWidth={1.5} size={14} />
                     </button>
