@@ -126,6 +126,13 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     }
   };
 
+  const handleVoiceDetails = (e: React.MouseEvent) => {
+    if (!voice || onSelect) return;
+    e.stopPropagation();
+    playClick('soft');
+    router.push(`/${voice.slug}`);
+  };
+
   const handleMouseEnter = () => {
     playSwell();
   };
@@ -440,10 +447,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   return (
     <ContainerInstrument
-      onClick={(e) => {
-        if (isEditMode || onSelect) return;
-        playClick('soft');
-      }}
+      onClick={handleVoiceDetails}
       plain
       className={cn(
         "group relative bg-white rounded-[20px] overflow-hidden shadow-aura transition-all duration-500 border border-black/[0.02] flex flex-col touch-manipulation w-full h-full",
