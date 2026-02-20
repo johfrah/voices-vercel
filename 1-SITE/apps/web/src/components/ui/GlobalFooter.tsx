@@ -67,7 +67,7 @@ export default function GlobalFooter() {
         links: [
           { name: 'Onze stemmen', href: '/agency/' },
           { name: 'Hoe werkt het', href: '/agency/zo-werkt-het/' },
-          { name: 'Tarieven', href: '/agency/tarieven/' },
+          { name: 'Tarieven', href: '/tarieven/' },
           { name: 'Casting-hulp', href: '/contact/' },
         ]
       },
