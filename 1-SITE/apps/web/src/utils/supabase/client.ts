@@ -61,9 +61,6 @@ export function createClient(): SupabaseClient | null {
       detectSessionInUrl: true,
       // @ts-expect-error - lockSession is geldig in auth-js maar niet in @supabase/ssr types
       lockSession: false,
-      //  Extra beveiliging tegen AbortError
-      storageKey: 'voices-auth-token',
-      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     },
     global: {
       // @ts-ignore

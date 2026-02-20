@@ -48,11 +48,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const getUser = async () => {
       try {
         // Sherlock: We voegen een kleine delay toe om race conditions met onAuthStateChange te voorkomen
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 500)); // Verhoogd naar 500ms
         if (!mountedRef.current) return;
 
         console.log('[Voices] Fetching current user session...')
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('[Voices] Session error:', sessionError);
+        }
+
         const { data: { user: authUser }, error } = await supabase.auth.getUser();
+        
+        console.log('[Voices] Auth check result:', { 
+          hasUser: !!authUser, 
+          hasSession: !!session,
+          email: authUser?.email 
+        });
+
         if (!mountedRef.current) return;
         if (error) {
           if (isAbortError(error)) {
@@ -101,7 +114,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[Voices] Auth state change:', event, { hasSession: !!session, email: session?.user?.email });
       if (mountedRef.current) {
         setUser(session?.user ?? null);
         setIsLoading(false);
