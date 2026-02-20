@@ -18,15 +18,17 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Final Transaction Mode Alignment (v2.4)
-      // Dit is de ENIGE manier om postgres-js stabiel te krijgen op poort 6543.
-      // We gebruiken de volledige connectionString inclusief ?pgbouncer=true.
-      const client = postgres(connectionString, { 
-        prepare: false, // VERPLICHT voor Transaction Mode
+      // CHRIS-PROTOCOL: Final Master Alignment (v2.5)
+      // We voegen de officiële Vercel-workaround toe aan de URL.
+      // Dit is de ENIGE manier om postgres-js stabiel te krijgen op poort 6543 in Vercel.
+      const connectionWithWorkaround = connectionString.includes('?') 
+        ? `${connectionString}&workaround=supabase-pooler.vercel`
+        : `${connectionString}?workaround=supabase-pooler.vercel`;
+
+      const client = postgres(connectionWithWorkaround, { 
+        prepare: false, 
         ssl: 'require',
         connect_timeout: 30,
-        // CRITIEK: Dwing de driver om GEEN sessie-parameters te sturen
-        // Dit voorkomt de 'Tenant or user not found' error op de proxy.
         onnotice: () => {},
         publications: [],
         idle_timeout: 20,
