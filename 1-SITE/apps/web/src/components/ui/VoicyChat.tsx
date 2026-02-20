@@ -976,57 +976,8 @@ export const VoicyChatV2: React.FC = () => {
           })}
         </ContainerInstrument>
 
-        {/* Mode & Persona Selectors - Only visible for Admin */}
-        {activeTab === 'chat' && isAdmin && (
-          <ContainerInstrument plain className="px-4 py-2 bg-va-off-white/50 border-b border-black/5 flex flex-col gap-2">
-            <ContainerInstrument plain className="flex justify-center">
-              <ContainerInstrument plain className="flex bg-white p-0.5 rounded-full border border-black/5 shadow-sm">
-                <ButtonInstrument 
-                  onClick={() => { setChatMode('ask'); playSonicClick('light'); }}
-                  className={`px-4 py-1 rounded-full text-[13px] font-light tracking-widest transition-all ${chatMode === 'ask' ? 'bg-va-black text-white shadow-md' : 'bg-va-off-white text-va-black/30 hover:text-va-black'}`}
-                >
-                  <VoiceglotText  translationKey="chat.mode.ask" defaultText="Ask" />
-                </ButtonInstrument>
-                <ButtonInstrument 
-                  onClick={() => { setChatMode('agent'); playSonicClick('pro'); }}
-                  className={`px-4 py-1 rounded-full text-[13px] font-light tracking-widest transition-all flex items-center gap-1.5 ${chatMode === 'agent' ? 'bg-va-black text-white shadow-md' : 'bg-va-off-white text-va-black/30 hover:text-va-black'}`}
-                >
-                  {chatMode === 'agent' && <Zap size={8} className="text-primary animate-pulse" />}
-                  <VoiceglotText  translationKey="chat.mode.agent" defaultText="Assistent" />
-                </ButtonInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
+        {/* Mode & Persona Selectors removed for pure chat experience */}
 
-            <ContainerInstrument plain className="flex justify-center">
-              <ContainerInstrument plain className="flex bg-white p-0.5 rounded-full border border-black/5 shadow-sm">
-                <ButtonInstrument 
-                  onClick={() => { 
-                    setPersona('voicy'); 
-                    playSonicClick('light');
-                    localStorage.setItem('voices_persona_preference', 'voicy');
-                    window.dispatchEvent(new CustomEvent('voices:persona_change', { detail: 'voicy' }));
-                  }}
-                  className={`px-4 py-1 rounded-full text-[13px] font-light tracking-widest transition-all flex items-center gap-1.5 ${persona === 'voicy' ? 'bg-va-black text-white shadow-md' : 'bg-va-off-white text-va-black/30 hover:text-va-black'}`}
-                >
-                  <MessageCircle size={10} className={persona === 'voicy' ? 'text-primary' : 'text-va-black/20'} />
-                  Voicy
-                </ButtonInstrument>
-                <ButtonInstrument 
-                  onClick={() => { 
-                    setPersona('johfrah'); 
-                    playSonicClick('pro');
-                    localStorage.setItem('voices_persona_preference', 'johfrah');
-                    window.dispatchEvent(new CustomEvent('voices:persona_change', { detail: 'johfrah' }));
-                  }}
-                  className={`px-4 py-1 rounded-full text-[13px] font-light tracking-widest transition-all flex items-center gap-1.5 ${persona === 'johfrah' ? 'bg-va-black text-white shadow-md' : 'bg-va-off-white text-va-black/30 hover:text-va-black'}`}
-                >
-                  <User size={10} className={persona === 'johfrah' ? 'text-primary' : 'text-va-black/20'} />
-                  Johfrah
-                </ButtonInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
-          </ContainerInstrument>
-        )}
 
         {/* Content Area */}
         <ContainerInstrument plain className="flex-1 overflow-hidden relative flex flex-col">
