@@ -26,9 +26,14 @@ export async function GET(request: Request) {
       
       //  SECURITY: Voorkom open redirects door alleen relatieve paden of de eigen origin toe te staan
       const isLocalRedirect = next.startsWith('/')
-      const redirectUrl = isLocalRedirect ? `${origin}${next}` : next
+      let finalPath = isLocalRedirect ? next : '/account'
       
-      return NextResponse.redirect(redirectUrl)
+      // Voeg auth=success toe als het nog niet in de URL staat
+      if (!finalPath.includes('auth=success')) {
+        finalPath += (finalPath.includes('?') ? '&' : '?') + 'auth=success'
+      }
+      
+      return NextResponse.redirect(`${origin}${finalPath}`)
     }
     
     console.error(' NUCLEAR AUTH ERROR:', error.message)
