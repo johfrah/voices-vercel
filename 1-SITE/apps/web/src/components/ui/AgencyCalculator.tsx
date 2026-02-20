@@ -156,7 +156,7 @@ export const AgencyCalculator = ({
       spots: { [calcType]: calcSpots },
       years: { [calcType]: calcYears },
       liveSession: calcLive,
-      music: { asBackground: calcMusic, asHoldMusic: false },
+      music: { asBackground: calcMusic, asHoldMusic: calcMusic },
       actorRates: actorRates || {} // Gebruik specifieke actor tarieven indien meegegeven
     }, config);
 
@@ -238,9 +238,9 @@ export const AgencyCalculator = ({
                     onClick={() => {
                       setCalcUsage(u.id as any);
                       if (onJourneyChange) onJourneyChange(u.id as any);
-                      if (u.id === 'telefonie') { setCalcType('ivr'); setCalcWords(25); }
-                      else if (u.id === 'unpaid') { setCalcType('webvideo'); setCalcWords(200); setCalcLive(false); }
-                      else { setCalcType('social'); setCalcWords(25); }
+                      if (u.id === 'telefonie') { setCalcType('ivr'); setCalcWords(25); setCalcLive(false); }
+                      else if (u.id === 'unpaid') { setCalcType('webvideo'); setCalcWords(200); setCalcLive(false); setCalcMusic(false); }
+                      else { setCalcType('social'); setCalcWords(25); setCalcMusic(false); }
                       setCalcYears(u.id === 'paid' && calcType === 'podcast' ? 0.25 : 1);
                     }}
                     className={cn(
@@ -376,36 +376,66 @@ export const AgencyCalculator = ({
                 </div>
               )}
 
-              {/* 4. Extra Options (Live Regie) */}
+              {/* 4. Extra Options (Live Regie / Wachtmuziek) */}
               {calcUsage !== 'unpaid' && (
                 <div className="pt-8 border-t border-black/5 space-y-4">
                   <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Extra Opties</LabelInstrument>
-                  <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-                        calcLive ? "bg-primary text-white" : "bg-va-off-white text-va-black/20"
-                      )}>
-                        <Mic2 size={20} strokeWidth={1.5} />
+                  
+                  {calcUsage === 'paid' ? (
+                    <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">
+                      <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                          calcLive ? "bg-primary text-white" : "bg-va-off-white text-va-black/20"
+                        )}>
+                          <Mic2 size={20} strokeWidth={1.5} />
+                        </div>
+                        <div>
+                          <span className={cn("font-bold text-[14px] block leading-tight", calcLive ? "text-va-black" : "text-va-black/40")}>Live Regie</span>
+                          <span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">Sessie volgen via Zoom/Teams</span>
+                        </div>
                       </div>
-                      <div>
-                        <span className={cn("font-bold text-[14px] block leading-tight", calcLive ? "text-va-black" : "text-va-black/40")}>Live Regie</span>
-                        <span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">Sessie volgen via Zoom/Teams</span>
-                      </div>
+                      <button 
+                        onClick={() => setCalcLive(!calcLive)}
+                        className={cn(
+                          "w-12 h-6 rounded-full relative transition-all duration-300",
+                          calcLive ? "bg-primary" : "bg-black/10"
+                        )}
+                      >
+                        <motion.div 
+                          animate={{ x: calcLive ? 24 : 4 }}
+                          className="absolute top-1 left-0 w-4 h-4 bg-white rounded-full shadow-sm"
+                        />
+                      </button>
                     </div>
-                    <button 
-                      onClick={() => setCalcLive(!calcLive)}
-                      className={cn(
-                        "w-12 h-6 rounded-full relative transition-all duration-300",
-                        calcLive ? "bg-primary" : "bg-black/10"
-                      )}
-                    >
-                      <motion.div 
-                        animate={{ x: calcLive ? 24 : 4 }}
-                        className="absolute top-1 left-0 w-4 h-4 bg-white rounded-full shadow-sm"
-                      />
-                    </button>
-                  </div>
+                  ) : (
+                    <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">
+                      <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                          calcMusic ? "bg-primary text-white" : "bg-va-off-white text-va-black/20"
+                        )}>
+                          <Music size={20} strokeWidth={1.5} />
+                        </div>
+                        <div>
+                          <span className={cn("font-bold text-[14px] block leading-tight", calcMusic ? "text-va-black" : "text-va-black/40")}>Wachtmuziek</span>
+                          <span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">Inclusief licentie & mix (+ €59)</span>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => setCalcMusic(!calcMusic)}
+                        className={cn(
+                          "w-12 h-6 rounded-full relative transition-all duration-300",
+                          calcMusic ? "bg-primary" : "bg-black/10"
+                        )}
+                      >
+                        <motion.div 
+                          animate={{ x: calcMusic ? 24 : 4 }}
+                          className="absolute top-1 left-0 w-4 h-4 bg-white rounded-full shadow-sm"
+                        />
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -482,11 +512,15 @@ export const AgencyCalculator = ({
                               <div className="text-right md:text-left">
                                 <div className="text-xl font-extralight tracking-tighter text-va-black">€{calculateTotal(true, a)}</div>
                                 <div className="text-[9px] text-va-black/30 font-bold uppercase tracking-widest">
-                                  {calcLive ? (
-                                    <span className="text-primary flex items-center gap-1">
-                                      <CheckCircle2 size={8} /> {parseFloat(a.price_live_regie || '0') > 0 ? `Incl. Regie` : "Regie Gratis"}
-                                    </span>
-                                  ) : calcUsage === 'paid' ? "All-in" : "Indicatie"}
+                                {calcLive ? (
+                                  <span className="text-primary flex items-center gap-1">
+                                    <CheckCircle2 size={8} /> {parseFloat(a.price_live_regie || '0') > 0 ? `Incl. Regie` : "Regie Gratis"}
+                                  </span>
+                                ) : calcMusic ? (
+                                  <span className="text-primary flex items-center gap-1">
+                                    <CheckCircle2 size={8} /> Incl. Wachtmuziek
+                                  </span>
+                                ) : calcUsage === 'paid' ? "All-in" : "Indicatie"}
                                 </div>
                               </div>
                             </td>
