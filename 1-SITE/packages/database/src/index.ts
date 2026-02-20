@@ -18,13 +18,11 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Force Session Mode for Serverless stability (v1.4)
-      const sessionConnectionString = connectionString.includes('?') 
-        ? `${connectionString}&pgbouncer=true` 
-        : `${connectionString}?pgbouncer=true`;
-
-      const client = postgres(sessionConnectionString, { 
-        prepare: false,
+      // CHRIS-PROTOCOL: Nuclear PgBouncer Session Mode Fix (v1.6)
+      // De 'Tenant or user not found' error ontstaat vaak door vervuilde strings.
+      // We zorgen voor een schone verbinding zonder prepared statements.
+      const client = postgres(connectionString, { 
+        prepare: false, // CRITIEK: PgBouncer ondersteunt geen prepared statements
         max: 1,
         idle_timeout: 20,
         connect_timeout: 30,
