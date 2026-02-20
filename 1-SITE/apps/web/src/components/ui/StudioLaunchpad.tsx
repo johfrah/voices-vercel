@@ -54,11 +54,21 @@ interface StudioLaunchpadProps {
  * Gebruikt de "Slimme Zwevende Kassa" logica voor projectinformatie.
  */
 export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) => {
-  const { state, toggleActorSelection, removeActor } = useVoicesState();
+  const { state, toggleActorSelection, removeActor, campaignMessage } = useVoicesState();
   const selectedActors = state.selected_actors;
   const [currentStep, setCurrentStep] = useState(1);
   const [script, setScript] = useState('');
   const [projectName, setProjectName] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
+  const [clientName, setClientName] = useState('');
+  const [clientCompany, setClientCompany] = useState('');
+  const [deadline, setDeadline] = useState('');
+  const [selectedVibe, setSelectedVibe] = useState('');
+  const [actorNotes, setActorNotes] = useState<Record<string, string>>({});
+  const [isLaunching, setIsLaunching] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isMatching, setIsMatching] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">("paid");
   const [selectedMedia, setSelectedMedia] = useState<CommercialMediaType[]>(['online']);
   const [spotsDetail, setSpotsDetail] = useState<Record<string, number>>({});
@@ -112,6 +122,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
   const handleLaunch = async () => {
     setIsLaunching(true);
     try {
+      console.log('Campaign message from state:', campaignMessage);
       const response = await fetch('/api/casting/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -18,6 +18,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { LoginPageClient } from './login/LoginPageClient';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
+import { LiquidBackground } from '@/components/ui/LiquidBackground';
 import { 
   Zap, 
   ShoppingBag, 
@@ -106,6 +107,7 @@ export default function AccountDashboardClient() {
 
   return (
     <PageWrapperInstrument className="va-home-container">
+      <LiquidBackground />
       {/*  ACCOUNT HERO */}
       <AccountHeroInstrument 
         userEmail={user?.email || 'user@voices.be'} 
