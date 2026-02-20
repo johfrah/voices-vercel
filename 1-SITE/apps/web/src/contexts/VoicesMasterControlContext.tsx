@@ -389,30 +389,24 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     params.delete('languages');
 
     const isAgency = pathname.startsWith('/agency');
-    const isTarieven = pathname === '/tarieven' || pathname === '/tarieven/';
-    let newUrl = pathname;
+    const isVoiceProfile = pathname.startsWith('/voice/') || (pathname.split('/').filter(Boolean).length === 1 && !isAgency);
+    const isTarieven = pathname === '/tarieven' || pathname === '/tarieven/' || pathname === '/price' || pathname === '/price/';
+    
+    // CHRIS-PROTOCOL: Only rewrite URL if we are explicitly in the Agency Journey flow
+    // and NOT on a specific profile page or static information page.
+    if (!isAgency) return;
 
-    if (isAgency) {
-      const jSlug = state.journey === 'telephony' ? 'telephony' : (state.journey === 'commercial' ? 'commercial' : 'video');
-      newUrl = '/agency/' + jSlug + '/';
-      
-      if (state.journey === 'commercial' && state.filters.media) {
-        state.filters.media.forEach(m => {
-          const spots = state.filters.spotsDetail?.[m] || 1;
-          const years = state.filters.yearsDetail?.[m] || 1;
-          newUrl += m + spots + 'x' + years + '/';
-        });
-      } else if ((state.journey === 'telephony' || state.journey === 'video') && state.filters.words) {
-        newUrl += state.filters.words + '/';
-      }
-    } else if (isTarieven) {
-      //  CHRIS-PROTOCOL: Don't rewrite URL on tarieven page
-      return;
-    } else {
-      const pathSegments = pathname.split('/').filter(Boolean);
-      if (pathSegments.length >= 2) {
-        newUrl = '/' + pathSegments[0] + '/' + state.journey;
-      }
+    const jSlug = state.journey === 'telephony' ? 'telephony' : (state.journey === 'commercial' ? 'commercial' : 'video');
+    let newUrl = '/agency/' + jSlug + '/';
+    
+    if (state.journey === 'commercial' && state.filters.media) {
+      state.filters.media.forEach(m => {
+        const spots = state.filters.spotsDetail?.[m] || 1;
+        const years = state.filters.yearsDetail?.[m] || 1;
+        newUrl += m + spots + 'x' + years + '/';
+      });
+    } else if ((state.journey === 'telephony' || state.journey === 'video') && state.filters.words) {
+      newUrl += state.filters.words + '/';
     }
 
     const queryString = params.toString();
