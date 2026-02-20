@@ -112,7 +112,7 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
     },
   };
 
-  const calculateTotal = () => {
+  const calculateTotal = (excludeVat = false) => {
     const config = pricingConfig || SlimmeKassa.getDefaultConfig();
     const wordCount = calcWords;
     const promptCount = Math.ceil(calcWords / 8); // Geschat aantal prompts voor IVR
@@ -130,7 +130,8 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
       actorRates: {} // AgencyCalculator gebruikt globale prijzen
     }, config);
 
-    return (result?.total || 0).toFixed(2);
+    const finalValue = excludeVat ? (result?.subtotal || 0) : (result?.total || 0);
+    return finalValue.toFixed(2);
   };
 
   const getUsageSteps = () => {
@@ -335,7 +336,7 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
                 <div className="text-center md:text-left">
                   <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold mb-1 uppercase">Indicatie Totaalprijs (excl. BTW)</TextInstrument>
                   <div className="text-6xl font-extralight tracking-tighter text-va-black">
-                    €{calculateTotal()}
+                    €{calculateTotal(true)}
                   </div>
                 </div>
                 <ButtonInstrument onClick={() => router.push('/agency')} className="va-btn-pro !bg-va-black !text-white !rounded-2xl px-10 py-6 text-lg shadow-xl hover:scale-105 transition-transform flex items-center gap-3">
