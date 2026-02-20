@@ -86,6 +86,15 @@ export async function middleware(request: NextRequest) {
   const forceUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true';
   const isMainDomain = host === 'voices.be' || host === 'www.voices.be';
   const isUnderConstruction = false; // Bob: De gate staat nu definitief open voor de lancering! 🚀🏗️
+
+  // 1.8 LEGACY REDIRECTS (v2.24)
+  // Vang oude URL-structuren op en stuur ze naar de nieuwe canonieke paden.
+  if (pathname.startsWith('/agency/video/') || pathname.startsWith('/agency/telephony/') || pathname.startsWith('/agency/commercial/')) {
+    const tarievenUrl = url.clone();
+    tarievenUrl.pathname = '/tarieven';
+    // Behoud eventuele query params voor de calculator
+    return NextResponse.redirect(tarievenUrl, 301);
+  }
   
   // DOMAIN BYPASS: Specifieke domeinen en staging mogen ALTIJD door (Johfrah, Ademing, Youssef, Staging)
   const isBypassDomain = host.includes('staging.voices.be') ||
