@@ -48,23 +48,23 @@ export interface SlimmeKassaConfig {
 }
 
 export const DEFAULT_KASSA_CONFIG: SlimmeKassaConfig = {
-  basePrice: 0,
-  videoBasePrice: 0,
-  telephonyBasePrice: 0,
-  telephonySetupFee: 0,
-  telephonyWordPrice: 0,
-  telephonyWordThreshold: 0,
-  videoWordThreshold: 0,
-  videoWordRate: 0,
-  telephonyBulkThreshold: 0,
-  telephonyBulkBasePrice: 0,
-  telephonyBulkWordRate: 0,
+  basePrice: 19900, // €199 in cents (BSF)
+  videoBasePrice: 23900, // €239 in cents
+  telephonyBasePrice: 8900, // €89 in cents
+  telephonySetupFee: 1995, // €19.95 in cents
+  telephonyWordPrice: 100, // €1.00 in cents
+  telephonyWordThreshold: 25, // in words
+  videoWordThreshold: 200, // in words
+  videoWordRate: 20, // €0.20 in cents
+  telephonyBulkThreshold: 750, // in words
+  telephonyBulkBasePrice: 91535, // €915.35 in cents
+  telephonyBulkWordRate: 25, // €0.25 in cents
   telephonyFormulaAnchor: 8900, // CHRIS-PROTOCOL: Verankerde telefonie-formule integriteit
-  wordRate: 0,
-  vatRate: 0,
-  musicSurcharge: 0,
+  wordRate: 20, // in cents (default fallback)
+  vatRate: 0.21, // 21%
+  musicSurcharge: 5900, // €59 in cents
   radioReadySurcharge: 0,
-  liveSessionSurcharge: 0,
+  liveSessionSurcharge: 5000, // €50 in cents
   academyPrice: 19900, // €199 in cents
   workshopPrice: 29500, // €295 in cents
   johfraiBasicPrice: 4900, // in cents
