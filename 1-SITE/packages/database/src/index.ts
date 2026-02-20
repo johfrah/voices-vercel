@@ -52,9 +52,8 @@ o/bKiIz+Fq8=
         },
         connect_timeout: 30,
         onnotice: () => {},
-        publications: [],
         idle_timeout: 10,
-        max: 5,
+        max: 10,
       });
 
       (globalThis as any).dbInstance = drizzle(client, { 
