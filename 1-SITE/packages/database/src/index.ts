@@ -18,8 +18,8 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Trusted Shared Pooler Handshake (v2.10)
-      // We definiëren supabaseRootCA binnen het try-block om ReferenceErrors te voorkomen.
+// CHRIS-PROTOCOL: Trusted Shared Pooler Handshake (v2.11) - Force Trigger Build
+// We definiëren supabaseRootCA binnen het try-block om ReferenceErrors te voorkomen.
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
 BQAwazELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5l
