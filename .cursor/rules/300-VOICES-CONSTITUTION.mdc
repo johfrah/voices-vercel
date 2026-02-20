@@ -1,0 +1,31 @@
+# 📜 DE VOICES GRONDWET (2026)
+
+Deze grondwet is het absolute referentiekader voor elke AI-agent die aan Voices.be werkt. Het beschermt de visuele ziel, de commerciële kracht en de superieure UX tegen ondoordachte "technische optimalisaties".
+
+## 🎭 1. INTERACTIE & PROGRESSIVE DISCLOSURE
+*   **De Wet van Rust**: Informatie mag de bezoeker nooit overweldigen. 
+*   **Progressive Disclosure**: Extra opties (zoals extra talen in de dropdown) mogen NOOIT direct in een lijst staan. Ze verschijnen uitsluitend via een openschuivende div of animatie NA een primaire actie.
+*   **100ms Feedback**: Elke interactie geeft binnen 100ms visuele response. Het verwijderen van animaties (zoals `va-bezier`) om code te "versimpelen" is een fatale fout.
+
+## 🎡 2. NUCLEAR SORTING (DE VOLGORDE)
+De volgorde van stemmen is de commerciële motor en mag nooit willekeurig zijn.
+*   **De Hiërarchie**: 
+    1. `menu_order` (De artistieke regie van Johfrah)
+    2. `voice_score` (De data-gedreven kwaliteitsscore)
+    3. `alphabetical` (Tie-breaker)
+*   **Verbod**: Het is ten strengste verboden om deze volgorde te wijzigen naar puur alfabetisch of op basis van ID zonder expliciet mandaat.
+
+## 📱 3. MOBY'S THUMB-ZONE
+*   **De Wet van de Duim**: Alle primaire actie-knoppen (Kies stem, Start Casting, Afrekenen) MOETEN zich in de onderste 30% van het scherm bevinden.
+*   **Floating Elements**: De `CastingDock` en floating actie-knoppen zijn heilig en mogen niet worden verplaatst naar de header of zijbalken op mobiel.
+
+## 🛡️ 4. SAFE HARBOR (GEEN DEAD-ENDS)
+*   **No Empty States**: Een filter-resultaat van 0 stemmen is onacceptabel zonder uitweg.
+*   **De Redding**: Bij 0 resultaten MOET er altijd een "Safe Harbor" zijn: een knop 'Filters herstellen' of een directe link naar Voicy/Support. De bezoeker mag nooit hoeven zoeken naar een weg terug.
+
+## 🔗 5. HYBRID LOGIC PROTECTION
+*   **Data vs UI**: Bij technische migraties (zoals van Strings naar IDs) moet de UI-state altijd intact blijven. 
+*   **Wet**: De code past zich aan de UI aan, nooit andersom. Als een ID-migratie de "openschuivende div" breekt, is de migratie mislukt en moet deze worden hersteld.
+
+---
+**MANDAAT**: Chris (Technisch Directeur) handhaaft deze grondwet. Elke overtreding wordt beschouwd als 'Slop' en moet onmiddellijk worden teruggedraaid.

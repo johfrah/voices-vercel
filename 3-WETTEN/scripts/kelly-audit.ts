@@ -10,14 +10,14 @@ import { db } from '../../1-SITE/packages/database/src';
 import { actors } from '../../1-SITE/packages/database/src/schema';
 
 // ------------------------------------------------------------------
-// ⚡ KELLY'S BRAIN (PricingEngine Logic Copy for Audit)
+// ⚡ KELLY'S BRAIN (SlimmeKassa Logic Copy for Audit)
 // We copy this to ensure we test the EXACT logic without import issues
 // ------------------------------------------------------------------
 
 type UsageType = 'unpaid' | 'telefonie' | 'subscription' | 'commercial' | 'non-commercial';
 type CommercialMediaType = 'online' | 'tv_national' | 'radio_national' | 'podcast' | 'social_media' | 'tv_regional' | 'tv_local' | 'radio_regional' | 'radio_local';
 
-interface PricingInput {
+interface SlimmeKassaInput {
   usage: UsageType;
   words?: number;
   mediaTypes?: CommercialMediaType[];
@@ -27,8 +27,8 @@ interface PricingInput {
   actorRates?: Record<string, any>;
 }
 
-class PricingEngine {
-  static calculate(input: PricingInput) {
+class SlimmeKassa {
+  static calculate(input: SlimmeKassaInput) {
     let base = 239;
     let mediaSurcharge = 0;
     let wordSurcharge = 0;
@@ -112,7 +112,7 @@ async function auditKelly() {
   console.log('\n🎥 SCENARIO A: Organic Video (Corporate/Web)');
   console.log('   - Usage: unpaid');
   console.log('   - Words: 150');
-  const priceA = PricingEngine.calculate({
+  const priceA = SlimmeKassa.calculate({
     usage: 'unpaid',
     words: 150,
     actorRates: targetActor.rates as any
@@ -125,7 +125,7 @@ async function auditKelly() {
   console.log('   - Usage: commercial');
   console.log('   - Media: Online');
   console.log('   - Spots: 1, Years: 1');
-  const priceB = PricingEngine.calculate({
+  const priceB = SlimmeKassa.calculate({
     usage: 'commercial',
     mediaTypes: ['online'],
     spots: { online: 1 },
@@ -143,7 +143,7 @@ async function auditKelly() {
   console.log('\n📻 SCENARIO C: Radio National');
   console.log('   - Usage: commercial');
   console.log('   - Media: Radio National');
-  const priceC = PricingEngine.calculate({
+  const priceC = SlimmeKassa.calculate({
     usage: 'commercial',
     mediaTypes: ['radio_national'],
     spots: { radio_national: 1 },

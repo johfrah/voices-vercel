@@ -172,6 +172,7 @@ export class MarketManager {
       logo_url: config.logo_url || VOICES_CONFIG.assets.logos.be,
       company_name: config.company_name || VOICES_CONFIG.company.name,
       vat_number: config.vat_number || VOICES_CONFIG.company.vat,
+      address: config.address || VOICES_CONFIG.company.address,
       theme: config.theme || 'voices',
       has_voicy: config.has_voicy ?? false
     };

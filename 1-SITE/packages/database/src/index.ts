@@ -1,4 +1,6 @@
-import * as schema from './schema';
+import * as schema from './schema/index';
+import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 
 // Sherlock: We gebruiken een lazy initializer voor de DB client om te voorkomen dat 
 // postgres.js wordt geïnitialiseerd in de Edge runtime (waar het niet werkt).
@@ -13,10 +15,6 @@ const getDb = () => {
   
   if (!(globalThis as any).dbInstance) {
     try {
-      const req = eval('require');
-      const postgres = req('postgres');
-      const { drizzle } = req('drizzle-orm/postgres-js');
-      
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
@@ -29,7 +27,9 @@ const getDb = () => {
         connect_timeout: 10
       });
       
-      (globalThis as any).dbInstance = drizzle(client, { schema });
+      (globalThis as any).dbInstance = drizzle(client, { 
+        schema
+      });
       console.log('✅ Drizzle initialized (Pool size:', process.env.NODE_ENV === 'development' ? 5 : 10, ')');
     } catch (e) {
       console.error('❌ Failed to initialize Drizzle:', e);

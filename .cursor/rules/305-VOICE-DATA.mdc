@@ -18,7 +18,7 @@ De "Source of Truth" is de Supabase PostgreSQL database via Drizzle ORM. We gebr
 - `reviews`: Klantervaringen gekoppeld via `iapContext->'actorId'`.
 
 ## 2. PRICING LOGIC (NATIVE ENGINE)
-Prijzen worden berekend via de `PricingEngine` (TypeScript) in `src/lib/pricing-engine.ts`.
+Prijzen worden berekend via de `SlimmeKassa` (TypeScript) in `src/lib/pricing-engine.ts`.
 
 ### Geverifieerde Velden voor Berekening:
 - `price_unpaid_media`: Basis voor corporate/e-learning.
@@ -27,7 +27,7 @@ Prijzen worden berekend via de `PricingEngine` (TypeScript) in `src/lib/pricing-
 - `price_live_regie`: Toeslag voor live regie.
 
 ### Reken-regels:
-- Gebruik ALTIJD de `PricingEngine.calculatePrice()` methode.
+- Gebruik ALTIJD de `SlimmeKassa.calculatePrice()` methode.
 - Bedragen zijn ALTIJD **exclusief BTW**.
 - Toon prijzen via de standaard `Intl.NumberFormat('nl-BE')`.
 
@@ -41,4 +41,4 @@ Prijzen worden berekend via de `PricingEngine` (TypeScript) in `src/lib/pricing-
 - Respecteer de `availability` JSON kolom voor het tonen van de 'Direct Boeken' knop.
 
 ---
-**GOUDEN REGEL:** Gok nooit naar tarieven. De `PricingEngine` is de enige die prijzen bepaalt op basis van de database-velden.
+**GOUDEN REGEL:** Gok nooit naar tarieven. De `SlimmeKassa` is de enige die prijzen bepaalt op basis van de database-velden.

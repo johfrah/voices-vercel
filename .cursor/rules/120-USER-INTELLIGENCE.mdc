@@ -22,7 +22,7 @@ Elke interactie wordt gedefinieerd door vier dimensies, opgeslagen in de Unified
 
 ### C. Usage Type (Flow)
 - **Types**: `Unpaid` (Corporate), `Paid` (Commercial), `Telefonie` (IVR).
-- **Functie**: Stuurt de `PricingEngine` aan.
+- **Functie**: Stuurt de `SlimmeKassa` aan.
 
 ### D. Intent (Predictive Router)
 - **Personas**: `agency_buyer`, `voice_talent`, `academy_student`, `partner`.

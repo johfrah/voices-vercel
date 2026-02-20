@@ -33,7 +33,7 @@ Wij zijn het **vriendelijkste** stemmenbureau. Onze toon is die van een ervaren 
 
 ### B. ZERO LAWS (TRANSPARANTIE)
 - **Wet:** Wees 100% transparant over prijzen en data. 
-- **Handhaving:** Geen vage "vanaf" prijzen. De `PricingEngine` is de enige bron van waarheid.
+- **Handhaving:** Geen vage "vanaf" prijzen. De `SlimmeKassa` is de enige bron van waarheid.
 
 ### C. TEXT ZERO (Voiceglot-First)
 - **Wet:** Rauwe strings in JSX zijn verboden. 

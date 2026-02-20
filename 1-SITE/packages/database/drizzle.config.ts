@@ -1,13 +1,14 @@
 import * as dotenv from 'dotenv';
 import { defineConfig } from 'drizzle-kit';
+import path from 'path';
 
-dotenv.config({ path: '../../apps/web/.env.local' });
+dotenv.config({ path: path.join(__dirname, '../../apps/web/.env.local') });
 
 export default defineConfig({
-  schema: './src/schema/index.ts',
-  out: './packages/database/meta',
+  schema: path.join(__dirname, './schema.ts'),
+  out: path.join(__dirname, './meta'),
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL!,
+    url: process.env.DATABASE_URL || "postgresql://postgres.vcbxyyjsxuquytcsskpj:VoicesHeadless20267654323456@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true",
   },
 });

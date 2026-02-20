@@ -55,7 +55,7 @@ Johfrai is het vlaggeschip. De officiële AI-kloon van Johfrah Lefebvre.
     *   **Extra Prompt**: €9,95 per stuk.
     *   **Extra Woorden**: €0,50 per woord.
     *   **Music Mix Upsell**: €59,- (voor automatische mix met wachtmuziek + losse bestanden).
-    *   *Alle prijzen zijn dynamisch en worden beheerd via de PricingEngine.*
+    *   *Alle prijzen zijn dynamisch en worden beheerd via de SlimmeKassa.*
     *   *Alle prijzen zijn exclusief 10% processing fee.*
 *   **Commerciële Upsell**: We gebruiken AI als de 'hook' om klanten kennis te laten maken met de kwaliteit van Voices.be, om ze vervolgens te laten groeien naar premium menselijke producties.
 
