@@ -201,6 +201,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!result) {
+      console.log(`[Proxy 404] Asset not found: ${assetPath}`);
       //  SELF-HEALING: Rapporteer kapotte asset (HITL)
       try {
         const { SelfHealingService } = await import('@/lib/system/self-healing-service');
