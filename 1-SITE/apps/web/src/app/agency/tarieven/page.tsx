@@ -1,5 +1,6 @@
 "use client";
 
+import { AgencyCalculator } from "@/components/ui/AgencyCalculator";
 import { 
   ContainerInstrument, 
   HeadingInstrument, 
@@ -7,49 +8,83 @@ import {
   SectionInstrument, 
   TextInstrument,
   ButtonInstrument
-} from '@/components/ui/LayoutInstruments';
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { useSonicDNA } from '@/lib/sonic-dna';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState, useMemo, Suspense } from 'react';
-import Image from 'next/image';
-import { ChevronRight, Info, Search, Mic2, Globe, Radio, Tv, Phone, Video, Megaphone, Users, User, X, Zap } from 'lucide-react';
-import { SlimmeKassa } from '@/lib/pricing-engine';
-import { MarketManager } from '@config/market-manager';
-import { cn } from '@/lib/utils';
-import { FlagBE, FlagNL, FlagFR, FlagUK, FlagUS, FlagDE, FlagES, FlagIT, FlagPL, FlagDK, FlagPT } from '@/components/ui/LayoutInstruments';
-import dynamic from "next/dynamic";
-import { useRouter } from 'next/navigation';
+} from "@/components/ui/LayoutInstruments";
+import { cn } from "@/lib/utils";
+import { LiquidBackground } from "@/components/ui/LiquidBackground";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useEffect, useState, useMemo } from "react";
+import { motion } from "framer-motion";
+import { Search, Globe, Phone, Video, Megaphone, Radio, Tv } from "lucide-react";
+import Image from "next/image";
+import { useSonicDNA } from "@/lib/sonic-dna";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { MarketManager } from "@config/market-manager";
+import { FlagBE, FlagNL, FlagFR, FlagUK, FlagDE } from "@/components/ui/LayoutInstruments";
 
-//  NUCLEAR LOADING MANDATE
-const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
-const PricingCalculator = dynamic(() => import("@/components/ui/PricingCalculator").then(mod => mod.PricingCalculator), { ssr: false });
+import { SlimmeKassa } from "@/lib/pricing-engine";
 
-export default function TarievenPage() {
+/**
+ * AGENCY PRICE PAGE (2026)
+ * Route: /agency/tarieven
+ * Doel: Transparante prijsindicatie voor de Agency journey (Slimme Kassa).
+ */
+function PricePageContent() {
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const { playSwell, playClick } = useSonicDNA();
+  const { playClick } = useSonicDNA();
+  const journey = searchParams.get('journey') || 'commercial';
+  
+  // Map journey param naar calculator usage
+  const initialUsage = journey === 'telephony' ? 'telefonie' : journey === 'video' ? 'unpaid' : 'paid';
+
   const [actors, setActors] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
-  const [activeTab, setActiveJourney] = useState<'telefonie' | 'unpaid' | 'paid'>('paid');
+  const [selectedLanguageId, setSelectedLanguageId] = useState<number | null>(null);
+  const [dbLanguages, setDbLanguages] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<'telefonie' | 'unpaid' | 'paid'>(initialUsage as any);
+  const [pricingConfig, setPricingConfig] = useState<any>(null);
+  const [currentPage, setCurrentStepPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    // Prefill language based on market
-    const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
-    const market = MarketManager.getCurrentMarket(host);
-    if (market.market_code === 'BE') setSelectedLanguage('Vlaams');
-    else if (market.market_code === 'NLNL') setSelectedLanguage('Nederlands');
+    const fetchConfig = async () => {
+      try {
+        const res = await fetch('/api/pricing/config');
+        if (res.ok) {
+          const data = await res.json();
+          setPricingConfig(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch pricing config', err);
+      }
+    };
+    fetchConfig();
   }, []);
 
   useEffect(() => {
     const fetchActors = async () => {
       try {
-        const res = await fetch('/api/admin/config?type=actors');
-        const data = await res.json();
-        setActors(data.results || []);
+        const [actorsRes, langsRes] = await Promise.all([
+          fetch('/api/admin/config?type=actors'),
+          fetch('/api/admin/config?type=languages')
+        ]);
+        
+        const actorsData = await actorsRes.json();
+        const langsData = await langsRes.json();
+        
+        const allActors = actorsData.results || [];
+        const allLangs = langsData.results || [];
+        
+        setActors(allActors);
+        setDbLanguages(allLangs);
+        
+        // Set default language to Vlaams by ID
+        const vlaams = allLangs.find((l: any) => l.label === 'Vlaams' || l.code === 'nl-BE');
+        if (vlaams) setSelectedLanguageId(vlaams.id);
+        
       } catch (err) {
-        console.error('Failed to fetch actors:', err);
+        console.error('Failed to fetch actors or languages:', err);
       } finally {
         setIsLoading(false);
       }
@@ -57,100 +92,91 @@ export default function TarievenPage() {
     fetchActors();
   }, []);
 
-  const languages = useMemo(() => {
-    const langs = new Set<string>();
-    actors.forEach(a => {
-      if (a.native_lang) langs.add(a.native_lang);
-    });
-    return Array.from(langs).sort();
-  }, [actors]);
-
   const filteredActors = useMemo(() => {
     return actors.filter(a => {
       const matchesSearch = a.display_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           a.first_name?.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesLang = selectedLanguage === 'all' || 
-                         a.native_lang === selectedLanguage || 
-                         (a.languages && a.languages.some((l: any) => l.label === selectedLanguage));
+      // CHRIS-PROTOCOL: Language filter is strictly for NATIVE language only
+      // We match on the native_lang_id from Supabase
+      const matchesLang = selectedLanguageId ? a.native_lang_id === selectedLanguageId : true;
       
       return matchesSearch && matchesLang;
     }).sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0));
-  }, [actors, searchQuery, selectedLanguage]);
+  }, [actors, searchQuery, selectedLanguageId]);
 
-  const languageOptions = [
-    { label: 'Alle talen', value: 'all', icon: Globe },
-    { label: 'Vlaams', value: 'Vlaams', icon: FlagBE },
-    { label: 'Nederlands', value: 'Nederlands', icon: FlagNL },
-    { label: 'Frans', value: 'Frans', icon: FlagFR },
-    { label: 'Engels', value: 'Engels', icon: FlagUK },
-    { label: 'Duits', value: 'Duits', icon: FlagDE },
-  ];
+  const paginatedActors = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredActors.slice(start, start + itemsPerPage);
+  }, [filteredActors, currentPage]);
+
+  const totalPages = Math.ceil(filteredActors.length / itemsPerPage);
+
+  const languageOptions = useMemo(() => {
+    const priority = ['Vlaams', 'Nederlands', 'Frans', 'Engels', 'Duits'];
+    const icons: Record<string, any> = {
+      'Vlaams': FlagBE,
+      'Nederlands': FlagNL,
+      'Frans': FlagFR,
+      'Engels': FlagUK,
+      'Duits': FlagDE
+    };
+
+    return dbLanguages
+      .filter(l => priority.includes(l.label))
+      .sort((a, b) => priority.indexOf(a.label) - priority.indexOf(b.label))
+      .map(l => ({
+        label: l.label,
+        value: l.id,
+        icon: icons[l.label]
+      }));
+  }, [dbLanguages]);
 
   return (
-    <PageWrapperInstrument className="bg-va-off-white min-h-screen pb-32 overflow-x-hidden">
-      <Suspense fallback={null}>
-        <LiquidBackground strokeWidth={1.5} />
-      </Suspense>
+    <PageWrapperInstrument className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white">
+      <LiquidBackground strokeWidth={1.5} />
       
-      {/* HERO SECTION */}
-      <ContainerInstrument className="pt-64 pb-12 relative z-10 max-w-6xl mx-auto px-6 text-center">
-        <header className="max-w-4xl mx-auto" onMouseEnter={() => playSwell()}>
-          <HeadingInstrument level={1} className="text-[8vw] lg:text-[120px] font-extralight tracking-tighter mb-10 leading-[0.85] text-va-black">
-            <VoiceglotText translationKey="pricing.title" defaultText="Tarieven" />
-          </HeadingInstrument>
-          
-          <div className="h-[100px] flex items-center justify-center overflow-hidden">
-            <TextInstrument className="text-2xl lg:text-3xl text-va-black/40 font-light tracking-tight max-w-2xl mx-auto leading-tight">
-              <VoiceglotText 
-                translationKey="pricing.subtitle" 
-                defaultText="Transparante prijzen voor elk project. Bereken direct jouw projectprijs." 
-              />
-            </TextInstrument>
-          </div>
-          
-          <ContainerInstrument className="w-24 h-1 bg-black/5 rounded-full mx-auto mt-8" />
-        </header>
-      </ContainerInstrument>
-
-      {/* CALCULATOR SECTION */}
-      <SectionInstrument className="py-16 relative z-10 max-w-6xl mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-        >
-          <Suspense fallback={
-            <div className="w-full h-[600px] bg-white/80 backdrop-blur-xl rounded-[20px] border border-white/20 shadow-aura flex flex-col lg:flex-row overflow-hidden">
-              <div className="flex-1 p-8 lg:p-12 space-y-10">
-                <div className="h-6 w-48 bg-va-black/5 rounded animate-pulse" />
-                <div className="grid grid-cols-3 gap-4">
-                  {[1, 2, 3].map(i => <div key={i} className="h-32 bg-va-black/5 rounded-[32px] animate-pulse" />)}
-                </div>
-                <div className="h-12 w-full bg-va-black/5 rounded-[20px] animate-pulse" />
-              </div>
-              <div className="lg:w-[380px] bg-va-black p-12 flex flex-col justify-center items-center gap-6">
-                <div className="h-16 w-48 bg-white/5 rounded animate-pulse" />
-                <div className="h-12 w-full bg-primary/20 rounded-[10px] animate-pulse" />
-              </div>
+      {/* Header Section */}
+      <SectionInstrument className="pt-48 pb-24">
+        <ContainerInstrument className="max-w-5xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-6"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/5 rounded-full text-primary text-[11px] font-bold tracking-widest uppercase">
+              <Search size={14} />
+              Tarieven per projecttype
             </div>
-          }>
-            <PricingCalculator />
-          </Suspense>
-        </motion.div>
+            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-extralight tracking-tighter leading-tight text-va-black">
+              Bereken je <span className="text-primary/30 italic">Projectprijs.</span>
+            </HeadingInstrument>
+            <TextInstrument className="text-xl text-va-black/40 font-light max-w-2xl mx-auto leading-relaxed">
+              Geen offertes afwachten. Bereken direct een indicatie van de kosten voor jouw project op basis van onze standaard Agency tarieven.
+            </TextInstrument>
+          </motion.div>
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      {/* Calculator Section */}
+      <SectionInstrument className="pb-32">
+        <ContainerInstrument className="max-w-6xl mx-auto px-6">
+          <AgencyCalculator initialJourney={initialUsage as any} />
+        </ContainerInstrument>
       </SectionInstrument>
 
       {/* RATE CARD LIST SECTION */}
-      <SectionInstrument className="py-32 relative z-10 max-w-6xl mx-auto px-6">
+      <SectionInstrument className="py-32 relative z-10 max-w-6xl mx-auto px-6 border-t border-black/5">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
           <div className="max-w-xl">
             <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter mb-6 text-va-black">
-              <VoiceglotText translationKey="pricing.ratecard.title" defaultText="Tarieven per stem" />
+              <VoiceglotText translationKey="pricing.ratecard.title" defaultText="Live Ratecard" />
             </HeadingInstrument>
             <TextInstrument className="text-xl text-va-black/40 font-light leading-relaxed">
               <VoiceglotText 
                 translationKey="pricing.ratecard.subtitle" 
-                defaultText="Voor telefonie en video hanteren we standaardtarieven. Bij advertenties variëren de prijzen per stemacteur." 
+                defaultText="Bekijk de individuele tarieven per stemacteur voor jouw project." 
               />
             </TextInstrument>
           </div>
@@ -161,38 +187,15 @@ export default function TarievenPage() {
               <input 
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentStepPage(1);
+                }}
                 placeholder="Zoek een stemacteur..."
                 className="w-full bg-white border border-black/5 rounded-full py-4 pl-12 pr-6 text-[15px] font-medium focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-sm"
               />
             </div>
           </div>
-        </div>
-
-        {/* JOURNEY TABS */}
-        <div className="flex items-center gap-2 p-1.5 bg-va-off-white/50 rounded-[24px] border border-black/5 mb-8 w-fit">
-          {[
-            { id: 'paid', label: 'Advertentie', icon: Megaphone },
-            { id: 'unpaid', label: 'Video', icon: Video },
-            { id: 'telefonie', label: 'Telefoon', icon: Phone },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => {
-                setActiveJourney(tab.id as any);
-                playClick('pro');
-              }}
-              className={cn(
-                "flex items-center gap-3 px-6 py-3 rounded-[18px] text-[13px] font-bold transition-all duration-500",
-                activeTab === tab.id 
-                  ? "bg-va-black text-white shadow-lg scale-[1.02]" 
-                  : "text-va-black/40 hover:text-va-black hover:bg-white/50"
-              )}
-            >
-              <tab.icon size={16} strokeWidth={activeTab === tab.id ? 2.5 : 1.5} />
-              <span>{tab.label}</span>
-            </button>
-          ))}
         </div>
 
         {/* LANGUAGE FILTERS */}
@@ -202,12 +205,13 @@ export default function TarievenPage() {
             <button
               key={lang.value}
               onClick={() => {
-                setSelectedLanguage(lang.value);
+                setSelectedLanguageId(lang.value);
+                setCurrentStepPage(1);
                 playClick('soft');
               }}
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-full border text-[13px] font-medium transition-all",
-                selectedLanguage === lang.value 
+                selectedLanguageId === lang.value 
                   ? "bg-primary/10 border-primary/20 text-primary shadow-sm" 
                   : "bg-white border-black/5 text-va-black/40 hover:border-black/10"
               )}
@@ -236,31 +240,19 @@ export default function TarievenPage() {
                           <Radio size={12} /> Radio
                         </div>
                       </th>
-                  <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                    <div className="flex items-center gap-2">
-                      <Tv size={12} /> TV Ad
-                    </div>
-                  </th>
-                  <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                    <div className="flex items-center gap-2">
-                      <Zap size={12} /> Live Regie
-                    </div>
-                  </th>
-                </>
-              ) : activeTab === 'unpaid' ? (
-                <>
-                  <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                    <div className="flex items-center gap-2">
-                      <Video size={12} /> Video (Unpaid)
-                    </div>
-                  </th>
-                  <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                    <div className="flex items-center gap-2">
-                      <Zap size={12} /> Live Regie
-                    </div>
-                  </th>
-                </>
-              ) : (
+                      <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                        <div className="flex items-center gap-2">
+                          <Tv size={12} /> TV Ad
+                        </div>
+                      </th>
+                    </>
+                  ) : activeTab === 'unpaid' ? (
+                    <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                      <div className="flex items-center gap-2">
+                        <Video size={12} /> Video (Unpaid)
+                      </div>
+                    </th>
+                  ) : (
                     <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
                       <div className="flex items-center gap-2">
                         <Phone size={12} /> Telefoon / IVR
@@ -280,8 +272,8 @@ export default function TarievenPage() {
                       </div>
                     </td>
                   </tr>
-                ) : filteredActors.length > 0 ? (
-                  filteredActors.map((a) => {
+                ) : paginatedActors.length > 0 ? (
+                  paginatedActors.map((a) => {
                     const rates = a.rates || a.rates_raw || {};
                     const beRates = rates['BE'] || {};
                     
@@ -306,34 +298,22 @@ export default function TarievenPage() {
                         {activeTab === 'paid' ? (
                           <>
                             <td className="px-8 py-5">
-                              <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'commercial', mediaTypes: ['online'], actorRates: a }).total}</span>
+                              <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'commercial', mediaTypes: ['online'], actorRates: a }, pricingConfig || undefined).total}</span>
                             </td>
                             <td className="px-8 py-5">
-                              <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'commercial', mediaTypes: ['radio_national'], actorRates: a }).total}</span>
+                              <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'commercial', mediaTypes: ['radio_national'], actorRates: a }, pricingConfig || undefined).total}</span>
                             </td>
                             <td className="px-8 py-5">
-                              <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'commercial', mediaTypes: ['tv_national'], actorRates: a }).total}</span>
-                            </td>
-                            <td className="px-8 py-5">
-                              <span className="text-[15px] font-light text-va-black">
-                                {SlimmeKassa.calculate({ usage: 'commercial', mediaTypes: ['online'], liveSession: true, actorRates: a }).liveSessionSurcharge || '—'}
-                              </span>
+                              <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'commercial', mediaTypes: ['tv_national'], actorRates: a }, pricingConfig || undefined).total}</span>
                             </td>
                           </>
                         ) : activeTab === 'unpaid' ? (
-                          <>
-                            <td className="px-8 py-5">
-                              <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'unpaid', words: 0, actorRates: a }).total}</span>
-                            </td>
-                            <td className="px-8 py-5">
-                              <span className="text-[15px] font-light text-va-black">
-                                {SlimmeKassa.calculate({ usage: 'unpaid', words: 0, liveSession: true, actorRates: a }).liveSessionSurcharge || '—'}
-                              </span>
-                            </td>
-                          </>
+                          <td className="px-8 py-5">
+                            <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'unpaid', words: 0, actorRates: a }, pricingConfig || undefined).base}</span>
+                          </td>
                         ) : (
                           <td className="px-8 py-5">
-                            <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'telefonie', words: 0, actorRates: a }).total}</span>
+                            <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'telefonie', words: 0, actorRates: a }, pricingConfig || undefined).base}</span>
                           </td>
                         )}
 
@@ -361,38 +341,60 @@ export default function TarievenPage() {
               </tbody>
             </table>
           </div>
+          
+          {/* PAGINATION CONTROLS */}
+          {totalPages > 1 && (
+            <div className="px-8 py-6 border-t border-black/5 flex items-center justify-between bg-va-off-white/30">
+              <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest">
+                Pagina {currentPage} van {totalPages}
+              </TextInstrument>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => { setCurrentStepPage(prev => Math.max(1, prev - 1)); playClick('soft'); }}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 rounded-xl bg-white border border-black/5 text-[11px] font-bold uppercase tracking-widest hover:border-primary/20 disabled:opacity-30 transition-all"
+                >
+                  Vorige
+                </button>
+                <button 
+                  onClick={() => { setCurrentStepPage(prev => Math.min(totalPages, prev + 1)); playClick('soft'); }}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 rounded-xl bg-white border border-black/5 text-[11px] font-bold uppercase tracking-widest hover:border-primary/20 disabled:opacity-30 transition-all"
+                >
+                  Volgende
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </SectionInstrument>
 
-      {/* FOOTER INFO */}
-      <SectionInstrument className="py-32 relative z-10">
-        <ContainerInstrument className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-            <div className="lg:col-span-5">
-              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-6 text-va-black">
-                <VoiceglotText translationKey="pricing.footer.title" defaultText="Wat is inbegrepen?" />
-              </HeadingInstrument>
-              <TextInstrument className="text-xl text-va-black/40 font-light leading-relaxed">
-                <VoiceglotText 
-                  translationKey="pricing.footer.subtitle" 
-                  defaultText="Bij Voices geloven we in eenvoud. Geen verborgen kosten, gewoon vakmanschap." 
-                />
-              </TextInstrument>
-            </div>
-            
-            <div className="lg:col-span-7">
-              <ContainerInstrument className="prose prose-xl text-va-black/60 font-light leading-relaxed tracking-tight">
-                <p>
-                  <VoiceglotText  
-                    translationKey="pricing.footer_text" 
-                    defaultText="Onze tarieven zijn inclusief studiosessie, nabewerking en retakes op tone-of-voice. Voor tekstwijzigingen achteraf rekenen we een klein supplement. Geen verrassingen achteraf, gewoon de beste kwaliteit." 
-                  />
-                </p>
-              </ContainerInstrument>
-            </div>
+      {/* Trust Footer */}
+      <SectionInstrument className="py-32 bg-white/50 backdrop-blur-sm border-t border-black/[0.03]">
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 text-center">
+          <TextInstrument className="text-[13px] font-bold text-va-black/20 tracking-[0.2em] uppercase mb-8">Onze Belofte</TextInstrument>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              { title: "Vaste Tarieven", desc: "Geen verrassingen achteraf. Wat je ziet is wat je betaalt." },
+              { title: "Inclusief Regie", desc: "Al onze boekingen zijn inclusief professionele nabewerking." },
+              { title: "Snelle Levering", desc: "Standaard binnen 48 uur geleverd, vaak sneller." }
+            ].map((item, i) => (
+              <div key={i} className="space-y-3">
+                <HeadingInstrument level={3} className="text-xl font-bold text-va-black">{item.title}</HeadingInstrument>
+                <TextInstrument className="text-[15px] text-va-black/40 font-light">{item.desc}</TextInstrument>
+              </div>
+            ))}
           </div>
         </ContainerInstrument>
       </SectionInstrument>
     </PageWrapperInstrument>
+  );
+}
+
+export default function PricePage() {
+  return (
+    <Suspense fallback={null}>
+      <PricePageContent />
+    </Suspense>
   );
 }
