@@ -89,12 +89,16 @@ export async function middleware(request: NextRequest) {
 
   // 1.8 LEGACY REDIRECTS (v2.24)
   // Vang oude URL-structuren op en stuur ze naar de nieuwe canonieke paden.
-  const isLegacyPath = pathname === '/agency/tarieven' || 
-                       pathname === '/agency/tarieven/' ||
-                       pathname === '/price' ||
-                       pathname === '/price/';
+  const isLegacyAgencyPath = pathname.startsWith('/agency/video') || 
+                             pathname.startsWith('/agency/telephony') || 
+                             pathname.startsWith('/agency/commercial');
+  
+  const isOtherLegacyPath = pathname === '/agency/tarieven' || 
+                            pathname === '/agency/tarieven/' ||
+                            pathname === '/price' ||
+                            pathname === '/price/';
 
-  if (isLegacyPath) {
+  if (isLegacyAgencyPath || isOtherLegacyPath) {
     const tarievenUrl = url.clone();
     tarievenUrl.pathname = '/tarieven';
     // Behoud eventuele query params voor de calculator

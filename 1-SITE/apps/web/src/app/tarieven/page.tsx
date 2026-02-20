@@ -82,19 +82,34 @@ function PricePageContent() {
         const allActors = actorsData.results || [];
         const allLangs = langsData.results || [];
         
+        console.log(`[Tarieven] Fetched ${allActors.length} actors and ${allLangs.length} languages`);
+        
         setActors(allActors);
         setDbLanguages(allLangs);
         
         // Market Awareness: Set default language based on domain
         const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
         const market = MarketManager.getCurrentMarket(host);
+        console.log(`[Tarieven] Current market: ${market.market_code}`);
+
         const defaultLang = allLangs.find((l: any) => 
           (market.market_code === 'BE' && (l.label === 'Vlaams' || l.code === 'nl-BE')) ||
           (market.market_code === 'NLNL' && (l.label === 'Nederlands' || l.code === 'nl-NL'))
         );
         
-        if (defaultLang) setSelectedLanguageId(defaultLang.id);
-        else if (allLangs.length > 0) setSelectedLanguageId(allLangs[0].id);
+        if (defaultLang) {
+          console.log(`[Tarieven] Setting default language to: ${defaultLang.label} (ID: ${defaultLang.id})`);
+          setSelectedLanguageId(defaultLang.id);
+        } else if (allLangs.length > 0) {
+          console.log(`[Tarieven] No default lang found for market, using first: ${allLangs[0].label}`);
+          setSelectedLanguageId(allLangs[0].id);
+        }
+        
+        // Debug: Check if any actors match the default language
+        if (defaultLang) {
+          const matching = allActors.filter(a => a.native_lang_id === defaultLang.id);
+          console.log(`[Tarieven] Found ${matching.length} actors matching default language ID ${defaultLang.id}`);
+        }
         
       } catch (err) {
         console.error('Failed to fetch actors or languages:', err);
