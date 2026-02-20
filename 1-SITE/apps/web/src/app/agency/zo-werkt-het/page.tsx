@@ -21,7 +21,17 @@ import dynamic from "next/dynamic";
 //  NUCLEAR LOADING MANDATE
 const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 
+import { AuthProvider } from '@/contexts/AuthContext';
+
 export default function HowItWorksPage() {
+  return (
+    <AuthProvider>
+      <HowItWorksContent />
+    </AuthProvider>
+  );
+}
+
+function HowItWorksContent() {
   const { state, updateJourney } = useMasterControl();
   const { playClick, playSwell } = useSonicDNA();
   
