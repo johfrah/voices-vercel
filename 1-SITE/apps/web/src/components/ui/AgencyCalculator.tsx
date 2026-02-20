@@ -293,7 +293,9 @@ export const AgencyCalculator = ({
 
                   {/* Spots Grid */}
                   <div className="space-y-4">
-                    <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Aantal spots</LabelInstrument>
+                    <div className="flex items-center justify-between">
+                      <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Aantal spots</LabelInstrument>
+                    </div>
                     <div className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm h-[64px]">
                       {[1, 2, 3, 4, 5].map((num) => (
                         <button
@@ -308,6 +310,9 @@ export const AgencyCalculator = ({
                         </button>
                       ))}
                     </div>
+                    <TextInstrument className="text-[10px] text-va-black/30 leading-relaxed italic px-1">
+                      Een campagne bestaat meestal uit 1 hoofdspot met variaties (vb. 30s, 20s en 6s) of verschillende call-to-actions. Elke variatie telt als een aparte spot.
+                    </TextInstrument>
                   </div>
 
                   {/* Duration Grid */}
@@ -326,6 +331,9 @@ export const AgencyCalculator = ({
                         </button>
                       ))}
                     </div>
+                    <TextInstrument className="text-[10px] text-va-black/30 leading-relaxed italic px-1">
+                      De periode waarin de opname mag worden uitgezonden. Na deze termijn kan de licentie (buyout) eenvoudig worden verlengd.
+                    </TextInstrument>
                   </div>
                 </div>
               ) : (
