@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { runMasterSync } from '@/lib/master-sync';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
+export const runtime = 'nodejs';
+
 /**
  *  NUCLEAR MASTER SYNC API
  * De 'Big Bang' knop voor de transitie naar Next.js.

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 /**
  * NUCLEAR ASSET PROXY - 2026 EDITION
  * 
