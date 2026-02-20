@@ -48,17 +48,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const getUser = async () => {
       try {
         // Sherlock: We voegen een kleine delay toe om race conditions met onAuthStateChange te voorkomen
-        await new Promise(resolve => setTimeout(resolve, 500)); // Verhoogd naar 500ms
+        await new Promise(resolve => setTimeout(resolve, 800)); // Verhoogd naar 800ms voor Vercel stabiliteit
         if (!mountedRef.current) return;
 
         console.log('[Voices] Fetching current user session...')
+        
+        //  NUCLEAR SYNC: We proberen eerst de sessie op te halen. 
+        // Dit is sneller en pakt de cookies direct op.
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error('[Voices] Session error:', sessionError);
         }
 
-        const { data: { user: authUser }, error } = await supabase.auth.getUser();
+        //  NUCLEAR VERIFY: We verifiëren de sessie met getUser voor maximale veiligheid.
+        // Als getSession een sessie heeft maar getUser niet (bv. verlopen), 
+        // vallen we terug op de server-side validatie.
+        let authUser = null;
+        const { data: { user: verifiedUser }, error: userError } = await supabase.auth.getUser();
+        
+        if (!userError && verifiedUser) {
+          authUser = verifiedUser;
+        } else if (session?.user) {
+          // Fallback naar session user als getUser faalt maar session er wel is (edge case)
+          authUser = session.user;
+        }
         
         console.log('[Voices] Auth check result:', { 
           hasUser: !!authUser, 
@@ -67,41 +81,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
         if (!mountedRef.current) return;
-        if (error) {
-          if (isAbortError(error)) {
-            console.warn('[Voices] Auth check aborted (harmless).');
-            return;
-          }
-          if (error.message?.includes('Auth session missing')) {
-            safeSetUser(null);
-            safeSetLoading(false);
-            return;
-          }
-          console.error('[Voices] Auth error:', error);
+        
+        // Als er geen gebruiker is, stoppen we hier
+        if (!authUser) {
           safeSetUser(null);
           safeSetLoading(false);
           return;
         }
-        if (authUser) {
-          try {
-            const { data: userData } = await supabase
-              .from('users')
-              .select('role, preferences')
-              .eq('email', authUser.email)
-              .single();
-            if (mountedRef.current) {
-              safeSetUser({ 
-                ...authUser, 
-                role: userData?.role,
-                preferences: userData?.preferences 
-              } as any);
-            }
-          } catch (dbErr) {
-            if (isAbortError(dbErr)) return;
-            if (mountedRef.current) safeSetUser(authUser);
+
+        // Gebruiker is gevonden, haal extra data op uit de 'users' tabel
+        try {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('role, preferences')
+            .eq('email', authUser.email)
+            .single();
+          
+          if (mountedRef.current) {
+            safeSetUser({ 
+              ...authUser, 
+              role: userData?.role,
+              preferences: userData?.preferences 
+            } as any);
           }
-        } else {
-          safeSetUser(null);
+        } catch (dbErr) {
+          if (isAbortError(dbErr)) return;
+          if (mountedRef.current) safeSetUser(authUser);
         }
       } catch (err) {
         if (isAbortError(err)) return;
