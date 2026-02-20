@@ -13,10 +13,11 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { LoginPageClient } from '../auth/login/LoginPageClient';
 import Image from 'next/image';
+import { toast } from 'react-hot-toast';
 import { 
   Zap, 
   ShoppingBag, 
@@ -31,16 +32,31 @@ import {
   Plus,
   ExternalLink,
   Shield,
-  Bell
+  Bell,
+  CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AccountDashboardClient() {
   const { user, isAdmin, isLoading, isAuthenticated, logout } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [customerDNA, setCustomerDNA] = useState<any>(null);
   const [isPartner, setIsPartner] = useState(true); // In productie checken we dit via user roles
   const [notifications, setNotifications] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (searchParams.get('auth') === 'success') {
+      toast.success('Succesvol ingelogd! Welkom terug.', {
+        id: 'auth-success',
+        duration: 5000,
+        icon: <CheckCircle2 className="text-green-500" size={20} />,
+      });
+      // Verwijder de query param uit de URL zonder de pagina te herladen
+      const newUrl = window.location.pathname;
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
