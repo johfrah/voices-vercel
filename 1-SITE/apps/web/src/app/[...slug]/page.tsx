@@ -18,7 +18,6 @@ import { JourneyType } from '@/types/journey';
 //  NUCLEAR LOADING MANDATE
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 const VideoPlayer = nextDynamic(() => import("@/components/academy/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
-const PricingCalculator = nextDynamic(() => import("@/components/ui/PricingCalculator").then(mod => mod.PricingCalculator), { ssr: false });
 
 const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalculator").then(mod => mod.AgencyCalculator), { ssr: false });
 
@@ -539,7 +538,7 @@ function CmsPageContent({ page, slug }: { page: any, slug: string }) {
       case 'calculator':
         return (
           <section key={block.id} className="py-24 animate-in fade-in duration-1000 fill-mode-both">
-            {journey === 'agency' ? <AgencyCalculator /> : <PricingCalculator />}
+            <AgencyCalculator />
           </section>
         );
 
