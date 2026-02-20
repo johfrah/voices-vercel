@@ -89,20 +89,16 @@ export async function middleware(request: NextRequest) {
 
   // 1.8 LEGACY REDIRECTS (v2.24)
   // Vang oude URL-structuren op en stuur ze naar de nieuwe canonieke paden.
-  const isLegacyPath = pathname.startsWith('/agency/video/') || pathname.startsWith('/agency/telephony/') || pathname.startsWith('/agency/commercial/');
+  const isLegacyPath = pathname === '/agency/tarieven' || 
+                       pathname === '/agency/tarieven/' ||
+                       pathname === '/price' ||
+                       pathname === '/price/';
+
   if (isLegacyPath) {
     const tarievenUrl = url.clone();
     tarievenUrl.pathname = '/tarieven';
     // Behoud eventuele query params voor de calculator
     return NextResponse.redirect(tarievenUrl, 301);
-  }
-
-  //  CHRIS-PROTOCOL: Catch-all for leaking legacy segments in the URL
-  // If the path ends with a number (like /200/), it's likely a leaked word count from the old system.
-  if (pathname.match(/\/\d+\/$/)) {
-    const cleanUrl = url.clone();
-    cleanUrl.pathname = pathname.replace(/\/\d+\/$/, '/');
-    return NextResponse.redirect(cleanUrl, 301);
   }
 
   // 1.9 AUTO-LOGIN BRIDGE (v2.29)
