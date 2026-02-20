@@ -24,7 +24,7 @@ import React, { Suspense } from 'react';
 function BookingContent() {
   const [isCompleted, setIsCompleted] = React.useState(false);
   const searchParams = useSearchParams();
-  const workshopId = searchParams.get('id');
+  const workshopId = searchParams?.get('id');
   
   // In een echte scenario zouden we hier de workshop data ophalen op basis van ID
   // Voor nu gebruiken we fallback data als er geen ID is

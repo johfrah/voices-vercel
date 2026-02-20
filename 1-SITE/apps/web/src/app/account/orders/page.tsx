@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 export default function OrdersPage() {
   const { user, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
-  const highlightedOrderId = searchParams.get('orderId');
+  const highlightedOrderId = searchParams?.get('orderId');
   const [ordersList, setOrdersList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

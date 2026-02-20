@@ -286,34 +286,34 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
       
       <SectionInstrument className="!pt-40 pb-32 relative z-50">
         <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0">
-          <div className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
-            <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
+          <ContainerInstrument plain className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
+            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
               <VoiceglotText translationKey={`home.hero.title_part1_${masterControlState.journey}`} defaultText={journeyContent.titlePart1} />
               {" "}
-              <span className="text-primary italic">
+              <TextInstrument as="span" className="text-primary italic font-light">
                 <VoiceglotText translationKey={`home.hero.title_highlight_${masterControlState.journey}`} defaultText={journeyContent.titleHighlight} />
-              </span>
+              </TextInstrument>
               <br />
               <VoiceglotText translationKey={`home.hero.title_part2_${masterControlState.journey}`} defaultText={journeyContent.titlePart2} />
-            </h1>
-            <p className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
+            </HeadingInstrument>
+            <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
               <VoiceglotText translationKey={`home.hero.subtitle_${masterControlState.journey}`} defaultText={journeyContent.subtitle} />
-            </p>
+            </TextInstrument>
 
             {/* USP Trust-Bar (Bob-methode) */}
-            <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 pt-8">
+            <ContainerInstrument plain className="flex flex-wrap justify-center gap-x-12 gap-y-6 pt-8">
               {journeyContent.usps.map((usp) => (
-                <div key={usp.key} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center">
+                <ContainerInstrument key={usp.key} plain className="flex items-center gap-3">
+                  <ContainerInstrument plain className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center">
                     {renderUspIcon(usp.icon)}
-                  </div>
+                  </ContainerInstrument>
                   <TextInstrument className="text-[14px] font-medium tracking-tight text-va-black/60">
                     <VoiceglotText translationKey={`home.usp.${usp.key}`} defaultText={usp.text} />
                   </TextInstrument>
-                </div>
+                </ContainerInstrument>
               ))}
-            </div>
-          </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
 
           <div className="w-full relative z-50 px-4 md:px-6">
             <VoicesMasterControl actors={actors} filters={filters} availableExtraLangs={availableExtraLangs} />

@@ -46,7 +46,7 @@ export default function AccountDashboardClient() {
   const [notifications, setNotifications] = useState<any[]>([]);
 
   useEffect(() => {
-    if (searchParams.get('auth') === 'success') {
+    if (searchParams?.get('auth') === 'success') {
       toast.success('Succesvol ingelogd! Welkom terug.', {
         id: 'auth-success',
         duration: 5000,

@@ -71,24 +71,24 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
     const market = MarketManager.getCurrentMarket(host);
 
-    const journey = (searchParams.get('journey') as JourneyType) || 
+    const journey = (searchParams?.get('journey') as JourneyType) || 
                    (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
     
-    const initialLanguageParam = searchParams.get('language');
+    const initialLanguageParam = searchParams?.get('language');
     const initialLanguage = initialLanguageParam 
       ? MarketManager.getLanguageLabel(initialLanguageParam) 
       : MarketManager.getLanguageLabel(MarketManager.getLanguageCode(market.primary_language));
       
-    const initialLanguages = searchParams.get('languages') ? searchParams.get('languages')?.split(',') : [initialLanguage.toLowerCase()];
-    const initialWordsParam = searchParams.get('words');
+    const initialLanguages = searchParams?.get('languages') ? searchParams?.get('languages')?.split(',') : [initialLanguage.toLowerCase()];
+    const initialWordsParam = searchParams?.get('words');
     const initialWords = (initialWordsParam && parseInt(initialWordsParam) > 0) 
       ? parseInt(initialWordsParam) 
       : (journey === 'telephony' ? 25 : (journey === 'commercial' ? 100 : 200));
-    const initialCountries = searchParams.get('countries') ? searchParams.get('countries')?.split(',') : [market.market_code];
+    const initialCountries = searchParams?.get('countries') ? searchParams?.get('countries')?.split(',') : [market.market_code];
     
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
     const pathSegments = currentPath.split('/').filter(Boolean);
-    let initialMedia = (searchParams.get('media') ? searchParams.get('media')?.split(',') : ['online']);
+    let initialMedia = (searchParams?.get('media') ? searchParams?.get('media')?.split(',') : ['online']);
     
     if (currentPath.startsWith('/agency') && journey === 'commercial' && pathSegments[2]) {
       initialMedia = [pathSegments[2].toLowerCase()];
@@ -96,19 +96,19 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
 
     let initialSpotsDetail = undefined;
     try {
-      const sd = searchParams.get('spotsDetail');
+      const sd = searchParams?.get('spotsDetail');
       if (sd) initialSpotsDetail = JSON.parse(decodeURIComponent(sd));
     } catch (e) {}
 
     let initialYearsDetail = undefined;
     try {
-      const yd = searchParams.get('yearsDetail');
+      const yd = searchParams?.get('yearsDetail');
       if (yd) initialYearsDetail = JSON.parse(decodeURIComponent(yd));
     } catch (e) {}
 
     let initialMediaRegion = undefined;
     try {
-      const mr = searchParams.get('mediaRegion');
+      const mr = searchParams?.get('mediaRegion');
       if (mr) initialMediaRegion = JSON.parse(decodeURIComponent(mr));
     } catch (e) {}
 
@@ -120,21 +120,21 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       filters: {
         language: initialLanguage,
         languages: initialLanguages as string[],
-        gender: searchParams.get('gender') || null,
-        style: searchParams.get('style') || null,
-        sortBy: (searchParams.get('sortBy') as any) || 'popularity',
+        gender: searchParams?.get('gender') || null,
+        style: searchParams?.get('style') || null,
+        sortBy: (searchParams?.get('sortBy') as any) || 'popularity',
         words: initialWords,
         media: initialMedia,
         countries: initialCountries as string[],
-        country: searchParams.get('country') || market.market_code,
-        spots: searchParams.get('spots') ? parseInt(searchParams.get('spots')!) : 1,
-        years: searchParams.get('years') ? parseInt(searchParams.get('years')!) : 1,
+        country: searchParams?.get('country') || market.market_code,
+        spots: searchParams?.get('spots') ? parseInt(searchParams?.get('spots')!) : 1,
+        years: searchParams?.get('years') ? parseInt(searchParams?.get('years')!) : 1,
         spotsDetail: initialSpotsDetail,
         yearsDetail: initialYearsDetail,
         mediaRegion: initialMediaRegion,
-        liveSession: searchParams.get('liveSession') === 'true',
+        liveSession: searchParams?.get('liveSession') === 'true',
       },
-      currentStep: (searchParams.get('step') as any) || (isRootInitial ? 'voice' : 'voice'),
+      currentStep: (searchParams?.get('step') as any) || (isRootInitial ? 'voice' : 'voice'),
     };
   });
 

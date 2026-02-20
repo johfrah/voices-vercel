@@ -2,11 +2,13 @@
 
 import { usePathname } from 'next/navigation';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { Mail, Phone, UserCircle } from 'lucide-react';
+import { Mail, Phone, UserCircle, Zap } from 'lucide-react';
 import { MarketManager } from '@config/market-manager';
 import { ContainerInstrument, TextInstrument, ButtonInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /**
  * TOP BAR COMPONENT
@@ -18,6 +20,7 @@ export const TopBar = () => {
   const { playClick } = useSonicDNA();
   const market = MarketManager.getCurrentMarket();
   const { t } = useTranslation();
+  const { campaignMessage } = useVoicesState();
 
   const handleSpeakToStaff = () => {
     playClick('pro');
@@ -54,50 +57,72 @@ export const TopBar = () => {
     <ContainerInstrument 
       as="div" 
       plain 
-      className="hidden md:flex w-full bg-va-off-white/80 backdrop-blur-md border-b border-black/[0.03] py-2 px-4 md:px-6 justify-end items-center gap-6 relative z-[201]"
+      className="hidden md:flex w-full bg-va-off-white/80 backdrop-blur-md border-b border-black/[0.03] py-2 px-4 md:px-6 justify-between items-center gap-6 relative z-[201]"
     >
-      {/* Medewerker spreken (Nu in TopBar) */}
-      <ButtonInstrument
-        variant="plain"
-        size="none"
-        onClick={handleSpeakToStaff}
-        className="flex items-center gap-2 group"
-      >
-        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-        <TextInstrument className="text-[11px] font-light tracking-[0.1em] text-va-black/40 group-hover:text-va-black transition-colors">
-          <VoiceglotText translationKey="nav.speak_to_staff" defaultText="Medewerker spreken" />
-        </TextInstrument>
-      </ButtonInstrument>
+      {/* Linkerkant: Campagne Bericht (Mark's Instrument) */}
+      <div className="flex-1">
+        <AnimatePresence mode="wait">
+          {campaignMessage && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              className="flex items-center gap-2"
+            >
+              <Zap size={12} className="text-primary animate-pulse" />
+              <TextInstrument className="text-[11px] font-bold tracking-tight text-primary uppercase">
+                {campaignMessage}
+              </TextInstrument>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-      {/* Telefoonnummer */}
-      {market.phone && (
+      {/* Rechterkant: Contact & Acties */}
+      <div className="flex items-center gap-6">
+        {/* Medewerker spreken (Nu in TopBar) */}
         <ButtonInstrument
           variant="plain"
           size="none"
+          onClick={handleSpeakToStaff}
           className="flex items-center gap-2 group"
-          onClick={handleOpenPhone}
         >
-          <Phone size={12} strokeWidth={2.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
+          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
           <TextInstrument className="text-[11px] font-light tracking-[0.1em] text-va-black/40 group-hover:text-va-black transition-colors">
-            {market.phone}
+            <VoiceglotText translationKey="nav.speak_to_staff" defaultText="Medewerker spreken" />
           </TextInstrument>
         </ButtonInstrument>
-      )}
 
-      {/* Emailadres */}
-      {market.email && (
-        <ButtonInstrument
-          variant="plain"
-          size="none"
-          className="flex items-center gap-2 group"
-          onClick={handleOpenMail}
-        >
-          <Mail size={12} strokeWidth={2.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
-          <TextInstrument className="text-[11px] font-light tracking-[0.1em] text-va-black/40 group-hover:text-va-black transition-colors">
-            {market.email}
-          </TextInstrument>
-        </ButtonInstrument>
-      )}
+        {/* Telefoonnummer */}
+        {market.phone && (
+          <ButtonInstrument
+            variant="plain"
+            size="none"
+            className="flex items-center gap-2 group"
+            onClick={handleOpenPhone}
+          >
+            <Phone size={12} strokeWidth={2.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
+            <TextInstrument className="text-[11px] font-light tracking-[0.1em] text-va-black/40 group-hover:text-va-black transition-colors">
+              {market.phone}
+            </TextInstrument>
+          </ButtonInstrument>
+        )}
+
+        {/* Emailadres */}
+        {market.email && (
+          <ButtonInstrument
+            variant="plain"
+            size="none"
+            className="flex items-center gap-2 group"
+            onClick={handleOpenMail}
+          >
+            <Mail size={12} strokeWidth={2.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
+            <TextInstrument className="text-[11px] font-light tracking-[0.1em] text-va-black/40 group-hover:text-va-black transition-colors">
+              {market.email}
+            </TextInstrument>
+          </ButtonInstrument>
+        )}
+      </div>
     </ContainerInstrument>
   );
 };
