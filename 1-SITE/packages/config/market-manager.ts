@@ -107,7 +107,7 @@ export class MarketManager {
       primary_language: 'Vlaams',
       supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
       name: 'Johfrah',
-      email: 'johfrah@johfrah.be',
+      email: 'info@johfrah.be',
       logo_url: VOICES_CONFIG.assets.logos.johfrah,
       theme: 'johfrah',
       has_voicy: true
