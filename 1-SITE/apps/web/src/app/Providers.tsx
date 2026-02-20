@@ -30,8 +30,8 @@ export function Providers({
   }
 
   return (
-    <TranslationProvider lang={lang} initialTranslations={initialTranslations}>
-      <AuthProvider>
+    <AuthProvider>
+      <TranslationProvider lang={lang} initialTranslations={initialTranslations}>
         <EditModeProvider>
           <VoicesStateProvider>
             <GlobalAudioProvider>
@@ -45,7 +45,7 @@ export function Providers({
             </GlobalAudioProvider>
           </VoicesStateProvider>
         </EditModeProvider>
-      </AuthProvider>
-    </TranslationProvider>
+      </TranslationProvider>
+    </AuthProvider>
   );
 }
