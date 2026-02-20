@@ -22,9 +22,10 @@ const getDb = () => {
       // In dev is 1 connectie vaak genoeg, in prod schalen we mee met de serverless limieten.
       const client = postgres(connectionString, { 
         prepare: false,
-        max: process.env.NODE_ENV === 'development' ? 5 : 10,
+        max: process.env.NODE_ENV === 'development' ? 5 : 1, // Nuclear: 1 connection per serverless lambda
         idle_timeout: 20,
-        connect_timeout: 10
+        connect_timeout: 30, // Ruimer voor koude start
+        ssl: 'require' // Expliciet voor Supabase
       });
       
       (globalThis as any).dbInstance = drizzle(client, { 
