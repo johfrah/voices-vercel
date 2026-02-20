@@ -168,186 +168,44 @@ function PricePageContent() {
       </SectionInstrument>
 
       {/* Calculator Section */}
-      <SectionInstrument className="pb-12">
-        <ContainerInstrument className="max-w-6xl mx-auto px-6">
+      <SectionInstrument className="pb-32">
+        <ContainerInstrument className="max-w-6xl mx-auto px-6 space-y-12">
+          {/* LANGUAGE FILTERS - Market Aware */}
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <span className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest mr-2">Filter op taal:</span>
+            {languageOptions.map((lang) => (
+              <button
+                key={lang.value}
+                onClick={() => {
+                  setSelectedLanguageId(lang.value);
+                  setCurrentStepPage(1);
+                  playClick('soft');
+                }}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-full border text-[13px] font-medium transition-all",
+                  selectedLanguageId === lang.value 
+                    ? "bg-primary/10 border-primary/20 text-primary shadow-sm" 
+                    : "bg-white border-black/5 text-va-black/40 hover:border-black/10"
+                )}
+              >
+                {lang.icon && <lang.icon size={14} />}
+                <span>{lang.label}</span>
+              </button>
+            ))}
+          </div>
+
           <AgencyCalculator 
             initialJourney={activeTab} 
-            actors={actors} 
+            actors={paginatedActors} 
             pricingConfig={pricingConfig}
             selectedLanguageId={selectedLanguageId}
             onJourneyChange={handleTabChange}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentStepPage(page)}
           />
         </ContainerInstrument>
-      </SectionInstrument>
-
-      {/* COMPACT RATE CARD SECTION (v2.21) */}
-      <SectionInstrument className="pb-32 relative z-10 max-w-6xl mx-auto px-6">
-        {/* LANGUAGE FILTERS - Market Aware */}
-        <div className="flex flex-wrap items-center gap-3 mb-8">
-          <span className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest mr-2">Filter op taal:</span>
-          {languageOptions.map((lang) => (
-            <button
-              key={lang.value}
-              onClick={() => {
-                setSelectedLanguageId(lang.value);
-                setCurrentStepPage(1);
-                playClick('soft');
-              }}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-full border text-[13px] font-medium transition-all",
-                selectedLanguageId === lang.value 
-                  ? "bg-primary/10 border-primary/20 text-primary shadow-sm" 
-                  : "bg-white border-black/5 text-va-black/40 hover:border-black/10"
-              )}
-            >
-              {lang.icon && <lang.icon size={14} />}
-              <span>{lang.label}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="bg-white/50 backdrop-blur-md rounded-[32px] border border-black/5 overflow-hidden shadow-aura">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-black/5">
-                  <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Stemacteur</th>
-                  {activeTab === 'paid' ? (
-                    <>
-                      <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                        <div className="flex items-center gap-2">
-                          <Globe size={12} /> Online Ad
-                        </div>
-                      </th>
-                      <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                        <div className="flex items-center gap-2">
-                          <Radio size={12} /> Radio
-                        </div>
-                      </th>
-                      <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                        <div className="flex items-center gap-2">
-                          <Tv size={12} /> TV Ad
-                        </div>
-                      </th>
-                    </>
-                  ) : activeTab === 'unpaid' ? (
-                    <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                      <div className="flex items-center gap-2">
-                        <Video size={12} /> Video (Unpaid)
-                      </div>
-                    </th>
-                  ) : (
-                    <th className="px-8 py-6 text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                      <div className="flex items-center gap-2">
-                        <Phone size={12} /> Telefoon / IVR
-                      </div>
-                    </th>
-                  )}
-                  <th className="px-8 py-6"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-black/[0.03]">
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={activeTab === 'paid' ? 5 : 3} className="px-8 py-20 text-center">
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-                        <span className="text-[13px] font-bold text-va-black/20 uppercase tracking-widest">Tarieven laden...</span>
-                      </div>
-                    </td>
-                  </tr>
-                ) : paginatedActors.length > 0 ? (
-                  paginatedActors.map((a) => {
-                    return (
-                      <tr key={a.id} className="group hover:bg-primary/[0.02] transition-colors">
-                        <td className="px-8 py-5">
-                          <div className="flex items-center gap-4">
-                            <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-va-off-white shadow-sm border border-black/5">
-                              {a.photo_url ? (
-                                <Image src={a.photo_url} alt={a.display_name} fill className="object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-va-black/20 font-bold">{a.display_name?.[0]}</div>
-                              )}
-                            </div>
-                            <div>
-                              <div className="text-[15px] font-bold text-va-black">{a.display_name}</div>
-                              <div className="text-[11px] text-va-black/40 font-medium uppercase tracking-widest">{a.native_lang}</div>
-                            </div>
-                          </div>
-                        </td>
-
-                        {activeTab === 'paid' ? (
-                          <>
-                            <td className="px-8 py-5">
-                              <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'commercial', mediaTypes: ['online'], actorRates: a }, pricingConfig || undefined).total}</span>
-                            </td>
-                            <td className="px-8 py-5">
-                              <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'commercial', mediaTypes: ['radio_national'], actorRates: a }, pricingConfig || undefined).total}</span>
-                            </td>
-                            <td className="px-8 py-5">
-                              <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'commercial', mediaTypes: ['tv_national'], actorRates: a }, pricingConfig || undefined).total}</span>
-                            </td>
-                          </>
-                        ) : activeTab === 'unpaid' ? (
-                          <td className="px-8 py-5">
-                            <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'unpaid', words: 0, actorRates: a }, pricingConfig || undefined).base}</span>
-                          </td>
-                        ) : (
-                          <td className="px-8 py-5">
-                            <span className="text-[15px] font-light text-va-black">€{SlimmeKassa.calculate({ usage: 'telefonie', words: 0, actorRates: a }, pricingConfig || undefined).base}</span>
-                          </td>
-                        )}
-
-                        <td className="px-8 py-5 text-right">
-                          <ButtonInstrument 
-                            variant="outline" 
-                            size="sm"
-                            className="opacity-0 group-hover:opacity-100 transition-all rounded-full"
-                            onClick={() => {
-                              playClick('pro');
-                              router.push(`/agency?search=${a.display_name}&usage=${activeTab}`);
-                            }}
-                          >
-                            Boek nu
-                          </ButtonInstrument>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={activeTab === 'paid' ? 5 : 3} className="px-8 py-20 text-center text-va-black/20 italic">Geen stemacteurs gevonden.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          
-          {/* PAGINATION CONTROLS */}
-          {totalPages > 1 && (
-            <div className="px-8 py-6 border-t border-black/5 flex items-center justify-between bg-va-off-white/30">
-              <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest">
-                Pagina {currentPage} van {totalPages}
-              </TextInstrument>
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => { setCurrentStepPage(prev => Math.max(1, prev - 1)); playClick('soft'); }}
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 rounded-xl bg-white border border-black/5 text-[11px] font-bold uppercase tracking-widest hover:border-primary/20 disabled:opacity-30 transition-all"
-                >
-                  Vorige
-                </button>
-                <button 
-                  onClick={() => { setCurrentStepPage(prev => Math.min(totalPages, prev + 1)); playClick('soft'); }}
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 rounded-xl bg-white border border-black/5 text-[11px] font-bold uppercase tracking-widest hover:border-primary/20 disabled:opacity-30 transition-all"
-                >
-                  Volgende
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
       </SectionInstrument>
 
       {/* Trust Footer */}
