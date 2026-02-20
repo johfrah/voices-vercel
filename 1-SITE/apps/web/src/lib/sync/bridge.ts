@@ -1,11 +1,11 @@
-import { db } from '../../../../../packages/database/src/index.ts';
+import { db } from '@db';
 export { db };
 import {
     actorDemos,
     actors,
     instructors,
     users
-} from '../../../../../packages/database/schema.ts';
+} from '@db/schema';
 import { eq } from 'drizzle-orm';
 import * as fs from 'fs';
 import * as path from 'path';
