@@ -47,6 +47,12 @@ function PricePageContent() {
   const [currentPage, setCurrentStepPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Sync activeTab met calculator state via URL of interne state
+  const handleTabChange = (newTab: 'telefonie' | 'unpaid' | 'paid') => {
+    setActiveTab(newTab);
+    setCurrentStepPage(1);
+  };
+
   useEffect(() => {
     const fetchConfig = async () => {
       try {
@@ -164,7 +170,13 @@ function PricePageContent() {
       {/* Calculator Section */}
       <SectionInstrument className="pb-12">
         <ContainerInstrument className="max-w-6xl mx-auto px-6">
-          <AgencyCalculator initialJourney={activeTab} />
+          <AgencyCalculator 
+            initialJourney={activeTab} 
+            actors={actors} 
+            pricingConfig={pricingConfig}
+            selectedLanguageId={selectedLanguageId}
+            onJourneyChange={handleTabChange}
+          />
         </ContainerInstrument>
       </SectionInstrument>
 

@@ -32,6 +32,10 @@ import { SlimmeKassa } from "@/lib/pricing-engine";
 
 interface AgencyCalculatorProps {
   initialJourney?: "telefonie" | "unpaid" | "paid";
+  actors?: any[];
+  pricingConfig?: any;
+  selectedLanguageId?: number | null;
+  onJourneyChange?: (journey: "telefonie" | "unpaid" | "paid") => void;
 }
 
 /**
@@ -39,7 +43,13 @@ interface AgencyCalculatorProps {
  * Voldoet aan het Voices Configurator Pattern (Exploratief).
  * Layout: Split-screen (7/5 verdeling).
  */
-export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorProps) => {
+export const AgencyCalculator = ({ 
+  initialJourney = "paid", 
+  actors = [], 
+  pricingConfig: externalPricingConfig,
+  selectedLanguageId,
+  onJourneyChange
+}: AgencyCalculatorProps) => {
   const router = useRouter();
   const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(initialJourney);
   const [calcType, setCalcType] = useState<"webvideo" | "social" | "radio" | "tv" | "ivr" | "podcast">("social");
@@ -50,20 +60,30 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
   const [calcMusic, setCalcMusic] = useState(false);
   const [calcLive, setCalcLive] = useState(false);
 
-  const [pricingConfig, setPricingConfig] = useState<any>(null);
+  // Sync interne state met prop indien gewijzigd (voor URL navigatie)
+  useEffect(() => {
+    if (initialJourney !== calcUsage) {
+      setCalcUsage(initialJourney);
+    }
+  }, [initialJourney]);
+
+  const [internalPricingConfig, setInternalPricingConfig] = useState<any>(null);
+  const pricingConfig = externalPricingConfig || internalPricingConfig;
   
   useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const res = await fetch('/api/pricing/config');
-        const data = await res.json();
-        setPricingConfig(data);
-      } catch (err) {
-        console.error('Failed to fetch pricing config', err);
-      }
-    };
-    fetchConfig();
-  }, []);
+    if (!externalPricingConfig) {
+      const fetchConfig = async () => {
+        try {
+          const res = await fetch('/api/pricing/config');
+          const data = await res.json();
+          setInternalPricingConfig(data);
+        } catch (err) {
+          console.error('Failed to fetch pricing config', err);
+        }
+      };
+      fetchConfig();
+    }
+  }, [externalPricingConfig]);
 
   const calculatorRates: Record<string, { label: string, sub: string, icon: any, national: number, regional?: number, usage: "unpaid" | "paid" | "telefonie" }> = {
     webvideo: { 
@@ -112,7 +132,7 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
     },
   };
 
-  const calculateTotal = (excludeVat = false) => {
+  const calculateTotal = (excludeVat = false, actorRates?: any) => {
     const config = pricingConfig || SlimmeKassa.getDefaultConfig();
     const wordCount = calcWords;
     const promptCount = Math.ceil(calcWords / 8); // Geschat aantal prompts voor IVR
@@ -127,12 +147,20 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
       years: { [calcType]: calcYears },
       liveSession: calcLive,
       music: { asBackground: calcMusic, asHoldMusic: false },
-      actorRates: {} // AgencyCalculator gebruikt globale prijzen
+      actorRates: actorRates || {} // Gebruik specifieke actor tarieven indien meegegeven
     }, config);
 
     const finalValue = excludeVat ? (result?.subtotal || 0) : (result?.total || 0);
     return finalValue.toFixed(2);
   };
+
+  const filteredActors = useMemo(() => {
+    if (!actors || actors.length === 0) return [];
+    return actors.filter(a => {
+      const matchesLang = selectedLanguageId ? a.native_lang_id === selectedLanguageId : true;
+      return matchesLang;
+    }).sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0)).slice(0, 5);
+  }, [actors, selectedLanguageId]);
 
   const getUsageSteps = () => {
     const config = pricingConfig || SlimmeKassa.getDefaultConfig();
@@ -199,6 +227,7 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
                     key={u.id}
                     onClick={() => {
                       setCalcUsage(u.id as any);
+                      if (onJourneyChange) onJourneyChange(u.id as any);
                       if (u.id === 'telefonie') { setCalcType('ivr'); setCalcWords(25); }
                       else if (u.id === 'unpaid') { setCalcType('webvideo'); setCalcWords(200); }
                       else { setCalcType('social'); setCalcWords(25); }
@@ -342,6 +371,46 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
                 <ButtonInstrument onClick={() => router.push('/agency')} className="va-btn-pro !bg-va-black !text-white !rounded-2xl px-10 py-6 text-lg shadow-xl hover:scale-105 transition-transform flex items-center gap-3">
                   Bekijk alle stemmen <ArrowRight size={20} />
                 </ButtonInstrument>
+              </div>
+            )}
+
+            {/* 5. Interactive Actor List for Commercial (v2.33) */}
+            {calcUsage === 'paid' && filteredActors.length > 0 && (
+              <div className="pt-10 border-t border-black/[0.03] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="flex items-center justify-between">
+                  <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold uppercase">Tarieven per stemacteur (excl. BTW)</TextInstrument>
+                  <button onClick={() => router.push('/agency')} className="text-[11px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity">Bekijk alle</button>
+                </div>
+                
+                <div className="space-y-2">
+                  {filteredActors.map((a) => (
+                    <div key={a.id} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden bg-va-off-white border border-black/5">
+                          {a.photo_url ? <Image src={a.photo_url} alt={a.display_name} fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center text-va-black/20 font-bold">{a.display_name?.[0]}</div>}
+                        </div>
+                        <div>
+                          <div className="text-[14px] font-bold text-va-black">{a.display_name}</div>
+                          <div className="text-[10px] text-va-black/40 font-medium uppercase tracking-widest">{a.native_lang}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <div className="text-2xl font-extralight tracking-tighter text-va-black">€{calculateTotal(true, a)}</div>
+                          <div className="text-[9px] text-va-black/30 font-bold uppercase tracking-widest">Totaalprijs</div>
+                        </div>
+                        <ButtonInstrument 
+                          variant="outline" 
+                          size="sm" 
+                          className="rounded-full !px-4 !py-2 text-[11px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all"
+                          onClick={() => router.push(`/agency?search=${a.display_name}&usage=paid`)}
+                        >
+                          Boek
+                        </ButtonInstrument>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
