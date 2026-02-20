@@ -11,6 +11,7 @@ import { ArrowLeft, ExternalLink, FileText, Package, ShoppingBag, Zap } from 'lu
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { LiquidBackground } from '@/components/ui/LiquidBackground';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +50,7 @@ export default function OrdersPage() {
 
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+      <LiquidBackground />
       <SectionInstrument className="mb-16">
         <Link  
           href="/account" 

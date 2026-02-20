@@ -5,6 +5,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Settings, ArrowLeft, User, Lock, Bell, Shield, BadgeCheck } from 'lucide-react';
 import Link from 'next/link';
 import { ActorProfileForm } from '@/components/forms/ActorProfileForm';
+import { LiquidBackground } from '@/components/ui/LiquidBackground';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +18,7 @@ export default function SettingsPage() {
 
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+      <LiquidBackground />
       <SectionInstrument className="mb-16">
         <Link  
           href="/account" 
