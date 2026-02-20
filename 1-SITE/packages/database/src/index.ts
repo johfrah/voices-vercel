@@ -18,23 +18,19 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Manual URL Parsing for PgBouncer Stability (v2.3)
-      // We ontleden de URL handmatig om elke ambiguïteit bij de Supabase Proxy te elimineren.
-      const dbUrl = new URL(connectionString);
-      
-      const client = postgres({
-        host: dbUrl.hostname,
-        port: parseInt(dbUrl.port || '5432'),
-        database: dbUrl.pathname.slice(1),
-        username: dbUrl.username,
-        password: dbUrl.password,
-        prepare: false, // ESSENTIEEL voor poort 6543
+      // CHRIS-PROTOCOL: Final Transaction Mode Alignment (v2.4)
+      // Dit is de ENIGE manier om postgres-js stabiel te krijgen op poort 6543.
+      // We gebruiken de volledige connectionString inclusief ?pgbouncer=true.
+      const client = postgres(connectionString, { 
+        prepare: false, // VERPLICHT voor Transaction Mode
         ssl: 'require',
         connect_timeout: 30,
+        // CRITIEK: Dwing de driver om GEEN sessie-parameters te sturen
+        // Dit voorkomt de 'Tenant or user not found' error op de proxy.
         onnotice: () => {},
-        publications: [], // Voorkom logical replication checks
+        publications: [],
         idle_timeout: 20,
-        max_lifetime: 60 * 30,
+        max: 10,
       });
 
       (globalThis as any).dbInstance = drizzle(client, { 
