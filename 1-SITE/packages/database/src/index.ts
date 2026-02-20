@@ -19,10 +19,10 @@ const getDb = () => {
       if (!connectionString) return null;
       
       // CHRIS-PROTOCOL: Nuclear PgBouncer Session Mode Fix (v1.6)
-      // De 'Tenant or user not found' error ontstaat vaak door vervuilde strings.
-      // We zorgen voor een schone verbinding zonder prepared statements.
+      // We gebruiken de directe pooler URL van Supabase (poort 6543 of 5432)
+      // CRITIEK: prepare: false is verplicht voor PgBouncer.
       const client = postgres(connectionString, { 
-        prepare: false, // CRITIEK: PgBouncer ondersteunt geen prepared statements
+        prepare: false, 
         max: 1,
         idle_timeout: 20,
         connect_timeout: 30,
