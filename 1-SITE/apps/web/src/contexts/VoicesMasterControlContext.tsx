@@ -389,6 +389,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     params.delete('languages');
 
     const isAgency = pathname.startsWith('/agency');
+    const isTarieven = pathname === '/tarieven' || pathname === '/tarieven/';
     let newUrl = pathname;
 
     if (isAgency) {
@@ -404,6 +405,9 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       } else if ((state.journey === 'telephony' || state.journey === 'video') && state.filters.words) {
         newUrl += state.filters.words + '/';
       }
+    } else if (isTarieven) {
+      //  CHRIS-PROTOCOL: Don't rewrite URL on tarieven page
+      return;
     } else {
       const pathSegments = pathname.split('/').filter(Boolean);
       if (pathSegments.length >= 2) {
