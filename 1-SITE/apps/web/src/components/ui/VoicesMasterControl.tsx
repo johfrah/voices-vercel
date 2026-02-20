@@ -633,7 +633,7 @@ const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => {
   return (
     <ContainerInstrument className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-black/5 rounded-full text-[14px] font-light tracking-widest shadow-sm hover:border-primary/20 transition-colors group">
       <TextInstrument className="text-va-black/60 group-hover:text-va-black">
-        {t(`language.${label.toLowerCase()}`, label)}
+        {t(`language.${String(label || '').toLowerCase()}`, String(label || ''))}
       </TextInstrument>
       <button onClick={onRemove} aria-label={t('action.remove', 'Verwijder')} className="hover:text-primary transition-colors p-0.5">
         <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
