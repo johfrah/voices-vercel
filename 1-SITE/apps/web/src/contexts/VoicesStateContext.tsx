@@ -79,7 +79,7 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
         //  CHRIS-PROTOCOL: Use a public endpoint for review stats instead of admin-only actors API
         // We fetch from the proxy but we don't fail if it's unauthorized
-        const res = await fetch('/api/proxy?path=' + encodeURIComponent('api/admin/actors'));
+        const res = await fetch('/api/admin/config?type=actors');
         if (!res.ok) {
           console.log('[VoicesState] Stats fetch skipped (unauthorized or error)');
           return;
