@@ -507,8 +507,9 @@ export default function Home() {
     //  CHRIS-PROTOCOL: We fetch ALL live actors to handle extra language UI context on client
     const cleanParams = new URLSearchParams();
     params.forEach((value, key) => {
+      //  CHRIS-PROTOCOL: Filter out legacy path segments that might have leaked into searchParams
       if (['journey', 'words', 'market', 'country', 'spots', 'years'].includes(key)) {
-        if (value && value !== 'null' && value !== 'undefined') {
+        if (value && value !== 'null' && value !== 'undefined' && !value.includes('/')) {
           cleanParams.set(key, value);
         }
       }
