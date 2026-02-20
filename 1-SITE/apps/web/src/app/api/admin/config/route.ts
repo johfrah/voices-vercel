@@ -7,6 +7,7 @@ import { requireAdmin } from '@/lib/auth/api-auth';
 import { ConfigBridge } from '@/lib/config-bridge';
 
 //  NUCLEAR CACHE BUSTER
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 

@@ -112,9 +112,9 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     const market = MarketManager.getCurrentMarket(host);
     
     //  CHRIS-PROTOCOL: Map extra languages available for each primary language
-    const getExtraLangsFor = (primary: string, primaryValue: string) => {
-      const lowPrimary = primary.toLowerCase();
-      const lowPrimaryValue = primaryValue.toLowerCase();
+    const getExtraLangsFor = (primary: string, primaryValue: any) => {
+      const lowPrimary = String(primary || '').toLowerCase();
+      const lowPrimaryValue = String(primaryValue || '').toLowerCase();
       
       //  CHRIS-PROTOCOL: Combinations don't have extra langs
       if (lowPrimaryValue.includes(',')) return [];

@@ -134,7 +134,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
   const availableExtraLangs = useMemo(() => {
     if (masterControlState.journey !== 'telephony' || !masterControlState.filters.language || !actors) return [];
     
-    const primaryLang = masterControlState.filters.language.toLowerCase();
+    const primaryLang = (masterControlState.filters.language || '').toLowerCase();
     const primaryCode = MarketManager.getLanguageCode(primaryLang);
 
     const relevantActors = (actors || []).filter(a => {
