@@ -209,7 +209,7 @@ export const AgencyCalculator = ({
           steps: [
             { num: 1, title: "De Opname", desc: `Je betaalt éénmalig €${videoBase} voor de studiotijd. Dit is de basis voor je project.` },
             { num: 2, title: "Het Gebruik", desc: "Voor niet-betaalde media is het gebruiksrecht onbeperkt inbegrepen." },
-            { num: 3, title: "Live Regie (Optioneel)", desc: `Regisseer de stem live tijdens de sessie voor het beste resultaat. Tarief afhankelijk van de stemacteur.` }
+            { num: 3, title: "Kwaliteit", desc: "Je ontvangt een professionele opname in 48kHz, klaar voor gebruik in al je eigen kanalen." }
           ]
         };
     }
@@ -239,7 +239,7 @@ export const AgencyCalculator = ({
                       setCalcUsage(u.id as any);
                       if (onJourneyChange) onJourneyChange(u.id as any);
                       if (u.id === 'telefonie') { setCalcType('ivr'); setCalcWords(25); }
-                      else if (u.id === 'unpaid') { setCalcType('webvideo'); setCalcWords(200); }
+                      else if (u.id === 'unpaid') { setCalcType('webvideo'); setCalcWords(200); setCalcLive(false); }
                       else { setCalcType('social'); setCalcWords(25); }
                       setCalcYears(u.id === 'paid' && calcType === 'podcast' ? 0.25 : 1);
                     }}
@@ -377,35 +377,37 @@ export const AgencyCalculator = ({
               )}
 
               {/* 4. Extra Options (Live Regie) */}
-              <div className="pt-8 border-t border-black/5 space-y-4">
-                <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Extra Opties</LabelInstrument>
-                <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">
-                  <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-                      calcLive ? "bg-primary text-white" : "bg-va-off-white text-va-black/20"
-                    )}>
-                      <Mic2 size={20} strokeWidth={1.5} />
+              {calcUsage !== 'unpaid' && (
+                <div className="pt-8 border-t border-black/5 space-y-4">
+                  <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Extra Opties</LabelInstrument>
+                  <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">
+                    <div className="flex items-center gap-4">
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                        calcLive ? "bg-primary text-white" : "bg-va-off-white text-va-black/20"
+                      )}>
+                        <Mic2 size={20} strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <span className={cn("font-bold text-[14px] block leading-tight", calcLive ? "text-va-black" : "text-va-black/40")}>Live Regie</span>
+                        <span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">Sessie volgen via Zoom/Teams</span>
+                      </div>
                     </div>
-                    <div>
-                      <span className={cn("font-bold text-[14px] block leading-tight", calcLive ? "text-va-black" : "text-va-black/40")}>Live Regie</span>
-                      <span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">Sessie volgen via Zoom/Teams</span>
-                    </div>
+                    <button 
+                      onClick={() => setCalcLive(!calcLive)}
+                      className={cn(
+                        "w-12 h-6 rounded-full relative transition-all duration-300",
+                        calcLive ? "bg-primary" : "bg-black/10"
+                      )}
+                    >
+                      <motion.div 
+                        animate={{ x: calcLive ? 24 : 4 }}
+                        className="absolute top-1 left-0 w-4 h-4 bg-white rounded-full shadow-sm"
+                      />
+                    </button>
                   </div>
-                  <button 
-                    onClick={() => setCalcLive(!calcLive)}
-                    className={cn(
-                      "w-12 h-6 rounded-full relative transition-all duration-300",
-                      calcLive ? "bg-primary" : "bg-black/10"
-                    )}
-                  >
-                    <motion.div 
-                      animate={{ x: calcLive ? 24 : 4 }}
-                      className="absolute top-1 left-0 w-4 h-4 bg-white rounded-full shadow-sm"
-                    />
-                  </button>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* 5. Price & CTA (Telephony & Video only) */}
