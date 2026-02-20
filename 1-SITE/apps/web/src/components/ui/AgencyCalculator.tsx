@@ -518,7 +518,12 @@ export const AgencyCalculator = ({
                               <div className="flex items-center gap-3">
                                 <div className="relative w-10 h-10 rounded-full overflow-hidden bg-va-off-white border border-black/5">
                                   {a.photo_url ? (
-                                    <Image src={a.photo_url} alt={a.display_name} fill className="object-cover" />
+                                    <Image 
+                                      src={a.photo_url.startsWith('http') || a.photo_url.startsWith('/') ? a.photo_url : `/api/proxy/?path=${encodeURIComponent(a.photo_url)}`} 
+                                      alt={a.display_name} 
+                                      fill 
+                                      className="object-cover" 
+                                    />
                                   ) : (
                                     <div className="w-full h-full flex items-center justify-center text-va-black/20 font-bold">{a.display_name?.[0]}</div>
                                   )}
