@@ -79,7 +79,7 @@ export const CookieBanner: React.FC = () => {
                 </ButtonInstrument>
                 <ButtonInstrument 
                   onClick={() => handleAccept('essential')}
-                  className="text-[15px] font-medium tracking-tight text-white/60 hover:text-white transition-colors"
+                  className="text-[15px] font-medium tracking-tight text-white/90 hover:text-white transition-colors border border-white/10 px-4 py-2 rounded-[15px] hover:bg-white/5"
                 >
                   <VoiceglotText  translationKey="legal.cookie.essential" defaultText="Noodzakelijk" />
                 </ButtonInstrument>
