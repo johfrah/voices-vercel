@@ -162,87 +162,288 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       conditions.push(eq(actors.gender, dbGender));
     }
 
-    //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt (DNS/Pooler issues)
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false
+    const dbResults = await db.query.actors.findMany({
+      columns: {
+        id: true,
+        wpProductId: true,
+        userId: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        gender: true,
+        nativeLang: true,
+        countryId: true,
+        deliveryTime: true,
+        extraLangs: true,
+        bio: true,
+        whyVoices: true,
+        tagline: true,
+        toneOfVoice: true,
+        photoId: true,
+        logoId: true,
+        voiceScore: true,
+        priceUnpaid: true,
+        priceOnline: true,
+        priceIvr: true,
+        priceLiveRegie: true,
+        dropboxUrl: true,
+        status: true,
+        isPublic: true,
+        isAi: true,
+        elevenlabsId: true,
+        internalNotes: true,
+        createdAt: true,
+        updatedAt: true,
+        slug: true,
+        youtubeUrl: true,
+        menuOrder: true,
+        rates: true,
+        deliveryDaysMin: true,
+        deliveryDaysMax: true,
+        cutoffTime: true,
+        samedayDelivery: true,
+        pendingBio: true,
+        pendingTagline: true,
+        experienceLevel: true,
+        studioSpecs: true,
+        connectivity: true,
+        availability: true,
+        isManuallyEdited: true,
+        website: true,
+        clients: true,
+        linkedin: true,
+        birthYear: true,
+        location: true,
+        aiTags: true,
+        deliveryDateMin: true,
+        deliveryDateMinPriority: true,
+        // allowFreeTrial: true
+      },
+      // @ts-ignore
+      where: and(...conditions),
+      orderBy: [
+        asc(actors.menuOrder), 
+        desc(actors.deliveryDateMinPriority),
+        sql`delivery_date_min ASC NULLS LAST`, 
+        desc(actors.voiceScore), 
+        asc(actors.firstName)
+      ],
+      limit: 200,
+      with: {
+        demos: true,
+        country: true,
+        actorLanguages: {
+          with: {
+            language: true
+          }
+        },
+        actorTones: {
+          with: {
+            tone: true
+          }
+        }
       }
     });
 
-    try {
-      console.log(' [Emergency SDK] Fetching actors via SDK...');
-      const { data: sdkResults, error: sdkError } = await supabase
-        .from('actors')
-        .select(`
-          *,
-          demos:actor_demos(*),
-          country:countries(*),
-          actorLanguages:actor_languages(
-            is_native,
-            language:languages(*)
-          ),
-          actorTones:actor_tones(
-            tone:tones(*)
-          )
-        `)
-        .eq('status', 'live')
-        .limit(200);
+    console.log(' API: DB returned', dbResults.length, 'results');
+    
+    const photoIds = Array.from(new Set(dbResults.map(a => a.photoId).filter(Boolean).map(id => Number(id))));
+    
+    //  CHRIS-PROTOCOL: Photo-Matcher Logic
+    // If a search query is present, we try to match it with actor visual tags
+    const searchVibe = search?.toLowerCase() || '';
 
-      if (sdkError) {
-        console.error(' [Emergency SDK] Supabase SDK error:', sdkError);
-        throw sdkError;
+    // Fetch reviews, translations and media in batch
+    const [reviewsRes, transRes, mediaRes] = await Promise.all([
+      db.select().from(reviews)
+        .where(
+          and(
+            eq(reviews.businessSlug, 'voices-be'), // Alleen Agency reviews
+            params.sector ? eq(reviews.sector, params.sector) : undefined,
+            params.persona ? eq(reviews.persona, params.persona) : undefined
+          )
+        )
+        .orderBy(desc(reviews.sentimentVelocity), desc(reviews.createdAt))
+        .limit(100),
+      VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang),
+      photoIds.length > 0
+        ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`)
+        : Promise.resolve([])
+    ]);
+
+    console.log(' API: reviewsRes count:', reviewsRes.length);
+
+    // CHRIS-PROTOCOL: Fallback to general reviews if specific sector matching returns too few results
+    let finalDbReviews = reviewsRes;
+    if (finalDbReviews.length < 10 && (params.sector || params.persona)) {
+      const fallbackReviews = await db.select().from(reviews)
+        .where(eq(reviews.businessSlug, 'voices-be'))
+        .orderBy(desc(reviews.sentimentVelocity), desc(reviews.createdAt))
+        .limit(50);
+      finalDbReviews = [...new Set([...finalDbReviews, ...fallbackReviews])].slice(0, 50);
+    }
+
+    console.log(' API: finalDbReviews count:', finalDbReviews.length);
+
+    const dbReviews = finalDbReviews.filter(r => r && (r.businessSlug === 'voices-be' || !r.businessSlug || r.businessSlug === 'NULL' || r.businessSlug === null || r.businessSlug === 'voices-studio' || r.businessSlug === 'voices-be') && (r.textNl || r.textEn || r.textFr || r.textDe)).slice(0, 30);
+    
+    console.log(' API: dbReviews count after filter:', dbReviews.length);
+    if (dbReviews.length > 0) {
+      console.log(' API: First review businessSlug:', dbReviews[0].businessSlug);
+    }
+    const translationMap = transRes as Record<string, string>;
+    const mediaResults = mediaRes || [];
+
+    //  NUCLEAR CALCULATION: Real-time review statistics
+    const reviewStats = await getReviewStats('voices-be');
+
+    // Get unique languages for filters
+    const uniqueLangs = Array.from(new Set(dbResults.map(a => a.nativeLang))).filter(Boolean) as string[];
+
+    const mappedResults = dbResults.map((actor) => {
+      //  CHRIS-PROTOCOL: The photo_id in the database is the ABSOLUTE Source of Truth
+      const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
+      const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+      
+      let photoUrl = '';
+      if (actor.photoId) {
+        const mediaItem = mediaResults.find(m => m.id === actor.photoId);
+        if (mediaItem) {
+          const fp = mediaItem.filePath;
+          if (fp && (fp.startsWith('agency/') || fp.startsWith('active/') || fp.startsWith('common/') || fp.startsWith('visuals/'))) {
+            const webpPath = fp.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+            photoUrl = `${SUPABASE_STORAGE_URL}/${webpPath}`;
+          } else if (fp) {
+            photoUrl = fp;
+          }
+        }
       }
 
-      console.log(` [Emergency SDK] Found ${sdkResults?.length || 0} actors`);
+      if (!photoUrl && actor.dropboxUrl) {
+        if (actor.dropboxUrl.includes('supabase.co/storage/v1/object/public/voices/')) {
+          photoUrl = actor.dropboxUrl.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+        } else if (actor.dropboxUrl.startsWith('visuals/') || actor.dropboxUrl.startsWith('agency/') || actor.dropboxUrl.startsWith('active/') || actor.dropboxUrl.startsWith('common/')) {
+          const webpPath = actor.dropboxUrl.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+          photoUrl = `${SUPABASE_STORAGE_URL}/${webpPath}`;
+        } else if (actor.dropboxUrl.startsWith('/api/proxy')) {
+          photoUrl = actor.dropboxUrl;
+        } else {
+          const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_URL || '';
+          photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${ASSET_BASE}${actor.dropboxUrl}`;
+        }
+      }
 
-      const mappedResults = (sdkResults || []).map((actor: any) => {
-        // Map SDK results to the same format as Drizzle
-        const photoUrl = actor.dropbox_url || ''; 
-        
-        return {
-          id: actor.wp_product_id || actor.id,
-          display_name: actor.first_name,
-          first_name: actor.first_name,
-          last_name: actor.last_name || '',
-          slug: actor.first_name?.toLowerCase(),
-          gender: actor.gender,
-          native_lang: actor.native_lang,
-          photo_url: photoUrl,
-          starting_price: parseFloat(actor.price_unpaid || '0'),
-          voice_score: actor.voice_score || 10,
-          ai_enabled: actor.is_ai,
-          bio: (actor.bio || '').replace(/<[^>]*>?/gm, '').trim(),
-          tagline: (actor.tagline || '').replace(/<[^>]*>?/gm, '').trim(),
-          demos: (actor.demos || []).map((d: any) => ({
-            id: d.id,
-            title: d.name,
-            audio_url: d.url,
-            category: d.type || 'demo'
-          }))
-        };
-      });
+      const proxiedPhoto = photoUrl.includes('supabase.co') ? photoUrl : (photoUrl ? `/api/proxy/?path=${encodeURIComponent(photoUrl)}` : '');
+      
+      //  LOUIS-MANDATE: Photo-Matcher Visual Selection
+      // If the actor has multiple photos in metadata, select the one that matches the search vibe
+      let matchedPhotoUrl = proxiedPhoto;
+      if (searchVibe && actor.aiTags && Array.isArray(actor.aiTags)) {
+        const matchingTag = (actor.aiTags as any[]).find(tag => 
+          tag.vibe?.toLowerCase().includes(searchVibe) || 
+          tag.label?.toLowerCase().includes(searchVibe)
+        );
+        if (matchingTag?.photoUrl) {
+          matchedPhotoUrl = matchingTag.photoUrl.startsWith('http') 
+            ? matchingTag.photoUrl 
+            : `/api/proxy/?path=${encodeURIComponent(matchingTag.photoUrl)}`;
+        }
+      }
+
+      const proxiedDemos = (actor.demos || []).map((d: any) => ({
+        id: d.id,
+        title: d.name,
+        audio_url: d.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url,
+        category: d.type || 'demo',
+        status: d.status || 'approved'
+      }));
+
+      const translatedBio = translationMap[actor.bio || ''] || actor.bio || '';
+      const translatedTagline = translationMap[actor.tagline || ''] || actor.tagline || '';
+
+      const nativeLangObj = actor.actorLanguages?.find((al: any) => al.isNative)?.language;
+      const extraLangIds = actor.actorLanguages?.filter((al: any) => !al.isNative).map((al: any) => al.languageId);
+      const tonesList = actor.actorTones?.map((at: any) => at.tone?.label);
+      const toneIds = actor.actorTones?.map((at: any) => at.toneId);
+
+      if (!nativeLangObj?.id) {
+        console.warn(`[api-server] Actor ${actor.id} (${actor.firstName}) missing native_lang_id`);
+      }
 
       return {
-        count: mappedResults.length,
-        results: mappedResults as any,
-        filters: {
-          genders: ['Mannelijk', 'Vrouwelijk'],
-          languages: ['Vlaams', 'Nederlands', 'Engels', 'Frans'],
-          styles: ['Corporate', 'Commercial']
-        },
-        _nuclear: true,
-        _source: 'supabase-sdk-emergency',
-        reviews: [],
-        reviewStats: { averageRating: 4.9, totalCount: 100, distribution: {} }
+        id: actor.wpProductId || actor.id,
+        display_name: actor.firstName,
+        first_name: actor.firstName,
+        last_name: actor.lastName || '',
+        slug: actor.firstName?.toLowerCase() || (actor as any).first_name?.toLowerCase(),
+        gender: actor.gender,
+        native_lang: nativeLangObj?.code || actor.nativeLang,
+        native_lang_id: nativeLangObj?.id || null, //  Harde ID matching
+        extra_lang_ids: extraLangIds || [], //  Harde ID matching
+        tone_ids: toneIds || [], //  Harde ID matching
+        country_id: actor.countryId || null, //  Harde ID matching
+        photo_url: matchedPhotoUrl || proxiedPhoto,
+        starting_price: parseFloat(actor.priceUnpaid || '0'),
+        voice_score: actor.voiceScore || 10,
+        menu_order: actor.menuOrder || 0,
+        ai_enabled: actor.isAi,
+        bio: translatedBio.replace(/<[^>]*>?/gm, '').trim(),
+        tagline: translatedTagline.replace(/<[^>]*>?/gm, '').trim(),
+        tone_of_voice: tonesList?.join(', ') || actor.toneOfVoice || '',
+        delivery_days_min: actor.deliveryDaysMin || 1,
+        delivery_days_max: actor.deliveryDaysMax || 3,
+        cutoff_time: actor.cutoffTime || '18:00',
+        availability: actor.availability as any[] || [],
+        holiday_from: actor.holidayFrom || '',
+        holiday_till: actor.holidayTill || '',
+        delivery_date_min: actor.deliveryDateMin,
+        delivery_date_min_priority: actor.deliveryDateMinPriority,
+        delivery_config: actor.deliveryConfig as any,
+        // allow_free_trial: actor.allowFreeTrial ?? true,
+        demos: proxiedDemos,
+        rates: actor.rates || {},
+        price_ivr: actor.priceIvr,
+        price_unpaid: actor.priceUnpaid,
+        price_live_regie: actor.priceLiveRegie
       };
-    } catch (emergencyError) {
-      console.error(' [Emergency SDK] FATAL FALLBACK FAILURE:', emergencyError);
-      throw emergencyError;
-    }
+    });
+
+    // Priority languages sorting
+    const priorityLangs = ['Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits', 'Spaans', 'Italiaans', 'Pools', 'Portugees', 'Turks', 'Deens', 'Zweeds', 'Noors', 'Fins', 'Grieks', 'Russisch', 'Arabisch', 'Chinees', 'Japans'];
+    const otherLangs = uniqueLangs.filter(l => !priorityLangs.includes(l)).sort();
+    const finalLangs = [...priorityLangs.filter(l => uniqueLangs.includes(l)), ...otherLangs];
+
+    return {
+      count: mappedResults.length,
+      results: mappedResults as any,
+      filters: {
+        genders: ['Mannelijk', 'Vrouwelijk'],
+        languages: finalLangs,
+        styles: ['Corporate', 'Commercial', 'Narrative', 'Energetic', 'Warm']
+      },
+      _nuclear: true,
+      _source: 'database',
+      reviews: dbReviews.map(r => {
+        const reviewDate = r.createdAt ? new Date(r.createdAt) : new Date();
+        return {
+          id: r.id,
+          name: r.authorName,
+          text: r.textNl || r.textEn || r.textFr || r.textDe || '',
+          authorUrl: r.authorUrl,
+          authorPhotoUrl: r.authorPhotoUrl,
+          author_photo_url: r.authorPhotoUrl,
+          rating: r.rating,
+          sector: r.sector,
+          persona: r.persona,
+          isHero: r.isHero,
+          businessSlug: r.businessSlug,
+          status: r.language === 'hidden' ? 'hidden' : 'published', // We gebruiken language als proxy voor status in de DB voor nu
+          date: reviewDate.toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }),
+          rawDate: r.createdAt
+        };
+      }),
+      reviewStats: reviewStats
+    };
   } catch (error: any) {
     console.error('[getActors FATAL ERROR]:', error);
     throw error;
