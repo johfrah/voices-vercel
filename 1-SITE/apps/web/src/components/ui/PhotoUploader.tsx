@@ -45,9 +45,9 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
   const createImage = (url: string): Promise<HTMLImageElement> =>
     new Promise((resolve, reject) => {
-      const image = new Image();
+      const image = new (window as any).Image();
       image.addEventListener('load', () => resolve(image));
-      image.addEventListener('error', (error) => reject(error));
+      image.addEventListener('error', (error: any) => reject(error));
       image.setAttribute('crossOrigin', 'anonymous');
       image.src = url;
     });
