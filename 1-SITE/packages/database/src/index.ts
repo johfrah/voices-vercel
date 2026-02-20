@@ -18,8 +18,7 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Force Session Mode for Serverless stability
-      // We voegen ?pgbouncer=true toe als dat nog niet zo is, of we forceren de poort
+      // CHRIS-PROTOCOL: Force Session Mode for Serverless stability (v1.4)
       const sessionConnectionString = connectionString.includes('?') 
         ? `${connectionString}&pgbouncer=true` 
         : `${connectionString}?pgbouncer=true`;
