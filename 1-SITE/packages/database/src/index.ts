@@ -18,17 +18,14 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Nuclear PgBouncer Connection Reset (v1.8)
-      // We gebruiken de DIRECTE verbinding (poort 5432) om 'Tenant not found' te elimineren.
-      // CRITIEK: prepare: false is verplicht.
+      // CHRIS-PROTOCOL: Final Transaction Mode Alignment (v1.9)
+      // Geoptimaliseerd voor poort 6543 (PgBouncer Transaction Mode)
       const client = postgres(connectionString, { 
-        prepare: false, 
+        prepare: false, // VERPLICHT voor poort 6543
         max: 1,
         ssl: 'require',
-        connect_timeout: 30,
-        idle_timeout: 20,
-        // Dwing de verbinding af zonder extra metadata die PgBouncer kan verwarren
-        onnotice: () => {}, 
+        connect_timeout: 60,
+        idle_timeout: 0, // Voorkom ghost connections in serverless
       });
       
       (globalThis as any).dbInstance = drizzle(client, { 
