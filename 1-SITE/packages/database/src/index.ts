@@ -53,14 +53,14 @@ o/bKiIz+Fq8=
         connect_timeout: 30,
         onnotice: () => {},
         publications: [],
-        idle_timeout: 20,
-        max: 10,
+        idle_timeout: 10,
+        max: 5,
       });
 
       (globalThis as any).dbInstance = drizzle(client, { 
         schema
       });
-      console.log('✅ Drizzle initialized (Pool size:', process.env.NODE_ENV === 'development' ? 5 : 10, ')');
+      console.log('✅ Drizzle initialized (Pool size:', 5, ')');
     } catch (e) {
       console.error('❌ Failed to initialize Drizzle:', e);
       return null;
