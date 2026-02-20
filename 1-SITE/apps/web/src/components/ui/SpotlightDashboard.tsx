@@ -42,6 +42,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { HeadingInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { useDebounce } from '@/hooks/useDebounce';
+import { toast } from 'react-hot-toast';
 
 interface MenuItem {
   title: string;
@@ -150,9 +151,24 @@ export const SpotlightDashboard: React.FC = () => {
   const [currentInstruction, setCurrentInstruction] = useState('');
   const debouncedSearch = useDebounce(search, 300);
   const router = useRouter();
-  const { isAdmin } = useAuth();
+  const { isAdmin, impersonate } = useAuth();
   const { t } = useTranslation();
   const { playClick, playSwell } = useSonicDNA();
+
+  const handleImpersonate = async (userId: string) => {
+    const toastId = toast.loading('Ghost Mode wordt geactiveerd...');
+    try {
+      const res = await impersonate(userId);
+      if (res.success) {
+        toast.success('Ghost Mode actief!', { id: toastId });
+        setIsOpen(false);
+      } else {
+        toast.error(res.error || 'Ghost Mode mislukt', { id: toastId });
+      }
+    } catch (err) {
+      toast.error('Er is een fout opgetreden', { id: toastId });
+    }
+  };
 
   const performDataSearch = useCallback(async (query: string) => {
     if (query.length < 2) {
@@ -293,15 +309,19 @@ export const SpotlightDashboard: React.FC = () => {
                         onMouseEnter={() => playSwell()}
                         onClick={() => {
                           playClick('pro');
-                          router.push(item.href);
-                          setIsOpen(false);
+                          if (item.type === 'user') {
+                            handleImpersonate(item.id as string);
+                          } else {
+                            router.push(item.href);
+                            setIsOpen(false);
+                          }
                         }}
                         className="flex items-center gap-4 p-5 rounded-[20px] bg-va-off-white/50 border border-black/[0.02] hover:border-primary/30 hover:bg-white hover:shadow-[0_15px_30px_rgba(0,0,0,0.04)] transition-all group text-left relative overflow-hidden touch-manipulation"
                       >
                         <div className={`w-12 h-12 rounded-[10px] bg-white flex items-center justify-center shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500`}>
                           {item.type === 'actor' && <Mic size={20} className="text-purple-500 group-hover:text-white" />}
                           {item.type === 'order' && <ShoppingBag size={20} className="text-blue-600 group-hover:text-white" />}
-                          {item.type === 'user' && <Users size={20} className="text-emerald-500 group-hover:text-white" />}
+                          {item.type === 'user' && <Ghost size={20} className="text-emerald-500 group-hover:text-white" />}
                           {item.type === 'article' && <FileText size={20} className="text-orange-500 group-hover:text-white" />}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -309,10 +329,17 @@ export const SpotlightDashboard: React.FC = () => {
                             {item.title}
                           </h4>
                           <p className="text-[11px] font-light tracking-widest text-va-black/30 uppercase truncate">
-                            {item.subtitle}
+                            {item.type === 'user' ? `Ghost Mode • ${item.subtitle.split(' • ')[1]}` : item.subtitle}
                           </p>
                         </div>
-                        <ArrowRight strokeWidth={1.5} size={14} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                        {item.type === 'user' ? (
+                          <div className="flex items-center gap-2 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="text-[9px] font-bold uppercase tracking-widest">Inloggen</span>
+                            <ArrowRight strokeWidth={1.5} size={14} className="group-hover:translate-x-1 transition-all" />
+                          </div>
+                        ) : (
+                          <ArrowRight strokeWidth={1.5} size={14} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                        )}
                       </button>
                     ))}
                   </div>
