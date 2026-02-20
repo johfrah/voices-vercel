@@ -151,7 +151,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    //  NUCLEAR SAFETY: Retourneer een veilige fallback in plaats van een harde crash
+    // Dit voorkomt witte schermen als componenten per ongeluk buiten de provider renderen
+    // of tijdens complexe hydratatie-cycli.
+    return {
+      user: null,
+      isAuthenticated: false,
+      isAdmin: false,
+      isLoading: true,
+      logout: async () => {},
+      resetPassword: async () => ({ success: false, error: 'Auth not initialized' })
+    };
   }
   return context;
 };
