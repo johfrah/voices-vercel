@@ -1,5 +1,9 @@
 import { bigint, boolean, foreignKey, integer, jsonb, numeric, pgEnum, pgTable, serial, text, timestamp, unique, uniqueIndex, vector } from "drizzle-orm/pg-core"
 
+/**
+ * @lock-file
+ */
+
 export const deliveryStatus = pgEnum("delivery_status", ['waiting', 'uploaded', 'admin_review', 'client_review', 'approved', 'rejected', 'revision'])
 export const leadVibe = pgEnum("lead_vibe", ['cold', 'warm', 'hot', 'burning'])
 export const senderType = pgEnum("sender_type", ['user', 'admin', 'ai'])
@@ -8,6 +12,8 @@ export const studioSessionStatus = pgEnum("studio_session_status", ['active', 'a
 export const studioFeedbackType = pgEnum("studio_feedback_type", ['text', 'audio', 'waveform_marker'])
 export const gender = pgEnum("gender", ['male', 'female', 'non-binary'])
 export const experienceLevel = pgEnum("experience_level", ['junior', 'pro', 'senior', 'legend'])
+
+export const auditionStatus = pgEnum("audition_status", ['invited', 'uploaded', 'rejected', 'selected', 'converted'])
 
 export const languages = pgTable("languages", {
 	id: serial().primaryKey().notNull(),
@@ -78,6 +84,7 @@ export const actorDemos = pgTable("actor_demos", {
 	url: text().notNull(),
 	type: text(),
 	isPublic: boolean("is_public").default(true),
+	status: status().default('approved'), // HITL: approved, pending, rejected
 	menuOrder: integer("menu_order").default(0),
 	wpId: integer("wp_id"),
 	mediaId: integer("media_id"),
@@ -406,6 +413,7 @@ export const reviews = pgTable("reviews", {
 	businessSlug: text("business_slug"),
 	authorName: text("author_name").notNull(),
 	authorUrl: text("author_url"),
+	authorPhotoUrl: text("author_photo_url"),
 	rating: integer().notNull(),
 	textNl: text("text_nl"),
 	textFr: text("text_fr"),
@@ -415,6 +423,9 @@ export const reviews = pgTable("reviews", {
 	conversionScore: numeric("conversion_score", { precision: 5, scale:  2 }),
 	iapContext: jsonb("iap_context"),
 	sentimentVelocity: integer("sentiment_velocity").default(0),
+	persona: text(),
+	sector: text(),
+	isHero: boolean("is_hero").default(false),
 	language: text().default('nl'),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
@@ -749,28 +760,50 @@ export const ademingTracks = pgTable("ademing_tracks", {
 export const workshops = pgTable("workshops", {
 	id: bigint("id", { mode: "number" }).primaryKey().notNull(),
 	title: text().notNull(),
+    slug: text().unique(),
 	description: text(),
-	date: timestamp({ mode: 'string' }).notNull(),
-	location: text(),
-	capacity: integer().default(8),
 	price: numeric({ precision: 10, scale:  2 }),
-	status: text().default('upcoming'),
+	status: text().default('publish'), // publish, draft, archive
 	mediaId: integer("media_id"),
-	duration: text(),
-	instructorId: integer("instructor_id"),
+    journey: text().default('studio'), // studio, academy
+    isOnDemand: boolean("is_on_demand").default(false), // Voor de Academy (instappen wanneer je wilt)
 	program: jsonb(),
 	meta: jsonb(),
+    createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	foreignKey({
 			columns: [table.mediaId],
 			foreignColumns: [media.id],
 			name: "workshops_media_id_media_id_fk"
 		}),
+]);
+
+export const workshopEditions = pgTable("workshop_editions", {
+	id: serial().primaryKey().notNull(),
+    workshopId: bigint("workshop_id", { mode: "number" }).notNull(),
+	title: text(), // Optioneel: bijv. "Voorjaarseditie"
+	date: timestamp({ mode: 'string' }).notNull(),
+	locationId: integer("location_id"),
+	capacity: integer().default(8),
+	status: text().default('upcoming'), // upcoming, in_progress, completed, cancelled
+	instructorId: integer("instructor_id"),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
 	foreignKey({
-			columns: [table.instructorId],
-			foreignColumns: [instructors.id],
-			name: "workshops_instructor_id_instructors_id_fk"
-		}),
+		columns: [table.workshopId],
+		foreignColumns: [workshops.id],
+		name: "workshop_editions_workshop_id_workshops_id_fk"
+	}),
+    foreignKey({
+		columns: [table.locationId],
+		foreignColumns: [locations.id],
+		name: "workshop_editions_location_id_locations_id_fk"
+	}),
+	foreignKey({
+		columns: [table.instructorId],
+		foreignColumns: [instructors.id],
+		name: "workshop_editions_instructor_id_instructors_id_fk"
+	}),
 ]);
 
 export const actorVideos = pgTable("actor_videos", {
@@ -781,6 +814,7 @@ export const actorVideos = pgTable("actor_videos", {
 	url: text().notNull(),
 	type: text(),
 	isPublic: boolean("is_public").default(true),
+	status: status().default('approved'), // HITL: approved, pending, rejected
 	menuOrder: integer("menu_order").default(0),
 }, (table) => [
 	foreignKey({
@@ -847,8 +881,9 @@ export const actors = pgTable("actors", {
 	priceUnpaid: numeric("price_unpaid", { precision: 10, scale:  2 }),
 	priceOnline: numeric("price_online", { precision: 10, scale:  2 }),
 	priceIvr: numeric("price_ivr", { precision: 10, scale:  2 }),
-	priceLiveRegie: numeric("price_live_regie", { precision: 10, scale:  2 }),
-	dropboxUrl: text("dropbox_url"),
+    priceLiveRegie: numeric("price_live_regie", { precision: 10, scale:  2 }),
+    pendingPriceLiveRegie: numeric("pending_price_live_regie", { precision: 10, scale:  2 }),
+    dropboxUrl: text("dropbox_url"),
 	status: text().default('pending'),
 	isPublic: boolean("is_public").default(false),
 	isAi: boolean("is_ai").default(false),
@@ -860,8 +895,9 @@ export const actors = pgTable("actors", {
 	youtubeUrl: text("youtube_url"),
 	email: text(),
 	menuOrder: integer("menu_order").default(0),
-	rates: jsonb().default({}),
-	deliveryDaysMin: integer("delivery_days_min").default(1),
+    rates: jsonb().default({}),
+    pendingRates: jsonb("pending_rates").default({}),
+    deliveryDaysMin: integer("delivery_days_min").default(1),
 	deliveryDaysMax: integer("delivery_days_max").default(2),
 	cutoffTime: text("cutoff_time"),
 	samedayDelivery: boolean("sameday_delivery").default(false),
@@ -880,6 +916,9 @@ export const actors = pgTable("actors", {
 	aiTags: jsonb("ai_tags").default([]),
 	holidayFrom: timestamp("holiday_from", { mode: 'string' }),
 	holidayTill: timestamp("holiday_till", { mode: 'string' }),
+	deliveryDateMin: timestamp("delivery_date_min", { mode: 'string' }),
+	deliveryDateMinPriority: integer("delivery_date_min_priority").default(0),
+	allowFreeTrial: boolean("allow_free_trial").default(false),
 }, (table) => [
 	uniqueIndex("actors_slug_idx").using("btree", table.slug.asc().nullsLast().op("text_ops")),
 	foreignKey({
@@ -938,6 +977,7 @@ export const orderItems = pgTable("order_items", {
 	orderId: integer("order_id"),
 	productId: integer("product_id"),
 	actorId: integer("actor_id"),
+    artistId: integer("artist_id"), // Voor donaties/muziek
 	name: text().notNull(),
 	quantity: integer().default(1),
 	price: numeric({ precision: 10, scale:  2 }).default('0'),
@@ -945,20 +985,25 @@ export const orderItems = pgTable("order_items", {
 	tax: numeric({ precision: 10, scale:  2 }).default('0'),
 	deliveryStatus: text("delivery_status").default('waiting'),
 	deliveryFileUrl: text("delivery_file_url"),
-	metaData: jsonb("meta_data").default({}),
+	metaData: jsonb("meta_data").default({}), // CHRIS-PROTOCOL: Bevat SlimmeKassaResult (usage, spots, years, etc)
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
 	isManuallyEdited: boolean("is_manually_edited").default(false),
 }, (table) => [
 	foreignKey({
-			columns: [table.actorId],
-			foreignColumns: [actors.id],
-			name: "order_items_actor_id_fkey"
-		}),
+		columns: [table.actorId],
+		foreignColumns: [actors.id],
+		name: "order_items_actor_id_fkey"
+	}),
+    foreignKey({
+		columns: [table.artistId],
+		foreignColumns: [artists.id],
+		name: "order_items_artist_id_fkey"
+	}),
 	foreignKey({
-			columns: [table.orderId],
-			foreignColumns: [orders.id],
-			name: "order_items_order_id_fkey"
-		}).onDelete("cascade"),
+		columns: [table.orderId],
+		foreignColumns: [orders.id],
+		name: "order_items_order_id_fkey"
+	}).onDelete("cascade"),
 ]);
 
 export const navMenus = pgTable("nav_menus", {
@@ -1146,5 +1191,172 @@ export const studioFeedback = pgTable("studio_feedback", {
 		foreignColumns: [users.id],
 		name: "studio_feedback_user_id_users_id_fk"
 	}),
+]);
+
+export const castingLists = pgTable("casting_lists", {
+	id: serial().primaryKey().notNull(),
+	userId: integer("user_id"),
+	name: text().notNull(),
+	hash: text().unique().notNull(), // Voor de Pitch Link: /pitch/[hash]
+	isPublic: boolean("is_public").default(true),
+	settings: jsonb().default({}),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "casting_lists_user_id_users_id_fk"
+	}),
+]);
+
+export const castingListItems = pgTable("casting_list_items", {
+	id: serial().primaryKey().notNull(),
+	listId: integer("list_id").notNull(),
+	actorId: integer("actor_id").notNull(),
+	displayOrder: integer("display_order").default(0),
+	notes: text(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.listId],
+		foreignColumns: [castingLists.id],
+		name: "casting_list_items_list_id_casting_lists_id_fk"
+	}).onDelete("cascade"),
+	foreignKey({
+		columns: [table.actorId],
+		foreignColumns: [actors.id],
+		name: "casting_list_items_actor_id_actors_id_fk"
+	}),
+]);
+
+export const auditions = pgTable("auditions", {
+	id: serial().primaryKey().notNull(),
+	orderId: integer("order_id"), // Optioneel: auditie kan leiden tot order
+	userId: integer("user_id").notNull(),
+	actorId: integer("actor_id").notNull(),
+	status: auditionStatus().default('invited'),
+	script: text(),
+	briefing: text(),
+	deadline: timestamp({ mode: 'string' }),
+	auditionFileUrl: text("audition_file_url"),
+	actorNote: text("actor_note"),
+	clientFeedback: text("client_feedback"),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.orderId],
+		foreignColumns: [orders.id],
+		name: "auditions_order_id_orders_id_fk"
+	}),
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "auditions_user_id_users_id_fk"
+	}),
+	foreignKey({
+		columns: [table.actorId],
+		foreignColumns: [actors.id],
+		name: "auditions_actor_id_actors_id_fk"
+	}),
+]);
+
+export const artists = pgTable("artists", {
+	id: serial().primaryKey().notNull(),
+	userId: integer("user_id"),
+	firstName: text("first_name").notNull(),
+	lastName: text("last_name"),
+	displayName: text("display_name"),
+	slug: text().unique().notNull(),
+	email: text(),
+	gender: gender(),
+	nativeLang: text("native_lang"),
+	bio: text(),
+	photoUrl: text("photo_url"),
+	iapContext: jsonb("iap_context"),
+	status: text().default('active'),
+	isPublic: boolean("is_public").default(true),
+    vision: text(),
+    labelManifesto: jsonb("label_manifesto"), // { why, how, what }
+    spotifyUrl: text("spotify_url"),
+    youtubeUrl: text("youtube_url"),
+    instagramUrl: text("instagram_url"),
+    tiktokUrl: text("tiktok_url"),
+    donationGoal: integer("donation_goal"),
+    donationCurrent: integer("donation_current").default(0),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "artists_user_id_users_id_fk"
+	}),
+]);
+
+export const artistPortfolio = pgTable("artist_portfolio", {
+	id: serial().primaryKey().notNull(),
+	artistId: integer("artist_id").notNull(),
+	title: text().notNull(),
+	url: text().notNull(),
+	type: text().default('video'), // video, image, audio
+	category: text(), // Live Performance, Music Video, etc.
+    displayOrder: integer("display_order").default(0),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.artistId],
+		foreignColumns: [artists.id],
+		name: "artist_portfolio_artist_id_artists_id_fk"
+	}),
+]);
+
+export const funnelEvents = pgTable("funnel_events", {
+	id: serial().primaryKey().notNull(),
+	visitorHash: text("visitor_hash").notNull(),
+	userId: integer("user_id"),
+	journey: text().notNull(), // academy, artist, agency, portfolio
+	step: text().notNull(), // view_artist, start_donation, complete_donation, etc.
+	metadata: jsonb().default({}),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
+export const invoiceRegistry = pgTable("invoice_registry", {
+	id: serial().primaryKey().notNull(),
+	orderId: integer("order_id").notNull(),
+	yukiInvoiceId: text("yuki_invoice_id"),
+	invoiceNumber: text("invoice_number"),
+	invoiceDate: timestamp("invoice_date", { mode: 'string' }),
+	status: text().default('draft'), // draft, sent, paid, overdue
+	pdfUrl: text("pdf_url"),
+	metadata: jsonb().default({}), // Bevat SlimmeKassaResult snapshot
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.orderId],
+		foreignColumns: [orders.id],
+		name: "invoice_registry_order_id_orders_id_fk"
+	}),
+]);
+
+export const agencyMembers = pgTable("agency_members", {
+	id: serial().primaryKey().notNull(),
+	agencyId: integer("agency_id").notNull(), // userId van de 'owner'
+	memberId: integer("member_id").notNull(), // userId van het teamlid
+	role: text().default('member'), // admin, member, viewer
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.agencyId],
+		foreignColumns: [users.id],
+		name: "agency_members_agency_id_users_id_fk"
+	}),
+	foreignKey({
+		columns: [table.memberId],
+		foreignColumns: [users.id],
+		name: "agency_members_member_id_users_id_fk"
+	}),
+	unique("agency_members_agency_id_member_id_key").on(table.agencyId, table.memberId),
 ]);
 

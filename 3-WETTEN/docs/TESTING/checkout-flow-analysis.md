@@ -240,7 +240,7 @@ if (state.items.length === 0) {
    - Select media types (if commercial)
    - Add music
    - See live price updates
-3. ✅ Price calculation happens in real-time via PricingEngine
+3. ✅ Price calculation happens in real-time via SlimmeKassa
 4. ✅ "Bestellen" button is enabled when actor is selected
 
 **Expected Console Logs**: (None, unless pricing updates)

@@ -11,7 +11,7 @@
 Dit document is de enige bron van waarheid. Voordat je een taak afrondt, MOET je:
 1. **Drift Detection:** Controleer of je nieuwe tabellen, meta-keys of design tokens hebt geïntroduceerd.
 2. **Update Mandate:** Werk de `Conformance Tracker`, `Data Deep-Dive` en `Tool Mapping` secties bij.
-3. **Dynamic Pricing:** Alle prijzen MOETEN via `PricingEngine.getDynamicConfig()` lopen. Geen hardcoded bedragen.
+3. **Dynamic Pricing:** Alle prijzen MOETEN via `SlimmeKassa.getDynamicConfig()` lopen. Geen hardcoded bedragen.
 4. **Zero Laws Compliance:** Controleer op hardcoded strings (Zero Laws) en vervang door `VoiceglotText`.
 5. **Version Bump:** Verhoog het versienummer bij elke structurele wijziging.
 
@@ -81,7 +81,7 @@ Bouw voor elke journey de specifieke Experience Layer met de juiste AI Persona e
 | `voicepage-logic-core.php` | Agency | Content Creator | `useVoiceSearch` hook + pgvector | 🔄 In Progress |
 | `450-telephony-cockpit.php` | Telephony | Office Manager | `IVRConfigurator` component | ✅ Live |
 | `40-course-recorder.php` | Academy | De Doener | `StudioRecorder` + Web Audio API | ✅ Live |
-| `110-pricing-helpers.php` | All | - | `PricingEngine` (TypeScript) | ✅ Live |
+| `110-pricing-helpers.php` | All | - | `SlimmeKassa` (TypeScript) | ✅ Live |
 | `10-mollie-core.php` | Commerce | - | `MollieService` (TypeScript) | ✅ Live |
 | `10-yuki-peppol-core.php` | Accounting | - | `YukiService` (Node.js) | ✅ Live |
 | `130-profit-engine-widget.php` | Backoffice | Founder | `ProfitEngine` widget + Drizzle | 🔄 In Progress |

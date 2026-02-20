@@ -27,7 +27,7 @@ De basis van het financiële model is de **Basic Studio Fee (BSF)** van **€249
 *   **Logica**: De stemacteur gebruikt de "Nuclear" infrastructuur (Yuki, Mollie, Dropbox) voor eigen klanten. De prijs voor de klant blijft identiek (€249), maar de stemacteur houdt er meer aan over.
 
 ## 3. Prijs-DNA: De "Voices Charm Steps"
-Alle tarieven in de database worden door **Kelly (PricingEngine)** automatisch afgerond naar de dichtstbijzijnde trede:
+Alle tarieven in de database worden door **Kelly (SlimmeKassa)** automatisch afgerond naar de dichtstbijzijnde trede:
 *   **Bedragen < €100**: Altijd omhoog naar de volgende '9' (bijv. €40 -> **€49**).
 *   **Bedragen ≥ €100**: Naar het dichtstbijzijnde tiental minus 1 (bijv. €150 -> **€149**, €250 -> **€249**).
 

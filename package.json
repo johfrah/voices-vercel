@@ -16,7 +16,7 @@
     "moby": "npx ts-node 3-WETTEN/scripts/moby-mobile.ts",
     "laya": "npx ts-node 3-WETTEN/scripts/laya-aesthetic.ts",
     "suzy": "npx ts-node 3-WETTEN/scripts/suzy-seo.ts",
-    "kelly": "echo 'Kelly: Checking Pricing Engine & Checkout Flow...'",
+    "kelly": "echo 'Kelly: Checking Slimme Kassa & Checkout Flow...'",
     "berny": "echo 'Berny: Syncing Studio Agenda & Workshops...'",
     "lex": "echo 'Lex: Auditing Legal Veracity & Facts...'",
     "chatty": "echo 'Chatty: Tuning Voicy & Interaction Vibe...'",
@@ -53,10 +53,12 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.95.3",
+    "@types/sharp": "^0.31.1",
     "dotenv": "^17.2.4",
     "drizzle-orm": "^0.45.1",
     "pg": "^8.18.0",
     "postgres": "^3.4.8",
-    "react-image-crop": "^11.0.10"
+    "react-image-crop": "^11.0.10",
+    "sharp": "^0.34.5"
   }
 }

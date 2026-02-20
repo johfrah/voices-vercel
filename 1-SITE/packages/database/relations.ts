@@ -1,5 +1,39 @@
 import { relations } from "drizzle-orm/relations";
-import { actors, actorDemos, media, users, ademingReflections, aiClones, aiLogs, chatConversations, aiRecommendations, chatMessages, appointments, courseProgress, courseSubmissions, favorites, contentArticles, contentBlocks, visitors, voicejarSessions, orders, utmTouchpoints, voucherBatches, vouchers, ademingStats, chatPushSubscriptions, voiceAffinity, orderNotes, ademingTracks, workshops, actorVideos, orderItems, vaultFiles } from "./schema";
+import { actors, actorDemos, media, users, ademingReflections, aiClones, aiLogs, chatConversations, aiRecommendations, chatMessages, appointments, courseProgress, courseSubmissions, favorites, contentArticles, contentBlocks, visitors, voicejarSessions, orders, utmTouchpoints, voucherBatches, vouchers, ademingStats, chatPushSubscriptions, voiceAffinity, orderNotes, ademingTracks, workshops, actorVideos, orderItems, vaultFiles, languages, countries, voiceTones, actorLanguages, actorTones } from "./schema";
+
+export const languagesRelations = relations(languages, ({many}) => ({
+	actorLanguages: many(actorLanguages),
+}));
+
+export const countriesRelations = relations(countries, ({many}) => ({
+	actors: many(actors),
+}));
+
+export const voiceTonesRelations = relations(voiceTones, ({many}) => ({
+	actorTones: many(actorTones),
+}));
+
+export const actorLanguagesRelations = relations(actorLanguages, ({one}) => ({
+	actor: one(actors, {
+		fields: [actorLanguages.actorId],
+		references: [actors.id]
+	}),
+	language: one(languages, {
+		fields: [actorLanguages.languageId],
+		references: [languages.id]
+	}),
+}));
+
+export const actorTonesRelations = relations(actorTones, ({one}) => ({
+	actor: one(actors, {
+		fields: [actorTones.actorId],
+		references: [actors.id]
+	}),
+	tone: one(voiceTones, {
+		fields: [actorTones.toneId],
+		references: [voiceTones.id]
+	}),
+}));
 
 export const actorDemosRelations = relations(actorDemos, ({one}) => ({
 	actor: one(actors, {
@@ -13,7 +47,7 @@ export const actorDemosRelations = relations(actorDemos, ({one}) => ({
 }));
 
 export const actorsRelations = relations(actors, ({one, many}) => ({
-	actorDemos: many(actorDemos),
+	demos: many(actorDemos),
 	aiClones: many(aiClones),
 	favorites: many(favorites),
 	voiceAffinities_voiceAId: many(voiceAffinity, {
@@ -29,6 +63,12 @@ export const actorsRelations = relations(actors, ({one, many}) => ({
 	}),
 	orderItems: many(orderItems),
 	vaultFiles: many(vaultFiles),
+	country: one(countries, {
+		fields: [actors.countryId],
+		references: [countries.id]
+	}),
+	actorLanguages: many(actorLanguages),
+	actorTones: many(actorTones),
 }));
 
 export const mediaRelations = relations(media, ({many}) => ({

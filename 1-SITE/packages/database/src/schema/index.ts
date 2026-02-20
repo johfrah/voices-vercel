@@ -1,11 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { bigint, boolean, decimal, integer, jsonb, pgEnum, pgTable, serial, text, timestamp, unique } from 'drizzle-orm/pg-core';
-
-export * from './config';
-export * from './fame';
-export * from './mailbox';
-export * from './vault';
-export * from './agents';
+import { bigint, boolean, decimal, integer, jsonb, pgEnum, pgTable, serial, text, timestamp, unique, customType, uniqueIndex, index } from 'drizzle-orm/pg-core';
 
 /**
  * VOICES OS - MASTER DATABASE SCHEMA (2026)
@@ -153,6 +147,9 @@ export const actors = pgTable('actors', {
   birthYear: integer('birth_year'), // 📅 Geboortejaar (Privé/Admin - voor leeftijdscategorie matching)
   location: text('location'), // 📍 Stad/Regio (Privé/Admin)
   clients: text('clients'), // 🏢 Merknamen/Klantenlijst (voor SEO en matching)
+  deliveryDateMin: timestamp('delivery_date_min', { mode: 'string' }), // 📅 Nuclear God Mode: Pre-calculated delivery date
+  deliveryDateMinPriority: integer('delivery_date_min_priority').default(0), // 🚀 Nuclear God Mode: Priority offset
+  deliveryConfig: jsonb('delivery_config').default({}), // 📦 Nuclear Delivery Profile
   photoId: integer('photo_id').references(() => media.id), // 📸 De Actor-specifieke foto (voor Agency)
   logoId: integer('logo_id'),
   voiceScore: integer('voice_score').default(10),
@@ -181,6 +178,10 @@ export const actors = pgTable('actors', {
   isManuallyEdited: boolean('is_manually_edited').default(false), // 🛡️ NUCLEAR LOCK MANDATE
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+  averageDeliveryTimeHours: decimal('average_delivery_time_hours', { precision: 10, scale: 2 }), // 📊 Accountability: Gemiddelde levertijd in uren
+  onTimeDeliveryRate: decimal('on_time_delivery_rate', { precision: 5, scale: 2 }), // 📊 Accountability: Percentage op tijd geleverd
+  deliveryPenaltyDays: integer('delivery_penalty_days').default(0), // ⚠️ Accountability: Automatische vertraging bij slechte prestaties
+  allowFreeTrial: boolean('allow_free_trial').default(true), // 🎁 Opt-out voor gratis proefopnames
 });
 
 // 🗣️ DIALECTS (Linguistic Nuance)
@@ -214,79 +215,6 @@ export const actorVideos = pgTable('actor_videos', {
   isPublic: boolean('is_public').default(true),
   menuOrder: integer('menu_order').default(0),
 });
-
-// 🔗 RELATIONS
-export const actorsRelations = relations(actors, ({ one, many }) => ({
-  user: one(users, {
-    fields: [actors.userId],
-    references: [users.id],
-  }),
-  demos: many(actorDemos),
-  videos: many(actorVideos),
-  dialects: many(actorDialects),
-  orderItems: many(orderItems), // 📦 Project historie voor de acteur
-  actorLanguages: many(actorLanguages),
-  actorTones: many(actorTones),
-  country: one(countries, {
-    fields: [actors.countryId],
-    references: [countries.id],
-  }),
-}));
-
-export const languagesRelations = relations(languages, ({ many }) => ({
-  actorLanguages: many(actorLanguages),
-}));
-
-export const actorLanguagesRelations = relations(actorLanguages, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorLanguages.actorId],
-    references: [actors.id],
-  }),
-  language: one(languages, {
-    fields: [actorLanguages.languageId],
-    references: [languages.id],
-  }),
-}));
-
-export const voiceTonesRelations = relations(voiceTones, ({ many }) => ({
-  actorTones: many(actorTones),
-}));
-
-export const actorTonesRelations = relations(actorTones, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorTones.actorId],
-    references: [actors.id],
-  }),
-  tone: one(voiceTones, {
-    fields: [actorTones.toneId],
-    references: [voiceTones.id],
-  }),
-}));
-
-export const countriesRelations = relations(countries, ({ many }) => ({
-  actors: many(actors),
-}));
-
-export const actorDialectsRelations = relations(actorDialects, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorDialects.actorId],
-    references: [actors.id],
-  }),
-}));
-
-export const actorDemosRelations = relations(actorDemos, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorDemos.actorId],
-    references: [actors.id],
-  }),
-}));
-
-export const actorVideosRelations = relations(actorVideos, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorVideos.actorId],
-    references: [actors.id],
-  }),
-}));
 
   // 🎧 WORKSHOPS (Studio Journey)
 export const instructors = pgTable('instructors', {
@@ -345,11 +273,6 @@ export const locations = pgTable('locations', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-export const locationsRelations = relations(locations, ({ many }) => ({
-  costs: many(costs),
-  editions: many(workshopEditions),
-}));
-
 export const workshopEditions = pgTable('workshop_editions', {
   id: serial('id').primaryKey(),
   workshopId: bigint('workshop_id', { mode: 'number' }).references(() => workshops.id).notNull(),
@@ -365,50 +288,6 @@ export const workshopEditions = pgTable('workshop_editions', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });
-
-export const workshopsRelations = relations(workshops, ({ one, many }) => ({
-  media: one(media, {
-    fields: [workshops.mediaId],
-    references: [media.id],
-  }),
-  instructor: one(instructors, {
-    fields: [workshops.instructorId],
-    references: [instructors.id],
-  }),
-  editions: many(workshopEditions),
-  gallery: many(workshopGallery),
-  costs: many(costs),
-}));
-
-export const workshopEditionsRelations = relations(workshopEditions, ({ one, many }) => ({
-  participants: many(orderItems),
-  workshop: one(workshops, {
-    fields: [workshopEditions.workshopId],
-    references: [workshops.id],
-  }),
-  location: one(locations, {
-    fields: [workshopEditions.locationId],
-    references: [locations.id],
-  }),
-  instructor: one(instructors, {
-    fields: [workshopEditions.instructorId],
-    references: [instructors.id],
-  }),
-  costs: many(costs),
-}));
-
-export const instructorsRelations = relations(instructors, ({ one, many }) => ({
-  photo: one(media, {
-    fields: [instructors.photoId],
-    references: [media.id],
-  }),
-  user: one(users, {
-    fields: [instructors.userId],
-    references: [users.id],
-  }),
-  workshops: many(workshops),
-  costs: many(costs),
-}));
 
 export const workshopInterest = pgTable('workshop_interest', {
   id: serial('id').primaryKey(),
@@ -583,31 +462,9 @@ export const orderItems = pgTable('order_items', {
   dropboxUrl: text('dropbox_url'), // 📦 Link naar de audio/bestanden voor deze specifieke deelnemer
   isManuallyEdited: boolean('is_manually_edited').default(false), // 🛡️ NUCLEAR LOCK MANDATE
   createdAt: timestamp('created_at').defaultNow(),
+  deliveredAt: timestamp('delivered_at'), // 🎤 Accountability: Wanneer de stemacteur het bestand heeft geüpload
+  expectedDeliveryDate: timestamp('expected_delivery_date'), // 📅 Accountability: De beloofde deadline
 });
-
-export const ordersRelations = relations(orders, ({ one, many }) => ({
-  user: one(users, {
-    fields: [orders.userId],
-    references: [users.id],
-  }),
-  items: many(orderItems),
-}));
-
-export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
-  order: one(orders, {
-    fields: [orderItems.orderId],
-    references: [orders.id],
-  }),
-  actor: one(actors, {
-    fields: [orderItems.actorId],
-    references: [actors.id],
-  }),
-  edition: one(workshopEditions, {
-    fields: [orderItems.editionId],
-    references: [workshopEditions.id],
-  }),
-  costs: many(costs),
-}));
 
 export const orderNotes = pgTable('order_notes', {
   id: serial('id').primaryKey(),
@@ -757,12 +614,6 @@ export const approvalQueue = pgTable('approval_queue', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const approvalQueueRelations = relations(approvalQueue, ({ one }) => ({
-  approver: one(users, {
-    fields: [approvalQueue.approvedBy],
-    references: [users.id],
-  }),
-}));
 export const aiLogs = pgTable('ai_logs', {
   id: serial('id').primaryKey(),
   userId: integer('user_id').references(() => users.id),
@@ -838,21 +689,6 @@ export const voicejarEvents = pgTable('voicejar_events', {
   sequenceOrder: integer('sequence_order').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 });
-
-export const voicejarSessionsRelations = relations(voicejarSessions, ({ one, many }) => ({
-  user: one(users, {
-    fields: [voicejarSessions.userId],
-    references: [users.id],
-  }),
-  events: many(voicejarEvents),
-}));
-
-export const voicejarEventsRelations = relations(voicejarEvents, ({ one }) => ({
-  session: one(voicejarSessions, {
-    fields: [voicejarEvents.sessionId],
-    references: [voicejarSessions.visitorHash],
-  }),
-}));
 
 // 💬 VOICY & CHAT
 export const chatConversations = pgTable('chat_conversations', {
@@ -998,34 +834,6 @@ export const contentBlockVersions = pgTable('content_block_versions', {
   changeNote: text('change_note'),
 });
 
-// 🔗 CONTENT RELATIONS
-export const contentArticlesRelations = relations(contentArticles, ({ one, many }) => ({
-  author: one(users, {
-    fields: [contentArticles.authorId],
-    references: [users.id],
-  }),
-  blocks: many(contentBlocks),
-}));
-
-export const contentBlocksRelations = relations(contentBlocks, ({ one, many }) => ({
-  article: one(contentArticles, {
-    fields: [contentBlocks.articleId],
-    references: [contentArticles.id],
-  }),
-  versions: many(contentBlockVersions),
-}));
-
-export const contentBlockVersionsRelations = relations(contentBlockVersions, ({ one }) => ({
-  block: one(contentBlocks, {
-    fields: [contentBlockVersions.blockId],
-    references: [contentBlocks.id],
-  }),
-  creator: one(users, {
-    fields: [contentBlockVersions.createdBy],
-    references: [users.id],
-  }),
-}));
-
 // 🌐 VOICEGLOT (Translations)
 export const translations = pgTable('translations', {
   id: serial('id').primaryKey(),
@@ -1075,17 +883,6 @@ export const visitorLogs = pgTable('visitor_logs', {
   iapContext: jsonb('iap_context'),
   createdAt: timestamp('created_at').defaultNow(),
 });
-
-export const visitorsRelations = relations(visitors, ({ many }) => ({
-  logs: many(visitorLogs),
-}));
-
-export const visitorLogsRelations = relations(visitorLogs, ({ one }) => ({
-  visitor: one(visitors, {
-    fields: [visitorLogs.visitorHash],
-    references: [visitors.visitorHash],
-  }),
-}));
 
 // ⭐ REVIEWS (Intelligence-Rich)
 export const reviews = pgTable('reviews', {
@@ -1147,17 +944,6 @@ export const workshopGallery = pgTable('workshop_gallery', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const workshopGalleryRelations = relations(workshopGallery, ({ one }) => ({
-  workshop: one(workshops, {
-    fields: [workshopGallery.workshopId],
-    references: [workshops.id],
-  }),
-  media: one(media, {
-    fields: [workshopGallery.mediaId],
-    references: [media.id],
-  }),
-}));
-
 // 🛡️ ABUSE PREVENTION (Free Preview Tracking)
 export const freePreviews = pgTable('free_previews', {
   id: serial('id').primaryKey(),
@@ -1200,25 +986,6 @@ export const costs = pgTable('costs', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });
 
-export const costsRelations = relations(costs, ({ one }) => ({
-  edition: one(workshopEditions, {
-    fields: [costs.workshopEditionId],
-    references: [workshopEditions.id],
-  }),
-  location: one(locations, {
-    fields: [costs.locationId],
-    references: [locations.id],
-  }),
-  instructor: one(instructors, {
-    fields: [costs.instructorId],
-    references: [instructors.id],
-  }),
-  orderItem: one(orderItems, {
-    fields: [costs.orderItemId],
-    references: [orderItems.id],
-  }),
-}));
-
 export const studioSessionStatusEnum = pgEnum('studio_session_status', ['active', 'archived', 'completed']);
 export const studioFeedbackTypeEnum = pgEnum('studio_feedback_type', ['text', 'audio', 'waveform_marker']);
 
@@ -1255,6 +1022,501 @@ export const studioFeedback = pgTable('studio_feedback', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// ⚙️ CONFIGURATION SCHEMA (2026)
+export const rateCards = pgTable('rate_cards', {
+  id: serial('id').primaryKey(),
+  market: text('market').notNull(), // BE, NL, FR, GLOBAL
+  category: text('category').notNull(), // unpaid, paid, telefonie, subscription
+  rules: jsonb('rules').notNull(), // { word_threshold: 200, surcharge: 0.20, etc. }
+  isManuallyEdited: boolean('is_manually_edited').default(false),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const pronunciationDictionary = pgTable('pronunciation_dictionary', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  word: text('word').notNull(),
+  phonetic: text('phonetic').notNull(),
+  language: text('language').default('nl-BE'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const navMenus = pgTable('nav_menus', {
+  id: serial('id').primaryKey(),
+  key: text('key').unique().notNull(), // main_nav, footer_nav, admin_nav
+  items: jsonb('items').notNull(), // Array: [{ label: 'Stemmen', href: '/agency', order: 1 }]
+  market: text('market').default('ALL'),
+  isManuallyEdited: boolean('is_manually_edited').default(false),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const marketConfigs = pgTable('market_configs', {
+  id: serial('id').primaryKey(),
+  market: text('market').unique().notNull(), // BE, NL, FR, DE
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone').notNull(),
+  vatNumber: text('vat_number'),
+  cocNumber: text('coc_number'), // KVK nummer voor NL
+  address: jsonb('address'), // { street: '', city: '', zip: '' }
+  socialLinks: jsonb('social_links'), // { instagram: '', linkedin: '', facebook: '', twitter: '' }
+  legal: jsonb('legal'), // { terms_url: '', privacy_url: '', disclaimer: '' }
+  localization: jsonb('localization'), // { default_lang: 'nl', currency: 'EUR', locale: 'nl-BE' }
+  isManuallyEdited: boolean('is_manually_edited').default(false),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const siteSettings = pgTable('site_settings', {
+  id: serial('id').primaryKey(),
+  key: text('key').unique().notNull(), // site_title, site_description, copyright, logo_url
+  value: text('value').notNull(),
+  context: text('context'), // SEO, Footer, Branding, etc.
+  isManuallyEdited: boolean('is_manually_edited').default(false),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// 💎 FAME REGISTRY
+export const fameRegistry = pgTable('fame_registry', {
+  id: serial('id').primaryKey(),
+  brandName: text('brand_name').unique().notNull(),
+  domain: text('domain'), // bijv. 'cocacola.be'
+  sensitivityNote: text('sensitivity_note'), // bijv. 'Extreem gevoelig voor merkkleuren en toon'
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+/**
+ * 🔢 VECTOR TYPE FOR PGVECTOR
+ */
+const vector = customType<{ data: number[] }>({
+  dataType() {
+    return 'vector(1536)';
+  },
+});
+
+/**
+ * MAIL INTELLIGENCE - MAIL CONTENT SCHEMA
+ * 
+ * Beheert de opslag van volledige e-mailinhoud (versleuteld).
+ */
+
+export const mailContent = pgTable('mail_content', {
+  id: serial('id').primaryKey(),
+  accountId: text('account_id').notNull(),
+  uid: bigint('uid', { mode: 'number' }).notNull(),
+  
+  // 📧 HEADER DATA (Nu in DB voor 0ms latency)
+  sender: text('sender'),
+  recipient: text('recipient'),
+  subject: text('subject'),
+  date: timestamp('date'),
+  
+  // 📝 BODY DATA
+  htmlBody: text('html_body'), // Versleuteld
+  textBody: text('text_body'), // Versleuteld
+  
+  // 🔗 THREADING
+  threadId: text('thread_id'),
+  messageId: text('message_id'),
+  inReplyTo: text('in_reply_to'),
+  referencesHeader: text('references_header'),
+  
+  // 🧠 INTELLIGENCE
+  iapContext: jsonb('iap_context').default({}), // Persona, Intent, Journey
+  embedding: vector('embedding'), // Semantische vector voor AI search
+  
+  // 🛡️ SECURITY
+  isEncrypted: boolean('is_encrypted').default(true),
+  isSuperPrivate: boolean('is_super_private').default(true), // 🔒 SUPER PRIVATE MANDATE
+  
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => {
+  return {
+    uidAccountIdx: uniqueIndex('uid_account_idx').on(table.uid, table.accountId),
+    messageIdIdx: uniqueIndex('message_id_idx').on(table.messageId),
+    accountIdIdx: index('account_id_idx').on(table.accountId), // 🚀 Snel deleten per account
+  }
+});
+
+/**
+ * 🔒 THE VAULT - MASTER SCHEMA (2026)
+ * 
+ * Doel: Beveiligde, multi-dimensionale opslag voor alle privé-documenten en inbound assets.
+ * Relationeel verbonden met Stemmen, Klanten en Projecten.
+ */
+
+export const vaultFiles = pgTable('vault_files', {
+  id: serial('id').primaryKey(),
+  
+  // 📁 FILE INFO
+  fileName: text('file_name').notNull(),
+  originalName: text('original_name'),
+  filePath: text('file_path').notNull(), // Fysiek pad in de beveiligde kluis op de server
+  mimeType: text('mime_type'),
+  fileSize: integer('file_size'),
+  
+  // 🔗 RELATIONELE ANKERS
+  actorId: integer('actor_id').references(() => actors.id), // Koppeling aan de stem
+  customerId: integer('customer_id').references(() => users.id), // Koppeling aan de klant
+  projectId: integer('project_id').references(() => orders.id), // Koppeling aan het project
+  accountId: text('account_id'), // 📧 Bron-mailbox (voor exit-strategie)
+  
+  // 🏷️ CATEGORISERING
+  category: text('category').notNull(), // 'script', 'briefing', 'demo_inbound', 'contract', 'example_video', 'example_audio'
+  status: text('status').default('active'), // 'active', 'archived', 'promoted'
+  
+  // 🧠 AI INTELLIGENCE (Voicy)
+  aiMetadata: jsonb('ai_metadata').default({}), // { transcription: string, summary: string, tags: string[], confidence: number }
+  
+  // 🚀 PROMOTIE STATUS
+  isPromoted: boolean('is_promoted').default(false), // Is dit een inbound demo die naar de publieke Dropbox is gegaan?
+  promotedMediaId: integer('promoted_media_id').references(() => media.id), // Link naar het publieke media record
+  
+  // 📅 TRACKING
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+/**
+ * 🤖 AGENT INTELLIGENCE SCHEMA (2026)
+ * 
+ * Beheert de prompts en instructies voor alle AI-agents in het Voices ecosysteem.
+ */
+
+export const agentPrompts = pgTable('agent_prompts', {
+  id: serial('id').primaryKey(),
+  agentSlug: text('agent_slug').unique().notNull(), // voicy, chris, moby, mark, etc.
+  name: text('name').notNull(),
+  description: text('description'),
+  systemPrompt: text('system_prompt').notNull(),
+  version: integer('version').default(1).notNull(),
+  isActive: boolean('is_active').default(true),
+  metadata: jsonb('metadata'), // { temperature: 0.7, model: 'gpt-4o', etc. }
+  updatedBy: integer('updated_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const agentPromptVersions = pgTable('agent_prompt_versions', {
+  id: serial('id').primaryKey(),
+  promptId: integer('prompt_id').references(() => agentPrompts.id).notNull(),
+  systemPrompt: text('system_prompt').notNull(),
+  version: integer('version').notNull(),
+  changeNote: text('change_note'),
+  createdBy: integer('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+/**
+ * 🔔 NOTIFICATIONS SYSTEM (2026)
+ * 
+ * Beheert klant-specifieke notificaties (email-first, subtiele UI).
+ * Volgt de Ademing-filosofie: rust en focus.
+ */
+export const notifications = pgTable('notifications', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  type: text('type').notNull(), // 'order_update', 'system', etc.
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  metadata: jsonb('metadata').default({}), // Bevat bijv. order_id
+  isRead: boolean('is_read').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// 🛒 PRODUCTS - MASTER SCHEMA (2026)
+export const products = pgTable('products', {
+  id: serial('id').primaryKey(),
+  wpProductId: integer('wp_product_id').unique(), // Link naar WooCommerce
+  name: text('name').notNull(),
+  slug: text('slug').unique().notNull(),
+  description: text('description'),
+  price: decimal('price', { precision: 10, scale: 2 }).notNull(),
+  category: text('category').notNull(), // 'portfolio', 'workshop', 'service'
+  tier: text('tier'), // 'mic', 'studio', 'agency'
+  features: jsonb('features').default([]), // Lijst met features
+  tierConfig: jsonb('tier_config').$type<{
+    showLastName?: boolean;
+    showContactDetails?: boolean;
+    showStudioSpecs?: boolean;
+    showConnectivity?: boolean;
+    showPortfolioPhotos?: boolean;
+    allowCustomWidget?: boolean;
+    allowCustomDomain?: boolean;
+  }>().default({}),
+  isSubscription: boolean('is_subscription').default(false),
+  billingCycle: text('billing_cycle'), // 'monthly', 'yearly'
+  status: text('status').default('publish'),
+  mediaId: integer('media_id').references(() => media.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// 🔗 RELATIONS (Moved to end to prevent 'referencedTable' undefined errors)
+
+export const vaultFilesRelations = relations(vaultFiles, ({ one }) => ({
+  actor: one(actors, {
+    fields: [vaultFiles.actorId],
+    references: [actors.id],
+  }),
+  customer: one(users, {
+    fields: [vaultFiles.customerId],
+    references: [users.id],
+  }),
+  project: one(orders, {
+    fields: [vaultFiles.projectId],
+    references: [orders.id],
+  }),
+  promotedMedia: one(media, {
+    fields: [vaultFiles.promotedMediaId],
+    references: [media.id],
+  }),
+}));
+
+export const productsRelations = relations(products, ({ one }) => ({
+  media: one(media, {
+    fields: [products.mediaId],
+    references: [media.id],
+  }),
+}));
+
+export const actorsRelations = relations(actors, ({ one, many }) => ({
+  user: one(users, {
+    fields: [actors.userId],
+    references: [users.id],
+  }),
+  demos: many(actorDemos),
+  videos: many(actorVideos),
+  dialects: many(actorDialects),
+  orderItems: many(orderItems), // 📦 Project historie voor de acteur
+  actorLanguages: many(actorLanguages),
+  actorTones: many(actorTones),
+  country: one(countries, {
+    fields: [actors.countryId],
+    references: [countries.id],
+  }),
+}));
+
+export const languagesRelations = relations(languages, ({ many }) => ({
+  actorLanguages: many(actorLanguages),
+}));
+
+export const actorLanguagesRelations = relations(actorLanguages, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorLanguages.actorId],
+    references: [actors.id],
+  }),
+  language: one(languages, {
+    fields: [actorLanguages.languageId],
+    references: [languages.id],
+  }),
+}));
+
+export const voiceTonesRelations = relations(voiceTones, ({ many }) => ({
+  actorTones: many(actorTones),
+}));
+
+export const actorTonesRelations = relations(actorTones, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorTones.actorId],
+    references: [actors.id],
+  }),
+  tone: one(voiceTones, {
+    fields: [actorTones.toneId],
+    references: [voiceTones.id],
+  }),
+}));
+
+export const countriesRelations = relations(countries, ({ many }) => ({
+  actors: many(actors),
+}));
+
+export const actorDialectsRelations = relations(actorDialects, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorDialects.actorId],
+    references: [actors.id],
+  }),
+}));
+
+export const actorDemosRelations = relations(actorDemos, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorDemos.actorId],
+    references: [actors.id],
+  }),
+}));
+
+export const actorVideosRelations = relations(actorVideos, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorVideos.actorId],
+    references: [actors.id],
+  }),
+}));
+
+export const locationsRelations = relations(locations, ({ many }) => ({
+  costs: many(costs),
+  editions: many(workshopEditions),
+}));
+
+export const workshopsRelations = relations(workshops, ({ one, many }) => ({
+  media: one(media, {
+    fields: [workshops.mediaId],
+    references: [media.id],
+  }),
+  instructor: one(instructors, {
+    fields: [workshops.instructorId],
+    references: [instructors.id],
+  }),
+  editions: many(workshopEditions),
+  gallery: many(workshopGallery),
+  costs: many(costs),
+}));
+
+export const workshopEditionsRelations = relations(workshopEditions, ({ one, many }) => ({
+  participants: many(orderItems),
+  workshop: one(workshops, {
+    fields: [workshopEditions.workshopId],
+    references: [workshops.id],
+  }),
+  location: one(locations, {
+    fields: [workshopEditions.locationId],
+    references: [locations.id],
+  }),
+  instructor: one(instructors, {
+    fields: [workshopEditions.instructorId],
+    references: [instructors.id],
+  }),
+  costs: many(costs),
+}));
+
+export const instructorsRelations = relations(instructors, ({ one, many }) => ({
+  photo: one(media, {
+    fields: [instructors.photoId],
+    references: [media.id],
+  }),
+  user: one(users, {
+    fields: [instructors.userId],
+    references: [users.id],
+  }),
+  workshops: many(workshops),
+  costs: many(costs),
+}));
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  user: one(users, {
+    fields: [orders.userId],
+    references: [users.id],
+  }),
+  items: many(orderItems),
+}));
+
+export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+  actor: one(actors, {
+    fields: [orderItems.actorId],
+    references: [actors.id],
+  }),
+  edition: one(workshopEditions, {
+    fields: [orderItems.editionId],
+    references: [workshopEditions.id],
+  }),
+  costs: many(costs),
+}));
+
+export const approvalQueueRelations = relations(approvalQueue, ({ one }) => ({
+  approver: one(users, {
+    fields: [approvalQueue.approvedBy],
+    references: [users.id],
+  }),
+}));
+
+export const voicejarSessionsRelations = relations(voicejarSessions, ({ one, many }) => ({
+  user: one(users, {
+    fields: [voicejarSessions.userId],
+    references: [users.id],
+  }),
+  events: many(voicejarEvents),
+}));
+
+export const voicejarEventsRelations = relations(voicejarEvents, ({ one }) => ({
+  session: one(voicejarSessions, {
+    fields: [voicejarEvents.sessionId],
+    references: [voicejarSessions.visitorHash],
+  }),
+}));
+
+export const contentArticlesRelations = relations(contentArticles, ({ one, many }) => ({
+  author: one(users, {
+    fields: [contentArticles.authorId],
+    references: [users.id],
+  }),
+  blocks: many(contentBlocks),
+}));
+
+export const contentBlocksRelations = relations(contentBlocks, ({ one, many }) => ({
+  article: one(contentArticles, {
+    fields: [contentBlocks.articleId],
+    references: [contentArticles.id],
+  }),
+  versions: many(contentBlockVersions),
+}));
+
+export const contentBlockVersionsRelations = relations(contentBlockVersions, ({ one }) => ({
+  block: one(contentBlocks, {
+    fields: [contentBlockVersions.blockId],
+    references: [contentBlocks.id],
+  }),
+  creator: one(users, {
+    fields: [contentBlockVersions.createdBy],
+    references: [users.id],
+  }),
+}));
+
+export const visitorsRelations = relations(visitors, ({ many }) => ({
+  logs: many(visitorLogs),
+}));
+
+export const visitorLogsRelations = relations(visitorLogs, ({ one }) => ({
+  visitor: one(visitors, {
+    fields: [visitorLogs.visitorHash],
+    references: [visitors.visitorHash],
+  }),
+}));
+
+export const workshopGalleryRelations = relations(workshopGallery, ({ one }) => ({
+  workshop: one(workshops, {
+    fields: [workshopGallery.workshopId],
+    references: [workshops.id],
+  }),
+  media: one(media, {
+    fields: [workshopGallery.mediaId],
+    references: [media.id],
+  }),
+}));
+
+export const costsRelations = relations(costs, ({ one }) => ({
+  edition: one(workshopEditions, {
+    fields: [costs.workshopEditionId],
+    references: [workshopEditions.id],
+  }),
+  location: one(locations, {
+    fields: [costs.locationId],
+    references: [locations.id],
+  }),
+  instructor: one(instructors, {
+    fields: [costs.instructorId],
+    references: [instructors.id],
+  }),
+  orderItem: one(orderItems, {
+    fields: [costs.orderItemId],
+    references: [orderItems.id],
+  }),
+}));
+
 export const studioSessionsRelations = relations(studioSessions, ({ one, many }) => ({
   order: one(orders, {
     fields: [studioSessions.orderId],
@@ -1287,5 +1549,16 @@ export const studioFeedbackRelations = relations(studioFeedback, ({ one }) => ({
   user: one(users, {
     fields: [studioFeedback.userId],
     references: [users.id],
+  }),
+}));
+
+export const coursesRelations = relations(courses, ({ many }) => ({
+  lessons: many(lessons),
+}));
+
+export const lessonsRelations = relations(lessons, ({ one }) => ({
+  course: one(courses, {
+    fields: [lessons.courseId],
+    references: [courses.id],
   }),
 }));

@@ -7,7 +7,7 @@
 Uit analyse van de huidige database (`PRICING_EXPORT.md`) blijkt dat de specifieke tarieven voor **Radio, TV en Podcast** ontbreken in de `rates` kolom van de `actors` tabel.
 *   **Huidige data:** Bevat alleen `ivr`, `online`, `unpaid` en een generieke `commercial` fallback.
 *   **Ontbrekende data:** Specifieke tarieven zoals `be_price_radio_national`, `nl_price_tv_local`, etc.
-*   **Gevolg:** De `PricingEngine` valt nu terug op standaardtarieven omdat de specifieke data mist.
+*   **Gevolg:** De `SlimmeKassa` valt nu terug op standaardtarieven omdat de specifieke data mist.
 
 ## 2. Benodigde Bron (Actie User)
 Om dit te herstellen, heb ik een export nodig van de **oude WordPress database**, specifiek de tabel `wp_postmeta`.

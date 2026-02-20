@@ -16,6 +16,7 @@ export const VOICES_CONFIG = {
     vat: 'BE 0662.426.460',
     email: 'johfrah@voices.be',
     phone: '+32 (0)2 793 19 91',
+    address: 'Jules Delhaziestraat, Brussel / Antwerpen, België'
   },
 
   // 🎨 ASSET ARCHITECTURE

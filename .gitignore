@@ -63,6 +63,18 @@ next-env.d.ts
 # 4. Git Lock
 .git/index.lock
 
+# 5. Private Voice Engine & AI Models
+3-WETTEN/docs/3-TECHNICAL-SPECS/private-voice-engine/
+**/johfrah-voice-env/
+**/training_data/
+*.dic
+*.dylib
+*.so
+
+# 6. Backups & Dubbels
+5-DUBBELS/
+assets_backup/
+
 # Webhosting rommel
 .webhosting/
 
@@ -73,3 +85,25 @@ next-env.d.ts
 
 # WordPress CLI slop
 .wp-cli/
+
+# 7. Lean Launch: Exclude all docs and heavy specs
+docs/
+3-WETTEN/docs/
+4-KELDER/
+5-DUBBELS/
+*.dic
+*.dylib
+*.so
+*.wav
+*.mp3
+
+# 7. Lean Launch: Exclude all docs and heavy specs
+docs/
+3-WETTEN/docs/
+4-KELDER/
+5-DUBBELS/
+*.dic
+*.dylib
+*.so
+*.wav
+*.mp3
