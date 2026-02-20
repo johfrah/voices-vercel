@@ -17,6 +17,10 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isLoading: boolean;
+  isGhostMode: boolean;
+  adminUser: User | null;
+  impersonate: (targetUserId: string) => Promise<{ success: boolean; error?: string }>;
+  stopImpersonation: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
 }
@@ -25,6 +29,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [adminUser, setAdminUser] = useState<User | null>(null);
+  const [isGhostMode, setIsGhostMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const mountedRef = useRef(true);
 
@@ -36,6 +42,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!supabase) {
       setIsLoading(false);
       return;
+    }
+
+    // Check for ghost mode in session storage on mount
+    const savedAdmin = sessionStorage.getItem('voices_ghost_admin');
+    if (savedAdmin) {
+      try {
+        setAdminUser(JSON.parse(savedAdmin));
+        setIsGhostMode(true);
+      } catch (e) {
+        console.error('[GhostMode] Failed to restore admin session', e);
+      }
     }
 
     const safeSetUser = (u: User | null) => {
@@ -136,7 +153,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [supabase]);
 
   const logout = async () => {
-    if (supabase) await supabase.auth.signOut();
+    if (supabase) {
+      sessionStorage.removeItem('voices_ghost_admin');
+      await supabase.auth.signOut();
+    }
+  };
+
+  const impersonate = async (targetUserId: string) => {
+    if (!isAdmin || isGhostMode) return { success: false, error: 'Niet toegestaan' };
+    
+    try {
+      // Sla huidige admin op
+      sessionStorage.setItem('voices_ghost_admin', JSON.stringify(user));
+      
+      // Roep server-side impersonation API aan
+      const res = await fetch('/api/admin/impersonate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUserId })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Impersonation failed');
+      
+      // Forceer refresh van de auth state
+      window.location.reload();
+      return { success: true };
+    } catch (err: any) {
+      sessionStorage.removeItem('voices_ghost_admin');
+      return { success: false, error: err.message };
+    }
+  };
+
+  const stopImpersonation = async () => {
+    if (!isGhostMode) return;
+    
+    try {
+      sessionStorage.removeItem('voices_ghost_admin');
+      // Roep server-side stop API aan (om cookies te clearen)
+      await fetch('/api/admin/impersonate/stop', { method: 'POST' });
+      window.location.reload();
+    } catch (err) {
+      console.error('[GhostMode] Failed to stop', err);
+      window.location.reload();
+    }
   };
 
   const resetPassword = async (email: string) => {
@@ -158,6 +218,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isAuthenticated: !!user,
       isAdmin,
       isLoading,
+      isGhostMode,
+      adminUser,
+      impersonate,
+      stopImpersonation,
       logout,
       resetPassword
     }}>
@@ -178,6 +242,10 @@ export const useAuth = () => {
       isAuthenticated: false,
       isAdmin: false,
       isLoading: true,
+      isGhostMode: false,
+      adminUser: null,
+      impersonate: async () => ({ success: false, error: 'Auth not initialized' }),
+      stopImpersonation: async () => {},
       logout: async () => {},
       resetPassword: async () => ({ success: false, error: 'Auth not initialized' })
     };

@@ -1,4 +1,5 @@
 import { CodyPreviewBanner } from "@/components/admin/CodyPreviewBanner";
+import { GhostModeBar } from "@/components/admin/GhostModeBar";
 import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { SpotlightDashboard } from "@/components/ui/SpotlightDashboard";
@@ -192,6 +193,7 @@ export default async function RootLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Providers initialTranslations={translations}>
+        <GhostModeBar />
         <EditModeOverlay>
           <LiquidTransitionOverlay />
           <CodyPreviewBanner />
