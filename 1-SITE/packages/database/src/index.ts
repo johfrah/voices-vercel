@@ -18,8 +18,9 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Trusted Shared Pooler Handshake (v2.7)
+      // CHRIS-PROTOCOL: Trusted Shared Pooler Handshake (v2.8)
       // We gebruiken het officiële Supabase Root CA certificaat voor IPv4 Pooler stabiliteit.
+      // Deze versie triggert de build met de nieuwe Shared Pooler URL in Vercel.
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
 BQAwazELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5l
