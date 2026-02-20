@@ -169,10 +169,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
+  
+  //  NUCLEAR SAFETY: Als de context ontbreekt, retourneren we een veilige fallback.
+  // Dit voorkomt witte schermen tijdens complexe hydratatie-cycli in Next.js.
   if (context === undefined) {
-    //  NUCLEAR SAFETY: Retourneer een veilige fallback in plaats van een harde crash
-    // Dit voorkomt witte schermen als componenten per ongeluk buiten de provider renderen
-    // of tijdens complexe hydratatie-cycli.
     return {
       user: null,
       isAuthenticated: false,
@@ -182,5 +182,6 @@ export const useAuth = () => {
       resetPassword: async () => ({ success: false, error: 'Auth not initialized' })
     };
   }
+  
   return context;
 };
