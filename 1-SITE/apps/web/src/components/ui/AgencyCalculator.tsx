@@ -332,7 +332,7 @@ export const AgencyCalculator = ({
                       ))}
                     </div>
                     <TextInstrument className="text-[10px] text-va-black/30 leading-relaxed italic px-1">
-                      De periode waarin de opname mag worden uitgezonden. Na deze termijn kan de licentie (buyout) eenvoudig worden verlengd.
+                      De periode waarin de advertentie actief gepusht wordt (met mediabudget) op radio, TV of online. Na deze termijn kan de licentie eenvoudig worden verlengd.
                     </TextInstrument>
                   </div>
                 </div>
