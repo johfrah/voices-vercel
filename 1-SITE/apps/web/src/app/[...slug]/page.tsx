@@ -20,6 +20,8 @@ const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackgro
 const VideoPlayer = nextDynamic(() => import("@/components/academy/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
 const PricingCalculator = nextDynamic(() => import("@/components/ui/PricingCalculator").then(mod => mod.PricingCalculator), { ssr: false });
 
+const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalculator").then(mod => mod.AgencyCalculator), { ssr: false });
+
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
  */
@@ -537,7 +539,7 @@ function CmsPageContent({ page, slug }: { page: any, slug: string }) {
       case 'calculator':
         return (
           <section key={block.id} className="py-24 animate-in fade-in duration-1000 fill-mode-both">
-            <PricingCalculator   />
+            {journey === 'agency' ? <AgencyCalculator /> : <PricingCalculator />}
           </section>
         );
 
