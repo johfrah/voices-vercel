@@ -75,11 +75,13 @@ export default function AccountDashboardClient() {
 
   if (isLoading) return <LoadingScreenInstrument />;
 
-  if (!isAuthenticated) {
+  //  BOB-METHODE: Als we niet ingelogd zijn, tonen we de inlogpagina.
+  // We voegen een kleine extra check toe op user om zeker te zijn dat de sessie er is.
+  if (!isAuthenticated || !user) {
     return (
       <SectionInstrument>
         <Suspense fallback={<LoadingScreenInstrument />}>
-          <LoginPageClient strokeWidth={1.5} />
+          <LoginPageClient />
         </Suspense>
       </SectionInstrument>
     );
