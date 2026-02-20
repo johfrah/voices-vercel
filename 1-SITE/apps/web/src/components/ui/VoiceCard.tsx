@@ -414,13 +414,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
       masterControlState.filters.countries?.[0] || masterControlState.filters.country || 'BE'
     );
 
-    // 🛡️ USER-MANDATE: We don't hide the card if it's unavailable, 
-    // instead we let the Pricing Engine handle the price display (which will show 'Op aanvraag' or 0).
-    // This prevents voices from disappearing when a country is selected.
-    // if (status === 'unavailable') return null;
+    if (status === 'unavailable') return null;
 
+    const finalSubtotal = result.subtotal;
+    
     return {
-      price: SlimmeKassa.format(result.subtotal).replace('', '').trim(),
+      price: SlimmeKassa.format(finalSubtotal).replace('', '').trim(),
       status,
       mediaBreakdown: result.mediaBreakdown
     };
