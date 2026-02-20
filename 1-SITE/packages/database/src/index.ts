@@ -18,16 +18,17 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Final Transaction Mode Alignment (v2.0)
-      // Geoptimaliseerd voor poort 6543 (PgBouncer Transaction Mode)
-      // We strippen de query params omdat postgres-js ze soms dubbel interpreteert
-      const cleanConnectionString = connectionString.split('?')[0];
-      const client = postgres(cleanConnectionString, { 
+      // CHRIS-PROTOCOL: Barebone Transaction Mode (v2.1)
+      // We strippen de URL en dwingen een minimale handshake af.
+      const cleanUrl = connectionString.split('?')[0];
+      const client = postgres(cleanUrl, { 
         prepare: false, 
         max: 1,
         ssl: 'require',
-        connect_timeout: 60,
-        idle_timeout: 0,
+        connect_timeout: 30,
+        // CRITIEK: Verwijder alle sessie-ruis die PgBouncer verwart
+        onnotice: () => {},
+        transform: { undefined: null }
       });
       
       (globalThis as any).dbInstance = drizzle(client, { 
