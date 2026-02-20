@@ -137,8 +137,8 @@ export default async function StudioPage() {
         <ContainerInstrument className="max-w-[1140px]">
           <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {/* 1. UITSPRAAK */}
-            <ContainerInstrument className="p-12 rounded-[20px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
-              <ContainerInstrument className="w-16 h-16 rounded-[10px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+            <ContainerInstrument className="p-12 rounded-[20px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group flex flex-col h-full">
+              <ContainerInstrument plain className="w-16 h-16 rounded-[10px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
                 <MessageSquare strokeWidth={1.5} className="text-primary" size={32} />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 text-va-black">
@@ -150,8 +150,8 @@ export default async function StudioPage() {
             </ContainerInstrument>
 
             {/* 2. VOICE-OVER */}
-            <ContainerInstrument className="p-12 rounded-[20px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
-              <ContainerInstrument className="w-16 h-16 rounded-[10px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+            <ContainerInstrument className="p-12 rounded-[20px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group flex flex-col h-full">
+              <ContainerInstrument plain className="w-16 h-16 rounded-[10px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
                 <Mic strokeWidth={1.5} className="text-primary" size={32} />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 text-va-black">
@@ -163,8 +163,8 @@ export default async function StudioPage() {
             </ContainerInstrument>
 
             {/* 3. STORYTELLING */}
-            <ContainerInstrument className="p-12 rounded-[20px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group">
-              <ContainerInstrument className="w-16 h-16 rounded-[10px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+            <ContainerInstrument className="p-12 rounded-[20px] bg-va-off-white border border-black/[0.03] shadow-sm hover:shadow-aura transition-all duration-700 group flex flex-col h-full">
+              <ContainerInstrument plain className="w-16 h-16 rounded-[10px] bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
                 <BookOpen strokeWidth={1.5} className="text-primary" size={32} />
               </ContainerInstrument>
               <HeadingInstrument level={3} className="text-3xl font-light tracking-tight mb-6 text-va-black">

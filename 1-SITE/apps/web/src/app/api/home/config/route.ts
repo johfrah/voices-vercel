@@ -2,11 +2,13 @@ import { db } from '@db';
 import { appConfigs, languages } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
+import { voicesConfig } from '@/lib/edge-config';
 
 export const runtime = 'nodejs';
 
 export async function GET() {
   try {
+    const campaignMessage = await voicesConfig.getCampaignMessage();
     const [homeConfig] = await db.select().from(appConfigs).where(eq(appConfigs.key, 'home_journey_content')).limit(1);
     const dbLanguages = await db.select({
       id: languages.id,
@@ -17,7 +19,8 @@ export async function GET() {
 
     return NextResponse.json({
       journeyContent: homeConfig?.value || null,
-      languages: dbLanguages
+      languages: dbLanguages,
+      campaignMessage: campaignMessage || null
     });
   } catch (e) {
     console.error('Failed to fetch home config', e);

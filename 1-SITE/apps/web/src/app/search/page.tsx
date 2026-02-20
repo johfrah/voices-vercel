@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react';
  */
 export default function SearchPage() {
   const searchParams = useSearchParams();
-  const query = searchParams.get('q') || '';
+  const query = searchParams?.get('q') || '';
   const [results, setResults] = useState<any>({ voices: [], articles: [] });
   const [loading, setLoading] = useState(query.length > 0);
 

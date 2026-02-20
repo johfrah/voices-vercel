@@ -250,12 +250,12 @@ function HowItWorksContent() {
       {/* FAQ SECTION - THEMATIC SPLIT RHYTHM */}
       <SectionInstrument className="py-48 relative z-10 bg-va-black/[0.02] border-y border-black/5">
         <ContainerInstrument className="max-w-6xl mx-auto px-6">
-          <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start group">
-            <ContainerInstrument className="lg:col-span-5 sticky top-40">
-              <ContainerInstrument className="mb-12 transform group-hover:scale-110 transition-transform duration-1000 ease-va-bezier">
+          <ContainerInstrument plain className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start group">
+            <ContainerInstrument plain className="lg:col-span-5 sticky top-40">
+              <ContainerInstrument plain className="mb-12 transform group-hover:scale-110 transition-transform duration-1000 ease-va-bezier">
                 <ShieldCheck strokeWidth={1.5} size={48} className="text-primary/40" />
               </ContainerInstrument>
-              <HeadingInstrument level={2} className="text-6xl font-light tracking-tighter mb-10 text-va-black leading-none">
+              <HeadingInstrument level={2} className="text-6xl md:text-7xl font-light tracking-tighter mb-10 text-va-black leading-none">
                 <VoiceglotText translationKey="how.faq.title" defaultText="Veelgestelde vragen" />
               </HeadingInstrument>
               <TextInstrument className="text-3xl text-va-black/20 font-light leading-tight tracking-tight max-w-sm">
@@ -263,7 +263,7 @@ function HowItWorksContent() {
               </TextInstrument>
             </ContainerInstrument>
             
-            <ContainerInstrument className="lg:col-span-7 pt-4">
+            <ContainerInstrument plain className="lg:col-span-7 pt-4">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={state.journey}

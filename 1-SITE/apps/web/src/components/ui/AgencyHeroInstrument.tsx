@@ -1,8 +1,6 @@
 "use client";
 
-import React from 'react';
-import Image from 'next/image';
-import { VoiceglotText } from './VoiceglotText';
+import { ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 
 interface AgencyHeroInstrumentProps {
@@ -60,32 +58,32 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
   const subtitleKey = `agency.hero.subtitle_${state.journey}`;
 
   return (
-    <header className="va-agency-hero pb-0">
-      <div className="va-container">
-        <div className="va-hero-content mb-20 text-center max-w-4xl mx-auto space-y-8">
+    <ContainerInstrument as="header" plain className="va-agency-hero pb-0">
+      <ContainerInstrument className="va-container">
+        <ContainerInstrument plain className="va-hero-content mb-20 text-center max-w-4xl mx-auto space-y-8">
           {/* Title (SALLY-MANDATE: Airbnb Style matching Frontpage) */}
-          <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
             {title ? (
               <VoiceglotText translationKey="agency.hero.custom_title" defaultText={title} />
             ) : (
               <>
                 <VoiceglotText key={`t1-${state.journey}`} translationKey={titleKeyPart1} defaultText={activeTitle.p1} />
                 {" "}
-                <span className="text-primary italic">
+                <TextInstrument as="span" className="text-primary italic font-light">
                   <VoiceglotText key={`th-${state.journey}`} translationKey={titleKeyHighlight} defaultText={activeTitle.h} />
-                </span>
+                </TextInstrument>
                 <br />
                 <VoiceglotText key={`t2-${state.journey}`} translationKey={titleKeyPart2} defaultText={activeTitle.p2} />
               </>
             )}
-          </h1>
+          </HeadingInstrument>
           
           {/* Subtitle */}
-          <p className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
+          <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
             <VoiceglotText key={`sub-${state.journey}`} translationKey={subtitleKey} defaultText={activeSubtitle} />
-          </p>
-        </div>
-      </div>
-    </header>
+          </TextInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 };

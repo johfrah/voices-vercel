@@ -27,8 +27,8 @@ export default function SuccessPageClient() {
   const router = useRouter();
   const { playClick } = useSonicDNA();
   const { state } = useCheckout();
-  const orderId = searchParams.get('orderId');
-  const secureToken = searchParams.get('token');
+  const orderId = searchParams?.get('orderId');
+  const secureToken = searchParams?.get('token');
   const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {

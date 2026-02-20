@@ -32,7 +32,7 @@ function PricePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { playClick } = useSonicDNA();
-  const journey = searchParams.get('journey') || 'commercial';
+  const journey = searchParams?.get('journey') || 'commercial';
   
   // Map journey param naar calculator usage
   const initialUsage = journey === 'telephony' ? 'telefonie' : journey === 'video' ? 'unpaid' : 'paid';
@@ -169,15 +169,21 @@ function PricePageContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-6"
+            className="space-y-8"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/5 rounded-full text-primary text-[11px] font-bold tracking-widest uppercase">
-              <Search size={14} />
-              Tarieven per projecttype
-            </div>
-            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-extralight tracking-tighter leading-tight text-va-black">
-              Bereken je <span className="text-primary/30 italic">Projectprijs.</span>
+            <ContainerInstrument plain className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full text-primary text-[13px] font-bold tracking-[0.2em] uppercase border border-primary/10">
+              <Search size={14} strokeWidth={2} />
+              <VoiceglotText translationKey="pricing.hero.badge" defaultText="Tarieven per projecttype" />
+            </ContainerInstrument>
+            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
+              <VoiceglotText translationKey="pricing.hero.title_part1" defaultText="Bereken je " />
+              <TextInstrument as="span" className="text-primary italic font-light">
+                <VoiceglotText translationKey="pricing.hero.title_highlight" defaultText="Projectprijs." />
+              </TextInstrument>
             </HeadingInstrument>
+            <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
+              <VoiceglotText translationKey="pricing.hero.subtitle" defaultText="Transparante prijzen zonder verrassingen achteraf. Kies je projecttype en ontdek direct de investering." />
+            </TextInstrument>
           </motion.div>
         </ContainerInstrument>
       </SectionInstrument>
@@ -224,21 +230,27 @@ function PricePageContent() {
       </SectionInstrument>
 
       {/* Trust Footer */}
-      <SectionInstrument className="py-32 bg-white/50 backdrop-blur-sm border-t border-black/[0.03]">
-        <ContainerInstrument className="max-w-4xl mx-auto px-6 text-center">
-          <TextInstrument className="text-[13px] font-bold text-va-black/20 tracking-[0.2em] uppercase mb-8">Onze Belofte</TextInstrument>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <SectionInstrument className="py-48 bg-white/50 backdrop-blur-sm border-t border-black/[0.03]">
+        <ContainerInstrument className="max-w-5xl mx-auto px-6 text-center">
+          <TextInstrument className="text-[13px] font-bold text-va-black/20 tracking-[0.3em] uppercase mb-16">
+            <VoiceglotText translationKey="pricing.promise.label" defaultText="Onze Belofte" />
+          </TextInstrument>
+          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-3 gap-16">
             {[
-              { title: "Vaste Tarieven", desc: "Geen verrassingen achteraf. Wat je ziet is wat je betaalt." },
-              { title: "Inclusief Regie", desc: "Al onze boekingen zijn inclusief professionele nabewerking." },
-              { title: "Snelle Levering", desc: "Standaard binnen 48 uur geleverd, vaak sneller." }
+              { title: "Vaste Tarieven", desc: "Geen verrassingen achteraf. Wat je ziet is wat je betaalt.", key: "pricing.promise.1" },
+              { title: "Inclusief Regie", desc: "Al onze boekingen zijn inclusief professionele nabewerking.", key: "pricing.promise.2" },
+              { title: "Snelle Levering", desc: "Standaard binnen 48 uur geleverd, vaak sneller.", key: "pricing.promise.3" }
             ].map((item, i) => (
-              <div key={i} className="space-y-3">
-                <HeadingInstrument level={3} className="text-xl font-bold text-va-black">{item.title}</HeadingInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-light">{item.desc}</TextInstrument>
-              </div>
+              <ContainerInstrument key={i} plain className="space-y-4">
+                <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-va-black">
+                  <VoiceglotText translationKey={`${item.key}.title`} defaultText={item.title} />
+                </HeadingInstrument>
+                <TextInstrument className="text-[16px] text-va-black/40 font-light leading-relaxed">
+                  <VoiceglotText translationKey={`${item.key}.desc`} defaultText={item.desc} />
+                </TextInstrument>
+              </ContainerInstrument>
             ))}
-          </div>
+          </ContainerInstrument>
         </ContainerInstrument>
       </SectionInstrument>
     </PageWrapperInstrument>

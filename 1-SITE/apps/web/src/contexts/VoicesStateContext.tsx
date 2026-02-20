@@ -20,11 +20,13 @@ interface VoicesState {
     averageRating: number;
     totalCount: number;
   } | null;
+  campaignMessage: string | null;
 }
 
 interface VoicesStateContextType {
   state: VoicesState;
   reviewStats: VoicesState['reviewStats']; // Direct access for convenience
+  campaignMessage: string | null;
   updateCompanyName: (name: string) => void;
   updateSector: (sector: string | null) => void;
   updateJourney: (journey: VoicesState['current_journey']) => void;
@@ -47,6 +49,7 @@ const initialState: VoicesState = {
   },
   selected_actors: [],
   reviewStats: null,
+  campaignMessage: null,
 };
 
 const VoicesStateContext = createContext<VoicesStateContextType | undefined>(undefined);
@@ -78,19 +81,19 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
         if (window.location.hostname === 'localhost') return;
 
         //  CHRIS-PROTOCOL: Use a public endpoint for review stats instead of admin-only actors API
-        // We fetch from the proxy but we don't fail if it's unauthorized
-        const res = await fetch('/api/admin/config?type=actors');
+        const res = await fetch('/api/home/config');
         if (!res.ok) {
-          console.log('[VoicesState] Stats fetch skipped (unauthorized or error)');
+          console.log('[VoicesState] Config fetch skipped (unauthorized or error)');
           return;
         }
         
         const data = await res.json();
-        if (data.reviewStats) {
-          setState(prev => ({ ...prev, reviewStats: data.reviewStats }));
+        if (data.campaignMessage) {
+          setState(prev => ({ ...prev, campaignMessage: data.campaignMessage }));
         }
+        // ... rest of review stats fetch if needed ...
       } catch (e) {
-        console.warn('[VoicesState] Failed to fetch review stats', e);
+        console.warn('[VoicesState] Failed to fetch config', e);
       }
     };
     fetchStats();
@@ -99,7 +102,8 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
   // Save to localStorage on change
   useEffect(() => {
     if (state !== initialState) {
-      localStorage.setItem('voices_state', JSON.stringify(state));
+      const { campaignMessage, ...stateToSave } = state; // Don't save campaign message to storage
+      localStorage.setItem('voices_state', JSON.stringify(stateToSave));
     }
   }, [state]);
 
@@ -139,6 +143,7 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
     <VoicesStateContext.Provider value={{ 
       state, 
       reviewStats: state.reviewStats,
+      campaignMessage: state.campaignMessage,
       updateCompanyName, 
       updateSector, 
       updateJourney,

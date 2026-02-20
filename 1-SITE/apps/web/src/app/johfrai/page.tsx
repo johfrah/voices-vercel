@@ -268,9 +268,9 @@ function JohfraiContent() {
 
   //  SHARE LINK LOGIC: Load from URL
   useEffect(() => {
-    const sharedText = searchParams.get('s');
-    const sharedCompany = searchParams.get('c');
-    const sharedMusic = searchParams.get('m');
+    const sharedText = searchParams?.get('s');
+    const sharedCompany = searchParams?.get('c');
+    const sharedMusic = searchParams?.get('m');
     
     if (sharedText) {
       try {
@@ -288,7 +288,7 @@ function JohfraiContent() {
 
   //  PERSISTENCE
   useEffect(() => {
-    if (!searchParams.get('s')) {
+    if (!searchParams?.get('s')) {
       const savedText = localStorage.getItem('johfrai_draft_text');
       const savedCompany = localStorage.getItem('johfrai_draft_company');
       const savedEmail = localStorage.getItem('johfrai_draft_email');

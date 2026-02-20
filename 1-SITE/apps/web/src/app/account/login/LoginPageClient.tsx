@@ -28,13 +28,13 @@ export function LoginPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
-  const redirect = searchParams.get('redirect') || '/account';
+  const redirect = searchParams?.get('redirect') || '/account';
 
   const supabaseUnavailable = !supabase;
 
   //  HANDLE CALLBACK ERRORS
   useEffect(() => {
-    const errorParam = searchParams.get('error');
+    const errorParam = searchParams?.get('error');
     if (errorParam === 'auth-callback-failed') {
       setError('Het inloggen via de link is mislukt. De link is mogelijk verlopen of al gebruikt. Vraag een nieuwe link aan.');
     }
@@ -55,7 +55,7 @@ export function LoginPageClient() {
   //  MAGIC LOGIN
   useEffect(() => {
     if (supabaseUnavailable) return;
-    const magic = searchParams.get('magic');
+    const magic = searchParams?.get('magic');
     if (magic === 'johfrah') {
       const loginMagic = async () => {
         setIsLoading(true);

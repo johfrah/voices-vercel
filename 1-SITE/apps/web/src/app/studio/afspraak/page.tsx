@@ -19,8 +19,8 @@ export const dynamic = 'force-dynamic';
 
 function AfspraakContent() {
   const searchParams = useSearchParams();
-  const isCancel = searchParams.get('cancel') === '1';
-  const manageToken = searchParams.get('manage');
+  const isCancel = searchParams?.get('cancel') === '1';
+  const manageToken = searchParams?.get('manage');
   const [isCancelled, setIsCancelled] = React.useState(false);
   const [loading, setLoading] = React.useState(isCancel);
   const [selectedSlot, setSelectedSlot] = React.useState<any>(null);
