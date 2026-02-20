@@ -3,7 +3,6 @@ import { actors, appConfigs } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import fs from 'fs/promises';
 import path from 'path';
-import { seedFutureproofConfig } from './sync/config-seeder';
 
 /**
  *  NUCLEAR MASTER SYNC (2026)
@@ -83,9 +82,6 @@ export async function runMasterSync() {
             stats.actorsProcessed++;
             stats.activated++;
         }
-
-        // 4. FUTUREPROOF CONFIG SEEDING
-        await seedFutureproofConfig();
 
         // 5. SYSTEM CONFIG UPDATE
         await db.insert(appConfigs).values({
