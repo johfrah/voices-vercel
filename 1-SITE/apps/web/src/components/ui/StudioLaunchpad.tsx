@@ -6,7 +6,6 @@ import {
     HeadingInstrument,
     InputInstrument,
     LabelInstrument,
-    PageWrapperInstrument,
     SectionInstrument,
     TextInstrument
 } from '@/components/ui/LayoutInstruments';
@@ -19,367 +18,376 @@ import {
     LucideCheckCircle,
     LucideFileText,
     LucideMic,
-    LucideTrash2,
     LucideUpload,
-    LucideX
+    LucideX,
+    Loader2,
+    ArrowRight,
+    Globe,
+    Radio,
+    Tv,
+    Mic2,
+    Building2,
+    Phone,
+    Video,
+    Megaphone,
+    Sparkles,
+    CheckCircle2,
+    Minus,
+    Plus
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useRef, useState, useEffect } from 'react';
 
 import { VoiceCard } from '@/components/ui/VoiceCard';
+import { LiquidBackground } from '@/components/ui/LiquidBackground';
+import { CommercialMediaType, SlimmeKassa } from '@/lib/pricing-engine';
 
 interface StudioLaunchpadProps {
   initialActors?: any[];
 }
 
+/**
+ * STUDIO LAUNCHPAD (2026)
+ * Voldoet aan het Voices Configurator Pattern.
+ * Gebruikt de "Slimme Zwevende Kassa" logica voor projectinformatie.
+ */
 export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) => {
-  const { state, toggleActorSelection, clearSelectedActors } = useVoicesState();
+  const { state, toggleActorSelection, removeActor } = useVoicesState();
   const selectedActors = state.selected_actors;
+  const [currentStep, setCurrentStep] = useState(1);
   const [script, setScript] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
-  const [files, setFiles] = useState<File[]>([]);
-  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
-  const [isExtracting, setIsExtracting] = useState(false);
-  const [videoUrl, setVideoUrl] = useState('');
-  const [isMatching, setIsMatching] = useState(false);
-  const [matchResults, setMatchResults] = useState<Record<number, number>>({});
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [projectName, setProjectName] = useState('');
+  const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">("paid");
+  const [selectedMedia, setSelectedMedia] = useState<CommercialMediaType[]>(['online']);
+  const [spotsDetail, setSpotsDetail] = useState<Record<string, number>>({});
+  const [yearsDetail, setYearsDetail] = useState<Record<string, number>>({});
+  const [pricingConfig, setPricingConfig] = useState<any>(null);
+  const [calcWords, setCalcWords] = useState(200);
+  
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const res = await fetch('/api/pricing/config');
+        const data = await res.json();
+        setPricingConfig(data);
+        setCalcWords(calcUsage === 'telefonie' ? (data.telephonyWordThreshold || 25) : (data.videoWordThreshold || 200));
+      } catch (err) {
+        console.error('Failed to fetch pricing config', err);
+      }
+    };
+    fetchConfig();
+  }, []);
 
-  const handleScriptAnalysis = async (text: string) => {
-    if (text.length < 20) return;
-    
-    setIsMatching(true);
+  // Sync selectedMedia with calcUsage
+  useEffect(() => {
+    if (calcUsage === 'telefonie') {
+      setSelectedMedia(['telephony' as any]);
+      if (pricingConfig) setCalcWords(pricingConfig.telephonyWordThreshold || 25);
+    } else if (calcUsage === 'unpaid') {
+      setSelectedMedia(['online']);
+      if (pricingConfig) setCalcWords(pricingConfig.videoWordThreshold || 200);
+    }
+  }, [calcUsage, pricingConfig]);
+
+  const steps = [
+    { id: 1, title: 'Project', key: 'step.access', description: 'Wat gaan we maken?' },
+    { id: 2, title: 'Selectie', key: 'step.voices', description: 'Kies je stemmen' },
+    { id: 3, title: 'Briefing', key: 'step.briefing', description: 'Script & vibe' },
+  ];
+
+  const handleNext = () => {
+    if (currentStep === 1 && (!clientEmail || !projectName)) return;
+    if (currentStep === 2 && selectedActors.length === 0) return;
+    setCurrentStep(prev => Math.min(prev + 1, 3));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBack = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleLaunch = async () => {
+    setIsLaunching(true);
     try {
-      // Sherlock: We sturen het script naar onze onzichtbare matchmaker
-      const res = await fetch('/api/studio/audit', { // We hergebruiken de audit route voor analyse
+      const response = await fetch('/api/casting/submit', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          text, 
-          mode: 'matchmaker',
-          actors: initialActors.map(a => ({ id: a.id, tags: a.ai_tags }))
+          projectName, 
+          clientName, 
+          clientCompany, 
+          clientEmail, 
+          selectedMedia, 
+          spots: spotsDetail,
+          years: yearsDetail,
+          words: calcWords,
+          deadline, 
+          script, 
+          selectedActors: selectedActors.map(actor => ({ ...actor, note: actorNotes[actor.id] || '' })), 
+          selectedVibe 
         })
       });
-      const data = await res.json();
-      if (data.matches) {
-        setMatchResults(data.matches);
+      const data = await response.json();
+      if (data.success) {
+        localStorage.removeItem('voices_proefopname_draft');
+        router.push(`/casting/session/${data.sessionHash}`);
+      } else {
+        throw new Error(data.error || 'Fout bij het indienen');
       }
-    } catch (error) {
-      console.error('[Sherlock] Matching failed:', error);
+    } catch (err) {
+      console.error('Launch error:', err);
+      alert('Er is iets misgegaan bij het aanvragen. Probeer het later opnieuw.');
+      setIsLaunching(false);
+    }
+  };
+
+  const handleFileDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    setIsMatching(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await fetch('/api/audio/extract-text', { method: 'POST', body: formData });
+      const data = await response.json();
+      if (data.success && data.script) setScript(data.script);
+    } catch (err) {
+      console.error('Drop extraction failed:', err);
     } finally {
       setIsMatching(false);
     }
   };
 
-  const removeActor = (actor: any) => {
-    toggleActorSelection(actor);
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      setFiles(prev => [...prev, ...newFiles]);
-
-      // Sherlock: Check voor video bestanden om direct een preview te tonen
-      const videoFile = newFiles.find(file => file.type.startsWith('video/'));
-      if (videoFile) {
-        const url = URL.createObjectURL(videoFile);
-        setVideoPreviewUrl(url);
-      }
-    }
-  };
-
-  const removeFile = (index: number) => {
-    const fileToRemove = files[index];
-    if (videoPreviewUrl && fileToRemove.type.startsWith('video/')) {
-      URL.revokeObjectURL(videoPreviewUrl);
-      setVideoPreviewUrl(null);
-    }
-    setFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleYoutubeExtract = async (url: string) => {
-    if (!url.includes('youtube.com') && !url.includes('youtu.be')) return;
-    
-    setIsExtracting(true);
-    try {
-      const response = await fetch(`/api/video/extract?url=${encodeURIComponent(url)}`);
-      const data = await response.json();
-      if (data.streamUrl) {
-        setVideoPreviewUrl(data.streamUrl);
-      }
-    } catch (error) {
-      console.error('[Sherlock] YouTube extraction failed:', error);
-    } finally {
-      setIsExtracting(false);
-    }
-  };
-
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
-  };
+  const mediaOptions = [
+    { id: 'online', label: 'Online & Socials', sub: 'YouTube, Meta, LinkedIn', icon: Globe },
+    { id: 'podcast', label: 'Podcast', sub: 'Pre-roll, Mid-roll', icon: Mic2 },
+    { id: 'radio_national', label: 'Radio', sub: 'Landelijke Radio', icon: Radio },
+    { id: 'tv_national', label: 'TV', sub: 'Landelijke TV', icon: Tv }
+  ];
 
   return (
-    <PageWrapperInstrument className="bg-va-off-white min-h-screen pb-32">
-      <SectionInstrument className="py-8 md:py-12">
-        <ContainerInstrument className="max-w-6xl mx-auto px-4">
-          {/* Header & Selection Strip */}
-          <ContainerInstrument className="mb-12 space-y-8">
-            <ContainerInstrument className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <ContainerInstrument className="space-y-2">
-                <Link  
-                  href="/search" 
-                  className="inline-flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[15px] font-light group"
-                >
-                  <LucideArrowLeft strokeWidth={1.5} size={16} className="group-hover:-translate-x-1 transition-transform" />
-                  <TextInstrument as="span"><VoiceglotText  translationKey="auto.studiolaunchpad.meer_stemmen_toevoeg.27de65" defaultText="Meer stemmen toevoegen" /></TextInstrument>
-                </Link>
-                <HeadingInstrument level={1} className="text-4xl md:text-5xl font-light tracking-tight">
-                  <VoiceglotText  translationKey="auto.studiolaunchpad.jouw_proefopname.e1fa5b" defaultText="Jouw proefopname" />
-                </HeadingInstrument>
-                <ContainerInstrument className="flex items-center gap-2 text-va-black/40 bg-va-black/5 px-4 py-2 rounded-full w-fit">
-                  <Image  
-                    src="/assets/common/branding/icons/INFO.svg" 
-                    alt="Info" 
-                    width={14} 
-                    height={14} 
-                    style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                  />
-                  <TextInstrument className="text-[15px] font-light tracking-tight"><VoiceglotText  translationKey="auto.studiolaunchpad.commercials___video.38a0aa" defaultText="Commercials & video" /></TextInstrument>
-                </ContainerInstrument>
-              </ContainerInstrument>
-              {selectedActors.length > 0 && (
-                <button 
-                  onClick={clearSelectedActors}
-                  className="text-va-black/20 hover:text-red-500 transition-colors text-[15px] font-light flex items-center gap-2"
-                >
-                  <LucideTrash2 strokeWidth={1.5} size={16} />
-                  <TextInstrument as="span"><VoiceglotText  translationKey="auto.studiolaunchpad.selectie_wissen.8a5df3" defaultText="Selectie wissen" /></TextInstrument>
-                </button>
-              )}
-            </ContainerInstrument>
+    <SectionInstrument className="bg-va-off-white min-h-screen pb-32 overflow-hidden">
+      <LiquidBackground strokeWidth={1.5} />
+      <ContainerInstrument className="pt-40 pb-12 relative z-10 max-w-5xl mx-auto px-6 text-center">
+        <header className="max-w-4xl mx-auto">
+          <HeadingInstrument level={1} className="text-[8vw] lg:text-[80px] font-extralight tracking-tighter mb-8 leading-[0.85] text-va-black">
+            <VoiceglotText translationKey="launchpad.title" defaultText="Gratis Proefopname" />
+          </HeadingInstrument>
+          <div className="h-[60px] flex items-center justify-center overflow-hidden">
+            <TextInstrument className="text-xl lg:text-2xl text-va-black/40 font-light tracking-tight max-w-2xl mx-auto leading-tight">
+              <VoiceglotText translationKey={`launchpad.subtitle.step${currentStep}`} defaultText={currentStep === 1 ? "Wat gaan we maken? Kies je projecttype en details." : currentStep === 2 ? "Bevestig je selectie van stemacteurs voor je proefopname." : "Geef je script en instructies door voor de proefopname."} />
+            </TextInstrument>
+          </div>
+          <ContainerInstrument className="w-16 h-1 bg-primary/20 rounded-full mx-auto mt-6" />
+        </header>
+      </ContainerInstrument>
 
-            {/* Horizontal Selection Strip OR Quick Selection Grid */}
-            {selectedActors.length > 0 ? (
-              <ContainerInstrument className="flex gap-4 overflow-x-auto no-scrollbar py-2">
-                <AnimatePresence  mode="popLayout">
-                  {selectedActors.map((actor) => (
-                    <motion.div
-                      key={actor.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="flex-shrink-0 bg-white rounded-[25px] p-3 pr-5 shadow-aura border border-va-off-white flex items-center gap-4 group relative"
-                    >
-                      <ContainerInstrument className="relative w-12 h-12 rounded-[15px] overflow-hidden bg-va-off-white">
-                        {actor.photoUrl ? (
-                          <Image  src={actor.photoUrl} alt={actor.firstName} fill className="object-cover" />
-                        ) : (
-                          <ContainerInstrument className="w-full h-full flex items-center justify-center font-light text-va-black/20 text-lg">
-                            {actor.firstName[0]}
-                          </ContainerInstrument>
-                        )}
-                      </ContainerInstrument>
-                      <TextInstrument className="font-light text-va-black whitespace-nowrap">
-                        {actor.firstName}
-                      </TextInstrument>
-                      <button 
-                        onClick={() => removeActor(actor)}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-va-off-white text-va-black/20 hover:bg-red-50 hover:text-red-500 rounded-full flex items-center justify-center shadow-sm border border-va-black/5 opacity-0 group-hover:opacity-100 transition-all"
-                      >
-                        <LucideX strokeWidth={1.5} size={12} />
-                      </button>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </ContainerInstrument>
-            ) : (
-              <ContainerInstrument className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <ContainerInstrument className="p-8 bg-white/50 backdrop-blur-sm rounded-[30px] border border-va-black/5">
-                  <ContainerInstrument className="flex items-center gap-3 mb-8">
-                    <ContainerInstrument className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                      <Image  
-                        src="/assets/common/branding/icons/MIC.svg" 
-                        alt="Mic" 
-                        width={20} 
-                        height={20} 
-                        style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                      />
-                    </ContainerInstrument>
-                    <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40 "><VoiceglotText  translationKey="auto.studiolaunchpad.selecteer_stemmen_vo.7278c6" defaultText="Selecteer stemmen voor jouw briefing" /></TextInstrument>
-                  </ContainerInstrument>
-                  <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {initialActors
-                      .sort((a, b) => (matchResults[b.id] || 0) - (matchResults[a.id] || 0))
-                      .slice(0, 6)
-                      .map((actor) => (
-                        <ContainerInstrument key={actor.id} className="relative">
-                          <VoiceCard voice={actor} />
-                          {matchResults[actor.id] > 80 && (
-                            <motion.div 
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              className="absolute -top-2 -left-2 bg-primary text-white text-[15px] font-bold px-2 py-1 rounded-full shadow-lg z-30 tracking-widest "
-                            ><VoiceglotText translationKey="auto.studiolaunchpad.match.6da892" defaultText="Match" /></motion.div>
+      <ContainerInstrument className="relative z-20 max-w-6xl mx-auto px-6 mb-12">
+        <ContainerInstrument plain className="bg-white/50 border border-black/5 p-2 rounded-[32px] shadow-aura flex items-center gap-2 max-w-xl mx-auto">
+          {steps.map((step) => {
+            const isActive = currentStep === step.id;
+            const isCompleted = currentStep > step.id;
+            return (
+              <button key={step.id} onClick={() => { if (isCompleted || (isActive && currentStep > 1)) setCurrentStep(step.id); }} disabled={!isCompleted && !isActive} className={cn("flex-1 flex items-center justify-start gap-4 px-6 py-4 rounded-[28px] transition-all duration-500 relative overflow-hidden text-left group", isActive ? "text-white cursor-default" : isCompleted ? "text-primary hover:bg-primary/5" : "text-va-black/20 cursor-not-allowed")}>
+                {isActive && <motion.div layoutId="activeStep" className="absolute inset-0 bg-va-black shadow-xl" style={{ borderRadius: 28 }} transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />}
+                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center border-2 shrink-0 transition-colors relative z-10", isActive ? "border-primary bg-primary/10" : isCompleted ? "border-primary/20 bg-primary/5" : "border-black/5 bg-black/5")}>
+                  {isCompleted ? <LucideCheckCircle size={14} strokeWidth={3} /> : <span className="text-[13px] font-bold tracking-tighter">0{step.id}</span>}
+                </div>
+                <div className="flex flex-col relative z-10 min-w-0">
+                  <span className={cn("text-[12px] font-bold tracking-widest leading-none mb-1 uppercase truncate", isActive ? "text-white" : isCompleted ? "text-va-black" : "text-va-black/20")}>
+                    <VoiceglotText translationKey={step.key} defaultText={step.title} />
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </ContainerInstrument>
+      </ContainerInstrument>
+
+      <SectionInstrument className="py-4 relative z-10 max-w-5xl mx-auto px-6">
+        <AnimatePresence mode="wait">
+          <motion.div key={currentStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}>
+            {currentStep === 1 && (
+              <div className="space-y-8">
+                <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura space-y-12">
+                  
+                  {/* 1. Journey Selector (Pill Mandaat) */}
+                  <div className="flex justify-center">
+                    <div className="flex p-1 bg-va-off-white rounded-2xl border border-black/5 shadow-inner">
+                      {[
+                        { id: 'telefonie', label: 'Telefoon', icon: Phone },
+                        { id: 'unpaid', label: 'Video', icon: Video },
+                        { id: 'paid', label: 'Advertentie', icon: Megaphone }
+                      ].map((u) => (
+                        <button 
+                          key={u.id}
+                          onClick={() => {
+                            setCalcUsage(u.id as any);
+                            setCalcWords(u.id === 'telefonie' ? 25 : 200);
+                          }}
+                          className={cn(
+                            "px-8 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center gap-2",
+                            calcUsage === u.id ? "bg-va-black text-white shadow-lg" : "text-va-black/30 hover:text-va-black"
                           )}
-                        </ContainerInstrument>
+                        >
+                          <u.icon size={14} className={calcUsage === u.id ? "text-primary" : ""} />
+                          <span>{u.label}</span>
+                        </button>
                       ))}
-                  </ContainerInstrument>
-                  <ContainerInstrument className="mt-8 text-center">
-                    <Link  
-                      href="/search" 
-                      className="text-[15px] font-light text-primary hover:underline tracking-widest "
-                    ><VoiceglotText  translationKey="auto.studiolaunchpad.bekijk_alle_stemmen.517883" defaultText="Bekijk alle stemmen" /></Link>
-                  </ContainerInstrument>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div className="space-y-8">
+                      <div className="space-y-3">
+                        <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Projectnaam</LabelInstrument>
+                        <InputInstrument value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="Bijv. Zomer Campagne 2026" className="w-full h-14 bg-va-off-white/50" />
+                      </div>
+                      <div className="space-y-3">
+                        <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">E-mailadres</LabelInstrument>
+                        <InputInstrument type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="naam@bedrijf.be" className="w-full h-14 bg-va-off-white/50" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-8">
+                      {calcUsage === 'paid' ? (
+                        /* 2. Media Detail Kaarten Mandaat (Vertical Stack) */
+                        <div className="space-y-4">
+                          <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Selecteer Kanalen</LabelInstrument>
+                          <div className="space-y-3">
+                            {mediaOptions.map((m) => {
+                              const isActive = selectedMedia.includes(m.id as any);
+                              return (
+                                <div key={m.id} className={cn(
+                                  "p-4 rounded-2xl border-2 transition-all duration-500 bg-white",
+                                  isActive ? "border-primary/20 shadow-aura-sm" : "border-black/5 opacity-60"
+                                )}>
+                                  <button
+                                    onClick={() => setSelectedMedia(prev => prev.includes(m.id as any) ? (prev.length > 1 ? prev.filter(i => i !== m.id) : prev) : [...prev, m.id as any])}
+                                    className="w-full flex items-center justify-between mb-3"
+                                  >
+                                    <div className="flex items-center gap-4">
+                                      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isActive ? "bg-primary text-white" : "bg-va-off-white text-va-black/20")}>
+                                        <m.icon size={20} />
+                                      </div>
+                                      <div className="text-left">
+                                        <div className="text-[14px] font-bold text-va-black">{m.label}</div>
+                                        <div className="text-[11px] text-va-black/30 font-light">{m.sub}</div>
+                                      </div>
+                                    </div>
+                                    <div className={cn("w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all", isActive ? "bg-primary border-primary text-white" : "border-black/10")}>
+                                      {isActive && <CheckCircle2 size={14} />}
+                                    </div>
+                                  </button>
+                                  
+                                  {isActive && (
+                                    <div className="grid grid-cols-2 gap-4 pt-3 border-t border-black/5">
+                                      <div className="space-y-2">
+                                        <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Spots</label>
+                                        <div className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
+                                          <button onClick={() => setSpotsDetail(prev => ({ ...prev, [m.id]: Math.max(1, (prev[m.id] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></button>
+                                          <span className="text-[12px] font-bold text-primary">{spotsDetail[m.id] || 1}</span>
+                                          <button onClick={() => setSpotsDetail(prev => ({ ...prev, [m.id]: (prev[m.id] || 1) + 1 }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Plus size={12} /></button>
+                                        </div>
+                                      </div>
+                                      <div className="space-y-2">
+                                        <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Looptijd</label>
+                                        <div className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
+                                          <button onClick={() => setYearsDetail(prev => ({ ...prev, [m.id]: Math.max(1, (prev[m.id] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></button>
+                                          <span className="text-[12px] font-bold text-primary">{yearsDetail[m.id] || 1}j</span>
+                                          <button onClick={() => setYearsDetail(prev => ({ ...prev, [m.id]: (prev[m.id] || 1) + 1 }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Plus size={12} /></button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : (
+                        /* 3. Slider Mandaat */
+                        <div className="space-y-6">
+                          <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Hoeveelheid woorden</LabelInstrument>
+                          <div className="bg-white rounded-[24px] p-8 border border-black/5 shadow-aura space-y-8">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[13px] font-medium text-va-black/40">Volume</span>
+                              <span className="text-xl font-bold text-primary">{calcWords} woorden</span>
+                            </div>
+                            <input 
+                              type="range" 
+                              min={calcUsage === 'telefonie' ? (pricingConfig?.telephonyWordThreshold || 25) : (pricingConfig?.videoWordThreshold || 200)} 
+                              max={2000} 
+                              value={calcWords} 
+                              onChange={(e) => setCalcWords(parseInt(e.target.value))} 
+                              className="w-full h-1.5 bg-black/5 rounded-lg appearance-none cursor-pointer accent-primary" 
+                            />
+                            <div className="flex items-center gap-4 bg-va-off-white rounded-2xl p-1.5 border border-black/5 max-w-xs mx-auto">
+                              <button onClick={() => setCalcWords(Math.max(calcUsage === 'telefonie' ? (pricingConfig?.telephonyWordThreshold || 25) : (pricingConfig?.videoWordThreshold || 200), calcWords - 25))} className="w-10 h-10 rounded-xl bg-white flex items-center justify-center hover:bg-primary hover:text-white transition-all text-va-black/40 shadow-sm">-</button>
+                              <div className="flex-1 text-center font-bold text-primary">{calcWords}</div>
+                              <button onClick={() => setCalcWords(calcWords + 25)} className="w-10 h-10 rounded-xl bg-white flex items-center justify-center hover:bg-primary hover:text-white transition-all text-va-black/40 shadow-sm">+</button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-8 border-t border-black/5">
+                    <ButtonInstrument variant="primary" onClick={handleNext} disabled={!clientEmail || !projectName} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3">
+                      Volgende stap <ArrowRight size={20} />
+                    </ButtonInstrument>
+                  </div>
                 </ContainerInstrument>
+              </div>
+            )}
+
+            {currentStep === 2 && (
+              <ContainerInstrument className="max-w-6xl mx-auto">
+                <div className="flex flex-col gap-8">
+                  <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
+                    <div className="flex items-center justify-between mb-12"><HeadingInstrument level={3} className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step2.title" defaultText="Jouw selectie" /></HeadingInstrument><Link href="/agency" className="text-primary text-[15px] font-light hover:underline tracking-widest uppercase"><VoiceglotText translationKey="launchpad.add_more" defaultText="+ Voeg meer toe" /></Link></div>
+                    {selectedActors.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">{selectedActors.map((actor) => (<div key={actor.id} className="relative group flex flex-col gap-3"><div className="relative"><VoiceCard voice={actor} hideButton compact hidePrice /><button onClick={() => removeActor(actor)} className="absolute -top-3 -right-3 w-8 h-8 bg-white text-va-black/20 hover:text-red-500 rounded-full flex items-center justify-center shadow-lg border border-va-black/5 transition-all z-50"><LucideX strokeWidth={1.5} size={16} /></button></div></div>))}</div>
+                    ) : (
+                      <div className="py-20 text-center space-y-6"><Link href="/agency" className="inline-block bg-va-black text-white px-8 py-4 rounded-[10px] font-medium tracking-widest uppercase hover:scale-105 transition-all">Bekijk stemmen</Link></div>
+                    )}
+                    <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
+                      <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} />Vorige</ButtonInstrument>
+                      <ButtonInstrument variant="primary" onClick={handleNext} disabled={selectedActors.length === 0} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3">Volgende stap <ArrowRight size={20} /></ButtonInstrument>
+                    </div>
+                  </ContainerInstrument>
+                </div>
               </ContainerInstrument>
             )}
-          </ContainerInstrument>
 
-          {/* Consolidatie: De Briefing Bridge is nu hier gentegreerd */}
-          <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Linker kolom: Script & Bestanden */}
-            <ContainerInstrument className="lg:col-span-8 space-y-8">
-              <ContainerInstrument className="bg-white rounded-[30px] p-6 md:p-10 shadow-aura border border-va-off-white">
-                <ContainerInstrument className="flex items-center justify-between mb-6">
-                  <LabelInstrument className="text-va-black font-light text-lg ml-0"><VoiceglotText  translationKey="auto.studiolaunchpad.het_script.5ccfdb" defaultText="Het Script" /></LabelInstrument>
-                  <button 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center gap-2 text-primary text-[15px] font-light hover:opacity-80 transition-opacity tracking-widest"
-                  >
-                    <LucideUpload size={16} strokeWidth={1.5} />
-                    <TextInstrument className="hidden sm:inline font-light"><VoiceglotText  translationKey="auto.studiolaunchpad.zet_om_naar_tekst.11d18c" defaultText="Zet om naar tekst" /></TextInstrument>
-                    <TextInstrument className="sm:hidden font-light"><VoiceglotText  translationKey="auto.studiolaunchpad.upload.914124" defaultText="Upload" /></TextInstrument>
-                  </button>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    className="hidden" 
-                    onChange={handleFileUpload}
-                    accept=".pdf,.doc,.docx,.txt"
-                  />
-                </ContainerInstrument>
-
-                <textarea
-                  value={script}
-                  onChange={(e) => {
-                    setScript(e.target.value);
-                    // Sherlock: Debounced analyse van het script voor onzichtbare matching
-                    const timer = setTimeout(() => handleScriptAnalysis(e.target.value), 2000);
-                    return () => clearTimeout(timer);
-                  }}
-                  placeholder="Plak hier je tekst of sleep een bestand..."
-                  className="w-full h-80 bg-va-off-white rounded-[20px] p-6 md:p-8 text-[16px] md:text-lg font-light leading-relaxed border-none focus:ring-2 focus:ring-primary/10 transition-all resize-none"
-                  spellCheck={false}
-                />
-
-                {files.length > 0 && (
-                  <ContainerInstrument className="mt-6 space-y-2">
-                    {files.map((file, i) => (
-                      <ContainerInstrument key={i} className="flex items-center justify-between bg-va-off-white/50 rounded-[12px] px-4 py-3">
-                        <ContainerInstrument className="flex items-center gap-3">
-                          <LucideFileText strokeWidth={1.5} size={18} className="text-va-black/40" />
-                          <TextInstrument className="text-[15px] font-medium text-va-black/70">{file.name}</TextInstrument>
-                        </ContainerInstrument>
-                        <button onClick={() => removeFile(i)} className="text-va-black/20 hover:text-red-500 transition-colors">
-                          <Image  
-                            src="/assets/common/branding/icons/TRASH.svg" 
-                            alt="Verwijder" 
-                            width={18} 
-                            height={18} 
-                            style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                          />
-                        </button>
-                      </ContainerInstrument>
-                    ))}
+            {currentStep === 3 && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-8 space-y-8">
+                  <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
+                    <div className="flex items-center justify-between mb-8"><HeadingInstrument level={3} className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step3.title" defaultText="Het Script" /></HeadingInstrument><button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 text-primary text-[15px] font-light hover:opacity-80 transition-opacity tracking-widest uppercase">{isMatching ? <Loader2 size={16} className="animate-spin" /> : <LucideUpload size={16} strokeWidth={1.5} />}<VoiceglotText translationKey="launchpad.upload" defaultText={isMatching ? "Bezig..." : "Upload bestand"} /></button><input type="file" ref={fileInputRef} className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) console.log('File uploaded:', file.name); }} accept=".pdf,.doc,.docx,.txt" /></div>
+                    <div className={cn("relative min-h-[320px] rounded-[20px] transition-all duration-500 overflow-hidden", isDragging ? "bg-primary/5 ring-2 ring-primary ring-inset scale-[0.99]" : "bg-va-off-white")} onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleFileDrop}>
+                      <textarea value={script} onChange={(e) => setScript(e.target.value)} placeholder="Plak hier je tekst of sleep een bestand..." className="w-full h-80 bg-transparent rounded-[20px] p-8 text-lg font-light leading-relaxed border-none focus:ring-2 focus:ring-primary/10 transition-all resize-none relative z-10" spellCheck={false} />
+                    </div>
+                    <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
+                      <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} />Vorige</ButtonInstrument>
+                      <ButtonInstrument variant="primary" onClick={handleLaunch} disabled={isLaunching || !script} className="va-btn-pro !bg-primary !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-xl shadow-primary/20">
+                        {isLaunching ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
+                        Ontvang gratis proefopnames
+                      </ButtonInstrument>
+                    </div>
                   </ContainerInstrument>
-                )}
-              </ContainerInstrument>
-
-              <ContainerInstrument className="bg-white rounded-[30px] p-6 md:p-10 shadow-aura border border-va-off-white">
-                <LabelInstrument className="text-va-black font-light text-lg ml-0 mb-8"><VoiceglotText  translationKey="auto.studiolaunchpad.referentie___vibe.067244" defaultText="Referentie & Vibe" /></LabelInstrument>
-                <ContainerInstrument className="space-y-8">
-                  <ContainerInstrument className="space-y-3">
-                    <LabelInstrument className="text-[15px] font-light tracking-widest ml-0 opacity-40"><VoiceglotText  translationKey="auto.studiolaunchpad.youtube_of_vimeo_lin.1c2443" defaultText="YouTube of Vimeo link (optioneel)" /></LabelInstrument>
-                    <ContainerInstrument className="relative">
-                      <ContainerInstrument className="absolute left-5 top-1/2 -translate-y-1/2">
-                        <Image  
-                          src="/assets/common/branding/icons/FORWARD.svg" 
-                          alt="Link" 
-                          width={20} 
-                          height={20} 
-                          className="opacity-20"
-                          style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                        />
-                      </ContainerInstrument>
-                      <InputInstrument 
-                        placeholder="https://..." 
-                        className="pl-14 w-full h-14 bg-va-off-white font-light"
-                      />
-                    </ContainerInstrument>
-                  </ContainerInstrument>
-                  
-                  <ContainerInstrument className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {['Zakelijk', 'Warm', 'Energiek', 'Vertrouwd'].map((vibe) => (
-                      <button 
-                        key={vibe}
-                        className="h-14 rounded-[18px] bg-va-off-white text-[15px] font-light hover:bg-primary/5 hover:text-primary transition-all border border-transparent hover:border-primary/20"
-                      >
-                        {vibe}
-                      </button>
-                    ))}
-                  </ContainerInstrument>
-                </ContainerInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
-
-            {/* Rechter kolom: Uitspraak & Launch */}
-            <ContainerInstrument className="lg:col-span-4 space-y-8">
-              <ContainerInstrument className="bg-va-black text-white rounded-[30px] p-8 shadow-aura-lg sticky top-32">
-                <ContainerInstrument className="flex items-center gap-3 mb-6">
-                  <ContainerInstrument className="bg-primary/20 p-2 rounded-full">
-                    <LucideMic strokeWidth={1.5} size={20} className="text-primary" />
-                  </ContainerInstrument>
-                  <HeadingInstrument level={3} className="text-xl font-light"><VoiceglotText  translationKey="auto.studiolaunchpad.uitspraak___vibe.4b4fd6" defaultText="Uitspraak & Vibe" /></HeadingInstrument>
-                </ContainerInstrument>
-                
-                <TextInstrument className="text-white/60 text-[15px] mb-8 leading-relaxed font-light"><VoiceglotText  translationKey="auto.studiolaunchpad.moeilijke_namen_of_e.d0f63b" defaultText="Moeilijke namen of een specifieke toon? Spreek het even in voor de stemacteur." /></TextInstrument>
-
-                <button 
-                  onClick={toggleRecording}
-                  className={cn(
-                    "w-full py-10 rounded-[25px] flex flex-col items-center justify-center gap-4 transition-all border-2 border-dashed touch-manipulation active:scale-95 mb-10",
-                    isRecording 
-                      ? "bg-primary/20 border-primary animate-pulse" 
-                      : "bg-white/5 border-white/10 hover:bg-white/10"
-                  )}
-                >
-                  <ContainerInstrument className={cn(
-                    "p-6 rounded-full",
-                    isRecording ? "bg-primary" : "bg-white/10"
-                  )}>
-                    <LucideMic size={32} strokeWidth={1.5} />
-                  </ContainerInstrument>
-                  <TextInstrument className="text-[15px] font-light tracking-widest ">
-                    {isRecording ? "Stop opname" : "Spreek het in"}
-                  </TextInstrument>
-                </button>
-
-                <ButtonInstrument 
-                  className="w-full bg-primary hover:bg-primary/90 text-white py-6 rounded-[20px] text-lg font-light flex items-center justify-center gap-3 shadow-lg shadow-primary/20 active:scale-95 transition-all tracking-widest"
-                  onClick={() => window.location.href = '/casting/session/'}
-                >
-                  <TextInstrument as="span"><VoiceglotText  translationKey="auto.studiolaunchpad.vraag_proefopname_aa.8c2d12" defaultText="Vraag proefopname aan" /></TextInstrument>
-                  <LucideCheckCircle size={24} strokeWidth={1.5} />
-                </ButtonInstrument>
-
-                <TextInstrument className="text-center text-white/20 text-[15px] mt-6 leading-relaxed tracking-widest font-light"><VoiceglotText  translationKey="auto.studiolaunchpad.je_gegevens_worden_a.e7a216" defaultText="Je gegevens worden anoniem behandeld." /></TextInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
-          </ContainerInstrument>
-        </ContainerInstrument>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </SectionInstrument>
-    </PageWrapperInstrument>
+    </SectionInstrument>
   );
 };

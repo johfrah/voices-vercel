@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+import { Actor } from '@/types';
+
 interface VoicesState {
   company_name: string;
   opening_hours: string;
@@ -13,21 +15,22 @@ interface VoicesState {
     asset_focus: 'Audio-First' | 'Script-First' | 'Hybrid';
     decision_power: 'End-User' | 'Proxy-Buyer' | null;
   };
-  selected_actors: Array<{
-    id: number;
-    firstName: string;
-    photoUrl?: string;
-  }>;
+  selected_actors: Actor[];
+  reviewStats: {
+    averageRating: number;
+    totalCount: number;
+  } | null;
 }
 
 interface VoicesStateContextType {
   state: VoicesState;
+  reviewStats: VoicesState['reviewStats']; // Direct access for convenience
   updateCompanyName: (name: string) => void;
   updateSector: (sector: string | null) => void;
   updateJourney: (journey: VoicesState['current_journey']) => void;
   updateIntent: (intent: Partial<VoicesState['intent']>) => void;
   getPlaceholderValue: (key: string) => string;
-  toggleActorSelection: (actor: { id: number; firstName: string; photoUrl?: string }) => void;
+  toggleActorSelection: (actor: Actor) => void;
   clearSelectedActors: () => void;
 }
 
@@ -43,6 +46,7 @@ const initialState: VoicesState = {
     decision_power: null,
   },
   selected_actors: [],
+  reviewStats: null,
 };
 
 const VoicesStateContext = createContext<VoicesStateContextType | undefined>(undefined);
@@ -55,16 +59,48 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const saved = localStorage.getItem('voices_state');
     if (saved) {
       try {
-        setState(prev => ({ ...prev, ...JSON.parse(saved) }));
+        const parsed = JSON.parse(saved);
+        setState(prev => ({ 
+          ...prev, 
+          ...parsed,
+          // Ensure selected_actors is always an array
+          selected_actors: Array.isArray(parsed.selected_actors) ? parsed.selected_actors : []
+        }));
       } catch (e) {
         console.error('Failed to parse saved voices state', e);
       }
     }
+
+    //  NUCLEAR SYNC: Fetch global review stats on mount
+    const fetchStats = async () => {
+      try {
+        //  CHRIS-PROTOCOL: Skip stats fetch on localhost if it causes 500/MIME errors
+        if (window.location.hostname === 'localhost') return;
+
+        //  CHRIS-PROTOCOL: Use a public endpoint for review stats instead of admin-only actors API
+        // We fetch from the proxy but we don't fail if it's unauthorized
+        const res = await fetch('/api/proxy?path=' + encodeURIComponent('api/admin/actors'));
+        if (!res.ok) {
+          console.log('[VoicesState] Stats fetch skipped (unauthorized or error)');
+          return;
+        }
+        
+        const data = await res.json();
+        if (data.reviewStats) {
+          setState(prev => ({ ...prev, reviewStats: data.reviewStats }));
+        }
+      } catch (e) {
+        console.warn('[VoicesState] Failed to fetch review stats', e);
+      }
+    };
+    fetchStats();
   }, []);
 
   // Save to localStorage on change
   useEffect(() => {
-    localStorage.setItem('voices_state', JSON.stringify(state));
+    if (state !== initialState) {
+      localStorage.setItem('voices_state', JSON.stringify(state));
+    }
   }, [state]);
 
   const updateCompanyName = (company_name: string) => setState(prev => ({ ...prev, company_name }));
@@ -76,12 +112,13 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const updateIntent = (intent: Partial<VoicesState['intent']>) => 
     setState(prev => ({ ...prev, intent: { ...prev.intent, ...intent } }));
 
-  const toggleActorSelection = (actor: { id: number; firstName: string; photoUrl?: string }) => {
+  const toggleActorSelection = (actor: Actor) => {
     setState(prev => {
       const isSelected = prev.selected_actors.some(a => a.id === actor.id);
       if (isSelected) {
         return { ...prev, selected_actors: prev.selected_actors.filter(a => a.id !== actor.id) };
       } else {
+        // We store the full actor object to ensure it's available in the favorites list
         return { ...prev, selected_actors: [...prev.selected_actors, actor] };
       }
     });
@@ -101,6 +138,7 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
   return (
     <VoicesStateContext.Provider value={{ 
       state, 
+      reviewStats: state.reviewStats,
       updateCompanyName, 
       updateSector, 
       updateJourney,

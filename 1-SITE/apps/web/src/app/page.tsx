@@ -1,8 +1,7 @@
 "use client";
 
 import { ContainerInstrument, HeadingInstrument, LoadingScreenInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
-import { LiquidBackground } from "@/components/ui/LiquidBackground";
-import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
+import { VoiceCardSkeleton } from "@/components/ui/VoiceCardSkeleton";
 import { VoiceGrid } from "@/components/ui/VoiceGrid";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
@@ -10,10 +9,22 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEditMode } from "@/contexts/EditModeContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
-import { PricingEngine } from '@/lib/pricing-engine';
+import { SlimmeKassa } from '@/lib/pricing-engine';
+import { VoiceFilterEngine } from "@/lib/voice-filter-engine";
 import { Actor } from "@/types";
 import { MarketManager } from "@config/market-manager";
 import { Suspense, useEffect, useMemo, useState } from 'react';
+import dynamic from "next/dynamic";
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
+  ssr: false,
+  loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />
+});
+const ReviewsInstrument = dynamic(() => import("@/components/ui/ReviewsInstrument").then(mod => mod.ReviewsInstrument), { 
+  ssr: false,
+  loading: () => <div className="h-[400px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
+});
 
 import ConfiguratorPageClient from '@/app/checkout/configurator/ConfiguratorPageClient';
 import { VoiceCard } from "@/components/ui/VoiceCard";
@@ -35,7 +46,7 @@ import { useRouter } from 'next/navigation';
  * - Geen HowItWorks of Pricing (deze hebben eigen pagina's).
  * - Reviews blijven behouden voor social proof.
  */
-function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number } }) {
+function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfig }: { actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number }, dynamicConfig?: any }) {
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const { state: masterControlState, updateStep, resetFilters } = useMasterControl();
@@ -90,153 +101,36 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
     }));
   };
 
-  // COMMERCIAL & TELEPHONY FILTERING (Korneel Mandate)
-  const filteredActors = useMemo(() => {
-    let result = actors;
-
-    console.log('HomeContent: Filtering actors', { 
-      total: actors.length, 
-      journey: masterControlState.journey,
-      media: masterControlState.filters.media,
-      country: masterControlState.filters.country,
-      languages: masterControlState.filters.languages,
-      language: masterControlState.filters.language,
-      currentStep: masterControlState.currentStep
-    });
-
-    if (masterControlState.journey === 'commercial' && Array.isArray(masterControlState.filters.media) && masterControlState.filters.media.length > 0) {
-      const selectedMedia = masterControlState.filters.media;
-      
-      result = result.filter(actor => {
-        //  KORNEEL RULE: Use Centralized PricingEngine Logic
-        const status = PricingEngine.getAvailabilityStatus(
-          actor, 
-          selectedMedia as any, 
-          masterControlState.filters.country || 'BE'
-        );
-        
-        // CHRIS-PROTOCOL: If the currently selected actor becomes unavailable due to filters,
-        // we don't want them to disappear from the sidebar if we are already in the script step.
-        if (checkoutState.selectedActor?.id === actor.id && masterControlState.currentStep === 'script') {
-          return true;
-        }
-        
-        return status === 'available';
+    // COMMERCIAL & TELEPHONY FILTERING (VoiceFilterEngine Mandate 2026)
+    const filteredActors = useMemo(() => {
+      console.log(`[HomeContent] Filtering ${actors.length} actors with criteria:`, {
+        journey: masterControlState.journey,
+        language: masterControlState.filters.language,
+        media: masterControlState.filters.media,
+        country: masterControlState.filters.country
       });
-    }
-
-    //  PRIMARY LANGUAGE FILTERING (Now handled on client for better UI context)
-    if (masterControlState.filters.language) {
-    const lowLang = masterControlState.filters.language?.toLowerCase() || '';
-    const dbLang = MarketManager.getLanguageCode(lowLang);
-      
-      result = result.filter(actor => {
-        const actorNative = actor.native_lang?.toLowerCase();
-        const actorNativeLabel = actor.native_lang_label?.toLowerCase();
-        
-    //  CHRIS-PROTOCOL: Strict primary language matching for the grid
-    // If the user selects a primary language, we only show actors whose native_lang matches.
-    const isNativeMatch = actorNative === dbLang || 
-                         actorNative === lowLang || 
-                         actorNativeLabel === lowLang ||
-                         (dbLang === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be' || actorNativeLabel === 'vlaams')) ||
-                         (dbLang === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl' || actorNativeLabel === 'nederlands')) ||
-                         (dbLang === 'fr-fr' && (actorNative === 'frans' || actorNative === 'fr-fr' || actorNativeLabel === 'frans')) ||
-                         (dbLang === 'fr-be' && (actorNative === 'frans (be)' || actorNative === 'fr-be' || actorNativeLabel === 'frans (be)')) ||
-                         (dbLang === 'en-gb' && (actorNative === 'engels' || actorNative === 'en-gb' || actorNativeLabel === 'engels')) ||
-                         (dbLang === 'en-us' && (actorNative === 'engels (us)' || actorNative === 'en-us' || actorNativeLabel === 'engels (us)'));
-        
-        //  TELEPHONY MULTI-LANG: Only allow extra languages if multiple languages are selected
-        // AND the actor's native language matches the primary selected language.
-        if (masterControlState.journey === 'telephony' && masterControlState.filters.languages && masterControlState.filters.languages.length > 1) {
-          // In multi-lang telephony, the FIRST language in the array is the primary native language.
-          // We MUST ensure the actor is a native speaker of that primary language.
-          const primarySelected = masterControlState.filters.languages[0]?.toLowerCase() || '';
-          const primaryDbCode = MarketManager.getLanguageCode(primarySelected);
-          
-          const isNativeOfPrimary = actorNative === primaryDbCode || 
-                                   actorNative === primarySelected ||
-                                   actorNativeLabel === primarySelected ||
-                                   (primaryDbCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be' || actorNativeLabel === 'vlaams')) ||
-                                   (primaryDbCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl' || actorNativeLabel === 'nederlands')) ||
-                                   (primaryDbCode === 'fr-fr' && (actorNative === 'frans' || actorNative === 'fr-fr' || actorNativeLabel === 'frans')) ||
-                                   (primaryDbCode === 'fr-be' && (actorNative === 'frans (be)' || actorNative === 'fr-be' || actorNativeLabel === 'frans (be)'));
-          
-          if (!isNativeOfPrimary) return false;
-          
-          return true; // Let the multi-lang block below handle the extra language checks
-        }
-
-        return isNativeMatch;
+      const results = VoiceFilterEngine.filter(actors, {
+        journey: masterControlState.journey,
+        language: masterControlState.filters.language,
+        languageId: masterControlState.filters.languageId,
+        languages: masterControlState.filters.languages,
+        languageIds: masterControlState.filters.languageIds,
+        gender: masterControlState.filters.gender,
+        media: masterControlState.filters.media,
+        country: masterControlState.filters.country,
+        countryId: masterControlState.filters.countryId,
+        toneIds: masterControlState.filters.toneIds,
+        sortBy: masterControlState.filters.sortBy,
+        currentStep: masterControlState.currentStep,
+        selectedActorId: checkoutState.selectedActor?.id
       });
-    }
-
-    //  GENDER FILTERING (Now handled on client)
-    if (masterControlState.filters.gender && masterControlState.filters.gender !== 'Iedereen') {
-      const lowGender = masterControlState.filters.gender.toLowerCase();
-      result = result.filter(actor => {
-        const g = actor.gender?.toLowerCase() || '';
-        if (lowGender.includes('man')) return g === 'male' || g === 'mannelijk';
-        if (lowGender.includes('vrouw')) return g === 'female' || g === 'vrouwelijk';
-        return true;
-      });
-    }
-
-    //  TELEPHONY MULTI-LANG FILTERING
-    if (masterControlState.journey === 'telephony' && masterControlState.filters.languages && masterControlState.filters.languages.length > 1) {
-      const selectedLangs = masterControlState.filters.languages;
-      
-      result = result.filter(actor => {
-        const actorLangs = [
-          actor.native_lang, 
-          ...(actor.extra_langs ? actor.extra_langs.split(',').map(l => l.trim()) : [])
-        ].filter(Boolean).map(l => l?.toLowerCase());
-
-        // Check if actor supports ALL selected languages
-        return selectedLangs.every(lang => {
-          const lowLang = lang.toLowerCase();
-          const dbLang = MarketManager.getLanguageCode(lowLang);
-          const shortLang = lowLang.split('-')[0];
-          
-          return actorLangs.some(al => al === dbLang || al === lowLang || al === shortLang || al?.includes(dbLang) || al?.includes(shortLang));
-        });
-      });
-    }
-
-    console.log('HomeContent: Filtered result', { 
-      count: result.length, 
-      names: result.map(a => a.display_name),
-      firstActor: result.length > 0 ? {
-        name: result[0].display_name,
-        native: result[0].native_lang,
-        price: result[0].starting_price
-      } : null
-    });
-
-    //  SORTING LOGIC (God Mode 2026)
-    const sortedResult = [...result].sort((a, b) => {
-      switch (masterControlState.filters.sortBy) {
-        case 'delivery':
-          // Sort by minimum delivery days (lower is faster)
-          return (a.delivery_days_min || 1) - (b.delivery_days_min || 1);
-        case 'alphabetical':
-          return (a.display_name || '').localeCompare(b.display_name || '');
-        case 'popularity':
-        default:
-          // Sort by voiceScore (lower is better/more popular)
-          // CHRIS-PROTOCOL: Christina (1), Mark (2), Birgit (3), Johfrah (4)
-          const aScore = a.voice_score || 100;
-          const bScore = b.voice_score || 100;
-          return aScore - bScore;
-      }
-    });
-
-    return sortedResult;
-  }, [actors, masterControlState.journey, masterControlState.filters.media, masterControlState.filters.country, masterControlState.filters.languages, masterControlState.filters.language, masterControlState.filters.gender, masterControlState.filters.sortBy, checkoutState.selectedActor?.id, masterControlState.currentStep]);
+      console.log(`[HomeContent] Filtered results: ${results.length} actors`);
+      return results;
+    }, [actors, masterControlState.journey, masterControlState.filters, checkoutState.selectedActor?.id, masterControlState.currentStep]);
 
   const isTelephony = customerDNA?.intelligence?.lastIntent === 'telephony' || customerDNA?.intelligence?.detectedSector === 'it';
 
-  //  POLYGLOT CHIPS LOGIC: Calculate available extra languages for the selected primary language
+  //  EXTRA LANGUAGES LOGIC: Calculate available extra languages for the selected primary language
   const availableExtraLangs = useMemo(() => {
     if (masterControlState.journey !== 'telephony' || !masterControlState.filters.language || !actors) return [];
     
@@ -258,13 +152,13 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
           const trimmed = l.trim();
           const lowTrimmed = trimmed.toLowerCase();
           
-  //  CHRIS-PROTOCOL: Exclude native language and its variations from extra languages
-  const isPrimary = lowTrimmed === primaryLang || 
-                   lowTrimmed === primaryCode || 
-                   (primaryCode === 'nl-be' && (lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be')) ||
-                   (primaryCode === 'nl-nl' && (lowTrimmed === 'nederlands' || lowTrimmed === 'nl-nl')) ||
-                   (primaryCode === 'fr-fr' && (lowTrimmed === 'frans' || lowTrimmed === 'fr-fr')) ||
-                   (primaryCode === 'fr-be' && (lowTrimmed === 'frans (be)' || lowTrimmed === 'fr-be'));
+          //  CHRIS-PROTOCOL: Exclude native language and its variations from extra languages
+          const isPrimary = lowTrimmed === primaryLang || 
+                           lowTrimmed === primaryCode || 
+                           (primaryCode === 'nl-be' && (lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be')) ||
+                           (primaryCode === 'nl-nl' && (lowTrimmed === 'nederlands' || lowTrimmed === 'nl-nl')) ||
+                           (primaryCode === 'fr-fr' && (lowTrimmed === 'frans' || lowTrimmed === 'fr-fr')) ||
+                           (primaryCode === 'fr-be' && (lowTrimmed === 'frans (be)' || lowTrimmed === 'fr-be'));
           
           //  CHRIS-PROTOCOL: Vlaams is a unique native type (nl-BE). 
           // Non-natives (like FR or NL-NL) can offer "Nederlands" as extra, but NEVER "Vlaams".
@@ -282,61 +176,115 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
     return Array.from(extraLangsSet).sort();
   }, [actors, masterControlState.journey, masterControlState.filters.language]);
 
-  // Mock filters voor de homepage (of haal ze op via API indien nodig)
-  const filters = {
-    languages: [
-      t('language.vlaams', 'Vlaams'), 
-      t('language.nederlands', 'Nederlands'), 
-      t('language.frans', 'Frans'), 
-      t('language.engels', 'Engels'), 
-      t('language.duits', 'Duits')
-    ],
-    genders: [
-      t('gender.mannelijk', 'Mannelijk'), 
-      t('gender.vrouwelijk', 'Vrouwelijk')
-    ],
-    styles: [],
-    categories: []
-  };
+  //  CHRIS-PROTOCOL: Dynamic Filters from DB
+  const filters = useMemo(() => {
+    if (dynamicConfig?.languages) {
+      return {
+        languages: dynamicConfig.languages.map((l: any) => l.label),
+        genders: [
+          t('gender.mannelijk', 'Mannelijk'), 
+          t('gender.vrouwelijk', 'Vrouwelijk')
+        ],
+        styles: [],
+        categories: []
+      };
+    }
+    return {
+      languages: [
+        t('language.vlaams', 'Vlaams'), 
+        t('language.nederlands', 'Nederlands'), 
+        t('language.frans', 'Frans'), 
+        t('language.engels', 'Engels'), 
+        t('language.duits', 'Duits')
+      ],
+      genders: [
+        t('gender.mannelijk', 'Mannelijk'), 
+        t('gender.vrouwelijk', 'Vrouwelijk')
+      ],
+      styles: [],
+      categories: []
+    };
+  }, [dynamicConfig, t]);
 
   const journeyContent = useMemo(() => {
-    switch (masterControlState.journey) {
+    const journey = masterControlState.journey;
+    if (dynamicConfig?.journeyContent?.[journey]) {
+      return dynamicConfig.journeyContent[journey];
+    }
+
+    switch (journey) {
       case 'telephony':
         return {
           titlePart1: "Maak jouw",
           titleHighlight: "telefooncentrale",
           titlePart2: "menselijk.",
-          subtitle: "Van welkomstboodschap tot wachtmuziek. Professionele stemmen die jouw klanten direct vertrouwen geven."
+          subtitle: "Van welkomstboodschap tot wachtmuziek. Professionele stemmen die jouw klanten direct vertrouwen geven.",
+          usps: [
+            { key: 'telephony.warm', text: 'menselijke begroeting', icon: 'mic' },
+            { key: 'telephony.mix', text: 'inclusief muziek-mix', icon: 'music' },
+            { key: 'telephony.speed', text: '90% binnen 24 uur klaar', icon: 'zap' }
+          ]
         };
       case 'video':
         return {
           titlePart1: "Geef jouw",
           titleHighlight: "video",
           titlePart2: "een eigen stem.",
-          subtitle: "Bedrijfsfilms, explanimations of documentaires. Vind de perfecte match voor jouw visuele verhaal."
+          subtitle: "Bedrijfsfilms, explanimations of documentaires. Vind de perfecte match voor jouw visuele verhaal.",
+          usps: [
+            { key: 'video.timing', text: 'perfecte timing & flow', icon: 'clock' },
+            { key: 'video.guarantee', text: 'foutloze opname-garantie', icon: 'check' },
+            { key: 'video.quality', text: 'technisch perfect (48kHz)', icon: 'shield' }
+          ]
         };
       case 'commercial':
         return {
           titlePart1: "Scoor met",
           titleHighlight: "high-end",
           titlePart2: "commercials.",
-          subtitle: "Radio, TV of Online. Stemmen met autoriteit die jouw merkwaarde en conversie direct verhogen."
+          subtitle: "Radio, TV of Online. Stemmen met autoriteit die jouw merkwaarde en conversie direct verhogen.",
+          usps: [
+            { key: 'commercial.buyout', text: 'directe buy-out calculatie', icon: 'pricing' },
+            { key: 'commercial.authority', text: 'stemmen met autoriteit', icon: 'megaphone' },
+            { key: 'commercial.master', text: 'broadcast-ready master', icon: 'zap' }
+          ]
         };
       default:
         return {
           titlePart1: "Vind de",
           titleHighlight: "stem",
           titlePart2: "voor jouw verhaal.",
-          subtitle: "Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap."
+          subtitle: "Snel, simpel en technisch perfect. Wij selecteren de beste stemmen zodat jij dat niet hoeft te doen.",
+          usps: [
+            { key: 'home.usp.speed', text: '90% binnen 24 uur klaar', icon: 'zap' },
+            { key: 'home.usp.quality', text: 'top-selectie van vakmensen', icon: 'shield' },
+            { key: 'home.usp.retake', text: 'foutloze opname-garantie', icon: 'check' }
+          ]
         };
     }
-  }, [masterControlState.journey]);
+  }, [masterControlState.journey, dynamicConfig]);
+
+  const renderUspIcon = (type: string) => {
+    switch (type) {
+      case 'zap': return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>;
+      case 'shield': return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
+      case 'check': return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M20 6L9 17l-5-5"/></svg>;
+      case 'mic': return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>;
+      case 'music': return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>;
+      case 'clock': return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+      case 'megaphone': return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/><path d="M4 8.13v15.47"/><path d="M11.6 16.8l10.1-10.1a1 1 0 0 0 0-1.4l-4.2-4.2a1 1 0 0 0-1.4 0l-10.1 10.1"/><path d="M17.5 6.5l2.5 2.5"/></svg>;
+      case 'pricing': return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
+      default: return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>;
+    }
+  };
 
   return (
     <>
-      <LiquidBackground strokeWidth={1.5} />
+      <Suspense fallback={null}>
+        <LiquidBackground strokeWidth={1.5} />
+      </Suspense>
       
-      <SectionInstrument className="!pt-20 pb-32 relative z-50">
+      <SectionInstrument className="!pt-40 pb-32 relative z-50">
         <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0">
           <div className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
             <h1 className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
@@ -351,6 +299,20 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
             <p className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
               <VoiceglotText translationKey={`home.hero.subtitle_${masterControlState.journey}`} defaultText={journeyContent.subtitle} />
             </p>
+
+            {/* USP Trust-Bar (Bob-methode) */}
+            <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 pt-8">
+              {journeyContent.usps.map((usp) => (
+                <div key={usp.key} className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center">
+                    {renderUspIcon(usp.icon)}
+                  </div>
+                  <TextInstrument className="text-[14px] font-medium tracking-tight text-va-black/60">
+                    <VoiceglotText translationKey={`home.usp.${usp.key}`} defaultText={usp.text} />
+                  </TextInstrument>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="w-full relative z-50 px-4 md:px-6">
@@ -368,7 +330,14 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                   transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
                   className="w-full"
                 >
-                  {filteredActors && filteredActors.length > 0 ? (
+                  {/* CHRIS-PROTOCOL: Deterministic Skeletons (Moby-methode) */}
+                  {(!filteredActors || filteredActors.length === 0) ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch">
+                      {[...Array(8)].map((_, i) => (
+                        <VoiceCardSkeleton key={`skeleton-${i}`} />
+                      ))}
+                    </div>
+                  ) : (
                     <VoiceGrid 
                       strokeWidth={1.5} 
                       actors={filteredActors.map(a => ({
@@ -389,26 +358,14 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                         // 2. Set the step to script
                         updateStep('script');
                         
-                        // 3. Scroll to top of the section
+                        // 3. Update URL for Smart Routing
+                        const newUrl = `/${actor.slug}/${masterControlState.journey}`;
+                        window.history.pushState(null, '', newUrl);
+                        
+                        // 4. Scroll to top of the section
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                     />
-                  ) : (
-                    <div className="py-20 text-center w-full space-y-6">
-                      <TextInstrument className="text-va-black/20 text-xl font-light italic">
-                        <VoiceglotText translationKey="home.voicegrid.no_results" defaultText="Geen stemmen gevonden voor deze selectie." />
-                      </TextInstrument>
-                      {actors && actors.length > 0 && (
-                        <button 
-                          onClick={() => {
-                            resetFilters();
-                          }}
-                          className="px-6 py-3 bg-va-black text-white rounded-full text-sm font-bold tracking-widest uppercase hover:bg-primary transition-all"
-                        >
-                          Filters herstellen
-                        </button>
-                      )}
-                    </div>
                   )}
                 </motion.div>
               ) : (
@@ -427,6 +384,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
                         isEmbedded={true} 
                         hideMediaSelector={true} 
                         minimalMode={true} 
+                        hidePriceBlock={true}
                       />
                     </div>
 
@@ -458,20 +416,30 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
 
       <SectionInstrument className="py-48 bg-white/80 backdrop-blur-md relative z-10">
         <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="max-w-3xl mb-24 space-y-6">
-            <TextInstrument className="text-[15px] font-bold tracking-[0.3em] text-primary uppercase">
-              <VoiceglotText translationKey="home.reviews.label" defaultText="Wat klanten zeggen" />
-            </TextInstrument>
-            <HeadingInstrument level={2} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.85] text-va-black">
-              <VoiceglotText translationKey="home.reviews.title" defaultText="Echte verhalen van echte klanten." />
-            </HeadingInstrument>
-          </div>
-          <ReviewsInstrument 
-            reviews={reviews} 
-            hideHeader={false} 
-            averageRating={reviewStats?.averageRating?.toString() || "4.9"}
-            totalReviews={reviewStats?.totalCount?.toString() || "392"}
-          />
+          <Suspense fallback={
+            <div className="space-y-16">
+              <div className="flex flex-col md:flex-row justify-between items-end gap-8">
+                <div className="space-y-4 w-full md:w-auto">
+                  <div className="h-6 w-32 bg-va-black/5 rounded-full animate-pulse" />
+                  <div className="h-24 w-full md:w-[600px] bg-va-black/5 rounded-2xl animate-pulse" />
+                </div>
+                <div className="h-20 w-64 bg-va-black/5 rounded-[24px] animate-pulse" />
+              </div>
+              <div className="flex gap-8 overflow-hidden">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="min-w-[400px] h-[450px] bg-va-black/5 rounded-[40px] animate-pulse" />
+                ))}
+              </div>
+            </div>
+          }>
+            <ReviewsInstrument 
+              reviews={reviews} 
+              hideHeader={false} 
+              averageRating={reviewStats?.averageRating?.toString() || "4.9"}
+              totalReviews={reviewStats?.totalCount?.toString() || "392"}
+              distribution={reviewStats?.distribution}
+            />
+          </Suspense>
         </ContainerInstrument>
       </SectionInstrument>
 
@@ -485,8 +453,8 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
         "description": "Castingbureau voor stemacteurs en voice-overs.",
         "aggregateRating": {
           "@type": "AggregateRating",
-          "ratingValue": reviewStats?.averageRating || "4.9",
-          "reviewCount": reviewStats?.totalCount || "392",
+          "ratingValue": reviewStats?.averageRating || 4.9,
+          "reviewCount": reviewStats?.totalCount || 392,
           "bestRating": "5",
           "worstRating": "1"
         },
@@ -517,7 +485,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats }: { actors: 
  */
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [data, setData] = useState<{ actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number } } | null>(null);
+  const [data, setData] = useState<{ actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number, distribution?: Record<number, number> }, dynamicConfig?: any } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -536,13 +504,9 @@ export default function Home() {
     //  CHRIS-PROTOCOL: Forceer de fetch op basis van de huidige URL (filters)
     const params = new URLSearchParams(searchParamsKey);
     
-    //  CHRIS-PROTOCOL: We fetch ALL live actors to handle polyglot UI context on client
-    //  Previously we filtered by language/gender here, but that broke the "available extra languages" chips
-    //  when switching between languages in the dropdown.
+    //  CHRIS-PROTOCOL: We fetch ALL live actors to handle extra language UI context on client
     const cleanParams = new URLSearchParams();
     params.forEach((value, key) => {
-      // Only send journey, words, market, country to API. 
-      // Language and Gender are now handled client-side for better UI responsiveness.
       if (['journey', 'words', 'market', 'country', 'spots', 'years'].includes(key)) {
         if (value && value !== 'null' && value !== 'undefined') {
           cleanParams.set(key, value);
@@ -551,77 +515,44 @@ export default function Home() {
     });
 
     const fetchUrl = `/api/actors/?${cleanParams.toString()}`;
-    
-    //  CHRIS-PROTOCOL: Use AbortController to prevent ghost fetches
     const controller = new AbortController();
     
-    console.log(' Home: Fetching from', fetchUrl);
     setIsLoading(true);
     
-    fetch(fetchUrl, { signal: controller.signal })
-      .then(res => res.json())
-      .then(resData => {
+    // Fetch both actors and dynamic home config
+    Promise.all([
+      fetch(fetchUrl, { signal: controller.signal }).then(res => res.json()),
+      fetch('/api/home/config', { signal: controller.signal }).then(res => res.json())
+    ])
+      .then(([resData, homeConfig]) => {
         if (!mounted) return;
-        console.log(' Home: Received', resData?.results?.length || 0, 'actors');
         if (!resData || !resData.results) {
-          setData({ actors: [], reviews: [] });
+          setData({ actors: [], reviews: [], dynamicConfig: homeConfig });
           return;
         }
         const mappedActors = resData.results.map((actor: any) => {
-          //  CHRIS-PROTOCOL: Ensure photo_url is correctly proxied if it's a raw path
           let photoUrl = actor.photo_url;
           if (photoUrl && !photoUrl.startsWith('http') && !photoUrl.startsWith('/api/proxy') && !photoUrl.startsWith('/assets')) {
             photoUrl = `/api/proxy/?path=${encodeURIComponent(photoUrl)}`;
           }
 
           return {
-            id: actor.id,
-            display_name: actor.display_name,
-            first_name: actor.first_name || actor.firstName,
-            last_name: actor.last_name || actor.lastName,
-            firstName: actor.firstName || actor.first_name,
-            lastName: actor.lastName || actor.last_name,
-            email: actor.email,
+            ...actor,
             photo_url: photoUrl,
-            voice_score: actor.voice_score,
-            native_lang: actor.native_lang,
-            gender: actor.gender, //  CHRIS-PROTOCOL: Added missing gender field
-            starting_price: actor.starting_price,
-            delivery_days_min: actor.delivery_days_min || 1,
-            delivery_days_max: actor.delivery_days_max || 2,
-            extra_langs: actor.extra_langs,
-            tone_of_voice: actor.tone_of_voice,
-            clients: actor.clients,
-            cutoff_time: actor.cutoff_time || '18:00',
-            availability: actor.availability || [],
-            tagline: actor.tagline,
-            ai_tags: actor.ai_tags || '',
-            slug: actor.slug,
-            demos: actor.demos || [],
-            bio: actor.bio,
-            price_ivr: actor.price_ivr,
-            price_online: actor.price_online,
-            price_bsf: actor.price_bsf,
-            price_tv_national: actor.price_tv_national,
-            price_radio_national: actor.price_radio_national,
-            price_podcast: actor.price_podcast,
-            price_social_media: actor.price_social_media,
-            price_tv_regional: actor.price_tv_regional,
-            price_tv_local: actor.price_tv_local,
-            price_radio_regional: actor.price_radio_regional,
-            price_radio_local: actor.price_radio_local,
-            rates: actor.rates || {},
-            holiday_from: actor.holiday_from,
-            holiday_till: actor.holiday_till,
-            rates_raw: actor.rates_raw || {} // CHRIS-PROTOCOL: Pass rates for filtering
+            native_lang_label: MarketManager.getLanguageLabel(actor.native_lang || ''),
           };
         });
-        setData({ actors: mappedActors, reviews: resData.reviews || [], reviewStats: resData.reviewStats });
+        setData({ 
+          actors: mappedActors, 
+          reviews: resData.reviews || [], 
+          reviewStats: resData.reviewStats, 
+          dynamicConfig: homeConfig 
+        });
       })
       .catch(err => {
         if (err.name === 'AbortError') return;
         console.error('Home Data Fetch Error:', err);
-        setData(prev => prev || { actors: [], reviews: [], reviewStats: { averageRating: 4.9, totalCount: 0 } });
+        setData(prev => prev || { actors: [], reviews: [], reviewStats: { averageRating: 4.9, totalCount: 392 } });
       })
       .finally(() => {
         if (!controller.signal.aborted) {
@@ -633,12 +564,40 @@ export default function Home() {
   }, [mounted, searchParamsKey]);
 
   if (!mounted || (!data && isLoading)) {
-    return <LoadingScreenInstrument text="" />;
+    return (
+      <SectionInstrument className="!pt-40 pb-32 relative z-50">
+        <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0">
+          <div className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
+            <div className="h-20 w-3/4 bg-va-black/5 rounded-2xl mx-auto animate-pulse" />
+            <div className="h-6 w-1/2 bg-va-black/5 rounded-xl mx-auto animate-pulse" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch px-4 md:px-6">
+            {[...Array(8)].map((_, i) => (
+              <VoiceCardSkeleton key={`skeleton-initial-${i}`} />
+            ))}
+          </div>
+        </ContainerInstrument>
+      </SectionInstrument>
+    );
   }
   
   return (
-    <Suspense  fallback={<LoadingScreenInstrument text="" />}>
-      {data && <HomeContent strokeWidth={1.5} actors={data.actors} reviews={data.reviews} reviewStats={data.reviewStats} />}
+    <Suspense fallback={
+      <SectionInstrument className="!pt-40 pb-32 relative z-50">
+        <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0">
+          <div className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
+            <div className="h-20 w-3/4 bg-va-black/5 rounded-2xl mx-auto animate-pulse" />
+            <div className="h-6 w-1/2 bg-va-black/5 rounded-xl mx-auto animate-pulse" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch px-4 md:px-6">
+            {[...Array(8)].map((_, i) => (
+              <VoiceCardSkeleton key={`skeleton-suspense-${i}`} />
+            ))}
+          </div>
+        </ContainerInstrument>
+      </SectionInstrument>
+    }>
+      {data && <HomeContent strokeWidth={1.5} actors={data.actors} reviews={data.reviews} reviewStats={data.reviewStats} dynamicConfig={data.dynamicConfig} />}
       {isLoading && data && (
         <div className="fixed top-0 left-0 w-full h-1 bg-primary/20 z-[9999]">
           <div className="h-full bg-primary animate-progress-fast" style={{ width: '30%' }} />

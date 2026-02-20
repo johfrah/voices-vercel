@@ -28,7 +28,10 @@ import {
     TrendingUp,
     Users,
     Zap,
-    Bot
+    Bot,
+    Music,
+    Phone,
+    Euro
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -51,8 +54,10 @@ export default function AdminDashboard() {
     { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '12', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },
     { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Approval Queue" />, value: '5', icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
     { label: <VoiceglotText  translationKey="admin.stats.finance" defaultText="Financieel" />, value: 'Dashboard', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: 'Journeys', color: 'text-green-500', href: '/admin/finance' },
+    { label: <VoiceglotText  translationKey="admin.stats.telephony" defaultText="Telefoon" />, value: 'Live', icon: <Phone strokeWidth={1.5} size={20} />, trend: 'Spotlight', color: 'text-primary', href: '/admin/telephony' },
     { label: <VoiceglotText  translationKey="admin.stats.workshops" defaultText="Workshops" />, value: '114', icon: <Calendar strokeWidth={1.5} size={20} />, trend: 'Studio', color: 'text-purple-500', href: '/admin/studio/workshops' },
-    { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Actieve Stemmen" />, value: '142', icon: <Mic strokeWidth={1.5} size={20} />, trend: '+12%', color: 'text-va-black/40', href: '/admin/voices' },
+    { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Actieve Stemmen" />, value: '142', icon: <Mic strokeWidth={1.5} size={20} />, trend: 'Demos', color: 'text-va-black/40', href: '/admin/voices/demos' },
+    { label: <VoiceglotText  translationKey="admin.stats.artists" defaultText="Music Label" />, value: 'Actief', icon: <Music strokeWidth={1.5} size={20} />, trend: 'Artists', color: 'text-pink-500', href: '/admin/artists' },
     { label: <VoiceglotText  translationKey="admin.stats.agents" defaultText="AI Agents" />, value: 'Actief', icon: <Bot strokeWidth={1.5} size={20} />, trend: 'Control', color: 'text-primary', href: '/admin/agents' },
   ];
 
@@ -196,7 +201,7 @@ export default function AdminDashboard() {
               <VoiceglotText translationKey="admin.studio.dashboard_title" defaultText="Workshop Dashboard" />
             </HeadingInstrument>
             <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">
-              <VoiceglotText translationKey="admin.studio.cockpit_text" defaultText="Beheer edities, deelnemers en bezettingsgraad voor de Studio-tak." />
+              <VoiceglotText translationKey="admin.studio.dashboard_text" defaultText="Beheer edities, deelnemers en bezettingsgraad voor de Studio-tak." />
             </TextInstrument>
           </ContainerInstrument>
           <Link href="/admin/studio/workshops" className="relative z-10 va-btn-pro !bg-primary w-fit">
@@ -211,10 +216,16 @@ export default function AdminDashboard() {
             <Image  src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" className="text-va-black/20 group-hover:text-primary transition-colors mb-8" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
             <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4 text-va-black"><VoiceglotText  translationKey="admin.settings.title" defaultText="Systeem instellingen" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed"><VoiceglotText  translationKey="admin.settings.text" defaultText="Configureer bedrijfsinformatie, openingsuren en de globale vakantieregeling." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
-          <Link  href="/admin/settings" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
-            <VoiceglotText  translationKey="admin.settings.cta" defaultText="Beheer instellingen" />
-            <Image  src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-          </Link>
+          <div className="flex flex-col gap-2">
+            <Link  href="/admin/settings" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
+              <VoiceglotText  translationKey="admin.settings.cta" defaultText="Bedrijfsinstellingen" />
+              <Image  src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            </Link>
+            <Link  href="/admin/telephony" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
+              <VoiceglotText  translationKey="admin.telephony.cta" defaultText="Telefonie Tarieven" />
+              <Euro strokeWidth={1.5} size={12} />
+            </Link>
+          </div>
         </BentoCard>
 
         {/* Page Builder Quick Access */}

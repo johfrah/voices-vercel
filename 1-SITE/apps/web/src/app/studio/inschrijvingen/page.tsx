@@ -9,6 +9,7 @@ import {
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
 import { StudioDataBridge } from "@/lib/studio-bridge";
+import { getReviewStats } from "@/lib/api-server";
 import {
     ArrowRight,
     Calendar,
@@ -25,7 +26,7 @@ import { redirect } from "next/navigation";
 
 /**
  * INSTRUCTOR DASHBOARD (BEHEER)
- *  VOICES OS: De cockpit voor de ondernemende instructeur.
+ *  VOICES OS: Het dashboard voor de ondernemende instructeur.
  * Alleen voor ingelogde instructeurs (of admins die als instructeur doorgaan).
  */
 export default async function InstructorDashboardPage() {
@@ -49,6 +50,7 @@ export default async function InstructorDashboardPage() {
   }
 
   const editions = await StudioDataBridge.getInstructorEditions(effectiveInstructor.id);
+  const reviewStats = await getReviewStats('voices-studio');
   
   // Statistieken berekenen voor de instructeur
   const upcomingEditions = editions.filter(e => e.status === 'upcoming');
@@ -100,7 +102,7 @@ export default async function InstructorDashboardPage() {
           <ContainerInstrument>
             <TrendingUp strokeWidth={1.5} className="text-primary mb-6" size={24} />
             <TextInstrument className="text-[15px] tracking-widest text-white/30 font-light"><VoiceglotText  translationKey="studio.beheer.stats.impact" defaultText="Jouw Impact" /></TextInstrument>
-            <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter mt-2">4.9/5</HeadingInstrument>
+            <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter mt-2">{reviewStats.averageRating}/5</HeadingInstrument>
           </ContainerInstrument>
           <Link  href="/studio/reviews" className="text-[15px] font-black tracking-widest text-primary hover:underline mt-8 flex items-center gap-2"><VoiceglotText  translationKey="studio.beheer.stats.reviews_cta" defaultText="BEKIJK REVIEWS" /><ExternalLink strokeWidth={1.5} size={12} /></Link>
         </BentoCard>

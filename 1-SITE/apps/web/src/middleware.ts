@@ -6,6 +6,8 @@ import { type NextRequest, NextResponse } from 'next/server'
  * 
  * Doel: Volledige controle over routing, i18n, en journey detection.
  * Deze middleware is de 'Traffic Controller' van het Voices Ecosysteem.
+ * 
+ * @lock-file
  */
 
 export async function middleware(request: NextRequest) {
@@ -32,19 +34,20 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/assets') ||
-    pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|ico|wav|mp3|mp4)$/)
+    pathname.startsWith('/favicon.ico') ||
+    pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|ico|wav|mp3|mp4|css|js|woff2?)$/)
   ) {
-    // HOTLINKING PROTECTION FOR ASSETS
-    const referer = request.headers.get('referer')
-    const isAsset = pathname.startsWith('/assets/agency/voices')
-    const host = request.headers.get('host') || ''
-    
-    if (isAsset && referer && !referer.includes(host) && !referer.includes('localhost')) {
-      console.warn(` HOTLINK BLOCK: Asset requested from external domain [${referer}]`)
-      return new NextResponse('Unauthorized asset request.', { status: 403 })
-    }
-
     return NextResponse.next()
+  }
+
+  // HOTLINKING PROTECTION FOR ASSETS
+  const referer = request.headers.get('referer')
+  const isAsset = pathname.startsWith('/assets/agency/voices')
+  const host = request.headers.get('host') || ''
+  
+  if (isAsset && referer && !referer.includes(host) && !referer.includes('localhost')) {
+    console.warn(` HOTLINK BLOCK: Asset requested from external domain [${referer}]`)
+    return new NextResponse('Unauthorized asset request.', { status: 403 })
   }
 
   let response: NextResponse
@@ -54,16 +57,13 @@ export async function middleware(request: NextRequest) {
     console.error(' Middleware updateSession failed:', err)
     response = NextResponse.next()
   }
-  const host = request.headers.get('host') || ''
 
   // 1.5 NUCLEAR SESSION CLEANUP (FORCE LOGOUT FROM OLD WP)
-  // Als we WordPress cookies zien, of als de 'voices_session_v2' vlag ontbreekt, 
-  // dwingen we een schone lei af voor de nieuwe Next.js omgeving.
+  // We dwingen een schone lei af voor de nieuwe Next.js omgeving.
   const hasNewSession = request.cookies.has('voices_session_v2')
-  const hasWpCookies = request.cookies.getAll().some(c => c.name.startsWith('wordpress_'))
 
-  if (!hasNewSession || hasWpCookies) {
-    // Verwijder alle oude WP cookies
+  if (!hasNewSession) {
+    // Verwijder alle oude WP cookies indien nog aanwezig
     request.cookies.getAll().forEach(c => {
       if (c.name.startsWith('wordpress_') || c.name.startsWith('wp-')) {
         response.cookies.delete(c.name)
@@ -77,7 +77,7 @@ export async function middleware(request: NextRequest) {
       sameSite: 'lax' 
     })
     
-    console.log(' NUCLEAR CLEANUP: Old WordPress sessions cleared.')
+    console.log(' NUCLEAR CLEANUP: Legacy session flags cleared.')
   }
 
   // 1.7 UNDER CONSTRUCTION GATE (GOD MODE)
@@ -85,7 +85,7 @@ export async function middleware(request: NextRequest) {
   // We gebruiken een environment variable of een cookie voor de bypass.
   const forceUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true';
   const isMainDomain = host === 'voices.be' || host === 'www.voices.be';
-  const isUnderConstruction = forceUnderConstruction || isMainDomain;
+  const isUnderConstruction = forceUnderConstruction; // Alleen als expliciet aangezet via ENV
   
   // DOMAIN BYPASS: Specifieke domeinen en staging mogen ALTIJD door (Johfrah, Ademing, Youssef, Staging)
   const isBypassDomain = host.includes('staging.voices.be') ||
@@ -94,7 +94,9 @@ export async function middleware(request: NextRequest) {
                          host.includes('youssefzaki.eu') ||
                          host.includes('johfrai.be') ||
                          host.includes('localhost') || // LOCAL TEST BYPASS
-                         url.searchParams.get('moby') === 'true';
+                         url.searchParams.get('moby') === 'true' ||
+                         url.searchParams.get('launch') === 'true' ||
+                         url.searchParams.get('bob') === 'true'; // BOB BYPASS
 
   // LLM CONTEXT & INTENT FILTER (Project DNA-Filter)
   const intent = url.searchParams.get('intent') || 'explore'
@@ -147,31 +149,79 @@ export async function middleware(request: NextRequest) {
   
   // Portfolio Journey
   if (host.includes('johfrah.be')) {
-    url.pathname = `/portfolio/johfrah${pathname === '/' ? '' : pathname}`
+    //  CHRIS-PROTOCOL: Map all root requests to the Johfrah portfolio directory
+    const targetPath = pathname === '/' ? '' : pathname;
+    url.pathname = `/portfolio/johfrah${targetPath}`;
     const portfolioResponse = NextResponse.rewrite(url)
     portfolioResponse.headers.set('x-voices-market', 'JOHFRAH')
+    portfolioResponse.headers.set('x-voices-pathname', pathname)
+    portfolioResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
     return portfolioResponse
   }
+
+    //  CHRIS-PROTOCOL: Localhost Journey Protection
+    // Voorkom dat specifieke journey routes op localhost in de knoop raken.
+    if (host.includes('localhost')) {
+      // Laat expliciete journey-paden ALTIJD door op localhost
+      const explicitJourneys = ['/agency', '/artist', '/voice', '/academy', '/ademing', '/johfrai', '/account', '/admin', '/price', '/tarieven'];
+      if (explicitJourneys.some(j => pathname.startsWith(j))) {
+        // Continue to final headers
+      } else if (pathname.startsWith('/portfolio/')) {
+        const parts = pathname.split('/').filter(Boolean);
+        const knownPortfolioSlugs = ['johfrah', 'youssef', 'ademing'];
+        
+        if (parts.length < 2 || !knownPortfolioSlugs.includes(parts[1].toLowerCase())) {
+          url.pathname = '/portfolio/johfrah'
+          return NextResponse.redirect(url)
+        }
+      } else {
+        //  CHRIS-PROTOCOL: Handle sub-routes on localhost for testing
+        const topLevelSubRoutes = ['demos', 'host', 'tarieven', 'contact', 'bestellen', 'over-mij'];
+        const firstPart = pathname.split('/').filter(Boolean)[0];
+        const referer = request.headers.get('referer') || '';
+        const isFromPortfolio = referer.includes('/portfolio/johfrah');
+
+        if (topLevelSubRoutes.includes(firstPart) && isFromPortfolio) {
+          url.pathname = `/portfolio/johfrah/${firstPart}`;
+          const subRouteResponse = NextResponse.rewrite(url);
+          subRouteResponse.headers.set('x-voices-pathname', pathname);
+          subRouteResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`);
+          return subRouteResponse;
+        }
+      }
+    }
 
   // JOHFRAI AI DOMAIN
   if (host.includes('johfrai.be')) {
     url.pathname = `/johfrai${pathname === '/' ? '' : pathname}`
-    return NextResponse.rewrite(url)
+    const johfraiResponse = NextResponse.rewrite(url)
+    johfraiResponse.headers.set('x-voices-market', 'JOHFRAI')
+    johfraiResponse.headers.set('x-voices-pathname', pathname)
+    johfraiResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
+    return johfraiResponse
   }
   
   // ARTIST DOMAIN (YOUSSEF) - STRICT ISOLATION
-  if (host.includes('youssefzaki.eu')) {
-    url.pathname = `/artist/youssef${pathname === '/' ? '' : pathname}`
+  if (host.includes('youssefzaki.eu') || (host.includes('localhost') && pathname.startsWith('/artist/youssef'))) {
+    const targetPath = pathname.replace('/artist/youssef', '') || '/';
+    url.pathname = `/artist/youssef${targetPath}`;
     const artistResponse = NextResponse.rewrite(url)
     artistResponse.headers.set('x-voices-market', 'YOUSSEF')
     artistResponse.headers.set('x-voices-lang', 'en')
+    artistResponse.headers.set('x-voices-pathname', pathname)
+    artistResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
+    artistResponse.cookies.set('voices_lang', 'en', { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
     return artistResponse
   }
 
   // Academy Journey
   if (market === 'ACADEMY') {
     url.pathname = `/academy${pathname === '/' ? '' : pathname}`
-    return NextResponse.rewrite(url)
+    const academyResponse = NextResponse.rewrite(url)
+    academyResponse.headers.set('x-voices-market', 'ACADEMY')
+    academyResponse.headers.set('x-voices-pathname', pathname)
+    academyResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
+    return academyResponse
   }
 
   // Meditation Journey (ADEMING)
@@ -179,10 +229,13 @@ export async function middleware(request: NextRequest) {
     url.pathname = `/ademing${pathname === '/' ? '' : pathname}`
     const ademingResponse = NextResponse.rewrite(url)
     ademingResponse.headers.set('x-voices-market', 'ADEMING')
+    ademingResponse.headers.set('x-voices-pathname', pathname)
+    ademingResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
     return ademingResponse
   }
 
   // 4. I18N NUCLEAR REWRITE (CLEAN URLS)
+  // ... (rest of the file)
   // Ondersteunt /fr/, /en/, /nl/, /de/, /es/, /it/, /pt/
   const langMatch = pathname.match(/^\/(fr|en|nl|de|es|it|pt)(\/|$)/i)
   let detectedLang = 'nl' // Default
@@ -215,6 +268,7 @@ export async function middleware(request: NextRequest) {
     const i18nResponse = NextResponse.rewrite(url)
     i18nResponse.headers.set('x-voices-market', market)
     i18nResponse.headers.set('x-voices-lang', detectedLang)
+    i18nResponse.headers.set('x-voices-pathname', pathname)
     i18nResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
     
     // Bewaar de taalvoorkeur in een cookie voor de bezoeker
@@ -252,8 +306,9 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - api (interne API routes)
+     * - admin (admin dashboard)
      * - assets (statische assets)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api|admin|assets|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|admin|assets|static|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff2?)$).*)',
   ],
 }

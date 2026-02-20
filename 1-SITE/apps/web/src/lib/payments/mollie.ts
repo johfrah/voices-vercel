@@ -56,7 +56,7 @@ export class MollieService {
   /**
    * Voer een request uit naar de Mollie API
    */
-  private static async request(method: string, endpoint: string, payload?: any) {
+  public static async request(method: string, endpoint: string, payload?: any) {
     if (!this.API_KEY) throw new Error('Mollie API Key missing');
 
     const response = await fetch(`${this.BASE_URL}${endpoint}`, {

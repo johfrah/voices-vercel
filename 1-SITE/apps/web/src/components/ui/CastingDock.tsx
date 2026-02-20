@@ -7,12 +7,13 @@ import {
   ButtonInstrument, 
   TextInstrument 
 } from '@/components/ui/LayoutInstruments';
-import { LucideX, LucideChevronRight, Mic2, Users } from 'lucide-react';
+import { LucideX, LucideChevronRight, Heart, Users } from 'lucide-react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { usePathname, useRouter } from 'next/navigation';
 
 /**
  * PREMIUM CASTING DOCK (GOD MODE 2026)
@@ -20,10 +21,17 @@ import { useSonicDNA } from '@/lib/sonic-dna';
  * Volgens Chris-Protocol: 100ms feedback, Liquid DNA
  */
 export const CastingDock = () => {
+  const pathname = usePathname();
+  const router = useRouter();
   const { state, toggleActorSelection } = useVoicesState();
   const { playClick } = useSonicDNA();
   const selectedActors = state.selected_actors;
-  const isVisible = selectedActors.length > 0;
+  
+  //  CHRIS-PROTOCOL: Geen CastingDock op Artist, Voice of Launchpad pagina's
+  const isExcludedPage = pathname?.startsWith('/artist/') || 
+                         pathname?.startsWith('/voice/') || 
+                         pathname?.startsWith('/casting/launchpad');
+  const isVisible = selectedActors.length > 0 && !isExcludedPage;
 
   const removeActor = (e: React.MouseEvent, actor: any) => {
     e.stopPropagation();
@@ -33,7 +41,7 @@ export const CastingDock = () => {
 
   const startCasting = () => {
     playClick('pro');
-    window.location.href = '/casting/launchpad/';
+    router.push('/casting/launchpad/');
   };
 
   return (
@@ -44,15 +52,15 @@ export const CastingDock = () => {
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 100, opacity: 0, scale: 0.9 }}
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[150] w-full max-w-xl px-6 pointer-events-none"
+          className="fixed bottom-8 left-0 right-0 z-[150] pointer-events-none flex justify-center px-6"
         >
           <ContainerInstrument 
             plain
-            className="bg-va-black shadow-[0_32px_128px_rgba(0,0,0,0.8)] rounded-full p-2 border border-white/10 pointer-events-auto relative overflow-hidden flex items-center gap-4 backdrop-blur-2xl bg-va-black/90"
+            className="bg-va-black shadow-[0_32px_128px_rgba(0,0,0,0.8)] rounded-full p-2 border border-white/10 pointer-events-auto relative overflow-hidden flex items-center justify-center gap-2 md:gap-8 backdrop-blur-2xl bg-va-black/90 w-fit"
           >
             {/*  ACTOR AVATARS (Liquid Stack) */}
-            <div className="flex items-center pl-2 shrink-0">
-              <div className="flex -space-x-3">
+            <div className="flex items-center pl-2 shrink-0 scale-90 md:scale-100">
+              <div className="flex -space-x-4 md:-space-x-3">
                 {selectedActors.slice(0, 5).map((actor, idx) => (
                   <motion.div 
                     key={actor.id}
@@ -60,11 +68,11 @@ export const CastingDock = () => {
                     className="relative w-12 h-14 rounded-full overflow-hidden border-2 border-va-black bg-va-off-white shadow-xl group cursor-pointer"
                     onClick={(e) => removeActor(e, actor)}
                   >
-                    {actor.photoUrl ? (
-                      <Image src={actor.photoUrl} alt={actor.firstName} fill className="object-cover transition-transform group-hover:scale-110" />
+                    {(actor.photo_url && actor.photo_url !== 'NULL') || (actor.photoUrl && actor.photoUrl !== 'NULL') ? (
+                      <Image src={actor.photo_url || actor.photoUrl} alt={actor.firstName || actor.display_name} fill className="object-cover transition-transform group-hover:scale-110" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-va-black font-bold text-sm">
-                        {actor.firstName[0]}
+                        {(actor.firstName || actor.display_name || 'S')[0]}
                       </div>
                     )}
                     {/* Remove Overlay on Hover */}
@@ -82,7 +90,7 @@ export const CastingDock = () => {
             </div>
 
             {/*  SELECTION INFO */}
-            <div className="flex-1 min-w-0 py-1">
+            <div className="py-1 shrink-0 hidden sm:block">
               <div className="flex items-center gap-2">
                 <Users size={14} className="text-primary" />
                 <TextInstrument className="text-white font-light text-[17px] tracking-tight truncate leading-tight block">
@@ -97,18 +105,18 @@ export const CastingDock = () => {
             {/*  ACTION BUTTON */}
             <button 
               onClick={startCasting}
-              className="bg-primary hover:bg-primary/90 text-white h-14 px-6 rounded-full flex items-center gap-3 transition-all hover:scale-105 active:scale-95 shadow-xl group/btn shrink-0"
+              className="bg-primary hover:bg-primary/90 text-white h-12 md:h-14 px-4 md:px-6 rounded-full flex items-center gap-2 md:gap-3 transition-all hover:scale-105 active:scale-95 shadow-xl group/btn shrink-0"
             >
-              <Mic2 size={20} strokeWidth={2} className="group-hover:animate-pulse" />
+              <Heart size={18} strokeWidth={2.5} className="group-hover:animate-pulse md:w-5 md:h-5 fill-white/20" />
               <div className="flex flex-col items-start">
-                <span className="text-[14px] font-bold tracking-widest uppercase leading-none">
-                  <VoiceglotText translationKey="auto.castingdock.casting" defaultText="Casting" />
-                </span>
-                <span className="text-[10px] font-medium opacity-70 leading-none mt-1">
+                <span className="text-[12px] md:text-[14px] font-bold tracking-widest uppercase leading-none">
                   <VoiceglotText translationKey="auto.castingdock.proefopname" defaultText="Gratis proefopname" />
                 </span>
+                <span className="text-[9px] md:text-[10px] font-medium opacity-70 leading-none mt-1 uppercase">
+                  <VoiceglotText translationKey="auto.castingdock.start_selectie" defaultText="Bevestig selectie" />
+                </span>
               </div>
-              <LucideChevronRight size={18} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform" />
+              <LucideChevronRight size={16} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform md:w-5 md:h-5" />
             </button>
           </ContainerInstrument>
         </motion.div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from '@/lib/utils';
-import { ArrowRight, Megaphone, Mic2, Phone, Video, Zap } from 'lucide-react';
+import { ArrowRight, Megaphone, Mic2, Phone, Video, Zap, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
@@ -50,11 +50,20 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       href: '/studio',
       icon: Mic2,
       color: 'bg-primary'
+    },
+    academy: {
+      title: 'Klaar om het ambacht te leren?',
+      text: 'Ontdek de online Academy en leer stap voor stap hoe je een luisteraar echt bereikt.',
+      cta: 'Bekijk het traject',
+      href: '/academy',
+      icon: GraduationCap,
+      color: 'bg-[#6366f1]'
     }
   };
 
-  const isStudio = typeof window !== 'undefined' && (window.location.pathname.startsWith('/studio') || window.location.pathname.startsWith('/academy'));
-  const config = isStudio ? configs.studio : (configs[journey] || configs.general);
+  const isStudio = typeof window !== 'undefined' && window.location.pathname.startsWith('/studio');
+  const isAcademy = typeof window !== 'undefined' && window.location.pathname.startsWith('/academy');
+  const config = isStudio ? configs.studio : isAcademy ? configs.academy : (configs[journey] || configs.general);
   const Icon = config.icon;
 
   return (

@@ -21,7 +21,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { SmartDemoExplorer } from "@/components/johfrai/SmartDemoExplorer";
 import { getActors, getMusicLibrary } from "@/lib/api";
-import { PricingEngine, PlanType } from "@/lib/pricing-engine";
+import { SlimmeKassa, PlanType, SlimmeKassaConfig } from "@/lib/pricing-engine";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { LiveMixerInstrument } from "@/components/johfrai/LiveMixerInstrument";
 
@@ -112,7 +112,7 @@ function JohfraiContent() {
   const [isSharing, setIsSharing] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
   const [price, setPrice] = useState(0);
-  const [pricingConfig, setPricingConfig] = useState<Record<string, any>>(PricingEngine.getDefaultConfig());
+  const [pricingConfig, setPricingConfig] = useState<Record<string, any>>(SlimmeKassa.getDefaultConfig());
   const [wordCount, setWordCount] = useState(0);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [promptCount, setPromptCount] = useState(1);
@@ -396,7 +396,7 @@ function JohfraiContent() {
     setWordCount(words);
     const duration = Math.ceil(words / 2.33);
     setEstimatedDuration(duration);
-    const result = PricingEngine.calculatePrice(
+    const result = SlimmeKassa.calculatePrice(
       { first_name: 'johfrah', ai_enabled: true },
       { usage: 'telefonie', words, prompts: detectedPrompts, musicMix: checkoutState.music.asBackground || checkoutState.music.asHoldMusic },
       pricingConfig
@@ -590,7 +590,7 @@ function JohfraiContent() {
                 <HeadingInstrument level={3} className="text-[15px] tracking-widest text-va-black/40 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.basic.title" defaultText="Basic" />
                 </HeadingInstrument>
-                <TextInstrument className="text-4xl font-black">19<TextInstrument as="span" className="text-[15px] font-medium text-va-black/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
+                <TextInstrument className="text-4xl font-black">{pricingConfig.johfraiBasicPrice / 100 || 19}<TextInstrument as="span" className="text-[15px] font-medium text-va-black/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
                 <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.contract" defaultText="12 maanden contract" />
                 </TextInstrument>
@@ -619,7 +619,7 @@ function JohfraiContent() {
                 <HeadingInstrument level={3} className="text-[15px] tracking-widest text-white/40 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.pro.title" defaultText="Pro" />
                 </HeadingInstrument>
-                <TextInstrument className="text-4xl font-black text-white">39<TextInstrument as="span" className="text-[15px] font-medium text-white/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
+                <TextInstrument className="text-4xl font-black text-white">{pricingConfig.johfraiProPrice / 100 || 39}<TextInstrument as="span" className="text-[15px] font-medium text-white/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
                 <TextInstrument className="text-[15px] tracking-widest text-white/30 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.contract" defaultText="12 maanden contract" />
                 </TextInstrument>
@@ -646,7 +646,7 @@ function JohfraiContent() {
                 <HeadingInstrument level={3} className="text-[15px] tracking-widest text-va-black/40 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.studio.title" defaultText="Studio" />
                 </HeadingInstrument>
-                <TextInstrument className="text-4xl font-black">99<TextInstrument as="span" className="text-[15px] font-medium text-va-black/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
+                <TextInstrument className="text-4xl font-black">{pricingConfig.johfraiStudioPrice / 100 || 99}<TextInstrument as="span" className="text-[15px] font-medium text-va-black/40"><VoiceglotText  translationKey="auto.page._maand.e3e6b0" defaultText="/maand" /></TextInstrument></TextInstrument>
                 <TextInstrument className="text-[15px] tracking-widest text-va-black/30 font-light">
                   <VoiceglotText  translationKey="johfrai.pricing.contract" defaultText="12 maanden contract" />
                 </TextInstrument>
@@ -1074,7 +1074,7 @@ function JohfraiContent() {
                 <motion.div key="explorer" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <ContainerInstrument className="mb-10 text-center space-y-2">
                     <HeadingInstrument level={2} className="text-2xl font-light tracking-tight"><VoiceglotText  translationKey="johfrai.explorer.title" defaultText="Slimme Voorbeelden" /></HeadingInstrument>
-                    <TextInstrument className="text-[15px] text-va-black/40 font-medium max-w-md mx-auto"><VoiceglotText  translationKey="johfrai.explorer.description" defaultText="Laat je inspireren door Johfrai demo's uit jouw sector. Luister, leer en adopteer het script met n klik." /></TextInstrument>
+                    <TextInstrument className="text-[15px] text-va-black/40 font-medium max-w-md mx-auto"><VoiceglotText  translationKey="johfrai.explorer.description" defaultText="Laat je inspireren door Johfrai demo's uit jouw sector. Luister, leer en adopteer het script met één klik." /></TextInstrument>
                   </ContainerInstrument>
                   <SmartDemoExplorer strokeWidth={1.5} onAdoptScript={(script) => { setText(script); setActiveTab('editor'); }} />
                 </motion.div>

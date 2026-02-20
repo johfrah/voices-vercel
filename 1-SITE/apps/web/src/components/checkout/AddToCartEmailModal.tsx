@@ -37,12 +37,12 @@ export const AddToCartEmailModal: React.FC<AddToCartEmailModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-va-black/60 backdrop-blur-xl">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-va-black/95 backdrop-blur-xl">
       <motion.div 
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="w-full max-w-xl bg-white rounded-[40px] shadow-aura overflow-hidden relative"
+        className="w-full max-w-xl bg-white rounded-[40px] shadow-aura overflow-hidden relative z-[10001]"
       >
         <button 
           onClick={() => {
@@ -60,10 +60,10 @@ export const AddToCartEmailModal: React.FC<AddToCartEmailModalProps> = ({
               <ShoppingBag size={40} strokeWidth={1.2} />
             </div>
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-va-black">
-              <VoiceglotText translationKey="checkout.modal.title" defaultText="Stem toegevoegd!" />
+              <VoiceglotText translationKey="checkout.modal.title" defaultText="Project gestart!" />
             </HeadingInstrument>
             <TextInstrument className="text-lg text-va-black/40 font-light leading-relaxed max-w-xs mx-auto">
-              <VoiceglotText translationKey="checkout.modal.subtitle" defaultText="Voer je e-mailadres in om je configuratie veilig op te slaan." />
+              <VoiceglotText translationKey="checkout.modal.subtitle" defaultText="Voer je e-mailadres in om je selectie en tarieven veilig te bewaren." />
             </TextInstrument>
           </div>
 
@@ -91,14 +91,14 @@ export const AddToCartEmailModal: React.FC<AddToCartEmailModalProps> = ({
                 className="order-2 md:order-1 py-5 px-6 text-[13px] font-bold tracking-widest text-va-black/40 hover:text-va-black transition-all uppercase border border-va-black/5 rounded-2xl hover:bg-va-off-white flex items-center justify-center gap-2 group"
               >
                 <Plus size={16} className="group-hover:rotate-90 transition-transform duration-300" />
-                <VoiceglotText translationKey="checkout.modal.add_more" defaultText="Nog een stem" />
+                <VoiceglotText translationKey="checkout.modal.add_more" defaultText="Stem toevoegen" />
               </button>
 
               <ButtonInstrument 
                 onClick={() => handleAction('checkout')}
                 className="order-1 md:order-2 py-5 px-8 text-[13px] font-bold tracking-widest uppercase !rounded-2xl !bg-va-black !text-white flex items-center justify-center gap-3 group hover:!bg-primary transition-all shadow-aura-lg hover:scale-[1.02] active:scale-[0.98]"
               >
-                <VoiceglotText translationKey="checkout.modal.finish" defaultText="Bestellen" />
+                <VoiceglotText translationKey="checkout.modal.finish" defaultText="Naar kassa" />
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </ButtonInstrument>
             </div>

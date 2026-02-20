@@ -40,13 +40,18 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
 
   //  SELF-HEALING LOGIC
   useEffect(() => {
-    if (noTranslate || language === 'nl') return;
+    // CHRIS-PROTOCOL: Determine default language based on market
+    // In Youssef market, 'en' is the source of truth, otherwise 'nl'
+    const isYoussefMarket = typeof window !== 'undefined' && (window.location.pathname.includes('/artist/youssef') || window.location.host.includes('youssefzaki.eu'));
+    const sourceLang = isYoussefMarket ? 'en' : 'nl';
+
+    if (noTranslate || language === sourceLang) return;
 
     const currentTranslation = t(translationKey, defaultText);
     
-    // Als de vertaling gelijk is aan de default (NL) maar we zitten in een andere taal,
+    // Als de vertaling gelijk is aan de default (Source) maar we zitten in een andere taal,
     // dan is er een grote kans dat de vertaling ontbreekt.
-    if (currentTranslation === defaultText && language !== 'nl' && !isHealing) {
+    if (currentTranslation === defaultText && language !== sourceLang && !isHealing) {
       const healTranslation = async () => {
         setIsHealing(true);
         

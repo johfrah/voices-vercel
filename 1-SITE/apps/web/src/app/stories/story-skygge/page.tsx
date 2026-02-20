@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   PageWrapperInstrument, 
   SectionInstrument, 
@@ -9,9 +8,13 @@ import {
 } from "@/components/ui/LayoutInstruments";
 import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { Quote, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 
 /**
  * STORY: SKYGGE (PHYSICAL PAGE)
@@ -21,7 +24,9 @@ import Link from "next/link";
 export default function SkyggeStoryPage() {
   return (
     <PageWrapperInstrument className="relative min-h-screen pt-32 pb-20 overflow-hidden">
-      <LiquidBackground strokeWidth={1.5} />
+      <Suspense fallback={null}>
+        <LiquidBackground strokeWidth={1.5} />
+      </Suspense>
       
       <SectionInstrument className="max-w-5xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-16">

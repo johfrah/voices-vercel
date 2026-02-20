@@ -1,18 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Loader2, AlertCircle, CheckCircle2, Play, Pause, Music, Tag, Briefcase, Globe, Clock, Camera, Tv, Radio, Mic, Mic2, Info as InfoIcon, ChevronDown, Sparkles } from 'lucide-react';
+import { X, Save, Loader2, AlertCircle, CheckCircle2, Play, Pause, Music, Tag, Briefcase, Globe, Clock, Camera, Tv, Radio, Mic, Mic2, Info as InfoIcon, ChevronDown, Sparkles, Zap, Award, Coffee, Settings, Video, Star, Calendar, Upload, Home, Image as ImageIcon } from 'lucide-react';
 import { 
   ContainerInstrument, 
   HeadingInstrument, 
   TextInstrument, 
-  ButtonInstrument 
+  ButtonInstrument
 } from './LayoutInstruments';
+import { VoiceglotText } from './VoiceglotText';
+import Image from 'next/image';
 import { Actor, Demo } from '@/types';
 import { cn } from '@/lib/utils';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { PhotoUploader } from './PhotoUploader';
+import { calculateDeliveryDate } from '@/lib/delivery-logic';
+import { formatDistanceToNow, isAfter, isBefore, startOfDay, format, parseISO } from 'date-fns';
+import { nl } from 'date-fns/locale';
 
 interface ActorEditModalProps {
   actor: Actor;
@@ -31,6 +36,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
 }) => {
   const { playClick } = useSonicDNA();
   const [taxonomies, setTaxonomies] = useState<{ tones: any[], languages: any[] }>({ tones: [], languages: [] });
+  const [systemWorkingDays, setSystemWorkingDays] = useState<string[]>(['mon', 'tue', 'wed', 'thu', 'fri']);
   const [formData, setFormData] = useState({
     display_name: actor.display_name || '',
     tagline: actor.tagline || '',
@@ -41,9 +47,9 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     status: actor.status || 'live',
     delivery_days: actor.delivery_days_max || 1,
     cutoff_time: actor.cutoff_time || '18:00',
-    native_lang: actor.native_lang || '',
-    extra_langs: actor.extra_langs || '',
-    native_lang_label: (actor as any).native_lang_label || '',
+    native_lang: actor.native_lang || (actor as any).nativeLang || '',
+    extra_langs: actor.extra_langs || (actor as any).extraLangs || '',
+    native_lang_label: actor.native_lang_label || (actor as any).nativeLangLabel || (actor as any).native_lang_label || '',
     photo_url: actor.photo_url || '',
     photo_id: (actor as any).photo_id || (actor as any).photoId || null,
     demos: actor.demos || [],
@@ -56,7 +62,16 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     holiday_till: (actor as any).holidayTill || (actor as any).holiday_till || '',
     price_online: (actor as any).priceOnline || (actor as any).price_online || '',
     price_live_regie: (actor as any).priceLiveRegie || (actor as any).price_live_regie || '',
-    rates: actor.rates || (actor as any).rates || { GLOBAL: {} }
+    rates: actor.rates || (actor as any).rates || { GLOBAL: {} },
+    delivery_config: actor.delivery_config || (actor as any).deliveryConfig || { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'] },
+    studio_specs: (actor as any).studioSpecs || (actor as any).studio_specs || { microphone: '', preamp: '', interface: '', booth: '' },
+    connectivity: (actor as any).connectivity || { source_connect: false, zoom: false, cleanfeed: false, session_link: false },
+    portfolio_photos: (actor as any).portfolio_photos || [],
+    actor_videos: actor.actor_videos || (actor as any).actorVideos || [],
+    reviews: actor.reviews || [],
+    portfolio_tier: (actor as any).portfolio_tier || (actor as any).portfolioTier || 'none',
+    pending_bio: (actor as any).pending_bio || (actor as any).pendingBio || null,
+    pending_tagline: (actor as any).pending_tagline || (actor as any).pendingTagline || null
   });
 
   //  CHRIS-PROTOCOL: If native_lang is a label (like "Vlaams"), try to find the code in taxonomies
@@ -103,14 +118,60 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
   }, [taxonomies.languages, formData.extra_langs]);
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingDemo, setIsUploadingDemo] = useState<number | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  const [activeTab, setActiveTab] = useState<'info' | 'rates' | 'demos'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'availability' | 'rates' | 'portfolio' | 'demos' | 'reviews'>('info');
   const [selectedMarket, setSelectedMarket] = useState<string>('GLOBAL');
   const [simulatorScenario, setSimulatorScenario] = useState<'1ch' | '2ch' | '3ch'>('1ch');
   const [simulatorSpots, setSimulatorSpots] = useState<Record<string, number>>({});
   const [simulatorYears, setSimulatorYears] = useState<Record<string, number>>({});
   const [simulatorMedia, setSimulatorMedia] = useState<string[]>(['tv']);
   const [simulatorRegion, setSimulatorRegion] = useState<Record<string, string>>({ tv: 'national', radio: 'national' });
+
+  //  CHRIS-PROTOCOL: Profile Strength Logic (2026)
+  const profileStrength = useMemo(() => {
+    let score = 0;
+    if (formData.bio?.length > 100) score += 20;
+    if (formData.tagline) score += 10;
+    if (formData.tone_of_voice) score += 10;
+    if (formData.clients) score += 10;
+    const type = formData.delivery_config?.type;
+    if (type === '24h' || type === 'sameday' || type === 'direct') score += 30;
+    if (formData.delivery_config?.weekly_on?.length >= 5) score += 20;
+    return Math.min(100, score);
+  }, [formData]);
+
+  const absenceStatus = useMemo(() => {
+    if (!formData.holiday_from || !formData.holiday_till) return null;
+    
+    try {
+      const from = startOfDay(parseISO(formData.holiday_from));
+      const till = startOfDay(parseISO(formData.holiday_till));
+      const now = startOfDay(new Date());
+      
+      if (isAfter(from, till)) return { text: "Einddatum moet na begindatum liggen.", type: 'error' };
+      
+      if (isAfter(from, now)) {
+        const distance = formatDistanceToNow(from, { locale: nl, addSuffix: true });
+        return { 
+          text: `Afwezig vanaf ${distance.replace('over ', '')}`, 
+          type: 'future' 
+        };
+      }
+      
+      if (!isAfter(now, till)) {
+        const distance = formatDistanceToNow(till, { locale: nl, addSuffix: true });
+        return { 
+          text: `Nu afwezig tot ${distance.replace('over ', '')}`, 
+          type: 'present' 
+        };
+      }
+      
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }, [formData.holiday_from, formData.holiday_till]);
 
   const updateRate = (market: string, field: string, value: string) => {
     const updatedRates = { ...(formData.rates || {}) };
@@ -167,7 +228,6 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
 
   const RateIntelligence = ({ value, label, isPlaceholder = false }: { value: string | number, label: string, isPlaceholder?: boolean }) => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
-    const BSF = 249;
     
     if (!numValue || isNaN(numValue)) {
       return (
@@ -204,7 +264,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     isAllIn?: boolean,
     placeholder?: string
   }) => {
-    const BSF = 249;
+    const BSF = 199;
     const options = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 750, 1000];
     
     // Calculate the buyout part for the display
@@ -242,20 +302,31 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
   const [playingDemoId, setPlayingDemoId] = useState<number | null>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
-  //  Load Taxonomies for better UI
+  //  Load Taxonomies and System Config for better UI
   useEffect(() => {
-    const loadTaxonomies = async () => {
+    const loadData = async () => {
       try {
-        const res = await fetch('/api/taxonomies');
-        if (res.ok) {
-          const data = await res.json();
+        const [taxRes, configRes] = await Promise.all([
+          fetch('/api/taxonomies'),
+          fetch('/api/admin/config')
+        ]);
+
+        if (taxRes.ok) {
+          const data = await taxRes.json();
           setTaxonomies(data);
         }
+
+        if (configRes.ok) {
+          const data = await configRes.json();
+          if (data.general_settings?.system_working_days) {
+            setSystemWorkingDays(data.general_settings.system_working_days);
+          }
+        }
       } catch (e) {
-        console.error("Failed to load taxonomies", e);
+        console.error("Failed to load data", e);
       }
     };
-    if (isOpen) loadTaxonomies();
+    if (isOpen) loadData();
   }, [isOpen]);
 
   useEffect(() => {
@@ -311,12 +382,13 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         tone_of_voice: actor.tone_of_voice || '',
         clients: actor.clients || '',
         voice_score: actor.voice_score || 10,
+        menu_order: actor.menu_order || 0,
         status: actor.status || 'live',
         delivery_days: actor.delivery_days_max || 1,
         cutoff_time: actor.cutoff_time || '18:00',
         native_lang: actor.native_lang || '',
         extra_langs: actor.extra_langs || '',
-        native_lang_label: (actor as any).native_lang_label || '',
+        native_lang_label: actor.native_lang_label || (actor as any).native_lang_label || '',
         photo_url: actor.photo_url || '',
         demos: actor.demos || [],
         firstName: actor.firstName || actor.first_name || (actor as any).display_name || '',
@@ -328,8 +400,12 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         holiday_till: (actor as any).holidayTill || (actor as any).holiday_till || '',
         price_live_regie: (actor as any).priceLiveRegie || (actor as any).price_live_regie || '',
         rates: initialRates,
+        delivery_config: actor.delivery_config || (actor as any).deliveryConfig || { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'] },
         photo_id: (actor as any).photo_id || (actor as any).photoId || null,
         price_online: (actor as any).priceOnline || (actor as any).price_online || '',
+        actor_videos: actor.actor_videos || (actor as any).actorVideos || [],
+        pending_bio: (actor as any).pending_bio || (actor as any).pendingBio || null,
+        pending_tagline: (actor as any).pending_tagline || (actor as any).pendingTagline || null
       });
       setMessage(null);
     }
@@ -338,6 +414,52 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
   const handlePhotoUploadSuccess = (newUrl: string, mediaId: number) => {
     setFormData({ ...formData, photo_url: newUrl, photo_id: mediaId });
     playClick('success');
+
+    //  CHRIS-PROTOCOL: Optimistic UI Update (2026)
+    // We update the VoiceCard immediately after upload, even before clicking "Opslaan"
+    // to give the user that "lightning fast" feeling.
+    window.dispatchEvent(new CustomEvent('voices:actor-updated', { 
+      detail: { 
+        actor: { 
+          ...actor, 
+          photo_url: newUrl,
+          photoId: mediaId 
+        } 
+      } 
+    }));
+  };
+
+  const handleDemoUpload = async (e: React.ChangeEvent<HTMLInputElement>, demoIdx: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const demoId = formData.demos[demoIdx].id;
+    setIsUploadingDemo(demoId);
+    playClick('pro');
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+
+      const response = await fetch('/api/admin/actors/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const data = await response.json();
+      const newDemos = [...formData.demos];
+      newDemos[demoIdx] = { ...newDemos[demoIdx], audio_url: data.url };
+      setFormData({ ...formData, demos: newDemos });
+      
+      playClick('success');
+    } catch (error) {
+      console.error('Demo upload error:', error);
+      setMessage({ type: 'error', text: 'Fout bij uploaden demo.' });
+    } finally {
+      setIsUploadingDemo(null);
+    }
   };
 
   const toggleTone = (toneLabel: string) => {
@@ -388,7 +510,12 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
       photo_id: formData.photo_id,
       photo_url: formData.photo_url,
       price_live_regie: formData.price_live_regie || null,
-      rates: formData.rates
+      rates: formData.rates,
+      studioSpecs: formData.studio_specs,
+      connectivity: formData.connectivity,
+      portfolio_photos: formData.portfolio_photos,
+      portfolioTier: formData.portfolio_tier,
+      reviews: formData.reviews
     };
 
     try {
@@ -402,6 +529,15 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
 
       const data = await response.json();
       setMessage({ type: 'success', text: 'Stem succesvol bijgewerkt!' });
+      
+      //  CHRIS-PROTOCOL: Global Sync (2026 Mandate)
+      // We dispatch a global event so all UI components (VoiceCards, Grids) 
+      // can update immediately without a page refresh.
+      if (data.actor) {
+        window.dispatchEvent(new CustomEvent('voices:actor-updated', { 
+          detail: { actor: data.actor } 
+        }));
+      }
       
       //  CHRIS-PROTOCOL: Trigger immediate UI update without reload
       if (onUpdate && data.actor) {
@@ -420,73 +556,112 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
       setIsSaving(false);
     }
   };
-
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 md:p-10">
+    <AnimatePresence mode="wait">
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 md:p-10">
         {/* Backdrop */}
         <motion.div 
+          key="backdrop"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-va-black/60 backdrop-blur-md"
+          className="absolute inset-0 bg-va-black/95 backdrop-blur-md"
         />
 
         {/* Modal */}
         <motion.div 
+          key="modal"
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-2xl bg-white rounded-[30px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          className="relative w-full max-w-2xl bg-white rounded-[30px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-[10001]"
         >
           {/* Header */}
-          <div className="px-8 py-6 border-b border-black/5 flex justify-between items-center bg-va-off-white/50">
-            <div>
-              <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter">
-                Bewerk <span className="text-primary italic">{actor.display_name}</span>
-              </HeadingInstrument>
-              <TextInstrument className="text-[11px] font-bold text-va-black/20 uppercase tracking-widest mt-1">
-                Admin God Mode
-              </TextInstrument>
-            </div>
-            <div className="flex items-center gap-2 bg-white rounded-full p-1 shadow-sm border border-black/5">
+          <div className="px-8 py-6 border-b border-black/5 flex flex-col gap-6 bg-va-off-white/50">
+            <div className="flex justify-between items-center">
+              <div>
+                <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter">
+                  Bewerk <span className="text-primary italic">{actor.display_name}</span>
+                </HeadingInstrument>
+                <div className="flex items-center gap-3 mt-1">
+                  <TextInstrument className="text-[11px] font-bold text-va-black/20 uppercase tracking-widest">
+                    Profielbeheer
+                  </TextInstrument>
+                  <div className="flex items-center gap-2 px-2 py-0.5 bg-primary/5 rounded-full border border-primary/10">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                    <span className="text-[10px] font-black text-primary uppercase tracking-widest">Profiel Score: {profileStrength}%</span>
+                  </div>
+                </div>
+              </div>
               <button 
-                onClick={() => setActiveTab('info')}
-                className={cn(
-                  "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all",
-                  activeTab === 'info' ? "bg-va-black text-white" : "text-va-black/40 hover:text-va-black"
-                )}
+                onClick={onClose}
+                className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-va-black/40 hover:text-primary transition-colors"
               >
-                Info
-              </button>
-              <button 
-                onClick={() => setActiveTab('rates')}
-                className={cn(
-                  "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all",
-                  activeTab === 'rates' ? "bg-va-black text-white" : "text-va-black/40 hover:text-va-black"
-                )}
-              >
-                Tarieven
-              </button>
-              <button 
-                onClick={() => setActiveTab('demos')}
-                className={cn(
-                  "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all",
-                  activeTab === 'demos' ? "bg-va-black text-white" : "text-va-black/40 hover:text-va-black"
-                )}
-              >
-                Demos
+                <X size={20} strokeWidth={1.5} />
               </button>
             </div>
-            <button 
-              onClick={onClose}
-              className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-va-black/40 hover:text-primary transition-colors"
-            >
-              <X size={20} strokeWidth={1.5} />
-            </button>
+
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 bg-white rounded-full p-1 shadow-sm border border-black/5">
+                <button 
+                  onClick={() => setActiveTab('info')}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all",
+                    activeTab === 'info' ? "bg-va-black text-white" : "text-va-black/40 hover:text-va-black"
+                  )}
+                >
+                  <VoiceglotText translationKey="admin.actor.tab.info" defaultText="Info" />
+                </button>
+                <button 
+                  onClick={() => setActiveTab('availability')}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all",
+                    activeTab === 'availability' ? "bg-va-black text-white" : "text-va-black/40 hover:text-va-black"
+                  )}
+                >
+                  <VoiceglotText translationKey="admin.actor.tab.availability" defaultText="Beschikbaarheid" />
+                </button>
+                <button 
+                  onClick={() => setActiveTab('rates')}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all",
+                    activeTab === 'rates' ? "bg-va-black text-white" : "text-va-black/40 hover:text-va-black"
+                  )}
+                >
+                  <VoiceglotText translationKey="admin.actor.tab.rates" defaultText="Tarieven" />
+                </button>
+                <button 
+                  onClick={() => setActiveTab('portfolio')}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all",
+                    activeTab === 'portfolio' ? "bg-va-black text-white" : "text-va-black/40 hover:text-va-black"
+                  )}
+                >
+                  <VoiceglotText translationKey="admin.actor.tab.portfolio" defaultText="Portfolio & Studio" />
+                </button>
+                <button 
+                  onClick={() => setActiveTab('demos')}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all",
+                    activeTab === 'demos' ? "bg-va-black text-white" : "text-va-black/40 hover:text-va-black"
+                  )}
+                >
+                  <VoiceglotText translationKey="admin.actor.tab.demos" defaultText="Demos" />
+                </button>
+                <button 
+                  onClick={() => setActiveTab('reviews')}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all",
+                    activeTab === 'reviews' ? "bg-va-black text-white" : "text-va-black/40 hover:text-va-black"
+                  )}
+                >
+                  <VoiceglotText translationKey="admin.actor.tab.reviews" defaultText="Reviews" />
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Form Content */}
@@ -519,26 +694,63 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                     actorName={formData.display_name}
                   />
                   <div className="flex-1 space-y-6 w-full">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Voornaam (Publiek)</label>
-                        <input 
-                          type="text"
-                          value={formData.firstName}
-                          onChange={(e) => setFormData({ ...formData, firstName: e.target.value, display_name: e.target.value })}
-                          className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1 italic">Familienaam (Priv)</label>
-                        <input 
-                          type="text"
-                          value={formData.lastName}
-                          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                          className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
-                        />
-                      </div>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Voornaam (Publiek)</label>
+                    <input 
+                      type="text"
+                      value={formData.firstName}
+                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value, display_name: e.target.value })}
+                      className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1 italic">Familienaam (Priv)</label>
+                    <input 
+                      type="text"
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                      className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
+                    />
+                  </div>
+                </div>
+
+                {/*  PORTFOLIO TIER SELECTOR */}
+                <div className="space-y-3 pt-4 border-t border-black/5">
+                  <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                    <Award size={14} className="text-primary" />
+                    Portfolio Abonnement (Tier)
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {[
+                      { id: 'none', label: 'Geen', icon: X, color: 'text-va-black/20' },
+                      { id: 'mic', label: 'The Mic', icon: Mic, color: 'text-blue-500' },
+                      { id: 'studio', label: 'The Studio', icon: Home, color: 'text-primary' },
+                      { id: 'agency', label: 'The Agency', icon: Briefcase, color: 'text-va-black' }
+                    ].map((tier) => (
+                      <button
+                        key={tier.id}
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, portfolio_tier: tier.id });
+                          playClick('pro');
+                        }}
+                        className={cn(
+                          "flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all text-center group",
+                          formData.portfolio_tier === tier.id
+                            ? "bg-white border-primary shadow-aura-sm ring-1 ring-primary/20"
+                            : "bg-va-off-white/50 border-black/5 text-va-black/40 hover:border-black/10"
+                        )}
+                      >
+                        <tier.icon size={18} className={cn(formData.portfolio_tier === tier.id ? tier.color : "text-va-black/20")} />
+                        <span className={cn("text-[10px] font-bold uppercase tracking-widest", formData.portfolio_tier === tier.id ? "text-va-black" : "")}>{tier.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <TextInstrument className="text-[10px] text-va-black/30 italic px-1">
+                    De tier bepaalt welke details (achternaam, studio, contact) zichtbaar zijn op het portfolio.
+                  </TextInstrument>
+                </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -593,34 +805,23 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Vakantie Van</label>
-                        <input 
-                          type="date"
-                          value={formData.holiday_from ? formData.holiday_from.split('T')[0] : ''}
-                          onChange={(e) => setFormData({ ...formData, holiday_from: e.target.value })}
-                          className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Vakantie Tot</label>
-                        <input 
-                          type="date"
-                          value={formData.holiday_till ? formData.holiday_till.split('T')[0] : ''}
-                          onChange={(e) => setFormData({ ...formData, holiday_till: e.target.value })}
-                          className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
-                        />
-                      </div>
-                    </div>
-
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Tagline</label>
+                      <div className="flex items-center justify-between px-1">
+                        <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest">Tagline</label>
+                        {formData.pending_tagline && (
+                          <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/5 px-2 py-0.5 rounded-md border border-amber-500/10 flex items-center gap-1">
+                            <Clock size={10} /> Pending Review
+                          </span>
+                        )}
+                      </div>
                       <input 
                         type="text"
                         value={formData.tagline}
                         onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
-                        className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
+                        className={cn(
+                          "w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light",
+                          formData.pending_tagline && "border-amber-500/20 bg-amber-500/[0.02]"
+                        )}
                         placeholder="Korte krachtige omschrijving..."
                       />
                     </div>
@@ -628,12 +829,22 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Bio</label>
+                  <div className="flex items-center justify-between px-1">
+                    <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest">Bio</label>
+                    {formData.pending_bio && (
+                      <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/5 px-2 py-0.5 rounded-md border border-amber-500/10 flex items-center gap-1">
+                        <Clock size={10} /> Pending Review
+                      </span>
+                    )}
+                  </div>
                   <textarea 
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     rows={4}
-                    className="w-full px-6 py-4 bg-va-off-white rounded-[20px] border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light resize-none text-[15px]"
+                    className={cn(
+                      "w-full px-6 py-4 bg-va-off-white rounded-[20px] border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light resize-none text-[15px]",
+                      formData.pending_bio && "border-amber-500/20 bg-amber-500/[0.02]"
+                    )}
                     placeholder="Uitgebreide biografie..."
                   />
                 </div>
@@ -674,48 +885,6 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                       className="w-full px-6 py-4 bg-va-off-white rounded-[20px] border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px] placeholder:opacity-20"
                       placeholder="Warm, Zakelijk, Energiek..."
                     />
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
-                      <Clock size={14} className="text-primary" />
-                      Levering & Cutoff
-                    </label>
-                    
-                    <div className="grid grid-cols-1 gap-4 p-4 bg-va-off-white/50 rounded-[20px] border border-black/[0.02]">
-                      <div className="space-y-2">
-                        <span className="text-[10px] text-va-black/30 uppercase font-bold tracking-widest px-1">Aantal Werkdagen</span>
-                        <div className="flex gap-2">
-                          {[0, 1, 2, 3].map((days) => (
-                            <button
-                              key={days}
-                              type="button"
-                              onClick={() => {
-                                setFormData({ ...formData, delivery_days: days });
-                                playClick('light');
-                              }}
-                              className={cn(
-                                "flex-1 py-3 rounded-xl text-[13px] font-bold transition-all border",
-                                formData.delivery_days === days
-                                  ? "bg-primary text-white border-primary shadow-aura-sm"
-                                  : "bg-white border-black/5 text-va-black/40 hover:border-black/10"
-                              )}
-                            >
-                              {days === 0 ? 'Sameday' : `${days} d.`}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <span className="text-[10px] text-va-black/30 uppercase font-bold tracking-widest px-1">Cutoff Tijd</span>
-                        <input 
-                          type="time"
-                          value={formData.cutoff_time}
-                          onChange={(e) => setFormData({ ...formData, cutoff_time: e.target.value })}
-                          className="w-full px-5 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px]"
-                        />
-                      </div>
-                    </div>
                   </div>
                 </div>
 
@@ -795,8 +964,287 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
               </motion.div>
             )}
 
+            {activeTab === 'availability' && (
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-8"
+              >
+                {/*  LIVE PREVIEW (CUSTOMER VIEW) */}
+                <div className="bg-va-black p-6 rounded-[30px] shadow-aura-lg relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+                  <div className="relative z-10 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
+                        <Tv size={24} className="text-primary" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <HeadingInstrument level={4} className="text-lg font-bold text-white tracking-tight">
+                          Live Preview
+                        </HeadingInstrument>
+                        <p className="text-[11px] text-white/40 uppercase font-black tracking-widest">
+                          Wat de klant nu ziet
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-6 py-3 flex flex-col items-end">
+                      <span className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                        <Clock size={10} /> Levering
+                      </span>
+                      <span className="text-2xl font-light text-primary tracking-tighter">
+                        {(() => {
+                          const preview = calculateDeliveryDate({
+                            ...actor,
+                            ...formData, // Gebruik actuele formData voor live preview
+                            delivery_config: formData.delivery_config
+                          }, new Date(), systemWorkingDays);
+                          const todayStr = new Date().toLocaleDateString('nl-BE');
+                          return preview.formattedShort === todayStr ? "VANDAAG" : preview.formattedShort;
+                        })()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/*  SMART PRESETS */}
+                <div className="space-y-4">
+                  <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                    <Sparkles size={14} className="text-primary" />
+                    Snel-instellingen (Aanbevolen)
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {[
+                      { 
+                        id: 'sameday', 
+                        label: 'Same-Day Hero', 
+                        icon: Award, 
+                        desc: 'Ma-Vr, voor 12:00 besteld',
+                        config: { type: 'sameday', cutoff: '12:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'], avg_turnaround_hours: 4 }
+                      },
+                      { 
+                        id: 'fulltime', 
+                        label: 'Fulltime Pro', 
+                        icon: Zap, 
+                        desc: 'Ma-Vr, 24u levering',
+                        config: { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'], avg_turnaround_hours: undefined }
+                      },
+                      { 
+                        id: 'weekend', 
+                        label: 'Altijd Aan', 
+                        icon: Coffee, 
+                        desc: 'Ook op zaterdag opnames',
+                        config: { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'], avg_turnaround_hours: undefined }
+                      }
+                    ].map((preset) => (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, delivery_config: preset.config as any });
+                          playClick('pro');
+                        }}
+                        className="flex flex-col items-start p-4 bg-white border border-black/5 rounded-2xl hover:border-primary/30 hover:shadow-aura-sm transition-all text-left group"
+                      >
+                        <div className="w-8 h-8 bg-va-off-white rounded-lg flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
+                          <preset.icon size={16} className="text-va-black/40 group-hover:text-primary" />
+                        </div>
+                        <span className="text-[13px] font-bold text-va-black mb-1">{preset.label}</span>
+                        <span className="text-[11px] text-va-black/40 leading-tight">{preset.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-4 border-t border-black/5">
+                  <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                    <Settings size={14} className="text-primary" />
+                    Handmatige Aanpassingen
+                  </label>
+                  
+                  <div className="grid grid-cols-1 gap-6 p-6 bg-va-off-white/50 rounded-[30px] border border-black/[0.02]">
+                    {/* Delivery Type */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between px-1">
+                        <span className="text-[10px] text-va-black/30 uppercase font-bold tracking-widest">Hoe snel kan je de audio aanleveren?</span>
+                        <span className="text-[10px] text-primary font-bold uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded-md">Tip: 24u converteert het best</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                          {[
+                            { id: 'sameday', label: 'Same-Day (4u)', icon: Zap },
+                            { id: '24h', label: 'Binnen 24u', icon: Clock },
+                            { id: '48h', label: 'Binnen 48u', icon: Clock },
+                            { id: '72u', label: 'Binnen 72u', icon: Clock }
+                          ].map((type) => (
+                            <button
+                              key={type.id}
+                              type="button"
+                              onClick={() => {
+                                const newConfig = { ...formData.delivery_config, type: type.id as any };
+                                // Als men kiest voor Same-Day, zetten we de cutoff vast op 12:00
+                                if (type.id === 'sameday') {
+                                  newConfig.cutoff = '12:00';
+                                  newConfig.avg_turnaround_hours = 4;
+                                } else {
+                                  // Reset turnaround voor andere types indien nodig
+                                  newConfig.avg_turnaround_hours = undefined;
+                                }
+                                setFormData({ 
+                                  ...formData, 
+                                  delivery_config: newConfig 
+                                });
+                                playClick('light');
+                              }}
+                            className={cn(
+                              "px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all border flex items-center gap-2",
+                              formData.delivery_config.type === type.id
+                                ? "bg-primary text-white border-primary shadow-aura-sm"
+                                : "bg-white border-black/5 text-va-black/40 hover:border-black/10"
+                            )}
+                          >
+                            <type.icon size={12} />
+                            {type.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Cutoff & Turnaround */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <div className="flex flex-col gap-1 px-1">
+                          <span className="text-[10px] text-va-black/30 uppercase font-bold tracking-widest">Dagelijkse Deadline (Cutoff)</span>
+                          <span className="text-[11px] text-va-black/20 italic leading-tight">
+                            {formData.delivery_config.type === 'sameday' 
+                              ? "Voor Same-Day staat de deadline vast op 12:00." 
+                              : "Tot hoe laat sta je in de studio?"}
+                          </span>
+                        </div>
+                        <input 
+                          type="time"
+                          disabled={formData.delivery_config.type === 'sameday'}
+                          value={formData.delivery_config.cutoff || '18:00'}
+                          onChange={(e) => setFormData({ 
+                            ...formData, 
+                            delivery_config: { ...formData.delivery_config, cutoff: e.target.value } 
+                          })}
+                          className={cn(
+                            "w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[14px]",
+                            formData.delivery_config.type === 'sameday' && "opacity-50 cursor-not-allowed bg-va-off-white"
+                          )}
+                        />
+                      </div>
+                      {formData.delivery_config.type === 'sameday' && (
+                        <div className="space-y-3">
+                          <div className="flex flex-col gap-1 px-1">
+                            <span className="text-[10px] text-va-black/30 uppercase font-bold tracking-widest">Turnaround (uren)</span>
+                            <span className="text-[11px] text-va-black/20 italic leading-tight">Gemiddelde tijd tot levering.</span>
+                          </div>
+                          <input 
+                            type="number"
+                            readOnly
+                            value={4}
+                            className="w-full px-4 py-3 bg-va-off-white rounded-xl border border-black/5 outline-none font-light text-[14px] opacity-50"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Weekly Schedule */}
+                    <div className="space-y-3">
+                      <div className="flex flex-col gap-1 px-1">
+                        <span className="text-[10px] text-va-black/30 uppercase font-bold tracking-widest">Opnamedagen (Wekelijks)</span>
+                        <span className="text-[11px] text-va-black/20 italic leading-tight">Op welke dagen neem je op? (Klant ziet automatisch de juiste datum)</span>
+                      </div>
+                      <div className="flex gap-1.5">
+                        {[
+                          { id: 'mon', label: 'Ma' },
+                          { id: 'tue', label: 'Di' },
+                          { id: 'wed', label: 'Wo' },
+                          { id: 'thu', label: 'Do' },
+                          { id: 'fri', label: 'Vr' },
+                          { id: 'sat', label: 'Za' },
+                          { id: 'sun', label: 'Zo' }
+                        ].map((day) => {
+                          const isActive = formData.delivery_config.weekly_on?.includes(day.id);
+                          return (
+                            <button
+                              key={day.id}
+                              type="button"
+                              onClick={() => {
+                                const current = formData.delivery_config.weekly_on || [];
+                                const next = isActive 
+                                  ? current.filter(d => d !== day.id)
+                                  : [...current, day.id];
+                                setFormData({ 
+                                  ...formData, 
+                                  delivery_config: { ...formData.delivery_config, weekly_on: next } 
+                                });
+                                playClick('light');
+                              }}
+                              className={cn(
+                                "flex-1 py-2 rounded-lg text-[10px] font-black transition-all border",
+                                isActive
+                                  ? "bg-va-black text-white border-va-black shadow-sm"
+                                  : "bg-white border-black/5 text-va-black/20 hover:border-black/10"
+                              )}
+                            >
+                              {day.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-8 border-t border-black/5">
+                  <div className="flex items-center justify-between px-1">
+                    <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Clock size={14} className="text-primary" />
+                      Vakanties & Afwezigheid
+                    </label>
+                    {absenceStatus && (
+                      <motion.div 
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={cn(
+                          "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border",
+                          absenceStatus.type === 'error' ? "bg-red-50 text-red-500 border-red-100" :
+                          absenceStatus.type === 'present' ? "bg-amber-500 text-white border-amber-600" :
+                          "bg-primary/10 text-primary border-primary/20"
+                        )}
+                      >
+                        {absenceStatus.type === 'present' ? <Zap size={10} className="animate-pulse" /> : <Calendar size={10} />}
+                        {absenceStatus.text}
+                      </motion.div>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-va-off-white/30 p-6 rounded-[30px] border border-black/[0.02]">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Vakantie Van</label>
+                      <input 
+                        type="date"
+                        value={formData.holiday_from ? formData.holiday_from.split('T')[0] : ''}
+                        onChange={(e) => setFormData({ ...formData, holiday_from: e.target.value })}
+                        className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Vakantie Tot</label>
+                      <input 
+                        type="date"
+                        value={formData.holiday_till ? formData.holiday_till.split('T')[0] : ''}
+                        onChange={(e) => setFormData({ ...formData, holiday_till: e.target.value })}
+                        className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
             {activeTab === 'rates' && (() => {
-              const BSF = 249;
+              const BSF = 199;
               return (
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
@@ -874,7 +1322,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                       </HeadingInstrument>
                       <TextInstrument className="text-[13px] text-va-black/40 font-medium leading-relaxed max-w-md">
                         Hanteer je voor specifieke landen andere tarieven? Voeg dan een land toe. 
-                        De <span className="text-va-black/60 font-bold">BSF ligt vast op €249</span>. Voor grote campagnes vul je de extra buyout in (1 jaar), voor kleine campagnes de all-in prijs.
+                        De <span className="text-va-black/60 font-bold">BSF ligt vast op €199</span>. Voor grote campagnes vul je de extra buyout in (1 jaar), voor kleine campagnes de all-in prijs.
                       </TextInstrument>
                     </div>
                     
@@ -1296,54 +1744,12 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                           <div className="space-y-2">
                             <TextInstrument className="text-[11px] font-black text-primary/60 uppercase tracking-[0.2em]">Jouw Geschatte Netto</TextInstrument>
                             <div className="text-6xl font-black text-primary tracking-tighter">
-                              € {(() => {
-                                const BSF = 249;
-                                
-                                let totalBuyout = 0;
-                                let hasNational = false;
-
-                                simulatorMedia.forEach(mId => {
-                                  // Determine effective media ID for rate lookup
-                                  let effectiveId = mId;
-                                  if (mId === 'radio' || mId === 'tv') {
-                                    const region = simulatorRegion[mId] || 'national';
-                                    effectiveId = `${mId}_${region}`;
-                                  }
-
-                                  const isAllIn = effectiveId.includes('regional') || effectiveId.includes('local') || effectiveId === 'podcast';
-                                  const rate = formData.rates?.[selectedMarket]?.[effectiveId] || formData.rates?.GLOBAL?.[effectiveId] || BSF;
-                                  const spots = simulatorSpots[mId] || 1;
-                                  const years = simulatorYears[mId] || 1;
-
-                                  if (isAllIn) {
-                                    totalBuyout += rate * spots;
-                                  } else {
-                                    hasNational = true;
-                                    const baseBuyout = Math.max(50, rate - BSF);
-                                    const yearMultiplier = mId === 'podcast' && years === 0.25 ? 0.7 : 
-                                                          years === 0.5 ? 0.8 : 
-                                                          (1 + (0.5 * (years - 1)));
-                                    
-                                    totalBuyout += (baseBuyout * spots * yearMultiplier);
-                                  }
-                                });
-
-                                  const finalBase = hasNational ? BSF : 0;
-                                  const totalVerkoop = (finalBase + totalBuyout);
-                                  return Math.floor(totalVerkoop * 0.75);
-                                })()}
-                              </div>
-                            </div>
-                            
-                            <div className="pt-6 border-t border-primary/10 space-y-4">
-                              <div className="flex justify-between items-center text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
-                                <span>Klant Totaal:</span>
-                                <span className="text-va-black/80 text-[14px]">
                                   € {(() => {
-                                    const BSF = 249;
+                                    const BSF = 199;
+                                    
                                     let totalBuyout = 0;
                                     let hasNational = false;
-    
+
                                     simulatorMedia.forEach(mId => {
                                       // Determine effective media ID for rate lookup
                                       let effectiveId = mId;
@@ -1351,12 +1757,12 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                                         const region = simulatorRegion[mId] || 'national';
                                         effectiveId = `${mId}_${region}`;
                                       }
-    
+
                                       const isAllIn = effectiveId.includes('regional') || effectiveId.includes('local') || effectiveId === 'podcast';
                                       const rate = formData.rates?.[selectedMarket]?.[effectiveId] || formData.rates?.GLOBAL?.[effectiveId] || BSF;
                                       const spots = simulatorSpots[mId] || 1;
                                       const years = simulatorYears[mId] || 1;
-    
+
                                       if (isAllIn) {
                                         totalBuyout += rate * spots;
                                       } else {
@@ -1369,13 +1775,55 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                                         totalBuyout += (baseBuyout * spots * yearMultiplier);
                                       }
                                     });
-    
+
                                       const finalBase = hasNational ? BSF : 0;
                                       const totalVerkoop = (finalBase + totalBuyout);
-                                      return Math.floor(totalVerkoop);
+                                      return Math.floor(totalVerkoop * 0.75);
                                     })()}
-                                  </span>
+                                  </div>
                                 </div>
+                                
+                                <div className="pt-6 border-t border-primary/10 space-y-4">
+                                  <div className="flex justify-between items-center text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
+                                    <span>Klant Totaal:</span>
+                                    <span className="text-va-black/80 text-[14px]">
+                                      € {(() => {
+                                        const BSF = 199;
+                                        let totalBuyout = 0;
+                                        let hasNational = false;
+        
+                                        simulatorMedia.forEach(mId => {
+                                          // Determine effective media ID for rate lookup
+                                          let effectiveId = mId;
+                                          if (mId === 'radio' || mId === 'tv') {
+                                            const region = simulatorRegion[mId] || 'national';
+                                            effectiveId = `${mId}_${region}`;
+                                          }
+    
+                                          const isAllIn = effectiveId.includes('regional') || effectiveId.includes('local') || effectiveId === 'podcast';
+                                          const rate = formData.rates?.[selectedMarket]?.[effectiveId] || formData.rates?.GLOBAL?.[effectiveId] || BSF;
+                                          const spots = simulatorSpots[mId] || 1;
+                                          const years = simulatorYears[mId] || 1;
+    
+                                          if (isAllIn) {
+                                            totalBuyout += rate * spots;
+                                          } else {
+                                            hasNational = true;
+                                            const baseBuyout = Math.max(50, rate - BSF);
+                                            const yearMultiplier = mId === 'podcast' && years === 0.25 ? 0.7 : 
+                                                                  years === 0.5 ? 0.8 : 
+                                                                  (1 + (0.5 * (years - 1)));
+                                            
+                                            totalBuyout += (baseBuyout * spots * yearMultiplier);
+                                          }
+                                        });
+    
+                                          const finalBase = hasNational ? BSF : 0;
+                                          const totalVerkoop = (finalBase + totalBuyout);
+                                          return Math.floor(totalVerkoop);
+                                        })()}
+                                      </span>
+                                    </div>
                                 <div className="bg-white/50 p-3 rounded-xl border border-primary/5">
                                   <TextInstrument className="text-[10px] text-va-black/30 italic leading-relaxed">
                                     Transparante prijsopbouw per spot en kanaal.
@@ -1429,6 +1877,222 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
               );
             })()}
 
+            {activeTab === 'portfolio' && (
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-10"
+              >
+                {/*  STUDIO SPECS */}
+                <div className="space-y-6">
+                  <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                    <Mic2 size={14} className="text-primary" />
+                    Studio Apparatuur
+                  </label>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-va-off-white/30 p-6 rounded-[30px] border border-black/[0.02]">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest px-1">
+                        <VoiceglotText translationKey="admin.actor.studio.microphone" defaultText="Microfoon" />
+                      </label>
+                      <input 
+                        type="text"
+                        value={formData.studio_specs.microphone}
+                        onChange={(e) => setFormData({ ...formData, studio_specs: { ...formData.studio_specs, microphone: e.target.value } })}
+                        className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[14px]"
+                        placeholder="Bijv. Neumann TLM 103"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest px-1">
+                        <VoiceglotText translationKey="admin.actor.studio.interface" defaultText="Interface" />
+                      </label>
+                      <input 
+                        type="text"
+                        value={formData.studio_specs.interface}
+                        onChange={(e) => setFormData({ ...formData, studio_specs: { ...formData.studio_specs, interface: e.target.value } })}
+                        className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[14px]"
+                        placeholder="Bijv. Universal Audio Apollo"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest px-1">
+                        <VoiceglotText translationKey="admin.actor.studio.preamp" defaultText="Preamp" />
+                      </label>
+                      <input 
+                        type="text"
+                        value={formData.studio_specs.preamp}
+                        onChange={(e) => setFormData({ ...formData, studio_specs: { ...formData.studio_specs, preamp: e.target.value } })}
+                        className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[14px]"
+                        placeholder="Bijv. Neve 1073"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest px-1">
+                        <VoiceglotText translationKey="admin.actor.studio.booth" defaultText="Booth / Akoestiek" />
+                      </label>
+                      <input 
+                        type="text"
+                        value={formData.studio_specs.booth}
+                        onChange={(e) => setFormData({ ...formData, studio_specs: { ...formData.studio_specs, booth: e.target.value } })}
+                        className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[14px]"
+                        placeholder="Bijv. Studiobricks / Custom"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/*  CONNECTIVITY */}
+                <div className="space-y-6 pt-4 border-t border-black/5">
+                  <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                    <Globe size={14} className="text-primary" />
+                    <VoiceglotText translationKey="admin.actor.connectivity.title" defaultText="Connectiviteit (Live Regie)" />
+                  </label>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { id: 'source_connect', label: 'SourceConnect', icon: Zap },
+                      { id: 'zoom', label: 'Zoom / Teams', icon: Video },
+                      { id: 'cleanfeed', label: 'Cleanfeed', icon: Radio },
+                      { id: 'session_link', label: 'SessionLink', icon: Globe }
+                    ].map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => {
+                          setFormData({ 
+                            ...formData, 
+                            connectivity: { 
+                              ...formData.connectivity, 
+                              [opt.id]: !formData.connectivity[opt.id] 
+                            } 
+                          });
+                          playClick('light');
+                        }}
+                        className={cn(
+                          "flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all text-center group",
+                          formData.connectivity[opt.id]
+                            ? "bg-va-black text-white border-va-black shadow-lg"
+                            : "bg-white border-black/5 text-va-black/40 hover:border-black/10"
+                        )}
+                      >
+                        <opt.icon size={18} strokeWidth={formData.connectivity[opt.id] ? 2.5 : 1.5} />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/*  PORTFOLIO PHOTOS (GALLERY) */}
+                <div className="space-y-6 pt-4 border-t border-black/5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                      <ImageIcon size={14} className="text-primary" />
+                      <VoiceglotText translationKey="admin.actor.photos.title" defaultText="Portfolio Foto's (Gallerij)" />
+                    </label>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {formData.portfolio_photos.map((photo: any, idx: number) => (
+                      <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden group border border-black/5">
+                        <Image src={photo.url} alt={`Portfolio ${idx}`} fill className="object-cover" />
+                        <button 
+                          onClick={() => {
+                            const next = formData.portfolio_photos.filter((_, i) => i !== idx);
+                            setFormData({ ...formData, portfolio_photos: next });
+                          }}
+                          className="absolute top-2 right-2 w-6 h-6 bg-va-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                    <div className="aspect-square">
+                      <PhotoUploader 
+                        actorName={formData.display_name}
+                        onUploadSuccess={(url, id) => {
+                          setFormData({ 
+                            ...formData, 
+                            portfolio_photos: [...formData.portfolio_photos, { url, id }] 
+                          });
+                        }}
+                        compact
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/*  PORTFOLIO VIDEOS CATEGORIZATION */}
+                <div className="space-y-6 pt-4 border-t border-black/5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                      <Tv size={14} className="text-primary" />
+                      <VoiceglotText translationKey="admin.actor.videos.title" defaultText="Portfolio Video's" />
+                    </label>
+                  </div>
+
+                  <div className="space-y-3">
+                    {formData.actor_videos.map((video, idx) => (
+                      <div key={idx} className="p-6 bg-va-off-white/50 rounded-[24px] border border-black/[0.02] space-y-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-va-black text-white flex items-center justify-center shrink-0">
+                            <Video size={16} />
+                          </div>
+                          <input 
+                            type="text" 
+                            value={video.name}
+                            onChange={(e) => {
+                              const newVideos = [...formData.actor_videos];
+                              newVideos[idx] = { ...newVideos[idx], name: e.target.value };
+                              setFormData({ ...formData, actor_videos: newVideos });
+                            }}
+                            className="flex-1 bg-transparent border-none p-0 text-[15px] font-bold text-va-black focus:ring-0"
+                            placeholder="Naam van de video..."
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-black text-va-black/20 uppercase tracking-widest px-1">
+                              <VoiceglotText translationKey="admin.actor.videos.category" defaultText="Type / Categorie" />
+                            </label>
+                            <select 
+                              value={(video as any).type || 'portfolio'}
+                              onChange={(e) => {
+                                const newVideos = [...formData.actor_videos];
+                                newVideos[idx] = { ...newVideos[idx], type: e.target.value };
+                                setFormData({ ...formData, actor_videos: newVideos });
+                              }}
+                              className="w-full px-4 py-2 bg-white rounded-xl border border-black/5 text-[12px] font-medium outline-none focus:ring-2 focus:ring-primary/10"
+                            >
+                              <option value="portfolio">Portfolio (Algemeen)</option>
+                              <option value="host">Host / Presentator</option>
+                              <option value="reporter">Reporter / On-the-road</option>
+                              <option value="commercial">Commercial / TV</option>
+                            </select>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-black text-va-black/20 uppercase tracking-widest px-1">Video URL / ID</label>
+                            <input 
+                              type="text"
+                              value={video.url}
+                              onChange={(e) => {
+                                const newVideos = [...formData.actor_videos];
+                                newVideos[idx] = { ...newVideos[idx], url: e.target.value };
+                                setFormData({ ...formData, actor_videos: newVideos });
+                              }}
+                              className="w-full px-4 py-2 bg-white rounded-xl border border-black/5 text-[12px] font-mono outline-none focus:ring-2 focus:ring-primary/10"
+                              placeholder="YouTube URL of VideoAsk ID"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {activeTab === 'demos' && (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -1479,18 +2143,25 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                           {playingDemoId === demo.id ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-0.5" />}
                         </button>
                         
-                        <div className="flex-1 min-w-0 space-y-1">
-                          <input 
-                            type="text" 
-                            value={demo.title}
-                            onChange={(e) => {
-                              const newDemos = [...formData.demos];
-                              newDemos[idx] = { ...newDemos[idx], title: e.target.value };
-                              setFormData({ ...formData, demos: newDemos });
-                            }}
-                            className="w-full bg-transparent border-none p-0 text-[15px] font-light text-va-black focus:ring-0 truncate placeholder:opacity-20"
-                            placeholder="Titel van de demo..."
-                          />
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <input 
+                                type="text" 
+                                value={demo.title}
+                                onChange={(e) => {
+                                  const newDemos = [...formData.demos];
+                                  newDemos[idx] = { ...newDemos[idx], title: e.target.value };
+                                  setFormData({ ...formData, demos: newDemos });
+                                }}
+                                className="flex-1 bg-transparent border-none p-0 text-[15px] font-light text-va-black focus:ring-0 truncate placeholder:opacity-20"
+                                placeholder="Titel van de demo..."
+                              />
+                              {demo.status === 'pending' && (
+                                <span className="px-1.5 py-0.5 bg-amber-500/10 text-amber-600 text-[8px] font-black uppercase tracking-widest rounded border border-amber-500/20">
+                                  Pending
+                                </span>
+                              )}
+                            </div>
                           <div className="flex items-center gap-3">
                             <span className="text-[10px] font-bold text-primary/40 uppercase tracking-[0.15em]">
                               {demo.category || 'Online'}
@@ -1506,6 +2177,36 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                               className="flex-1 bg-transparent border-none p-0 text-[10px] text-va-black/20 focus:ring-0 truncate font-mono"
                               placeholder="url/naar/audio.mp3"
                             />
+                            
+                            {/*  CHRIS-PROTOCOL: Quick Upload for Demos */}
+                            <div className="flex items-center gap-2">
+                              <input 
+                                type="file"
+                                id={`demo-upload-${idx}`}
+                                accept="audio/*"
+                                className="hidden"
+                                onChange={(e) => handleDemoUpload(e, idx)}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => document.getElementById(`demo-upload-${idx}`)?.click()}
+                                disabled={isUploadingDemo === demo.id}
+                                className={cn(
+                                  "p-1.5 rounded-lg transition-all flex items-center gap-1.5",
+                                  isUploadingDemo === demo.id 
+                                    ? "bg-primary/10 text-primary animate-pulse" 
+                                    : "bg-va-black/5 text-va-black/20 hover:bg-primary/10 hover:text-primary"
+                                )}
+                                title="Upload audio bestand"
+                              >
+                                {isUploadingDemo === demo.id ? (
+                                  <Loader2 size={10} className="animate-spin" />
+                                ) : (
+                                  <Upload size={10} />
+                                )}
+                                <span className="text-[8px] font-black uppercase tracking-widest">Upload</span>
+                              </button>
+                            </div>
                           </div>
                         </div>
 
@@ -1557,6 +2258,213 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                       >
                         Demo Toevoegen
                       </ButtonInstrument>
+                    </div>
+                  )}
+                </div>
+
+                {/*  VIDEOS SECTION (GOD MODE 2026) */}
+                <div className="pt-8 border-t border-black/5 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                      <Tv size={14} className="text-primary" />
+                      Video&apos;s & Showreels
+                    </label>
+                    <ButtonInstrument 
+                      type="button"
+                      onClick={() => {
+                        const newId = Date.now();
+                        setFormData({
+                          ...formData,
+                          actor_videos: [...formData.actor_videos, { id: newId, name: 'Nieuwe Video', url: '' }]
+                        });
+                      }}
+                      className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-all"
+                    >
+                      + Video Toevoegen
+                    </ButtonInstrument>
+                  </div>
+
+                  <div className="space-y-3">
+                    {formData.actor_videos.length > 0 ? (
+                      formData.actor_videos.map((video, idx) => (
+                        <div 
+                          key={(video as any).id || idx} 
+                          className="group flex items-center gap-4 p-4 bg-va-off-white/50 rounded-[20px] border border-black/[0.02] hover:bg-white hover:shadow-aura-sm transition-all duration-500"
+                        >
+                          <div className="w-12 h-12 rounded-full bg-va-black text-white flex items-center justify-center shrink-0">
+                            <Video size={20} />
+                          </div>
+                          
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <input 
+                                type="text" 
+                                value={video.name}
+                                onChange={(e) => {
+                                  const newVideos = [...formData.actor_videos];
+                                  newVideos[idx] = { ...newVideos[idx], name: e.target.value };
+                                  setFormData({ ...formData, actor_videos: newVideos });
+                                }}
+                                className="flex-1 bg-transparent border-none p-0 text-[15px] font-light text-va-black focus:ring-0 truncate placeholder:opacity-20"
+                                placeholder="Titel van de video (bijv. Unizo Reporter)..."
+                              />
+                              {video.status === 'pending' && (
+                                <span className="px-1.5 py-0.5 bg-amber-500/10 text-amber-600 text-[8px] font-black uppercase tracking-widest rounded border border-amber-500/20">
+                                  Pending
+                                </span>
+                              )}
+                            </div>
+                            <input 
+                              type="text"
+                              value={video.url}
+                              onChange={(e) => {
+                                const newVideos = [...formData.actor_videos];
+                                newVideos[idx] = { ...newVideos[idx], url: e.target.value };
+                                setFormData({ ...formData, actor_videos: newVideos });
+                              }}
+                              className="w-full bg-transparent border-none p-0 text-[10px] text-va-black/20 focus:ring-0 truncate font-mono"
+                              placeholder="url/naar/video.mp4 of VideoAsk ID"
+                            />
+                          </div>
+
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const newVideos = formData.actor_videos.filter((_, i) => i !== idx);
+                              setFormData({ ...formData, actor_videos: newVideos });
+                            }}
+                            className="p-2 text-va-black/10 hover:text-red-500 transition-colors"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-8 border-2 border-dashed border-black/5 rounded-[30px] flex flex-col items-center justify-center text-center bg-va-off-white/10">
+                        <TextInstrument className="text-[13px] text-va-black/30 font-light">
+                          Geen video&apos;s gekoppeld.
+                        </TextInstrument>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            {activeTab === 'reviews' && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <label className="text-[11px] font-bold text-va-black/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                    <Star size={14} className="text-primary" />
+                    Reviews & Testimonials
+                  </label>
+                  <ButtonInstrument 
+                    type="button"
+                    onClick={() => {
+                      const newReview = { 
+                        id: Date.now(), 
+                        author_name: '', 
+                        text_nl: '', 
+                        rating: 5, 
+                        provider: 'manual',
+                        created_at: new Date().toISOString()
+                      };
+                      setFormData({
+                        ...formData,
+                        reviews: [newReview, ...formData.reviews]
+                      });
+                    }}
+                    className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-all"
+                  >
+                    + Review Toevoegen
+                  </ButtonInstrument>
+                </div>
+
+                <div className="space-y-4">
+                  {formData.reviews.length > 0 ? (
+                    formData.reviews.map((review: any, idx: number) => (
+                      <div 
+                        key={review.id || idx} 
+                        className="p-6 bg-va-off-white/50 rounded-[24px] border border-black/[0.02] space-y-4 group relative"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex gap-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                type="button"
+                                onClick={() => {
+                                  const newReviews = [...formData.reviews];
+                                  newReviews[idx] = { ...newReviews[idx], rating: star };
+                                  setFormData({ ...formData, reviews: newReviews });
+                                }}
+                                className="focus:outline-none"
+                              >
+                                <Star 
+                                  size={14} 
+                                  className={cn(
+                                    "transition-colors",
+                                    star <= (review.rating || 5) ? "text-[#fabc05] fill-current" : "text-va-black/10"
+                                  )} 
+                                />
+                              </button>
+                            ))}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md",
+                              review.provider === 'google_places' ? "bg-blue-500/10 text-blue-500" : "bg-primary/10 text-primary"
+                            )}>
+                              {review.provider === 'google_places' ? 'Google' : 'Handmatig'}
+                            </span>
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                const newReviews = formData.reviews.filter((_, i) => i !== idx);
+                                setFormData({ ...formData, reviews: newReviews });
+                              }}
+                              className="p-1 text-va-black/10 hover:text-red-500 transition-colors"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <input 
+                            type="text" 
+                            value={review.author_name || review.authorName || ''}
+                            onChange={(e) => {
+                              const newReviews = [...formData.reviews];
+                              newReviews[idx] = { ...newReviews[idx], author_name: e.target.value, authorName: e.target.value };
+                              setFormData({ ...formData, reviews: newReviews });
+                            }}
+                            className="w-full bg-transparent border-none p-0 text-[14px] font-bold text-va-black focus:ring-0 placeholder:opacity-20"
+                            placeholder="Naam van de klant of bedrijf..."
+                          />
+                          <textarea 
+                            value={review.text_nl || review.textNl || review.text || ''}
+                            onChange={(e) => {
+                              const newReviews = [...formData.reviews];
+                              newReviews[idx] = { ...newReviews[idx], text_nl: e.target.value, textNl: e.target.value };
+                              setFormData({ ...formData, reviews: newReviews });
+                            }}
+                            rows={3}
+                            className="w-full bg-white/50 rounded-xl border border-black/5 p-3 text-[13px] font-light text-va-black focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all resize-none placeholder:opacity-20"
+                            placeholder="Schrijf hier de testimonial..."
+                          />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-12 border-2 border-dashed border-black/5 rounded-[30px] flex flex-col items-center justify-center text-center bg-va-off-white/20">
+                      <Star size={40} className="text-va-black/5 mb-4" />
+                      <TextInstrument className="text-[15px] text-va-black/30 font-light">
+                        Nog geen reviews toegevoegd.
+                      </TextInstrument>
                     </div>
                   )}
                 </div>

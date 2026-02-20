@@ -31,24 +31,26 @@ export class GeminiService {
 
   /**
    * Genereert platte tekst via Gemini. Gebruikt door heal-routes, chat en Telegram-Bob.
+   * NU MET AGENT-MANDAAT: Kan gestructureerde acties voorstellen.
    */
-  async generateText(prompt: string): Promise<string> {
+  async generateText(prompt: string, options?: { jsonMode?: boolean }): Promise<string> {
     try {
       const model = this.getModel();
       
       //  CHRIS-PROTOCOL: Voeg een timeout toe aan de Gemini call (Next.js Edge compatibel)
       const result = await Promise.race([
-        model.generateContent(prompt),
+        model.generateContent(options?.jsonMode ? `${prompt}\n\nANTWOORD UITSLUITEND IN STRIKT JSON FORMAAT.` : prompt),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Gemini Timeout')), 25000))
       ]) as any;
 
-      return result.response.text();
+      const text = result.response.text();
+      return options?.jsonMode ? text.replace(/```json|```/g, '').trim() : text;
     } catch (error: any) {
       console.error(' Gemini Text Generation Error:', error);
       if (error.message === 'Gemini Timeout') {
-        return "Ik heb even wat meer tijd nodig om na te denken. Probeer je het zo nog eens?";
+        return options?.jsonMode ? JSON.stringify({ message: "Ik heb even wat meer tijd nodig om na te denken." }) : "Ik heb even wat meer tijd nodig om na te denken. Probeer je het zo nog eens?";
       }
-      throw error; // Throw error so caller can handle fallback/retry
+      throw error;
     }
   }
 

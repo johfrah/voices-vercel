@@ -1,21 +1,25 @@
 import { VatService } from '@/lib/compliance/vat-service';
 import { LexCheck } from '@/lib/compliance/lex-check';
 import { db } from '@db';
-import { orders, users, centralLeads } from '@db/schema';
-import { eq } from 'drizzle-orm';
+import { orders, users, centralLeads, actors, notifications } from '@db/schema';
+import { eq, inArray } from 'drizzle-orm';
 import { sign } from 'jsonwebtoken';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { MollieService } from '@/lib/payments/mollie';
+import { SlimmeKassa } from '@/lib/pricing-engine';
+import { generateCartHash } from '@/lib/cart-utils';
 
 /**
  * MOLLIE V3 HEADLESS CHECKOUT (CORE LOGIC 2026)
  * 
  * Directe integratie met Mollie API. Bypasses WordPress volledig.
  * Nu inclusief Offerte-modus en volledige User Mapping.
+ * 
+ * CHRIS-PROTOCOL: Server-Side Prijs Validatie & Cart Hashing.
+ * 
+ * @lock-file
  */
-
-import { PricingEngine } from '@/lib/pricing-engine';
 
 export async function POST(request: Request) {
   try {
@@ -28,6 +32,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { 
       pricing, 
+      items = [],
+      selectedActor,
+      step,
       first_name, 
       last_name, 
       email, 
@@ -35,7 +42,7 @@ export async function POST(request: Request) {
       postal_code, 
       city, 
       metadata,
-      isQuote,
+      isQuote: submittedIsQuote,
       quoteMessage,
       phone,
       company,
@@ -51,57 +58,136 @@ export async function POST(request: Request) {
       payment_method,
       isVatExempt: submittedIsVatExempt
     } = body;
+
+    // 1. Cart Hash Validatie (Race-condition check)
+    const serverCartHash = generateCartHash(items, selectedActor, step);
+    if (pricing?.cartHash && pricing.cartHash !== serverCartHash) {
+      console.warn(`[Checkout] Cart hash mismatch! Client: ${pricing.cartHash}, Server: ${serverCartHash}`);
+      // We blokkeren niet direct, maar we dwingen een herberekening af.
+    }
+
+    // 2. Server-Side Prijs Validatie (Lex Check)
+    let isQuote = submittedIsQuote || false;
+    let serverCalculatedSubtotal = 0;
     
-    //  CHRIS-PROTOCOL: Trust the Frontend ("Mandje is Truth")
-    // We skip server-side re-calculation and VAT re-verification as requested.
-    // pricing.total is the EXCL VAT grand total from the context.
-    const subtotal = pricing?.total || 0;
+    // Fetch actor data from DB for all items
+    const actorIds = Array.from(new Set([
+      ...items.map((i: any) => i.actor?.id).filter(Boolean),
+      ...(selectedActor?.id ? [selectedActor.id] : [])
+    ]));
+
+    const dbActors = actorIds.length > 0 
+      ? await db.select().from(actors).where(inArray(actors.id, actorIds as number[]))
+      : [];
+    
+    const actorMap = new Map(dbActors.map(a => [a.id, a]));
+
+    // Re-calculate each item
+    const validatedItems = items.map((item: any) => {
+      const dbActor = actorMap.get(item.actor?.id);
+      if (!dbActor) return item;
+
+      const result = SlimmeKassa.calculate({
+        usage: item.usage,
+        words: item.briefing?.trim().split(/\s+/).filter(Boolean).length || 0,
+        mediaTypes: item.media,
+        country: item.country,
+        spots: item.spots,
+        years: item.years,
+        liveSession: item.liveSession,
+        actorRates: dbActor as any,
+        music: item.music,
+        isVatExempt: !!submittedIsVatExempt
+      });
+
+      if (result.isQuoteOnly) isQuote = true;
+      serverCalculatedSubtotal += result.subtotal;
+      
+      return { ...item, pricing: { ...result } };
+    });
+
+    // Handle current selection if in briefing step
+    if (selectedActor && step === 'briefing') {
+      const dbActor = actorMap.get(selectedActor.id);
+      if (dbActor) {
+        const wordCount = body.briefing?.trim().split(/\s+/).filter(Boolean).length || 0;
+        const result = SlimmeKassa.calculate({
+          usage: usage,
+          words: wordCount,
+          mediaTypes: body.media,
+          country: body.country,
+          spots: body.spotsDetail || { [body.media?.[0]]: body.spots },
+          years: body.yearsDetail || { [body.media?.[0]]: body.years },
+          liveSession: body.liveSession,
+          actorRates: dbActor as any,
+          music: music,
+          isVatExempt: !!submittedIsVatExempt
+        });
+        if (result.isQuoteOnly) isQuote = true;
+        serverCalculatedSubtotal += result.subtotal;
+      }
+    }
+
+    // 3. Vergelijk met ingediende prijs
+    const submittedSubtotal = pricing?.total || 0;
+    const priceDiff = Math.abs(serverCalculatedSubtotal - submittedSubtotal);
+    
+    if (priceDiff > 0.01) {
+      console.warn(`[Checkout] Price discrepancy detected! Submitted: ${submittedSubtotal}, Server: ${serverCalculatedSubtotal}`);
+      // Bij grote verschillen (> 1 euro) dwingen we offerte-modus af voor de veiligheid
+      if (priceDiff > 1.00) {
+        isQuote = true;
+      }
+    }
+
+    const subtotal = serverCalculatedSubtotal;
     const isVatExempt = !!submittedIsVatExempt;
     const taxRate = isVatExempt ? 0 : 0.21;
     
     // Calculate INCL VAT total for Mollie
-    const totalInclVat = subtotal * (1 + taxRate);
+    const totalInclVat = Math.round(subtotal * (1 + taxRate) * 100) / 100;
     const amount = totalInclVat;
 
-    console.log(`[Checkout] Processing order for ${email}, subtotal: ${subtotal}, totalInclVat: ${totalInclVat}, gateway: ${gateway}, payment_method: ${payment_method}`);
+    console.log(`[Checkout] Final validation for ${email}: Subtotal=${subtotal}, TotalInclVat=${totalInclVat}, isQuote=${isQuote}`);
 
     //  LEX: AUDIT & NOTIFY (Non-blocking)
-    // We still log the attempt for security and transparency
-    await LexCheck.auditOrder({
+    LexCheck.auditOrder({
       ...body,
-      isVatExempt
-    });
+      isVatExempt,
+      serverValidated: true,
+      serverSubtotal: subtotal
+    }).catch(e => console.warn('[LEX] Audit failed (background):', e));
 
-    return await db.transaction(async (tx) => {
+    //  CHRIS-PROTOCOL: Execute DB operations
+    const dbResult = await db.transaction(async (tx) => {
       let userId = metadata?.userId;
 
-      // 0. Lead Tracking (MAT-MANDAAT: Leg de drempel vast zodra de e-mail bekend is)
-      // CHRIS-PROTOCOL: Non-blocking. De verkoop is heilig.
+      // Lead Tracking
       if (email) {
-        try {
-          await db.insert(centralLeads).values({
-            email,
-            firstName: first_name,
-            lastName: last_name,
-            phone: phone,
-            sourceType: 'checkout_attempt',
-            leadVibe: 'hot',
-            iapContext: {
-              journey: isSubscription ? 'johfrai-subscription' : 'agency',
-              usage,
-              plan,
-              amount: amount.toString(),
-              metadata
-            }
-          }).onConflictDoNothing();
-        } catch (e) {
-          console.warn('[MAT] Lead tracking failed (non-blocking):', e);
-        }
+        db.insert(centralLeads).values({
+          email,
+          firstName: first_name,
+          lastName: last_name,
+          phone: phone,
+          sourceType: 'checkout_attempt',
+          leadVibe: 'hot',
+          iapContext: {
+            journey: isSubscription ? 'johfrai-subscription' : 'agency',
+            usage,
+            plan,
+            amount: amount.toString(),
+            metadata
+          }
+        }).onConflictDoNothing().catch(e => console.warn('[MAT] Lead tracking failed:', e));
       }
 
-      // 1. Upsert User (Systeem-kern: Altijd up-to-date adresgegevens)
+      // Upsert User
+      let isNewUser = false;
       if (email) {
         try {
+          const [existingUser] = await tx.select().from(users).where(eq(users.email, email)).limit(1);
+          isNewUser = !existingUser;
+
           const [user] = await tx.insert(users).values({
             email,
             firstName: first_name,
@@ -131,16 +217,32 @@ export async function POST(request: Request) {
             }
           }).returning();
           userId = user.id;
+
+          if (isNewUser) {
+            (async () => {
+              try {
+                const { VumeEngine } = await import('@/lib/mail/VumeEngine');
+                await VumeEngine.send({
+                  to: email,
+                  subject: 'Welkom bij Voices.be',
+                  template: 'new-account',
+                  context: { name: first_name || 'Klant', language: 'nl' },
+                  host: host
+                });
+              } catch (welcomeErr) {
+                console.warn('[Checkout] Welcome email failed:', welcomeErr);
+              }
+            })();
+          }
         } catch (userErr) {
           console.error('[Checkout] User upsert failed:', userErr);
-          // We gaan door als we al een userId hadden uit metadata, anders is dit fataal
           if (!userId) throw userErr;
         }
       }
 
-      // 2. Create Order/Quote in Supabase
+      // Create Order/Quote
       const [newOrder] = await tx.insert(orders).values({
-        wpOrderId: Math.floor(Math.random() * 100000), // Temporary ID
+        wpOrderId: Math.floor(Math.random() * 100000),
         total: amount.toString(),
         status: isQuote ? 'quote-pending' : 'pending',
         userId: userId || null,
@@ -156,24 +258,45 @@ export async function POST(request: Request) {
           music: body.music,
           billing_po: billing_po || null,
           financial_email: financial_email || null,
-          items: body.items // Store the full cart items for truth
+          items: validatedItems, // Use server-validated items
+          serverCalculated: true
         },
         ipAddress: ip,
         createdAt: new Date()
       }).returning();
 
-      // 3. Generate Secure One-Time Token for Post-Purchase Euphoria (Magic Access)
-      const secureToken = sign(
-        { orderId: newOrder.id, userId, journey: newOrder.journey, email },
-        process.env.JWT_SECRET || 'voices-secret-2026',
-        { expiresIn: '24h' }
-      );
+      // CHRIS-PROTOCOL: Order Items opslaan inclusief volledige metadata (SlimmeKassaResult)
+      if (validatedItems.length > 0) {
+        await tx.insert(orderItems).values(validatedItems.map((item: any) => ({
+          orderId: newOrder.id,
+          actorId: item.actor?.id || null,
+          artistId: item.artist?.id || null,
+          name: item.actor?.display_name ? `Stemopname: ${item.actor.display_name}` : (item.name || 'Product'),
+          quantity: 1,
+          price: (item.pricing?.subtotal || item.pricing?.total || 0).toString(),
+          tax: (item.pricing?.tax || 0).toString(),
+          metaData: item.pricing || {}, // Bevat full breakdown: base, wordSurcharge, mediaSurcharge, etc.
+          deliveryStatus: 'waiting'
+        })));
+      }
 
-      // 4. Handle Response (Mollie vs Banktransfer vs Quote)
-      const selectedGateway = payment_method || gateway;
-      if (isQuote || selectedGateway === 'banktransfer') {
-        //  YUKI SYNC: Bij overschrijving maken we direct een factuur in Yuki aan
-        if (selectedGateway === 'banktransfer') {
+      return { newOrder, userId, isNewUser };
+    });
+
+    const { newOrder, userId, isNewUser } = dbResult;
+
+    // 3. Generate Secure Token
+    const secureToken = sign(
+      { orderId: newOrder.id, userId, journey: newOrder.journey, email },
+      process.env.JWT_SECRET || 'voices-secret-2026',
+      { expiresIn: '24h' }
+    );
+
+    // 4. Handle Response (Mollie vs Banktransfer vs Quote)
+    const selectedGateway = payment_method || gateway;
+    if (isQuote || selectedGateway === 'banktransfer') {
+      if (selectedGateway === 'banktransfer') {
+        (async () => {
           try {
             const { YukiService } = await import('@/services/YukiService');
             await YukiService.createInvoice({
@@ -200,11 +323,12 @@ export async function POST(request: Request) {
               paymentMethod: 'banktransfer'
             });
           } catch (e) {
-            console.error('Yuki Sync failed during banktransfer:', e);
+            console.error('Yuki Sync failed:', e);
           }
-        }
+        })();
+      }
 
-        //  HITL-TRIGGER: Stuur een mailtje naar de admin bij offerte of banktransfer
+      (async () => {
         try {
           const fetchUrl = `${process.env.NEXT_PUBLIC_BASE_URL || `https://${host}`}/api/admin/notify`;
           await fetch(fetchUrl, {
@@ -217,117 +341,82 @@ export async function POST(request: Request) {
                 email: email,
                 amount: isQuote ? subtotal : amount,
                 company: company,
-                items: body.items,
-                customer: {
-                  firstName: first_name,
-                  lastName: last_name,
-                  phone: phone
-                }
+                items: validatedItems,
+                isNewUser: isNewUser,
+                customer: { firstName: first_name, lastName: last_name, phone: phone }
               }
             })
           });
         } catch (notifyErr) {
-          console.warn('[Admin Notify] Failed during checkout processing:', notifyErr);
+          console.warn('[Admin Notify] Failed:', notifyErr);
         }
+      })();
 
-        return NextResponse.json({
-          success: true,
-          orderId: newOrder.id,
-          token: secureToken,
-          isBankTransfer: payment_method === 'banktransfer',
-          message: selectedGateway === 'banktransfer' 
-            ? 'Bestelling ontvangen. We sturen je de factuur voor de overschrijving.'
-            : 'Offerte succesvol aangemaakt en verzonden.'
-        });
-      }
+      return NextResponse.json({
+        success: true,
+        orderId: newOrder.id,
+        token: secureToken,
+        isBankTransfer: payment_method === 'banktransfer',
+        isQuote: isQuote,
+        message: selectedGateway === 'banktransfer' 
+          ? 'Bestelling ontvangen. We sturen je de factuur voor de overschrijving.'
+          : 'Offerte succesvol aangemaakt en verzonden.'
+      });
+    }
 
-    // 5. Initialize Mollie Order (REAL API 2026)
-    // CHRIS-PROTOCOL: Orders API is superior for reporting and Klarna support
-    
-    // Map cart items to Mollie lines
-    const mollieLines = (body.items || []).map((item: any) => {
+    // 5. Initialize Mollie Order
+    const mollieLines = validatedItems.map((item: any) => {
       const itemSubtotal = item.pricing?.total || item.pricing?.subtotal || 0;
-      const vatAmount = itemSubtotal * taxRate;
-      const totalAmount = itemSubtotal + vatAmount;
+      const vatAmount = Math.round(itemSubtotal * taxRate * 100) / 100;
+      const totalAmount = Math.round((itemSubtotal + vatAmount) * 100) / 100;
 
       return {
         name: item.actor?.display_name ? `Stemopname: ${item.actor.display_name}` : (item.type || 'Product'),
         quantity: 1,
-        unitPrice: {
-          currency: 'EUR',
-          value: totalAmount.toFixed(2)
-        },
-        totalAmount: {
-          currency: 'EUR',
-          value: totalAmount.toFixed(2)
-        },
+        unitPrice: { currency: 'EUR', value: totalAmount.toFixed(2) },
+        totalAmount: { currency: 'EUR', value: totalAmount.toFixed(2) },
         vatRate: (taxRate * 100).toFixed(0),
-        vatAmount: {
-          currency: 'EUR',
-          value: vatAmount.toFixed(2)
-        },
-        metadata: {
-          actorId: item.actor?.id,
-          type: item.type
-        }
+        vatAmount: { currency: 'EUR', value: vatAmount.toFixed(2) },
+        metadata: { actorId: item.actor?.id, type: item.type }
       };
     });
 
-    // Add current selection if present AND not already in items
-    if (body.selectedActor) {
-      const isAlreadyInItems = (body.items || []).some((item: any) => item.actor?.id === body.selectedActor.id);
-      
+    // Add current selection if present and not already in items
+    if (selectedActor && step === 'briefing') {
+      const isAlreadyInItems = validatedItems.some((item: any) => item.actor?.id === selectedActor.id);
       if (!isAlreadyInItems) {
-        // Calculate current selection subtotal
-        const currentSubtotal = pricing?.total_current || (subtotal - (body.items || []).reduce((sum: number, i: any) => sum + (i.pricing?.total || i.pricing?.subtotal || 0), 0));
-
+        // Find the current selection total from the validated items or re-calculate
+        const currentSubtotal = subtotal - validatedItems.reduce((sum: number, i: any) => sum + (i.pricing?.total || i.pricing?.subtotal || 0), 0);
         if (currentSubtotal > 0.01) {
-          const vatAmount = currentSubtotal * taxRate;
-          const totalAmount = currentSubtotal + vatAmount;
-
+          const vatAmount = Math.round(currentSubtotal * taxRate * 100) / 100;
+          const totalAmount = Math.round((currentSubtotal + vatAmount) * 100) / 100;
           mollieLines.push({
-            name: `Stemopname: ${body.selectedActor.display_name || body.selectedActor.firstName}`,
+            name: `Stemopname: ${selectedActor.display_name || selectedActor.firstName}`,
             quantity: 1,
-            unitPrice: {
-              currency: 'EUR',
-              value: totalAmount.toFixed(2)
-            },
-            totalAmount: {
-              currency: 'EUR',
-              value: totalAmount.toFixed(2)
-            },
+            unitPrice: { currency: 'EUR', value: totalAmount.toFixed(2) },
+            totalAmount: { currency: 'EUR', value: totalAmount.toFixed(2) },
             vatRate: (taxRate * 100).toFixed(0),
-            vatAmount: {
-              currency: 'EUR',
-              value: vatAmount.toFixed(2)
-            },
-            metadata: {
-              actorId: body.selectedActor.id,
-              type: 'current_selection'
-            }
+            vatAmount: { currency: 'EUR', value: vatAmount.toFixed(2) },
+            metadata: { actorId: selectedActor.id, type: 'current_selection' }
           });
         }
       }
     }
 
-    // Add Academy/Studio if present but not in items (legacy fallback)
     if (mollieLines.length === 0 && amount > 0) {
-      const vatAmount = amount - (amount / (1 + taxRate));
       mollieLines.push({
         name: `Voices.be ${newOrder.journey.charAt(0).toUpperCase() + newOrder.journey.slice(1)}`,
         quantity: 1,
         unitPrice: { currency: 'EUR', value: amount.toFixed(2) },
         totalAmount: { currency: 'EUR', value: amount.toFixed(2) },
         vatRate: (taxRate * 100).toFixed(0),
-        vatAmount: { currency: 'EUR', value: vatAmount.toFixed(2) }
+        vatAmount: { currency: 'EUR', value: (amount - subtotal).toFixed(2) }
       });
     }
 
-    //  KELLY-MANDATE: Recalculate grand total from lines to ensure 100% Mollie sync
     const finalAmountInclVat = mollieLines.reduce((sum, line) => sum + parseFloat(line.totalAmount.value), 0);
     
     if (finalAmountInclVat <= 0) {
-      console.warn('[Checkout] Final amount is 0 or negative, skipping Mollie.');
       return NextResponse.json({
         success: true,
         orderId: newOrder.id,
@@ -337,43 +426,39 @@ export async function POST(request: Request) {
     }
 
     const mollieOrder = await MollieService.createOrder({
-      amount: {
-        currency: 'EUR',
-        value: finalAmountInclVat.toFixed(2)
-      },
+      amount: { currency: 'EUR', value: finalAmountInclVat.toFixed(2) },
       orderNumber: newOrder.id.toString(),
       lines: mollieLines,
-        billingAddress: {
-          streetAndNumber: address_street || 'N/A',
-          postalCode: postal_code || 'N/A',
-          city: city || 'N/A',
-          country: country || 'BE',
-          givenName: first_name || 'Klant',
-          familyName: last_name || '',
-          email: email
-        },
-        redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}`,
-        webhookUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout/webhook`,
-        locale: country === 'BE' ? 'nl_BE' : (country === 'NL' ? 'nl_NL' : (country === 'FR' ? 'fr_FR' : 'en_US')),
-        method: selectedGateway || undefined,
-        metadata: {
-          orderId: newOrder.id,
-          userId: userId,
-          billing_po: billing_po || null,
-          financial_email: financial_email || null,
-          journey: newOrder.journey,
-          company: company || null,
-          vatNumber: vat_number || null
-        }
-      });
-
-      return NextResponse.json({
-        success: true,
+      billingAddress: {
+        streetAndNumber: address_street || 'N/A',
+        postalCode: postal_code || 'N/A',
+        city: city || 'N/A',
+        country: country || 'BE',
+        givenName: first_name || 'Klant',
+        familyName: last_name || '',
+        email: email
+      },
+      redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}`,
+      webhookUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout/webhook`,
+      locale: country === 'BE' ? 'nl_BE' : (country === 'NL' ? 'nl_NL' : (country === 'FR' ? 'fr_FR' : 'en_US')),
+      method: selectedGateway || undefined,
+      metadata: {
         orderId: newOrder.id,
-        checkoutUrl: `${mollieOrder._links.checkout.href}`,
-        token: secureToken,
-        message: 'Mollie order session initialized.'
-      });
+        userId: userId,
+        billing_po: billing_po || null,
+        financial_email: financial_email || null,
+        journey: newOrder.journey,
+        company: company || null,
+        vatNumber: vat_number || null
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      orderId: newOrder.id,
+      checkoutUrl: `${mollieOrder._links.checkout.href}`,
+      token: secureToken,
+      message: 'Mollie order session initialized.'
     });
 
   } catch (error) {
@@ -391,9 +476,25 @@ export async function PATCH(request: Request) {
 
     return await db.transaction(async (tx) => {
       // Update order status based on Mollie webhook
-      await tx.update(orders)
+      const [updatedOrder] = await tx.update(orders)
         .set({ status: status === 'paid' ? 'completed' : 'failed' })
-        .where(eq(orders.id, id));
+        .where(eq(orders.id, id))
+        .returning();
+
+      // 🔔 NOTIFICATION ENGINE (2026)
+      if (status === 'paid' && updatedOrder?.userId) {
+        try {
+          await tx.insert(notifications).values({
+            userId: updatedOrder.userId,
+            type: 'order_update',
+            title: 'Betaling ontvangen',
+            message: `Je betaling voor bestelling #${updatedOrder.displayOrderId || updatedOrder.id} is succesvol verwerkt.`,
+            metadata: { orderId: updatedOrder.id, status: 'completed' }
+          });
+        } catch (notifyError) {
+          console.error('[Mollie Webhook Notification Error]:', notifyError);
+        }
+      }
 
       return NextResponse.json({ success: true });
     });

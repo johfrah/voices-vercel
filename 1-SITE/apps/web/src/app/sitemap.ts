@@ -28,6 +28,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/terms',
     '/privacy',
     '/cookies',
+    '/tarieven',
+    '/over-ons',
+    '/zo-werkt-het',
   ];
 
   // 2. Dynamische Routes: Actors, Articles, Academy & Studio

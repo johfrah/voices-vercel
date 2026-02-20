@@ -233,18 +233,27 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
                   <ContainerInstrument plain className="flex items-center gap-2">
                     <Image src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 
                     <TextInstrument className={`text-[15px] tracking-widest ${index === 0 ? 'font-medium text-va-black' : 'font-light text-va-black/30'}`}>
-                      {new Date(edition.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })}
+                      <VoiceglotText 
+                        translationKey={`studio.workshop.${workshop.id}.edition.${edition.id}.date`} 
+                        defaultText={new Date(edition.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })} 
+                      />
                     </TextInstrument>
                   </ContainerInstrument>
                   
                   {/* Tijd & Locatie */}
                   <ContainerInstrument plain className="flex items-center gap-4">
                     <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest">
-                      {new Date(edition.date).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}
+                      <VoiceglotText 
+                        translationKey={`studio.workshop.${workshop.id}.edition.${edition.id}.time`} 
+                        defaultText={new Date(edition.date).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })} 
+                      />
                     </TextInstrument>
                     {edition.location?.city && (
                       <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest">
-                        {edition.location.city}
+                        <VoiceglotText 
+                          translationKey={`studio.workshop.${workshop.id}.edition.${edition.id}.location`} 
+                          defaultText={edition.location.city} 
+                        />
                       </TextInstrument>
                     )}
                   </ContainerInstrument>
@@ -262,7 +271,15 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
           {/* Workshopgever */}
           {(nextEdition?.instructor?.name || workshop.instructor?.name) && (
             <TextInstrument className="text-[15px] font-light text-va-black/40 mb-6 tracking-widest">
-              door {nextEdition?.instructor?.name || workshop.instructor?.name}
+              <VoiceglotText 
+                translationKey={`studio.workshop.${workshop.id}.instructor_prefix`} 
+                defaultText="door" 
+                className="mr-1"
+              />
+              <VoiceglotText 
+                translationKey={`instructor.${workshop.instructor_id || 'default'}.name`} 
+                defaultText={nextEdition?.instructor?.name || workshop.instructor?.name} 
+              />
             </TextInstrument>
           )}
           
@@ -290,7 +307,10 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
             
             <Link 
               href={`/studio/${workshop.slug}`}
-              onClick={handleCTAClick}
+              onClick={(e) => {
+                e.preventDefault();
+                handleCardClick();
+              }}
               className="flex items-center gap-3 text-[15px] font-light tracking-widest text-primary group/btn min-h-[44px] px-4 py-2 bg-primary/5 hover:bg-primary/10 rounded-[10px] transition-all"
             >
               <VoiceglotText translationKey="studio.book_cta" defaultText="Bekijk workshop" />

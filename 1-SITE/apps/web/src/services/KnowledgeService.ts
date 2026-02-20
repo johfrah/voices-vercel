@@ -35,7 +35,9 @@ export class KnowledgeService {
         '4-Voicy-Intelligence/VOICY-AGENCY-TELEPHONY.md',
         '4-Voicy-Intelligence/VOICY-AGENCY-VIDEO.md',
         '4-Voicy-Intelligence/VOICY-STUDIO.md',
-        '4-Voicy-Intelligence/VOICY-MATURITY-RULES.md'
+        '4-Voicy-Intelligence/VOICY-MATURITY-RULES.md',
+        '4-Voicy-Intelligence/VOICY-TOOL-ORCHESTRATION.md',
+        '4-Voicy-Intelligence/VOICY-SPEED-AND-URGENCY.md'
       ];
 
       let briefing = "--- FULL VOICY KNOWLEDGE BASE ---\n";
@@ -47,6 +49,14 @@ export class KnowledgeService {
         } catch (e) {
           console.warn(`Could not read Voicy knowledge file: ${file}`);
         }
+      }
+
+      //  SUPERINTELLIGENCE: Injecteer ook diepe data uit de kelder
+      try {
+        const scoreInventory = await fs.readFile('/Users/voices/Library/CloudStorage/Dropbox/voices-headless/4-KELDER/VOICE_SCORES_INVENTORY.md', 'utf-8');
+        briefing += `\n[Deep Data: Voice Scores]\n${scoreInventory}\n`;
+      } catch (e) {
+        console.warn("Could not read Voice Scores Inventory");
       }
 
       return briefing;
@@ -86,15 +96,16 @@ export class KnowledgeService {
   }
 
   /**
-   * Zoekt specifiek naar context voor een bepaalde journey.
+   * Zoekt specifiek naar context voor een bepaalde journey of tool.
    */
   async getJourneyContext(journey: string): Promise<string> {
-    const fileName = `VOICY-${journey.toUpperCase()}.md`;
+    //  NUCLEAR FIX: Support voor TOOL-ORCHESTRATION en andere niet-journey bestanden
+    const fileName = journey === 'TOOL-ORCHESTRATION' ? 'VOICY-TOOL-ORCHESTRATION.md' : `VOICY-${journey.toUpperCase()}.md`;
     const filePath = path.join(this.bijbelPath, '4-Voicy-Intelligence', fileName);
 
     try {
       const content = await fs.readFile(filePath, 'utf-8');
-      return `\n[Journey Context: ${journey}]\n${content}\n`;
+      return `\n[Context: ${journey}]\n${content}\n`;
     } catch (e) {
       return "";
     }

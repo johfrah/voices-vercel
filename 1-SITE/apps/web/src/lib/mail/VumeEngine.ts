@@ -2,6 +2,9 @@ import { DirectMailService } from '@/services/DirectMailService';
 import { VumeMagicLinkTemplate } from './templates/VumeMagicLinkTemplate';
 import { VumeStudioTemplate } from './templates/VumeStudioTemplate';
 import { VumeInvoiceReplyTemplate } from './templates/VumeInvoiceReplyTemplate';
+import { VumeActorAssignmentTemplate } from './templates/VumeActorAssignmentTemplate';
+import { VumeNewAccountTemplate } from './templates/VumeNewAccountTemplate';
+import { VumeDonationThankYouTemplate } from './templates/VumeDonationThankYouTemplate';
 
 /**
  *  VUME ENGINE (2026)
@@ -12,10 +15,11 @@ import { VumeInvoiceReplyTemplate } from './templates/VumeInvoiceReplyTemplate';
 interface SendOptions {
   to: string;
   subject: string;
-  template: 'magic-link' | 'studio-experience' | 'invoice-reply';
+  template: 'magic-link' | 'studio-experience' | 'invoice-reply' | 'actor-assignment' | 'new-account' | 'donation-thank-you';
   context: any;
   from?: string;
   host?: string;
+  language?: string;
 }
 
 export class VumeEngine {
@@ -58,6 +62,41 @@ export class VumeEngine {
           language: context.language || 'nl'
         });
         break;
+
+      case 'actor-assignment':
+        html = VumeActorAssignmentTemplate({
+          actorName: context.actorName,
+          orderId: context.orderId,
+          clientName: context.clientName,
+          clientCompany: context.clientCompany,
+          usageType: context.usageType,
+          script: context.script,
+          briefing: context.briefing,
+          deliveryTime: context.deliveryTime,
+          host: host,
+          language: context.language || 'nl'
+        });
+        break;
+
+      case 'new-account':
+        html = VumeNewAccountTemplate({
+          name: context.name,
+          host: host,
+          language: context.language || 'nl'
+        });
+        break;
+
+      case 'donation-thank-you':
+        html = VumeDonationThankYouTemplate({
+          name: context.name,
+          amount: context.amount,
+          artistName: context.artistName,
+          message: context.message,
+          host: host,
+          language: context.language || 'nl'
+        });
+        break;
+
       default:
         throw new Error(`Template ${template} niet gevonden in VUME.`);
     }

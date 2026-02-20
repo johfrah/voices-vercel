@@ -34,7 +34,6 @@ export const StudioAcademyBento = () => {
               defaultText="Van basisuitspraak tot professionele voice-over technieken. Leer van de besten in onze maandelijkse workshops." 
             /></TextInstrument></HeadingInstrument>
         </ContainerInstrument>
-        <ContainerInstrument className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
       </BentoCard>
 
       {/*  Academy Quick-Link */}

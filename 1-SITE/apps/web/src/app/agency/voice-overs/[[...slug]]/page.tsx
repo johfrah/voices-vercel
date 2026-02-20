@@ -1,9 +1,13 @@
 import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
 import { PageWrapperInstrument, SectionInstrument } from "@/components/ui/LayoutInstruments";
-import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { getActors } from "@/lib/api-server";
 import { headers } from "next/headers";
 import { AgencyContent } from "../../AgencyContent";
+import nextDynamic from "next/dynamic";
+import { Suspense } from "react";
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 
 export const dynamic = 'force-dynamic';
 
@@ -64,7 +68,9 @@ export default async function AgencyDynamicPage({
 
   return (
     <PageWrapperInstrument>
-      <LiquidBackground strokeWidth={1.5} />
+      <Suspense fallback={null}>
+        <LiquidBackground strokeWidth={1.5} />
+      </Suspense>
       <AgencyHeroInstrument 
         title={filters.language ? `${filters.language.toUpperCase()} Stemmen` : undefined} 
         subtitle="Vind de perfecte stem voor uw project."

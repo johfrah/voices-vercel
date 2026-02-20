@@ -31,7 +31,7 @@ export class LexCheck {
 
     // 2. BTW-logica check
     if (data.country === 'BE' && data.isVatExempt) {
-      issues.push(`Verdachte BTW-vrijstelling: Gebruiker uit Belgi claimt BTW-vrijstelling.`);
+      issues.push(`Verdachte BTW-vrijstelling: Gebruiker uit België claimt BTW-vrijstelling.`);
     }
 
     // 3. Facturatie-integriteit

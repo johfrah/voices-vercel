@@ -160,6 +160,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                           src={state.selectedActor.photo_url} 
                           alt="" 
                           fill
+                          sizes="32px"
                           className="object-cover" 
                         />
                       )}
@@ -234,7 +235,7 @@ export const MobileCheckoutSheet: React.FC = () => {
                   <ChevronUp strokeWidth={1.5} className="-rotate-90" size={20} />
                 </button>
                 <h2 className="text-3xl font-light tracking-tighter">
-                  <VoiceglotText  translationKey="checkout.mobile.voice_briefing_title" defaultText="Spreek je briefing in" />
+                  <VoiceglotText  translationKey="checkout.mobile.voice_briefing_title" defaultText="Spreek je tekst in" />
                 </h2>
               </div>
 

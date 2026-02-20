@@ -7,7 +7,7 @@ import { ActorEditModal } from './ActorEditModal';
 /**
  *  GLOBAL MODAL MANAGER (GOD MODE 2026)
  * 
- * Beheert alle sitewide popups en modals vanuit n centrale plek.
+ * Beheert alle sitewide popups en modals vanuit één centrale plek.
  * Gebruikt de EditModeContext voor state management.
  */
 export const GlobalModalManager: React.FC = () => {

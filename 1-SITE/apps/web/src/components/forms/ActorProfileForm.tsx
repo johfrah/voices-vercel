@@ -21,7 +21,9 @@ import {
   ChevronLeft, 
   Check,
   Languages,
-  Sparkles
+  Sparkles,
+  Clock,
+  AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -53,6 +55,10 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
     nativeLangId: initialData?.native_lang_id || '',
     extraLangIds: initialData?.extra_lang_ids || [] as number[],
     toneIds: initialData?.tone_ids || [] as number[],
+    deliveryDaysMin: initialData?.deliveryDaysMin || 1,
+    deliveryDaysMax: initialData?.deliveryDaysMax || 3,
+    cutoffTime: initialData?.cutoffTime || '18:00',
+    allowFreeTrial: initialData?.allowFreeTrial ?? true,
     ...initialData
   });
 
@@ -104,7 +110,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
     <ContainerInstrument plain className="max-w-4xl mx-auto">
       {/*  Progress Indicator */}
       <ContainerInstrument plain className="flex justify-between mb-12 px-4">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3, 4].map((i) => (
           <div key={i} className="flex flex-col items-center gap-2 group">
             <div className={cn(
               "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 border",
@@ -119,6 +125,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
               {i === 1 && <VoiceglotText translationKey="form.step.identity" defaultText="Identiteit" />}
               {i === 2 && <VoiceglotText translationKey="form.step.languages" defaultText="Talen" />}
               {i === 3 && <VoiceglotText translationKey="form.step.character" defaultText="Karakter" />}
+              {i === 4 && <VoiceglotText translationKey="form.step.delivery" defaultText="Levering" />}
             </TextInstrument>
           </div>
         ))}
@@ -328,11 +335,9 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                 <ChevronLeft size={18} className="mr-2" />
                 Vorige
               </ButtonInstrument>
-              <ButtonInstrument 
-                onClick={() => onSave(formData)} 
-                className="va-btn-pro bg-primary text-white px-12"
-              >
-                {mode === 'signup' ? 'Aanmelding Voltooien' : 'Profiel Bijwerken'}
+              <ButtonInstrument onClick={nextStep} className="va-btn-pro group">
+                Volgende stap
+                <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
               </ButtonInstrument>
             </div>
           </motion.div>

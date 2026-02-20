@@ -8,11 +8,14 @@ import {
     SectionInstrument,
     TextInstrument
 } from '@/components/ui/LayoutInstruments';
-import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { ChevronDown, ChevronUp, Search, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import dynamic from "next/dynamic";
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 
 /**
  *  FAQ PAGE (NUCLEAR 2026)
@@ -59,7 +62,9 @@ export default function FAQPage() {
 
   return (
     <PageWrapperInstrument className="pt-32 pb-40 bg-va-off-white min-h-screen relative overflow-hidden">
-      <LiquidBackground strokeWidth={1.5} />
+      <Suspense fallback={null}>
+        <LiquidBackground strokeWidth={1.5} />
+      </Suspense>
       
       <SectionInstrument className="max-w-7xl mx-auto px-6 relative z-10">
         

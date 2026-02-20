@@ -27,6 +27,14 @@ export interface NavConfig {
     href: string;
     key?: string;
   }>;
+  sections?: Array<{
+    title: string;
+    links: Array<{
+      name: string;
+      href: string;
+      key?: string;
+    }>;
+  }>;
   icons: {
     favorites: boolean;
     cart: boolean;

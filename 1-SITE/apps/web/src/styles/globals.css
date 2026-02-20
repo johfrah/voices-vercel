@@ -70,6 +70,12 @@ body {
 .text-va-black\/50 { color: rgba(26, 26, 26, 0.75) !important; }
 .text-va-black\/60 { color: rgba(26, 26, 26, 0.85) !important; }
 
+/* 🖋️ PLACEHOLDER MANDATE (2026) */
+::placeholder {
+  color: rgba(26, 26, 26, 0.45) !important;
+  opacity: 1; /* Firefox fix */
+}
+
 .tracking-widest {
   tracking: 0.1em !important; /* Sanitize extreme tracking */
 }

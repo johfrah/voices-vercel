@@ -1,6 +1,7 @@
 "use client";
 
-import { PlanType, PricingEngine, UsageType } from '@/lib/pricing-engine';
+import { PlanType, SlimmeKassa, UsageType } from '@/lib/pricing-engine';
+import { generateCartHash } from '@/lib/cart-utils';
 import { Actor } from '@/types';
 import { cn } from '@/lib/utils';
 import { CheckCircle2 } from 'lucide-react';
@@ -55,12 +56,14 @@ interface CheckoutState {
   isSubmitting: boolean;
   items: any[];
   isLocked: boolean;
+  mediaCache: Record<string, string[]>; //  NEW: Cache media selections per journey
   briefingFiles: {
     id: string;
     name: string;
     type: 'audio' | 'video' | 'text';
     url: string;
   }[];
+  pricingConfig: any;
   pricing: {
     base: number;
     wordSurcharge: number;
@@ -111,6 +114,8 @@ interface CheckoutContextType {
   lockPrice: () => void;
   unlockPrice: () => void;
   isVatExempt: boolean;
+  subtotal: number;
+  cartHash: string;
 }
 
 const initialState: CheckoutState = {
@@ -152,16 +157,20 @@ const initialState: CheckoutState = {
   },
   paymentMethod: 'bancontact',
   paymentMethods: [
-    { id: 'bancontact', description: 'Bancontact', image: { size2x: 'https://www.mollie.com/external/icons/payment-methods/bancontact%402x.png' } },
-    { id: 'ideal', description: 'iDEAL', image: { size2x: 'https://www.mollie.com/external/icons/payment-methods/ideal%402x.png' } },
-    { id: 'banktransfer', description: 'Betalen op factuur', isInvoice: true, image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' } }
+    { id: 'bancontact', description: 'Bancontact', image: { size2x: '/assets/common/branding/payment/bancontact.svg' } },
+    { id: 'ideal', description: 'iDEAL', image: { size2x: '/assets/common/branding/payment/mollie.svg' } },
+    { id: 'banktransfer', description: 'Betalen op factuur (Offerte)', isInvoice: true, image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' } }
   ],
   taxRate: 0.21,
   agreedToTerms: true,
   isSubmitting: false,
   items: [],
   isLocked: false,
+  mediaCache: {
+    commercial: ['online'],
+  },
   briefingFiles: [],
+  pricingConfig: null,
   pricing: {
     base: 0,
     wordSurcharge: 0,
@@ -224,8 +233,14 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     const fetchConfig = async () => {
       try {
+        // Fetch checkout config
         const res = await fetch('/api/checkout/config');
         const data = await res.json();
+        
+        // Fetch pricing config from Supabase via our API
+        const pricingRes = await fetch('/api/pricing/config');
+        const pricingData = await pricingRes.json();
+
         if (data && data.paymentMethods) {
           // Filter out unwanted methods
           const filtered = data.paymentMethods.filter((m: any) => 
@@ -234,10 +249,19 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           
           // Add our custom "Invoice" method to the list
           const allMethods = [
-            ...filtered,
+            ...filtered.map((m: any) => ({
+              ...m,
+              image: {
+                ...m.image,
+                size2x: m.id === 'bancontact' ? '/assets/common/branding/payment/bancontact.svg' : 
+                        m.id === 'ideal' ? '/assets/common/branding/payment/mollie.svg' : 
+                        m.id === 'creditcard' ? '/assets/common/branding/payment/visa.svg' :
+                        m.image.size2x
+              }
+            })),
             { 
               id: 'banktransfer', 
-              description: 'Betalen op factuur', 
+              description: 'Betalen op factuur (Offerte)', 
               isInvoice: true,
               image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' }
             }
@@ -246,11 +270,12 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           setState(prev => ({
             ...prev,
             paymentMethods: allMethods,
-            taxRate: data.taxRate || 0.21
+            taxRate: data.taxRate || 0.21,
+            pricingConfig: pricingData // Store dynamic pricing config
           }));
         }
       } catch (e) {
-        console.warn('[CheckoutContext] Failed to fetch checkout config', e);
+        console.warn('[CheckoutContext] Failed to fetch config', e);
       }
     };
     fetchConfig();
@@ -306,7 +331,16 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const updatePlan = useCallback((plan: PlanType) => setState(prev => ({ ...prev, plan })), []);
   const updateMedia = useCallback((media: CheckoutState['media']) => {
     console.log(`[CheckoutContext] Updating media to: ${JSON.stringify(media)}`);
-    setState(prev => ({ ...prev, media }));
+    setState(prev => {
+      const newState = { ...prev, media };
+      
+      //  MONKEYPROOF CACHE: Save commercial media selection
+      if (prev.usage === 'commercial') {
+        newState.mediaCache = { ...prev.mediaCache, commercial: media };
+      }
+      
+      return newState;
+    });
   }, []);
   const updateCountry = useCallback((country: string | string[]) => setState(prev => ({ ...prev, country })), []);
   const updateSecondaryLanguages = useCallback((languages: string[]) => setState(prev => ({ ...prev, secondaryLanguages: languages })), []);
@@ -321,7 +355,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setState(prev => ({ ...prev, music: { ...prev.music, ...music } })), []);
 
   const selectActor = useCallback((actor: Actor | null) => setState(prev => {
-    const status = actor ? PricingEngine.getAvailabilityStatus(
+    const status = actor ? SlimmeKassa.getAvailabilityStatus(
       actor,
       prev.usage === 'commercial' ? (prev.media as any) : [],
       Array.isArray(prev.country) ? prev.country[0] : prev.country
@@ -330,7 +364,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return {
       ...prev,
       selectedActor: actor,
-      isQuoteRequest: status === 'unavailable' // PricingEngine returns available/unavailable
+      isQuoteRequest: status === 'unavailable' // SlimmeKassa returns available/unavailable
     };
   }), []);
 
@@ -463,8 +497,21 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // Academy pricing logic
     if (state.journey === 'academy') {
-      let academySubtotal = 149;
-      if (state.upsells.workshop_home) academySubtotal += 395;
+      const result = SlimmeKassa.calculate({
+        usage: 'subscription',
+        plan: 'pro',
+        actorRates: {},
+      }, state.pricingConfig || undefined);
+      
+      let academySubtotal = result.total; 
+      if (state.upsells.workshop_home) {
+        const workshopResult = SlimmeKassa.calculate({
+          usage: 'subscription',
+          plan: 'studio',
+          actorRates: {},
+        }, state.pricingConfig || undefined);
+        academySubtotal += workshopResult.total;
+      }
 
       console.log(`[CheckoutContext] Academy total: ${academySubtotal}`);
 
@@ -472,7 +519,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         ...prev,
         pricing: {
           ...prev.pricing,
-          total: academySubtotal, //  KELLY-MANDATE: Only current selection total
+          total: academySubtotal,
         }
       }));
       return;
@@ -480,12 +527,17 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // Studio pricing logic
     if (state.journey === 'studio' && state.editionId) {
-      const workshopPrice = 395; 
+      const result = SlimmeKassa.calculate({
+        usage: 'subscription',
+        plan: 'studio',
+        actorRates: {},
+      }, state.pricingConfig || undefined);
+      
       setState(prev => ({
         ...prev,
         pricing: {
           ...prev.pricing,
-          total: workshopPrice,
+          total: result.total,
         }
       }));
       return;
@@ -506,7 +558,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     console.log(`[CheckoutContext] Calculating with media: ${JSON.stringify(state.media)}`);
 
-    const result = PricingEngine.calculate({
+    const result = SlimmeKassa.calculate({
       usage: state.usage,
       plan: state.plan,
       words: wordCount,
@@ -523,7 +575,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         state.customer.vat_number.length > 2 && 
         !state.customer.vat_number.startsWith('BE') && 
         state.customer.country !== 'BE'
-    });
+    }, state.pricingConfig || undefined);
 
     // Liquid price animation in context
     setState(prev => {
@@ -573,6 +625,19 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     !state.customer.vat_number.startsWith('BE') && 
     state.customer.country !== 'BE';
 
+  // CHRIS-PROTOCOL: Centralized Subtotal Selector
+  // Dit is de enige bron van waarheid voor het subtotaal in de hele app.
+  // Het telt de items in het mandje op, en voegt de huidige selectie toe ALLEEN als we in de briefing-stap zijn.
+  const subtotal = React.useMemo(() => {
+    const cartTotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
+    const currentSelectionTotal = (state.selectedActor && state.step === 'briefing') ? state.pricing.total : 0;
+    return cartTotal + currentSelectionTotal;
+  }, [state.items, state.selectedActor, state.step, state.pricing.total]);
+
+  const cartHash = React.useMemo(() => {
+    return generateCartHash(state.items, state.selectedActor, state.step);
+  }, [state.items, state.selectedActor, state.step]);
+
   return (
     <CheckoutContext.Provider value={{ 
       state, 
@@ -607,7 +672,9 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       removeBriefingFile,
       lockPrice,
       unlockPrice,
-      isVatExempt
+      isVatExempt,
+      subtotal,
+      cartHash
     }}>
       <div className="hidden"><CheckCircle2 strokeWidth={1.5} /></div>
       <div className={cn(!isHydrated && "opacity-0 pointer-events-none")}>

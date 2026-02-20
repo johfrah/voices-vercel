@@ -16,6 +16,7 @@ export async function sendTestMails(recipient: string) {
   try {
     // 1. Test Magic Link (Auth Journey) - Gebruik echte user data
     const [realUser] = await db.select().from(users).orderBy(desc(users.createdAt)).limit(1);
+    // const realUser = { firstName: 'Johfrah' };
     await VumeEngine.send({
       to: recipient,
       subject: ' Test: Inloggen op Voices.be (Real Data)',

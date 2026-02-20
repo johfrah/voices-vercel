@@ -55,7 +55,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const logoHtml = `
     <tr>
       <td align="center" style="padding-bottom: 40px;">
-                  <img src="https://voices-vercel.vercel.app/assets/common/branding/logo-color.png" alt="Voices.be" width="140" style="display: block; border: 0;" />
+                  <img src="https://www.voices.be/assets/common/branding/logo-color.png" alt="Voices.be" width="140" style="display: block; border: 0;" />
       </td>
     </tr>
   `;
@@ -65,7 +65,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
       <tr>
         <td width="100" style="vertical-align: middle; text-align: center;">
           <a href="https://www.voices.be/?utm_source=E-mail&utm_medium=be-mail" style="text-decoration: none;">
-            <img src="https://voices-vercel.vercel.app/assets/common/branding/founder/johfrah.png?v=20260213" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
+            <img src="https://www.voices.be/assets/common/branding/founder/johfrah.png?v=20260213" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
           </a>
         </td>
         <td style="vertical-align: middle; padding-left: 31px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">
@@ -131,4 +131,25 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     </body>
     </html>
   `;
+}
+
+export type BaseTemplateProps = {
+  title: string;
+  previewText?: string;
+  journey?: 'agency' | 'artist' | 'portfolio' | 'studio' | 'auth';
+  market?: string;
+  children: string;
+  headerImage?: string;
+  optOutUrl?: string;
+};
+
+export function BaseTemplate(props: BaseTemplateProps) {
+  return VumeMasterWrapper(props.children, {
+    title: props.title,
+    previewText: props.previewText,
+    journey: props.journey,
+    market: props.market,
+    headerImage: props.headerImage,
+    optOutUrl: props.optOutUrl
+  });
 }

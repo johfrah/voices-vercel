@@ -6,9 +6,13 @@ import {
     SectionInstrument,
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
-import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { Copy, FileText } from "lucide-react";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 
 /**
  * SCRIPTS: TELEFOON TEKSTEN (PHYSICAL PAGE)
@@ -41,7 +45,9 @@ export default function ScriptsPage() {
 
   return (
     <PageWrapperInstrument className="relative min-h-screen pt-32 pb-20 overflow-hidden">
-      <LiquidBackground />
+      <Suspense fallback={null}>
+        <LiquidBackground />
+      </Suspense>
       
       <SectionInstrument className="max-w-6xl mx-auto px-6 relative z-10">
         <ContainerInstrument className="mb-16">

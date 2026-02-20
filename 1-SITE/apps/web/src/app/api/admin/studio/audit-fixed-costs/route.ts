@@ -17,7 +17,7 @@ export async function GET() {
     `);
 
     let mdContent = "#  Overzicht Vaste Workshop Kosten (Marketing & Algemeen)\n\n";
-    mdContent += "Dit overzicht bevat de kosten die niet direct aan n specifieke workshop-editie zijn gekoppeld.\n\n";
+    mdContent += "Dit overzicht bevat de kosten die niet direct aan één specifieke workshop-editie zijn gekoppeld.\n\n";
 
     if (fixedCosts.rows.length === 0) {
       mdContent += "##  Prognose (Op basis van gebruikers-input)\n\n";

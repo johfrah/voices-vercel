@@ -65,7 +65,7 @@ export default function LessonPage({ params, searchParams }: { params: { id: str
   return (
     <PageWrapperInstrument>
       <Suspense  fallback={<LoadingScreenInstrument />}>
-        <LessonContent strokeWidth={1.5} params={params} searchParams={searchParams} />
+        <LessonContent params={params} searchParams={searchParams} />
       </Suspense>
     </PageWrapperInstrument>
   );
@@ -394,7 +394,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
         {/* Main Content Area */}
         <BentoCard span="xl" className="space-y-12" id="lesson-content-to-export">
           {/* Video Section */}
-          <VideoPlayer strokeWidth={1.5} 
+          <VideoPlayer 
             url={videoUrl} 
             title={<VoiceglotText  translationKey="academy.lesson.video_title" defaultText="Les Video" />}
           />
@@ -403,7 +403,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
           <ContainerInstrument className="prose prose-va max-w-none">
             <HeadingInstrument level={2} className="text-3xl font-light tracking-tight mb-6"><VoiceglotText  translationKey="academy.lesson.exercise_title" defaultText="Oefening" /></HeadingInstrument>
             <ContainerInstrument className="text-va-black/70 leading-relaxed academy-content">
-              <AcademyContent strokeWidth={1.5} 
+              <AcademyContent 
                 translationKey={`academy.lesson.${params.id}.content`} 
                 defaultHtml={exerciseHtml} 
                 variables={variables}
@@ -411,7 +411,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
             </ContainerInstrument>
 
           {/* Recorder Section */}
-          <AcademyRecorder strokeWidth={1.5} lessonId={params.id} initialText={data.exercise} />
+          <AcademyRecorder lessonId={params.id} initialText={data.exercise} />
         </ContainerInstrument>
 
           {/*  NULMETING REFLECTIE (Alleen voor Les 1) */}
@@ -452,11 +452,11 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
 
           {/*  ADMIN ONLY: Video Scripts Section */}
           {isAdmin && (
-            <BentoGrid strokeWidth={1.5} columns={2} className="mt-12">
+            <BentoGrid columns={2} className="mt-12">
               <BentoCard span="md" className="bg-va-black text-white p-8">
                 <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-4 text-primary"><VoiceglotText  translationKey="academy.admin.intro_script_title" defaultText="Introductie Script (2 min)" /></HeadingInstrument>
                 <ContainerInstrument className="prose prose-invert prose-xs max-h-96 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10">
-                  <AcademyContent strokeWidth={1.5} 
+                  <AcademyContent 
                     translationKey={`academy.lesson.${params.id}.intro_script`} 
                     defaultHtml={data.intro_script || "Geen intro script beschikbaar."} 
                     variables={variables}
@@ -467,7 +467,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
               <BentoCard span="md" className="bg-va-black text-white p-8">
                 <HeadingInstrument level={3} className="text-xl font-light tracking-tight mb-4 text-primary"><VoiceglotText  translationKey="academy.admin.deep_dive_script_title" defaultText="Verdieping Script (4 min)" /></HeadingInstrument>
                 <ContainerInstrument className="prose prose-invert prose-xs max-h-96 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10">
-                  <AcademyContent strokeWidth={1.5} 
+                  <AcademyContent 
                     translationKey={`academy.lesson.${params.id}.deep_dive_script`} 
                     defaultHtml={data.deep_dive_script || "Geen verdieping script beschikbaar."} 
                     variables={variables}
@@ -510,7 +510,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
               <ContainerInstrument className="h-full bg-primary" {...({ style: { width: `${progress.percentage}%` } } as any)} />
             </ContainerInstrument>
             {isAdmin && (
-              <AcademyPdfButton strokeWidth={1.5} 
+              <AcademyPdfButton 
                 lessonTitle={data.header.title} 
                 contentSelector="#lesson-content-to-export" 
                 fileName={`Voices-Academy-Les-${params.id}-${variables.firstName}.pdf`}

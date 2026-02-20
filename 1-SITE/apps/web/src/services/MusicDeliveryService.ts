@@ -1,7 +1,7 @@
 import { db } from '@db';
 import { media, orders, users } from '@db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { DropboxExportBridge } from '@/lib/audio/dropbox-bridge';
+import { DropboxService } from '@/services/DropboxService';
 
 /**
  *  MUSIC DELIVERY SERVICE (2026)
@@ -54,16 +54,13 @@ export class MusicDeliveryService {
       if (formats['16khz']) filesToDeliver.push(formats['16khz']);
       if (formats['8khz']) filesToDeliver.push(formats['8khz']);
 
-      // 5. Push naar Dropbox via de Bridge
-      const metadata = {
-        orderId: orderId.toString(),
-        customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Klant',
-        projectName: `Muzieklicentie - ${track.altText || track.fileName}`
-      };
-
-      for (const filePath of filesToDeliver) {
-        await DropboxExportBridge.pushToControlFolder(filePath, metadata);
-      }
+      // 5. Push naar Dropbox via de Service
+      const dropbox = DropboxService.getInstance();
+      await dropbox.syncToControlFolder(
+        orderId.toString(),
+        `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Klant',
+        `Muzieklicentie - ${track.altText || track.fileName}`
+      );
 
       console.log(` [MUSIC DELIVERY] Successfully pushed ${filesToDeliver.length} files to Dropbox for Order #${orderId}.`);
 

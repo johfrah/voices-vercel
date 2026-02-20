@@ -141,6 +141,7 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
 
       <video
         ref={videoRef}
+        key={url}
         poster={poster}
         autoPlay
         muted={isMuted}
@@ -172,8 +173,8 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
         }}
         onClick={togglePlay}
         crossOrigin="anonymous"
+        src={url}
       >
-        <source src={url} type="video/mp4" />
         {subtitles && (
           <track 
             label="Nederlands"

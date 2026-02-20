@@ -30,6 +30,8 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
     { id: 'checkout', label: 'Afrekenen', key: 'order_steps.checkout' },
   ] as const;
 
+  const totalActors = checkoutState.items.length + (checkoutState.selectedActor ? 1 : 0);
+
   return (
     <div className={cn("flex justify-center opacity-80 hover:opacity-100 transition-opacity duration-500", className)}>
       <div className="flex items-center gap-4 md:gap-6">
@@ -37,7 +39,26 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
           const isActive = step.id === currentStep;
           const isPast = steps.findIndex(s => s.id === currentStep) > index;
           const isVoiceStep = step.id === 'voice';
-          const showActorName = isVoiceStep && (isActive || isPast) && checkoutState.selectedActor;
+          
+          // CHRIS-PROTOCOL: Dynamic step labels based on cart content
+          let stepLabel = <VoiceglotText translationKey={step.key} defaultText={step.label} />;
+          
+          if (isVoiceStep && (isActive || isPast)) {
+            if (totalActors > 1) {
+              stepLabel = (
+                <span className="flex items-center gap-1.5">
+                  {totalActors} <VoiceglotText translationKey="order_steps.voices_plural" defaultText="Stemmen" />
+                </span>
+              );
+            } else {
+              const actorName = checkoutState.selectedActor?.display_name || checkoutState.items[0]?.actor?.display_name;
+              // CHRIS-PROTOCOL: Alleen de naam tonen als er echt een stem geselecteerd is OF in het mandje zit
+              // En we niet in de initiële 'voice' stap zitten zonder selectie
+              if (actorName && (checkoutState.items.length > 0 || (checkoutState.selectedActor && currentStep !== 'voice'))) {
+                stepLabel = <span>{actorName}</span>;
+              }
+            }
+          }
 
           return (
             <React.Fragment key={step.id}>
@@ -56,13 +77,7 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
                   "text-[12px] font-bold tracking-[0.15em] uppercase transition-all duration-500",
                   isActive ? "text-va-black" : isPast ? "text-green-600" : "text-va-black/30"
                 )}>
-                  {showActorName ? (
-                    <span className="flex items-center gap-1.5">
-                      {checkoutState.selectedActor?.display_name}
-                    </span>
-                  ) : (
-                    <VoiceglotText translationKey={step.key} defaultText={step.label} />
-                  )}
+                  {stepLabel}
                 </span>
               </div>
               

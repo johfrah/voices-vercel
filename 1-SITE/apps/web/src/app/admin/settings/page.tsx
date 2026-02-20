@@ -51,9 +51,27 @@ export default function AdminSettingsPage() {
       iban: 'BE00 0000 0000 0000'
     },
     general_settings: {
-      opening_hours: '09:00 - 18:00',
+      opening_hours: {
+        mon: { active: true, start: '09:00', end: '18:00' },
+        tue: { active: true, start: '09:00', end: '18:00' },
+        wed: { active: true, start: '09:00', end: '18:00' },
+        thu: { active: true, start: '09:00', end: '18:00' },
+        fri: { active: true, start: '09:00', end: '18:00' },
+        sat: { active: false, start: '09:00', end: '12:00' },
+        sun: { active: false, start: '09:00', end: '12:00' }
+      },
+      phone_hours: {
+        mon: { active: true, start: '09:00', end: '17:00' },
+        tue: { active: true, start: '09:00', end: '17:00' },
+        wed: { active: true, start: '09:00', end: '17:00' },
+        thu: { active: true, start: '09:00', end: '17:00' },
+        fri: { active: true, start: '09:00', end: '17:00' },
+        sat: { active: false, start: '09:00', end: '12:00' },
+        sun: { active: false, start: '09:00', end: '12:00' }
+      },
       default_delivery_days: 2,
-      ai_enabled: true
+      ai_enabled: true,
+      system_working_days: ['mon', 'tue', 'wed', 'thu', 'fri']
     },
     vacation_rules: {
       is_active: false,
@@ -130,7 +148,7 @@ export default function AdminSettingsPage() {
         <ContainerInstrument className="space-y-4">
           <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText  translationKey="admin.back_to_cockpit" defaultText="Terug" />
+            <VoiceglotText  translationKey="admin.back_to_dashboard" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter ">
             <VoiceglotText  translationKey="admin.settings.title" defaultText="Instellingen" />
@@ -245,14 +263,60 @@ export default function AdminSettingsPage() {
           </ContainerInstrument>
 
           <ContainerInstrument className="space-y-6">
-            <ContainerInstrument className="space-y-1">
-              <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase"><VoiceglotText  translationKey="auto.page.openingsuren.f8b4ae" defaultText="Openingsuren" /></LabelInstrument>
-              <InputInstrument 
-                value={configs.general_settings.opening_hours} 
-                onChange={(e) => updateConfig('general_settings', 'opening_hours', e.target.value)}
-                disabled={!isEditMode}
-                className="w-full bg-va-off-white border-none rounded-[10px] py-3 px-6 text-[15px] font-light"
-              />
+            <ContainerInstrument className="space-y-3">
+              <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase">
+                <VoiceglotText translationKey="admin.settings.opening_hours" defaultText="Openingsuren (Functioneel)" />
+              </LabelInstrument>
+              
+              <div className="space-y-2">
+                {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => {
+                  const config = configs.general_settings.opening_hours?.[day] || { active: false, start: '09:00', end: '18:00' };
+                  return (
+                    <div key={day} className="flex items-center gap-3 bg-va-off-white/50 p-2 rounded-xl border border-black/[0.03]">
+                      <button
+                        disabled={!isEditMode}
+                        onClick={() => {
+                          const next = { ...configs.general_settings.opening_hours };
+                          next[day] = { ...config, active: !config.active };
+                          updateConfig('general_settings', 'opening_hours', next);
+                        }}
+                        className={cn(
+                          "w-10 h-10 rounded-lg text-[10px] font-black uppercase transition-all flex items-center justify-center shrink-0",
+                          config.active ? "bg-va-black text-white" : "bg-white text-va-black/20 border border-black/5"
+                        )}
+                      >
+                        {day.substring(0, 2)}
+                      </button>
+                      
+                      <div className={cn("flex items-center gap-2 flex-grow transition-opacity", !config.active && "opacity-30 pointer-events-none")}>
+                        <input 
+                          type="text"
+                          value={config.start}
+                          disabled={!isEditMode}
+                          onChange={(e) => {
+                            const next = { ...configs.general_settings.opening_hours };
+                            next[day] = { ...config, start: e.target.value };
+                            updateConfig('general_settings', 'opening_hours', next);
+                          }}
+                          className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
+                        />
+                        <span className="text-[10px] text-va-black/20 font-bold">-</span>
+                        <input 
+                          type="text"
+                          value={config.end}
+                          disabled={!isEditMode}
+                          onChange={(e) => {
+                            const next = { ...configs.general_settings.opening_hours };
+                            next[day] = { ...config, end: e.target.value };
+                            updateConfig('general_settings', 'opening_hours', next);
+                          }}
+                          className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </ContainerInstrument>
             <ContainerInstrument className="space-y-1">
               <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase"><VoiceglotText  translationKey="auto.page.standaard_levertijd_.6d07f2" defaultText="Standaard Levertijd (Dagen)" /></LabelInstrument>
@@ -273,6 +337,98 @@ export default function AdminSettingsPage() {
               >
                 <ContainerInstrument className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${configs.general_settings.ai_enabled ? 'left-5' : 'left-1'}`} />
               </ButtonInstrument>
+            </ContainerInstrument>
+
+            {/* Voices Kalender (System Working Days) */}
+            <ContainerInstrument className="space-y-3 pt-4 border-t border-black/5">
+              <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase">
+                <VoiceglotText translationKey="admin.settings.voices_calendar" defaultText="Voices Kalender (Systeem Werkdagen)" />
+              </LabelInstrument>
+              <ContainerInstrument className="grid grid-cols-7 gap-1">
+                {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => {
+                  const isActive = (configs.general_settings.system_working_days || []).includes(day);
+                  return (
+                    <ButtonInstrument
+                      key={day}
+                      disabled={!isEditMode}
+                      onClick={() => {
+                        const current = configs.general_settings.system_working_days || [];
+                        const next = isActive 
+                          ? current.filter((d: string) => d !== day)
+                          : [...current, day];
+                        updateConfig('general_settings', 'system_working_days', next);
+                      }}
+                      className={`h-10 rounded-[8px] text-[11px] font-light uppercase transition-all ${
+                        isActive 
+                          ? 'bg-va-black text-white' 
+                          : 'bg-va-off-white text-va-black/30 hover:bg-va-black/5'
+                      }`}
+                    >
+                      {day.substring(0, 2)}
+                    </ButtonInstrument>
+                  );
+                })}
+              </ContainerInstrument>
+              <TextInstrument className="text-[12px] text-va-black/30 font-light italic">
+                <VoiceglotText translationKey="admin.settings.calendar_desc" defaultText="Bepaalt wanneer de admin orders kan valideren en doorsturen." />
+              </TextInstrument>
+            </ContainerInstrument>
+
+            {/* Telefonische Bereikbaarheid */}
+            <ContainerInstrument className="space-y-3 pt-4 border-t border-black/5">
+              <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase">
+                <VoiceglotText translationKey="admin.settings.phone_hours" defaultText="Telefonische Bereikbaarheid (Functioneel)" />
+              </LabelInstrument>
+              
+              <div className="space-y-2">
+                {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => {
+                  const config = configs.general_settings.phone_hours?.[day] || { active: false, start: '09:00', end: '17:00' };
+                  return (
+                    <div key={day} className="flex items-center gap-3 bg-va-off-white/50 p-2 rounded-xl border border-black/[0.03]">
+                      <button
+                        disabled={!isEditMode}
+                        onClick={() => {
+                          const next = { ...configs.general_settings.phone_hours };
+                          next[day] = { ...config, active: !config.active };
+                          updateConfig('general_settings', 'phone_hours', next);
+                        }}
+                        className={cn(
+                          "w-10 h-10 rounded-lg text-[10px] font-black uppercase transition-all flex items-center justify-center shrink-0",
+                          config.active ? "bg-blue-500 text-white" : "bg-white text-va-black/20 border border-black/5"
+                        )}
+                      >
+                        {day.substring(0, 2)}
+                      </button>
+                      
+                      <div className={cn("flex items-center gap-2 flex-grow transition-opacity", !config.active && "opacity-30 pointer-events-none")}>
+                        <input 
+                          type="text"
+                          value={config.start}
+                          disabled={!isEditMode}
+                          onChange={(e) => {
+                            const next = { ...configs.general_settings.phone_hours };
+                            next[day] = { ...config, start: e.target.value };
+                            updateConfig('general_settings', 'phone_hours', next);
+                          }}
+                          className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
+                        />
+                        <span className="text-[10px] text-va-black/20 font-bold">-</span>
+                        <input 
+                          type="text"
+                          value={config.end}
+                          disabled={!isEditMode}
+                          onChange={(e) => {
+                            const next = { ...configs.general_settings.phone_hours };
+                            next[day] = { ...config, end: e.target.value };
+                            updateConfig('general_settings', 'phone_hours', next);
+                          }}
+                          className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </ContainerInstrument>
           </ContainerInstrument>
         </BentoCard>

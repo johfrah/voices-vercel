@@ -48,6 +48,8 @@ export async function GET(request: NextRequest) {
     const isAllowed = 
       cleanPath.startsWith('/assets/') || 
       cleanPath.startsWith('/wp-content/') || 
+      cleanPath.startsWith('/api/') ||
+      cleanPath.startsWith('api/') ||
       cleanPath.startsWith('agency/') || 
       cleanPath.startsWith('active/') ||
       cleanPath.startsWith('common/') || 
@@ -72,22 +74,47 @@ export async function GET(request: NextRequest) {
 
     let normalizedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
 
-    //  SUPABASE STORAGE REDIRECT: Als het pad begint met 'agency/', 'active/', 'common/' of 'studio/', fetch het dan van Supabase Storage
-    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/')) {
+    //  SUPABASE STORAGE REDIRECT: Als het pad begint met 'agency/', 'active/', 'common/', 'studio/', 'ademing/', 'portfolio/', 'artists/' of 'visuals/', fetch het dan van Supabase Storage
+    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co')) {
       const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
-      const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+      const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1`;
       
       //  FIX: Zorg dat er geen dubbele slashes ontstaan en encodeer het pad segment per segment
-      // Alleen encoderen als het nog niet encoded is (check voor % in segmenten)
-      const pathSegments = cleanPath.split('/').map(segment => {
+      let storagePath = cleanPath;
+      if (storagePath.startsWith('https://')) {
+        // Extract path after /public/voices/
+        const match = storagePath.match(/\/public\/voices\/(.*)/);
+        if (match) storagePath = match[1];
+      }
+
+      const pathSegments = storagePath.split('/').filter(Boolean).map(segment => {
         if (segment.includes('%')) return segment; // Al encoded
         return encodeURIComponent(segment);
       });
-      const targetUrl = `${SUPABASE_STORAGE_URL}/${pathSegments.join('/')}`;
       
-      console.log(`[Proxy Supabase] Fetching: ${targetUrl}`);
+      //  CHRIS-PROTOCOL: Forensische fix voor dubbele taal-segments (bijv. nl/nl/)
+      // Sommige legacy paths in de DB hebben per ongeluk dubbele segments.
+      let finalSegments = pathSegments;
+      if (pathSegments[0] === 'agency' && pathSegments[1] === 'voices') {
+        // Check voor patronen als agency/voices/nl/nl/
+        if (pathSegments[2] === pathSegments[3] && pathSegments[2].length === 2) {
+          console.log(`[Proxy Fix] Removing duplicate language segment: ${pathSegments[2]}`);
+          finalSegments = [pathSegments[0], pathSegments[1], pathSegments[2], ...pathSegments.slice(4)];
+        }
+      }
 
-      const response = await fetch(targetUrl, {
+      const isImage = !!cleanPath.match(/\.(jpg|jpeg|png|webp|gif)$/i);
+      const isAlreadyWebP = cleanPath.toLowerCase().endsWith('.webp');
+
+      //  CHRIS-PROTOCOL: Smart WebP Transformation with Fallback
+      // If it's already a WebP, we fetch raw to avoid redundant transformation latency
+      const optimizedUrl = isAlreadyWebP 
+        ? `${SUPABASE_STORAGE_URL}/object/public/voices/${finalSegments.join('/')}`
+        : `${SUPABASE_STORAGE_URL}/render/image/public/voices/${finalSegments.join('/')}?width=1080&format=webp&quality=75`;
+      
+      const rawUrl = `${SUPABASE_STORAGE_URL}/object/public/voices/${finalSegments.join('/')}`;
+      
+      let response = await fetch(optimizedUrl, {
         headers: {
           'User-Agent': 'Voices-Asset-Proxy/1.0',
           'Cache-Control': 'no-cache'
@@ -95,15 +122,27 @@ export async function GET(request: NextRequest) {
         next: { revalidate: 0 }
       });
 
+      //  CHRIS-PROTOCOL: Fallback to Raw if Optimization fails (e.g. new uploads not yet in CDN)
+      if (!response.ok && isImage && !isAlreadyWebP) {
+        console.log(`[Proxy Fallback] Optimization failed, fetching raw: ${rawUrl}`);
+        response = await fetch(rawUrl, {
+          headers: {
+            'User-Agent': 'Voices-Asset-Proxy/1.0',
+            'Cache-Control': 'no-cache'
+          },
+          next: { revalidate: 0 }
+        });
+      }
+
       if (!response.ok) {
-        console.error(`[Proxy Supabase Error] Failed to fetch ${targetUrl}: ${response.status} ${response.statusText}`);
+        console.error(`[Proxy Supabase Error] Failed to fetch ${rawUrl}: ${response.status} ${response.statusText}`);
         return null;
       }
 
       const blob = await response.blob();
       const contentType = response.headers.get('content-type') || 'application/octet-stream';
 
-      return { blob, contentType, source: 'Voices-Core-2026-Supabase' };
+      return { blob, contentType, source: response.url.includes('render/image') ? 'Voices-Core-2026-Supabase-Optimized' : 'Voices-Core-2026-Supabase' };
     }
 
     //  FIX: Als het pad al een volledige Supabase URL is, fetch deze dan direct

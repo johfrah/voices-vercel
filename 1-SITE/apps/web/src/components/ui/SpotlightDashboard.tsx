@@ -241,8 +241,8 @@ export const SpotlightDashboard: React.FC = () => {
     });
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-va-black/60 backdrop-blur-2xl animate-fade-in">
-      <div className="w-full max-w-5xl bg-white rounded-[20px] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[85vh]">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-va-black/95 backdrop-blur-2xl animate-fade-in">
+      <div className="w-full max-w-5xl bg-white rounded-[20px] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[85vh] z-[10001]">
         {/* Search Header */}
         <div className="p-10 border-b border-black/5 flex items-center gap-8">
           <div className="w-12 h-12 bg-primary/10 rounded-[10px] flex items-center justify-center text-primary">

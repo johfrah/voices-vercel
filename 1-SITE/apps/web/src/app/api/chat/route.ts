@@ -71,9 +71,9 @@ async function handleFaqSearch(params: any) {
  * Slaat berichten direct op in Supabase en triggeert AI-logica
  */
 async function handleSendMessage(params: any) {
-  const { conversationId, message, senderType = 'user', senderId, context, language = 'nl', mode = 'ask', previewLogic = null } = params;
+  const { conversationId, message, senderType = 'user', senderId, context, language = 'nl', mode = 'ask', persona = 'voicy', previewLogic = null } = params;
 
-  console.log('[Voicy API] handleSendMessage started:', { conversationId, messageLength: message?.length, mode });
+  console.log('[Voicy API] handleSendMessage started:', { conversationId, messageLength: message?.length, mode, persona });
 
   try {
     //  LANGUAGE ADAPTATION: Voicy past haar taal aan aan de gebruiker
@@ -159,9 +159,14 @@ async function handleSendMessage(params: any) {
     }
 
     // 2. Als FAQ niets vindt of het is een complexe vraag -> Trigger Gemini Brain
-    if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic) {
+    if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic || /medewerker|spreken|johfrah|human|contact/i.test(message)) {
       console.log('[Voicy API] Triggering Gemini Brain...', { mode, hasPreviewLogic: !!previewLogic });
       
+      //  HUMAN TAKEOVER: Als de gebruiker vraagt om een medewerker
+      if (/medewerker|spreken|johfrah|human|contact/i.test(message)) {
+        actions.push({ label: "Johfrah Spreken", action: "johfrah_takeover" });
+      }
+
       //  MODERATION GUARD: Blokkeer misbruik of off-topic vragen
       const forbiddenPatterns = /hack|exploit|password|admin|discount|free|gratis|korting|system|internal/i;
       if (forbiddenPatterns.test(message) && senderType !== 'admin') {
@@ -175,22 +180,101 @@ async function handleSendMessage(params: any) {
         const knowledge = KnowledgeService.getInstance();
         
         //  CHRIS-PROTOCOL: Parallel knowledge injection to save time
-        const [coreBriefing, journeyBriefing] = await Promise.all([
+        const [coreBriefing, journeyBriefing, toolBriefing, fullBriefing] = await Promise.all([
           knowledge.getCoreBriefing(),
-          knowledge.getJourneyContext(context?.journey || 'agency')
+          knowledge.getJourneyContext(context?.journey || 'agency'),
+          knowledge.getJourneyContext('TOOL-ORCHESTRATION'),
+          knowledge.getFullVoicyBriefing()
         ]);
 
         console.log('[Voicy API] Requesting Gemini generation...');
         const gemini = GeminiService.getInstance();
+
+        //  PRICING CONTEXT: Inject real-time pricing data from Supabase app_configs
+        const { data: configs } = await (await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/app_configs?key=eq.pricing_config`, {
+          headers: {
+            'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`
+          }
+        })).json().then(res => ({ data: res }));
+
+        const dbPricing = configs?.[0]?.value || {};
+        
+        const pricingContext = `
+ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
+- Basis Video (unpaid): ${dbPricing.videoBasePrice / 100} (tot 200 woorden)
+- Telefoon/IVR: ${dbPricing.telephonyBasePrice / 100} (tot 25 woorden)
+- Academy: ${dbPricing.academyPrice / 100}
+- Studio Workshop: ${dbPricing.workshopPrice / 100}
+- Commercial (paid): Vanaf ${dbPricing.basePrice / 100} (excl. buyout)
+- Extra woorden (Video): ${dbPricing.videoWordRate / 100 || 0.20} per woord
+- Wachtmuziek: ${dbPricing.musicSurcharge / 100} per track
+- BTW: ${Math.round((dbPricing.vatRate || 0.21) * 100)}%
+
+SLIMME KASSA REGELS:
+1. Als een prijs niet in Supabase staat, bestaat hij niet (€0).
+2. Berekeningen zijn strikt lineair (Spots * Jaren * Tarief).
+3. Geen charm rounding, geen marketing-yoga.
+4. Acteur-tarieven hebben altijd voorrang op platform-standaarden.
+        `;
+
         const prompt = `
-          Je bent Voicy, de intelligente assistent van Voices.be.
-          Huidige Mode: ${mode.toUpperCase()} (Ask = Informatief, Agent = Actiegericht)
+          ${persona === 'johfrah' 
+            ? "Je bent Johfrah Lefebvre, de oprichter van Voices.be en een bedreven stemacteur/regisseur. Je spreekt vanuit passie voor het ambacht, vakmanschap en persoonlijke luxe. Je bent warm, artistiek en gidsend."
+            : "Je bent Voicy, de superintelligente butler en assistent van Voices.be."
+          }
+          Huidige Mode: ${mode.toUpperCase()} (Ask = Informatief, Agent = Butler/Actiegericht)
+          
+          SUPABASE SOURCE OF TRUTH (100% VOORRANG):
+          ${pricingContext}
+          
+          PORTFOLIO JOURNEY ISOLATIE (CRUCIAAL):
+          - Indien journey = 'portfolio': Je bent de persoonlijke assistent van de stemacteur op hun eigen portfolio site.
+          - Je mag UITSLUITEND praten over de stemacteur van deze site.
+          - Noem GEEN andere stemacteurs van Voices.be.
+          - Verwijs NIET naar de marktplaats van Voices.be.
+          - Focus volledig op de tarieven, demo's en beschikbaarheid van DEZE specifieke stem.
+          - Als de gebruiker vraagt naar andere stemmen, geef je aan dat je hier bent om hen te helpen met het boeken van deze specifieke stem.
           
           ${coreBriefing}
           ${journeyBriefing}
+          ${toolBriefing}
+          ${fullBriefing}
           ${workshopContext}
           
-           JOURNEY-ISOLATIE MANDATE:
+          TIJD EN STATUS (ZEER BELANGRIJK):
+          - Huidige tijd (België): ${new Date().toLocaleString("nl-BE", {timeZone: "Europe/Brussels"})}
+          - Studio Status: ${(() => {
+            const { isOfficeOpen } = require('@/lib/delivery-logic');
+            const isOpen = context?.generalSettings?.opening_hours ? isOfficeOpen(context.generalSettings.opening_hours) : true;
+            return isOpen ? 'OPEN' : 'GESLOTEN';
+          })()}
+          
+          SUPERINTELLIGENCE MANDAAT:
+          1. REASONING: Gebruik 'Chain of Chain of Thought'. Analyseer eerst de vraag, de context en de beschikbare data voordat je antwoordt.
+          2. DEEP DATA: Je hebt inzicht in Voice Scores en historische data. Gebruik dit om de BESTE stemmen aan te bevelen, niet alleen de eerste de beste.
+          3. SCRIPT ANALYSE: Als er een briefing is, analyseer deze op timing (160 woorden/min), toon en complexiteit.
+          4. PROACTIEF: Doe suggesties die de klant echt helpen (bijv. "Ik zie dat je een medisch script hebt, Sarah is onze specialist in rustige, betrouwbare tonen").
+          5. MUZIEK RESTRICTIE: Muziek is **ALLEEN** beschikbaar voor de Telefonie journey. Stel dit NOOIT voor voor Commercial of Video projecten.
+          
+          BUTLER MANDAAT:
+          - Je bent proactief maar nooit opdringerig.
+          - Je bedient de tools van de website voor de klant.
+          - Als een klant over prijs, woorden of gebruik praat, stel je ALTIJD een 'SET_CONFIGURATOR' actie voor.
+          - Als een klant een stem zoekt, stel je een 'FILTER_VOICES' actie voor.
+          - Als een klant een stem wil toevoegen aan zijn mandje (bijv. "zet deze er ook bij"), stel je 'ADD_TO_CART' voor.
+          - Als een klant wil bestellen of afrekenen, stel je 'PLACE_ORDER' voor. Je kunt dit VOLLEDIG voor hen regelen in de chat. Vraag indien nodig eerst om hun e-mailadres.
+          
+          ANTWOORD FORMAAT (STRIKT JSON):
+          {
+            "message": "Je vriendelijke antwoord (max 2 zinnen)",
+            "suggestedAction": {
+              "type": "SET_CONFIGURATOR" | "FILTER_VOICES" | "PREFILL_CHECKOUT" | "NAVIGATE_JOURNEY" | "PLACE_ORDER" | "ADD_TO_CART",
+              "params": { ... relevante parameters volgens de Tool-Bijbel ... }
+            }
+          }
+          
+          JOURNEY-ISOLATIE MANDATE:
           - Je bevindt je nu in de ${journey.toUpperCase()} journey.
           - Praat UITSLUITEND over onderwerpen die bij deze journey horen.
           - Verwijs NOOIT naar andere journeys (bijv. geen 'Academy' noemen als je in 'Studio' bent, en geen 'Agency/Voices' noemen als je in 'Academy' bent).
@@ -246,8 +330,26 @@ async function handleSendMessage(params: any) {
           - Antwoord kort en krachtig (max 3 zinnen).
         `;
         
-        aiContent = await gemini.generateText(prompt);
+        aiContent = await gemini.generateText(prompt, { jsonMode: true });
         console.log('[Voicy API] Gemini Response received:', aiContent.substring(0, 50));
+
+        //  BUTLER BRIDGE: Parse JSON en extraheer acties
+        try {
+          const parsed = JSON.parse(aiContent);
+          aiContent = parsed.message;
+          if (parsed.suggestedAction) {
+            // Voeg de actie toe aan de bestaande actions array voor de UI
+            actions.push({
+              label: `Butler: ${parsed.suggestedAction.type.replace('_', ' ')}`,
+              action: parsed.suggestedAction.type,
+              params: parsed.suggestedAction.params,
+              isButlerAction: true
+            });
+          }
+        } catch (e) {
+          console.error('[Voicy API] Butler JSON Parse Error:', e);
+          // Fallback naar platte tekst als JSON faalt
+        }
       }
     }
 
@@ -294,6 +396,34 @@ async function handleSendMessage(params: any) {
           message: message,
           createdAt: new Date()
         }).returning();
+
+        //  JOHFRAH NOTIFICATION: Stuur een mail bij elke interactie (Chris-Protocol: Real-time awareness)
+        if (senderType === 'user') {
+          try {
+            const { DirectMailService } = await import('@/services/DirectMailService');
+            const mailService = DirectMailService.getInstance();
+            const host = request.headers.get('host') || 'voices.be';
+            
+            await mailService.sendMail({
+              to: 'johfrah@voices.be',
+              subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
+              html: `
+                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                  <h2 style="color: #1a1a1a; font-weight: 200;">Nieuw bericht in de chat</h2>
+                  <p style="color: #666;"><strong>Bericht:</strong> "${message}"</p>
+                  <p style="color: #666;"><strong>Conversatie ID:</strong> ${convId}</p>
+                  <p style="color: #666;"><strong>Journey:</strong> ${journey}</p>
+                  <p style="color: #666;"><strong>Persona:</strong> ${persona}</p>
+                  <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+                  <a href="https://${host}/admin/dashboard" style="background: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 14px;">Open Dashboard</a>
+                </div>
+              `,
+              host: host
+            });
+          } catch (mailErr) {
+            console.error('[Voicy API] Failed to send notification mail:', mailErr);
+          }
+        }
 
         await tx.update(chatConversations)
           .set({ updatedAt: new Date() })

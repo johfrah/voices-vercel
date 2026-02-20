@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       )
       .limit(1);
 
-    if (existing && existing.translatedText) {
+    if (existing && existing.translatedText && existing.translatedText !== 'Initial Load') {
       return NextResponse.json({ success: true, message: 'Already exists', text: existing.translatedText });
     }
 
@@ -104,28 +104,31 @@ export async function POST(request: NextRequest) {
 
     // 4. Notificatie naar Admin (Post-Action Info)
     try {
-      const { DirectMailService } = await import('@/services/DirectMailService');
-      const mailService = DirectMailService.getInstance();
-      await mailService.sendMail({
-        to: adminEmail,
-        subject: ` Voicy Self-Heal LIVE: Nieuwe vertaling [${key}]`,
-        html: `
-          <div style="font-family: sans-serif; padding: 40px; background: #f9f9f9; border-radius: 24px;">
-            <h2 style="letter-spacing: -0.02em; color: #ff4f00;"> Self-Healing Live</h2>
-            <p>Er is een ontbrekende vertaling live gefixed op de frontend.</p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p><strong>Key:</strong> <code>${key}</code></p>
-            <p><strong>Taal:</strong> ${currentLang.toUpperCase()}</p>
-            <p><strong>Bron (NL):</strong> ${originalText}</p>
-            <p style="color: #ff4f00; font-size: 18px;"><strong>AI Vertaling:</strong> ${cleanTranslation}</p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <div style="margin-top: 30px;">
-              <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/voiceglot" style="background: #ff4f00; color: white; padding: 12px 24px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 14px; display: inline-block;">BEVESTIG OF PAS AAN</a>
+      //  CHRIS-PROTOCOL: Skip notification for initial load key to prevent spam
+      if (key !== 'initial_load') {
+        const { DirectMailService } = await import('@/services/DirectMailService');
+        const mailService = DirectMailService.getInstance();
+        await mailService.sendMail({
+          to: adminEmail,
+          subject: ` Voicy Self-Heal LIVE: Nieuwe vertaling [${key}]`,
+          html: `
+            <div style="font-family: sans-serif; padding: 40px; background: #f9f9f9; border-radius: 24px;">
+              <h2 style="letter-spacing: -0.02em; color: #ff4f00;"> Self-Healing Live</h2>
+              <p>Er is een ontbrekende vertaling live gefixed op de frontend.</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+              <p><strong>Key:</strong> <code>${key}</code></p>
+              <p><strong>Taal:</strong> ${currentLang.toUpperCase()}</p>
+              <p><strong>Bron (NL):</strong> ${originalText}</p>
+              <p style="color: #ff4f00; font-size: 18px;"><strong>AI Vertaling:</strong> ${cleanTranslation}</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+              <div style="margin-top: 30px;">
+                <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/voiceglot" style="background: #ff4f00; color: white; padding: 12px 24px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 14px; display: inline-block;">BEVESTIG OF PAS AAN</a>
+              </div>
+              <p style="font-size: 10px; color: #999; margin-top: 40px;">Gegenereerd door de Voices Engine - Pure Excellence 2026</p>
             </div>
-            <p style="font-size: 10px; color: #999; margin-top: 40px;">Gegenereerd door de Voices Engine - Pure God Mode 2026</p>
-          </div>
-        `
-      });
+          `
+        });
+      }
     } catch (mailErr) {
       console.error(' Failed to send self-heal notification:', mailErr);
     }

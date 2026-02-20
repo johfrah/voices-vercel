@@ -2,6 +2,8 @@
 
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Demo } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -53,6 +55,17 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
 };
 
 export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
+  const pathname = usePathname();
+  const { state: voicesState } = useVoicesState();
+  const selectedActors = voicesState.selected_actors;
+
+  //  CHRIS-PROTOCOL: Geen CastingDock op Artist, Voice of Launchpad pagina's (sync met CastingDock.tsx)
+  const isExcludedPage = pathname?.startsWith('/artist/') || 
+                         pathname?.startsWith('/voice/') || 
+                         pathname?.startsWith('/casting/launchpad');
+  
+  const hasCastingDock = selectedActors.length > 0 && !isExcludedPage;
+
   //  CHRIS-PROTOCOL: Clean demo titles for display
   const cleanDemoTitle = (title: string) => {
     if (!title) return '';
@@ -169,7 +182,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   return (
     <motion.div 
       initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      animate={{ y: hasCastingDock ? -80 : 0, opacity: 1 }}
       exit={{ y: 100, opacity: 0 }}
       className="fixed bottom-12 inset-x-0 z-[200] px-6 pointer-events-none"
     >

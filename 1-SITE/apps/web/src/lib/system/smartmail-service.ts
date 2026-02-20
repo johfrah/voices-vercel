@@ -20,7 +20,7 @@ export interface SmartOpportunity {
 
 export class SmartmailService {
   /**
-   * Genereert een lijst met "Smart Opportunities" voor de sales cockpit.
+   * Genereert een lijst met "Smart Opportunities" voor het sales dashboard.
    */
   static async getProactiveOpportunities(): Promise<SmartOpportunity[]> {
     // In een echte scenario zouden we hier door alle actieve klanten loopen

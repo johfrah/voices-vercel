@@ -5,14 +5,20 @@ import {
   SectionInstrument,
   TextInstrument 
 } from '@/components/ui/LayoutInstruments';
-import { LiquidBackground } from '@/components/ui/LiquidBackground';
 import { StudioFeedbackForm } from '@/components/studio/feedback/StudioFeedbackForm';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 
 export default function StudioFeedbackPage() {
   return (
     <PageWrapperInstrument className="min-h-screen pt-32 pb-40 bg-va-off-white">
-      <LiquidBackground />
+      <Suspense fallback={null}>
+        <LiquidBackground />
+      </Suspense>
       
       <ContainerInstrument className="relative z-10">
         <SectionInstrument className="mb-20 text-center">

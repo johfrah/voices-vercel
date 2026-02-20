@@ -11,6 +11,7 @@ import {
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCheckout } from "@/contexts/CheckoutContext";
+import { useTranslation } from "@/contexts/TranslationContext";
 import { useSonicDNA } from "@/lib/sonic-dna";
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
@@ -25,7 +26,8 @@ import { TermsModal } from './TermsModal';
 
 export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const { playClick } = useSonicDNA();
-  const { state, updateCustomer, updatePaymentMethod, updateAgreedToTerms, updateIsSubmitting } = useCheckout();
+  const { t } = useTranslation();
+  const { state, subtotal, cartHash, updateCustomer, updatePaymentMethod, updateAgreedToTerms, updateIsSubmitting } = useCheckout();
   const auth = useAuth();
   const isAdmin = auth.isAdmin;
   const supabase = createClient();
@@ -69,14 +71,14 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       const result = await response.json();
 
       if (!response.ok) {
-        setModalLoginError(result.error || 'Versturen mislukt. Probeer het later opnieuw.');
+        setModalLoginError(result.error || t('checkout.login.error_send', 'Versturen mislukt. Probeer het later opnieuw.'));
         playClick('error');
       } else {
         playClick('success');
         setMagicLinkSent(true);
       }
     } catch (err) {
-      setModalLoginError('Versturen mislukt. Probeer het later opnieuw.');
+      setModalLoginError(t('checkout.login.error_send', 'Versturen mislukt. Probeer het later opnieuw.'));
     } finally {
       setIsModalLoggingIn(false);
     }
@@ -89,7 +91,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     }
   }, [state.isQuoteRequest]);
 
-  const [vatStatus, setVatStatus] = useState<{ validating: boolean; valid: boolean | null; lastChecked: string }>({
+  const [vatStatus, setVatStatus] = useState<{ validating: boolean; valid: boolean | null; lastChecked: string; message?: string }>({
     validating: false,
     valid: state.customer.vat_number ? true : null, // Assume valid if already in context
     lastChecked: state.customer.vat_number || ''
@@ -110,24 +112,42 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           
           if (data.valid && data.companyName) {
             playClick('pro');
+            const vatCountry = formData.vat_number.substring(0, 2).toUpperCase();
+            const selectedCountry = formData.country || 'BE';
+
+            //  LEX-MANDATE: Voorkom BTW-fraude door land-mismatch
+            if (selectedCountry === 'BE' && vatCountry !== 'BE') {
+              setVatStatus(prev => ({ 
+                ...prev, 
+                validating: false, 
+                valid: false,
+                message: t('checkout.vat.error_be', 'Belgische klanten moeten een BE BTW-nummer gebruiken.') 
+              }));
+              playClick('error');
+              return;
+            }
+
+            if (selectedCountry !== vatCountry) {
+              setVatStatus(prev => ({ 
+                ...prev, 
+                validating: false, 
+                valid: false,
+                message: t('checkout.vat.error_mismatch', `BTW-nummer matcht niet met land (${selectedCountry}).`) 
+              }));
+              playClick('error');
+              return;
+            }
+
             const updates: any = { 
               company: data.companyName,
-              country: formData.vat_number.substring(0, 2),
               vat_verified: true
             };
-            if (data.address) {
-              const addressParts = data.address.split('\n');
-              if (addressParts.length > 0) {
-                updates.address_street = addressParts[0].trim();
-              }
-              if (addressParts.length > 1) {
-                const cityParts = addressParts[1].trim().split(' ');
-                if (cityParts.length >= 2) {
-                  updates.postal_code = cityParts[0];
-                  updates.city = cityParts.slice(1).join(' ');
-                }
-              }
+
+            // Alleen land invullen als het nog leeg was
+            if (!formData.country) {
+              updates.country = vatCountry;
             }
+
             setFormData(prev => ({ ...prev, ...updates }));
             updateCustomer(updates);
           }
@@ -138,7 +158,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       const timer = setTimeout(validateVat, 800);
       return () => clearTimeout(timer);
     }
-  }, [formData.vat_number, playClick, updateCustomer, vatStatus.lastChecked]);
+  }, [formData.vat_number, formData.country, playClick, updateCustomer, vatStatus.lastChecked, t]);
 
   useEffect(() => {
     if (formData.email && formData.email.includes('@') && formData.email.length > 5) {
@@ -177,26 +197,41 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     playClick('light');
     const newData = { ...formData, [field]: value };
     
-    // Reset verification if VAT number changes
-    if (field === 'vat_number') {
+    // Reset verification if VAT number or country changes
+    if (field === 'vat_number' || field === 'country') {
       newData.vat_verified = false;
     }
     
     setFormData(newData);
-    updateCustomer(field === 'vat_number' ? { [field]: value, vat_verified: false } : { [field]: value });
+    const updates: any = { [field]: value };
+    if (field === 'vat_number' || field === 'country') {
+      updates.vat_verified = false;
+    }
+    updateCustomer(updates);
   };
 
   const handleSubmit = async (quoteMessage?: string) => {
     if (state.isSubmitting) return;
     
+    //  MONKEYPROOF VALIDATION: Check required fields and scroll to first error
+    const requiredFields = ['email', 'first_name', 'last_name', 'postal_code', 'city'];
+    const missingField = requiredFields.find(f => !formData[f as keyof typeof formData]);
+    
+    if (missingField) {
+      playClick('error');
+      const element = document.getElementsByName(missingField)[0] || document.querySelector(`[placeholder*="${missingField}"]`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        (element as HTMLElement).focus();
+        // Add a temporary shake class if possible, or just focus
+      }
+      return;
+    }
+
     playClick('deep');
     updateIsSubmitting(true);
 
     try {
-    const cartSubtotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
-    const currentSubtotal = state.selectedActor ? state.pricing.total : 0;
-    const grandSubtotal = cartSubtotal + currentSubtotal;
-
     const res = await fetch('/api/checkout/mollie', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -205,7 +240,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         ...formData,
         pricing: {
           ...state.pricing,
-          total: grandSubtotal
+          total: subtotal,
+          cartHash
         },
         quoteMessage,
         payment_method: state.paymentMethod,
@@ -245,7 +281,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           window.location.href = data.checkoutUrl;
         }
       } else {
-        alert(data.message || 'Er is iets misgegaan.');
+        alert(data.message || t('common.error_occurred', 'Er is iets misgegaan.'));
         updateIsSubmitting(false);
       }
     } catch (error) {
@@ -302,16 +338,13 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     { id: 'VA', label: 'Vaticaanstad' },
   ].sort((a, b) => a.label.localeCompare(b.label));
 
-  const cartSubtotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
-  const subtotalBeforeDiscount = cartSubtotal + state.pricing.total;
-  
   const discountAmount = state.customer.active_coupon 
     ? (state.customer.active_coupon.type === 'percentage' 
-        ? (subtotalBeforeDiscount * (state.customer.active_coupon.discount / 100)) 
+        ? (subtotal * (state.customer.active_coupon.discount / 100)) 
         : state.customer.active_coupon.discount)
     : 0;
 
-  const grandTotal = subtotalBeforeDiscount - discountAmount;
+  const grandTotal = subtotal - discountAmount;
   const selectedMethod = state.paymentMethod || 'bancontact';
   const selectedMethodObj = state.paymentMethods.find(m => m.id === selectedMethod);
   const methodLabel = selectedMethodObj?.description || (selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1));
@@ -413,7 +446,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                  ) : vatStatus.valid === false ? (
                    <ContainerInstrument className="flex items-center gap-2 text-red-500 animate-shake">
                      <TextInstrument className="text-[15px] font-light tracking-widest ">
-                       <VoiceglotText  translationKey="checkout.form.vat_invalid" defaultText="Ongeldig" />
+                       <VoiceglotText  translationKey="checkout.form.vat_invalid" defaultText={vatStatus.message || "Ongeldig"} />
                      </TextInstrument>
                      <AlertCircle size={18} strokeWidth={1.5} />
                    </ContainerInstrument>
@@ -511,7 +544,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               {showExtraDetails && <CheckCircle2 size={12} strokeWidth={3} className="text-white" />}
             </div>
             <span className="text-[13px] font-bold tracking-[0.1em] text-va-black/40 uppercase group-hover:text-va-black transition-colors">
-              Extra Facturatie Details
+              <VoiceglotText translationKey="checkout.billing.extra_details" defaultText="Extra Facturatie Details" />
             </span>
           </button>
           
@@ -531,7 +564,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                     </LabelInstrument>
                     <InputInstrument
                       value={(formData as any).billing_po || ''}
-                      placeholder="Bijv. PO-12345"
+                      placeholder={t('checkout.form.po_placeholder', "Bijv. PO-12345")}
                       className="w-full !rounded-[10px]"
                       onChange={(e) => handleChange('billing_po', e.target.value)}
                     />
@@ -543,7 +576,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                     <InputInstrument
                       type="email"
                       value={(formData as any).financial_email || ''}
-                      placeholder="facturatie@bedrijf.be"
+                      placeholder={t('checkout.form.financial_email_placeholder', "facturatie@bedrijf.be")}
                       className="w-full !rounded-[10px]"
                       onChange={(e) => handleChange('financial_email', e.target.value)}
                     />
@@ -760,12 +793,12 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-va-black/90 backdrop-blur-xl"
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-va-black/95 backdrop-blur-xl"
           >
-            <ContainerInstrument plain className="relative w-full max-w-md bg-white rounded-[40px] overflow-hidden shadow-2xl flex flex-col z-[601]">
+            <ContainerInstrument plain className="relative w-full max-w-md bg-white rounded-[40px] overflow-hidden shadow-2xl flex flex-col z-[10001]">
               <div className="p-8 border-b border-black/5 flex justify-between items-center">
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter">
-                  Inloggen
+                  <VoiceglotText translationKey="checkout.login.title" defaultText="Inloggen" />
                 </HeadingInstrument>
                 <button onClick={() => setIsLoginModalOpen(false)} className="p-2 hover:bg-va-off-white rounded-full transition-colors">
                   <X size={20} />
@@ -782,7 +815,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                       className="space-y-6"
                     >
                       <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
-                        Vul je e-mailadres in om een magische link te ontvangen. Hiermee log je direct in en worden je gegevens automatisch ingevuld.
+                        <VoiceglotText translationKey="checkout.login.desc" defaultText="Vul je e-mailadres in om een magische link te ontvangen. Hiermee log je direct in en worden je gegevens automatisch ingevuld." />
                       </TextInstrument>
 
                       <form onSubmit={handleModalLogin} className="space-y-4">
@@ -793,7 +826,9 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                         )}
                         
                         <div className="space-y-0.5">
-                          <LabelInstrument className="ml-1 mb-1">E-mailadres</LabelInstrument>
+                          <LabelInstrument className="ml-1 mb-1">
+                            <VoiceglotText translationKey="checkout.form.email" defaultText="E-mailadres" />
+                          </LabelInstrument>
                           <div className="relative group">
                             <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" />
                             <InputInstrument 
@@ -817,7 +852,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                             <Loader2 size={20} className="animate-spin" />
                           ) : (
                             <>
-                              Magische link versturen
+                              <VoiceglotText translationKey="checkout.login.cta" defaultText="Magische link versturen" />
                               <Send size={18} />
                             </>
                           )}
@@ -829,7 +864,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                           onClick={() => setIsLoginModalOpen(false)}
                           className="w-full text-center text-[13px] font-light text-va-black/40 hover:text-va-black transition-colors"
                         >
-                          Doorgaan als gast
+                          <VoiceglotText translationKey="checkout.login.guest" defaultText="Doorgaan als gast" />
                         </button>
                       </div>
                     </motion.div>
@@ -845,11 +880,10 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                       </div>
                       <div className="space-y-2">
                         <HeadingInstrument level={4} className="text-2xl font-light tracking-tighter">
-                          Check je inbox!
+                          <VoiceglotText translationKey="checkout.login.success_title" defaultText="Check je inbox!" />
                         </HeadingInstrument>
                         <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
-                          We hebben een magische link gestuurd naar <span className="text-va-black font-medium">{modalEmail}</span>.<br />
-                          Klik op de link in de e-mail om direct in te loggen.
+                          <VoiceglotText translationKey="checkout.login.success_desc" defaultText={`We hebben een magische link gestuurd naar ${modalEmail}. Klik op de link in de e-mail om direct in te loggen.`} />
                         </TextInstrument>
                       </div>
                       <ButtonInstrument 
@@ -857,7 +891,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                         variant="pure"
                         className="w-full va-btn-nav !rounded-xl !bg-va-black !text-white"
                       >
-                        Sluiten
+                        <VoiceglotText translationKey="common.close" defaultText="Sluiten" />
                       </ButtonInstrument>
                     </motion.div>
                   )}

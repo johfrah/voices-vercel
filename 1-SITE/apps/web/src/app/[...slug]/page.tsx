@@ -1,19 +1,89 @@
-import { VideoPlayer } from '@/components/academy/VideoPlayer';
-import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument, LoadingScreenInstrument } from '@/components/ui/LayoutInstruments';
-import { LiquidBackground } from '@/components/ui/LiquidBackground';
-import { PricingCalculator } from '@/components/ui/PricingCalculator';
+import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument, LoadingScreenInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { db } from '@db';
-import { contentArticles, actors } from '@db/schema';
+import { contentArticles, actors, artists } from '@db/schema';
 import { eq, or, ilike } from 'drizzle-orm';
 import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap } from 'lucide-react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from "react";
-import { getActor } from "@/lib/api-server";
+import { getActor, getArtist } from "@/lib/api-server";
 import { headers } from "next/headers";
 import { VoiceDetailClient } from "../voice/[slug]/VoiceDetailClient";
+import { ArtistDetailClient } from "../artist/[slug]/ArtistDetailClient";
+import nextDynamic from "next/dynamic";
+import { JourneyType } from '@/types/journey';
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
+const VideoPlayer = nextDynamic(() => import("@/components/academy/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
+const PricingCalculator = nextDynamic(() => import("@/components/ui/PricingCalculator").then(mod => mod.PricingCalculator), { ssr: false });
+
+/**
+ *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
+ */
+function generateActorSchema(actor: any) {
+  const baseUrl = 'https://www.voices.be';
+  
+  // Map internal delivery type to ISO 8601 duration
+  const deliveryMap: Record<string, string> = {
+    'sameday': 'PT4H',
+    '24h': 'P1D',
+    '48h': 'P2D',
+    '72u': 'P3D'
+  };
+  
+  const deliveryType = actor.delivery_config?.type || (actor.deliveryDaysMin === 0 ? 'sameday' : '24h');
+  const deliveryDuration = deliveryMap[deliveryType] || 'P1D';
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    'name': `${actor.firstName} - Voice-over Stem`,
+    'description': actor.bio || actor.tagline,
+    'provider': {
+      '@type': 'LocalBusiness',
+      'name': 'Voices.be',
+      'url': baseUrl
+    },
+    'areaServed': 'BE',
+    'offers': {
+      '@type': 'Offer',
+      'price': actor.starting_price || actor.price_unpaid,
+      'priceCurrency': 'EUR',
+      'availability': 'https://schema.org/InStock',
+      'deliveryLeadTime': {
+        '@type': 'QuantitativeValue',
+        'value': deliveryType === 'sameday' ? 4 : (deliveryType === '24h' ? 1 : (deliveryType === '48h' ? 2 : 3)),
+        'unitCode': deliveryType === 'sameday' ? 'HUR' : 'DAY'
+      }
+    },
+    // Custom Nuclear Enrichment for LLMs
+    'additionalType': 'https://schema.org/VoiceoverService',
+    'identifier': actor.wpProductId || actor.id
+  };
+}
+
+/**
+ *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Artists
+ */
+function generateArtistSchema(artist: any) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "MusicGroup",
+    "name": artist.displayName,
+    "description": artist.bio,
+    "url": `https://www.voices.be/artist/${artist.slug}`,
+    "genre": artist.iapContext?.genre || "Pop",
+    "sameAs": [
+      artist.spotifyUrl,
+      artist.youtubeUrl,
+      artist.instagramUrl,
+      artist.tiktokUrl
+    ].filter(Boolean)
+  };
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +94,8 @@ export const dynamic = 'force-dynamic';
  *  - voices.be/over-ons (CMS)
  *  - voices.be/johfrah (Stem)
  *  - voices.be/johfrah/commercial/radio (Stem + Journey + Medium)
+ * 
+ * @lock-file
  */
 
 interface SmartRouteParams {
@@ -35,17 +107,36 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const headersList = headers();
   const lang = headersList.get('x-voices-lang') || 'nl';
 
-  // 1. Probeer eerst een Stem te vinden
+  // 1. Probeer eerst een Artist te vinden (Artist Journey DNA)
+  try {
+    const artist = await getArtist(firstSegment, lang);
+    if (artist) {
+      return {
+        title: `${artist.displayName} | Voices Artist`,
+        description: artist.bio,
+        other: {
+          'script:ld+json': JSON.stringify(generateArtistSchema(artist))
+        }
+      };
+    }
+  } catch (e) {}
+
+  // 2. Probeer een Stem te vinden
   try {
     const actor = await getActor(firstSegment, lang);
     if (actor) {
       const title = `${actor.firstName} - Voice-over Stem | Voices.be`;
       const description = actor.bio || `Ontdek de stem van ${actor.firstName} op Voices.be.`;
+      const schema = generateActorSchema(actor);
+
       return {
         title,
         description,
         alternates: {
           canonical: `https://www.voices.be/${params.slug.join('/')}`,
+        },
+        other: {
+          'script:ld+json': JSON.stringify(schema)
         }
       };
     }
@@ -53,7 +144,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
     // Geen stem gevonden, ga door naar CMS check
   }
 
-  // 2. Probeer een CMS Artikel te vinden
+  // 3. Probeer een CMS Artikel te vinden
   try {
     const page = await db.query.contentArticles.findFirst({
       where: eq(contentArticles.slug, firstSegment),
@@ -78,11 +169,14 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 }
 
 export default async function SmartRoutePage({ params }: { params: SmartRouteParams }) {
-  const [firstSegment, journey, medium] = params.slug;
+  const [firstSegment, journey, language, gender] = params.slug;
   
-  // Gereserveerde routes overslaan
-  const reserved = ['agency', 'admin', 'backoffice', 'account', 'studio', 'academy', 'article', 'voice', 'api', 'auth', 'checkout', 'contact', 'tarieven', 'faq'];
-  if (reserved.includes(firstSegment)) return notFound();
+  // Gereserveerde routes overslaan (Alleen harde systeem-folders)
+  const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout'];
+  
+  if (reserved.includes(firstSegment)) {
+    return notFound();
+  }
 
   return (
     <Suspense fallback={<LoadingScreenInstrument />}>
@@ -96,13 +190,159 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   const headersList = headers();
   const lang = headersList.get('x-voices-lang') || 'nl';
 
-  // 1. Check voor Stem
+  // 1. Artist Journey (Youssef Mandate)
+  try {
+    const artist = await getArtist(firstSegment, lang);
+    if (artist) {
+      const isYoussef = firstSegment === 'youssef' || firstSegment === 'youssef-zaki';
+      return (
+        <PageWrapperInstrument>
+          <ArtistDetailClient 
+            artistData={artist} 
+            isYoussef={isYoussef} 
+            params={{ slug: firstSegment }} 
+          />
+        </PageWrapperInstrument>
+      );
+    }
+  } catch (e) {}
+
+  // 2. Pitch Link (Casting List)
+  if (firstSegment === 'pitch' && journey) {
+    try {
+      //  CHRIS-PROTOCOL: Fetch real casting list from DB
+      const list = await db.query.castingLists.findFirst({
+        where: eq(castingLists.hash, journey),
+        with: {
+          items: {
+            with: {
+              actor: {
+                with: {
+                  actorLanguages: {
+                    with: {
+                      language: true
+                    }
+                  }
+                }
+              }
+            },
+            orderBy: (items, { asc }) => [asc(items.displayOrder)]
+          }
+        }
+      });
+
+      if (!list) return notFound();
+
+      const schema = {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        'name': list.name,
+        'numberOfItems': list.items.length,
+        'itemListElement': list.items.map((item, i) => ({
+          '@type': 'ListItem',
+          'position': i + 1,
+          'item': {
+            '@type': 'Service',
+            'name': item.actor.firstName,
+            'provider': {
+              '@type': 'LocalBusiness',
+              'name': 'Voices.be'
+            }
+          }
+        }))
+      };
+
+      return (
+        <PageWrapperInstrument className="bg-va-off-white">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          />
+          <Suspense fallback={null}>
+            <LiquidBackground strokeWidth={1.5} />
+          </Suspense>
+          <ContainerInstrument className="py-48 max-w-5xl mx-auto">
+            <header className="mb-20 text-center">
+              <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-6 block uppercase">
+                Casting Selectie
+              </TextInstrument>
+              <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-8 text-va-black">
+                {list.name}
+              </HeadingInstrument>
+              <ContainerInstrument className="w-24 h-1 bg-primary/20 rounded-full mx-auto" />
+            </header>
+
+            <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {list.items.map((item, i) => (
+                <ContainerInstrument key={i} className="bg-white p-8 rounded-[20px] shadow-aura border border-black/5 flex flex-col gap-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden">
+                      {item.actor.photoId ? (
+                        <img 
+                          src={`/api/proxy/?path=${encodeURIComponent(item.actor.dropboxUrl || '')}`} 
+                          alt={item.actor.firstName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : item.actor.firstName[0]}
+                    </div>
+                    <div>
+                      <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.firstName}</HeadingInstrument>
+                      <TextInstrument className="text-[15px] text-va-black/40">
+                        {item.actor.actorLanguages?.find(al => al.isNative)?.language?.label || 'Voice-over Stem'}
+                      </TextInstrument>
+                    </div>
+                  </div>
+                  <div className="h-12 bg-va-off-white rounded-[10px] flex items-center px-4 gap-2">
+                    <div className="w-8 h-8 bg-va-black rounded-full flex items-center justify-center text-white">
+                      <ArrowRight size={14} />
+                    </div>
+                    <TextInstrument className="text-[13px] font-medium tracking-widest text-va-black/40 uppercase">Bekijk Profiel</TextInstrument>
+                  </div>
+                  <Link 
+                    href={`/${item.actor.slug}`}
+                    className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
+                  >
+                    Selecteer deze stem
+                  </Link>
+                </ContainerInstrument>
+              ))}
+            </ContainerInstrument>
+
+            <footer className="mt-32 text-center">
+              <ContainerInstrument className="bg-va-black text-white p-16 rounded-[20px] shadow-aura-lg">
+                <HeadingInstrument level={2} className="text-4xl font-light mb-8">Niet de juiste match?</HeadingInstrument>
+                <Link href="/agency" className="va-btn-pro inline-flex items-center gap-2">
+                  Bekijk alle stemmen <ArrowRight size={18} />
+                </Link>
+              </ContainerInstrument>
+            </footer>
+          </ContainerInstrument>
+        </PageWrapperInstrument>
+      );
+    } catch (e) {
+      console.error("Pitch Link Error:", e);
+      return notFound();
+    }
+  }
+
+  // 2. Check voor Stem
   try {
     const actor = await getActor(firstSegment, lang);
     if (actor) {
+      //  CHRIS-PROTOCOL: Map journey slug to internal journey type
+      const journeyMap: Record<string, JourneyType> = {
+        'telefoon': 'telephony',
+        'telefooncentrale': 'telephony',
+        'telephony': 'telephony',
+        'video': 'video',
+        'commercial': 'commercial',
+        'reclame': 'commercial'
+      };
+      const mappedJourney = journey ? journeyMap[journey.toLowerCase()] : undefined;
+
       return (
         <PageWrapperInstrument>
-          <VoiceDetailClient actor={actor} initialJourney={journey} initialMedium={medium} />
+          <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
         </PageWrapperInstrument>
       );
     }
@@ -195,7 +435,6 @@ function CmsPageContent({ page, slug }: { page: any, slug: string }) {
                 ))}
               </ContainerInstrument>
             </ContainerInstrument>
-            <ContainerInstrument className="absolute -bottom-60 -right-60 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[150px] group-hover:bg-primary/10 transition-all duration-1000" />
           </section>
         );
 
@@ -248,7 +487,6 @@ function CmsPageContent({ page, slug }: { page: any, slug: string }) {
                         {itemBody}
                       </TextInstrument>
                     </ContainerInstrument>
-                    {!videoUrl && <ContainerInstrument className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] group-hover/bento:bg-primary/10 transition-all duration-1000" />}
                   </ContainerInstrument>
                 );
               })}
@@ -341,11 +579,13 @@ function CmsPageContent({ page, slug }: { page: any, slug: string }) {
 
   return (
     <PageWrapperInstrument className="bg-va-off-white">
-      <LiquidBackground strokeWidth={1.5} />
+      <Suspense fallback={null}>
+        <LiquidBackground strokeWidth={1.5} />
+      </Suspense>
       <ContainerInstrument className="py-48 relative z-10">
         <header className="mb-64 max-w-5xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
-          <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-12 block">
-            {journey}
+          <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">
+            Projecttype
           </TextInstrument>
           <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black"><VoiceglotText  translationKey={`page.${page.slug}.title`} defaultText={page.title} /></HeadingInstrument>
           <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
@@ -354,20 +594,21 @@ function CmsPageContent({ page, slug }: { page: any, slug: string }) {
           {page.blocks.map((block: any, index: number) => renderBlock(block, index))}
         </ContainerInstrument>
         <footer className="mt-80 text-center">
-          <ContainerInstrument className="bg-va-black text-white p-32 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
-            <ContainerInstrument className="relative z-10">
-              <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block"><VoiceglotText  translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
-              <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9]"><VoiceglotText  translationKey="cta.ready_title" defaultText="wil je onze stemmen beluisteren?" /></HeadingInstrument>
-              <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-10">
-                <Link  href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-tight hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white"><VoiceglotText  translationKey="cta.find_voice" defaultText="vind jouw stem" /></Link>
-                <Link  href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-tight flex items-center gap-4 group transition-all duration-700">
-                  <VoiceglotText  translationKey="cta.ask_question" defaultText="stel een vraag" />
-                  <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
-                </Link>
+          {journey !== 'portfolio' && (
+            <ContainerInstrument className="bg-va-black text-white p-32 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
+              <ContainerInstrument className="relative z-10">
+                <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block uppercase"><VoiceglotText  translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
+                <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9] text-white"><VoiceglotText  translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" /></HeadingInstrument>
+                <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-10">
+                  <Link  href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-widest hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white uppercase"><VoiceglotText  translationKey="cta.find_voice" defaultText="vind jouw stem" /></Link>
+                  <Link  href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-widest flex items-center gap-4 group transition-all duration-700 uppercase">
+                    <VoiceglotText  translationKey="cta.ask_question" defaultText="stel een vraag" />
+                    <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
+                  </Link>
+                </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <ContainerInstrument className="absolute -bottom-60 -right-60 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[200px] group-hover:bg-primary/10 transition-all duration-1000" />
-          </ContainerInstrument>
+          )}
         </footer>
       </ContainerInstrument>
     </PageWrapperInstrument>

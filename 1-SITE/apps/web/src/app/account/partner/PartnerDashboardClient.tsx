@@ -20,7 +20,8 @@ import {
   BarChart3,
   ExternalLink,
   Plus,
-  ArrowRight
+  ArrowRight,
+  Clock
 } from 'lucide-react';
 import Link from 'next/link';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
@@ -30,12 +31,12 @@ export default function PartnerDashboardClient() {
 
   if (isLoading) return <LoadingScreenInstrument />;
 
-  const stats = [
-    { label: 'Actieve Projecten', value: '12', icon: <Briefcase strokeWidth={1.5} size={20} />, trend: '+2' },
-    { label: 'Totaal Bereik', value: '45.2k', icon: <Users strokeWidth={1.5} size={20} />, trend: '+12%' },
-    { label: 'Conversie', value: '3.8%', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: '+0.4%' },
-    { label: 'Inkomsten (30d)', value: ' 2.450', icon: <BarChart3 strokeWidth={1.5} size={20} />, trend: '+15%' },
-  ];
+    const stats = [
+      { label: 'Actieve Projecten', value: '12', icon: <Briefcase strokeWidth={1.5} size={20} />, trend: '+2' },
+      { label: 'On-time Delivery', value: '98%', icon: <Zap strokeWidth={1.5} size={20} />, trend: 'Stable' },
+      { label: 'Gem. Levertijd', value: '24u', icon: <Clock strokeWidth={1.5} size={20} />, trend: '-2u' },
+      { label: 'Inkomsten (30d)', value: ' 2.450', icon: <BarChart3 strokeWidth={1.5} size={20} />, trend: '+15%' },
+    ];
 
   return (
     <PageWrapperInstrument className="max-w-7xl mx-auto px-6 py-20 relative z-10">
@@ -55,7 +56,7 @@ export default function PartnerDashboardClient() {
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
             <VoiceglotText  translationKey="account.partner.title_part1" defaultText="Partner " />
             <TextInstrument as="span" className="text-primary font-light">
-              <VoiceglotText  translationKey="account.partner.title_part2" defaultText="Insights" />
+              <VoiceglotText  translationKey="account.partner.title_part2" defaultText="Overzicht" />
             </TextInstrument>
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-light"><VoiceglotText  translationKey="account.partner.subtitle" defaultText="Beheer je samenwerkingen en bekijk je resultaten." /></TextInstrument>
@@ -93,7 +94,7 @@ export default function PartnerDashboardClient() {
             <TextInstrument className="text-white/40 max-w-sm text-[15px] font-light leading-relaxed">
               <VoiceglotText  
                 translationKey="account.partner.campaigns.text" 
-                defaultText="Bekijk en beheer al je actieve campagnes en voice-over projecten op n plek." 
+                defaultText="Bekijk en beheer al je actieve campagnes en voice-over projecten op één plek." 
               />
             </TextInstrument>
           </ContainerInstrument>

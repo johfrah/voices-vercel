@@ -18,7 +18,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 md:p-6">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 md:p-6">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -27,13 +27,13 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
               playClick('soft');
               onClose();
             }}
-            className="absolute inset-0 bg-va-black/60 backdrop-blur-xl"
+            className="absolute inset-0 bg-va-black/95 backdrop-blur-xl"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-4xl bg-white rounded-[32px] shadow-aura overflow-hidden flex flex-col max-h-[85vh]"
+            className="relative w-full max-w-4xl bg-white rounded-[32px] shadow-aura overflow-hidden flex flex-col max-h-[85vh] z-[10001]"
           >
             {/* Header */}
             <div className="p-8 border-b border-black/5 flex justify-between items-center bg-va-off-white/50">

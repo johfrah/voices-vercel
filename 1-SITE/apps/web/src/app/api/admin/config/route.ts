@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { getActor, getActors, getMusicLibrary } from '@/lib/api-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { ConfigBridge } from '@/lib/config-bridge';
 
 //  NUCLEAR CACHE BUSTER
 export const dynamic = 'force-dynamic';
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
@@ -30,6 +31,21 @@ export async function GET(request: NextRequest) {
 
   try {
     //  BRIDGE LOGIC: Handle client-side requests for server-only data
+    if (type === 'telephony') {
+      const config = await db.select().from(appConfigs).where(eq(appConfigs.key, 'telephony_config')).limit(1);
+      return NextResponse.json({ telephony_config: config[0]?.value || {} });
+    }
+
+    if (type === 'general') {
+      const config = await db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1);
+      return NextResponse.json({ general_settings: config[0]?.value || {} });
+    }
+
+    if (type === 'languages') {
+      const results = await db.select().from(languages).orderBy(asc(languages.label));
+      return NextResponse.json({ results });
+    }
+
     if (type === 'actor') {
       const slug = searchParams.get('slug');
       const lang = searchParams.get('lang') || 'nl';
@@ -52,6 +68,12 @@ export async function GET(request: NextRequest) {
       const category = searchParams.get('category') || 'music';
       const library = await getMusicLibrary(category);
       return NextResponse.json(library);
+    }
+
+    if (type === 'navigation') {
+      const journey = searchParams.get('journey') || 'agency';
+      const config = await ConfigBridge.getNavConfig(journey);
+      return NextResponse.json(config || { links: [], icons: {} });
     }
 
     // Default: Return all app configs

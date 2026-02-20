@@ -6,12 +6,10 @@ import {
     ContainerInstrument,
     HeadingInstrument,
     PageWrapperInstrument,
-    SectionInstrument,
+    SectionInstrument, 
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
-import { LiquidBackground } from "@/components/ui/LiquidBackground";
 import { ReviewsInstrument } from "@/components/ui/ReviewsInstrument";
-import { StudioVideoPlayer } from "@/components/ui/StudioVideoPlayer";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { JourneyCta } from "@/components/ui/JourneyCta";
 import { getWorkshops } from "@/lib/api-server";
@@ -19,6 +17,12 @@ import { ArrowRight, BookOpen, MessageSquare, Mic } from 'lucide-react';
 import { Metadata } from 'next';
 import Image from "next/image";
 import Link from "next/link";
+import nextDynamic from "next/dynamic";
+import { Suspense } from "react";
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
+const StudioVideoPlayer = nextDynamic(() => import("@/components/ui/StudioVideoPlayer").then(mod => mod.StudioVideoPlayer), { ssr: false });
 
 /**
  * STUDIO
@@ -61,7 +65,9 @@ export default async function StudioPage() {
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white">
-      <LiquidBackground />
+      <Suspense fallback={null}>
+        <LiquidBackground />
+      </Suspense>
       
       {/* HERO SECTION WITH PROMOVIDEO */}
       <SectionInstrument className="voices-hero">
@@ -69,13 +75,15 @@ export default async function StudioPage() {
           {/* LINKS: VERTICAL PROMOVIDEO (40%) */}
             <ContainerInstrument plain className="voices-hero-right group lg:order-1">
               <ContainerInstrument plain className="voices-hero-visual-container">
-                <StudioVideoPlayer 
-                  url="/assets/studio/workshops/videos/workshop_studio_teaser.mp4" 
-                  subtitles="/assets/studio/workshops/subtitles/workshop_studio_teaser-nl.vtt"
-                  poster="/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"
-                  aspect="portrait"
-                  className="shadow-aura-lg border-none w-full h-full"
-                />
+                <Suspense fallback={<div className="w-full h-full bg-va-black/5 animate-pulse rounded-[32px]" />}>
+                  <StudioVideoPlayer 
+                    url="/assets/studio/workshops/videos/workshop_studio_teaser.mp4" 
+                    subtitles="/assets/studio/workshops/subtitles/workshop_studio_teaser-nl.vtt"
+                    poster="/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"
+                    aspect="portrait"
+                    className="shadow-aura-lg border-none w-full h-full"
+                  />
+                </Suspense>
               </ContainerInstrument>
               {/* Decorative elements */}
               <ContainerInstrument plain className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] -z-10 animate-pulse" />

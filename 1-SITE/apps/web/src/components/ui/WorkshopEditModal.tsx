@@ -299,20 +299,20 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 md:p-10">
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 md:p-10">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-va-black/60 backdrop-blur-md"
+          className="absolute inset-0 bg-va-black/95 backdrop-blur-md"
         />
 
         <motion.div 
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-2xl bg-white rounded-[30px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          className="relative w-full max-w-2xl bg-white rounded-[30px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-[10001]"
         >
           {/* Header */}
           <div className="px-8 py-6 border-b border-black/5 flex justify-between items-center bg-va-off-white/50">

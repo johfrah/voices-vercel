@@ -6,8 +6,10 @@ import { Check, ChevronRight, Globe } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
+import { MarketManager } from '@config/market-manager';
 
 import { ButtonInstrument, ContainerInstrument, TextInstrument } from './LayoutInstruments';
+import { VoiceglotText } from './VoiceglotText';
 
 interface Language {
   code: string;
@@ -17,13 +19,13 @@ interface Language {
 }
 
 const LANGUAGE_MAP: Record<string, Language> = {
-  nl: { code: 'nl', label: 'Nederlands', native: 'Nederlands', flag: '' },
-  fr: { code: 'fr', label: 'Frans', native: 'Franais', flag: '' },
-  en: { code: 'en', label: 'Engels', native: 'English', flag: '' },
-  de: { code: 'de', label: 'Duits', native: 'Deutsch', flag: '' },
+  nl: { code: 'nl', label: 'Dutch', native: 'Nederlands', flag: '' },
+  fr: { code: 'fr', label: 'French', native: 'Français', flag: '' },
+  en: { code: 'en', label: 'English', native: 'English', flag: '' },
+  de: { code: 'de', label: 'German', native: 'Deutsch', flag: '' },
 };
 
-export const LanguageSwitcher: React.FC = () => {
+export function LanguageSwitcher({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState<string>('nl');
   const pathname = usePathname();
@@ -31,17 +33,25 @@ export const LanguageSwitcher: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<any>(null);
   const { playClick, playSwell } = useSonicDNA();
+  const market = MarketManager.getCurrentMarket();
 
-  const languages = Object.values(LANGUAGE_MAP);
+  const languages = Object.values(LANGUAGE_MAP).sort((a, b) => {
+    if (market.market_code === 'YOUSSEF') {
+      if (a.code === 'en') return -1;
+      if (b.code === 'en') return 1;
+    }
+    return 0;
+  });
 
   useEffect(() => {
     const langMatch = pathname.match(/^\/(nl|fr|en|de)(\/|$)/);
     if (langMatch) {
       setCurrentLang(langMatch[1]);
     } else {
-      setCurrentLang('nl');
+      // CHRIS-PROTOCOL: Default to 'en' for Youssef market, otherwise 'nl'
+      setCurrentLang(market.market_code === 'YOUSSEF' ? 'en' : 'nl');
     }
-  }, [pathname]);
+  }, [pathname, market.market_code]);
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -62,7 +72,11 @@ export const LanguageSwitcher: React.FC = () => {
     let newPath = pathname;
     newPath = newPath.replace(/^\/(nl|fr|en|de)(\/|$)/, '/');
     if (!newPath.startsWith('/')) newPath = '/' + newPath;
-    if (langCode !== 'nl') {
+    
+    // CHRIS-PROTOCOL: Determine default language for routing
+    const defaultLang = market.market_code === 'YOUSSEF' ? 'en' : 'nl';
+    
+    if (langCode !== defaultLang) {
       newPath = `/${langCode}${newPath === '/' ? '' : newPath}`;
     }
     document.cookie = `voices_lang=${langCode}; path=/; max-age=31536000; SameSite=Lax`;
@@ -86,12 +100,21 @@ export const LanguageSwitcher: React.FC = () => {
           playClick('soft');
           setIsOpen(!isOpen);
         }}
-        className={`relative p-1 rounded-[8px] transition-all duration-500 cursor-pointer group flex items-center justify-center min-w-[32px] h-[32px] ${
-          isOpen ? 'bg-primary/10 text-primary' : 'hover:bg-va-black/5 text-va-black'
+        className={className || `relative p-1 rounded-[8px] transition-all duration-500 cursor-pointer group flex items-center justify-center min-w-[32px] h-[32px] ${
+          isOpen 
+            ? 'bg-primary/10 text-primary' 
+            : market.market_code === 'YOUSSEF' 
+              ? 'hover:bg-white/5 text-white' 
+              : 'hover:bg-va-black/5 text-va-black'
         }`}
       >
-        <Globe strokeWidth={1.5} size={18} className="transition-transform duration-500 group-hover:scale-110" />
-        <TextInstrument as="span" className="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg border border-white leading-none z-10 ">
+        <Globe strokeWidth={1.5} size={20} className="transition-transform duration-500 group-hover:scale-110" />
+        <TextInstrument 
+          as={motion.span}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
+        >
           {currentLang}
         </TextInstrument>
       </ButtonInstrument>
@@ -108,6 +131,11 @@ export const LanguageSwitcher: React.FC = () => {
             className="absolute top-full right-0 mt-1 w-64 bg-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-[220]"
           >
             <div className="p-1">
+              <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1">
+                <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                  <VoiceglotText translationKey="nav.language_selection" defaultText="Language choice" />
+                </TextInstrument>
+              </ContainerInstrument>
               {languages.map((lang) => {
                 const isActive = lang.code === currentLang;
                 return (
@@ -125,7 +153,9 @@ export const LanguageSwitcher: React.FC = () => {
                     <div className="flex items-center gap-2.5">
                       <TextInstrument as="span" className="text-base leading-none">{lang.flag}</TextInstrument>
                       <div className="flex flex-col">
-                        <TextInstrument as="span" className={`text-[15px] font-medium tracking-tight ${isActive ? 'text-white' : 'text-va-black'}`}>{lang.label}</TextInstrument>
+                        <TextInstrument as="span" className={`text-[15px] font-medium tracking-tight ${isActive ? 'text-white' : 'text-va-black'}`}>
+                          <VoiceglotText translationKey={`nav.lang_label.${lang.code}`} defaultText={lang.label} />
+                        </TextInstrument>
                         <TextInstrument as="span" className={`text-[12px] mt-0.5 font-light ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>{lang.native}</TextInstrument>
                       </div>
                     </div>

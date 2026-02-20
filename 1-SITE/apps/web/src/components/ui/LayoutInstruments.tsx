@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * LAYOUT INSTRUMENTS (VOICES 2026)
+ * 
+ * De visuele bouwstenen van het Voices Ecosysteem.
+ * Garandeert consistentie in afronding, typografie en interactie.
+ * 
+ * @lock-file
+ */
+
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -20,7 +29,7 @@ export const RootLayoutInstrument = ({
 }) => {
   return (
     <html lang={lang}>
-      <body className={cn(className, "pb-24 md:pb-0 select-none touch-manipulation")}>
+      <body className={cn(className, "pb-24 md:pb-0 touch-manipulation")}>
         {children}
       </body>
     </html>
@@ -37,7 +46,12 @@ export const PageWrapperInstrument = forwardRef<HTMLElement, HTMLAttributes<HTML
   ...props
 }, ref) => {
   return (
-    <main ref={ref} className={className} {...props}>
+    <main 
+      ref={ref} 
+      className={cn(className, "va-render-optimize")} 
+      style={{ contentVisibility: 'auto' } as React.CSSProperties}
+      {...props}
+    >
       {children}
     </main>
   );
@@ -252,7 +266,7 @@ export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentPr
       type={Component === 'button' ? type : undefined}
       href={(Component === 'a' || Component === Link) ? href : undefined}
       className={cn(
-        "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] ease-va-bezier inline-flex items-center justify-center whitespace-nowrap",
+        "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] ease-va-bezier inline-flex items-center justify-center whitespace-nowrap cursor-pointer",
         !className.includes('font-') && "font-light",
         variantClasses[variant],
         sizeClasses[size],
@@ -286,7 +300,7 @@ export const InputInstrument = forwardRef<HTMLInputElement, InputHTMLAttributes<
     <input 
       ref={ref}
       className={cn(
-        "bg-va-off-white border-none rounded-[10px] px-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/20",
+        "bg-va-off-white border-none rounded-[10px] px-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/40",
         className
       )}
       {...props}
@@ -318,9 +332,25 @@ export const OptionInstrument = ({
   children, 
   ...props
 }: React.OptionHTMLAttributes<HTMLOptionElement>) => {
+  //  CHRIS-PROTOCOL: No <span> inside <option> (Hydration Error prevention)
+  // We recursively strip elements and only keep text content
+  const getTextContent = (node: React.ReactNode): string => {
+    if (typeof node === 'string' || typeof node === 'number') return String(node);
+    if (Array.isArray(node)) return node.map(getTextContent).join('');
+    if (React.isValidElement(node)) {
+      if ((node.type as any).displayName === 'VoiceglotText') {
+        return (node.props as any).defaultText || '';
+      }
+      return getTextContent(node.props.children);
+    }
+    return '';
+  };
+
+  const textContent = getTextContent(children);
+
   return (
     <option {...props} className="text-[15px]">
-      {children}
+      {textContent}
     </option>
   );
 };

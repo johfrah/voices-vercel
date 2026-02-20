@@ -18,12 +18,18 @@ interface AudioRecorderProps {
   orderId?: number;
   onUploadComplete?: (url: string) => void;
   className?: string;
+  mode?: 'briefing' | 'practice';
+  title?: string;
+  subtitle?: string;
 }
 
 export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({ 
   orderId, 
   onUploadComplete,
-  className 
+  className,
+  mode = 'briefing',
+  title,
+  subtitle
 }) => {
   const { playClick, playSwell } = useSonicDNA();
   const [isRecording, setIsRecording] = useState(false);
@@ -88,7 +94,7 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
 
   return (
     <div className={cn(
-      "va-cockpit-card p-8 text-center flex flex-col items-center gap-6",
+      "va-dashboard-card p-8 text-center flex flex-col items-center gap-6",
       className
     )}>
       <div className={cn(
@@ -100,10 +106,16 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
 
       <div className="space-y-2">
         <h3 className="text-xl font-light tracking-tight">
-          <VoiceglotText  translationKey="recorder.title" defaultText="Audiobriefing" />
+          <VoiceglotText  
+            translationKey={mode === 'practice' ? "recorder.practice.title" : "recorder.title"} 
+            defaultText={title || (mode === 'practice' ? "Oefen je stem" : "Spreek je tekst in")} 
+          />
         </h3>
         <p className="text-[15px] text-va-black/40 max-w-xs mx-auto font-light">
-          <VoiceglotText  translationKey="recorder.subtitle" defaultText="Spreek je instructies in voor de stemacteur. Duidelijkheid boven alles." />
+          <VoiceglotText  
+            translationKey={mode === 'practice' ? "recorder.practice.subtitle" : "recorder.subtitle"} 
+            defaultText={subtitle || (mode === 'practice' ? "Neem een kort fragment op en ontdek hoe je klinkt." : "Spreek je instructies in voor de stemacteur. Duidelijkheid boven alles.")} 
+          />
         </p>
       </div>
 
@@ -155,12 +167,25 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
 
       <div className="pt-6 border-t border-va-black/5 w-full text-left">
         <h4 className="text-[15px] font-medium tracking-widest opacity-30 mb-3">
-          <VoiceglotText  translationKey="recorder.tips.title" defaultText="Tips voor succes" />
+          <VoiceglotText  
+            translationKey={mode === 'practice' ? "recorder.practice.tips.title" : "recorder.tips.title"} 
+            defaultText="Tips voor succes" 
+          />
         </h4>
         <ul className="text-[15px] text-va-black/50 space-y-1.5 font-light">
-          <li> <VoiceglotText  translationKey="recorder.tips.1" defaultText="Spreek namen en vaktermen duidelijk uit." /></li>
-          <li> <VoiceglotText  translationKey="recorder.tips.2" defaultText="Geef aan welk tempo of welke toon je wenst." /></li>
-          <li> <VoiceglotText  translationKey="recorder.tips.3" defaultText="Maximaal 2 minuten per opname." /></li>
+          {mode === 'practice' ? (
+            <>
+              <li> <VoiceglotText  translationKey="recorder.practice.tips.1" defaultText="Sta rechtop voor een betere ademhaling." /></li>
+              <li> <VoiceglotText  translationKey="recorder.practice.tips.2" defaultText="Lach tijdens het spreken voor een warme toon." /></li>
+              <li> <VoiceglotText  translationKey="recorder.practice.tips.3" defaultText="Neem de opname mee naar de workshop." /></li>
+            </>
+          ) : (
+            <>
+              <li> <VoiceglotText  translationKey="recorder.tips.1" defaultText="Spreek namen en vaktermen duidelijk uit." /></li>
+              <li> <VoiceglotText  translationKey="recorder.tips.2" defaultText="Geef aan welk tempo of welke toon je wenst." /></li>
+              <li> <VoiceglotText  translationKey="recorder.tips.3" defaultText="Maximaal 2 minuten per opname." /></li>
+            </>
+          )}
         </ul>
       </div>
     </div>

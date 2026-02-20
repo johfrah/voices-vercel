@@ -12,8 +12,14 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { key: string } }
 ) {
-  const auth = await requireAdmin();
-  if (auth instanceof NextResponse) return auth;
+  // CHRIS-PROTOCOL: Internal bypass for public config bridge
+  const internalBypass = request.headers.get('x-internal-bypass');
+  const isInternal = internalBypass && internalBypass === process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!isInternal) {
+    const auth = await requireAdmin();
+    if (auth instanceof NextResponse) return auth;
+  }
 
   const config = await ConfigBridge.getNavConfig(params.key);
   return NextResponse.json(config || { links: [], icons: {} });

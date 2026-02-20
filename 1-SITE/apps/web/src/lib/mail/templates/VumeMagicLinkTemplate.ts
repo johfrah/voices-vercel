@@ -20,21 +20,21 @@ export function VumeMagicLinkTemplate(options: MagicLinkOptions) {
     nl: {
       title: 'Welkom terug',
       greeting: name ? `Beste ${name},` : 'Beste,',
-      body: 'Je bent slechts n klik verwijderd van je cockpit. We hebben alles voor je klaargezet.',
+      body: 'Je bent slechts één klik verwijderd van je account. We hebben alles voor je klaargezet.',
       button: 'DIRECT INLOGGEN',
       footer: 'Deze link is 15 minuten geldig. Heb je deze mail niet aangevraagd? Dan kun je hem veilig negeren.'
     },
     fr: {
       title: 'Bienvenue',
       greeting: name ? `Cher ${name},` : 'Cher,',
-      body: 'Vous n\'tes qu\' un clic de votre cockpit. Nous avons tout prpar pour vous.',
+      body: 'Vous n\'êtes qu\'un clic de votre compte. Nous avons tout préparé pour vous.',
       button: 'SE CONNECTER MAINTENANT',
       footer: 'Ce lien est valable 15 minutes. Vous n\'avez pas demand cet e-mail ? Vous pouvez l\'ignorer en toute scurit.'
     },
     en: {
       title: 'Welcome back',
       greeting: name ? `Dear ${name},` : 'Dear,',
-      body: 'You\'re just one click away from your cockpit. Everything is ready for you.',
+      body: 'You\'re just one click away from your account. Everything is ready for you.',
       button: 'LOGIN DIRECTLY',
       footer: 'This link is valid for 15 minutes. Didn\'t request this email? You can safely ignore it.'
     }

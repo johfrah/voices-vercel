@@ -12,6 +12,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Loader2, Trash2, Edit2, X, ChevronRight, Info, Star, CreditCard, FileText, Tag, Eye, Lock, AlertCircle, Send, ArrowRight, Check } from 'lucide-react';
@@ -25,9 +26,10 @@ export const PricingSummary: React.FC<{
   onlyTotals?: boolean;
   className?: string;
 }> = ({ onlyItems, onlyTotals, className }) => {
-  const { state, removeItem, restoreItem, isVatExempt, updateCustomer, updateIsSubmitting, updateAgreedToTerms } = useCheckout();
+  const { state, subtotal, cartHash, removeItem, restoreItem, isVatExempt, updateCustomer, updateIsSubmitting, updateAgreedToTerms } = useCheckout();
   const { updateStep } = useMasterControl();
   const { playClick } = useSonicDNA();
+  const { t } = useTranslation();
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
   const [couponCode, setCouponCode] = useState('');
@@ -35,9 +37,22 @@ export const PricingSummary: React.FC<{
   const [couponError, setCouponError] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [reviewStats, setReviewStats] = useState<{ averageRating: number, totalCount: number } | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('/api/proxy?path=' + encodeURIComponent('https://www.voices.be/api/admin/actors'));
+        const data = await res.json();
+        if (data.reviewStats) setReviewStats(data.reviewStats);
+      } catch (e) {}
+    };
+    fetchStats();
+  }, []);
 
   const applyCoupon = async () => {
-    if (!couponCode) return;
+    const cleanCode = couponCode.trim().toUpperCase();
+    if (!cleanCode) return;
     setIsCouponApplying(true);
     setCouponError(null);
     playClick('light');
@@ -45,15 +60,15 @@ export const PricingSummary: React.FC<{
     try {
       // TODO: Implement real coupon validation API
       // For now, we simulate a successful validation for 'VOICES2026'
-      if (couponCode.toUpperCase() === 'VOICES2026') {
+      if (cleanCode === 'VOICES2026') {
         updateCustomer({ active_coupon: { code: 'VOICES2026', discount: 10, type: 'percentage' } });
         playClick('success');
       } else {
-        setCouponError('Ongeldige kortingscode');
+        setCouponError(t('checkout.coupon.invalid', 'Ongeldige kortingscode'));
         playClick('error');
       }
     } catch (e) {
-      setCouponError('Fout bij valideren');
+      setCouponError(t('checkout.coupon.error', 'Fout bij valideren'));
     } finally {
       setIsCouponApplying(false);
     }
@@ -74,7 +89,8 @@ export const PricingSummary: React.FC<{
           ...state.customer,
           pricing: {
             ...state.pricing,
-            total: subtotal // Send the correctly calculated grand total (excl VAT)
+            total: subtotal, // Send the correctly calculated grand total (excl VAT)
+            cartHash
           },
           quoteMessage,
           payment_method: state.paymentMethod,
@@ -143,10 +159,6 @@ export const PricingSummary: React.FC<{
   const isSubscription = state.usage === 'subscription';
   const hasContextData = state.items.length > 0 || state.selectedActor || state.briefing || isSubscription || state.editionId;
   
-  const cartSubtotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
-  const currentSubtotal = state.selectedActor ? state.pricing.total : 0;
-  const subtotal = cartSubtotal + currentSubtotal;
-
   const discountAmount = state.customer.active_coupon 
     ? (state.customer.active_coupon.type === 'percentage' 
         ? (subtotal * (state.customer.active_coupon.discount / 100)) 
@@ -212,6 +224,7 @@ export const PricingSummary: React.FC<{
                     src={item.actor?.photo_url || '/mic-placeholder.png'} 
                     alt={item.actor?.display_name || 'Item'} 
                     fill 
+                    sizes="64px"
                     className="object-cover" 
                   />
                 </ContainerInstrument>
@@ -224,7 +237,7 @@ export const PricingSummary: React.FC<{
                     </HeadingInstrument>
                     <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1 line-clamp-2">
                       {item.usage === 'telefonie' ? (
-                        'Onbeperkt gebruik voor telefonie & IVR.'
+                        t('checkout.item.telephony_desc', 'Onbeperkt gebruik voor telefonie & IVR.')
                       ) : item.usage === 'commercial' ? (
                         <div className="flex flex-col gap-0.5">
                           <span className="font-medium text-primary/60">
@@ -233,16 +246,16 @@ export const PricingSummary: React.FC<{
                                   const label = mediaLabels[m] || m;
                                   const spots = (typeof item.spots === 'object' ? item.spots[m] : item.spots) || 1;
                                   const years = (typeof item.years === 'object' ? item.years[m] : item.years) || 1;
-                                  return `${label} (${spots} ${spots === 1 ? 'spot' : 'spots'}, ${years} ${years === 1 ? 'jaar' : 'jaar'})`;
+                                  return `${label} (${spots} ${spots === 1 ? t('common.spot', 'spot') : t('common.spots', 'spots')}, ${years} ${years === 1 ? t('common.year', 'jaar') : t('common.years', 'jaar')})`;
                                 }).join(' • ')
                               : (mediaLabels[item.media] || item.media)}
                           </span>
                           <span className="text-[11px] uppercase tracking-widest opacity-70">
-                            {countryLabels[item.country] || item.country || 'België'}
+                            {countryLabels[item.country] || item.country || t('common.country.be', 'België')}
                           </span>
                         </div>
                       ) : (
-                        'Onbeperkt gebruik in de tijd zonder advertentie-budget.'
+                        t('checkout.item.unpaid_desc', 'Onbeperkt gebruik in de tijd zonder advertentie-budget.')
                       )}
                     </div>
                   </ContainerInstrument>
@@ -278,9 +291,9 @@ export const PricingSummary: React.FC<{
                       )}
                       <TextInstrument className={cn(
                         "font-light text-2xl tracking-tight",
-                        state.customer.active_coupon ? "text-green-600" : "text-va-black"
+                        "text-va-black"
                       )}>
-                        €{((item.pricing?.subtotal ?? item.pricing?.total ?? 0) * (state.customer.active_coupon?.type === 'percentage' ? (1 - state.customer.active_coupon.discount / 100) : 1)).toFixed(2)}
+                        €{(item.pricing?.subtotal ?? item.pricing?.total ?? 0).toFixed(2)}
                       </TextInstrument>
                       <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-widest mt-0.5">
                         Excl. BTW
@@ -323,19 +336,19 @@ export const PricingSummary: React.FC<{
       {/* ITEM DETAIL MODAL */}
       <AnimatePresence>
         {selectedItem && (
-          <div className="fixed inset-0 z-[500] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedItem(null)}
-              className="absolute inset-0 bg-va-black/60 backdrop-blur-xl"
+              className="absolute inset-0 bg-va-black/95 backdrop-blur-xl"
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-xl bg-white rounded-[32px] shadow-aura overflow-hidden max-h-[90vh] flex flex-col z-[501]"
+              className="relative w-full max-w-xl bg-white rounded-[32px] shadow-aura overflow-hidden max-h-[90vh] flex flex-col z-[10001]"
             >
               <div className="p-10 flex-1 overflow-y-auto custom-scrollbar space-y-10">
                 <div className="flex justify-between items-start">
@@ -345,6 +358,7 @@ export const PricingSummary: React.FC<{
                         src={selectedItem.actor?.photo_url || '/mic-placeholder.png'} 
                         alt={selectedItem.actor?.display_name} 
                         fill
+                        sizes="96px"
                         className="object-cover"
                       />
                     </div>
@@ -354,14 +368,23 @@ export const PricingSummary: React.FC<{
                       </HeadingInstrument>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold tracking-[0.1em] uppercase text-va-black/40">
                         <span>{usageLabels[selectedItem.usage] || selectedItem.usage}</span>
-                        <span className="w-1 h-1 rounded-full bg-va-black/10" />
-                        <span>
-                          {Array.isArray(selectedItem.media) 
-                            ? selectedItem.media.map((m: string) => mediaLabels[m] || m).join(', ') 
-                            : (mediaLabels[selectedItem.media] || selectedItem.media || 'Online')}
-                        </span>
-                        <span className="w-1 h-1 rounded-full bg-va-black/10" />
-                        <span>{countryLabels[selectedItem.country] || selectedItem.country || 'België'}</span>
+                        {selectedItem.usage === 'telefonie' ? (
+                          <>
+                            <span className="w-1 h-1 rounded-full bg-va-black/10" />
+                            <span><VoiceglotText translationKey="common.unlimited_usage" defaultText="Onbeperkt gebruik" /></span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="w-1 h-1 rounded-full bg-va-black/10" />
+                            <span>
+                              {Array.isArray(selectedItem.media) 
+                                ? selectedItem.media.map((m: string) => mediaLabels[m] || m).join(', ') 
+                                : (mediaLabels[selectedItem.media] || selectedItem.media || 'Online')}
+                            </span>
+                            <span className="w-1 h-1 rounded-full bg-va-black/10" />
+                            <span>{countryLabels[selectedItem.country] || selectedItem.country || t('common.country.be', 'België')}</span>
+                          </>
+                        )}
                         <span className="w-1 h-1 rounded-full bg-va-black/10" />
                         <span className="text-va-black">€ {(selectedItem.pricing?.subtotal ?? selectedItem.pricing?.total ?? 0).toFixed(2)}</span>
                       </div>
@@ -377,10 +400,12 @@ export const PricingSummary: React.FC<{
 
                 <div className="space-y-8">
                   <div className="space-y-3">
-                    <LabelInstrument className="text-[11px] uppercase tracking-[0.1em] text-va-black/40 font-bold ml-0">Script & Briefing</LabelInstrument>
+                    <LabelInstrument className="text-[11px] uppercase tracking-[0.1em] text-va-black/40 font-bold ml-0">
+                      <VoiceglotText translationKey="checkout.your_text" defaultText="Jouw Tekst" />
+                    </LabelInstrument>
                     <div className="bg-va-off-white/40 p-8 rounded-[32px] border border-black/[0.02] max-h-[300px] overflow-y-auto custom-scrollbar relative group/script">
                       <p className="text-[16px] font-light leading-relaxed text-va-black italic whitespace-pre-wrap">
-                        &quot;{selectedItem.script || selectedItem.briefing || 'Geen script ingevoerd'}&quot;
+                        &quot;{selectedItem.script || selectedItem.briefing || t('common.no_text_entered', 'Nog geen tekst ingevoerd')}&quot;
                       </p>
                       <div className="absolute top-4 right-4 opacity-0 group-hover/script:opacity-100 transition-opacity">
                         <Edit2 size={14} className="text-va-black/10" />
@@ -390,27 +415,37 @@ export const PricingSummary: React.FC<{
 
                   {selectedItem.pricing && (
                     <div className="pt-8 border-t border-va-black/5 space-y-4">
-                      <LabelInstrument className="text-[11px] uppercase tracking-[0.1em] text-va-black/40 font-bold ml-0">Prijsopbouw (excl. BTW)</LabelInstrument>
+                      <LabelInstrument className="text-[11px] uppercase tracking-[0.1em] text-va-black/40 font-bold ml-0">
+                        <VoiceglotText translationKey="pricing.breakdown_excl_vat" defaultText="Prijsopbouw (excl. BTW)" />
+                      </LabelInstrument>
                       <div className="space-y-3">
                         <div className="flex justify-between text-[15px]">
-                          <span className="text-va-black/60 font-light">Basistarief</span>
+                          <span className="text-va-black/60 font-light">
+                            {selectedItem.usage === 'telefonie' ? t('pricing.base_telephony', 'Basistarief (Telefoon)') : t('pricing.base', 'Basistarief')}
+                          </span>
                           <span className="font-medium text-va-black">€ {(selectedItem.pricing.base ?? 0).toFixed(2)}</span>
                         </div>
                         {(selectedItem.pricing.wordSurcharge ?? 0) > 0 && (
                           <div className="flex justify-between text-[15px]">
-                            <span className="text-va-black/60 font-light">Extra woorden/prompts</span>
+                            <span className="text-va-black/60 font-light">
+                              {selectedItem.usage === 'telefonie' ? t('pricing.production_fee', 'Productie & Verwerking') : t('pricing.extra_words_prompts', 'Extra woorden/prompts')}
+                            </span>
                             <span className="font-medium text-va-black">+ € {(selectedItem.pricing.wordSurcharge ?? 0).toFixed(2)}</span>
                           </div>
                         )}
                         {(selectedItem.pricing.mediaSurcharge ?? 0) > 0 && (
                           <div className="flex justify-between text-[15px]">
-                            <span className="text-va-black/60 font-light">Buyouts & Licenties</span>
+                            <span className="text-va-black/60 font-light">
+                              <VoiceglotText translationKey="pricing.buyouts_licenses" defaultText="Buyouts & Licenties" />
+                            </span>
                             <span className="font-medium text-va-black">+ € {(selectedItem.pricing.mediaSurcharge ?? 0).toFixed(2)}</span>
                           </div>
                         )}
                         {(selectedItem.pricing.musicSurcharge ?? 0) > 0 && (
                           <div className="flex justify-between text-[15px]">
-                            <span className="text-va-black/60 font-light">Muziek & Mixage</span>
+                            <span className="text-va-black/60 font-light">
+                              <VoiceglotText translationKey="pricing.music_mix" defaultText="Muziek & Mixage" />
+                            </span>
                             <span className="font-medium text-va-black">+ € {(selectedItem.pricing.musicSurcharge ?? 0).toFixed(2)}</span>
                           </div>
                         )}
@@ -549,7 +584,7 @@ const TotalsSection: React.FC<any> = ({
             <div className="flex items-center gap-2">
               <Tag size={14} strokeWidth={2} />
               <TextInstrument className="font-light tracking-widest">
-                Korting ({state.customer.active_coupon.code})
+                <VoiceglotText translationKey="common.discount" defaultText="Korting" /> ({state.customer.active_coupon.code})
               </TextInstrument>
             </div>
             <TextInstrument className="font-medium">- € {discountAmount.toFixed(2)}</TextInstrument>
@@ -680,7 +715,7 @@ const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsO
               ))}
             </div>
             <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase">
-              <VoiceglotText translationKey="checkout.social_proof" defaultText="4.9/5 sterren op 395+ reviews" />
+              <VoiceglotText translationKey="checkout.social_proof" defaultText={`${reviewStats?.averageRating || "4.9"}/5 sterren op ${reviewStats?.totalCount || "395"}+ reviews`} />
             </TextInstrument>
           </div>
           

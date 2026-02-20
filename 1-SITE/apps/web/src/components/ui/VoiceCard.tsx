@@ -7,14 +7,14 @@ import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { calculateDeliveryDate } from '@/lib/delivery-logic';
-import { PricingEngine } from '@/lib/pricing-engine';
+import { calculateDeliveryDate, startOfDayNative } from '@/lib/delivery-logic';
+import { SlimmeKassa } from '@/lib/pricing-engine';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
 import { MarketManager } from '@config/market-manager';
-import { motion } from 'framer-motion';
-import { ArrowRight, Check, Clock, Edit3, Mic, Pause, Play, Plus, Settings } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Check, ChevronDown, Clock, Edit3, Mic, Pause, Play, Plus, Search, Settings, ShieldCheck, Zap, X } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, HeadingInstrument, TextInstrument } from './LayoutInstruments';
@@ -49,7 +49,7 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
   return null;
 };
 
-export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButton, hidePrice, isCornered, compact }) => {
+export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSelect, hideButton, hidePrice, isCornered, compact }) => {
   const { t } = useTranslation();
   const { playClick, playSwell } = useSonicDNA();
   const { state, getPlaceholderValue, toggleActorSelection } = useVoicesState();
@@ -60,6 +60,39 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
   const { isAdmin } = useAuth();
   const router = useRouter();
 
+  //  CHRIS-PROTOCOL: Local state for immediate UI updates
+  const [voice, setVoice] = useState<Actor>(initialVoice);
+
+  // Sync with prop changes
+  useEffect(() => {
+    setVoice(initialVoice);
+  }, [initialVoice]);
+
+  //  CHRIS-PROTOCOL: Listen for global actor updates
+  useEffect(() => {
+    const handleGlobalUpdate = (e: CustomEvent<{ actor: Actor }>) => {
+      const updatedActor = e.detail?.actor;
+      if (updatedActor && (updatedActor.id === voice.id || updatedActor.wpProductId === voice.id)) {
+        console.log(`[VoiceCard] Received global update for ${voice.display_name}`);
+        
+        // Ensure photo_url is correctly proxied if it's a raw path
+        let finalPhotoUrl = updatedActor.photo_url || (updatedActor as any).dropboxUrl;
+        if (finalPhotoUrl && !finalPhotoUrl.startsWith('http') && !finalPhotoUrl.startsWith('/api/proxy') && !finalPhotoUrl.startsWith('/assets')) {
+          finalPhotoUrl = `/api/proxy/?path=${encodeURIComponent(finalPhotoUrl)}`;
+        }
+
+        setVoice(prev => ({
+          ...prev,
+          ...updatedActor,
+          photo_url: finalPhotoUrl || prev.photo_url
+        }));
+      }
+    };
+
+    window.addEventListener('voices:actor-updated', handleGlobalUpdate as EventListener);
+    return () => window.removeEventListener('voices:actor-updated', handleGlobalUpdate as EventListener);
+  }, [voice.id, voice.display_name]);
+
   const isSelected = useMemo(() => {
     if (!voice || !state.selected_actors) return false;
     return state.selected_actors.some(a => a.id === voice.id);
@@ -68,9 +101,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
   const handleAdminClick = (e: React.MouseEvent) => {
     if (!voice) return;
     e.stopPropagation();
-    openEditModal(voice, (updatedVoice: Actor) => {
-      console.log(`VoiceCard [${voice.display_name}] updated immediately`);
-    });
+    openEditModal(voice);
   };
 
   const handleStudioToggle = (e: React.MouseEvent) => {
@@ -83,11 +114,14 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
   const handleMainAction = (e: React.MouseEvent) => {
     if (!voice) return;
     e.stopPropagation();
-    playClick(isSelected ? 'light' : 'pro');
     
     if (onSelect) {
+      playClick(isSelected ? 'light' : 'pro');
       onSelect(voice);
     } else {
+      //  CHRIS-PROTOCOL: In non-SPA context (like home carousel), 
+      //  the plus button ALWAYS triggers the Casting Dock.
+      playClick(isSelected ? 'soft' : 'pro');
       toggleActorSelection(voice);
     }
   };
@@ -192,6 +226,98 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
 
   const [pricingUpdateTick, setPricingUpdateTick] = useState(0);
   const [eventData, setEventData] = useState<any>(null);
+  const [isTagSelectorOpen, setIsTagSelectorOpen] = useState(false);
+  const [isLangSelectorOpen, setIsLangSelectorOpen] = useState(false);
+  const [tagSearchQuery, setTagSearchQuery] = useState('');
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const tagSelectorRef = useRef<HTMLDivElement>(null);
+  const langSelectorRef = useRef<HTMLDivElement>(null);
+
+  const market = MarketManager.getCurrentMarket();
+  const supportedLangs = market.supported_languages;
+
+  useEffect(() => {
+    if (isTagSelectorOpen) {
+      // Fetch unique tags from all actors
+      fetch('/api/admin/actors/tags')
+        .then(res => res.json())
+        .then(data => {
+          if (data.tags) setAvailableTags(data.tags);
+        })
+        .catch(err => console.error('Failed to fetch tags:', err));
+    }
+  }, [isTagSelectorOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tagSelectorRef.current && !tagSelectorRef.current.contains(event.target as Node)) {
+        setIsTagSelectorOpen(false);
+      }
+      if (langSelectorRef.current && !langSelectorRef.current.contains(event.target as Node)) {
+        setIsLangSelectorOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleTagToggle = async (tag: string) => {
+    if (!voice) return;
+    playClick('pro');
+    
+    const currentTags = voice.tone_of_voice?.split(',').map(t => t.trim()).filter(Boolean) || [];
+    let newTags: string[];
+    
+    if (currentTags.includes(tag)) {
+      newTags = currentTags.filter(t => t !== tag);
+    } else {
+      newTags = [...currentTags, tag];
+    }
+    
+    const toneString = newTags.join(', ');
+    
+    try {
+      const res = await fetch(`/api/admin/actors/${voice.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tone_of_voice: toneString })
+      });
+      
+      if (res.ok) {
+        playClick('success');
+      }
+    } catch (err) {
+      console.error('Failed to update tags:', err);
+    }
+  };
+
+  const handleLangChange = async (langLabel: string) => {
+    if (!voice) return;
+    playClick('pro');
+    
+    const langCode = MarketManager.getLanguageCode(langLabel);
+    
+    try {
+      const res = await fetch(`/api/admin/actors/${voice.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ native_lang: langCode })
+      });
+      
+      if (res.ok) {
+        playClick('success');
+        setIsLangSelectorOpen(false);
+      }
+    } catch (err) {
+      console.error('Failed to update language:', err);
+    }
+  };
+
+  const filteredAvailableTags = useMemo(() => {
+    return availableTags.filter(tag => 
+      tag.toLowerCase().includes(tagSearchQuery.toLowerCase())
+    );
+  }, [availableTags, tagSearchQuery]);
 
   useEffect(() => {
     const handleUpdate = (e: any) => {
@@ -204,13 +330,35 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
 
   const deliveryInfo = useMemo(() => {
     if (!voice) return { deliveryDaysMin: 1, deliveryDaysMax: 1, formattedShort: '' };
+    
+    // NUCLEAR GOD MODE: Gebruik direct de database datum voor de UI
+    if (voice.delivery_date_min) {
+      const date = new Date(voice.delivery_date_min);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const isToday = date.getTime() === today.getTime();
+      
+      const d = String(date.getDate()).padStart(2, '0');
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const y = date.getFullYear();
+      
+      return {
+        deliveryDaysMin: voice.delivery_days_min || 1,
+        deliveryDaysMax: voice.delivery_days_max || 1,
+        formattedShort: isToday ? "VANDAAG" : `${d}/${m}/${y}`,
+        isToday
+      };
+    }
+
+    // Fallback naar live berekening indien DB veld leeg is (zou niet mogen gebeuren)
     return calculateDeliveryDate({
       deliveryDaysMin: voice.delivery_days_min || 1,
       deliveryDaysMax: voice.delivery_days_max || 1,
       cutoffTime: voice.cutoff_time || '18:00',
       availability: voice.availability,
       holidayFrom: voice.holiday_from,
-      holidayTill: voice.holiday_till
+      holidayTill: voice.holiday_till,
+      delivery_config: voice.delivery_config
     });
   }, [voice]);
 
@@ -238,31 +386,34 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
         }), {})
       : undefined;
 
-    const result = PricingEngine.calculate({
+    const result = SlimmeKassa.calculate({
       usage: masterControlState.journey === 'telephony' ? 'telefonie' : (masterControlState.journey === 'video' ? 'unpaid' : 'commercial'),
       plan: checkoutState.plan,
       words: wordCount,
       prompts: checkoutState.prompts,
-      mediaTypes: masterControlState.journey === 'commercial' ? (currentMedia as string[]) : undefined,
+      mediaTypes: masterControlState.journey === 'commercial' ? (currentMedia as any) : undefined,
       countries: masterControlState.filters.countries || [masterControlState.filters.country || 'BE'],
       spots: spotsMap,
       years: yearsMap,
       liveSession: masterControlState.filters.liveSession,
-      actorRates: voice,
+      actorRates: voice as any,
       music: checkoutState.music,
       isVatExempt: false
-    });
+    }, checkoutState.pricingConfig || undefined);
 
-    const status = PricingEngine.getAvailabilityStatus(
-      voice, 
-      masterControlState.journey === 'commercial' ? (currentMedia as string[]) : [], 
+    const status = SlimmeKassa.getAvailabilityStatus(
+      voice as any, 
+      masterControlState.journey === 'commercial' ? (currentMedia as any) : [], 
       masterControlState.filters.countries?.[0] || masterControlState.filters.country || 'BE'
     );
 
-    if (status === 'unavailable') return null;
+    // 🛡️ USER-MANDATE: We don't hide the card if it's unavailable, 
+    // instead we let the Pricing Engine handle the price display (which will show 'Op aanvraag' or 0).
+    // This prevents voices from disappearing when a country is selected.
+    // if (status === 'unavailable') return null;
 
     return {
-      price: PricingEngine.format(result.subtotal).replace('', '').trim(),
+      price: SlimmeKassa.format(result.subtotal).replace('', '').trim(),
       status,
       mediaBreakdown: result.mediaBreakdown
     };
@@ -313,6 +464,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
       )}
 
       <ContainerInstrument plain className="relative bg-va-black overflow-hidden shrink-0 aspect-square w-full">
+        {/* Quality Stamps removed to avoid overlap and focus on audio demos */}
+
         {activeVideo ? (
           <div className="absolute inset-0 z-10 bg-black">
             <video 
@@ -357,6 +510,20 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
             src={voice.photo_url} 
             alt={voice.display_name} 
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            journey="agency"
+            category="voicecards"
+            onUpdate={(newSrc) => {
+              //  CHRIS-PROTOCOL: Direct DB update for actor photo
+              fetch(`/api/admin/actors/${voice.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  id: voice.id,
+                  photo_url: newSrc
+                })
+              });
+            }}
             className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-700" 
           />
         ) : (
@@ -410,7 +577,10 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                 )}
               >
                 {activeDemo?.id === demo.id && globalIsPlaying ? <Pause size={10} fill="currentColor" /> : <Play size={10} fill="currentColor" />}
-                {cleanDemoTitle(demo.title, demo.category)}
+                <VoiceglotText 
+                  translationKey={`actor.${voice.id}.demo.${demo.id}.title`} 
+                  defaultText={cleanDemoTitle(demo.title, demo.category)} 
+                />
               </button>
             ))}
           </div>
@@ -430,15 +600,21 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                   return;
                 }
                 
-                if (!activeDemo && voice?.demos?.[0]) {
+                //  CHRIS-PROTOCOL: Monkeyproof Audio Switching
+                // Check of deze specifieke acteur al aan het spelen is
+                const isThisActorActive = activeDemo?.actor_name === voice.display_name;
+
+                if (isThisActorActive) {
+                  // Zelfde acteur: toggle play/pause
+                  setGlobalIsPlaying(!globalIsPlaying);
+                } else if (voice?.demos?.[0]) {
+                  // Andere acteur: switch direct naar de eerste demo van deze persoon
                   playDemo({
                     ...voice.demos[0],
                     actor_name: voice.display_name,
                     actor_photo: voice.photo_url,
                     actor_lang: voice.native_lang
                   });
-                } else {
-                  setGlobalIsPlaying(!globalIsPlaying);
                 }
               }}
               className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white hover:scale-110 hover:bg-white/30 transition-all duration-500 shadow-2xl group/play"
@@ -460,18 +636,34 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
           )}
         </ContainerInstrument>
 
-        {!activeVideo && (
-          <button 
-            onClick={handleStudioToggle}
-            className={cn(
-              "absolute top-4 right-4 z-40 w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-lg border border-white/10 group/studio",
-              isSelected 
-                ? "bg-primary text-white border-primary" 
-                : "bg-va-black/40 text-white hover:bg-va-black/60"
-            )}
-          >
-            {isSelected ? <Check size={18} strokeWidth={3} /> : <Plus size={18} />}
-          </button>
+        {!activeVideo && voice.allow_free_trial !== false && (
+          <div className="absolute bottom-4 right-4 z-40">
+            <button 
+              onClick={handleStudioToggle}
+              className={cn(
+                "h-10 rounded-full backdrop-blur-md flex items-center transition-all duration-500 shadow-lg border border-white/10 group/studio overflow-hidden",
+                isSelected 
+                  ? "bg-primary text-white border-primary px-3 gap-2" 
+                  : "bg-va-black/40 hover:bg-va-black/60 text-white px-3 gap-0 group-hover:gap-2 backdrop-blur-md"
+              )}
+            >
+              {isSelected ? (
+                <>
+                  <Check size={18} strokeWidth={3} />
+                  <span className="text-[10px] font-black tracking-widest uppercase animate-in fade-in slide-in-from-left-2">
+                    <VoiceglotText translationKey="common.selected" defaultText="Geselecteerd" />
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Plus size={18} className="shrink-0 transition-transform group-hover/studio:rotate-90 duration-500" />
+                  <span className="max-w-0 group-hover:max-w-[180px] opacity-0 group-hover:opacity-100 transition-all duration-500 text-[10px] font-black tracking-widest uppercase whitespace-nowrap">
+                    <VoiceglotText translationKey="common.free_demo_cta" defaultText="Gratis proefopname" />
+                  </span>
+                </>
+              )}
+            </button>
+          </div>
         )}
 
         {isAdmin && (
@@ -487,34 +679,89 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
       <ContainerInstrument plain className="p-0 flex flex-col flex-grow">
         <div className="flex items-start justify-between px-8 pt-8 pb-4 border-b border-black/[0.02]">
           <div className="flex flex-col gap-2.5">
-            <div className="flex items-center gap-1.5 bg-va-off-white/50 px-2.5 py-1.5 rounded-full border border-black/[0.05] w-fit">
+            <div className="flex items-center gap-1.5 bg-va-off-white/50 px-2.5 py-1.5 rounded-full border border-black/[0.05] w-fit relative">
               <VoiceFlag lang={voice?.native_lang} size={18} />
-              <TextInstrument className="text-[13px] font-bold text-va-black tracking-tight">
+              <TextInstrument className="text-[13px] font-light text-va-black tracking-tight">
                 <VoiceglotText 
                   translationKey={`common.language.${voice?.native_lang?.toLowerCase()}`} 
-                  defaultText={
-                    voice?.native_lang?.toLowerCase() === 'nl-be' || voice?.native_lang?.toLowerCase() === 'vlaams' ? 'Vlaams' : 
-                    voice?.native_lang?.toLowerCase() === 'nl-nl' || voice?.native_lang?.toLowerCase() === 'nederlands' ? 'Nederlands' : 
-                    voice?.native_lang?.toLowerCase() === 'fr-fr' || voice?.native_lang?.toLowerCase() === 'frans' ? 'Frans' : 
-                    voice?.native_lang?.toLowerCase() === 'fr-be' ? 'Frans (BE)' :
-                    voice?.native_lang || ''
-                  } 
+                  defaultText={voice?.native_lang_label || MarketManager.getLanguageLabel(voice?.native_lang || '')} 
                 />
               </TextInstrument>
+              
+              {isEditMode && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsLangSelectorOpen(!isLangSelectorOpen);
+                    playClick('pro');
+                  }}
+                  className="ml-1 text-primary hover:scale-110 transition-transform"
+                >
+                  <ChevronDown size={14} strokeWidth={3} />
+                </button>
+              )}
+
+              <AnimatePresence>
+                {isLangSelectorOpen && (
+                  <motion.div
+                    ref={langSelectorRef}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full left-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-black/10 py-2 z-[110]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="max-h-64 overflow-y-auto no-scrollbar">
+                      {supportedLangs.map(lang => {
+                        const isSelected = MarketManager.getLanguageCode(lang) === voice.native_lang;
+                        return (
+                          <button
+                            key={lang}
+                            onClick={() => handleLangChange(lang)}
+                            className={cn(
+                              "w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group",
+                              isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
+                            )}
+                          >
+                            <span>{lang}</span>
+                            {isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {(masterControlState.journey === 'telephony' || compact) && voice?.extra_langs && (
-              <div className="flex items-center gap-1.5 px-1 animate-in fade-in slide-in-from-left-1 duration-500">
-                <div className="flex -space-x-1">
-                  {voice.extra_langs.split(',').filter(Boolean).map((l, idx) => (
-                    <div key={idx} className="w-5 h-5 rounded-full border-2 border-white bg-va-off-white flex items-center justify-center overflow-hidden shadow-sm">
-                      <VoiceFlag lang={l.trim()} size={12} />
+            {voice?.extra_langs && (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-1 animate-in fade-in slide-in-from-left-1 duration-500">
+                {voice.extra_langs.split(',').filter(Boolean).map((l, idx) => {
+                  const trimmed = l.trim().toLowerCase();
+                  let label = '';
+                  if (trimmed === 'nl-be' || trimmed === 'vlaams') label = 'Vlaams';
+                  else if (trimmed === 'nl-nl' || trimmed === 'nederlands') label = 'Nederlands';
+                  else if (trimmed === 'fr-fr' || trimmed === 'frans') label = 'Frans';
+                  else if (trimmed === 'fr-be') label = 'Frans (BE)';
+                  else if (trimmed === 'en-gb' || trimmed === 'engels') label = 'Engels';
+                  else if (trimmed === 'en-us') label = 'Engels (US)';
+                  else if (trimmed === 'de-de' || trimmed === 'duits') label = 'Duits';
+                  else label = MarketManager.getLanguageLabel(trimmed);
+
+                  return (
+                    <div key={idx} className="flex items-center gap-1.5">
+                      <div className="w-4 h-4 rounded-full border border-black/5 bg-va-off-white flex items-center justify-center overflow-hidden shadow-sm shrink-0">
+                        <VoiceFlag lang={trimmed} size={10} />
+                      </div>
+                      <TextInstrument className="text-[10px] text-va-black/40 font-bold uppercase tracking-widest whitespace-nowrap">
+                        <VoiceglotText 
+                          translationKey={`common.language.${trimmed}`} 
+                          defaultText={label} 
+                        />
+                      </TextInstrument>
                     </div>
-                  ))}
-                </div>
-                <TextInstrument className="text-[10px] text-va-black/30 font-bold uppercase tracking-widest">
-                  Polyglot
-                </TextInstrument>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -522,7 +769,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
           {!compact && (
             <div className={cn(
               "flex flex-col items-end justify-center px-3 py-1.5 rounded-xl border transition-colors duration-500",
-              deliveryInfo.deliveryDaysMax <= 1 
+              (deliveryInfo as any).isToday || deliveryInfo.deliveryDaysMax <= 1 
                 ? "bg-green-500/5 border-green-500/10 text-green-600" 
                 : "bg-blue-500/5 border-blue-500/10 text-blue-600"
             )}>
@@ -531,7 +778,10 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                 <VoiceglotText translationKey="common.delivery" defaultText="Levering" />
               </span>
               <TextInstrument className="text-[13px] font-bold tracking-tight leading-none">
-                {deliveryInfo.formattedShort}
+                <VoiceglotText 
+                  translationKey={`actor.${voice.id}.delivery_info`} 
+                  defaultText={deliveryInfo.formattedShort} 
+                />
               </TextInstrument>
             </div>
           )}
@@ -539,7 +789,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
 
         <div className="flex flex-col flex-grow px-8 pt-6 pb-8">
           <div className="flex flex-col mb-4">
-            <HeadingInstrument level={3} className={cn("font-light tracking-tighter leading-none group-hover:text-primary transition-colors truncate", compact ? "text-3xl mb-2" : "text-4xl mb-2")}>
+            <HeadingInstrument level={3} className={cn("font-extralight tracking-tighter leading-none group-hover:text-primary transition-colors truncate", compact ? "text-3xl mb-2" : "text-4xl mb-2")}>
               <VoiceglotText  
                 translationKey={`actor.${voice?.id}.name`} 
                 defaultText={voice?.display_name} 
@@ -548,12 +798,91 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
             </HeadingInstrument>
 
             {voice?.tone_of_voice && (
-              <div className="flex flex-wrap gap-1 animate-in fade-in slide-in-from-bottom-1 duration-500">
-                {voice.tone_of_voice.split(',').filter(Boolean).slice(0, 2).map((tone, i) => (
-                  <span key={i} className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10">
-                    {tone.trim()}
+              <div className="flex flex-wrap gap-1 animate-in fade-in slide-in-from-bottom-1 duration-500 relative">
+                {voice.tone_of_voice.split(',').filter(Boolean).slice(0, 3).map((tone, i) => (
+                  <span key={i} className="text-[9px] font-light tracking-[0.2em] uppercase px-2 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10">
+                    <VoiceglotText 
+                      translationKey={`actor.${voice.id}.tone.${i}`} 
+                      defaultText={tone.trim()} 
+                    />
                   </span>
                 ))}
+                
+                {isEditMode && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsTagSelectorOpen(!isTagSelectorOpen);
+                      playClick('pro');
+                    }}
+                    className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm ml-1"
+                  >
+                    <Plus size={10} strokeWidth={3} />
+                  </button>
+                )}
+
+                <AnimatePresence>
+                  {isTagSelectorOpen && (
+                    <motion.div
+                      ref={tagSelectorRef}
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute bottom-full left-0 mb-2 w-64 bg-white rounded-2xl shadow-2xl border border-black/10 p-4 z-[100]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex items-center gap-2 mb-4 bg-va-off-white px-3 py-2 rounded-full border border-black/5">
+                        <Search size={14} className="text-va-black/30" />
+                        <input
+                          autoFocus
+                          type="text"
+                          value={tagSearchQuery}
+                          onChange={(e) => setTagSearchQuery(e.target.value)}
+                          placeholder="Zoek of voeg tag toe..."
+                          className="bg-transparent border-none outline-none text-[13px] font-medium w-full"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && tagSearchQuery.trim()) {
+                              handleTagToggle(tagSearchQuery.trim());
+                              setTagSearchQuery('');
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="max-h-48 overflow-y-auto no-scrollbar flex flex-wrap gap-2">
+                        {filteredAvailableTags.map(tag => {
+                          const isSelected = voice.tone_of_voice?.split(',').map(t => t.trim()).includes(tag);
+                          return (
+                            <button
+                              key={tag}
+                              onClick={() => handleTagToggle(tag)}
+                              className={cn(
+                                "px-3 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all",
+                                isSelected 
+                                  ? "bg-primary text-white" 
+                                  : "bg-va-off-white text-va-black/40 hover:bg-va-black/5"
+                              )}
+                            >
+                              {tag}
+                            </button>
+                          );
+                        })}
+                        {tagSearchQuery && !availableTags.includes(tagSearchQuery) && (
+                          <button
+                            onClick={() => {
+                              handleTagToggle(tagSearchQuery);
+                              setTagSearchQuery('');
+                            }}
+                            className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase flex items-center gap-1"
+                          >
+                            <Plus size={10} strokeWidth={3} />
+                            Voeg &quot;{tagSearchQuery}&quot; toe
+                          </button>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             )}
           </div>
@@ -575,11 +904,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
             <div className="flex flex-col items-start">
               {!hidePrice && displayPrice && (
                 <>
-                  <TextInstrument className="text-[10px] font-black tracking-[0.1em] text-va-black/30 uppercase leading-none mb-1">
+                  <TextInstrument className="text-[10px] font-light tracking-[0.2em] text-va-black/30 uppercase leading-none mb-1">
                     <VoiceglotText translationKey="common.starting_from" defaultText="Vanaf" />
                   </TextInstrument>
                   <div className="flex items-baseline gap-1">
-                    <TextInstrument className="text-2xl font-light tracking-tighter text-va-black">
+                    <TextInstrument className="text-2xl font-extralight tracking-tighter text-va-black">
                       {displayPrice.price}
                     </TextInstrument>
                   </div>
@@ -590,13 +919,14 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
             {!hideButton && (
               <ButtonInstrument 
                 onClick={handleMainAction}
-                variant={isSelected ? "primary" : "outline"}
+                variant={isSelected ? "default" : "outline"}
                 size="sm"
                 className={cn(
-                  "rounded-xl px-6 py-5 font-bold tracking-tight text-[13px] transition-all duration-500",
+                  "rounded-xl px-6 py-5 font-light tracking-[0.1em] uppercase text-[13px] transition-all duration-500",
                   isSelected 
                     ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105" 
-                    : "hover:bg-va-black hover:text-white hover:border-va-black"
+                    : "hover:bg-va-black hover:text-white hover:border-va-black",
+                  voice.allow_free_trial === false && !onSelect && "opacity-0 pointer-events-none"
                 )}
               >
                 {isSelected ? (
@@ -605,7 +935,15 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice, onSelect, hideButto
                     <VoiceglotText translationKey="common.selected" defaultText="Geselecteerd" />
                   </span>
                 ) : (
-                  <VoiceglotText translationKey="common.choose_voice" defaultText="Kies stem" />
+                  <div className="flex flex-col items-center leading-none gap-1">
+                    <VoiceglotText 
+                      translationKey={onSelect ? "common.choose_voice" : "common.add_to_casting"} 
+                      defaultText={onSelect ? "Kies stem" : "Proefopname +"} 
+                    />
+                    {!onSelect && (
+                      <span className="text-[8px] font-black tracking-[0.2em] opacity-50">GRATIS</span>
+                    )}
+                  </div>
                 )}
               </ButtonInstrument>
             )}

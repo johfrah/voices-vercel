@@ -18,7 +18,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
   
   const handleDayClick = (day: number) => {
     playClick('light');
-    window.location.href = `/studio/book?day=${day}`;
+    // window.location.href = `/studio/book?day=${day}`;
   };
 
   return (

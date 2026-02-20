@@ -73,12 +73,12 @@ export const CommercialMediaSelectionModal: React.FC<CommercialMediaSelectionMod
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[400] flex items-center justify-center p-6 bg-va-black/60 backdrop-blur-xl">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-va-black/95 backdrop-blur-xl">
       <motion.div 
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="w-full max-w-2xl bg-white rounded-[40px] shadow-aura overflow-hidden relative"
+        className="w-full max-w-2xl bg-white rounded-[40px] shadow-aura overflow-hidden relative z-[10001]"
       >
         <button 
           onClick={() => {

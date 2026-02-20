@@ -1,12 +1,15 @@
 'use client';
 
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
-import { LiquidBackground } from '@/components/ui/LiquidBackground';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import { Archive, ArrowRight, Check, ChevronRight, Search, Star, Tag } from 'lucide-react';
 import Image from 'next/image';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, Suspense } from 'react';
+import dynamic from "next/dynamic";
+
+//  NUCLEAR LOADING MANDATE
+const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 
 interface Suggestion {
   id: string;
@@ -500,7 +503,9 @@ export default function PhotoMatcherPage() {
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white selection:bg-primary selection:text-white overflow-x-hidden">
-      <LiquidBackground />
+      <Suspense fallback={null}>
+        <LiquidBackground />
+      </Suspense>
       
       {/*  Minimal Floating Stats Overlay */}
       <ContainerInstrument className="fixed top-8 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-xl rounded-full px-8 py-4 shadow-aura border border-black/5 flex items-center gap-12 pointer-events-none">

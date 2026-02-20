@@ -13,6 +13,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
  * 
  * Deze service vervangt de PHP voices_t() API volledig.
  * Het haalt real-time vertalingen uit de Supabase 'translations' tabel.
+ * 
+ * @lock-file
  */
 
 export class VoiceglotBridge {

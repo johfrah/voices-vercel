@@ -50,15 +50,60 @@ export async function POST(request: NextRequest) {
       // Update Order status
       let finalStatus = newStatus;
       
-      //  Als betaald: Check of het een "Music Only" order is
+      //  Als betaald: Check of het een "Music Only" of "Donation" order is
       if (newStatus === 'paid' && order) {
         const hasVoice = (order.rawMeta as any)?.actorId || (order.rawMeta as any)?.voiceId;
         const hasMusic = (order.rawMeta as any)?.music?.trackId;
+        const isDonation = order.journey === 'artist_donation';
         
         // Als er ENKEL muziek is (geen stem), zetten we de order direct op 'completed'
         if (hasMusic && !hasVoice) {
           finalStatus = 'completed';
           console.log(` Order #${orderId} is Music Only. Setting status to 'completed'.`);
+        }
+
+        //  ARTIST DONATION FLOW: Trigger bedankmail
+        if (isDonation) {
+          const donationContext = order.iapContext as any;
+          if (donationContext?.donorEmail) {
+            try {
+              const { VumeEngine } = await import('@/lib/mail/VumeEngine');
+              await VumeEngine.send({
+                to: donationContext.donorEmail,
+                subject: `Bedankt voor je support aan Youssef Zaki!`,
+                template: 'donation-thank-you',
+                context: {
+                  name: donationContext.donorName || 'Supporter',
+                  amount: order.total,
+                  artistName: 'Youssef Zaki',
+                  message: donationContext.message,
+                  language: 'nl'
+                },
+                host: host
+              });
+              console.log(` Donation: Thank you email sent to ${donationContext.donorEmail}`);
+
+              //  Notificatie naar Admin (Donatie specifiek)
+              const fetchUrl = `${process.env.NEXT_PUBLIC_BASE_URL || `https://${host}`}/api/admin/notify`;
+              await fetch(fetchUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'donation_received',
+                  data: {
+                    orderId: orderId,
+                    email: donationContext.donorEmail,
+                    amount: order.total,
+                    artistName: 'Youssef Zaki',
+                    message: donationContext.message,
+                    customer: { firstName: donationContext.donorName }
+                  }
+                })
+              });
+            } catch (err) {
+              console.error(' Failed to process donation post-payment:', err);
+            }
+          }
         }
       }
 
@@ -99,23 +144,23 @@ export async function POST(request: NextRequest) {
 
         //  Notificatie naar Admin (HITL)
         try {
-          const { DirectMailService } = await import('@/services/DirectMailService');
-          const mailService = DirectMailService.getInstance();
-          await mailService.sendMail({
-            to: adminEmail,
-            subject: ` Nieuwe Betaling Ontvangen: Order #${orderId}`,
-            html: `
-              <div style="font-family: sans-serif; padding: 40px; background: #f9f9f9; border-radius: 24px;">
-                <h2 style="color: #ff4f00;"> Nieuwe Betaling</h2>
-                <p>Er is een nieuwe betaling succesvol verwerkt via Mollie.</p>
-                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-                <p><strong>Order ID:</strong> #${orderId}</p>
-                <p><strong>Bedrag:</strong> ${payment.amount.value}</p>
-                <p><strong>Klant ID:</strong> ${payment.metadata.userId || 'Gast'}</p>
-                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-                <p>Bekijk de details in het <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/dashboard">Voices Dashboard</a>.</p>
-              </div>
-            `
+          const isSameDay = (order.rawMeta as any)?.items?.some((i: any) => i.actor?.delivery_config?.type === 'sameday');
+          const fetchUrl = `${process.env.NEXT_PUBLIC_BASE_URL || `https://${host}`}/api/admin/notify`;
+          
+          await fetch(fetchUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: isSameDay ? 'sameday_alert' : 'payment_received',
+              data: {
+                orderId: orderId,
+                email: payment.metadata.email || 'Gast',
+                amount: payment.amount.value,
+                company: payment.metadata.company,
+                items: (order.rawMeta as any)?.items || [],
+                customer: { firstName: payment.metadata.givenName, lastName: payment.metadata.familyName }
+              }
+            })
           });
         } catch (mailErr) {
           console.error(' Failed to send payment notification:', mailErr);

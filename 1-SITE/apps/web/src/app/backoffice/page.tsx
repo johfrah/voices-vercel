@@ -24,37 +24,37 @@ async function StatsGrid() {
   const [userCount] = await db.select({ value: count() }).from(users).catch(() => [{ value: 0 }]);
   const [actorCount] = await db.select({ value: count() }).from(actors).catch(() => [{ value: 0 }]);
   
-  // Mock revenue logic for now (will be replaced by Pricing Engine)
+  // Mock revenue logic for now (will be replaced by Slimme Kassa)
   const totalRevenue = ((orderCount?.value || 0) * 245.50).toLocaleString('nl-BE', { style: 'currency', currency: 'EUR' });
 
   return (
     <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-8">
       {/* Revenue Card */}
       <ContainerInstrument className="bg-white rounded-[40px] p-6 hmagic text-white border-none">
-        <TextInstrument className="text-[15px] font-light text-white/50 tracking-widest mb-2"><VoiceglotText  translationKey="admin.cockpit.revenue_label" defaultText="Omzet" /></TextInstrument>
+        <TextInstrument className="text-[15px] font-light text-white/50 tracking-widest mb-2"><VoiceglotText  translationKey="admin.dashboard.revenue_label" defaultText="Omzet" /></TextInstrument>
         <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{totalRevenue}</HeadingInstrument>
-        <ContainerInstrument className="mt-4 text-[15px] font-light bg-white/20 inline-block px-2 py-1 rounded"><VoiceglotText  translationKey="admin.cockpit.profit_engine" defaultText="Dashboard" /></ContainerInstrument>
+        <ContainerInstrument className="mt-4 text-[15px] font-light bg-white/20 inline-block px-2 py-1 rounded"><VoiceglotText  translationKey="admin.dashboard.profit_engine" defaultText="Dashboard" /></ContainerInstrument>
       </ContainerInstrument>
 
       {/* Orders Card */}
       <ContainerInstrument className="bg-white rounded-[40px] p-6 border border-black/[0.03] shadow-sm">
-        <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-2"><VoiceglotText  translationKey="admin.cockpit.orders_label" defaultText="Bestellingen" /></TextInstrument>
+        <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-2"><VoiceglotText  translationKey="admin.dashboard.orders_label" defaultText="Bestellingen" /></TextInstrument>
         <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{orderCount?.value || 0}</HeadingInstrument>
         <TextInstrument className="text-[15px] text-green-600 font-light mt-2"> 12%</TextInstrument>
       </ContainerInstrument>
 
       {/* Users Card */}
       <ContainerInstrument className="bg-white rounded-[40px] p-6 border border-black/[0.03] shadow-sm">
-        <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-2"><VoiceglotText  translationKey="admin.cockpit.users_label" defaultText="Gebruikers" /></TextInstrument>
+        <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-2"><VoiceglotText  translationKey="admin.dashboard.users_label" defaultText="Gebruikers" /></TextInstrument>
         <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{userCount?.value || 0}</HeadingInstrument>
-        <TextInstrument className="text-[15px] text-va-black/40 font-light mt-2"><VoiceglotText  translationKey="admin.cockpit.users_subtitle" defaultText="Geverifieerd" /></TextInstrument>
+        <TextInstrument className="text-[15px] text-va-black/40 font-light mt-2"><VoiceglotText  translationKey="admin.dashboard.users_subtitle" defaultText="Geverifieerd" /></TextInstrument>
       </ContainerInstrument>
 
       {/* Actors Card */}
       <ContainerInstrument className="bg-white rounded-[40px] p-6 border border-black/[0.03] shadow-sm">
-        <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-2"><VoiceglotText  translationKey="admin.cockpit.voices_label" defaultText="Stemmen" /></TextInstrument>
+        <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mb-2"><VoiceglotText  translationKey="admin.dashboard.voices_label" defaultText="Stemmen" /></TextInstrument>
         <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">{actorCount?.value || 0}</HeadingInstrument>
-        <TextInstrument className="text-[15px] text-va-black/40 font-light mt-2"><VoiceglotText  translationKey="admin.cockpit.voices_subtitle" defaultText="Totaal" /></TextInstrument>
+        <TextInstrument className="text-[15px] text-va-black/40 font-light mt-2"><VoiceglotText  translationKey="admin.dashboard.voices_subtitle" defaultText="Totaal" /></TextInstrument>
       </ContainerInstrument>
     </ContainerInstrument>
   );
@@ -76,7 +76,7 @@ async function RecentActivity() {
 
   return (
     <ContainerInstrument className="bg-white rounded-[40px] m-8 p-8 border border-black/[0.03] shadow-sm">
-      <HeadingInstrument level={3} className="text-xl font-light tracking-tighter mb-6 "><VoiceglotText  translationKey="admin.cockpit.recent_activity" defaultText="Activiteit" /></HeadingInstrument>
+      <HeadingInstrument level={3} className="text-xl font-light tracking-tighter mb-6 "><VoiceglotText  translationKey="admin.dashboard.recent_activity" defaultText="Activiteit" /></HeadingInstrument>
       <ContainerInstrument className="space-y-4">
         {recentOrders.map((order) => (
           <ContainerInstrument key={order.id} className="flex justify-between items-center border-b border-black/5 pb-4 last:border-0 last:pb-0">
@@ -105,7 +105,7 @@ export default function BackofficePage() {
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-24">
       <SectionInstrument className="px-8 mb-8">
-        <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.cockpit.title" defaultText="Backoffice" /><TextInstrument className="text-va-black/40 font-light text-[15px] tracking-widest"><VoiceglotText  translationKey="admin.cockpit.subtitle" defaultText="Voices" /></TextInstrument></HeadingInstrument>
+        <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.dashboard.title" defaultText="Backoffice" /><TextInstrument className="text-va-black/40 font-light text-[15px] tracking-widest"><VoiceglotText  translationKey="admin.dashboard.subtitle" defaultText="Voices" /></TextInstrument></HeadingInstrument>
       </SectionInstrument>
 
       <Suspense  fallback={<LoadingScreenInstrument />}>
@@ -120,7 +120,7 @@ export default function BackofficePage() {
                 <TextInstrument as="span" className="text-xl font-light"></TextInstrument>
               </ContainerInstrument>
               <ContainerInstrument>
-                <HeadingInstrument level={4} className="font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="admin.cockpit.media_library" defaultText="Media" /><TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mt-1"><VoiceglotText  translationKey="admin.cockpit.media_library_subtitle" defaultText="Beheer online assets" /></TextInstrument></HeadingInstrument>
+                <HeadingInstrument level={4} className="font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="admin.dashboard.media_library" defaultText="Media" /><TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest mt-1"><VoiceglotText  translationKey="admin.dashboard.media_library_subtitle" defaultText="Beheer online assets" /></TextInstrument></HeadingInstrument>
               </ContainerInstrument>
             </ButtonInstrument>
 
@@ -129,7 +129,7 @@ export default function BackofficePage() {
               <ContainerInstrument className="w-12 h-12 bg-black/5 rounded-full flex items-center justify-center mb-4">
                 <TextInstrument as="span" className="text-xl font-light"></TextInstrument>
               </ContainerInstrument>
-              <HeadingInstrument level={4} className="font-light tracking-tighter text-va-black/40 text-[15px]"><VoiceglotText  translationKey="admin.cockpit.lead_scoring" defaultText="Leads" /><TextInstrument className="text-[15px] font-light text-va-black/20 tracking-widest mt-2"><VoiceglotText  translationKey="common.coming_soon" defaultText="Binnenkort" /></TextInstrument></HeadingInstrument>
+              <HeadingInstrument level={4} className="font-light tracking-tighter text-va-black/40 text-[15px]"><VoiceglotText  translationKey="admin.dashboard.lead_scoring" defaultText="Leads" /><TextInstrument className="text-[15px] font-light text-va-black/20 tracking-widest mt-2"><VoiceglotText  translationKey="common.coming_soon" defaultText="Binnenkort" /></TextInstrument></HeadingInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

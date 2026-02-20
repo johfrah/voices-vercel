@@ -33,6 +33,7 @@ export interface Customer360 {
     averageOrderValue: number;
     lastOrderDate: Date | null;
   };
+  orders: any[]; // CHRIS-PROTOCOL: Inclusief order items en metadata
   intelligence: {
     leadVibe: 'cold' | 'warm' | 'hot' | 'burning';
     customerType: string | null;
@@ -103,33 +104,35 @@ export class UCIService {
 
       if (!user) return null;
 
-      // 2. Aggregeer order statistieken
+      // 2. Aggregeer order statistieken en haal orders op
       let totalSpent = 0;
       let orderCount = 0;
       let lastOrderDate: Date | null = null;
+      let ordersList: any[] = [];
 
       try {
-        const orderStats = await db
-          .select({
-            totalSpent: sum(orders.total),
-            orderCount: count(orders.id),
-            lastOrder: sql`MAX(${orders.createdAt})`,
-          })
-          .from(orders)
-          .where(eq(orders.userId, user.id));
+        ordersList = await db.query.orders.findMany({
+          where: eq(orders.userId, user.id),
+          orderBy: [desc(orders.createdAt)],
+          with: {
+            orderItems: true
+          }
+        });
 
-        const stats = orderStats[0];
-        totalSpent = Number(stats?.totalSpent || 0);
-        orderCount = Number(stats?.orderCount || 0);
-        lastOrderDate = stats?.lastOrder as Date;
+        totalSpent = ordersList.reduce((acc, o) => acc + Number(o.total || 0), 0);
+        orderCount = ordersList.length;
+        if (ordersList.length > 0) {
+          lastOrderDate = new Date(ordersList[0].createdAt);
+        }
       } catch (orderError) {
         console.warn(' UCI Order stats Drizzle failed, falling back to SDK');
-        const { data: ordersData } = await supabase.from('orders').select('total, created_at').eq('user_id', user.id);
+        const { data: ordersData } = await supabase.from('orders').select('*, order_items(*)').eq('user_id', user.id).order('created_at', { ascending: false });
         if (ordersData) {
+          ordersList = ordersData;
           totalSpent = ordersData.reduce((acc, o) => acc + Number(o.total || 0), 0);
           orderCount = ordersData.length;
           if (ordersData.length > 0) {
-            lastOrderDate = new Date(Math.max(...ordersData.map(o => new Date(o.created_at).getTime())));
+            lastOrderDate = new Date(ordersData[0].created_at);
           }
         }
       }
@@ -168,6 +171,7 @@ export class UCIService {
           averageOrderValue: orderCount > 0 ? totalSpent / orderCount : 0,
           lastOrderDate,
         },
+        orders: ordersList,
         intelligence: {
           leadVibe,
           customerType: user.customerType,

@@ -1,3 +1,7 @@
+import * as dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.join(process.cwd(), '1-SITE/apps/web/.env.local') });
+
 import { contentArticles, contentBlocks } from '../../../packages/database/src/schema';
 import { eq } from "drizzle-orm";
 import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
@@ -14,7 +18,7 @@ async function injectMarkMobyContent() {
   const now = new Date();
 
   // 1. Zo werkt het
-  const howSlug = "how-it-works";
+  const howSlug = "zo-werkt-het";
   const howTitle = "Zo werkt het";
   const howIntro = "In vier simpele stappen naar de perfecte stem voor jouw bedrijf. Geen gedoe, gewoon kwaliteit.";
   
@@ -26,15 +30,15 @@ async function injectMarkMobyContent() {
   ];
 
   // 2. Garanties
-  const garSlug = "onze-belofte";
-  const garTitle = "Onze belofte";
-  const garIntro = "Kwaliteit zonder omwegen. Wij staan achter ons ambacht.";
+  const garSlug = "tarieven";
+  const garTitle = "Tarieven";
+  const garIntro = "Kwaliteit zonder omwegen. Wij staan achter ons ambacht en hanteren transparante tarieven.";
 
   const garItems = [
-    { title: "Retakes inbegrepen", content: "Niet helemaal tevreden over de uitspraak of het tempo? We passen het kosteloos aan tot het perfect is. Let op: voor tekstwijzigingen achteraf rekenen we een klein supplement.", order: 1 },
-    { title: "Snelle levering", content: "Tijd is kostbaar. De meeste opnames worden binnen 24 uur geleverd, vaak zelfs sneller.", order: 2 },
-    { title: "Professionele mix", content: "Elke opname wordt in onze studio afgemixt op 48kHz broadcast kwaliteit. Klaar voor elk platform.", order: 3 },
-    { title: "Opknippen inbegrepen", content: "Heb je losse bestanden nodig voor je telefooncentrale? Wij knippen ze voor je op en leveren ze in het juiste formaat.", order: 4 }
+    { title: "Transparante prijzen", content: "Geen verrassingen achteraf. Gebruik onze calculator voor een directe prijsopgave op maat van jouw project.", order: 1 },
+    { title: "Retakes inbegrepen", content: "Niet helemaal tevreden over de uitspraak of het tempo? We passen het kosteloos aan tot het perfect is. Let op: voor tekstwijzigingen achteraf rekenen we een klein supplement.", order: 2 },
+    { title: "Snelle levering", content: "Tijd is kostbaar. De meeste opnames worden binnen 24 uur geleverd, vaak zelfs sneller.", order: 3 },
+    { title: "Professionele mix", content: "Elke opname wordt in onze studio afgemixt op 48kHz broadcast kwaliteit. Klaar voor elk platform.", order: 4 }
   ];
 
   // 3. FAQ (High-Impact)
@@ -47,6 +51,15 @@ async function injectMarkMobyContent() {
     { title: "Wat kost een stem?", content: "De prijs hangt af van de lengte van je tekst en het type project. Een voicemail heeft een ander tarief dan een nationale TV-spot. Gebruik onze calculator voor een directe prijsopgave zonder verrassingen.", order: 2 },
     { title: "Kan ik de opname nog aanpassen?", content: "Natuurlijk. Een retake voor uitspraak, tempo of intonatie is altijd inbegrepen. Voor wijzigingen in de tekst na de opname rekenen we een vast tarief.", order: 3 }
   ];
+
+  // 4. Cookies & Voorwaarden
+  const cookieSlug = "cookies";
+  const cookieTitle = "Cookiebeleid";
+  const cookieIntro = "Wij gebruiken cookies om uw ervaring op onze website te verbeteren.";
+
+  const termsSlug = "voorwaarden";
+  const termsTitle = "Algemene Voorwaarden";
+  const termsIntro = "Onze afspraken voor een fijne samenwerking.";
 
   // 4. Script Bibliotheek (Inspiratie)
   const scriptSlug = "voorbeeldteksten-telefooncentrale";
@@ -349,6 +362,34 @@ async function injectMarkMobyContent() {
         isManuallyEdited: true
       });
     }
+
+    // Inject Cookies
+    console.log(` MARK: Upserting article [${cookieSlug}]...`);
+    await db.insert(contentArticles).values({
+      title: cookieTitle,
+      slug: cookieSlug,
+      content: cookieIntro,
+      status: 'publish',
+      isManuallyEdited: true,
+      updatedAt: now as any
+    }).onConflictDoUpdate({
+      target: [contentArticles.slug],
+      set: { title: cookieTitle, content: cookieIntro, updatedAt: now as any, isManuallyEdited: true }
+    });
+
+    // Inject Voorwaarden
+    console.log(` MARK: Upserting article [${termsSlug}]...`);
+    await db.insert(contentArticles).values({
+      title: termsTitle,
+      slug: termsSlug,
+      content: termsIntro,
+      status: 'publish',
+      isManuallyEdited: true,
+      updatedAt: now as any
+    }).onConflictDoUpdate({
+      target: [contentArticles.slug],
+      set: { title: termsTitle, content: termsIntro, updatedAt: now as any, isManuallyEdited: true }
+    });
 
     // 7. SLV Belgium Story (Stories)
     const slvSlug = "slv-belgium";
