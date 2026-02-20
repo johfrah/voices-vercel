@@ -388,25 +388,37 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     params.delete('language');
     params.delete('languages');
 
-    const isAgency = pathname.startsWith('/agency');
-    const isVoiceProfile = pathname.startsWith('/voice/') || (pathname.split('/').filter(Boolean).length === 1 && !isAgency);
-    const isTarieven = pathname === '/tarieven' || pathname === '/tarieven/' || pathname === '/price' || pathname === '/price/';
+    const cleanPath = pathname.replace(/^\/(nl|fr|en|de|es|it|pt)/, '') || '/';
+    const isAgencyFilterPage = (cleanPath.startsWith('/agency/') || cleanPath === '/agency') && 
+                               !['/agency/tarieven', '/agency/over-ons', '/agency/privacy', '/agency/cookies', '/agency/voorwaarden', '/tarieven', '/price', '/contact'].includes(cleanPath);
     
-    // CHRIS-PROTOCOL: Only rewrite URL if we are explicitly in the Agency Journey flow
-    // and NOT on a specific profile page or static information page.
-    if (!isAgency) return;
-
-    const jSlug = state.journey === 'telephony' ? 'telephony' : (state.journey === 'commercial' ? 'commercial' : 'video');
-    let newUrl = '/agency/' + jSlug + '/';
+    const pathSegments = cleanPath.split('/').filter(Boolean);
+    const isVoiceProfile = pathSegments.length >= 1 && !isAgencyFilterPage && 
+                          !['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'tarieven', 'price', 'contact', 'over-ons', 'agency'].includes(pathSegments[0]);
     
-    if (state.journey === 'commercial' && state.filters.media) {
-      state.filters.media.forEach(m => {
-        const spots = state.filters.spotsDetail?.[m] || 1;
-        const years = state.filters.yearsDetail?.[m] || 1;
-        newUrl += m + spots + 'x' + years + '/';
-      });
-    } else if ((state.journey === 'telephony' || state.journey === 'video') && state.filters.words) {
-      newUrl += state.filters.words + '/';
+    // CHRIS-PROTOCOL: Strict URL rewrite mandate. 
+    // We only touch the URL if we are in a known dynamic flow.
+    if (isAgencyFilterPage) {
+      const jSlug = state.journey === 'telephony' ? 'telephony' : (state.journey === 'commercial' ? 'commercial' : 'video');
+      const locale = pathname.match(/^\/(nl|fr|en|de|es|it|pt)/)?.[0] || '';
+      newUrl = locale + '/agency/' + jSlug + '/';
+      
+      if (state.journey === 'commercial' && state.filters.media) {
+        state.filters.media.forEach(m => {
+          const spots = state.filters.spotsDetail?.[m] || 1;
+          const years = state.filters.yearsDetail?.[m] || 1;
+          newUrl += m + spots + 'x' + years + '/';
+        });
+      } else if ((state.journey === 'telephony' || state.journey === 'video') && state.filters.words) {
+        newUrl += state.filters.words + '/';
+      }
+    } else if (isVoiceProfile && pathSegments.length >= 2) {
+      // Update journey segment on profile pages
+      const locale = pathname.match(/^\/(nl|fr|en|de|es|it|pt)/)?.[0] || '';
+      newUrl = locale + '/' + pathSegments[0] + '/' + state.journey;
+    } else {
+      // For all other pages (tarieven, contact, etc.), we NEVER touch the URL.
+      return;
     }
 
     const queryString = params.toString();
@@ -472,9 +484,9 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
           window.history.replaceState(null, '', newUrl);
         }
       } else if (step === 'voice') {
-        const isAgency = pathname.startsWith('/agency');
-        const newUrl = isAgency ? '/agency/' + prev.journey : '/';
-        if (typeof window !== 'undefined') {
+        const isAgencyFilterPage = pathname.startsWith('/agency/') || pathname === '/agency';
+        const newUrl = isAgencyFilterPage ? '/agency/' + prev.journey : pathname;
+        if (typeof window !== 'undefined' && newUrl !== pathname) {
           window.history.replaceState(null, '', newUrl);
         }
       }
