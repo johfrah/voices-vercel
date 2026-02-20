@@ -135,10 +135,10 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
 
   const getUsageSteps = () => {
     const config = pricingConfig || SlimmeKassa.getDefaultConfig();
-    const telephonyBase = config.telephonyBasePrice / 100;
-    const videoBase = config.videoBasePrice / 100;
-    const currentBsf = config.basePrice / 100;
-    const liveSurcharge = config.liveSessionSurcharge / 100;
+    const telephonyBase = (config.telephonyBasePrice / 100) || 0;
+    const videoBase = (config.videoBasePrice / 100) || 0;
+    const currentBsf = (config.basePrice / 100) || 0;
+    const liveSurcharge = (config.liveSessionSurcharge / 100) || 0;
 
     switch (calcUsage) {
       case 'telefonie':
@@ -370,17 +370,15 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
           </div>
 
           <div className="pt-8 border-t border-black/[0.03] space-y-6">
-            <div className="p-4 bg-va-off-white/50 rounded-2xl border border-black/5">
               <TextInstrument className="text-[11px] text-va-black/40 leading-relaxed italic">
                 {calcUsage === 'paid' ? (
-                  <>De opnamekosten (€{pricingConfig?.basePrice / 100 || 199}) zijn slechts één keer verrekend. De buyout is berekend per eenheid (jaar of 3 maanden).</>
+                  <>De opnamekosten (€{(pricingConfig?.basePrice / 100) || 199}) zijn slechts één keer verrekend. De buyout is berekend per eenheid (jaar of 3 maanden).</>
                 ) : calcUsage === 'unpaid' ? (
-                  <>Inclusief studio-opname (€{pricingConfig?.videoBasePrice / 100 || 249}) en onbeperkt gebruiksrecht. {calcWords > (pricingConfig?.videoWordThreshold || 200) && `Toeslag toegepast voor de extra lengte boven ${pricingConfig?.videoWordThreshold || 200} woorden.`}</>
+                  <>Inclusief studio-opname (€{(pricingConfig?.videoBasePrice / 100) || 249}) en onbeperkt gebruiksrecht. {calcWords > (pricingConfig?.videoWordThreshold || 200) && `Toeslag toegepast voor de extra lengte boven ${pricingConfig?.videoWordThreshold || 200} woorden.`}</>
                 ) : (
                   <>Transparante prijsberekening voor telefonie. {calcWords > (pricingConfig?.telephonyWordThreshold || 25) && "Inclusief eenmalige opstart- en verwerkingskosten."}</>
                 )}
               </TextInstrument>
-            </div>
             <div className="flex items-center gap-3 px-5 py-3 bg-va-off-white rounded-full border border-black/5 w-fit shadow-sm">
               <ShieldCheck size={16} className="text-green-500" />
               <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
