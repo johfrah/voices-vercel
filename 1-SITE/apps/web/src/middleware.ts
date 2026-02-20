@@ -169,13 +169,13 @@ export async function middleware(request: NextRequest) {
   // REDIRECT OLD AUTH PATHS TO UNIVERSAL ACCOUNT PAGE
   if (pathname === '/auth/login' || pathname === '/auth/login/') {
     const accountUrl = url.clone()
-    accountUrl.pathname = '/account'
+    accountUrl.pathname = '/account/login'
     return NextResponse.redirect(accountUrl)
   }
 
   // REDIRECT OLD SIGNUP TO UNIVERSAL ACCOUNT
   if (pathname === '/auth/signup-legacy' || pathname === '/auth/signup') {
-    url.pathname = '/account'
+    url.pathname = '/account/signup'
     return NextResponse.redirect(url)
   }
 

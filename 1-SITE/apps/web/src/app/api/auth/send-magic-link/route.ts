@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       type: 'magiclink',
       email: email,
       options: {
-        redirectTo: `${new URL(req.url).origin}/auth/callback?redirect=${redirect}`,
+        redirectTo: `${new URL(req.url).origin}/account/callback?redirect=${redirect}`,
       }
     });
 
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
         type: 'signup',
         email: email,
         options: {
-          redirectTo: `${new URL(req.url).origin}/auth/callback?redirect=${redirect}`,
+          redirectTo: `${new URL(req.url).origin}/account/callback?redirect=${redirect}`,
         }
       });
 
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
 
     // ONZE BETROUWBARE LINK (Forceer https op productie)
     const origin = new URL(req.url).origin.replace('http://', 'https://');
-    const voicesLink = `${origin}/auth/confirm?token=${token}&type=${type}&redirect=${redirect}`;
+    const voicesLink = `${origin}/account/confirm?token=${token}&type=${type}&redirect=${redirect}`;
     
     console.log(`[Auth API] Voices link created: ${voicesLink}`);
 

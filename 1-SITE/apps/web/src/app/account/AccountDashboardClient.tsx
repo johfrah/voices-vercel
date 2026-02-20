@@ -15,7 +15,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
-import { LoginPageClient } from '../auth/login/LoginPageClient';
+import { LoginPageClient } from './login/LoginPageClient';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
 import { 
