@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const token = searchParams.get('token')
   const type = searchParams.get('type') || 'magiclink'
-  const redirectPath = searchParams.get('redirect') || '/account'
+  const redirectPath = searchParams.get('redirect') || '/account?auth=success'
 
   console.log(`[Auth Confirm] Processing ${type} for token: ${token?.substring(0, 5)}...`)
 
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       
       // Voorkom open redirects
       const isLocalRedirect = redirectPath.startsWith('/')
-      const finalRedirect = isLocalRedirect ? `${origin}${redirectPath}` : `${origin}/account`
+      const finalRedirect = isLocalRedirect ? `${origin}${redirectPath}` : `${origin}/account?auth=success`
       
       return NextResponse.redirect(finalRedirect)
     }
