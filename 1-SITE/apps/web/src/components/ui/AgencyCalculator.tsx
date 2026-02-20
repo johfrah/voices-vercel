@@ -101,14 +101,14 @@ export const AgencyCalculator = ({
       sub: "Corporate & Web",
       icon: Video,
       usage: "unpaid",
-      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 239
+      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 249
     },
     social: { 
       label: "Social Ad", 
       sub: "Social Ads",
       icon: Megaphone,
       usage: "paid",
-      national: ((pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 239) + 50
+      national: ((pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 249) + 50
     },
     radio: { 
       label: "Radio", 
@@ -131,7 +131,7 @@ export const AgencyCalculator = ({
       sub: "Pre-roll",
       icon: Mic2,
       usage: "paid",
-      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 239
+      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 249
     },
     ivr: { 
       label: "Telefoon", 
@@ -177,7 +177,7 @@ export const AgencyCalculator = ({
     
     // CHRIS-PROTOCOL: Smart mapping between Drizzle/JSON keys and SlimmeKassaConfig
     const telephonyBase = (config.telephonyBasePrice / 100) || config.ivr_base || 89;
-    const videoBase = (config.videoBasePrice / 100) || config.unpaid_base || 239;
+    const videoBase = (config.videoBasePrice / 100) || config.unpaid_base || 249;
     const currentBsf = (config.basePrice / 100) || config.entry_price_base === 9 ? 199 : (config.entry_price_base || 199); // Handle weird 9 value
     const liveSurcharge = (config.liveSessionSurcharge / 100) || config.live_regie || 50;
 

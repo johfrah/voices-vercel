@@ -49,7 +49,7 @@ export interface SlimmeKassaConfig {
 
 export const DEFAULT_KASSA_CONFIG: SlimmeKassaConfig = {
   basePrice: 19900, // €199 in cents (BSF)
-  videoBasePrice: 23900, // €239 in cents
+  videoBasePrice: 24900, // €249 in cents
   telephonyBasePrice: 8900, // €89 in cents
   telephonySetupFee: 1995, // €19.95 in cents
   telephonyWordPrice: 100, // €1.00 in cents
