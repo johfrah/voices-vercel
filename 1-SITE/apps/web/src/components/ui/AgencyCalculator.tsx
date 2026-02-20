@@ -29,6 +29,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { SlimmeKassa } from "@/lib/pricing-engine";
+import { useSonicDNA } from '@/lib/sonic-dna';
 
 interface AgencyCalculatorProps {
   initialJourney?: "telefonie" | "unpaid" | "paid";
