@@ -36,6 +36,11 @@ interface AgencyCalculatorProps {
   pricingConfig?: any;
   selectedLanguageId?: number | null;
   onJourneyChange?: (journey: "telefonie" | "unpaid" | "paid") => void;
+  // Pagination props for the integrated table
+  isLoading?: boolean;
+  currentPage?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 
 /**
@@ -48,9 +53,14 @@ export const AgencyCalculator = ({
   actors = [], 
   pricingConfig: externalPricingConfig,
   selectedLanguageId,
-  onJourneyChange
+  onJourneyChange,
+  isLoading = false,
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange
 }: AgencyCalculatorProps) => {
   const router = useRouter();
+  const { playClick } = useSonicDNA();
   const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(initialJourney);
   const [calcType, setCalcType] = useState<"webvideo" | "social" | "radio" | "tv" | "ivr" | "podcast">("social");
   const [calcSpots, setCalcSpots] = useState(1);
@@ -398,7 +408,7 @@ export const AgencyCalculator = ({
               </div>
             </div>
 
-            {/* 5. Price & CTA */}
+            {/* 5. Price & CTA (Telephony & Video only) */}
             {(calcUsage === 'telefonie' || calcUsage === 'unpaid') && (
               <div className="pt-10 border-t border-black/[0.03] flex flex-col md:flex-row items-center justify-between gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="text-center md:text-left">
@@ -413,51 +423,121 @@ export const AgencyCalculator = ({
               </div>
             )}
 
-            {/* 5. Interactive Actor List for Commercial (v2.33) */}
-            {calcUsage === 'paid' && filteredActors.length > 0 && (
-              <div className="pt-10 border-t border-black/[0.03] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div className="flex items-center justify-between">
-                  <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold uppercase">Tarieven per stemacteur (excl. BTW)</TextInstrument>
-                  <button onClick={() => router.push('/agency')} className="text-[11px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity">Bekijk alle</button>
+            {/* 6. Integrated Actor Rate Table (v2.47: Moved from page.tsx) */}
+            <div className="pt-10 border-t border-black/[0.03] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="flex items-center justify-between">
+                <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold uppercase">
+                  {calcUsage === 'paid' ? 'Tarieven per stemacteur (excl. BTW)' : 'Beschikbare stemacteurs'}
+                </TextInstrument>
+                <button onClick={() => router.push('/agency')} className="text-[11px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity">Bekijk alle</button>
+              </div>
+              
+              <div className="bg-white rounded-[24px] border border-black/5 overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-black/5 bg-va-off-white/50">
+                        <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Stemacteur</th>
+                        {calcUsage === 'paid' ? (
+                          <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Totaalprijs</th>
+                        ) : calcUsage === 'unpaid' ? (
+                          <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Basisprijs</th>
+                        ) : (
+                          <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Starttarief</th>
+                        )}
+                        <th className="px-6 py-4"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-black/[0.03]">
+                      {isLoading ? (
+                        <tr>
+                          <td colSpan={3} className="px-6 py-12 text-center">
+                            <div className="flex flex-col items-center gap-3">
+                              <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+                              <span className="text-[11px] font-bold text-va-black/20 uppercase tracking-widest">Laden...</span>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : actors.length > 0 ? (
+                        actors.map((a) => (
+                          <tr key={a.id} className="group hover:bg-primary/[0.01] transition-colors">
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="relative w-10 h-10 rounded-full overflow-hidden bg-va-off-white border border-black/5">
+                                  {a.photo_url ? (
+                                    <Image src={a.photo_url} alt={a.display_name} fill className="object-cover" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-va-black/20 font-bold">{a.display_name?.[0]}</div>
+                                  )}
+                                </div>
+                                <div>
+                                  <div className="text-[14px] font-bold text-va-black">{a.display_name}</div>
+                                  <div className="text-[10px] text-va-black/40 font-medium uppercase tracking-widest">{a.native_lang}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="text-right md:text-left">
+                                <div className="text-xl font-extralight tracking-tighter text-va-black">€{calculateTotal(true, a)}</div>
+                                <div className="text-[9px] text-va-black/30 font-bold uppercase tracking-widest">
+                                  {calcLive ? (
+                                    <span className="text-primary flex items-center gap-1">
+                                      <CheckCircle2 size={8} /> {parseFloat(a.price_live_regie || '0') > 0 ? `Incl. Regie` : "Regie Gratis"}
+                                    </span>
+                                  ) : calcUsage === 'paid' ? "All-in" : "Indicatie"}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <ButtonInstrument 
+                                variant="outline" 
+                                size="sm" 
+                                className="rounded-full !px-4 !py-2 text-[10px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all"
+                                onClick={() => {
+                                  playClick('pro');
+                                  router.push(`/agency?search=${a.display_name}&usage=${calcUsage}`);
+                                }}
+                              >
+                                Boek
+                              </ButtonInstrument>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={3} className="px-6 py-12 text-center text-va-black/20 italic text-[13px]">Geen stemacteurs gevonden.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
                 
-                <div className="space-y-2">
-                  {filteredActors.map((a) => (
-                    <div key={a.id} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">
-                      <div className="flex items-center gap-3">
-                        <div className="relative w-10 h-10 rounded-full overflow-hidden bg-va-off-white border border-black/5">
-                          {a.photo_url ? <Image src={a.photo_url} alt={a.display_name} fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center text-va-black/20 font-bold">{a.display_name?.[0]}</div>}
-                        </div>
-                        <div>
-                          <div className="text-[14px] font-bold text-va-black">{a.display_name}</div>
-                          <div className="text-[10px] text-va-black/40 font-medium uppercase tracking-widest">{a.native_lang}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-6">
-                        <div className="text-right">
-                          <div className="text-2xl font-extralight tracking-tighter text-va-black">€{calculateTotal(true, a)}</div>
-                          <div className="text-[9px] text-va-black/30 font-bold uppercase tracking-widest">
-                            {calcLive ? (
-                              <span className="text-primary flex items-center justify-end gap-1">
-                                <CheckCircle2 size={8} /> {parseFloat(a.price_live_regie || '0') > 0 ? `Incl. Live Regie` : "Live Regie Gratis"}
-                              </span>
-                            ) : "Totaalprijs"}
-                          </div>
-                        </div>
-                        <ButtonInstrument 
-                          variant="outline" 
-                          size="sm" 
-                          className="rounded-full !px-4 !py-2 text-[11px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all"
-                          onClick={() => router.push(`/agency?search=${a.display_name}&usage=paid`)}
-                        >
-                          Boek
-                        </ButtonInstrument>
-                      </div>
+                {/* PAGINATION CONTROLS */}
+                {totalPages > 1 && (
+                  <div className="px-6 py-4 border-t border-black/5 flex items-center justify-between bg-va-off-white/30">
+                    <TextInstrument className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
+                      {currentPage} / {totalPages}
+                    </TextInstrument>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => { onPageChange?.(Math.max(1, currentPage - 1)); playClick('soft'); }}
+                        disabled={currentPage === 1}
+                        className="p-2 rounded-lg bg-white border border-black/5 hover:border-primary/20 disabled:opacity-30 transition-all"
+                      >
+                        <Minus size={12} />
+                      </button>
+                      <button 
+                        onClick={() => { onPageChange?.(Math.min(totalPages, currentPage + 1)); playClick('soft'); }}
+                        disabled={currentPage === totalPages}
+                        className="p-2 rounded-lg bg-white border border-black/5 hover:border-primary/20 disabled:opacity-30 transition-all"
+                      >
+                        <Plus size={12} />
+                      </button>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
 
