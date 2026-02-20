@@ -174,6 +174,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     });
 
     try {
+      console.log(' [Emergency SDK] Fetching actors via SDK...');
       const { data: sdkResults, error: sdkError } = await supabase
         .from('actors')
         .select(`
@@ -191,11 +192,16 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         .eq('status', 'live')
         .limit(200);
 
-      if (sdkError) throw sdkError;
+      if (sdkError) {
+        console.error(' [Emergency SDK] Supabase SDK error:', sdkError);
+        throw sdkError;
+      }
+
+      console.log(` [Emergency SDK] Found ${sdkResults?.length || 0} actors`);
 
       const mappedResults = (sdkResults || []).map((actor: any) => {
         // Map SDK results to the same format as Drizzle
-        const photoUrl = actor.dropbox_url || ''; // Simplified for quick fix
+        const photoUrl = actor.dropbox_url || ''; 
         
         return {
           id: actor.wp_product_id || actor.id,
@@ -234,7 +240,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         reviewStats: { averageRating: 4.9, totalCount: 100, distribution: {} }
       };
     } catch (emergencyError) {
-      console.error(' EMERGENCY SDK FALLBACK FAILED:', emergencyError);
+      console.error(' [Emergency SDK] FATAL FALLBACK FAILURE:', emergencyError);
       throw emergencyError;
     }
 /*
