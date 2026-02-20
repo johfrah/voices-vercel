@@ -8,6 +8,7 @@ import { VoiceglotText } from './VoiceglotText';
 interface AccountHeroInstrumentProps {
   userEmail?: string;
   onLogout: () => void;
+  isAdmin?: boolean;
 }
 
 /**
@@ -20,9 +21,11 @@ interface AccountHeroInstrumentProps {
  */
 export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({ 
   userEmail, 
-  onLogout 
+  onLogout,
+  isAdmin = false
 }) => {
   const userName = userEmail?.split('@')[0] || 'User';
+  const isPartner = userEmail?.includes('voices.be') || isAdmin;
 
   return (
     <div className="va-account-hero">
@@ -53,6 +56,23 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
             defaultText="Beheer je bestellingen, cursussen en instellingen." 
           />
         </p>
+
+        {/* Toegang Badges in Hero */}
+        <div className="flex gap-2 mt-6">
+          <div className="px-3 py-1 bg-va-black/5 border border-black/5 rounded-full text-[10px] font-bold tracking-widest uppercase text-va-black/40">
+            Klant Account
+          </div>
+          {isAdmin && (
+            <div className="px-3 py-1 bg-primary/10 border border-primary/10 rounded-full text-[10px] font-bold tracking-widest uppercase text-primary">
+              Administrator
+            </div>
+          )}
+          {isPartner && (
+            <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/10 rounded-full text-[10px] font-bold tracking-widest uppercase text-blue-500">
+              Partner Toegang
+            </div>
+          )}
+        </div>
       </div>
       <button onClick={onLogout} className="va-account-logout-btn">
         <LogOut strokeWidth={1.5} size={16} /> 
