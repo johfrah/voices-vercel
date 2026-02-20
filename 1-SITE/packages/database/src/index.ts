@@ -18,15 +18,17 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Nuclear PgBouncer Session Mode Fix (v1.6)
-      // We gebruiken de directe pooler URL van Supabase (poort 6543 of 5432)
-      // CRITIEK: prepare: false is verplicht voor PgBouncer.
+      // CHRIS-PROTOCOL: Nuclear PgBouncer Connection Reset (v1.8)
+      // We gebruiken de DIRECTE verbinding (poort 5432) om 'Tenant not found' te elimineren.
+      // CRITIEK: prepare: false is verplicht.
       const client = postgres(connectionString, { 
         prepare: false, 
         max: 1,
-        idle_timeout: 20,
+        ssl: 'require',
         connect_timeout: 30,
-        ssl: 'require'
+        idle_timeout: 20,
+        // Dwing de verbinding af zonder extra metadata die PgBouncer kan verwarren
+        onnotice: () => {}, 
       });
       
       (globalThis as any).dbInstance = drizzle(client, { 
