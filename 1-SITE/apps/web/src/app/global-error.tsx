@@ -45,7 +45,7 @@ export default function GlobalError({
                   <TextInstrument className="text-va-black/40 font-medium leading-relaxed">
                     <VoiceglotText  
                       translationKey="error.global.text" 
-                      defaultText="Er ging iets mis bij het laden van de Freedom Machine. Onze excuses voor het ongemak." 
+                      defaultText="Er ging iets mis bij het laden van de pagina. Onze excuses voor het ongemak." 
                     />
                   </TextInstrument>
                 </ContainerInstrument>

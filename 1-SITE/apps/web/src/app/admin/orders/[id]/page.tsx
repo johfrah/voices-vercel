@@ -229,7 +229,7 @@ export default function OrderDetailPage() {
               <div className="bg-va-off-white/50 rounded-[20px] p-8 border border-primary/10 space-y-6">
                 <div className="flex items-center gap-3 text-primary">
                   <Zap size={20} strokeWidth={1.5} />
-                  <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] uppercase">Freedom Machine Action Center (HITL)</HeadingInstrument>
+                  <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] uppercase">Voices Action Center (HITL)</HeadingInstrument>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
