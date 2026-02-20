@@ -948,36 +948,38 @@ export const VoicyChatV2: React.FC = () => {
           <ContainerInstrument plain className="absolute top-0 right-0 w-24 h-24 bg-va-black/20 rounded-full blur-2xl -mr-12 -mt-12" />
         </ContainerInstrument>
 
-        {/* Tabs */}
-        <ContainerInstrument plain className="flex border-b border-black/5 p-1.5 gap-1 bg-va-off-white/30">
-          {[
-            { id: 'chat', icon: MessageCircle, label: 'Chat', translationKey: 'chat.tabs.chat' },
-            { id: 'mail', icon: Mail, label: 'Mail', translationKey: 'chat.tabs.mail' },
-            { id: 'phone', icon: Phone, label: 'Bel', translationKey: 'chat.tabs.phone' },
-            { id: 'faq', icon: HelpCircle, label: 'FAQ', translationKey: 'chat.tabs.faq' },
-            ...(isAdmin ? [{ id: 'admin', icon: Shield, label: 'Admin', translationKey: 'chat.tabs.admin' }] : []),
-          ].map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <ButtonInstrument
-                key={tab.id}
-                onClick={() => {
-                  playSonicClick('light');
-                  setActiveTab(tab.id as any);
-                }}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg transition-all ${
-                  activeTab === tab.id ? 'bg-va-black text-white shadow-sm ring-1 ring-black/5' : 'bg-va-off-white text-va-black/30 hover:bg-black/5'
-                }`}
-              >
-                <Icon size={12} strokeWidth={1.5} className={activeTab === tab.id ? 'text-white' : 'text-va-black/20'} />
-                <TextInstrument as="span" className="text-[13px] font-light tracking-widest"><VoiceglotText  translationKey={tab.translationKey} defaultText={tab.label} /></TextInstrument>
-              </ButtonInstrument>
-            );
-          })}
-        </ContainerInstrument>
+        {/* Tabs - Hidden for visitors, only visible for Admin */}
+        {isAdmin && (
+          <ContainerInstrument plain className="flex border-b border-black/5 p-1.5 gap-1 bg-va-off-white/30">
+            {[
+              { id: 'chat', icon: MessageCircle, label: 'Chat', translationKey: 'chat.tabs.chat' },
+              { id: 'mail', icon: Mail, label: 'Mail', translationKey: 'chat.tabs.mail' },
+              { id: 'phone', icon: Phone, label: 'Bel', translationKey: 'chat.tabs.phone' },
+              { id: 'faq', icon: HelpCircle, label: 'FAQ', translationKey: 'chat.tabs.faq' },
+              { id: 'admin', icon: Shield, label: 'Admin', translationKey: 'chat.tabs.admin' },
+            ].map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <ButtonInstrument
+                  key={tab.id}
+                  onClick={() => {
+                    playSonicClick('light');
+                    setActiveTab(tab.id as any);
+                  }}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg transition-all ${
+                    activeTab === tab.id ? 'bg-va-black text-white shadow-sm ring-1 ring-black/5' : 'bg-va-off-white text-va-black/30 hover:bg-black/5'
+                  }`}
+                >
+                  <Icon size={12} strokeWidth={1.5} className={activeTab === tab.id ? 'text-white' : 'text-va-black/20'} />
+                  <TextInstrument as="span" className="text-[13px] font-light tracking-widest"><VoiceglotText  translationKey={tab.translationKey} defaultText={tab.label} /></TextInstrument>
+                </ButtonInstrument>
+              );
+            })}
+          </ContainerInstrument>
+        )}
 
-        {/* Mode Selector (Ask vs Agent) */}
-        {activeTab === 'chat' && (
+        {/* Mode & Persona Selectors - Only visible for Admin */}
+        {activeTab === 'chat' && isAdmin && (
           <ContainerInstrument plain className="px-4 py-2 bg-va-off-white/50 border-b border-black/5 flex flex-col gap-2">
             <ContainerInstrument plain className="flex justify-center">
               <ContainerInstrument plain className="flex bg-white p-0.5 rounded-full border border-black/5 shadow-sm">
