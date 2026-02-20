@@ -8,6 +8,7 @@ import { getActors } from '@/lib/api-server';
  * Voldoet aan het Chris-Protocol: Forensische logging en rigide validatie.
  */
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   console.log(' ACTORS API: Request received', request.url);

@@ -4,6 +4,9 @@ import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { DEFAULT_KASSA_CONFIG } from '@/lib/pricing-engine';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET() {
   try {
     const [config] = await db.select().from(appConfigs).where(eq(appConfigs.key, 'pricing_config')).limit(1);
