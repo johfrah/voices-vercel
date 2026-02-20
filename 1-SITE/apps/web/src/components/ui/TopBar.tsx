@@ -77,10 +77,10 @@ export const TopBar = () => {
           className="flex items-center gap-2 group"
           onClick={handleOpenPhone}
         >
+          <Phone size={12} strokeWidth={2.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
           <TextInstrument className="text-[11px] font-light tracking-[0.1em] text-va-black/40 group-hover:text-va-black transition-colors">
             {market.phone}
           </TextInstrument>
-          <Phone size={12} strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
         </ButtonInstrument>
       )}
 
@@ -92,10 +92,10 @@ export const TopBar = () => {
           className="flex items-center gap-2 group"
           onClick={handleOpenMail}
         >
+          <Mail size={12} strokeWidth={2.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
           <TextInstrument className="text-[11px] font-light tracking-[0.1em] text-va-black/40 group-hover:text-va-black transition-colors">
             {market.email}
           </TextInstrument>
-          <Mail size={12} strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
         </ButtonInstrument>
       )}
     </ContainerInstrument>
