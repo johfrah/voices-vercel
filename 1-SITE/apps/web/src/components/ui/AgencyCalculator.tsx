@@ -71,44 +71,44 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
       sub: "Corporate & Web",
       icon: Video,
       usage: "unpaid",
-      national: (pricingConfig?.videoBasePrice / 100) || 0
+      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 239
     },
     social: { 
       label: "Social Ad", 
       sub: "Social Ads",
       icon: Megaphone,
       usage: "paid",
-      national: (pricingConfig?.videoBasePrice / 100) + 50 || 0
+      national: ((pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 239) + 50
     },
     radio: { 
       label: "Radio", 
       sub: "Radio Ads",
       icon: Radio,
       usage: "paid",
-      national: (pricingConfig?.basePrice / 100) + 150 || 0,
-      regional: (pricingConfig?.basePrice / 100) || 0
+      national: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199) + 150,
+      regional: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199)
     },
     tv: { 
       label: "TV Ad", 
       sub: "TV Ads",
       icon: Tv,
       usage: "paid",
-      national: (pricingConfig?.basePrice / 100) + 250 || 0,
-      regional: (pricingConfig?.basePrice / 100) + 50 || 0
+      national: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199) + 250,
+      regional: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199) + 50
     },
     podcast: { 
       label: "Podcast Ad", 
       sub: "Pre-roll",
       icon: Mic2,
       usage: "paid",
-      national: (pricingConfig?.videoBasePrice / 100) || 0
+      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 239
     },
     ivr: { 
       label: "Telefoon", 
       sub: "Voicemail & IVR",
       icon: Phone,
       usage: "telefonie",
-      national: (pricingConfig?.telephonyBasePrice / 100) || 0
+      national: (pricingConfig?.telephonyBasePrice / 100) || pricingConfig?.ivr_base || 89
     },
   };
 
@@ -135,10 +135,12 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
 
   const getUsageSteps = () => {
     const config = pricingConfig || SlimmeKassa.getDefaultConfig();
-    const telephonyBase = (config.telephonyBasePrice / 100) || 0;
-    const videoBase = (config.videoBasePrice / 100) || 0;
-    const currentBsf = (config.basePrice / 100) || 0;
-    const liveSurcharge = (config.liveSessionSurcharge / 100) || 0;
+    
+    // CHRIS-PROTOCOL: Smart mapping between Drizzle/JSON keys and SlimmeKassaConfig
+    const telephonyBase = (config.telephonyBasePrice / 100) || config.ivr_base || 89;
+    const videoBase = (config.videoBasePrice / 100) || config.unpaid_base || 239;
+    const currentBsf = (config.basePrice / 100) || config.entry_price_base === 9 ? 199 : (config.entry_price_base || 199); // Handle weird 9 value
+    const liveSurcharge = (config.liveSessionSurcharge / 100) || config.live_regie || 50;
 
     switch (calcUsage) {
       case 'telefonie':
