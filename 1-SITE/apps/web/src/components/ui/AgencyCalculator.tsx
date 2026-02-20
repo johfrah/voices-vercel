@@ -329,7 +329,20 @@ export const AgencyCalculator = ({ initialJourney = "paid" }: AgencyCalculatorPr
               )}
             </div>
 
-            {/* 4. Price & CTA - VERWIJDERD VOLGENS USER MANDATE (v2.21) */}
+            {/* 4. Price & CTA (v2.28: Re-integrated for Telephony & Video) */}
+            {(calcUsage === 'telefonie' || calcUsage === 'unpaid') && (
+              <div className="pt-10 border-t border-black/[0.03] flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="text-center md:text-left">
+                  <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold mb-1 uppercase">Indicatie Totaalprijs (excl. BTW)</TextInstrument>
+                  <div className="text-6xl font-extralight tracking-tighter text-va-black">
+                    €{calculateTotal()}
+                  </div>
+                </div>
+                <ButtonInstrument onClick={() => router.push('/agency')} className="va-btn-pro !bg-va-black !text-white !rounded-2xl px-10 py-6 text-lg shadow-xl hover:scale-105 transition-transform flex items-center gap-3">
+                  Bekijk alle stemmen <ArrowRight size={20} />
+                </ButtonInstrument>
+              </div>
+            )}
           </div>
         </div>
 
