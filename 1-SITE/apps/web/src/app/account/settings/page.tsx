@@ -30,13 +30,13 @@ export default function SettingsPage() {
             <Settings strokeWidth={1.5} size={12} fill="currentColor" /> 
             <VoiceglotText  translationKey="account.settings.badge" defaultText="Account Instellingen" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-tight">
             <VoiceglotText  translationKey="account.settings.title_part1" defaultText="Jouw " />
             <TextInstrument as="span" className="text-primary font-light">
               <VoiceglotText  translationKey="account.settings.title_part2" defaultText="Profiel" />
             </TextInstrument>
           </HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-light">
+          <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight max-w-2xl">
             <VoiceglotText  translationKey="account.settings.subtitle" defaultText="Beheer je persoonlijke gegevens, talen en artistieke kenmerken." />
           </TextInstrument>
         </ContainerInstrument>

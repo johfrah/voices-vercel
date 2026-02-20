@@ -7,6 +7,7 @@ import {
   TextInstrument,
   LabelInstrument
 } from "@/components/ui/LayoutInstruments";
+import Image from "next/image";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";

@@ -62,8 +62,15 @@ export default function OrdersPage() {
             <ShoppingBag strokeWidth={1.5} size={12} fill="currentColor" /> 
             <VoiceglotText  translationKey="account.orders.badge" defaultText="Besteloverzicht" />
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter"><VoiceglotText  translationKey="account.orders.title_part1" defaultText="Mijn " /><TextInstrument as="span" className="text-primary font-light"><VoiceglotText  translationKey="account.orders.title_part2" defaultText="Bestellingen" /></TextInstrument></HeadingInstrument>
-          <TextInstrument className="text-va-black/40 font-light"><VoiceglotText  translationKey="account.orders.subtitle" defaultText="Volg de status van je voice-over projecten." /></TextInstrument>
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-tight">
+            <VoiceglotText  translationKey="account.orders.title_part1" defaultText="Mijn " />
+            <TextInstrument as="span" className="text-primary font-light">
+              <VoiceglotText  translationKey="account.orders.title_part2" defaultText="Bestellingen" />
+            </TextInstrument>
+          </HeadingInstrument>
+          <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight max-w-2xl">
+            <VoiceglotText  translationKey="account.orders.subtitle" defaultText="Volg de status van je voice-over projecten." />
+          </TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
