@@ -18,14 +18,13 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Final Master Alignment (v2.5)
-      // We voegen de officiële Vercel-workaround toe aan de URL.
-      // Dit is de ENIGE manier om postgres-js stabiel te krijgen op poort 6543 in Vercel.
-      const connectionWithWorkaround = connectionString.includes('?') 
-        ? `${connectionString}&workaround=supabase-pooler.vercel`
-        : `${connectionString}?workaround=supabase-pooler.vercel`;
+      // CHRIS-PROTOCOL: Total Silence Handshake (v2.6)
+      // We extraheren de project ID uit de URL die jij hebt ingevoerd in Vercel.
+      // Dit dwingt de Supabase proxy om de verbinding direct te herkennen.
+      const dbUrl = new URL(connectionString);
+      const projectId = dbUrl.username.split('.')[1];
 
-      const client = postgres(connectionWithWorkaround, { 
+      const client = postgres(connectionString, { 
         prepare: false, 
         ssl: 'require',
         connect_timeout: 30,
@@ -33,6 +32,10 @@ const getDb = () => {
         publications: [],
         idle_timeout: 20,
         max: 10,
+        // CRITIEK: Forceer de project ID voor de proxy om 'Tenant not found' te elimineren
+        options: {
+          project: projectId
+        }
       });
 
       (globalThis as any).dbInstance = drizzle(client, { 
