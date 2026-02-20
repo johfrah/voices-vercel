@@ -4,6 +4,9 @@ import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 /**
  *  ADMIN USER LOOKUP (GOD MODE 2026)
  * 
