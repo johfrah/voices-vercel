@@ -18,14 +18,18 @@ const getDb = () => {
       const connectionString = process.env.DATABASE_URL!;
       if (!connectionString) return null;
       
-      // CHRIS-PROTOCOL: Beperk het aantal connecties in de pool om "Max client connections reached" te voorkomen.
-      // In dev is 1 connectie vaak genoeg, in prod schalen we mee met de serverless limieten.
-      const client = postgres(connectionString, { 
+      // CHRIS-PROTOCOL: Force Session Mode for Serverless stability
+      // We voegen ?pgbouncer=true toe als dat nog niet zo is, of we forceren de poort
+      const sessionConnectionString = connectionString.includes('?') 
+        ? `${connectionString}&pgbouncer=true` 
+        : `${connectionString}?pgbouncer=true`;
+
+      const client = postgres(sessionConnectionString, { 
         prepare: false,
-        max: process.env.NODE_ENV === 'development' ? 5 : 1, // Nuclear: 1 connection per serverless lambda
+        max: 1,
         idle_timeout: 20,
-        connect_timeout: 30, // Ruimer voor koude start
-        ssl: 'require' // Expliciet voor Supabase
+        connect_timeout: 30,
+        ssl: 'require'
       });
       
       (globalThis as any).dbInstance = drizzle(client, { 
