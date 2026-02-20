@@ -161,6 +161,10 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     }
 
     console.log(' API: Executing findMany with conditions:', conditions.length);
+    if (!db.query || !db.query.actors) {
+      console.error(' API: db.query.actors is not available! Drizzle initialization might have failed.');
+      throw new Error('Database query engine not available');
+    }
     const dbResults = await db.query.actors.findMany({
       columns: {
         id: true,
