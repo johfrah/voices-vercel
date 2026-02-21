@@ -4,6 +4,7 @@ import { db } from '@db';
 import { translations } from '@db/schema';
 import { and, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
+import { SlopFilter } from '@/lib/slop-filter';
 
 /**
  *  API: SELF-HEALING TRANSLATIONS (GOD MODE 2026)
@@ -100,19 +101,7 @@ export async function POST(request: NextRequest) {
       cleanTranslation = cleanTranslation.trim().replace(/^"|"$/g, '');
 
       //  CHRIS-PROTOCOL: Slop Filter
-      const isSlop = (
-        cleanTranslation.includes('Het lijkt erop dat') ||
-        cleanTranslation.includes('Zou je de tekst') ||
-        cleanTranslation.includes('niet compleet is') ||
-        cleanTranslation.includes('voldoende context') ||
-        cleanTranslation.includes('meer informatie') ||
-        cleanTranslation.includes('langere tekst') ||
-        cleanTranslation.includes('tijd nodig om na te denken') ||
-        cleanTranslation.includes('probeer je het zo nog eens') ||
-        cleanTranslation.length > 200
-      );
-
-      if (isSlop) {
+      if (SlopFilter.isSlop(cleanTranslation, currentLang, originalText)) {
         throw new Error('AI returned slop instead of translation');
       }
     } catch (aiErr: any) {

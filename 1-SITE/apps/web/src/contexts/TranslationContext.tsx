@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { SlopFilter } from '@/lib/slop-filter';
 
 interface TranslationContextType {
   t: (key: string, defaultText: string, values?: Record<string, string | number>) => string;
@@ -49,17 +50,8 @@ export const TranslationProvider: React.FC<{
     if (lang !== 'nl' && !key.startsWith('admin.') && !key.startsWith('command.')) {
       const translation = translations[key];
       
-      //  STABILITEIT: Als de vertaling ontbreekt of leeg is, gebruik de defaultText (NL)
-      if (!translation || translation.trim() === '' || 
-          translation.includes('voldoende context') || 
-          translation.includes('meer informatie') || 
-          translation.includes('langere tekst') ||
-          translation.includes('niet compleet') ||
-          translation.includes('accuraat') ||
-          translation.includes('zou je') ||
-          translation.includes('tijd nodig om na te denken') ||
-          translation.includes('probeer je het zo nog eens') ||
-          translation.includes('het lijkt erop')) {
+      //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren
+      if (!translation || translation.trim() === '' || SlopFilter.isSlop(translation, lang, defaultText)) {
         //  SELF-HEALING TRIGGER (Silent)
         if (typeof window !== 'undefined' && !healingKeys.current.has(key)) {
           healingKeys.current.add(key);
