@@ -186,7 +186,6 @@ export async function middleware(request: NextRequest) {
   else if (host.includes('voices.es')) market = 'ES'
   else if (host.includes('voices.eu')) market = 'EU'
   else if (host.includes('voices.pt')) market = 'PT'
-  else if (host.includes('voices.de')) market = 'DE'
   else if (host.includes('voices.academy')) market = 'ACADEMY'
   else if (host.includes('ademing.be')) market = 'ADEMING'
   else if (host.includes('johfrai.be')) market = 'JOHFRAI'

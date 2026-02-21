@@ -191,11 +191,9 @@ export function LanguageSwitcher({ className }: { className?: string }) {
                       <TextInstrument as="span" className="text-base leading-none">{lang.flag}</TextInstrument>
                       <div className="flex flex-col">
                         <TextInstrument as="span" className={`text-[15px] font-medium tracking-tight ${isActive ? 'text-white' : 'text-va-black'}`}>
-                          {lang.native}
-                        </TextInstrument>
-                        <TextInstrument as="span" className={`text-[12px] mt-0.5 font-light ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>
                           <VoiceglotText translationKey={`nav.lang_label.${lang.code}`} defaultText={lang.label} />
                         </TextInstrument>
+                        <TextInstrument as="span" className={`text-[12px] mt-0.5 font-light ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>{lang.native}</TextInstrument>
                       </div>
                     </div>
                     {isActive ? (

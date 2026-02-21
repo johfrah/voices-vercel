@@ -1,144 +1,110 @@
 import { OpenAIService } from '@/services/OpenAIService';
+import { MarketManager } from '@config/market-manager';
 import { db } from '@db';
 import { translations } from '@db/schema';
 import { and, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- *  API: SELF-HEALING & AUDIT TRANSLATIONS (GOD MODE 2026)
+ *  API: SELF-HEALING TRANSLATIONS (GOD MODE 2026)
  * 
- * Doel: 
- * 1. Automatisch ontbrekende vertalingen registreren en vertalen.
- * 2. Bestaande vertalingen AUDITEN op native kwaliteit (GPT-4o).
- * 3. CONTEXT-AWARE: Gebruikt meegegeven context voor betere hertalingen.
+ * Doel: Automatisch ontbrekende vertalingen registreren, vertalen via AI,
+ * en de admin notificeren.
+ * 
+ *  UPDATE: Switched to OpenAI (GPT-4o mini) for higher rate limits and stability.
  */
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    //  ANNA-PROTOCOL: Safe body parsing to prevent "Unexpected end of JSON input"
     const bodyText = await request.text();
-    if (!bodyText) return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
+    if (!bodyText) {
+      return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
+    }
 
     let body;
-    try { body = JSON.parse(bodyText); } catch (e) { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }); }
+    try {
+      body = JSON.parse(bodyText);
+    } catch (e) {
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
 
-    const { key, originalText, currentLang = 'nl', forceAudit = false, context = '', maxChars, values } = body;
+    const { key, originalText, currentLang = 'nl' } = body;
 
     if (!key || !originalText) {
       return NextResponse.json({ error: 'Key and originalText required' }, { status: 400 });
     }
 
+    //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
+    const host = request.headers.get('host') || 'voices.be';
+    const market = MarketManager.getCurrentMarket(host);
+    const adminEmail = process.env.ADMIN_EMAIL || market.email;
+
     // 1. Check of de key al bestaat voor deze taal
     const [existing] = await db
       .select()
       .from(translations)
-      .where(and(eq(translations.translationKey, key), eq(translations.lang, currentLang)))
+      .where(
+        and(
+          eq(translations.translationKey, key),
+          eq(translations.lang, currentLang)
+        )
+      )
       .limit(1);
 
-    // Als het geen forceAudit is en de vertaling bestaat al, zijn we klaar
-    if (existing && existing.translatedText && !forceAudit) {
+    if (existing && existing.translatedText && existing.translatedText !== 'Initial Load') {
       return NextResponse.json({ success: true, message: 'Already exists', text: existing.translatedText });
     }
 
-    //  CHRIS-PROTOCOL: Skip healing/audit if translation is locked
-    if (existing?.isLocked) {
-      console.log(` [VOICEGLOT] Skipping locked key [${key}]`);
-      return NextResponse.json({ success: true, message: 'Locked', text: existing.translatedText });
-    }
+    console.log(` SELF-HEALING (OpenAI): New key detected [${key}] for lang [${currentLang}]`);
 
-    console.log(` [VOICEGLOT] ${forceAudit ? 'AUDITING' : 'HEALING'} key [${key}] for lang [${currentLang}] with context [${context}]`);
-
-    // 2. Live AI Vertaling / Audit via OpenAI GPT-4o
+    // 2. Live AI Vertaling via OpenAI
     let cleanTranslation = '';
     try {
-      const valueContext = values ? `\nBESCHIKBARE WAARDEN VOOR PLACEHOLDERS: ${JSON.stringify(values)}` : '';
-      
-      const prompt = forceAudit 
-        ? `
-          Je bent een native speaker ${currentLang} en een expert in copywriting voor high-end merken.
-          Audit de volgende vertaling van het Nederlands naar het ${currentLang}.
-          
-          CONTEXT: Voices.be is een premium voice-over agency. De toon is warm, professioneel, en direct (geen marketing-yoga).
-          SPECIFIEKE CONTEXT: ${context || 'Algemene website tekst'}${valueContext}
-          
-          BELANGRIJK: 
-          - Gebruik ALTIJD de beleefdheidsvorm (votre/vous in het Frans, Sie in het Duits).
-          - Let op "valse vrienden" (zoals 'chaud' voor een stem, wat in het Frans 'geil' kan betekenen. Gebruik liever 'grave' of 'chaleureux').
-          - De tekst moet natuurlijk en high-end aanvoelen voor een native speaker.
-          
-          TEMPLATE PLACEHOLDERS:
-          - Behoud placeholders zoals {name}, {price}, {count}, {id}, {email} exact.
-          - Vertaal de tekst eromheen en zet de placeholder op de grammaticaal juiste plek.
-          - Vertaal NOOIT het woord binnen de accolades.
-          
-          ${maxChars ? `- STRIKTE LIMIET: Maximaal ${maxChars} tekens (inclusief spaties). Gebruik kortere synoniemen indien nodig.` : ''}
-          
-          Bron (NL): "${originalText}"
-          Huidige vertaling: "${existing?.translatedText || ''}"
-          
-          Is de huidige vertaling perfect native en correct binnen de context? Zo nee, geef de verbeterde versie.
-          Geef UITSLUITEND de verbeterde tekst terug, geen uitleg.
-          Verbeterde tekst:
-        `
-        : `
-          Vertaal de volgende tekst van het Nederlands naar het ${currentLang}.
-          Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
-          SPECIFIEKE CONTEXT: ${context || 'Algemene website tekst'}${valueContext}
-          
-          BELANGRIJK:
-          - Gebruik ALTIJD de beleefdheidsvorm (votre/vous in het Frans, Sie in het Duits).
-          - Let op context-specifieke nuances (bijv. stemkenmerken).
-          - Geen AI-bingo woorden, geen em-dashes, max 15 words.
-          
-          TEMPLATE PLACEHOLDERS:
-          - Behoud placeholders zoals {name}, {price}, {count}, {id}, {email} exact.
-          - Vertaal de tekst eromheen en zet de placeholder op de grammaticaal juiste plek.
-          - Vertaal NOOIT het woord binnen de accolades.
-          
-          ${maxChars ? `- STRIKTE LIMIET: Maximaal ${maxChars} tekens (inclusief spaties).` : ''}
-          
-          Tekst: "${originalText}"
-          Vertaling:
-        `;
+      const prompt = `
+        Vertaal de volgende tekst van het Nederlands naar het ${currentLang}.
+        Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
+        Geen AI-bingo woorden, geen em-dashes, max 15 woorden.
+        
+        Tekst: "${originalText}"
+        Vertaling:
+      `;
 
-      cleanTranslation = await OpenAIService.generateText(prompt, forceAudit ? "gpt-4o" : "gpt-4o-mini", currentLang);
+      cleanTranslation = await OpenAIService.generateText(prompt);
       cleanTranslation = cleanTranslation.trim().replace(/^"|"$/g, '');
 
-      //  CHRIS-FILTER: Auto-clean common AI slop
-      const slopPrefixes = [
-        'Vertaling:', 'Translation:', 'Traduction:', 'Traducción:', 'Traduzione:',
-        'Verbeterde tekst:', 'Improved text:', 'Texte amélioré:',
-        'Hier is de vertaling:', 'Here is the translation:', 'Voici la traduction:',
-        'Native version:', 'Native translation:', 'Native audit:'
-      ];
+      //  CHRIS-PROTOCOL: Slop Filter
+      const isSlop = (
+        cleanTranslation.includes('Het lijkt erop dat') ||
+        cleanTranslation.includes('Zou je de tekst') ||
+        cleanTranslation.includes('niet compleet is') ||
+        cleanTranslation.includes('voldoende context') ||
+        cleanTranslation.includes('meer informatie') ||
+        cleanTranslation.includes('langere tekst') ||
+        cleanTranslation.length > 200
+      );
 
-      for (const prefix of slopPrefixes) {
-        if (cleanTranslation.startsWith(prefix)) {
-          cleanTranslation = cleanTranslation.slice(prefix.length).trim();
-        }
-      }
-
-      // Final trim and quote removal (sometimes AI adds nested quotes)
-      cleanTranslation = cleanTranslation.replace(/^["']|["']$/g, '').trim();
-
-      // Slop Filter
-      if (cleanTranslation.length > 500 || cleanTranslation.includes('Het lijkt erop dat')) {
-        throw new Error('AI returned slop');
+      if (isSlop) {
+        throw new Error('AI returned slop instead of translation');
       }
     } catch (aiErr: any) {
-      console.error(' OpenAI Error:', aiErr.message);
-      return NextResponse.json({ success: false, message: 'AI engine error', text: originalText }, { status: 500 });
+      console.error(' OpenAI Self-Heal Error:', aiErr.message);
+      return NextResponse.json({ 
+        success: false, 
+        message: 'AI engine error',
+        text: originalText 
+      }, { status: 500 });
     }
 
-    // 3. Opslaan in de database
-    if (cleanTranslation && cleanTranslation !== existing?.translatedText) {
+    // 3. Opslaan in de database (DIRECT LIVE - User Mandate)
+    if (cleanTranslation) {
       await db.insert(translations).values({
         translationKey: key,
         lang: currentLang,
         originalText: originalText,
         translatedText: cleanTranslation,
-        context: context,
         status: 'active',
         isManuallyEdited: false,
         updatedAt: new Date()
@@ -146,17 +112,49 @@ export async function POST(request: NextRequest) {
         target: [translations.translationKey, translations.lang],
         set: {
           translatedText: cleanTranslation,
-          context: context,
           updatedAt: new Date()
         }
       });
-      console.log(` [VOICEGLOT] Updated [${key}] -> [${cleanTranslation}]`);
     }
+
+    // 4. Notificatie naar Admin (Post-Action Info)
+    // CHRIS-PROTOCOL: Disabled per User Request - No more self-healing emails.
+    /*
+    try {
+      //  CHRIS-PROTOCOL: Skip notification for initial load key to prevent spam
+      if (key !== 'initial_load') {
+        const { DirectMailService } = await import('@/services/DirectMailService');
+        const mailService = DirectMailService.getInstance();
+        await mailService.sendMail({
+          to: adminEmail,
+          subject: ` Voicy Self-Heal LIVE: Nieuwe vertaling [${key}]`,
+          html: `
+            <div style="font-family: sans-serif; padding: 40px; background: #f9f9f9; border-radius: 24px;">
+              <h2 style="letter-spacing: -0.02em; color: #ff4f00;"> Self-Healing Live</h2>
+              <p>Er is een ontbrekende vertaling live gefixed op de frontend.</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+              <p><strong>Key:</strong> <code>${key}</code></p>
+              <p><strong>Taal:</strong> ${currentLang.toUpperCase()}</p>
+              <p><strong>Bron (NL):</strong> ${originalText}</p>
+              <p style="color: #ff4f00; font-size: 18px;"><strong>AI Vertaling:</strong> ${cleanTranslation}</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+              <div style="margin-top: 30px;">
+                <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/voiceglot" style="background: #ff4f00; color: white; padding: 12px 24px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 14px; display: inline-block;">BEVESTIG OF PAS AAN</a>
+              </div>
+              <p style="font-size: 10px; color: #999; margin-top: 40px;">Gegenereerd door de Voices Engine - Pure Excellence 2026</p>
+            </div>
+          `
+        });
+      }
+    } catch (mailErr) {
+      console.error(' Failed to send self-heal notification:', mailErr);
+    }
+    */
 
     return NextResponse.json({ 
       success: true, 
       text: cleanTranslation,
-      _action: forceAudit ? 'audited' : 'healed' 
+      _healed: true 
     });
 
   } catch (error) {
