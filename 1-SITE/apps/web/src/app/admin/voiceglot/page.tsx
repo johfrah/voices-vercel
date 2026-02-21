@@ -48,6 +48,28 @@ export default function VoiceglotMasterPage() {
     fetchTranslations();
   }, []);
 
+  const [isHealingAll, setIsHealingAll] = useState(false);
+
+  const handleHealAll = async () => {
+    if (!confirm('Weet je zeker dat je alle ontbrekende vertalingen wilt genereren via AI? Dit kan even duren.')) return;
+    
+    setIsHealingAll(true);
+    playClick('pro');
+    try {
+      const res = await fetch('/api/admin/voiceglot/heal-all', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`${data.healedCount} vertalingen gegenereerd!`);
+        fetchTranslations();
+        playClick('success');
+      }
+    } catch (e) {
+      toast.error('Healing mislukt.');
+    } finally {
+      setIsHealingAll(false);
+    }
+  };
+
   const fetchTranslations = async () => {
     setLoading(true);
     try {
@@ -153,6 +175,15 @@ export default function VoiceglotMasterPage() {
             Voiceglot Registry
           </HeadingInstrument>
         </ContainerInstrument>
+
+        <ButtonInstrument 
+          onClick={handleHealAll}
+          disabled={isHealingAll}
+          className="va-btn-pro !bg-primary flex items-center gap-2"
+        >
+          {isHealingAll ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}
+          {isHealingAll ? 'Vertaalwerk bezig...' : 'Vertaal Alles (AI)'}
+        </ButtonInstrument>
       </SectionInstrument>
 
       {/* Filters */}
