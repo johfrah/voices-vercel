@@ -3,6 +3,7 @@
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { CommercialMediaType, SlimmeKassa } from '@/lib/pricing-engine';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
@@ -42,6 +43,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const { t } = useTranslation();
   const { state, updateJourney, updateFilters, updateStep, resetFilters } = useMasterControl();
   const { state: checkoutState, updateUsage } = useCheckout();
+  const { isAdmin } = useAuth();
   const pathname = usePathname();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
@@ -170,19 +172,19 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     };
 
     const languageConfig = [
-      { label: t('language.vlaams', 'Vlaams'), value: 1, icon: FlagBE, tLabel: 'Vlaams', popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
-      { label: t('language.nederlands', 'Nederlands'), value: 2, icon: FlagNL, tLabel: 'Nederlands', popular: market.market_code === 'BE' || market.market_code === 'NLNL' },
-      { label: t('language.frans', 'Frans'), value: 3, icon: FlagBE, tLabel: 'Frans', popular: market.market_code === 'BE' },
-      { label: t('language.frans', 'Frans'), value: 4, icon: FlagFR, tLabel: 'Frans', popular: market.market_code === 'FR' || market.market_code === 'BE' },
-      { label: t('language.engels', 'Engels'), value: 5, icon: FlagUK, tLabel: 'Engels', popular: true },
-      { label: t('language.engels', 'Engels'), value: 6, icon: FlagUS, tLabel: 'Engels', popular: true },
-      { label: t('language.duits', 'Duits'), value: 7, icon: FlagDE, tLabel: 'Duits', popular: market.market_code === 'DE' || market.market_code === 'BE' || market.market_code === 'NLNL' },
-      { label: t('language.spaans', 'Spaans'), value: 8, icon: FlagES, tLabel: 'Spaans', popular: market.market_code === 'ES' },
-      { label: t('language.italiaans', 'Italiaans'), value: 9, icon: FlagIT, tLabel: 'Italiaans', popular: market.market_code === 'IT' },
-      { label: t('language.pools', 'Pools'), value: 10, icon: FlagPL, tLabel: 'Pools' },
-      { label: t('language.deens', 'Deens'), value: 11, icon: FlagDK, tLabel: 'Deens' },
-      { label: t('language.portugees', 'Portugees'), value: 12, icon: FlagPT, tLabel: 'Portugees', popular: market.market_code === 'PT' },
-      { label: t('language.zweeds', 'Zweeds'), value: 43, icon: Globe, tLabel: 'Zweeds' },
+      { label: t('language.vlaams', 'Vlaams'), value: 1, icon: FlagBE, tLabel: 'Vlaams', popular: market.popular_languages.includes('Vlaams') },
+      { label: t('language.nederlands', 'Nederlands'), value: 2, icon: FlagNL, tLabel: 'Nederlands', popular: market.popular_languages.includes('Nederlands') },
+      { label: t('language.frans', 'Frans'), value: 3, icon: FlagBE, tLabel: 'Frans', popular: market.popular_languages.includes('Frans') && market.market_code === 'BE' },
+      { label: t('language.frans', 'Frans'), value: 4, icon: FlagFR, tLabel: 'Frans', popular: market.popular_languages.includes('Frans') && market.market_code !== 'BE' },
+      { label: t('language.engels', 'Engels'), value: 5, icon: FlagUK, tLabel: 'Engels', popular: market.popular_languages.includes('Engels') },
+      { label: t('language.engels', 'Engels'), value: 6, icon: FlagUS, tLabel: 'Engels', popular: false },
+      { label: t('language.duits', 'Duits'), value: 7, icon: FlagDE, tLabel: 'Duits', popular: market.popular_languages.includes('Duits') },
+      { label: t('language.spaans', 'Spaans'), value: 8, icon: FlagES, tLabel: 'Spaans', popular: market.popular_languages.includes('Spaans') },
+      { label: t('language.italiaans', 'Italiaans'), value: 9, icon: FlagIT, tLabel: 'Italiaans', popular: market.popular_languages.includes('Italiaans') },
+      { label: t('language.pools', 'Pools'), value: 10, icon: FlagPL, tLabel: 'Pools', popular: market.popular_languages.includes('Pools') },
+      { label: t('language.deens', 'Deens'), value: 11, icon: FlagDK, tLabel: 'Deens', popular: market.popular_languages.includes('Deens') },
+      { label: t('language.portugees', 'Portugees'), value: 12, icon: FlagPT, tLabel: 'Portugees', popular: market.popular_languages.includes('Portugees') },
+      { label: t('language.zweeds', 'Zweeds'), value: 43, icon: Globe, tLabel: 'Zweeds', popular: market.popular_languages.includes('Zweeds') },
     ];
 
     const mappedConfig = languageConfig.map(lang => ({
@@ -194,41 +196,44 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     const otherLangs = mappedConfig.filter(l => !l.popular);
 
     const sortFn = (a: any, b: any) => {
-      //  CHRIS-PROTOCOL: Market-specific priority sorting (Bob-methode)
-      if (market.market_code === 'BE') {
-        const priority: Record<string, number> = {
-          'Vlaams': 1,
-          'Nederlands': 2,
-          'Frans': 3,
-          'Engels': 4,
-          'Duits': 5
-        };
+      //  CHRIS-PROTOCOL: Universal Market-specific priority sorting (Bob-methode)
+      const primaryLang = market.primary_language;
+      
+      // Define a logical priority for ANY market
+      // 1. Primary Language of the market
+      // 2. English (Global standard)
+      // 3. Other major European languages if not primary
+      const getPriority = (label: string) => {
+        if (label === primaryLang) return 1;
+        if (label === 'Engels') return 2;
         
-        const scoreA = priority[a.tLabel] || 100;
-        const scoreB = priority[b.tLabel] || 100;
-        
-        if (scoreA !== scoreB) return scoreA - scoreB;
-        
-        // Specifieke fix voor Frans (BE) vs Frans (FR)
-        if (a.tLabel === 'Frans' && b.tLabel === 'Frans') {
-          if (a.icon === FlagBE) return -1;
-          if (b.icon === FlagBE) return 1;
+        // Market-specific secondary priorities
+        if (market.market_code === 'BE') {
+          if (label === 'Nederlands') return 3;
+          if (label === 'Frans') return 4;
+          if (label === 'Duits') return 5;
+        } else if (market.market_code === 'NLNL') {
+          if (label === 'Vlaams') return 3;
+          if (label === 'Duits') return 4;
+          if (label === 'Frans') return 5;
+        } else if (market.market_code === 'FR') {
+          if (label === 'Nederlands') return 3;
+          if (label === 'Vlaams') return 4;
+          if (label === 'Duits') return 5;
         }
-      }
-
-      if (market.market_code === 'NLNL') {
-        const priority: Record<string, number> = {
-          'Nederlands': 1,
-          'Vlaams': 2,
-          'Engels': 3,
-          'Duits': 4,
-          'Frans': 5
-        };
         
-        const scoreA = priority[a.tLabel] || 100;
-        const scoreB = priority[b.tLabel] || 100;
-        
-        if (scoreA !== scoreB) return scoreA - scoreB;
+        return 100;
+      };
+      
+      const scoreA = getPriority(a.tLabel);
+      const scoreB = getPriority(b.tLabel);
+      
+      if (scoreA !== scoreB) return scoreA - scoreB;
+      
+      // Specifieke fix voor Frans (BE) vs Frans (FR) in de Belgische markt
+      if (market.market_code === 'BE' && a.tLabel === 'Frans' && b.tLabel === 'Frans') {
+        if (a.icon === FlagBE) return -1;
+        if (b.icon === FlagBE) return 1;
       }
 
       const getBaseLang = (label: string) => label.split(' ')[0];

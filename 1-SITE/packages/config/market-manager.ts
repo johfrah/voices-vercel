@@ -13,6 +13,7 @@ export interface MarketConfig {
   language: string;
   primary_language: string; // De voorgeselecteerde taal (bijv. 'Vlaams')
   supported_languages: string[]; // Welke talen zichtbaar zijn in de dropdown
+  popular_languages: string[]; // Welke talen bovenaan staan in de dropdown (Bob-methode)
   currency: string;
   name: string;
   phone: string;
@@ -36,6 +37,7 @@ export class MarketManager {
         'Deens', 'Zweeds', 'Noors', 'Fins', 'Grieks', 
         'Russisch', 'Arabisch', 'Chinees', 'Japans'
       ],
+      popular_languages: ['Vlaams', 'Nederlands', 'Frans', 'Engels', 'Duits'],
       name: 'België',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices'
@@ -45,6 +47,7 @@ export class MarketManager {
       language: 'nl',
       primary_language: 'Nederlands',
       supported_languages: ['Nederlands', 'Vlaams', 'Engels', 'Duits', 'Frans', 'Spaans', 'Italiaans'],
+      popular_languages: ['Nederlands', 'Vlaams', 'Engels', 'Duits', 'Frans'],
       name: 'Nederland',
       phone: '+31 (0)85 016 34 60',
       email: 'johfrah@voices.nl',
@@ -56,6 +59,7 @@ export class MarketManager {
       language: 'fr',
       primary_language: 'Frans',
       supported_languages: ['Frans', 'Engels', 'Nederlands', 'Vlaams', 'Duits', 'Spaans', 'Italiaans'],
+      popular_languages: ['Frans', 'Engels', 'Nederlands', 'Vlaams', 'Duits'],
       name: 'France',
       email: 'johfrah@voices.fr',
       logo_url: VOICES_CONFIG.assets.logos.fr,
@@ -66,6 +70,7 @@ export class MarketManager {
       language: 'es',
       primary_language: 'Spaans',
       supported_languages: ['Spaans', 'Engels', 'Frans', 'Portugees', 'Italiaans'],
+      popular_languages: ['Spaans', 'Engels', 'Frans', 'Portugees', 'Italiaans'],
       name: 'España',
       email: 'johfrah@voices.es',
       logo_url: VOICES_CONFIG.assets.logos.es,
@@ -76,6 +81,7 @@ export class MarketManager {
       language: 'pt',
       primary_language: 'Portugees',
       supported_languages: ['Portugees', 'Engels', 'Spaans', 'Frans'],
+      popular_languages: ['Portugees', 'Engels', 'Spaans', 'Frans'],
       name: 'Portugal',
       email: 'johfrah@voices.pt',
       logo_url: VOICES_CONFIG.assets.logos.pt,
@@ -86,6 +92,7 @@ export class MarketManager {
       language: 'en',
       primary_language: 'Engels',
       supported_languages: ['Engels', 'Vlaams', 'Nederlands', 'Frans', 'Duits', 'Spaans', 'Italiaans'],
+      popular_languages: ['Engels', 'Frans', 'Duits', 'Nederlands', 'Vlaams'],
       name: 'Europe',
       email: 'johfrah@voices.eu',
       logo_url: VOICES_CONFIG.assets.logos.eu,
@@ -96,6 +103,7 @@ export class MarketManager {
       language: 'de',
       primary_language: 'Duits',
       supported_languages: ['Duits', 'Engels', 'Frans', 'Nederlands', 'Vlaams', 'Italiaans', 'Spaans'],
+      popular_languages: ['Duits', 'Engels', 'Frans', 'Nederlands', 'Vlaams'],
       name: 'Deutschland',
       email: 'johfrah@voices.de',
       logo_url: VOICES_CONFIG.assets.logos.eu, // Fallback to EU logo
@@ -106,6 +114,7 @@ export class MarketManager {
       language: 'nl',
       primary_language: 'Vlaams',
       supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
+      popular_languages: ['Vlaams', 'Nederlands', 'Engels'],
       name: 'Johfrah',
       email: 'info@johfrah.be',
       logo_url: VOICES_CONFIG.assets.logos.johfrah,
@@ -117,6 +126,7 @@ export class MarketManager {
       language: 'en',
       primary_language: 'Engels',
       supported_languages: ['Engels', 'Nederlands', 'Vlaams', 'Frans', 'Duits'],
+      popular_languages: ['Engels', 'Nederlands', 'Vlaams', 'Frans', 'Duits'],
       name: 'Youssef Zaki',
       email: 'info@youssefzaki.eu',
       logo_url: VOICES_CONFIG.assets.logos.be,
@@ -127,6 +137,7 @@ export class MarketManager {
       language: 'nl',
       primary_language: 'Vlaams',
       supported_languages: ['Vlaams', 'Nederlands'],
+      popular_languages: ['Vlaams', 'Nederlands'],
       name: 'Ademing',
       email: 'info@ademing.be',
       logo_url: VOICES_CONFIG.assets.logos.ademing,
@@ -137,6 +148,7 @@ export class MarketManager {
       language: 'nl',
       primary_language: 'Vlaams',
       supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
+      popular_languages: ['Vlaams', 'Nederlands', 'Engels'],
       name: 'Johfrai',
       email: 'info@johfrai.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
@@ -153,7 +165,7 @@ export class MarketManager {
     if (!activeHost && typeof window !== 'undefined') {
       activeHost = window.location.host;
     }
-
+    
     if (!activeHost) activeHost = 'voices.be';
 
     const cleanHost = activeHost.replace('www.', '');
@@ -165,6 +177,7 @@ export class MarketManager {
       language: config.language || 'nl',
       primary_language: config.primary_language || 'Vlaams',
       supported_languages: config.supported_languages || ['Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits'],
+      popular_languages: config.popular_languages || ['Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits'],
       currency: config.currency || 'EUR',
       name: config.name || 'Voices',
       phone: config.phone || VOICES_CONFIG.company.phone,
