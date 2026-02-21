@@ -11,6 +11,11 @@ import { MetadataRoute } from 'next';
  */
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return [];
+  }
+
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.voices.be';
   const languages = ['', '/en', '/fr', '/de']; // Ondersteunde talen
 
