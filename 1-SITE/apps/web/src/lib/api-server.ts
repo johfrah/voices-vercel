@@ -787,41 +787,71 @@ export async function getWorkshops(limit: number = 50): Promise<any[]> {
   return workshopsData;
 }
 
+//  CHRIS-PROTOCOL: In-memory cache for translations to reduce DB load
+const translationCache: Record<string, { data: Record<string, string>, timestamp: number }> = {};
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
 export async function getTranslationsServer(lang: string): Promise<Record<string, string>> {
   if (lang === 'nl') return {};
   
-  try {
-    const data = await db.select({
-      translationKey: translations.translationKey,
-      translatedText: translations.translatedText,
-      originalText: translations.originalText
-    })
-    .from(translations)
-    .where(eq(translations.lang, lang));
-    
-    const translationMap: Record<string, string> = {};
-    data?.forEach(row => {
-      if (row.translationKey) {
-        translationMap[row.translationKey] = row.translatedText || row.originalText || '';
+  // 1. Check Cache First
+  const cached = translationCache[lang];
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+    return cached.data;
+  }
+
+  let lastError: any = null;
+  const maxRetries = 3;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const data = await db.select({
+        translationKey: translations.translationKey,
+        translatedText: translations.translatedText,
+        originalText: translations.originalText
+      })
+      .from(translations)
+      .where(eq(translations.lang, lang));
+      
+      const translationMap: Record<string, string> = {};
+      data?.forEach(row => {
+        if (row.translationKey) {
+          translationMap[row.translationKey] = row.translatedText || row.originalText || '';
+        }
+      });
+      
+      // 2. Update Cache
+      translationCache[lang] = {
+        data: translationMap,
+        timestamp: Date.now()
+      };
+
+      return translationMap;
+    } catch (error: any) {
+      lastError = error;
+      console.error(`[getTranslationsServer] Attempt ${attempt} failed for ${lang}:`, error.message);
+      
+      // Wait before retry (exponential backoff)
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 500 * attempt));
       }
-    });
+    }
+  }
     
-    return translationMap;
-  } catch (error: any) {
-    console.error(`[getTranslationsServer] Failed for ${lang}:`, error);
-    
-    //  CHRIS-PROTOCOL: Report server-side failure to Watchdog
+  //  CHRIS-PROTOCOL: Report server-side failure to Watchdog after all retries failed
+  // Skip reporting during build phase to avoid connection pool noise
+  if (process.env.NEXT_PHASE !== 'phase-production-build') {
     const { ServerWatchdog } = await import('./server-watchdog');
     ServerWatchdog.report({
-      error: `Server Translation Failure (${lang}): ${error.message}`,
-      stack: error.stack,
+      error: `Server Translation Failure (${lang}): ${lastError?.message || 'Unknown error'}`,
+      stack: lastError?.stack,
       component: 'ServerTranslations',
       level: 'critical'
     });
-
-    // Fallback naar leeg object zodat de site niet crasht
-    return {};
   }
+
+  // Fallback naar leeg object zodat de site niet crasht
+  return {};
 }
 
 export async function getProducts(category?: string): Promise<any[]> {
