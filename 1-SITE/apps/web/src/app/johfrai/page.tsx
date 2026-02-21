@@ -29,56 +29,67 @@ const TELEPHONY_TEMPLATES = [
   {
     id: 'welcome',
     title: 'Welkomstbegroeting',
+    translationKey: 'johfrai.template.welcome.title',
     text: '(Welkomstbegroeting)\nWelkom bij {Bedrijfsnaam}. Fijn dat je belt. We helpen je zo dadelijk verder.'
   },
   {
     id: 'menu',
     title: 'Keuzemenu (IVR)',
+    translationKey: 'johfrai.template.menu.title',
     text: '(Keuzemenu)\nWelkom bij {Bedrijfsnaam}. Voor sales, druk 1. Voor support, druk 2. Voor administratie, druk 3. Blijf aan de lijn voor al je andere vragen.'
   },
   {
     id: 'waiting',
     title: 'Wachtbericht',
+    translationKey: 'johfrai.template.waiting.title',
     text: '(Wachtbericht)\nAl onze medewerkers zijn momenteel in gesprek. Een momentje geduld alsjeblieft, we helpen je zo snel mogelijk.'
   },
   {
     id: 'closed',
     title: 'Gesloten Bericht',
+    translationKey: 'johfrai.template.closed.title',
     text: '(Gesloten Bericht)\nWelkom bij {Bedrijfsnaam}. Helaas zijn we nu gesloten. We zijn telefonisch bereikbaar op {Openingsuren}. Je kunt ons ook mailen op {Emailadres}.'
   },
   {
     id: 'holiday',
     title: 'Vakantiebericht',
+    translationKey: 'johfrai.template.holiday.title',
     text: '(Vakantiebericht)\nWelkom bij {Bedrijfsnaam}. In verband met de vakantieperiode zijn wij gesloten van {Vakantie_Van} tot en met {Vakantie_Tot}. Vanaf {Vakantie_Terug} staan we weer voor je klaar.'
   },
   {
     id: 'feestdag',
     title: 'Feestdag',
+    translationKey: 'johfrai.template.holiday_day.title',
     text: '(Feestdag)\nPrettige feestdagen van het hele team van {Bedrijfsnaam}! Let op: we zijn vandaag gesloten. Morgen staan we weer voor je klaar vanaf {Openingsuren}.'
   },
   {
     id: 'voicemail',
     title: 'Voicemail',
+    translationKey: 'johfrai.template.voicemail.title',
     text: '(Voicemail)\nWelkom, je bent verbonden met de voicemail van {Bedrijfsnaam}. Laat je naam en nummer achter na de toon, dan bellen we je zo snel mogelijk terug.'
   },
   {
     id: 'service',
     title: 'Service Bericht',
+    translationKey: 'johfrai.template.service.title',
     text: '(Service Bericht)\nOp dit moment ervaren wij een technische storing. Onze excuses voor het ongemak. We werken aan een oplossing en hopen snel weer bereikbaar te zijn.'
   },
   {
     id: 'info',
     title: 'Informatief',
+    translationKey: 'johfrai.template.info.title',
     text: '(Informatief)\nWist u dat u veel zaken ook direct online kunt regelen? Bezoek onze website op {Website} voor meer informatie en antwoorden op veelgestelde vragen.'
   },
   {
     id: 'callback',
     title: 'Call-back',
+    translationKey: 'johfrai.template.callback.title',
     text: '(Call-back)\nHet is momenteel erg druk. Laat uw telefoonnummer achter na de piep, dan belt een van onze medewerkers u binnen 30 minuten terug.'
   }
 ];
 
 function JohfraiContent() {
+  const { t } = useTranslation();
   const { 
     state: checkoutState,
     updateUsage, 
@@ -419,11 +430,11 @@ function JohfraiContent() {
     
     if (!isAdmin && wordCount <= 25 && !hasUsedFreePreview) {
       if (!email || !firstName || !lastName || !companyName) {
-        toast.error("Vul eerst je naam, bedrijf en e-mailadres in voor je gratis proevertje.");
+        toast.error(t('johfrai.error.fill_details', "Vul eerst je naam, bedrijf en e-mailadres in voor je gratis proevertje."));
         return;
       }
       if (!agreedToTerms) {
-        toast.error("Ga akkoord met de voorwaarden om je gratis proevertje te ontvangen.");
+        toast.error(t('johfrai.error.agree_terms', "Ga akkoord met de voorwaarden om je gratis proevertje te ontvangen."));
         return;
       }
     }
@@ -481,7 +492,7 @@ function JohfraiContent() {
           
           const status = response.headers.get('X-Johfrai-Status');
           if (status === 'watermarked' && !showWatermark) {
-            toast.success("Je hebt je gratis proevertje al gebruikt. Deze versie bevat een watermerk.");
+            toast.success(t('johfrai.info.watermark_active', "Je hebt je gratis proevertje al gebruikt. Deze versie bevat een watermerk."));
           }
 
           newGeneratedSegments.push({
@@ -832,7 +843,9 @@ function JohfraiContent() {
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-6">
                         <ContainerInstrument className="flex items-center justify-between">
                           <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2"><Sliders strokeWidth={1.5} size={14} /><VoiceglotText  translationKey="auto.page.jouw_audio_mixes.b5bdf5" defaultText="Jouw Audio Mixes" /></HeadingInstrument>
-                          <ButtonInstrument onClick={() => setGeneratedSegments([])} className="text-[15px] font-bold tracking-widest text-va-black/20 hover:text-red-500 transition-colors">Alles wissen</ButtonInstrument>
+                          <ButtonInstrument onClick={() => setGeneratedSegments([])} className="text-[15px] font-bold tracking-widest text-va-black/20 hover:text-red-500 transition-colors">
+                            <VoiceglotText translationKey="action.clear_all" defaultText="Alles wissen" />
+                          </ButtonInstrument>
                         </ContainerInstrument>
                         <ContainerInstrument className="grid grid-cols-1 gap-4">
                           {generatedSegments.map((segment) => (
@@ -897,7 +910,9 @@ function JohfraiContent() {
                               <ButtonInstrument key={template.id} onClick={() => toggleTemplate(template.id)} className={cn("flex items-center gap-4 p-4 rounded-2xl transition-all text-left border", selectedTemplates.includes(template.id) ? "bg-primary text-white border-primary shadow-md" : "bg-white text-va-black border-black/5 hover:border-primary/20 shadow-sm")}>
                                 <ContainerInstrument className={cn("w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all", selectedTemplates.includes(template.id) ? "bg-white border-white text-primary" : "border-black/10")}>{selectedTemplates.includes(template.id) && <Check strokeWidth={1.5} size={12} />}</ContainerInstrument>
                                 <ContainerInstrument className="flex-1">
-                                  <TextInstrument className={cn("text-[15px] font-black uppercase tracking-widest mb-0.5", selectedTemplates.includes(template.id) ? "text-white/60" : "text-va-black/30")}>{template.title}</TextInstrument>
+                                  <TextInstrument className={cn("text-[15px] font-black uppercase tracking-widest mb-0.5", selectedTemplates.includes(template.id) ? "text-white/60" : "text-va-black/30")}>
+                                    <VoiceglotText translationKey={template.translationKey} defaultText={template.title} />
+                                  </TextInstrument>
                                   <TextInstrument className="text-[15px] font-medium line-clamp-1">
                                     {template.text.split('\n')[1]
                                       .replace(/\{Bedrijfsnaam\}/g, companyName || '{Bedrijfsnaam}')
@@ -923,8 +938,10 @@ function JohfraiContent() {
                       <ContainerInstrument className="flex items-center gap-4">
                         <ContainerInstrument className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all", (checkoutState.music.asBackground || checkoutState.music.asHoldMusic) ? "bg-primary/10 text-primary" : "bg-va-black/5 text-va-black/20")}><Music strokeWidth={1.5} size={18} /></ContainerInstrument>
                         <ContainerInstrument>
-                          <TextInstrument className="text-[15px] font-black tracking-widest">Wachtmuziek toevoegen (+{pricingConfig.music_mix})</TextInstrument>
-                          <TextInstrument className="text-[15px] font-bold text-va-black/40 tracking-tighter"><VoiceglotText  translationKey="auto.page.inclusief_mix___loss.0da798" defaultText="Inclusief mix + losse bestanden in HD & 8kHz" /></TextInstrument>
+                          <TextInstrument className="text-[15px] font-black tracking-widest">
+                            <VoiceglotText translationKey="johfrai.action.add_music" defaultText="Wachtmuziek toevoegen" /> (+{pricingConfig.music_mix})
+                          </TextInstrument>
+                          <TextInstrument className="text-[15px] font-bold text-va-black/40 tracking-tighter"><VoiceglotText  translationKey="johfrai.info.music_mix_desc" defaultText="Inclusief mix + losse bestanden in HD & 8kHz" /></TextInstrument>
                         </ContainerInstrument>
                       </ContainerInstrument>
                       <ButtonInstrument type="button" onClick={() => {
@@ -1018,13 +1035,13 @@ function JohfraiContent() {
                       {deliveryMethod === 'whatsapp' && (
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="relative">
                           <Phone strokeWidth={1.5} size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" />
-                          <InputInstrument type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Jouw GSM nummer voor WhatsApp..." className="w-full !pl-10 shadow-sm" />
+                          <InputInstrument type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder={t('johfrai.placeholder.whatsapp', "Jouw GSM nummer voor WhatsApp...")} className="w-full !pl-10 shadow-sm" />
                         </motion.div>
                       )}
                       {deliveryMethod === 'email' && (
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="relative">
                           <Mail strokeWidth={1.5} size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" />
-                          <InputInstrument type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Jouw e-mailadres voor de bestanden..." className="w-full !pl-10 shadow-sm" />
+                          <InputInstrument type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('johfrai.placeholder.email', "Jouw e-mailadres voor de bestanden...")} className="w-full !pl-10 shadow-sm" />
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -1042,7 +1059,7 @@ function JohfraiContent() {
                       </ContainerInstrument>
                     </ContainerInstrument>
                     <ButtonInstrument as="a" href={`/checkout?usage=subscription&plan=${checkoutState.plan}&voice=johfrah&text=${encodeURIComponent(text)}&music=${checkoutState.music.asBackground || checkoutState.music.asHoldMusic}&track=${checkoutState.music.trackId}&delivery=${deliveryMethod}&phone=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(email)}`} className="va-btn-pro !bg-primary flex-1 !py-6 !text-[15px] !tracking-[0.2em] shadow-xl shadow-primary/20 h-fit">
-                      {deliveryMethod === 'whatsapp' ? <VoiceglotText  translationKey="johfrai.checkout.whatsapp" defaultText="Stuur naar WhatsApp" /> : deliveryMethod === 'email' ? <VoiceglotText  translationKey="johfrai.checkout.email" defaultText="Stuur naar E-mail" /> : <VoiceglotText  translationKey="johfrai.checkout.download" defaultText="Download meteen" />} ({price.toFixed(2)}) <ArrowRight strokeWidth={1.5} size={16} />
+                      {deliveryMethod === 'whatsapp' ? <VoiceglotText  translationKey="johfrai.checkout.whatsapp" defaultText="Stuur naar WhatsApp" /> : deliveryMethod === 'email' ? <VoiceglotText  translationKey="johfrai.checkout.email" defaultText="Stuur naar E-mail" /> : <VoiceglotText  translationKey="johfrai.checkout.download" defaultText="Download meteen" />} ({SlimmeKassa.format(price)}) <ArrowRight strokeWidth={1.5} size={16} />
                     </ButtonInstrument>
                   </ContainerInstrument>
 
@@ -1113,7 +1130,7 @@ function JohfraiContent() {
             <VoiceglotImage  src="/assets/ademing/johfrah-avatar.jpg" alt="Johfrah" fill journey="common" category="branding" className="object-cover" />
           </ContainerInstrument>
           <ContainerInstrument>
-            <TextInstrument className="font-black text-[15px] tracking-[0.2em]"><VoiceglotText  translationKey="johfrai.founder.name" defaultText="Johfrah Lefebvre" /></TextInstrument>
+            <TextInstrument className="font-black text-[15px] tracking-[0.2em]"><VoiceglotText  translationKey="johfrai.founder.name" defaultText="Johfrah Lefebvre" noTranslate={true} /></TextInstrument>
             <TextInstrument className="text-va-black/40 text-[15px] tracking-widest mt-1 font-light"><VoiceglotText  translationKey="johfrai.founder.title" defaultText="Founder Voices.be & De stem achter Johfrai" /></TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

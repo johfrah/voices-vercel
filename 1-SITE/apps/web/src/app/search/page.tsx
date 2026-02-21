@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from '@/contexts/TranslationContext';
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -18,6 +19,7 @@ import { useEffect, useState } from 'react';
  *  GLOBAL SEARCH PAGE (NUCLEAR 2026)
  */
 export default function SearchPage() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const query = searchParams?.get('q') || '';
   const [results, setResults] = useState<any>({ voices: [], articles: [] });
@@ -54,7 +56,7 @@ export default function SearchPage() {
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter leading-none mb-6"><VoiceglotText  translationKey="search.title" defaultText="Zoekresultaten" /></HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-light text-xl">
             {query ? (
-              <ContainerInstrument as="span">Je zocht op: <TextInstrument as="span" className="text-va-black font-light">&quot;{query}&quot;</TextInstrument></ContainerInstrument>
+              <ContainerInstrument as="span"><VoiceglotText translationKey="search.query_prefix" defaultText="Je zocht op:" /> <TextInstrument as="span" className="text-va-black font-light">&quot;{query}&quot;</TextInstrument></ContainerInstrument>
             ) : (
               <VoiceglotText  translationKey="search.no_query" defaultText="Typ een zoekopdracht om resultaten te zien." />
             )}
@@ -79,7 +81,7 @@ export default function SearchPage() {
                       <ContainerInstrument className="w-12 h-12 bg-va-off-white rounded-2xl flex items-center justify-center font-light text-va-black/20 ">{voice.firstName[0]}</ContainerInstrument>
                       <ContainerInstrument className="flex-1">
                         <TextInstrument className="text-[15px] font-light tracking-tight">{voice.firstName} {voice.lastName}</TextInstrument>
-                        <TextInstrument className="text-[15px] font-light text-primary tracking-widest">{voice.nativeLang} Native</TextInstrument>
+                        <TextInstrument className="text-[15px] font-light text-primary tracking-widest">{voice.nativeLang} <VoiceglotText translationKey="common.native" defaultText="Native" /></TextInstrument>
                       </ContainerInstrument>
                       <ArrowRight strokeWidth={1.5} size={16} className="text-va-black/10 group-hover:text-primary transition-colors" />
                     </ButtonInstrument>

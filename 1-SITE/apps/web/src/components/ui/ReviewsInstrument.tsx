@@ -298,8 +298,8 @@ export const ReviewsInstrument: React.FC<{
                     <Star key={i} size={14} className="text-[#fabc05]" fill="currentColor" />
                   ))}
                 </div>
-                <TextInstrument className="text-[11px] font-light text-va-black/20 uppercase tracking-[0.2em] group-hover/stats:text-primary/40 transition-colors">
-                  Google Rating
+                <TextInstrument className="text-[11px] font-bold text-va-black/20 uppercase tracking-[0.2em] group-hover/stats:text-primary/40 transition-colors">
+                  <VoiceglotText translationKey="footer.reviews.google_rating" defaultText="Google Rating" />
                 </TextInstrument>
               </div>
               <div className="w-px h-8 bg-black/5" />
@@ -338,7 +338,7 @@ export const ReviewsInstrument: React.FC<{
                 </div>
                 <div className="mt-6 pt-4 border-t border-black/5">
                   <TextInstrument className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest mb-3 block">
-                    Populaire termen
+                    <VoiceglotText translationKey="reviews.popular_terms" defaultText="Populaire termen" />
                   </TextInstrument>
                   <div className="flex flex-wrap gap-1.5">
                     {keywords.map(word => (
@@ -499,7 +499,7 @@ export const ReviewsInstrument: React.FC<{
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                       <TextInstrument className="text-[11px] font-light text-va-black/30 uppercase tracking-[0.2em]">
-                        {review.date || 'Geverifieerd'}
+                        {review.date || t('common.verified', 'Geverifieerd')}
                       </TextInstrument>
                       {review.sector && review.sector !== 'general' && (
                         <>

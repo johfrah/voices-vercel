@@ -23,6 +23,8 @@ const LANGUAGE_MAP: Record<string, Language> = {
   fr: { code: 'fr', label: 'French', native: 'Français', flag: '' },
   en: { code: 'en', label: 'English', native: 'English', flag: '' },
   de: { code: 'de', label: 'German', native: 'Deutsch', flag: '' },
+  es: { code: 'es', label: 'Spanish', native: 'Español', flag: '' },
+  pt: { code: 'pt', label: 'Portuguese', native: 'Português', flag: '' },
 };
 
 export function LanguageSwitcher({ className }: { className?: string }) {
@@ -44,7 +46,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   });
 
   useEffect(() => {
-    const langMatch = pathname.match(/^\/(nl|fr|en|de)(\/|$)/);
+    const langMatch = pathname.match(/^\/(nl|fr|en|de|es|pt)(\/|$)/);
     if (langMatch) {
       setCurrentLang(langMatch[1]);
     } else {
@@ -70,7 +72,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     }
     playClick('soft');
     let newPath = pathname;
-    newPath = newPath.replace(/^\/(nl|fr|en|de)(\/|$)/, '/');
+    newPath = newPath.replace(/^\/(nl|fr|en|de|es|pt)(\/|$)/, '/');
     if (!newPath.startsWith('/')) newPath = '/' + newPath;
     
     // CHRIS-PROTOCOL: Determine default language for routing

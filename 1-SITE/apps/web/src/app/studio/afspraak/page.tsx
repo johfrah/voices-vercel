@@ -7,6 +7,7 @@ import {
     TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { Calendar, CheckCircle2, RefreshCcw, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -18,6 +19,7 @@ import { ZeroLossCheckoutInstrument } from "@/components/ui/ZeroLossCheckoutInst
 export const dynamic = 'force-dynamic';
 
 function AfspraakContent() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const isCancel = searchParams?.get('cancel') === '1';
   const manageToken = searchParams?.get('manage');
@@ -179,7 +181,7 @@ function AfspraakContent() {
           {selectedSlot && (
             <ZeroLossCheckoutInstrument 
               item={{
-                name: "Kennismakingsgesprek",
+                name: t('studio.appointment.item_name', "Kennismakingsgesprek"),
                 price: 0,
                 date: new Date(selectedSlot.start).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
               }}

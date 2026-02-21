@@ -39,10 +39,13 @@ export default async function StudioFaqPage() {
             VOICES STUDIO
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-tight mb-8">
-            Hulp & <TextInstrument className="text-primary font-light">Inzichten.</TextInstrument>
+            <VoiceglotText translationKey="studio.faq.title_part1" defaultText="Hulp &" /> <TextInstrument className="text-primary font-light"><VoiceglotText translationKey="studio.faq.title_part2" defaultText="Inzichten." /></TextInstrument>
           </HeadingInstrument>
           <TextInstrument className="text-va-black text-xl md:text-2xl font-light max-w-2xl mx-auto leading-relaxed opacity-80">
-            Ontdek welk traject bij je past via de quiz of bekijk de meest gestelde vragen over onze workshops.
+            <VoiceglotText 
+              translationKey="studio.faq.subtitle" 
+              defaultText="Ontdek welk traject bij je past via de quiz of bekijk de meest gestelde vragen over onze workshops." 
+            />
           </TextInstrument>
         </SectionInstrument>
 
@@ -55,7 +58,7 @@ export default async function StudioFaqPage() {
           {/*  RECHTS: FAQ VRAGEN (7 Kolommen) */}
           <ContainerInstrument className="lg:col-span-7 space-y-12">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tight mb-8 border-b border-black/10 pb-6 text-va-black">
-              Veelgestelde vragen
+              <VoiceglotText translationKey="common.faq" defaultText="Veelgestelde vragen" />
             </HeadingInstrument>
             
             <AccordionInstrument items={accordionItems} />
@@ -63,7 +66,7 @@ export default async function StudioFaqPage() {
             {/*  MINI CTA */}
             <ContainerInstrument className="pt-12 p-10 bg-white/40 backdrop-blur-xl rounded-[32px] border border-black/5 shadow-aura">
               <TextInstrument className="text-va-black text-lg font-light tracking-wide mb-6 opacity-60">
-                Staat je vraag er niet tussen? Onze AI-gids Voicy kent alle details van de workshops.
+                <VoiceglotText translationKey="studio.faq.not_found" defaultText="Staat je vraag er niet tussen? Onze AI-gids Voicy kent alle details van de workshops." />
               </TextInstrument>
               <VoicyFaqButton />
             </ContainerInstrument>

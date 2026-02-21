@@ -7,6 +7,7 @@ import {
     PageWrapperInstrument,
     TextInstrument
 } from '@/components/ui/LayoutInstruments';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import Link from 'next/link';
@@ -24,6 +25,7 @@ import { useCheckout } from '@/contexts/CheckoutContext';
  */
 export default function SuccessPageClient() {
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
   const router = useRouter();
   const { playClick } = useSonicDNA();
   const { state } = useCheckout();
@@ -58,7 +60,7 @@ export default function SuccessPageClient() {
     }
   }, [orderId, secureToken, router, playClick]);
 
-  if (isVerifying) return <LoadingScreenInstrument message="Bestelling verifiëren..." />;
+  if (isVerifying) return <LoadingScreenInstrument message={t('checkout.success.verifying', 'Bestelling verifiëren...')} />;
 
   return (
     <PageWrapperInstrument className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden bg-va-off-white">
@@ -80,7 +82,7 @@ export default function SuccessPageClient() {
           <TextInstrument className="text-[18px] md:text-[20px] text-va-black/40 font-light leading-relaxed max-w-xl mx-auto Raleway">
             <VoiceglotText  
               translationKey="checkout.success.subtitle" 
-              defaultText={`Je bestelling #${orderId} is succesvol ontvangen. We sturen je direct een bevestigingsmail met alle details.`} 
+              defaultText={`${t('checkout.success.subtitle_prefix', 'Je bestelling #')}${orderId} ${t('checkout.success.subtitle_suffix', 'is succesvol ontvangen. We sturen je direct een bevestigingsmail met alle details.')}`} 
             />
           </TextInstrument>
         </ContainerInstrument>
@@ -91,10 +93,10 @@ export default function SuccessPageClient() {
             <VoiceglotText  
               translationKey="checkout.success.delivery.info" 
               defaultText={searchParams?.get('delivery') 
-                ? `Verwachte levering: ${searchParams?.get('delivery')}` 
+                ? `${t('checkout.success.delivery.label', "Verwachte levering:")} ${searchParams?.get('delivery')}` 
                 : state.selectedActor?.delivery_time 
-                  ? `Verwachte levering: ${state.selectedActor.delivery_time}`
-                  : "Verwachte levering: binnen 48 uur"} 
+                  ? `${t('checkout.success.delivery.label', "Verwachte levering:")} ${state.selectedActor.delivery_time}`
+                  : `${t('checkout.success.delivery.label', "Verwachte levering:")} ${t('common.within_48_hours', "binnen 48 uur")}`} 
             />
           </TextInstrument>
         </ContainerInstrument>

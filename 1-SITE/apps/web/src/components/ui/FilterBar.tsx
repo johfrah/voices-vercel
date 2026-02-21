@@ -50,8 +50,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
   //  MARKET-BASED LANGUAGE LOGIC
   const sortedLanguages = React.useMemo(() => {
     const market = combinedParams.market || 'BE';
-    const primaryLang = market === 'BE' ? 'Vlaams' : 'Nederlands';
-    const secondaryLang = market === 'BE' ? 'Nederlands' : 'Vlaams';
+    const primaryLang = market === 'BE' ? t('language.vlaams', 'Vlaams') : t('language.nederlands', 'Nederlands');
+    const secondaryLang = market === 'BE' ? t('language.nederlands', 'Nederlands') : t('language.vlaams', 'Vlaams');
     
     const baseLangs = [...filters.languages];
     const filteredLangs = baseLangs.filter(l => l !== primaryLang && l !== secondaryLang);

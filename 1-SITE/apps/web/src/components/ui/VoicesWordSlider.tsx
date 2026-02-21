@@ -57,7 +57,7 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
     const mins = Math.floor(minutes);
     const secs = Math.round((minutes - mins) * 60);
     if (mins === 0) return ` ${secs} ${t('common.sec', 'sec')}`;
-    return ` ${mins}${t('common.min_short', 'm')} ${secs.toString().padStart(2, '0')}${t('common.sec_short', 's')}`;
+    return ` ${mins}${t('common.min_short', 'min')} ${secs.toString().padStart(2, '0')}${t('common.sec_short', 'sec')}`;
   }, [value, isVideo, t]);
 
   useEffect(() => {

@@ -291,51 +291,51 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   };
 
   const countries = [
-    { id: 'AL', label: 'Albanië' },
-    { id: 'AD', label: 'Andorra' },
-    { id: 'AT', label: 'Oostenrijk' },
-    { id: 'BY', label: 'Wit-Rusland' },
-    { id: 'BE', label: 'België' },
-    { id: 'BA', label: 'Bosnië en Herzegovina' },
-    { id: 'BG', label: 'Bulgarije' },
-    { id: 'HR', label: 'Kroatië' },
-    { id: 'CY', label: 'Cyprus' },
-    { id: 'CZ', label: 'Tsjechië' },
-    { id: 'DK', label: 'Denemarken' },
-    { id: 'EE', label: 'Estland' },
-    { id: 'FI', label: 'Finland' },
-    { id: 'FR', label: 'Frankrijk' },
-    { id: 'DE', label: 'Duitsland' },
-    { id: 'GR', label: 'Griekenland' },
-    { id: 'HU', label: 'Hongarije' },
-    { id: 'IS', label: 'IJsland' },
-    { id: 'IE', label: 'Ierland' },
-    { id: 'IT', label: 'Italië' },
-    { id: 'LV', label: 'Letland' },
-    { id: 'LI', label: 'Liechtenstein' },
-    { id: 'LT', label: 'Litouwen' },
-    { id: 'LU', label: 'Luxemburg' },
-    { id: 'MT', label: 'Malta' },
-    { id: 'MD', label: 'Moldavië' },
-    { id: 'MC', label: 'Monaco' },
-    { id: 'ME', label: 'Montenegro' },
-    { id: 'NL', label: 'Nederland' },
-    { id: 'MK', label: 'Noord-Macedonië' },
-    { id: 'NO', label: 'Noorwegen' },
-    { id: 'PL', label: 'Polen' },
-    { id: 'PT', label: 'Portugal' },
-    { id: 'RO', label: 'Roemenië' },
-    { id: 'SM', label: 'San Marino' },
-    { id: 'RS', label: 'Servië' },
-    { id: 'SK', label: 'Slowakije' },
-    { id: 'SI', label: 'Slovenië' },
-    { id: 'ES', label: 'Spanje' },
-    { id: 'SE', label: 'Zweden' },
-    { id: 'CH', label: 'Zwitserland' },
-    { id: 'TR', label: 'Turkije' },
-    { id: 'UA', label: 'Oekraïne' },
-    { id: 'GB', label: 'Verenigd Koninkrijk' },
-    { id: 'VA', label: 'Vaticaanstad' },
+    { id: 'AL', label: t('country.AL', 'Albanië') },
+    { id: 'AD', label: t('country.AD', 'Andorra') },
+    { id: 'AT', label: t('country.AT', 'Oostenrijk') },
+    { id: 'BY', label: t('country.BY', 'Wit-Rusland') },
+    { id: 'BE', label: t('country.BE', 'België') },
+    { id: 'BA', label: t('country.BA', 'Bosnië en Herzegovina') },
+    { id: 'BG', label: t('country.BG', 'Bulgarije') },
+    { id: 'HR', label: t('country.HR', 'Kroatië') },
+    { id: 'CY', label: t('country.CY', 'Cyprus') },
+    { id: 'CZ', label: t('country.CZ', 'Tsjechië') },
+    { id: 'DK', label: t('country.DK', 'Denemarken') },
+    { id: 'EE', label: t('country.EE', 'Estland') },
+    { id: 'FI', label: t('country.FI', 'Finland') },
+    { id: 'FR', label: t('country.FR', 'Frankrijk') },
+    { id: 'DE', label: t('country.DE', 'Duitsland') },
+    { id: 'GR', label: t('country.GR', 'Griekenland') },
+    { id: 'HU', label: t('country.HU', 'Hongarije') },
+    { id: 'IS', label: t('country.IS', 'IJsland') },
+    { id: 'IE', label: t('country.IE', 'Ierland') },
+    { id: 'IT', label: t('country.IT', 'Italië') },
+    { id: 'LV', label: t('country.LV', 'Letland') },
+    { id: 'LI', label: t('country.LI', 'Liechtenstein') },
+    { id: 'LT', label: t('country.LT', 'Litouwen') },
+    { id: 'LU', label: t('country.LU', 'Luxemburg') },
+    { id: 'MT', label: t('country.MT', 'Malta') },
+    { id: 'MD', label: t('country.MD', 'Moldavië') },
+    { id: 'MC', label: t('country.MC', 'Monaco') },
+    { id: 'ME', label: t('country.ME', 'Montenegro') },
+    { id: 'NL', label: t('country.NL', 'Nederland') },
+    { id: 'MK', label: t('country.MK', 'Noord-Macedonië') },
+    { id: 'NO', label: t('country.NO', 'Noorwegen') },
+    { id: 'PL', label: t('country.PL', 'Polen') },
+    { id: 'PT', label: t('country.PT', 'Portugal') },
+    { id: 'RO', label: t('country.RO', 'Roemenië') },
+    { id: 'SM', label: t('country.SM', 'San Marino') },
+    { id: 'RS', label: t('country.RS', 'Servië') },
+    { id: 'SK', label: t('country.SK', 'Slowakije') },
+    { id: 'SI', label: t('country.SI', 'Slovenië') },
+    { id: 'ES', label: t('country.ES', 'Spanje') },
+    { id: 'SE', label: t('country.SE', 'Zweden') },
+    { id: 'CH', label: t('country.CH', 'Zwitserland') },
+    { id: 'TR', label: t('country.TR', 'Turkije') },
+    { id: 'UA', label: t('country.UA', 'Oekraïne') },
+    { id: 'GB', label: t('country.GB', 'Verenigd Koninkrijk') },
+    { id: 'VA', label: t('country.VA', 'Vaticaanstad') },
   ].sort((a, b) => a.label.localeCompare(b.label));
 
   const discountAmount = state.customer.active_coupon 
@@ -380,7 +380,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           <InputInstrument
             type="email"
             value={formData.email || ''}
-            placeholder="naam@bedrijf.be"
+            placeholder={t('checkout.form.email_placeholder', "naam@bedrijf.be")}
             className="w-full !rounded-[10px] !py-5"
             onChange={(e) => handleChange('email', e.target.value)}
           />
@@ -393,7 +393,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             </LabelInstrument>
             <InputInstrument
               value={formData.first_name || ''}
-              placeholder="Bijv. Jan"
+              placeholder={t('checkout.form.first_name_placeholder', "Bijv. Jan")}
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('first_name', e.target.value)}
             />
@@ -404,7 +404,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             </LabelInstrument>
             <InputInstrument
               value={formData.last_name || ''}
-              placeholder="Bijv. Janssen"
+              placeholder={t('checkout.form.last_name_placeholder', "Bijv. Janssen")}
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('last_name', e.target.value)}
             />
@@ -418,7 +418,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             </LabelInstrument>
             <InputInstrument
               value={formData.phone || ''}
-              placeholder="+32..."
+              placeholder={t('checkout.form.phone_placeholder', "+32...")}
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('phone', e.target.value)}
             />
@@ -430,7 +430,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             <ContainerInstrument className="relative">
               <InputInstrument
                 value={formData.vat_number || ''}
-                placeholder="Bijv. BE0662426460"
+                placeholder={t('checkout.form.vat_placeholder', "Bijv. BE0662426460")}
                 className="w-full !rounded-[10px]"
                 onChange={(e) => handleChange('vat_number', e.target.value.toUpperCase())}
               />
@@ -446,7 +446,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                  ) : vatStatus.valid === false ? (
                    <ContainerInstrument className="flex items-center gap-2 text-red-500 animate-shake">
                      <TextInstrument className="text-[15px] font-light tracking-widest ">
-                       <VoiceglotText  translationKey="checkout.form.vat_invalid" defaultText={vatStatus.message || "Ongeldig"} />
+                       <VoiceglotText  translationKey="checkout.form.vat_invalid" defaultText={vatStatus.message || t('checkout.vat.invalid', "Ongeldig")} />
                      </TextInstrument>
                      <AlertCircle size={18} strokeWidth={1.5} />
                    </ContainerInstrument>
@@ -469,7 +469,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           </LabelInstrument>
           <InputInstrument
             value={formData.company || ''}
-            placeholder="Jouw bedrijf"
+            placeholder={t('checkout.form.company_placeholder', "Jouw bedrijf")}
             className="w-full !rounded-[10px]"
             onChange={(e) => handleChange('company', e.target.value)}
           />
@@ -482,7 +482,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             </LabelInstrument>
             <InputInstrument
               value={formData.address_street || ''}
-              placeholder="Kerkstraat 1"
+              placeholder={t('checkout.form.address_placeholder', "Kerkstraat 1")}
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('address_street', e.target.value)}
             />
@@ -493,7 +493,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             </LabelInstrument>
             <InputInstrument
               value={formData.postal_code || ''}
-              placeholder="9000"
+              placeholder={t('checkout.form.zip_placeholder', "9000")}
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('postal_code', e.target.value)}
             />
@@ -507,7 +507,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             </LabelInstrument>
             <InputInstrument
               value={formData.city || ''}
-              placeholder="Gent"
+              placeholder={t('checkout.form.city_placeholder', "Gent")}
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('city', e.target.value)}
             />
@@ -835,7 +835,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                               type="email"
                               value={modalEmail}
                               onChange={(e) => setModalEmail(e.target.value)}
-                              placeholder="naam@bedrijf.be"
+                              placeholder={t('checkout.form.email_placeholder', "naam@bedrijf.be")}
                               className="w-full !pl-12 !py-3 !rounded-xl bg-va-off-white/50 border-transparent focus:bg-white transition-all"
                               required
                             />

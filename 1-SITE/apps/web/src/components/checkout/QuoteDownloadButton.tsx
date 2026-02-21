@@ -6,6 +6,7 @@ import { FileText, Download, Loader2, Mail, Send, X, Check } from "lucide-react"
 import { useState } from "react";
 import { useSonicDNA } from "@/lib/sonic-dna";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { useTranslation } from "@/contexts/TranslationContext";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils";
 export function QuoteDownloadButton() {
   const { state, subtotal, updateCustomer } = useCheckout();
   const { playClick, playSwell } = useSonicDNA();
+  const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [email, setEmail] = useState(state.customer?.email || "");
@@ -48,10 +50,10 @@ export function QuoteDownloadButton() {
       window.URL.revokeObjectURL(url);
       
       playClick('success');
-      toast.success("Offerte succesvol gegenereerd");
+      toast.success(t('checkout.quote.success_generated', "Offerte succesvol gegenereerd"));
     } catch (error) {
       console.error('PDF Error:', error);
-      toast.error("Fout bij genereren van PDF");
+      toast.error(t('checkout.quote.error_pdf', "Fout bij genereren van PDF"));
       playClick('error');
     } finally {
       setIsGenerating(false);
@@ -85,11 +87,11 @@ export function QuoteDownloadButton() {
       if (!response.ok) throw new Error('Email failed');
 
       playClick('success');
-      toast.success("Offerte is onderweg naar je inbox!");
+      toast.success(t('checkout.quote.success_email', "Offerte is onderweg naar je inbox!"));
       setShowEmailInput(false);
     } catch (error) {
       console.error('Email Error:', error);
-      toast.error("Fout bij verzenden van e-mail");
+      toast.error(t('checkout.quote.error_email', "Fout bij verzenden van e-mail"));
       playClick('error');
     } finally {
       setIsSending(false);
@@ -154,7 +156,7 @@ export function QuoteDownloadButton() {
           >
             <form onSubmit={handleSendEmail} className="bg-va-off-white/50 border border-black/[0.03] p-4 rounded-[24px] space-y-3">
               <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest ml-1">
-                E-mailadres voor offerte
+                <VoiceglotText translationKey="checkout.quote.email_label" defaultText="E-mailadres voor offerte" />
               </TextInstrument>
               <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -163,7 +165,7 @@ export function QuoteDownloadButton() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="jouw@email.be"
+                    placeholder={t('checkout.quote.email_placeholder', "jouw@email.be")}
                     required
                     className="w-full py-3 pl-9 pr-4 bg-white rounded-xl border-transparent focus:ring-2 focus:ring-primary/20 outline-none text-[13px] transition-all"
                   />
@@ -177,7 +179,7 @@ export function QuoteDownloadButton() {
                 </ButtonInstrument>
               </div>
               <TextInstrument className="text-[10px] text-va-black/30 italic px-1 leading-relaxed">
-                Door je e-mailadres in te vullen, kunnen we je ook helpen bij eventuele vragen over deze offerte.
+                <VoiceglotText translationKey="checkout.quote.email_help" defaultText="Door je e-mailadres in te vullen, kunnen we je ook helpen bij eventuele vragen over deze offerte." />
               </TextInstrument>
             </form>
           </motion.div>

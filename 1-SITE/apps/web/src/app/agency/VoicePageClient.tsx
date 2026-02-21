@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/contexts/TranslationContext";
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
 import {
     ButtonInstrument,
@@ -19,6 +20,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 export default function VoicePageClient({ actors }: { actors: any[] }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   return (
@@ -30,12 +32,12 @@ export default function VoicePageClient({ actors }: { actors: any[] }) {
               <Image  src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /> 
               <VoiceglotText  translationKey="agency.client.badge" defaultText="Voice Casting" />
             </ContainerInstrument>
-            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none">
-              <VoiceglotText  translationKey="agency.client.title_part1" defaultText="Vind jouw " />
-              <TextInstrument as="span" className="text-primary font-light">
-                <VoiceglotText  translationKey="agency.client.title_part2" defaultText="Stem" />
-              </TextInstrument>
-            </HeadingInstrument>
+          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-none">
+            <VoiceglotText  translationKey="agency.client.title_part1" defaultText="Vind jouw " />
+            <TextInstrument as="span" className="text-primary font-light">
+              <VoiceglotText  translationKey="common.voice" defaultText="Stem" />
+            </TextInstrument>
+          </HeadingInstrument>
           </ContainerInstrument>
 
           <ContainerInstrument className="flex gap-4">
@@ -43,7 +45,7 @@ export default function VoicePageClient({ actors }: { actors: any[] }) {
               <Image  src="/assets/common/branding/icons/SEARCH.svg" width={18} height={18} alt="" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
               <InputInstrument 
                 type="text" 
-                placeholder="Zoek op naam of taal..."
+                placeholder={t('agency.search_placeholder', "Zoek op naam of taal...")}
                 className="bg-white border border-black/5 rounded-[20px] pl-12 pr-6 py-4 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all w-64 shadow-sm"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

@@ -11,13 +11,14 @@ interface BestelPageParams {
 export async function generateMetadata({ params }: { params: BestelPageParams }): Promise<Metadata> {
   const headersList = headers();
   const lang = headersList.get('x-voices-lang') || 'nl';
+  const t = (key: string, def: string) => def; // Fallback for metadata
   const actor = await getActor(params.slug, lang);
 
   if (!actor) return {};
 
   return {
-    title: `Bestellen bij ${actor.display_name} | Portfolio`,
-    description: `Start direct je project met ${actor.display_name}.`,
+    title: `${t('portfolio.bestellen.title_prefix', "Bestellen bij")} ${actor.display_name} | Portfolio`,
+    description: `${t('portfolio.bestellen.description_prefix', "Start direct je project met")} ${actor.display_name}.`,
   };
 }
 

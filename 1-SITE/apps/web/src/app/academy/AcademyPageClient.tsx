@@ -54,10 +54,10 @@ export default function AcademyPageClient({ courses }: { courses: any[] }) {
                   </TextInstrument>
                 </ContainerInstrument>
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-4 group-hover:text-primary transition-colors">
-                  {course.title}
+                  <VoiceglotText translationKey={`academy.course.${course.id}.title`} defaultText={course.title} />
                 </HeadingInstrument>
                 <TextInstrument className="text-va-black/40 text-[15px] font-medium leading-relaxed line-clamp-3 mb-8">
-                  {course.description}
+                  <VoiceglotText translationKey={`academy.course.${course.id}.description`} defaultText={course.description} />
                 </TextInstrument>
               </ContainerInstrument>
               

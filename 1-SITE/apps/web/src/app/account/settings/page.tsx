@@ -1,4 +1,6 @@
 import React from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
@@ -10,6 +12,9 @@ import { LiquidBackground } from '@/components/ui/LiquidBackground';
 export const dynamic = 'force-dynamic';
 
 export default function SettingsPage() {
+  const auth = useAuth();
+  const { t } = useTranslation();
+  
   const handleSave = async (data: any) => {
     "use server";
     console.log(' CHRIS-PROTOCOL: Saving actor profile data...', data);
@@ -58,17 +63,25 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div>
-                <HeadingInstrument level={3} className="text-2xl tracking-tight font-medium">John Doe</HeadingInstrument>
-                <TextInstrument className="text-va-black/40 text-[13px] tracking-widest uppercase">Pro Voice Actor</TextInstrument>
+                <HeadingInstrument level={3} className="text-2xl tracking-tight font-medium">
+                  {auth.user?.firstName} {auth.user?.lastName}
+                </HeadingInstrument>
+                <TextInstrument className="text-va-black/40 text-[13px] tracking-widest uppercase">
+                  <VoiceglotText translationKey="account.settings.role_actor" defaultText="Pro Voice Actor" />
+                </TextInstrument>
               </div>
               <div className="pt-6 border-t border-black/[0.03] flex justify-center gap-8">
                 <div className="text-center">
                   <TextInstrument className="text-xl font-medium leading-none">12</TextInstrument>
-                  <TextInstrument className="text-[10px] text-va-black/40 uppercase tracking-tighter">Projecten</TextInstrument>
+                  <TextInstrument className="text-[10px] text-va-black/40 uppercase tracking-tighter">
+                    <VoiceglotText translationKey="account.settings.projects" defaultText="Projecten" />
+                  </TextInstrument>
                 </div>
                 <div className="text-center">
                   <TextInstrument className="text-xl font-medium leading-none">4.9</TextInstrument>
-                  <TextInstrument className="text-[10px] text-va-black/40 uppercase tracking-tighter">Rating</TextInstrument>
+                  <TextInstrument className="text-[10px] text-va-black/40 uppercase tracking-tighter">
+                    <VoiceglotText translationKey="account.settings.rating" defaultText="Rating" />
+                  </TextInstrument>
                 </div>
               </div>
             </div>
@@ -78,13 +91,15 @@ export default function SettingsPage() {
                 <Lock strokeWidth={1.5} size={24} />
               </div>
               <div>
-                <HeadingInstrument level={3} className="text-xl tracking-tight mb-2 text-white">Beveiliging</HeadingInstrument>
+                <HeadingInstrument level={3} className="text-xl tracking-tight mb-2 text-white">
+                  <VoiceglotText translationKey="account.settings.security.title" defaultText="Beveiliging" />
+                </HeadingInstrument>
                 <TextInstrument className="text-white/40 text-[14px] leading-relaxed">
-                  Wijzig je wachtwoord of activeer extra beveiliging voor je account.
+                  <VoiceglotText translationKey="account.settings.security.text" defaultText="Wijzig je wachtwoord of activeer extra beveiliging voor je account." />
                 </TextInstrument>
               </div>
               <ButtonInstrument variant="link" className="text-primary p-0 h-auto flex items-center gap-2 group-hover:gap-4 transition-all">
-                Wachtwoord Wijzigen
+                <VoiceglotText translationKey="account.settings.security.cta" defaultText="Wachtwoord Wijzigen" />
                 <ArrowLeft strokeWidth={1.5} size={14} className="rotate-180" />
               </ButtonInstrument>
             </div>
@@ -95,20 +110,26 @@ export default function SettingsPage() {
                 <Shield strokeWidth={1.5} size={24} />
               </div>
               <div>
-                <HeadingInstrument level={3} className="text-xl tracking-tight mb-2">Agency Workspace</HeadingInstrument>
+                <HeadingInstrument level={3} className="text-xl tracking-tight mb-2">
+                  <VoiceglotText translationKey="account.settings.agency.title" defaultText="Agency Workspace" />
+                </HeadingInstrument>
                 <TextInstrument className="text-va-black/40 text-[14px] leading-relaxed">
-                  Nodig teamleden uit om samen te werken aan projecten en audities.
+                  <VoiceglotText translationKey="account.settings.agency.text" defaultText="Nodig teamleden uit om samen te werken aan projecten en audities." />
                 </TextInstrument>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-va-off-white rounded-xl border border-black/5">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-[10px] font-bold text-primary">JD</div>
-                    <TextInstrument className="text-[13px] font-medium">John Doe (Admin)</TextInstrument>
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-[10px] font-bold text-primary">
+                      {auth.user?.firstName?.substring(0, 1)}{auth.user?.lastName?.substring(0, 1)}
+                    </div>
+                    <TextInstrument className="text-[13px] font-medium">
+                      {auth.user?.firstName} {auth.user?.lastName} (Admin)
+                    </TextInstrument>
                   </div>
                 </div>
                 <ButtonInstrument className="w-full bg-va-black text-white py-3 rounded-xl text-[13px] font-bold tracking-tight hover:bg-primary transition-all">
-                  Teamlid Uitnodigen
+                  <VoiceglotText translationKey="account.settings.agency.invite" defaultText="Teamlid Uitnodigen" />
                 </ButtonInstrument>
               </div>
             </div>

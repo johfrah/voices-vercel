@@ -26,7 +26,7 @@ export const BriefingStep: React.FC = () => {
 
   const handleNext = () => {
     if (!state.briefing.trim()) {
-      alert('Vul a.u.b. je tekst in.');
+      alert(t('checkout.briefing.alert_empty', 'Vul a.u.b. je tekst in.'));
       return;
     }
     playClick('deep');
@@ -74,7 +74,7 @@ export const BriefingStep: React.FC = () => {
           <textarea
             value={state.briefing}
             onChange={(e) => updateBriefing(e.target.value)}
-            placeholder="Plak hier je tekst..."
+            placeholder={t('checkout.briefing.placeholder', "Plak hier je tekst...")}
             className="w-full h-64 bg-va-off-white border-none rounded-[20px] p-8 text-lg font-light focus:ring-2 focus:ring-primary/20 transition-all resize-none"
           />
           
@@ -101,7 +101,7 @@ export const BriefingStep: React.FC = () => {
                   className="flex items-center gap-2 bg-va-black text-white px-6 py-2.5 rounded-full text-[13px] font-bold tracking-tight hover:scale-105 transition-all"
                 >
                   {isPlayingDraft ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
-                  {isPlayingDraft ? 'Pauzeer Preview' : 'Beluister Preview'}
+                  {isPlayingDraft ? t('checkout.briefing.pause_preview', 'Pauzeer Preview') : t('checkout.briefing.listen_preview', 'Beluister Preview')}
                   <audio 
                     ref={audioRef} 
                     src={aiDraftUrl} 
@@ -150,7 +150,7 @@ export const BriefingStep: React.FC = () => {
             type="text"
             value={state.pronunciation}
             onChange={(e) => updatePronunciation(e.target.value)}
-            placeholder="Bijv. namen, technische termen, tone-of-voice..."
+            placeholder={t('checkout.briefing.pronunciation_placeholder', "Bijv. namen, technische termen, tone-of-voice...")}
             className="w-full bg-va-off-white border-none rounded-[10px] py-5 px-8 text-[15px] font-light focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </ContainerInstrument>

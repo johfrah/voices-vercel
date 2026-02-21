@@ -64,37 +64,47 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-8 md:p-12 space-y-10 custom-scrollbar">
               <section className="space-y-4">
-                <h4 className="text-lg font-bold text-va-black tracking-tight">1. Toepasselijkheid</h4>
+                <h4 className="text-lg font-bold text-va-black tracking-tight">
+                  <VoiceglotText translationKey="legal.terms.section1.title" defaultText="1. Toepasselijkheid" />
+                </h4>
                 <p className="text-va-black/60 font-light leading-relaxed">
-                  Deze algemene voorwaarden zijn van toepassing op alle aanbiedingen, offertes en overeenkomsten tussen Voices.be en haar opdrachtgevers. Door het plaatsen van een bestelling of het aanvragen van een offerte verklaart de opdrachtgever zich akkoord met deze voorwaarden.
+                  <VoiceglotText translationKey="legal.terms.section1.text" defaultText="Deze algemene voorwaarden zijn van toepassing op alle aanbiedingen, offertes en overeenkomsten tussen Voices.be en haar opdrachtgevers. Door het plaatsen van een bestelling of het aanvragen van een offerte verklaart de opdrachtgever zich akkoord met deze voorwaarden." />
                 </p>
               </section>
 
               <section className="space-y-4">
-                <h4 className="text-lg font-bold text-va-black tracking-tight">2. Tarieven en Betaling</h4>
+                <h4 className="text-lg font-bold text-va-black tracking-tight">
+                  <VoiceglotText translationKey="legal.terms.section2.title" defaultText="2. Tarieven en Betaling" />
+                </h4>
                 <p className="text-va-black/60 font-light leading-relaxed">
-                  Alle genoemde tarieven zijn exclusief BTW, tenzij expliciet anders vermeld. Betaling dient te geschieden via de aangeboden betaalmethoden (Mollie) of, indien overeengekomen, per factuur binnen de gestelde termijn van 14 dagen.
+                  <VoiceglotText translationKey="legal.terms.section2.text" defaultText="Alle genoemde tarieven zijn exclusief BTW, tenzij expliciet anders vermeld. Betaling dient te geschieden via de aangeboden betaalmethoden (Mollie) of, indien overeengekomen, per factuur binnen de gestelde termijn van 14 dagen." />
                 </p>
               </section>
 
               <section className="space-y-4">
-                <h4 className="text-lg font-bold text-va-black tracking-tight">3. Levering en Gebruiksrechten</h4>
+                <h4 className="text-lg font-bold text-va-black tracking-tight">
+                  <VoiceglotText translationKey="legal.terms.section3.title" defaultText="3. Levering en Gebruiksrechten" />
+                </h4>
                 <p className="text-va-black/60 font-light leading-relaxed">
-                  De leveringstermijn wordt per project bepaald. De gebruiksrechten (buy-outs) zijn beperkt tot de media, regio en periode zoals gespecificeerd in de bestelling. Elk ander gebruik dient vooraf schriftelijk te worden overeengekomen en kan leiden tot aanvullende kosten.
+                  <VoiceglotText translationKey="legal.terms.section3.text" defaultText="De leveringstermijn wordt per project bepaald. De gebruiksrechten (buy-outs) zijn beperkt tot de media, regio en periode zoals gespecificeerd in de bestelling. Elk ander gebruik dient vooraf schriftelijk te worden overeengekomen en kan leiden tot aanvullende kosten." />
                 </p>
               </section>
 
               <section className="space-y-4">
-                <h4 className="text-lg font-bold text-va-black tracking-tight">4. Annulering en Herroepingsrecht</h4>
+                <h4 className="text-lg font-bold text-va-black tracking-tight">
+                  <VoiceglotText translationKey="legal.terms.section4.title" defaultText="4. Annulering en Herroepingsrecht" />
+                </h4>
                 <p className="text-va-black/60 font-light leading-relaxed">
-                  Gezien de aard van de dienstverlening (maatwerk audio-opnames) is het wettelijke herroepingsrecht niet van toepassing op afgeronde opnames. Annulering van een opdracht na aanvang van de werkzaamheden door de stemacteur is niet kosteloos mogelijk.
+                  <VoiceglotText translationKey="legal.terms.section4.text" defaultText="Gezien de aard van de dienstverlening (maatwerk audio-opnames) is het wettelijke herroepingsrecht niet van toepassing op afgeronde opnames. Annulering van een opdracht na aanvang van de werkzaamheden door de stemacteur is niet kosteloos mogelijk." />
                 </p>
               </section>
 
               <section className="space-y-4">
-                <h4 className="text-lg font-bold text-va-black tracking-tight">5. Aansprakelijkheid</h4>
+                <h4 className="text-lg font-bold text-va-black tracking-tight">
+                  <VoiceglotText translationKey="legal.terms.section5.title" defaultText="5. Aansprakelijkheid" />
+                </h4>
                 <p className="text-va-black/60 font-light leading-relaxed">
-                  Voices.be spant zich in voor een optimale kwaliteit van de geleverde diensten, maar is niet aansprakelijk voor indirecte schade of gevolgschade voortvloeiend uit het gebruik van de geleverde audio-opnames.
+                  <VoiceglotText translationKey="legal.terms.section5.text" defaultText="Voices.be spant zich in voor een optimale kwaliteit van de geleverde diensten, maar is niet aansprakelijk voor indirecte schade of gevolgschade voortvloeiend uit het gebruik van de geleverde audio-opnames." />
                 </p>
               </section>
             </div>
@@ -108,7 +118,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
                 }}
                 className="va-btn-pro !px-12"
               >
-                Ik begrijp het
+                <VoiceglotText translationKey="legal.terms.understand" defaultText="Ik begrijp het" />
               </button>
             </div>
           </motion.div>

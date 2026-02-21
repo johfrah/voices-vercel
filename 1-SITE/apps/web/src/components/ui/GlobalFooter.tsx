@@ -63,38 +63,38 @@ export default function GlobalFooter() {
   const standardSections = useMemo(() => {
     const sections = [
       {
-        title: 'Kies je stem',
+        title: t('footer.section.voices.title', 'Kies je stem'),
         links: [
-          { name: 'Onze stemmen', href: '/agency/' },
-          { name: 'Hoe werkt het', href: '/agency/zo-werkt-het/' },
-          { name: 'Tarieven', href: '/tarieven/' },
-          { name: 'Casting-hulp', href: '/contact/' },
+          { name: t('footer.link.voices.browse', 'Onze stemmen'), href: '/agency/' },
+          { name: t('footer.link.voices.how_it_works', 'Hoe werkt het'), href: '/agency/zo-werkt-het/' },
+          { name: t('footer.link.voices.rates', 'Tarieven'), href: '/tarieven/' },
+          { name: t('footer.link.voices.casting_help', 'Casting-hulp'), href: '/contact/' },
         ]
       },
       {
-        title: 'Groei',
+        title: t('footer.section.growth.title', 'Groei'),
         links: [
-          { name: 'Voices Studio', href: '/studio/' },
-          { name: 'Academy', href: '/academy/' },
-          { name: 'Aanmelden als stem', href: '/account' },
+          { name: t('footer.link.growth.studio', 'Voices Studio'), href: '/studio/' },
+          { name: t('footer.link.growth.academy', 'Academy'), href: '/academy/' },
+          { name: t('footer.link.growth.signup', 'Aanmelden als stem'), href: '/account' },
         ],
-        badges: { 'Academy': 'Nieuw' }
+        badges: { [t('footer.link.growth.academy', 'Academy')]: t('common.new', 'Nieuw') }
       },
       {
-        title: 'Vertrouwen',
+        title: t('footer.section.trust.title', 'Vertrouwen'),
         links: [
-          { name: 'FAQ', href: '/agency/zo-werkt-het/#faq' },
-          { name: 'Voorwaarden', href: '/agency/voorwaarden/' },
-          { name: 'Privacy', href: '/privacy/' },
+          { name: t('footer.link.trust.faq', 'FAQ'), href: '/agency/zo-werkt-het/#faq' },
+          { name: t('footer.link.trust.terms', 'Voorwaarden'), href: '/agency/voorwaarden/' },
+          { name: t('footer.link.trust.privacy', 'Privacy'), href: '/privacy/' },
         ]
       },
       {
-        title: 'Ontdek',
+        title: t('footer.section.discover.title', 'Ontdek'),
         links: [
-          { name: 'Ons verhaal', href: '/agency/over-ons/' },
-          { name: 'Ademing (Rust)', href: 'https://ademing.be' },
-          { name: 'Blog', href: '/blog/' },
-          { name: 'Contact', href: '/contact/' },
+          { name: t('footer.link.discover.story', 'Ons verhaal'), href: '/agency/over-ons/' },
+          { name: t('footer.link.discover.ademing', 'Ademing (Rust)'), href: 'https://ademing.be' },
+          { name: t('footer.link.discover.blog', 'Blog'), href: '/blog/' },
+          { name: t('footer.link.discover.contact', 'Contact'), href: '/contact/' },
         ]
       }
     ];
@@ -105,7 +105,7 @@ export default function GlobalFooter() {
     }
 
     return sections;
-  }, [isPortfolio]);
+  }, [isPortfolio, t]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -286,7 +286,9 @@ export default function GlobalFooter() {
             </ContainerInstrument>
 
             <div className="space-y-6 flex flex-col items-start">
-              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-white/20 uppercase">Label</HeadingInstrument>
+              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-white/20 uppercase">
+                <VoiceglotText translationKey="footer.label.title" defaultText="Label" />
+              </HeadingInstrument>
               <ul className="space-y-2">
                 <li><Link href="/agency/" className="text-[15px] font-light text-white/40 hover:text-white transition-colors">Voices Agency</Link></li>
                 <li><Link href="/studio/" className="text-[15px] font-light text-white/40 hover:text-white transition-colors">Voices Studio</Link></li>
@@ -295,7 +297,9 @@ export default function GlobalFooter() {
             </div>
 
             <div className="space-y-6 flex flex-col items-start">
-              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-white/20 uppercase">Legal</HeadingInstrument>
+              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-white/20 uppercase">
+                <VoiceglotText translationKey="footer.legal.title" defaultText="Legal" />
+              </HeadingInstrument>
               <ul className="space-y-2">
                 <li><Link href="/privacy/" className="text-[15px] font-light text-white/40 hover:text-white transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms/" className="text-[15px] font-light text-white/40 hover:text-white transition-colors">Terms of Service</Link></li>
@@ -303,7 +307,9 @@ export default function GlobalFooter() {
             </div>
 
             <div className="space-y-6 flex flex-col items-start">
-              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-white/20 uppercase">Contact</HeadingInstrument>
+              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-white/20 uppercase">
+                <VoiceglotText translationKey="footer.contact.title" defaultText="Contact" />
+              </HeadingInstrument>
               <div className="space-y-3">
                 <a href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[15px] font-light text-white/40 hover:text-white transition-colors">
                   <Mail size={14} strokeWidth={1.5} />
@@ -319,12 +325,12 @@ export default function GlobalFooter() {
 
           <ContainerInstrument className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
             <TextInstrument className="text-[15px] font-light tracking-widest text-white/20">
-              © 2026 Voices Artists. <span className="opacity-50">Powered by Voices.be</span>
+              © 2026 Voices Artists. <span className="opacity-50"><VoiceglotText translationKey="footer.powered_by_voices" defaultText="Powered by Voices.be" /></span>
             </TextInstrument>
             <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/5">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
               <TextInstrument className="text-[12px] font-bold tracking-widest text-white/40 uppercase">
-                Label Online
+                <VoiceglotText translationKey="footer.status.label_online" defaultText="Label Online" />
               </TextInstrument>
             </div>
           </ContainerInstrument>
@@ -363,7 +369,7 @@ export default function GlobalFooter() {
                       <div className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                         <Phone size={16} strokeWidth={1.5} />
                       </div>
-                      <span>{actor.phone}</span>
+                      <TextInstrument as="span">{actor.phone}</TextInstrument>
                     </ButtonInstrument>
                   )}
                   {actor?.email && (
@@ -377,7 +383,7 @@ export default function GlobalFooter() {
                       <div className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                         <Mail size={16} strokeWidth={1.5} />
                       </div>
-                      <span>{actor.email}</span>
+                      <TextInstrument as="span">{actor.email}</TextInstrument>
                     </ButtonInstrument>
                   )}
                 </div>
@@ -388,14 +394,14 @@ export default function GlobalFooter() {
             <div className="md:col-span-7 grid grid-cols-2 gap-12">
               <div className="space-y-6">
                 <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] text-va-black/20 uppercase">
-                  Navigatie
+                  <VoiceglotText translationKey="footer.navigation.title" defaultText="Navigatie" />
                 </HeadingInstrument>
                 <ul className="space-y-3">
                   {[
-                    { name: 'Voice-over', href: '#demos' },
-                    { name: 'Host & Reporter', href: '#host' },
-                    { name: 'Tarieven', href: '#tarieven' },
-                    { name: 'Contact', href: '#contact' },
+                    { name: t('common.voiceover', 'Voice-over'), href: '#demos' },
+                    { name: t('common.host_reporter', 'Host & Reporter'), href: '#host' },
+                    { name: t('common.rates', 'Tarieven'), href: '#tarieven' },
+                    { name: t('common.contact', 'Contact'), href: '#contact' },
                   ].map((link) => (
                     <li key={link.name}>
                       <Link href={link.href} className="text-[15px] font-light text-va-black/40 hover:text-va-black transition-colors">
@@ -408,7 +414,7 @@ export default function GlobalFooter() {
 
               <div className="space-y-6">
                 <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] text-va-black/20 uppercase">
-                  Social Media
+                  <VoiceglotText translationKey="footer.social_media.title" defaultText="Social Media" />
                 </HeadingInstrument>
                 <div className="flex gap-4">
                   {socialIcons.filter(s => actor?.[s.id] || activeSocials[s.id]).slice(0, 3).map((social) => (
@@ -574,282 +580,296 @@ export default function GlobalFooter() {
                               />
                             </div>
                             <div className="flex justify-end gap-2">
-                              <button onClick={() => setIsEditingSocial(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">Annuleer</button>
-                              <button onClick={() => updateSocialLink(social.id, editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
-                                <Check size={12} strokeWidth={3} /> Save
-                              </button>
-                            </div>
+                            <button onClick={() => setIsEditingSocial(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
+                              <VoiceglotText translationKey="common.cancel" defaultText="Annuleer" />
+                            </button>
+                            <button onClick={() => updateSocialLink(social.id, editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
+                              <Check size={12} strokeWidth={3} /> <VoiceglotText translationKey="common.save" defaultText="Save" />
+                            </button>
                           </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                ))}
-              </ContainerInstrument>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </ContainerInstrument>
 
-              <div className="flex flex-col gap-2">
-                <div className="relative group/contact">
-                  <ButtonInstrument 
-                    as="a"
-                    href={(() => {
+            <div className="flex flex-col gap-2">
+              <div className="relative group/contact">
+                <ButtonInstrument 
+                  as="a"
+                  href={(() => {
+                    const isPhoneOpen = generalSettings?.phone_hours ? isOfficeOpen(generalSettings.phone_hours) : true;
+                    return isPhoneOpen ? `tel:${activePhone.replace(/\s+/g, '')}` : undefined;
+                  })()}
+                  variant="plain"
+                  size="none"
+                  onClick={(e) => {
+                    if (isEditMode) {
+                      e.preventDefault();
+                      setIsEditingContact('phone');
+                      setEditValue(activePhone);
+                      playClick('pro');
+                    } else {
                       const isPhoneOpen = generalSettings?.phone_hours ? isOfficeOpen(generalSettings.phone_hours) : true;
-                      return isPhoneOpen ? `tel:${activePhone.replace(/\s+/g, '')}` : undefined;
-                    })()}
-                    variant="plain"
-                    size="none"
-                    onClick={(e) => {
-                      if (isEditMode) {
+                      if (!isPhoneOpen) {
                         e.preventDefault();
-                        setIsEditingContact('phone');
-                        setEditValue(activePhone);
-                        playClick('pro');
-                      } else {
-                        const isPhoneOpen = generalSettings?.phone_hours ? isOfficeOpen(generalSettings.phone_hours) : true;
-                        if (!isPhoneOpen) {
-                          e.preventDefault();
-                          playClick('error');
-                          toast.error('Onze studio is momenteel telefonisch gesloten.');
-                        }
+                        playClick('error');
+                        toast.error(t('footer.error.phone_closed', 'Onze studio is momenteel telefonisch gesloten.'));
                       }
-                    }}
-                    className={cn(
-                      "flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors",
-                      generalSettings?.phone_hours && !isOfficeOpen(generalSettings.phone_hours) && "opacity-50"
-                    )}
-                  >
-                    <Phone size={14} strokeWidth={1.5} />
-                    <span>{activePhone}</span>
-                    {generalSettings?.phone_hours && (
-                      <span className={cn("w-1.5 h-1.5 rounded-full ml-1", isOfficeOpen(generalSettings.phone_hours) ? "bg-green-500" : "bg-amber-500")} />
-                    )}
-                  </ButtonInstrument>
-                  <AnimatePresence>
-                    {isEditingContact === 'phone' && (
-                      <motion.div 
-                        ref={popoverRef}
-                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                        className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-50"
-                      >
-                        <div className="flex flex-col gap-3">
-                          <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">Telefoonnummer</TextInstrument>
-                          <input 
-                            autoFocus
-                            type="text" 
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            className="bg-va-off-white px-3 py-2 rounded-lg border border-black/5 text-[13px] font-medium w-full outline-none focus:ring-2 focus:ring-primary/20"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') updateContactInfo('phone', editValue);
-                              if (e.key === 'Escape') setIsEditingContact(null);
-                            }}
-                          />
-                          <div className="flex justify-end gap-2">
-                            <button onClick={() => setIsEditingContact(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">Annuleer</button>
-                            <button onClick={() => updateContactInfo('phone', editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
-                              <Check size={12} strokeWidth={3} /> Save
-                            </button>
-                          </div>
+                    }
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors",
+                    generalSettings?.phone_hours && !isOfficeOpen(generalSettings.phone_hours) && "opacity-50"
+                  )}
+                >
+                  <Phone size={14} strokeWidth={1.5} />
+                  <span>{activePhone}</span>
+                  {generalSettings?.phone_hours && (
+                    <span className={cn("w-1.5 h-1.5 rounded-full ml-1", isOfficeOpen(generalSettings.phone_hours) ? "bg-green-500" : "bg-amber-500")} />
+                  )}
+                </ButtonInstrument>
+                <AnimatePresence>
+                  {isEditingContact === 'phone' && (
+                    <motion.div 
+                      ref={popoverRef}
+                      initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                      className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-50"
+                    >
+                      <div className="flex flex-col gap-3">
+                        <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
+                          <VoiceglotText translationKey="common.phone_number" defaultText="Telefoonnummer" />
+                        </TextInstrument>
+                        <input 
+                          autoFocus
+                          type="text" 
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          className="bg-va-off-white px-3 py-2 rounded-lg border border-black/5 text-[13px] font-medium w-full outline-none focus:ring-2 focus:ring-primary/20"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') updateContactInfo('phone', editValue);
+                            if (e.key === 'Escape') setIsEditingContact(null);
+                          }}
+                        />
+                        <div className="flex justify-end gap-2">
+                          <button onClick={() => setIsEditingContact(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
+                            <VoiceglotText translationKey="common.cancel" defaultText="Annuleer" />
+                          </button>
+                          <button onClick={() => updateContactInfo('phone', editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
+                            <Check size={12} strokeWidth={3} /> <VoiceglotText translationKey="common.save" defaultText="Save" />
+                          </button>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-                <div className="relative group/contact">
-                  <ButtonInstrument 
-                    as="a"
-                    href={`mailto:${activeEmail}`}
-                    variant="plain"
-                    size="none"
-                    onClick={(e) => {
-                      if (isEditMode) {
-                        e.preventDefault();
-                        setIsEditingContact('email');
-                        setEditValue(activeEmail);
-                        playClick('pro');
-                      }
-                    }}
-                    className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors"
-                  >
-                    <Mail size={14} strokeWidth={1.5} />
-                    <span>{activeEmail}</span>
-                  </ButtonInstrument>
-                  <AnimatePresence>
-                    {isEditingContact === 'email' && (
-                      <motion.div 
-                        ref={popoverRef}
-                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                        className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-50"
-                      >
-                        <div className="flex flex-col gap-3">
-                          <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">Email adres</TextInstrument>
-                          <input 
-                            autoFocus
-                            type="text" 
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            className="bg-va-off-white px-3 py-2 rounded-lg border border-black/5 text-[13px] font-medium w-full outline-none focus:ring-2 focus:ring-primary/20"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') updateContactInfo('email', editValue);
-                              if (e.key === 'Escape') setIsEditingContact(null);
-                            }}
-                          />
-                          <div className="flex justify-end gap-2">
-                            <button onClick={() => setIsEditingContact(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">Annuleer</button>
-                            <button onClick={() => updateContactInfo('email', editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
-                              <Check size={12} strokeWidth={3} /> Save
-                            </button>
-                          </div>
+              <div className="relative group/contact">
+                <ButtonInstrument 
+                  as="a"
+                  href={`mailto:${activeEmail}`}
+                  variant="plain"
+                  size="none"
+                  onClick={(e) => {
+                    if (isEditMode) {
+                      e.preventDefault();
+                      setIsEditingContact('email');
+                      setEditValue(activeEmail);
+                      playClick('pro');
+                    }
+                  }}
+                  className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors"
+                >
+                  <Mail size={14} strokeWidth={1.5} />
+                  <span>{activeEmail}</span>
+                </ButtonInstrument>
+                <AnimatePresence>
+                  {isEditingContact === 'email' && (
+                    <motion.div 
+                      ref={popoverRef}
+                      initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                      className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-50"
+                    >
+                      <div className="flex flex-col gap-3">
+                        <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
+                          <VoiceglotText translationKey="common.email_address" defaultText="Email adres" />
+                        </TextInstrument>
+                        <input 
+                          autoFocus
+                          type="text" 
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          className="bg-va-off-white px-3 py-2 rounded-lg border border-black/5 text-[13px] font-medium w-full outline-none focus:ring-2 focus:ring-primary/20"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') updateContactInfo('email', editValue);
+                            if (e.key === 'Escape') setIsEditingContact(null);
+                          }}
+                        />
+                        <div className="flex justify-end gap-2">
+                          <button onClick={() => setIsEditingContact(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
+                            <VoiceglotText translationKey="common.cancel" defaultText="Annuleer" />
+                          </button>
+                          <button onClick={() => updateContactInfo('email', editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
+                            <Check size={12} strokeWidth={3} /> <VoiceglotText translationKey="common.save" defaultText="Save" />
+                          </button>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
-          </ContainerInstrument>
-
-          {/* Links Columns */}
-          {sections.map((section, i) => (
-            <div key={i} className="space-y-6 flex flex-col items-start relative group/section w-full md:w-auto">
-              {/* Mobile Accordion Header */}
-              <button 
-                onClick={() => setOpenAccordion(openAccordion === i ? null : i)}
-                className="flex items-center justify-between w-full md:hidden py-4 border-b border-black/5"
-              >
-                <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase text-left">
-                  <VoiceglotText  translationKey={`footer.section.${i}.title`} defaultText={section.title} />
-                </HeadingInstrument>
-                <ChevronDown 
-                  size={16} 
-                  className={cn("text-va-black/20 transition-transform duration-300", openAccordion === i && "rotate-180")} 
-                />
-              </button>
-
-              {/* Desktop Header */}
-              <HeadingInstrument level={4} className="hidden md:block text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase text-left">
-                <VoiceglotText  translationKey={`footer.section.${i}.title`} defaultText={section.title} />
-              </HeadingInstrument>
-
-              <AnimatePresence>
-                {(openAccordion === i || (typeof window !== 'undefined' && window.innerWidth >= 768)) && (
-                  <motion.ul 
-                    initial={typeof window !== 'undefined' && window.innerWidth < 768 ? { height: 0, opacity: 0 } : false}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="flex flex-col items-start space-y-1 w-full overflow-hidden md:!h-auto md:!opacity-100"
-                  >
-                    {section.links.map((link: any, j: number) => (
-                      <li key={j} className="w-full flex justify-start items-center gap-2 group/link">
-                        <ButtonInstrument 
-                          as={Link}
-                          href={link.href} 
-                          variant="plain"
-                          size="none"
-                          onClick={() => playClick('light')}
-                          className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors duration-300 py-1"
-                        >
-                          <VoiceglotText  translationKey={`footer.link.${i}.${j}`} defaultText={link.name} />
-                          {section.badges?.[link.name] && (
-                            <span className="ml-2 px-1.5 py-0.5 bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-widest rounded">
-                              {section.badges[link.name]}
-                            </span>
-                          )}
-                        </ButtonInstrument>
-
-                        {isEditMode && (
-                          <div className="flex items-center gap-1 opacity-0 group-hover/link:opacity-100 transition-opacity">
-                            <button 
-                              onClick={() => {
-                                setIsEditingLink({ sectionIdx: i, linkIdx: j });
-                                setEditValue(link.href);
-                                playClick('pro');
-                              }}
-                              className="p-1 text-primary hover:bg-primary/10 rounded"
-                            >
-                              <LinkIcon size={12} />
-                            </button>
-                            <button 
-                              onClick={() => removeLink(i, j)}
-                              className="p-1 text-red-500 hover:bg-red-50 rounded"
-                            >
-                              <Trash2 size={12} />
-                            </button>
-                          </div>
-                        )}
-
-                        <AnimatePresence>
-                          {isEditingLink?.sectionIdx === i && isEditingLink?.linkIdx === j && (
-                            <motion.div 
-                              ref={popoverRef}
-                              initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                              animate={{ opacity: 1, scale: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                              className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-50"
-                            >
-                              <div className="flex flex-col gap-3">
-                                <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">Link URL</TextInstrument>
-                                <div className="flex items-center gap-2 bg-va-off-white px-3 py-2 rounded-lg border border-black/5">
-                                  <Search size={14} className="text-va-black/30" />
-                                  <input 
-                                    autoFocus
-                                    type="text" 
-                                    value={editValue}
-                                    onChange={(e) => setEditValue(e.target.value)}
-                                    placeholder="https://..."
-                                    className="bg-transparent border-none outline-none text-[13px] font-medium w-full"
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') updateLinkUrl(i, j, editValue);
-                                      if (e.key === 'Escape') setIsEditingLink(null);
-                                    }}
-                                  />
-                                </div>
-                                <div className="flex justify-end gap-2">
-                                  <button onClick={() => setIsEditingLink(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">Annuleer</button>
-                                  <button onClick={() => updateLinkUrl(i, j, editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
-                                    <Check size={12} strokeWidth={3} /> Save
-                                  </button>
-                                </div>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </li>
-                    ))}
-                    {isEditMode && (
-                      <li className="pt-2">
-                        <button 
-                          onClick={() => addLink(i)}
-                          className="flex items-center gap-2 text-[11px] font-bold text-primary hover:opacity-70 transition-opacity"
-                        >
-                          <Plus size={12} strokeWidth={3} /> Link toevoegen
-                        </button>
-                      </li>
-                    )}
-                  </motion.ul>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
+          </div>
         </ContainerInstrument>
 
-        {/* Bottom Bar */}
-        <ContainerInstrument className="pt-12 border-t border-black/5 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <TextInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/20 ">
-               2026 {isPortfolio ? 'Johfrah Lefebvre' : isArtist ? 'Youssef Zaki' : 'Voices'}. {isSpecial && (
-                <TextInstrument as="span">
-                  <VoiceglotText translationKey="footer.powered_by" defaultText="Powered by" />
-                  <ButtonInstrument as="a" href="https://voices.be" variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
-                    <VoiceglotText  translationKey="auto.globalfooter.voices_be.46435e" defaultText="Voices.be" />
-                  </ButtonInstrument>
-                </TextInstrument>
+        {/* Links Columns */}
+        {sections.map((section, i) => (
+          <div key={i} className="space-y-6 flex flex-col items-start relative group/section w-full md:w-auto">
+            {/* Mobile Accordion Header */}
+            <button 
+              onClick={() => setOpenAccordion(openAccordion === i ? null : i)}
+              className="flex items-center justify-between w-full md:hidden py-4 border-b border-black/5"
+            >
+              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase text-left">
+                {section.title}
+              </HeadingInstrument>
+              <ChevronDown 
+                size={16} 
+                className={cn("text-va-black/20 transition-transform duration-300", openAccordion === i && "rotate-180")} 
+              />
+            </button>
+
+            {/* Desktop Header */}
+            <HeadingInstrument level={4} className="hidden md:block text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase text-left">
+              {section.title}
+            </HeadingInstrument>
+
+            <AnimatePresence>
+              {(openAccordion === i || (typeof window !== 'undefined' && window.innerWidth >= 768)) && (
+                <motion.ul 
+                  initial={typeof window !== 'undefined' && window.innerWidth < 768 ? { height: 0, opacity: 0 } : false}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="flex flex-col items-start space-y-1 w-full overflow-hidden md:!h-auto md:!opacity-100"
+                >
+                  {section.links.map((link: any, j: number) => (
+                    <li key={j} className="w-full flex justify-start items-center gap-2 group/link">
+                      <ButtonInstrument 
+                        as={Link}
+                        href={link.href} 
+                        variant="plain"
+                        size="none"
+                        onClick={() => playClick('light')}
+                        className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors duration-300 py-1"
+                      >
+                        {link.name}
+                        {section.badges?.[link.name] && (
+                          <span className="ml-2 px-1.5 py-0.5 bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-widest rounded">
+                            {section.badges[link.name]}
+                          </span>
+                        )}
+                      </ButtonInstrument>
+
+                      {isEditMode && (
+                        <div className="flex items-center gap-1 opacity-0 group-hover/link:opacity-100 transition-opacity">
+                          <button 
+                            onClick={() => {
+                              setIsEditingLink({ sectionIdx: i, linkIdx: j });
+                              setEditValue(link.href);
+                              playClick('pro');
+                            }}
+                            className="p-1 text-primary hover:bg-primary/10 rounded"
+                          >
+                            <LinkIcon size={12} />
+                          </button>
+                          <button 
+                            onClick={() => removeLink(i, j)}
+                            className="p-1 text-red-500 hover:bg-red-50 rounded"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      )}
+
+                      <AnimatePresence>
+                        {isEditingLink?.sectionIdx === i && isEditingLink?.linkIdx === j && (
+                          <motion.div 
+                            ref={popoverRef}
+                            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                            className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-50"
+                          >
+                            <div className="flex flex-col gap-3">
+                              <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
+                                <VoiceglotText translationKey="common.link_url" defaultText="Link URL" />
+                              </TextInstrument>
+                              <div className="flex items-center gap-2 bg-va-off-white px-3 py-2 rounded-lg border border-black/5">
+                                <Search size={14} className="text-va-black/30" />
+                                <input 
+                                  autoFocus
+                                  type="text" 
+                                  value={editValue}
+                                  onChange={(e) => setEditValue(e.target.value)}
+                                  placeholder="https://..."
+                                  className="bg-transparent border-none outline-none text-[13px] font-medium w-full"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') updateLinkUrl(i, j, editValue);
+                                    if (e.key === 'Escape') setIsEditingLink(null);
+                                  }}
+                                />
+                              </div>
+                              <div className="flex justify-end gap-2">
+                                <button onClick={() => setIsEditingLink(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
+                                  <VoiceglotText translationKey="common.cancel" defaultText="Annuleer" />
+                                </button>
+                                <button onClick={() => updateLinkUrl(i, j, editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
+                                  <Check size={12} strokeWidth={3} /> <VoiceglotText translationKey="common.save" defaultText="Save" />
+                                </button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </li>
+                  ))}
+                  {isEditMode && (
+                    <li className="pt-2">
+                      <button 
+                        onClick={() => addLink(i)}
+                        className="flex items-center gap-2 text-[11px] font-bold text-primary hover:opacity-70 transition-opacity"
+                      >
+                        <Plus size={12} strokeWidth={3} /> <VoiceglotText translationKey="footer.add_link" defaultText="Link toevoegen" />
+                      </button>
+                    </li>
+                  )}
+                </motion.ul>
               )}
-            </TextInstrument>
+            </AnimatePresence>
+          </div>
+        ))}
+      </ContainerInstrument>
+
+      {/* Bottom Bar */}
+      <ContainerInstrument className="pt-12 border-t border-black/5 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="flex flex-col md:flex-row items-center gap-8">
+          <TextInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/20 ">
+             2026 {isPortfolio ? 'Johfrah Lefebvre' : isArtist ? 'Youssef Zaki' : 'Voices'}. {isSpecial && (
+              <TextInstrument as="span">
+                <VoiceglotText translationKey="footer.powered_by" defaultText="Powered by" />
+                <ButtonInstrument as="a" href="https://voices.be" variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
+                  <VoiceglotText  translationKey="auto.globalfooter.voices_be.46435e" defaultText="Voices.be" />
+                </ButtonInstrument>
+              </TextInstrument>
+            )}
+          </TextInstrument>
             
             {/* Trust Logos (Kelly-Mandate) */}
             {!isSpecial && (
@@ -884,7 +904,7 @@ export default function GlobalFooter() {
                             const next = generalSettings?.opening_hours ? getNextOpeningTime(generalSettings.opening_hours) : null;
                             return next ? (
                               <span className="ml-1 opacity-50">
-                                vanaf {next.day} om {next.time}
+                                <VoiceglotText translationKey="footer.status.back_at" defaultText={`vanaf ${next.day} om ${next.time}`} noTranslate={true} />
                               </span>
                             ) : null;
                           })()}

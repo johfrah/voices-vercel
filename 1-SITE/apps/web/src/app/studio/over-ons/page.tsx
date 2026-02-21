@@ -43,7 +43,7 @@ export default function OverOnsPage() {
           </ContainerInstrument>
           <ContainerInstrument className="space-y-8">
             <ContainerInstrument className="space-y-4">
-              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="studio.about.founder.title" defaultText="Johfrah Lefebvre" /><TextInstrument className="text-va-black/60 font-light leading-relaxed"><VoiceglotText  
+              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="studio.about.founder.title" defaultText="Johfrah Lefebvre" noTranslate={true} /><TextInstrument className="text-va-black/60 font-light leading-relaxed"><VoiceglotText  
                   translationKey="studio.about.founder.text1" 
                   defaultText="Al meer dan 15 jaar breng ik teksten tot leven voor merken die weigeren op te gaan in de grijze massa. Je herkent mijn stem van de tv-spots van Trivago of als de gids bij Tesla en Samsung." 
                 /></TextInstrument></HeadingInstrument>
@@ -54,7 +54,9 @@ export default function OverOnsPage() {
             </ContainerInstrument>
             <ContainerInstrument className="flex items-center gap-4">
               <Image  src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText  translationKey="auto.page.international_emmy_a.39163c" defaultText="International Emmy Award winner" /></TextInstrument>
+              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40">
+                <VoiceglotText translationKey="studio.about.emmy_winner" defaultText="International Emmy Award winner" />
+              </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
@@ -63,7 +65,7 @@ export default function OverOnsPage() {
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mb-32">
           <ContainerInstrument className="order-2 md:order-1 space-y-8">
             <ContainerInstrument className="space-y-4">
-              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="studio.about.coach.title" defaultText="Bernadette Timmermans" /><TextInstrument className="text-va-black/60 font-light leading-relaxed"><VoiceglotText  
+              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="studio.about.coach.title" defaultText="Bernadette Timmermans" noTranslate={true} /><TextInstrument className="text-va-black/60 font-light leading-relaxed"><VoiceglotText  
                   translationKey="studio.about.coach.text1" 
                   defaultText="Als gerenommeerd stemcoach en auteur van 'Klink Klaar' is Bernadette de autoriteit op het gebied van uitspraak en stemgebruik in Vlaanderen." 
                 /></TextInstrument></HeadingInstrument>
@@ -91,15 +93,30 @@ export default function OverOnsPage() {
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
           <ContainerInstrument className="p-10 rounded-[20px] bg-white border border-black/5 shadow-aura space-y-6">
             <Image  src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-            <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black"><VoiceglotText  translationKey="auto.page.top_selectie.e9e6c4" defaultText="Top-selectie" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed"><VoiceglotText  translationKey="auto.page.geen_eindeloze_lijst.b1c678" defaultText="Geen eindeloze lijsten, maar een gecureerde groep stemmen die we persoonlijk kennen en regisseren." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
+              <VoiceglotText translationKey="studio.about.philosophy.selection.title" defaultText="Top-selectie" />
+              <TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed">
+                <VoiceglotText translationKey="studio.about.philosophy.selection.text" defaultText="Geen eindeloze lijsten, maar een gecureerde groep stemmen die we persoonlijk kennen en regisseren." />
+              </TextInstrument>
+            </HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="p-10 rounded-[20px] bg-white border border-black/5 shadow-aura space-y-6">
             <Image  src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-            <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black"><VoiceglotText  translationKey="auto.page.technische_perfectie.ea0d36" defaultText="Technische perfectie" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed"><VoiceglotText  translationKey="auto.page.alles_wordt_geleverd.dd6681" defaultText="Alles wordt geleverd in 48kHz studiokwaliteit, genormaliseerd volgens de strengste loudness-normen." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
+              <VoiceglotText translationKey="studio.about.philosophy.technical.title" defaultText="Technische perfectie" />
+              <TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed">
+                <VoiceglotText translationKey="studio.about.philosophy.technical.text" defaultText="Alles wordt geleverd in 48kHz studiokwaliteit, genormaliseerd volgens de strengste loudness-normen." />
+              </TextInstrument>
+            </HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="p-10 rounded-[20px] bg-va-black text-white space-y-6">
             <Image  src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" className="brightness-0 invert" />
-            <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-white"><VoiceglotText  translationKey="auto.page.digitale_kluis.571296" defaultText="Digitale kluis" /><TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed"><VoiceglotText  translationKey="auto.page.we_bewaren_al_je_scr.a10adf" defaultText="We bewaren al je scripts en instellingen. Een pickup over een jaar klinkt daardoor exact zoals vandaag." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-white">
+              <VoiceglotText translationKey="studio.about.philosophy.vault.title" defaultText="Digitale kluis" />
+              <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed">
+                <VoiceglotText translationKey="studio.about.philosophy.vault.text" defaultText="We bewaren al je scripts en instellingen. Een pickup over een year klinkt daardoor exact zoals vandaag." />
+              </TextInstrument>
+            </HeadingInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
 

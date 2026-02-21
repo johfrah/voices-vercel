@@ -3,6 +3,7 @@
 import { CollaborativeStudio } from '@/components/ui/CollaborativeStudio';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { LucideLock, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -11,6 +12,7 @@ import { createClient } from '@/utils/supabase/client';
 export default function CastingSessionPage({ params }: { params: { hash: string } }) {
   const { state } = useVoicesState();
   const { user, isAdmin } = useAuth();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [sessionData, setSessionData] = useState<any>(null);
   const supabase = createClient();
@@ -62,9 +64,11 @@ export default function CastingSessionPage({ params }: { params: { hash: string 
           <div className="w-16 h-16 bg-va-black/5 rounded-full flex items-center justify-center mx-auto mb-6">
             <LucideLock className="text-va-black/20" size={32} strokeWidth={1.5} />
           </div>
-          <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter">Sessie niet gevonden</HeadingInstrument>
+          <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter">
+            <VoiceglotText translationKey="casting.session.not_found.title" defaultText="Sessie niet gevonden" />
+          </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-light leading-relaxed">
-            Deze casting sessie bestaat niet of is niet langer beschikbaar.
+            <VoiceglotText translationKey="casting.session.not_found.text" defaultText="Deze casting sessie bestaat niet of is niet langer beschikbaar." />
           </TextInstrument>
         </div>
       </ContainerInstrument>
@@ -76,7 +80,7 @@ export default function CastingSessionPage({ params }: { params: { hash: string 
     id: item.id,
     actorId: item.actor_id,
     actor: {
-      firstName: item.actors?.first_name || 'Onbekend',
+      firstName: item.actors?.first_name || t('common.unknown', 'Onbekend'),
       photoUrl: item.actors?.photo_url || item.actors?.photoUrl
     },
     status: 'pending',

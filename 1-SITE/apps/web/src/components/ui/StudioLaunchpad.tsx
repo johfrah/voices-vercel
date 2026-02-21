@@ -259,11 +259,15 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                     <div className="space-y-8">
                       <div className="space-y-3">
-                        <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Projectnaam</LabelInstrument>
+                        <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                          <VoiceglotText translationKey="common.project_name" defaultText="Projectnaam" />
+                        </LabelInstrument>
                         <InputInstrument value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="Bijv. Zomer Campagne 2026" className="w-full h-14 bg-va-off-white/50" />
                       </div>
                       <div className="space-y-3">
-                        <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">E-mailadres</LabelInstrument>
+                        <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                          <VoiceglotText translationKey="common.email" defaultText="E-mailadres" />
+                        </LabelInstrument>
                         <InputInstrument type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="naam@bedrijf.be" className="w-full h-14 bg-va-off-white/50" />
                       </div>
                     </div>
@@ -272,7 +276,9 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                       {calcUsage === 'paid' ? (
                         /* 2. Media Detail Kaarten Mandaat (Vertical Stack) */
                         <div className="space-y-4">
-                          <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Selecteer Kanalen</LabelInstrument>
+                          <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                            <VoiceglotText translationKey="common.select_channels" defaultText="Selecteer Kanalen" />
+                          </LabelInstrument>
                           <div className="space-y-3">
                             {mediaOptions.map((m) => {
                               const isActive = selectedMedia.includes(m.id as any);
@@ -290,8 +296,12 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                                         <m.icon size={20} />
                                       </div>
                                       <div className="text-left">
-                                        <div className="text-[14px] font-bold text-va-black">{m.label}</div>
-                                        <div className="text-[11px] text-va-black/30 font-light">{m.sub}</div>
+                                        <div className="text-[14px] font-bold text-va-black">
+                                          <VoiceglotText translationKey={`common.media.${m.id}`} defaultText={m.label} />
+                                        </div>
+                                        <div className="text-[11px] text-va-black/30 font-light">
+                                          <VoiceglotText translationKey={`common.media.${m.id}.desc`} defaultText={m.sub} />
+                                        </div>
                                       </div>
                                     </div>
                                     <div className={cn("w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all", isActive ? "bg-primary border-primary text-white" : "border-black/10")}>
@@ -302,7 +312,9 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                                   {isActive && (
                                     <div className="grid grid-cols-2 gap-4 pt-3 border-t border-black/5">
                                       <div className="space-y-2">
-                                        <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Spots</label>
+                                        <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                                          <VoiceglotText translationKey="common.spots" defaultText="Spots" />
+                                        </label>
                                         <div className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
                                           <button onClick={() => setSpotsDetail(prev => ({ ...prev, [m.id]: Math.max(1, (prev[m.id] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></button>
                                           <span className="text-[12px] font-bold text-primary">{spotsDetail[m.id] || 1}</span>
@@ -310,7 +322,9 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                                         </div>
                                       </div>
                                       <div className="space-y-2">
-                                        <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Looptijd</label>
+                                        <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                                          <VoiceglotText translationKey="common.duration" defaultText="Looptijd" />
+                                        </label>
                                         <div className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
                                           <button onClick={() => setYearsDetail(prev => ({ ...prev, [m.id]: Math.max(1, (prev[m.id] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></button>
                                           <span className="text-[12px] font-bold text-primary">{yearsDetail[m.id] || 1}j</span>
@@ -327,11 +341,15 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                       ) : (
                         /* 3. Slider Mandaat */
                         <div className="space-y-6">
-                          <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Hoeveelheid woorden</LabelInstrument>
+                          <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                            <VoiceglotText translationKey="common.word_count" defaultText="Hoeveelheid woorden" />
+                          </LabelInstrument>
                           <div className="bg-white rounded-[24px] p-8 border border-black/5 shadow-aura space-y-8">
                             <div className="flex justify-between items-center">
-                              <span className="text-[13px] font-medium text-va-black/40">Volume</span>
-                              <span className="text-xl font-bold text-primary">{calcWords} woorden</span>
+                              <span className="text-[13px] font-medium text-va-black/40">
+                                <VoiceglotText translationKey="common.volume" defaultText="Volume" />
+                              </span>
+                              <span className="text-xl font-bold text-primary">{calcWords} <VoiceglotText translationKey="common.words" defaultText="woorden" /></span>
                             </div>
                             <input 
                               type="range" 
@@ -389,10 +407,10 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                       <textarea value={script} onChange={(e) => setScript(e.target.value)} placeholder="Plak hier je tekst of sleep een bestand..." className="w-full h-80 bg-transparent rounded-[20px] p-8 text-lg font-light leading-relaxed border-none focus:ring-2 focus:ring-primary/10 transition-all resize-none relative z-10" spellCheck={false} />
                     </div>
                     <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
-                      <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} />Vorige</ButtonInstrument>
+                      <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></ButtonInstrument>
                       <ButtonInstrument variant="primary" onClick={handleLaunch} disabled={isLaunching || !script} className="va-btn-pro !bg-primary !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-xl shadow-primary/20">
                         {isLaunching ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
-                        Ontvang gratis proefopnames
+                        <VoiceglotText translationKey="launchpad.cta" defaultText="Ontvang gratis proefopnames" />
                       </ButtonInstrument>
                     </div>
                   </ContainerInstrument>

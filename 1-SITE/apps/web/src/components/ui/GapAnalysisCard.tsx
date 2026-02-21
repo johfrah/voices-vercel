@@ -62,10 +62,18 @@ export const GapAnalysisCard: React.FC = () => {
 
           <div className="space-y-4">
             <h3 className="text-4xl font-light tracking-tighter leading-none">
-              Maak de bereikbaarheid van <br />
-              <span className="text-primary">{getPlaceholderValue('company_name')}</span><VoiceglotText  translationKey="auto.gapanalysiscard.compleet_.3a9cd5" defaultText="compleet." /></h3>
+              <VoiceglotText 
+                translationKey="gap_analysis.title" 
+                defaultText={`Maak de bereikbaarheid van ${getPlaceholderValue('company_name')} compleet.`}
+                noTranslate={true}
+              />
+            </h3>
             <p className="text-white/40 text-[15px] font-light max-w-md">
-              Op basis van uw sector ({sector}) adviseren wij de volgende ontbrekende berichten:
+              <VoiceglotText 
+                translationKey="gap_analysis.subtitle" 
+                defaultText={`Op basis van uw sector (${sector}) adviseren wij de volgende ontbrekende berichten:`}
+                noTranslate={true}
+              />
             </p>
           </div>
 
@@ -85,10 +93,14 @@ export const GapAnalysisCard: React.FC = () => {
                   ) : (
                     <AlertCircle strokeWidth={1.5} size={16} className="text-primary" />
                   )}
-                  <span className="text-[15px] font-light tracking-widest">{req.label}</span>
+                  <span className="text-[15px] font-light tracking-widest">
+                    <VoiceglotText translationKey={`gap_analysis.requirement.${req.id}`} defaultText={req.label} />
+                  </span>
                 </div>
                 {!hasAsset(req.id) && (
-                  <span className="text-[15px] font-light bg-primary px-2 py-1 rounded-full tracking-tighter "><VoiceglotText  translationKey="auto.gapanalysiscard.aanbevolen.991a0b" defaultText="Aanbevolen" /></span>
+                  <span className="text-[15px] font-light bg-primary px-2 py-1 rounded-full tracking-tighter ">
+                    <VoiceglotText translationKey="common.recommended" defaultText="Aanbevolen" />
+                  </span>
                 )}
               </div>
             ))}

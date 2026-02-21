@@ -136,18 +136,18 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(58%) sepia(68%) saturate(534%) hue-rotate(113deg) brightness(94%) contrast(91%)' }} />
         </ContainerInstrument>
         <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-va-black">
-          {hasDates ? "Bedankt voor je inschrijving!" : "Je staat op de lijst!"}
+          {hasDates ? <VoiceglotText translationKey="studio.booking.success.title" defaultText="Bedankt voor je inschrijving!" /> : <VoiceglotText translationKey="studio.booking.notify_me.success.title" defaultText="Je staat op de lijst!" />}
         </HeadingInstrument>
         <TextInstrument className="text-[15px] text-va-black/60 font-light leading-relaxed max-w-[240px] mx-auto">
           {hasDates 
-            ? "We hebben je gegevens ontvangen. Je ontvangt binnen enkele minuten een bevestiging per e-mail."
-            : "We laten je als eerste weten wanneer er een nieuwe datum voor deze workshop beschikbaar is."}
+            ? <VoiceglotText translationKey="studio.booking.success.text" defaultText="We hebben je gegevens ontvangen. Je ontvangt binnen enkele minuten een bevestiging per e-mail." />
+            : <VoiceglotText translationKey="studio.booking.notify_me.success.text" defaultText="We laten je als eerste weten wanneer er een nieuwe datum voor deze workshop beschikbaar is." />}
         </TextInstrument>
         <ButtonInstrument 
           onClick={() => setIsSuccess(false)}
           className="text-[15px] font-light tracking-widest text-primary mt-8 hover:underline"
         >
-          Sluiten
+          <VoiceglotText translationKey="common.close" defaultText="Sluiten" />
         </ButtonInstrument>
       </ContainerInstrument>
     );
@@ -193,10 +193,10 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                             : "bg-va-black/10 text-va-black/40"
                       )}>
                         {(date.capacity - (date.filled || 0)) <= 0 
-                          ? "VOLZET" 
+                          ? <VoiceglotText translationKey="common.full" defaultText="VOLZET" /> 
                           : (date.capacity - (date.filled || 0)) <= 2 
-                            ? `LAATSTE ${(date.capacity - (date.filled || 0)) === 1 ? 'PLEK' : 'PLEKKEN'}` 
-                            : "BESCHIKBAAR"}
+                            ? <VoiceglotText translationKey="common.last_spots" defaultText={t('common.last_spots_count', `LAATSTE ${ (date.capacity - (date.filled || 0)) === 1 ? 'PLEK' : 'PLEKKEN' }`, { count: date.capacity - (date.filled || 0) })} /> 
+                            : <VoiceglotText translationKey="common.available" defaultText="BESCHIKBAAR" />}
                       </div>
                     )}
                   </ContainerInstrument>
@@ -205,7 +205,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                   </TextInstrument>
                 </ContainerInstrument>
                 <TextInstrument className="text-[15px] font-light tracking-tighter ml-4 text-inherit">
-                  {parseFloat(date.price || String(priceExclVatValue))}
+                  € {parseFloat(date.price || String(priceExclVatValue))}
                 </TextInstrument>
               </ButtonInstrument>
             ))}
@@ -225,19 +225,19 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
 
         {!hasDates && (
           <TextInstrument className="text-[15px] text-va-black/80 font-light leading-relaxed mb-4">
-            Er zijn momenteel geen data gepland. Laat je gegevens achter en we laten je weten wanneer er een nieuwe editie is.
+            <VoiceglotText translationKey="studio.booking.notify_me.text" defaultText="Er zijn momenteel geen data gepland. Laat je gegevens achter en we laten je weten wanneer er een nieuwe editie is." />
           </TextInstrument>
         )}
 
         <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InputInstrument 
-            placeholder="Voornaam"
+            placeholder={t('common.placeholder.first_name', "Voornaam")}
             value={formData.firstName}
             onChange={(e) => setFormData({...formData, firstName: e.target.value})}
             className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all"
           />
           <InputInstrument 
-            placeholder="Familienaam"
+            placeholder={t('common.placeholder.last_name', "Familienaam")}
             value={formData.lastName}
             onChange={(e) => setFormData({...formData, lastName: e.target.value})}
             className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all"
@@ -245,20 +245,20 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
           
           <InputInstrument 
             type="email"
-            placeholder="Emailadres"
+            placeholder={t('common.placeholder.email', "Emailadres")}
             value={formData.email}
             onChange={(e) => setFormData({...formData, email: e.target.value})}
             className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all md:col-span-2"
           />
 
           <InputInstrument 
-            placeholder="Leeftijd"
+            placeholder={t('common.placeholder.age', "Leeftijd")}
             value={formData.age}
             onChange={(e) => setFormData({...formData, age: e.target.value})}
             className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all"
           />
           <InputInstrument 
-            placeholder="Beroep"
+            placeholder={t('common.placeholder.profession', "Beroep")}
             value={formData.profession}
             onChange={(e) => setFormData({...formData, profession: e.target.value})}
             className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all"
@@ -320,7 +320,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
         
         {hasDates && (
           <TextInstrument className="text-[15px] text-center text-va-black/60 font-light tracking-[0.2em] ">
-            <VoiceglotText translationKey="studio.booking.security_info" defaultText="Veilig betalen via Mollie  Directe bevestiging" />
+            <VoiceglotText translationKey="studio.booking.security_info" defaultText="Veilig betalen via Mollie • Directe bevestiging" />
           </TextInstrument>
         )}
       </ContainerInstrument>

@@ -153,7 +153,7 @@ export default function CheckoutPageClient() {
                       <VoiceglotText translationKey="checkout.trust.title" defaultText="Anderen gingen je voor" />
                     </HeadingInstrument>
                     <TextInstrument className="text-[13px] text-va-black/40 font-light uppercase tracking-widest">
-                      <VoiceglotText translationKey="checkout.trust.subtitle" defaultText={`${reviewStats?.averageRating || "4.9"}/5 op basis van ${reviewStats?.totalCount || "390"}+ reviews`} />
+                      <VoiceglotText translationKey="checkout.trust.subtitle" defaultText={`${reviewStats?.averageRating || "4.9"}/5 ${t('common.based_on', 'op basis van')} ${reviewStats?.totalCount || "390"}+ ${t('common.reviews', 'reviews')}`} />
                     </TextInstrument>
                   </div>
                 </div>
@@ -180,7 +180,7 @@ export default function CheckoutPageClient() {
                     </div>
                   </div>
                   <TextInstrument className="text-[12px] font-medium text-va-black/40 italic">
-                    &quot;Direct contact, snelle levering.&quot;
+                    &quot;<VoiceglotText translationKey="checkout.trust.testimonial" defaultText="Direct contact, snelle levering." />&quot;
                   </TextInstrument>
                 </div>
               </div>

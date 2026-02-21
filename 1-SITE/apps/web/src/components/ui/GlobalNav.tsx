@@ -408,15 +408,15 @@ export default function GlobalNav() {
       const data = await res.json();
       if (res.ok) {
         setLoginStatus('success');
-        setLoginMessage('Check je inbox!');
+        setLoginMessage(t('nav.login.check_inbox', 'Check je inbox!'));
         playClick('success');
       } else {
         setLoginStatus('error');
-        setLoginMessage(data.error || 'Fout bij aanvraag');
+        setLoginMessage(data.error || t('nav.login.error_request', 'Fout bij aanvraag'));
       }
     } catch (err) {
       setLoginStatus('error');
-      setLoginMessage('Netwerkfout');
+      setLoginMessage(t('nav.login.network_error', 'Netwerkfout'));
     }
   };
 
@@ -600,9 +600,9 @@ export default function GlobalNav() {
             />
           </div>
         ) : isJohfrah ? (
-          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="auto.globalnav.johfrah_lefebvre.95a724" defaultText="Johfrah Lefebvre" /></TextInstrument>
+          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.johfrah_name" defaultText="Johfrah Lefebvre" noTranslate={true} /></TextInstrument>
         ) : market.market_code === 'YOUSSEF' ? (
-          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="auto.globalnav.youssef_zaki.42bcfa" defaultText="Youssef Zaki" /></TextInstrument>
+          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.youssef_name" defaultText="Youssef Zaki" noTranslate={true} /></TextInstrument>
         ) : pathname.startsWith('/academy') ? (
           <Image  
           src="/assets/studio/common/branding/VACADEMY.webp" 
@@ -726,7 +726,9 @@ export default function GlobalNav() {
                   className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-[250]"
                 >
                   <div className="flex flex-col gap-3">
-                    <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-widest">Link url</TextInstrument>
+                    <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-widest">
+                      <VoiceglotText translationKey="nav.edit.link_url" defaultText="Link url" />
+                    </TextInstrument>
                     <input 
                       autoFocus
                       type="text" 
@@ -739,9 +741,11 @@ export default function GlobalNav() {
                       }}
                     />
                     <div className="flex justify-end gap-2">
-                      <button onClick={() => setIsEditingLink(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">Annuleer</button>
+                      <button onClick={() => setIsEditingLink(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
+                        <VoiceglotText translationKey="common.cancel" defaultText="Annuleer" />
+                      </button>
                       <button onClick={() => updateLinkUrl(idx, editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
-                        <Check size={12} strokeWidth={3} /> Save
+                        <Check size={12} strokeWidth={3} /> <VoiceglotText translationKey="common.save" defaultText="Save" />
                       </button>
                     </div>
                   </div>
@@ -786,7 +790,7 @@ export default function GlobalNav() {
                   <VoiceglotText translationKey="nav.favorites_title" defaultText="Jouw selectie" />
                 </TextInstrument>
                 <TextInstrument className="text-[11px] font-medium text-va-black/30 tracking-widest uppercase">
-                  {favoritesCount} {favoritesCount === 1 ? 'stem' : 'stemmen'}
+                  {favoritesCount} {favoritesCount === 1 ? t('common.voice', 'stem') : t('common.voices', 'stemmen')}
                 </TextInstrument>
               </ContainerInstrument>
 
@@ -811,7 +815,10 @@ export default function GlobalNav() {
                             {actor.display_name}
                           </TextInstrument>
                           <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest uppercase">
-                            {actor.native_lang_label || actor.native_lang}
+                            <VoiceglotText 
+                              translationKey={`common.language.${actor.native_lang?.toLowerCase()}`} 
+                              defaultText={actor.native_lang_label || MarketManager.getLanguageLabel(actor.native_lang || '')} 
+                            />
                           </TextInstrument>
                         </ContainerInstrument>
                         <button 
@@ -868,7 +875,7 @@ export default function GlobalNav() {
                 <VoiceglotText translationKey="nav.cart_title" defaultText="Winkelmandje" />
               </TextInstrument>
               <TextInstrument className="text-[11px] font-medium text-va-black/30 tracking-widest uppercase">
-                {cartCount} {cartCount === 1 ? 'item' : 'items'}
+                {cartCount} {cartCount === 1 ? t('common.item', 'item') : t('common.items', 'items')}
               </TextInstrument>
             </ContainerInstrument>
 
@@ -894,7 +901,7 @@ export default function GlobalNav() {
                         </TextInstrument>
                         <div className="flex items-center gap-1.5 mt-0.5">
                           <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest">
-                            {item.usage === 'commercial' ? 'Commercial' : item.usage === 'telefonie' ? 'Telefonie' : 'Corporate'}
+                            {item.usage === 'commercial' ? t('common.commercial', 'Commercial') : item.usage === 'telefonie' ? t('common.telephony', 'Telefonie') : t('common.corporate', 'Corporate')}
                           </TextInstrument>
                           {item.country && (
                             <>
@@ -911,7 +918,7 @@ export default function GlobalNav() {
                           €{item.pricing?.total || item.pricing?.subtotal || 0}
                         </TextInstrument>
                         <TextInstrument className="text-[10px] text-va-black/20 font-light tracking-tighter">
-                          Excl. BTW
+                          <VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" />
                         </TextInstrument>
                       </div>
                     </ContainerInstrument>
@@ -930,7 +937,9 @@ export default function GlobalNav() {
             {checkoutState.items.length > 0 && (
               <ContainerInstrument plain className="p-2 pt-3 border-t border-black/5 mt-1">
                 <div className="flex justify-between items-center mb-3 px-2">
-                  <TextInstrument className="text-[13px] font-light text-va-black/40">Subtotaal</TextInstrument>
+                  <TextInstrument className="text-[13px] font-light text-va-black/40">
+                    <VoiceglotText translationKey="common.subtotal" defaultText="Subtotaal" />
+                  </TextInstrument>
                   <TextInstrument className="text-[15px] font-medium text-va-black">
                     €{subtotal.toFixed(2)}
                   </TextInstrument>
@@ -1058,11 +1067,23 @@ export default function GlobalNav() {
                   
                   {/* Toegang Sectie */}
                   <div className="mt-3 pt-3 border-t border-black/5">
-                    <TextInstrument className="text-[9px] font-bold text-va-black/20 tracking-[0.1em] uppercase mb-2">Jouw Toegang</TextInstrument>
+                    <TextInstrument className="text-[9px] font-bold text-va-black/20 tracking-[0.1em] uppercase mb-2">
+                      <VoiceglotText translationKey="nav.your_access" defaultText="Jouw Toegang" />
+                    </TextInstrument>
                     <div className="flex flex-wrap gap-1.5">
-                      <div className="px-2 py-0.5 bg-va-black text-white text-[9px] font-bold rounded-md tracking-wider uppercase">Klant</div>
-                      {isAdmin && <div className="px-2 py-0.5 bg-primary text-white text-[9px] font-bold rounded-md tracking-wider uppercase">Admin</div>}
-                      {(auth.user?.email?.includes('voices.be') || isAdmin) && <div className="px-2 py-0.5 bg-blue-500 text-white text-[9px] font-bold rounded-md tracking-wider uppercase">Partner</div>}
+                      <div className="px-2 py-0.5 bg-va-black text-white text-[9px] font-bold rounded-md tracking-wider uppercase">
+                        <VoiceglotText translationKey="nav.access.customer" defaultText="Klant" />
+                      </div>
+                      {isAdmin && (
+                        <div className="px-2 py-0.5 bg-primary text-white text-[9px] font-bold rounded-md tracking-wider uppercase">
+                          <VoiceglotText translationKey="nav.access.admin" defaultText="Admin" />
+                        </div>
+                      )}
+                      {(auth.user?.email?.includes('voices.be') || isAdmin) && (
+                        <div className="px-2 py-0.5 bg-blue-500 text-white text-[9px] font-bold rounded-md tracking-wider uppercase">
+                          <VoiceglotText translationKey="nav.access.partner" defaultText="Partner" />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </ContainerInstrument>
@@ -1071,7 +1092,7 @@ export default function GlobalNav() {
                 label={<VoiceglotText translationKey="nav.admin_dashboard" defaultText="Admin Dashboard" />} 
                 href="/admin/dashboard/" 
                 variant="primary" 
-                badge="Admin" />
+                badge={t('common.admin', "Admin")} />
             )}
             {isAdmin && (
               <ButtonInstrument
@@ -1129,7 +1150,7 @@ export default function GlobalNav() {
                         {loginMessage}
                       </TextInstrument>
                       <TextInstrument className="text-[10px] text-green-600/60 mt-1">
-                        Link verstuurd naar {loginEmail}
+                        <VoiceglotText translationKey="nav.login.link_sent_to" defaultText="Link verstuurd naar" /> {loginEmail}
                       </TextInstrument>
                     </ContainerInstrument>
                   ) : (
@@ -1138,7 +1159,7 @@ export default function GlobalNav() {
                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/30 group-focus-within:text-primary transition-colors" size={18} />
                         <input 
                           type="email"
-                          placeholder="E-mailadres"
+                          placeholder={t('nav.login.email_placeholder', "E-mailadres")}
                           className="w-full py-4 pl-12 pr-4 rounded-xl bg-va-off-white border-2 border-transparent focus:border-primary/20 focus:bg-white transition-all text-[15px] font-light outline-none text-va-black placeholder:text-va-black/20"
                           value={loginEmail}
                           onChange={(e) => setLoginEmail(e.target.value)}
@@ -1171,7 +1192,7 @@ export default function GlobalNav() {
                       
                       <div className="flex items-center gap-2 py-1">
                         <div className="h-[1px] flex-1 bg-black/5" />
-                        <TextInstrument className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase">of</TextInstrument>
+                        <TextInstrument className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase"><VoiceglotText translationKey="common.or" defaultText="of" /></TextInstrument>
                         <div className="h-[1px] flex-1 bg-black/5" />
                       </div>
 

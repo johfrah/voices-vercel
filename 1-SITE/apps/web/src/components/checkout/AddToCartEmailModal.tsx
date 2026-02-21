@@ -6,6 +6,7 @@ import { ButtonInstrument, InputInstrument, HeadingInstrument, TextInstrument } 
 import { motion } from 'framer-motion';
 import { X, Mail, ArrowRight, ShoppingBag, Plus } from 'lucide-react';
 import { VoiceglotText } from '../ui/VoiceglotText';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface AddToCartEmailModalProps {
   isOpen: boolean;
@@ -21,12 +22,13 @@ export const AddToCartEmailModal: React.FC<AddToCartEmailModalProps> = ({
   initialEmail = ''
 }) => {
   const { playClick } = useSonicDNA();
+  const { t } = useTranslation();
   const [email, setEmail] = useState(initialEmail);
   const [error, setError] = useState('');
 
   const handleAction = (action: 'checkout' | 'continue') => {
     if (!email || !email.includes('@')) {
-      setError('Voer een geldig e-mailadres in');
+      setError(t('checkout.modal.error_email', 'Voer een geldig e-mailadres in'));
       playClick('error');
       return;
     }
@@ -71,7 +73,7 @@ export const AddToCartEmailModal: React.FC<AddToCartEmailModalProps> = ({
             <div className="space-y-3">
               <InputInstrument 
                 type="email"
-                placeholder="jouw@email.be"
+                placeholder={t('checkout.modal.placeholder_email', "jouw@email.be")}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);

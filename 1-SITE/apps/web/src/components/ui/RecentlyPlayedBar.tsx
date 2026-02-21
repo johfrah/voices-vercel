@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/contexts/TranslationContext";
 import { useGlobalAudio } from "@/contexts/GlobalAudioContext";
 import { ContainerInstrument, TextInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
 import { useSonicDNA } from "@/lib/sonic-dna";
@@ -11,6 +12,7 @@ import { useState, useEffect } from "react";
 import { VoiceglotText } from "./VoiceglotText";
 
 export function RecentlyPlayedBar() {
+  const { t } = useTranslation();
   const { recentlyPlayed, activeDemo, isPlaying, playDemo, setIsPlaying, clearHistory } = useGlobalAudio();
   const { playClick, playSwell } = useSonicDNA();
 
@@ -41,7 +43,7 @@ export function RecentlyPlayedBar() {
           }}
           className="text-[10px] font-bold text-va-black/20 hover:text-primary transition-colors uppercase tracking-widest"
         >
-          <VoiceglotText translationKey="action.clear" defaultText="Wissen" />
+          <VoiceglotText translationKey="action.clear_history" defaultText="Wissen" />
         </button>
       </ContainerInstrument>
 
@@ -103,7 +105,7 @@ export function RecentlyPlayedBar() {
                       "text-[10px] font-light leading-none tracking-tight",
                       isActive ? "text-white/70" : "text-va-black/40"
                     )}>
-                      {demo.category || "Demo"}
+                      {t(`category.${demo.category?.toLowerCase()}`, demo.category || "Demo")}
                     </TextInstrument>
                   </div>
                 </button>

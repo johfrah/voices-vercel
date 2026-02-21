@@ -187,10 +187,10 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
         
         // CHRIS-PROTOCOL: Human-friendly full labels for single selection
         let humanLabel = label;
-        if (key.startsWith('radio_')) humanLabel = count === 1 ? `radiospot (${label.toLowerCase()})` : `radiospots (${label.toLowerCase()})`;
-        else if (key.startsWith('tv_')) humanLabel = count === 1 ? `tv-spot (${label.toLowerCase()})` : `tv-spots (${label.toLowerCase()})`;
-        else if (key === 'online') humanLabel = count === 1 ? 'online spot' : 'online spots';
-        else if (key === 'podcast') humanLabel = count === 1 ? 'podcast spot' : 'podcast spots';
+        if (key.startsWith('radio_')) humanLabel = count === 1 ? t('common.radio_spot_label', `radiospot (${label.toLowerCase()})`, { label: label.toLowerCase() }) : t('common.radio_spots_label', `radiospots (${label.toLowerCase()})`, { label: label.toLowerCase() });
+        else if (key.startsWith('tv_')) humanLabel = count === 1 ? t('common.tv_spot_label', `tv-spot (${label.toLowerCase()})`, { label: label.toLowerCase() }) : t('common.tv_spots_label', `tv-spots (${label.toLowerCase()})`, { label: label.toLowerCase() });
+        else if (key === 'online') humanLabel = count === 1 ? t('common.online_spot', 'online spot') : t('common.online_spots', 'online spots');
+        else if (key === 'podcast') humanLabel = count === 1 ? t('common.podcast_spot', 'podcast spot') : t('common.podcast_spots', 'podcast spots');
 
         return `${count}x ${humanLabel}`;
       }
@@ -288,7 +288,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchSearchQuery(e.target.value)}
-                    placeholder="Zoeken..."
+                    placeholder={t('action.search', "Zoeken...")}
                     className="w-full pl-10 pr-4 py-2 bg-va-off-white rounded-full text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                   />
                 </div>
@@ -306,7 +306,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                     !value ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
                   )}
                 >
-                  <span>{placeholder}</span>
+                  <span>{t('common.none', placeholder)}</span>
                   {!value && <Check size={16} strokeWidth={3} className="text-primary" />}
                 </button>
               )}
@@ -381,7 +381,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                           {hasRegions && (
                             <div className="flex items-center justify-between">
                               <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
-                                Uitzendgebied
+                                <VoiceglotText translationKey="common.broadcast_area" defaultText="Uitzendgebied" />
                               </span>
                               <div className="flex items-center gap-3 bg-va-off-white p-1 rounded-lg border border-black/5">
                                 <button 
@@ -400,9 +400,9 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                 <span className="text-[11px] font-bold text-primary min-w-[65px] text-center uppercase tracking-tight">
                                   {(() => {
                                     const r = mediaRegion[item.value] || 'national';
-                                    if (r === 'national') return 'Nationaal';
-                                    if (r === 'regional') return 'Regionaal';
-                                    return 'Lokaal';
+                                    if (r === 'national') return t('common.national', 'Nationaal');
+                                    if (r === 'regional') return t('common.regional', 'Regionaal');
+                                    return t('common.local', 'Lokaal');
                                   })()}
                                 </span>
                                 <button 
@@ -425,7 +425,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                           {/* Aantal Spots */}
                           <div className="flex items-center justify-between">
                             <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
-                              {t('common.spots', 'Aantal spots')}
+                              <VoiceglotText translationKey="common.spots_count" defaultText="Aantal spots" />
                             </span>
                             <div className="flex items-center gap-3">
                               <button 
@@ -456,7 +456,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                           {onYearsChange && (
                             <div className="flex items-center justify-between">
                               <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
-                                {isPodcast ? t('common.license', 'Licentie') : t('common.duration', 'Looptijd')}
+                                {isPodcast ? <VoiceglotText translationKey="common.license" defaultText="Licentie" /> : <VoiceglotText translationKey="common.duration" defaultText="Looptijd" />}
                               </span>
                               <div className="flex items-center gap-3">
                                   <button 
@@ -481,12 +481,12 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                   </button>
                                   <span className="text-[11px] font-bold text-primary min-w-[40px] text-center">
                                     {isPodcast ? (
-                                      years === 0.25 ? "3 maanden" :
-                                      years === 0.5 ? "6 maanden" :
-                                      years === 0.75 ? "9 maanden" :
-                                      `${years} jaar`
+                                      years === 0.25 ? t('common.3_months', "3 maanden") :
+                                      years === 0.5 ? t('common.6_months', "6 maanden") :
+                                      years === 0.75 ? t('common.9_months', "9 maanden") :
+                                      t('common.years_count', `${years} jaar`, { count: years })
                                     ) : (
-                                      years === 1 ? "1 jaar" : `${years} jaar`
+                                      years === 1 ? t('common.1_year', "1 jaar") : t('common.years_count', `${years} jaar`, { count: years })
                                     )}
                                   </span>
                                   <button 
@@ -563,7 +563,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                               onOrderClick(item.label);
                             }}
                             className="p-2 bg-va-black text-white rounded-lg hover:bg-primary transition-all shadow-sm group/order"
-                            title="Volgorde aanpassen"
+                            title={t('action.adjust_order', "Volgorde aanpassen")}
                           >
                             <GripVertical size={14} className="group-hover/order:scale-110 transition-transform" />
                           </button>

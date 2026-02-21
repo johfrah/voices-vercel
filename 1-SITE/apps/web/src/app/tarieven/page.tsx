@@ -209,7 +209,9 @@ function PricePageContent() {
 
           {/* LANGUAGE FILTERS - Market Aware - Moved below calculator, above table */}
           <div className="flex flex-wrap items-center justify-center gap-3 pt-8 border-t border-black/[0.03]">
-            <span className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest mr-2">Filter op taal:</span>
+            <span className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest mr-2">
+              <VoiceglotText translationKey="pricing.filter.language" defaultText="Filter op taal:" />
+            </span>
             {languageOptions.map((lang) => (
               <button
                 key={lang.value}
@@ -226,7 +228,9 @@ function PricePageContent() {
                 )}
               >
                 {lang.icon && <lang.icon size={14} />}
-                <span>{lang.label}</span>
+                <span>
+                  <VoiceglotText translationKey={`common.language.${lang.label.toLowerCase()}`} defaultText={lang.label} />
+                </span>
               </button>
             ))}
           </div>

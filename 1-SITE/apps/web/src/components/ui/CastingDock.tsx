@@ -94,7 +94,7 @@ export const CastingDock = () => {
               <div className="flex items-center gap-2">
                 <Users size={14} className="text-primary" />
                 <TextInstrument className="text-white font-light text-[17px] tracking-tight truncate leading-tight block">
-                  {selectedActors.length} {selectedActors.length === 1 ? 'stem' : 'stemmen'}
+                  {selectedActors.length} <VoiceglotText translationKey={selectedActors.length === 1 ? 'common.voice' : 'common.voices'} defaultText={selectedActors.length === 1 ? 'stem' : 'stemmen'} />
                 </TextInstrument>
               </div>
               <TextInstrument className="text-white/40 text-[11px] font-bold tracking-[0.1em] uppercase truncate mt-0.5 ml-5">
