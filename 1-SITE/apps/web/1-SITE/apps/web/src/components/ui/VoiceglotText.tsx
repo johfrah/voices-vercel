@@ -13,9 +13,6 @@ interface VoiceglotTextProps {
   className?: string;
   as?: 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div';
   noTranslate?: boolean;
-  context?: string;
-  instrument?: 'button' | 'tag' | 'label' | 'text' | 'hero' | 'pricing';
-  maxChars?: number;
 }
 
 /**
@@ -30,10 +27,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   defaultText, 
   className,
   as: Component = 'span',
-  noTranslate = false,
-  context = '',
-  instrument = 'text',
-  maxChars
+  noTranslate = false
 }) => {
   const { isEditMode } = useEditMode();
   const { playClick, playSwell } = useSonicDNA();
@@ -43,37 +37,6 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isHealing, setIsHealing] = useState(false);
   const textRef = useRef<HTMLSpanElement>(null);
-  const containerRef = useRef<HTMLElement>(null);
-
-  //  CHRIS-PROTOCOL: Get granular context from DOM
-  const getGranularContext = () => {
-    if (!containerRef.current) return context;
-    
-    try {
-      const parent = containerRef.current.parentElement;
-      const siblings = Array.from(parent?.children || [])
-        .filter(c => c !== containerRef.current)
-        .map(c => (c as HTMLElement).innerText?.slice(0, 30))
-        .filter(Boolean)
-        .join(' | ');
-      
-      const path = [];
-      let curr = containerRef.current as HTMLElement | null;
-      while (curr && path.length < 3) {
-        path.push(curr.tagName.toLowerCase() + (curr.className ? '.' + curr.className.split(' ')[0] : ''));
-        curr = curr.parentElement;
-      }
-
-      return `
-        CONTEXT: ${context || 'General UI Text'}
-        INSTRUMENT: ${instrument}
-        DOM PATH: ${path.reverse().join(' > ')}
-        SIBLINGS: ${siblings}
-      `.trim();
-    } catch (e) {
-      return context;
-    }
-  };
 
   //  CHRIS-PROTOCOL: Force content update when translation or edit mode changes
   useEffect(() => {
@@ -122,7 +85,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     }
   }, [translationKey, defaultText, language, isEditMode]);
 
-  //  SELF-HEALING & AUDIT LOGIC
+  //  SELF-HEALING LOGIC
   useEffect(() => {
     // CHRIS-PROTOCOL: Determine default language based on market
     // In Youssef market, 'en' is the source of truth, otherwise 'nl'
@@ -133,19 +96,15 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
 
     const currentTranslation = t(translationKey, defaultText);
     
-    //  NUCLEAR AUDIT PROTOCOL:
-    // 1. Als de vertaling gelijk is aan de default (Source), dan ontbreekt deze -> HEAL
-    // 2. Als de vertaling bestaat, maar we willen native kwaliteit garanderen -> BACKGROUND AUDIT
-    const needsHeal = currentTranslation === defaultText;
-    const needsAudit = !needsHeal && !isHealing; // We auditen bestaande copy in de achtergrond
-
-    if ((needsHeal || needsAudit) && !isHealing) {
-      const processTranslation = async () => {
+    // Als de vertaling gelijk is aan de default (Source) maar we zitten in een andere taal,
+    // dan is er een grote kans dat de vertaling ontbreekt.
+    if (currentTranslation === defaultText && language !== sourceLang && !isHealing) {
+      const healTranslation = async () => {
         setIsHealing(true);
         
         //  ANNA-PROTOCOL: Small random delay to prevent "request storms" 
         // when many translations are missing on a single page.
-        await new Promise(resolve => setTimeout(resolve, Math.random() * 3000));
+        await new Promise(resolve => setTimeout(resolve, Math.random() * 2000));
 
         try {
           const res = await fetch('/api/translations/heal', {
@@ -154,23 +113,20 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
             body: JSON.stringify({
               key: translationKey,
               originalText: defaultText,
-              currentLang: language,
-              forceAudit: needsAudit, // Trigger GPT-4o native check
-              context: getGranularContext(),
-              maxChars: maxChars
+              currentLang: language
             })
           });
           const data = await res.json();
-          if (data.success && data.text && needsHeal) {
+          if (data.success && data.text) {
             setContent(data.text);
           }
         } catch (e) {
-          console.error(' Voiceglot process failed:', e);
+          console.error(' Self-healing failed:', e);
         } finally {
           setIsHealing(false);
         }
       };
-      processTranslation();
+      healTranslation();
     } else {
       setContent(currentTranslation);
     }
@@ -216,7 +172,6 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
 
   return (
     <Component 
-      ref={containerRef as any}
       className={cn(
         "relative group/edit inline-block transition-all duration-300",
         isEditMode && !noTranslate && "cursor-text hover:bg-primary/5 px-1 -mx-1 rounded-md min-w-[20px]",
@@ -243,7 +198,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
         {content}
       </span>
 
-      {isHealing && isEditMode && (
+      {isHealing && (
         <div className="absolute -right-6 top-1/2 -translate-y-1/2">
           <Sparkles strokeWidth={1.5} size={12} className="text-primary animate-spin" />
         </div>
