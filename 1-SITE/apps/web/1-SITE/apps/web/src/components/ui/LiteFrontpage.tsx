@@ -18,8 +18,13 @@ export default function LiteFrontpage() {
           <VoiceglotText  translationKey="lite.badge" defaultText="Voices in Aanbouw" />
         </div>
         <h1 className="text-7xl md:text-[120px] font-light leading-[0.85] tracking-tighter max-w-5xl ">
-          <VoiceglotText  translationKey="lite.title.part1" defaultText="De" /> <span className="text-primary"><VoiceglotText  translationKey="lite.title.highlight" defaultText="vriendelijkste" /></span> <br/>
-          <VoiceglotText  translationKey="lite.title.part2" defaultText="Stemmen-Ervaring." />
+          <VoiceglotText 
+            translationKey="lite.title_v2" 
+            defaultText="De {vriendelijkste} Stemmen-Ervaring." 
+            components={{
+              vriendelijkste: (children) => <span className="text-primary">{children === 'vriendelijkste' ? t('common.friendliest', 'vriendelijkste') : children}</span>
+            }}
+          />
         </h1>
         <div className="flex flex-col md:flex-row md:items-center gap-12 pt-4">
           <p className="text-xl text-va-black/60 max-w-md font-light leading-relaxed">
@@ -82,7 +87,13 @@ export default function LiteFrontpage() {
       <BentoCard span="full" className="bg-va-off-white p-12 flex flex-col md:flex-row items-center justify-between gap-8 border border-black/5 mb-32 !rounded-[20px]">
         <div className="space-y-4 text-center md:text-left">
           <h2 className="text-4xl font-light tracking-tighter ">
-            <VoiceglotText  translationKey="lite.status.title" defaultText="Blijf op de" /> <span className="text-primary"><VoiceglotText  translationKey="lite.status.highlight" defaultText="hoogte" /></span>
+            <VoiceglotText 
+              translationKey="lite.status.title_v2" 
+              defaultText="Blijf op de {hoogte}" 
+              components={{
+                hoogte: (children) => <span className="text-primary">{children === 'hoogte' ? t('common.updated', 'hoogte') : children}</span>
+              }}
+            />
           </h2>
           <p className="text-va-black/40 font-light">
             <VoiceglotText  translationKey="lite.status.text" defaultText="Laat je e-mail achter voor exclusieve toegang tot de launch." />

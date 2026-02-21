@@ -67,6 +67,11 @@ If the task is an audit or translation, simulate a native peer review.
 Ask yourself: "Would a local professional really say this, or is this 'translation-ese'?"
 Use common industry abbreviations (like 'à.p.d.' in French) if it's for a UI element.
 
+TEMPLATE PLACEHOLDERS:
+If the text contains placeholders like {name}, {price}, {count}, etc., you MUST preserve these placeholders in the translation.
+Position them where they are grammatically correct in the target language. 
+DO NOT translate the word inside the curly braces.
+
 TASK:
 ${prompt}
           `;

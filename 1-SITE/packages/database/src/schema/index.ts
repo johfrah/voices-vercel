@@ -1256,331 +1256,37 @@ export const products = pgTable('products', {
 
 // 🔗 RELATIONS (Moved to end to prevent 'referencedTable' undefined errors)
 
-export const vaultFilesRelations = relations(vaultFiles, ({ one }) => ({
-  actor: one(actors, {
-    fields: [vaultFiles.actorId],
-    references: [actors.id],
-  }),
-  customer: one(users, {
-    fields: [vaultFiles.customerId],
-    references: [users.id],
-  }),
-  project: one(orders, {
-    fields: [vaultFiles.projectId],
-    references: [orders.id],
-  }),
-  promotedMedia: one(media, {
-    fields: [vaultFiles.promotedMediaId],
-    references: [media.id],
-  }),
-}));
 
-export const productsRelations = relations(products, ({ one }) => ({
-  media: one(media, {
-    fields: [products.mediaId],
-    references: [media.id],
-  }),
-}));
 
-export const actorsRelations = relations(actors, ({ one, many }) => ({
-  user: one(users, {
-    fields: [actors.userId],
-    references: [users.id],
-  }),
-  demos: many(actorDemos),
-  videos: many(actorVideos),
-  dialects: many(actorDialects),
-  orderItems: many(orderItems), // 📦 Project historie voor de acteur
-  actorLanguages: many(actorLanguages),
-  actorTones: many(actorTones),
-  country: one(countries, {
-    fields: [actors.countryId],
-    references: [countries.id],
-  }),
-}));
 
-export const languagesRelations = relations(languages, ({ many }) => ({
-  actorLanguages: many(actorLanguages),
-}));
 
-export const actorLanguagesRelations = relations(actorLanguages, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorLanguages.actorId],
-    references: [actors.id],
-  }),
-  language: one(languages, {
-    fields: [actorLanguages.languageId],
-    references: [languages.id],
-  }),
-}));
 
-export const voiceTonesRelations = relations(voiceTones, ({ many }) => ({
-  actorTones: many(actorTones),
-}));
 
-export const actorTonesRelations = relations(actorTones, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorTones.actorId],
-    references: [actors.id],
-  }),
-  tone: one(voiceTones, {
-    fields: [actorTones.toneId],
-    references: [voiceTones.id],
-  }),
-}));
 
-export const countriesRelations = relations(countries, ({ many }) => ({
-  actors: many(actors),
-}));
 
-export const actorDialectsRelations = relations(actorDialects, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorDialects.actorId],
-    references: [actors.id],
-  }),
-}));
 
-export const actorDemosRelations = relations(actorDemos, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorDemos.actorId],
-    references: [actors.id],
-  }),
-}));
 
-export const actorVideosRelations = relations(actorVideos, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorVideos.actorId],
-    references: [actors.id],
-  }),
-}));
 
-export const locationsRelations = relations(locations, ({ many }) => ({
-  costs: many(costs),
-  editions: many(workshopEditions),
-}));
 
-export const workshopsRelations = relations(workshops, ({ one, many }) => ({
-  media: one(media, {
-    fields: [workshops.mediaId],
-    references: [media.id],
-  }),
-  instructor: one(instructors, {
-    fields: [workshops.instructorId],
-    references: [instructors.id],
-  }),
-  editions: many(workshopEditions),
-  gallery: many(workshopGallery),
-  costs: many(costs),
-}));
 
-export const workshopEditionsRelations = relations(workshopEditions, ({ one, many }) => ({
-  participants: many(orderItems),
-  workshop: one(workshops, {
-    fields: [workshopEditions.workshopId],
-    references: [workshops.id],
-  }),
-  location: one(locations, {
-    fields: [workshopEditions.locationId],
-    references: [locations.id],
-  }),
-  instructor: one(instructors, {
-    fields: [workshopEditions.instructorId],
-    references: [instructors.id],
-  }),
-  costs: many(costs),
-}));
 
-export const instructorsRelations = relations(instructors, ({ one, many }) => ({
-  photo: one(media, {
-    fields: [instructors.photoId],
-    references: [media.id],
-  }),
-  user: one(users, {
-    fields: [instructors.userId],
-    references: [users.id],
-  }),
-  workshops: many(workshops),
-  costs: many(costs),
-}));
 
-export const ordersRelations = relations(orders, ({ one, many }) => ({
-  user: one(users, {
-    fields: [orders.userId],
-    references: [users.id],
-  }),
-  items: many(orderItems),
-}));
 
-export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
-  order: one(orders, {
-    fields: [orderItems.orderId],
-    references: [orders.id],
-  }),
-  actor: one(actors, {
-    fields: [orderItems.actorId],
-    references: [actors.id],
-  }),
-  edition: one(workshopEditions, {
-    fields: [orderItems.editionId],
-    references: [workshopEditions.id],
-  }),
-  costs: many(costs),
-}));
 
-export const approvalQueueRelations = relations(approvalQueue, ({ one }) => ({
-  approver: one(users, {
-    fields: [approvalQueue.approvedBy],
-    references: [users.id],
-  }),
-}));
 
-export const voicejarSessionsRelations = relations(voicejarSessions, ({ one, many }) => ({
-  user: one(users, {
-    fields: [voicejarSessions.userId],
-    references: [users.id],
-  }),
-  events: many(voicejarEvents),
-}));
 
-export const voicejarEventsRelations = relations(voicejarEvents, ({ one }) => ({
-  session: one(voicejarSessions, {
-    fields: [voicejarEvents.sessionId],
-    references: [voicejarSessions.visitorHash],
-  }),
-}));
 
-export const contentArticlesRelations = relations(contentArticles, ({ one, many }) => ({
-  author: one(users, {
-    fields: [contentArticles.authorId],
-    references: [users.id],
-  }),
-  blocks: many(contentBlocks),
-}));
 
-export const contentBlocksRelations = relations(contentBlocks, ({ one, many }) => ({
-  article: one(contentArticles, {
-    fields: [contentBlocks.articleId],
-    references: [contentArticles.id],
-  }),
-  versions: many(contentBlockVersions),
-}));
 
-export const contentBlockVersionsRelations = relations(contentBlockVersions, ({ one }) => ({
-  block: one(contentBlocks, {
-    fields: [contentBlockVersions.blockId],
-    references: [contentBlocks.id],
-  }),
-  creator: one(users, {
-    fields: [contentBlockVersions.createdBy],
-    references: [users.id],
-  }),
-}));
 
-export const visitorsRelations = relations(visitors, ({ many }) => ({
-  logs: many(visitorLogs),
-}));
 
-export const visitorLogsRelations = relations(visitorLogs, ({ one }) => ({
-  visitor: one(visitors, {
-    fields: [visitorLogs.visitorHash],
-    references: [visitors.visitorHash],
-  }),
-}));
 
-export const workshopGalleryRelations = relations(workshopGallery, ({ one }) => ({
-  workshop: one(workshops, {
-    fields: [workshopGallery.workshopId],
-    references: [workshops.id],
-  }),
-  media: one(media, {
-    fields: [workshopGallery.mediaId],
-    references: [media.id],
-  }),
-}));
 
-export const costsRelations = relations(costs, ({ one }) => ({
-  edition: one(workshopEditions, {
-    fields: [costs.workshopEditionId],
-    references: [workshopEditions.id],
-  }),
-  location: one(locations, {
-    fields: [costs.locationId],
-    references: [locations.id],
-  }),
-  instructor: one(instructors, {
-    fields: [costs.instructorId],
-    references: [instructors.id],
-  }),
-  orderItem: one(orderItems, {
-    fields: [costs.orderItemId],
-    references: [orderItems.id],
-  }),
-}));
 
-export const studioSessionsRelations = relations(studioSessions, ({ one, many }) => ({
-  order: one(orders, {
-    fields: [studioSessions.orderId],
-    references: [orders.id],
-  }),
-  orderItem: one(orderItems, {
-    fields: [studioSessions.orderItemId],
-    references: [orderItems.id],
-  }),
-  conversation: one(chatConversations, {
-    fields: [studioSessions.conversationId],
-    references: [chatConversations.id],
-  }),
-  scripts: many(studioScripts),
-  feedback: many(studioFeedback),
-}));
 
-export const studioScriptsRelations = relations(studioScripts, ({ one }) => ({
-  session: one(studioSessions, {
-    fields: [studioScripts.sessionId],
-    references: [studioSessions.id],
-  }),
-}));
 
-export const studioFeedbackRelations = relations(studioFeedback, ({ one }) => ({
-  session: one(studioSessions, {
-    fields: [studioFeedback.sessionId],
-    references: [studioSessions.id],
-  }),
-  user: one(users, {
-    fields: [studioFeedback.userId],
-    references: [users.id],
-  }),
-}));
 
-export const coursesRelations = relations(courses, ({ many }) => ({
-  lessons: many(lessons),
-}));
 
-export const lessonsRelations = relations(lessons, ({ one }) => ({
-  course: one(courses, {
-    fields: [lessons.courseId],
-    references: [courses.id],
-  }),
-}));
-
-export const castingListsRelations = relations(castingLists, ({ one, many }) => ({
-  user: one(users, {
-    fields: [castingLists.userId],
-    references: [users.id],
-  }),
-  items: many(castingListItems),
-}));
-
-export const castingListItemsRelations = relations(castingListItems, ({ one }) => ({
-  list: one(castingLists, {
-    fields: [castingListItems.listId],
-    references: [castingLists.id],
-  }),
-  actor: one(actors, {
-    fields: [castingListItems.actorId],
-    references: [actors.id],
-  }),
-}));
 
 export const castingLists = pgTable("casting_lists", {
 	id: serial().primaryKey().notNull(),
@@ -1618,3 +1324,296 @@ export const castingListItems = pgTable("casting_list_items", {
 		name: "casting_list_items_actor_id_actors_id_fk"
 	}),
 ]);
+
+export const vaultFilesRelations = relations(vaultFiles, ({ one }) => ({
+  actor: one(actors, {
+    fields: [vaultFiles.actorId],
+    references: [actors.id],
+  }),
+  customer: one(users, {
+    fields: [vaultFiles.customerId],
+    references: [users.id],
+  }),
+  project: one(orders, {
+    fields: [vaultFiles.projectId],
+    references: [orders.id],
+  }),
+  promotedMedia: one(media, {
+    fields: [vaultFiles.promotedMediaId],
+    references: [media.id],
+  }),
+}));
+export const productsRelations = relations(products, ({ one }) => ({
+  media: one(media, {
+    fields: [products.mediaId],
+    references: [media.id],
+  }),
+}));
+export const actorsRelations = relations(actors, ({ one, many }) => ({
+  user: one(users, {
+    fields: [actors.userId],
+    references: [users.id],
+  }),
+  demos: many(actorDemos),
+  videos: many(actorVideos),
+  dialects: many(actorDialects),
+  orderItems: many(orderItems), // 📦 Project historie voor de acteur
+  actorLanguages: many(actorLanguages),
+  actorTones: many(actorTones),
+  country: one(countries, {
+    fields: [actors.countryId],
+    references: [countries.id],
+  }),
+}));
+export const languagesRelations = relations(languages, ({ many }) => ({
+  actorLanguages: many(actorLanguages),
+}));
+export const actorLanguagesRelations = relations(actorLanguages, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorLanguages.actorId],
+    references: [actors.id],
+  }),
+  language: one(languages, {
+    fields: [actorLanguages.languageId],
+    references: [languages.id],
+  }),
+}));
+export const voiceTonesRelations = relations(voiceTones, ({ many }) => ({
+  actorTones: many(actorTones),
+}));
+export const actorTonesRelations = relations(actorTones, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorTones.actorId],
+    references: [actors.id],
+  }),
+  tone: one(voiceTones, {
+    fields: [actorTones.toneId],
+    references: [voiceTones.id],
+  }),
+}));
+export const countriesRelations = relations(countries, ({ many }) => ({
+  actors: many(actors),
+}));
+export const actorDialectsRelations = relations(actorDialects, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorDialects.actorId],
+    references: [actors.id],
+  }),
+}));
+export const actorDemosRelations = relations(actorDemos, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorDemos.actorId],
+    references: [actors.id],
+  }),
+}));
+export const actorVideosRelations = relations(actorVideos, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorVideos.actorId],
+    references: [actors.id],
+  }),
+}));
+export const locationsRelations = relations(locations, ({ many }) => ({
+  costs: many(costs),
+  editions: many(workshopEditions),
+}));
+export const workshopsRelations = relations(workshops, ({ one, many }) => ({
+  media: one(media, {
+    fields: [workshops.mediaId],
+    references: [media.id],
+  }),
+  instructor: one(instructors, {
+    fields: [workshops.instructorId],
+    references: [instructors.id],
+  }),
+  editions: many(workshopEditions),
+  gallery: many(workshopGallery),
+  costs: many(costs),
+}));
+export const workshopEditionsRelations = relations(workshopEditions, ({ one, many }) => ({
+  participants: many(orderItems),
+  workshop: one(workshops, {
+    fields: [workshopEditions.workshopId],
+    references: [workshops.id],
+  }),
+  location: one(locations, {
+    fields: [workshopEditions.locationId],
+    references: [locations.id],
+  }),
+  instructor: one(instructors, {
+    fields: [workshopEditions.instructorId],
+    references: [instructors.id],
+  }),
+  costs: many(costs),
+}));
+export const instructorsRelations = relations(instructors, ({ one, many }) => ({
+  photo: one(media, {
+    fields: [instructors.photoId],
+    references: [media.id],
+  }),
+  user: one(users, {
+    fields: [instructors.userId],
+    references: [users.id],
+  }),
+  workshops: many(workshops),
+  costs: many(costs),
+}));
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  user: one(users, {
+    fields: [orders.userId],
+    references: [users.id],
+  }),
+  items: many(orderItems),
+}));
+export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+  actor: one(actors, {
+    fields: [orderItems.actorId],
+    references: [actors.id],
+  }),
+  edition: one(workshopEditions, {
+    fields: [orderItems.editionId],
+    references: [workshopEditions.id],
+  }),
+  costs: many(costs),
+}));
+export const approvalQueueRelations = relations(approvalQueue, ({ one }) => ({
+  approver: one(users, {
+    fields: [approvalQueue.approvedBy],
+    references: [users.id],
+  }),
+}));
+export const voicejarSessionsRelations = relations(voicejarSessions, ({ one, many }) => ({
+  user: one(users, {
+    fields: [voicejarSessions.userId],
+    references: [users.id],
+  }),
+  events: many(voicejarEvents),
+}));
+export const voicejarEventsRelations = relations(voicejarEvents, ({ one }) => ({
+  session: one(voicejarSessions, {
+    fields: [voicejarEvents.sessionId],
+    references: [voicejarSessions.visitorHash],
+  }),
+}));
+export const contentArticlesRelations = relations(contentArticles, ({ one, many }) => ({
+  author: one(users, {
+    fields: [contentArticles.authorId],
+    references: [users.id],
+  }),
+  blocks: many(contentBlocks),
+}));
+export const contentBlocksRelations = relations(contentBlocks, ({ one, many }) => ({
+  article: one(contentArticles, {
+    fields: [contentBlocks.articleId],
+    references: [contentArticles.id],
+  }),
+  versions: many(contentBlockVersions),
+}));
+export const contentBlockVersionsRelations = relations(contentBlockVersions, ({ one }) => ({
+  block: one(contentBlocks, {
+    fields: [contentBlockVersions.blockId],
+    references: [contentBlocks.id],
+  }),
+  creator: one(users, {
+    fields: [contentBlockVersions.createdBy],
+    references: [users.id],
+  }),
+}));
+export const visitorsRelations = relations(visitors, ({ many }) => ({
+  logs: many(visitorLogs),
+}));
+export const visitorLogsRelations = relations(visitorLogs, ({ one }) => ({
+  visitor: one(visitors, {
+    fields: [visitorLogs.visitorHash],
+    references: [visitors.visitorHash],
+  }),
+}));
+export const workshopGalleryRelations = relations(workshopGallery, ({ one }) => ({
+  workshop: one(workshops, {
+    fields: [workshopGallery.workshopId],
+    references: [workshops.id],
+  }),
+  media: one(media, {
+    fields: [workshopGallery.mediaId],
+    references: [media.id],
+  }),
+}));
+export const costsRelations = relations(costs, ({ one }) => ({
+  edition: one(workshopEditions, {
+    fields: [costs.workshopEditionId],
+    references: [workshopEditions.id],
+  }),
+  location: one(locations, {
+    fields: [costs.locationId],
+    references: [locations.id],
+  }),
+  instructor: one(instructors, {
+    fields: [costs.instructorId],
+    references: [instructors.id],
+  }),
+  orderItem: one(orderItems, {
+    fields: [costs.orderItemId],
+    references: [orderItems.id],
+  }),
+}));
+export const studioSessionsRelations = relations(studioSessions, ({ one, many }) => ({
+  order: one(orders, {
+    fields: [studioSessions.orderId],
+    references: [orders.id],
+  }),
+  orderItem: one(orderItems, {
+    fields: [studioSessions.orderItemId],
+    references: [orderItems.id],
+  }),
+  conversation: one(chatConversations, {
+    fields: [studioSessions.conversationId],
+    references: [chatConversations.id],
+  }),
+  scripts: many(studioScripts),
+  feedback: many(studioFeedback),
+}));
+export const studioScriptsRelations = relations(studioScripts, ({ one }) => ({
+  session: one(studioSessions, {
+    fields: [studioScripts.sessionId],
+    references: [studioSessions.id],
+  }),
+}));
+export const studioFeedbackRelations = relations(studioFeedback, ({ one }) => ({
+  session: one(studioSessions, {
+    fields: [studioFeedback.sessionId],
+    references: [studioSessions.id],
+  }),
+  user: one(users, {
+    fields: [studioFeedback.userId],
+    references: [users.id],
+  }),
+}));
+export const coursesRelations = relations(courses, ({ many }) => ({
+  lessons: many(lessons),
+}));
+export const lessonsRelations = relations(lessons, ({ one }) => ({
+  course: one(courses, {
+    fields: [lessons.courseId],
+    references: [courses.id],
+  }),
+}));
+export const castingListsRelations = relations(castingLists, ({ one, many }) => ({
+  user: one(users, {
+    fields: [castingLists.userId],
+    references: [users.id],
+  }),
+  items: many(castingListItems),
+}));
+export const castingListItemsRelations = relations(castingListItems, ({ one }) => ({
+  list: one(castingLists, {
+    fields: [castingListItems.listId],
+    references: [castingLists.id],
+  }),
+  actor: one(actors, {
+    fields: [castingListItems.actorId],
+    references: [actors.id],
+  }),
+}));

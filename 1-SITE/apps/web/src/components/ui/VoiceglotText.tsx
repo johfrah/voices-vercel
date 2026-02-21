@@ -16,6 +16,8 @@ interface VoiceglotTextProps {
   context?: string;
   instrument?: 'button' | 'tag' | 'label' | 'text' | 'hero' | 'pricing';
   maxChars?: number;
+  components?: Record<string, (children: React.ReactNode) => React.ReactNode>;
+  values?: Record<string, string | number>;
 }
 
 /**
@@ -24,6 +26,9 @@ interface VoiceglotTextProps {
  * 
  *  SELF-HEALING: Als een vertaling ontbreekt, wordt deze live 
  * gegenereerd via AI en wordt Johfrah genotificeerd.
+ * 
+ *  TEMPLATE SUPPORT: Ondersteunt {placeholder} in defaultText
+ * die gemapt worden op 'components' (styling) of 'values' (data).
  */
 export const VoiceglotText: React.FC<VoiceglotTextProps> = ({ 
   translationKey, 
@@ -33,7 +38,9 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   noTranslate = false,
   context = '',
   instrument = 'text',
-  maxChars
+  maxChars,
+  components,
+  values
 }) => {
   const { isEditMode } = useEditMode();
   const { playClick, playSwell } = useSonicDNA();
@@ -157,7 +164,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
               currentLang: language,
               forceAudit: needsAudit, // Trigger GPT-4o native check
               context: getGranularContext(),
-              maxChars: maxChars
+              maxChars: maxChars,
+              values: values
             })
           });
           const data = await res.json();
@@ -214,6 +222,38 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     }
   };
 
+  //  CHRIS-PROTOCOL: Render content with template support
+  const renderContent = () => {
+    const hasComponents = components && Object.keys(components).length > 0;
+    const hasValues = values && Object.keys(values).length > 0;
+
+    if (!hasComponents && !hasValues) {
+      return content;
+    }
+
+    // Split content by {placeholder}
+    const parts = content.split(/(\{.*?\})/g);
+    
+    return parts.map((part, index) => {
+      const match = part.match(/^\{(.*)\}$/);
+      if (match) {
+        const key = match[1];
+        
+        // 1. Check for value injection (data)
+        if (values && values[key] !== undefined) {
+          return <React.Fragment key={index}>{values[key]}</React.Fragment>;
+        }
+
+        // 2. Check for component injection (styling)
+        const component = components?.[key];
+        if (component) {
+          return <React.Fragment key={index}>{component(key)}</React.Fragment>;
+        }
+      }
+      return part;
+    });
+  };
+
   return (
     <Component 
       ref={containerRef as any}
@@ -240,7 +280,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
           isHealing && "animate-pulse"
         )}
       >
-        {content}
+        {renderContent()}
       </span>
 
       {isHealing && isEditMode && (
