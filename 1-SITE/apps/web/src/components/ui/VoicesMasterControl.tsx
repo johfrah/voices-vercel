@@ -18,6 +18,7 @@ import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 import { VoicesDropdown } from './VoicesDropdown';
 import { VoicesWordSlider } from './VoicesWordSlider';
+import { ActorReorderModal } from './ActorReorderModal';
 
 
 interface VoicesMasterControlProps {
@@ -43,11 +44,19 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const { state: checkoutState, updateUsage } = useCheckout();
   const pathname = usePathname();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
+  const [reorderLanguage, setReorderLanguage] = useState('');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleReorderClick = (language: string) => {
+    setReorderLanguage(language);
+    setIsReorderModalOpen(true);
+    playClick('pro');
+  };
 
   const handleJourneySwitch = (id: any) => {
     try {
@@ -185,23 +194,46 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     const otherLangs = mappedConfig.filter(l => !l.popular);
 
     const sortFn = (a: any, b: any) => {
-      const getBaseLang = (label: string) => label.split(' ')[0];
-      const baseA = getBaseLang(a.label);
-      const baseB = getBaseLang(b.label); 
-
+      //  CHRIS-PROTOCOL: Market-specific priority sorting (Bob-methode)
       if (market.market_code === 'BE') {
-        if (a.value === 'Vlaams') return -1;
-        if (b.value === 'Vlaams') return 1;
-        if (a.value === 'Nederlands') return -1;
-        if (b.value === 'Nederlands') return 1;
+        const priority: Record<string, number> = {
+          'Vlaams': 1,
+          'Nederlands': 2,
+          'Frans': 3,
+          'Engels': 4,
+          'Duits': 5
+        };
+        
+        const scoreA = priority[a.tLabel] || 100;
+        const scoreB = priority[b.tLabel] || 100;
+        
+        if (scoreA !== scoreB) return scoreA - scoreB;
+        
+        // Specifieke fix voor Frans (BE) vs Frans (FR)
+        if (a.tLabel === 'Frans' && b.tLabel === 'Frans') {
+          if (a.icon === FlagBE) return -1;
+          if (b.icon === FlagBE) return 1;
+        }
       }
 
       if (market.market_code === 'NLNL') {
-        if (a.value === 'Nederlands') return -1;
-        if (b.value === 'Nederlands') return 1;
-        if (a.value === 'Vlaams') return -1;
-        if (b.value === 'Vlaams') return 1;
+        const priority: Record<string, number> = {
+          'Nederlands': 1,
+          'Vlaams': 2,
+          'Engels': 3,
+          'Duits': 4,
+          'Frans': 5
+        };
+        
+        const scoreA = priority[a.tLabel] || 100;
+        const scoreB = priority[b.tLabel] || 100;
+        
+        if (scoreA !== scoreB) return scoreA - scoreB;
       }
+
+      const getBaseLang = (label: string) => label.split(' ')[0];
+      const baseA = getBaseLang(a.label);
+      const baseB = getBaseLang(b.label); 
 
       if (baseA !== baseB) return baseA.localeCompare(baseB);
       return a.label.localeCompare(b.label);
@@ -373,6 +405,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           placeholder="Alle talen"
                           label="Welke taal?"
                           className="w-full h-full"
+                          onOrderClick={handleReorderClick}
                         />
                       </div>
                     ) : null}
@@ -596,6 +629,20 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
           onUpdate={(params) => updateFilters(params)}
           isOpen={isSheetOpen}
           onClose={() => setIsSheetOpen(false)}
+        />
+      )}
+
+      {/* Actor Reorder Modal (Admin Only) */}
+      {isAdmin && (
+        <ActorReorderModal 
+          isOpen={isReorderModalOpen}
+          onClose={() => setIsReorderModalOpen(false)}
+          language={reorderLanguage}
+          actors={actors}
+          onSuccess={() => {
+            // Force refresh of actors list
+            window.location.reload();
+          }}
         />
       )}
 

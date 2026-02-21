@@ -38,6 +38,7 @@ interface VoicesDropdownProps {
   disabled?: boolean;
   mediaRegion?: Record<string, string>;
   onMediaRegionChange?: (mediaId: string, region: string) => void;
+  onOrderClick?: (language: string) => void; //  Added for admin reordering
 }
 
 export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
@@ -60,9 +61,11 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
   livePrice,
   disabled = false,
   mediaRegion = {},
-  onMediaRegionChange
+  onMediaRegionChange,
+  onOrderClick
 }) => {
   const { t } = useTranslation();
+  const { isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchSearchQuery] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -551,7 +554,19 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                           )}
                         </div>
                       </div>
-                      <div className="w-5 flex justify-end shrink-0 ml-4">
+                      <div className="flex items-center gap-2 shrink-0 ml-4">
+                        {isAdmin && isSelected && onOrderClick && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onOrderClick(item.label);
+                            }}
+                            className="p-2 bg-va-black text-white rounded-lg hover:bg-primary transition-all shadow-sm group/order"
+                            title="Volgorde aanpassen"
+                          >
+                            <GripVertical size={14} className="group-hover/order:scale-110 transition-transform" />
+                          </button>
+                        )}
                         {isSelected && <Check size={16} strokeWidth={3} className="text-primary" />}
                       </div>
                     </button>
