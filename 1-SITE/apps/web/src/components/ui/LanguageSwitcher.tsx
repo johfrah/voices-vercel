@@ -29,6 +29,8 @@ const LANGUAGE_MAP: Record<string, Language> = {
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
+  const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+  const market = MarketManager.getCurrentMarket(host);
   const [currentLang, setCurrentLang] = useState<string>(market.language || 'nl');
   const pathname = usePathname();
   const router = useRouter();

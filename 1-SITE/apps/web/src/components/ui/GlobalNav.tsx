@@ -241,7 +241,8 @@ export default function GlobalNav() {
   const { notifications: customerNotifications, unreadCount: customerUnreadCount, markAsRead: markCustomerAsRead, markAllAsRead: markAllCustomerAsRead } = useNotifications();
   const auth = useAuth();
   const isAdmin = auth.isAdmin;
-  const market = MarketManager.getCurrentMarket(); 
+  const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+  const market = MarketManager.getCurrentMarket(host); 
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
