@@ -9,6 +9,7 @@ import { VoicesStateProvider } from '@/contexts/VoicesStateContext';
 import { GlobalAudioProvider } from '@/contexts/GlobalAudioContext';
 import { VoicesMasterControlProvider } from '@/contexts/VoicesMasterControlContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
+import { WatchdogProvider } from '@/contexts/WatchdogContext';
 import { usePathname } from 'next/navigation';
 import { MarketManager } from '@config/market-manager';
 
@@ -37,22 +38,24 @@ export function Providers({
   }
 
   return (
-    <AuthProvider>
-      <TranslationProvider lang={lang} initialTranslations={initialTranslations}>
-        <EditModeProvider>
-          <VoicesStateProvider>
-            <GlobalAudioProvider>
-              <CheckoutProvider>
-                <NotificationProvider>
-                  <VoicesMasterControlProvider>
-                    {children}
-                  </VoicesMasterControlProvider>
-                </NotificationProvider>
-              </CheckoutProvider>
-            </GlobalAudioProvider>
-          </VoicesStateProvider>
-        </EditModeProvider>
-      </TranslationProvider>
-    </AuthProvider>
+    <WatchdogProvider>
+      <AuthProvider>
+        <TranslationProvider lang={lang} initialTranslations={initialTranslations}>
+          <EditModeProvider>
+            <VoicesStateProvider>
+              <GlobalAudioProvider>
+                <CheckoutProvider>
+                  <NotificationProvider>
+                    <VoicesMasterControlProvider>
+                      {children}
+                    </VoicesMasterControlProvider>
+                  </NotificationProvider>
+                </CheckoutProvider>
+              </GlobalAudioProvider>
+            </VoicesStateProvider>
+          </EditModeProvider>
+        </TranslationProvider>
+      </AuthProvider>
+    </WatchdogProvider>
   );
 }
