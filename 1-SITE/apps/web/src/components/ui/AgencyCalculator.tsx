@@ -657,10 +657,10 @@ export const AgencyCalculator = ({
           <div className="space-y-2">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tight text-va-black">
               <VoiceglotText 
-                translationKey="calculator.how_it_works.title_v2" 
-                defaultText="Hoe werkt de {price}?" 
+                translationKey="calculator.how_it_works.title_v3" 
+                defaultText="Hoe werkt de *prijs?*" 
                 components={{
-                  price: (children) => <span className="text-primary italic">{children === 'price' ? t('common.price', 'prijs?') : children}</span>
+                  highlight: (children) => <span className="text-primary italic">{children}</span>
                 }}
               />
             </HeadingInstrument>

@@ -245,7 +245,7 @@ export default function VoiceglotMasterPage() {
                   </div>
                 </td>
                 <td className="px-8 py-6">
-                  <TextInstrument className="text-[15px] text-va-black/60 max-w-xs truncate" title={t.originalText}>
+                  <TextInstrument className="text-[15px] text-va-black/60" title={t.originalText}>
                     {t.originalText}
                   </TextInstrument>
                 </td>
