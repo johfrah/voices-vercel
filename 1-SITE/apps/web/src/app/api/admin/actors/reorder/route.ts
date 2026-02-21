@@ -1,20 +1,23 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/sync/bridge';
+import { db } from '@db';
 import { actors } from '@db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 /**
- *  ADMIN ACTORS REORDER API (GOD MODE 2026)
+ *  API: ADMIN ACTORS REORDER (GOD MODE 2026)
  * 
- * Verwerkt bulk updates voor de menu_order van stemacteurs.
+ * Verwerkt bulk updates van menu_order voor stemacteurs.
  */
 export async function POST(request: Request) {
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const { orders } = await request.json(); // Array van { id: number, menuOrder: number }
+    const { orders } = await request.json(); // Array of { id: number, menuOrder: number }
 
     if (!orders || !Array.isArray(orders)) {
       return NextResponse.json({ error: 'Invalid orders data' }, { status: 400 });
@@ -22,22 +25,18 @@ export async function POST(request: Request) {
 
     console.log(` ADMIN: Reordering ${orders.length} actors`);
 
-    // We voeren de updates uit in een transactie voor integriteit
+    // CHRIS-PROTOCOL: Bulk update via transaction for integrity
     await db.transaction(async (tx) => {
       for (const item of orders) {
         await tx.update(actors)
-          .set({ menuOrder: item.menuOrder })
-          .where(eq(actors.id, item.id));
+          .set({ menuOrder: item.menuOrder, updatedAt: new Date() })
+          .where(or(eq(actors.id, item.id), eq(actors.wpProductId, item.id)));
       }
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      message: `Successfully reordered ${orders.length} actors` 
-    });
-
+    return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error(' ADMIN REORDER FAILURE:', error);
+    console.error('[Admin Actors Reorder Error]:', error);
     return NextResponse.json({ error: 'Failed to reorder actors', details: error.message }, { status: 500 });
   }
 }
