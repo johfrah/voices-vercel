@@ -201,26 +201,16 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       
       // Define a logical priority for ANY market
       // 1. Primary Language of the market
-      // 2. English (Global standard)
-      // 3. Other major European languages if not primary
+      // 2. Popular languages (in order of market.popular_languages)
+      // 3. English (Global standard)
+      // 4. Other major European languages if not primary
       const getPriority = (label: string) => {
         if (label === primaryLang) return 1;
-        if (label === 'Engels') return 2;
         
-        // Market-specific secondary priorities
-        if (market.market_code === 'BE') {
-          if (label === 'Nederlands') return 3;
-          if (label === 'Frans') return 4;
-          if (label === 'Duits') return 5;
-        } else if (market.market_code === 'NLNL') {
-          if (label === 'Vlaams') return 3;
-          if (label === 'Duits') return 4;
-          if (label === 'Frans') return 5;
-        } else if (market.market_code === 'FR') {
-          if (label === 'Nederlands') return 3;
-          if (label === 'Vlaams') return 4;
-          if (label === 'Duits') return 5;
-        }
+        const popularIndex = market.popular_languages.indexOf(label);
+        if (popularIndex !== -1) return 2 + popularIndex;
+        
+        if (label === 'Engels') return 50;
         
         return 100;
       };
