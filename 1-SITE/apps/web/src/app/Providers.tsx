@@ -20,9 +20,15 @@ export function Providers({
 }) {
   const pathname = usePathname();
   
-  // Detect language from pathname
+  // Detect language from pathname or market
   const langMatch = pathname.match(/^\/(nl|fr|en|de)(\/|$)/);
-  let lang = langMatch ? langMatch[1] : 'nl';
+  
+  //  CHRIS-PROTOCOL: Market-Aware Language Resolution
+  // We check the host to determine the default language for the market.
+  const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+  const market = MarketManager.getCurrentMarket(host);
+  
+  let lang = langMatch ? langMatch[1] : (market.language || 'nl');
 
   //  BOB'S MANDATE: Admin/Dashboard routes altijd in het Nederlands (NL)
   if (pathname.startsWith('/admin') || pathname.startsWith('/backoffice') || pathname.startsWith('/studio/beheer')) {
