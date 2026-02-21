@@ -411,8 +411,8 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               }
                             }
                           }}
-                          placeholder="Alle talen"
-                          label="Welke taal?"
+                          placeholder={t('filter.all_languages', 'Alle talen')}
+                          label={t('filter.which_language', 'Welke taal?')}
                           className="w-full h-full"
                           onOrderClick={handleReorderClick}
                         />
@@ -446,7 +446,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           value={state.filters.words && state.filters.words >= 5 ? state.filters.words : (state.journey === 'telephony' ? 25 : 200)}
                           onChange={(val) => updateFilters({ words: val })}
                           disabled={state.currentStep === 'script'}
-                          label="Hoeveelheid?"
+                          label={t('filter.quantity', 'Hoeveelheid?')}
                           className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
                         />
                       ) : null}
