@@ -10,6 +10,7 @@ import { GlobalAudioProvider } from '@/contexts/GlobalAudioContext';
 import { VoicesMasterControlProvider } from '@/contexts/VoicesMasterControlContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import { usePathname } from 'next/navigation';
+import { MarketManager } from '@config/market-manager';
 
 export function Providers({ 
   children,
