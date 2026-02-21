@@ -6,6 +6,7 @@ import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Lock, Sparkles } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { SlopFilter } from '@/lib/slop-filter';
 
 interface VoiceglotTextProps {
   translationKey: string;
@@ -48,22 +49,14 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
       setContent(defaultText);
     } else {
       const currentT = t(translationKey, defaultText, values);
-      //  STABILITEIT: Als de vertaling een AI-foutmelding is, gebruik de defaultText
-      if (currentT.includes('voldoende context') || 
-          currentT.includes('meer informatie') || 
-          currentT.includes('langere tekst') ||
-          currentT.includes('niet compleet') ||
-          currentT.includes('accuraat') ||
-          currentT.includes('zou je') ||
-          currentT.includes('tijd nodig om na te denken') ||
-          currentT.includes('probeer je het zo nog eens') ||
-          currentT.includes('het lijkt erop')) {
+      //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren
+      if (SlopFilter.isSlop(currentT, language, defaultText)) {
         setContent(defaultText);
       } else {
         setContent(currentT);
       }
     }
-  }, [translationKey, defaultText, t, noTranslate, isEditMode, values]);
+  }, [translationKey, defaultText, t, noTranslate, isEditMode, values, language]);
 
   //  REGISTRATION LOGIC (Nuclear 2026)
   // Zorgt ervoor dat nieuwe strings direct in de registry komen en vertaald worden
