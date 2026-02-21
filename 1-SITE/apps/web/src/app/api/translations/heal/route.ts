@@ -74,6 +74,18 @@ export async function POST(request: NextRequest) {
 
       cleanTranslation = await OpenAIService.generateText(prompt);
       cleanTranslation = cleanTranslation.trim().replace(/^"|"$/g, '');
+
+      //  CHRIS-PROTOCOL: Slop Filter
+      const isSlop = (
+        cleanTranslation.includes('Het lijkt erop dat') ||
+        cleanTranslation.includes('Zou je de tekst') ||
+        cleanTranslation.includes('niet compleet is') ||
+        cleanTranslation.length > 200
+      );
+
+      if (isSlop) {
+        throw new Error('AI returned slop instead of translation');
+      }
     } catch (aiErr: any) {
       console.error(' OpenAI Self-Heal Error:', aiErr.message);
       return NextResponse.json({ 
