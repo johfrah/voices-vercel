@@ -1,70 +1,94 @@
 "use client";
 
-import {
-    ButtonInstrument,
-    ContainerInstrument,
-    HeadingInstrument,
-    PageWrapperInstrument,
-    SectionInstrument,
-    TextInstrument,
-    FixedActionDockInstrument
+import React, { useState, useEffect } from 'react';
+import { 
+  PageWrapperInstrument, 
+  SectionInstrument, 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument, 
+  ButtonInstrument,
+  InputInstrument
 } from '@/components/ui/LayoutInstruments';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { useAdminTracking } from '@/hooks/useAdminTracking';
-import { ArrowLeft, Globe, Languages, Loader2, RefreshCw, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import { useSonicDNA } from '@/lib/sonic-dna';
+import { 
+  Search, 
+  Lock, 
+  Unlock, 
+  History, 
+  CheckCircle2, 
+  AlertCircle,
+  ArrowLeft,
+  Loader2,
+  Filter,
+  ArrowRightLeft
+} from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { cn } from '@/lib/utils';
 
 /**
- *  VOICEGLOT ADMIN DASHBOARD (NUCLEAR 2026)
+ *  VOICEGLOT MASTER TABLE (GOD MODE 2026)
  * 
- * "De taal van de Freedom Machine."
+ * Volledig overzicht van alle vertalingen met lifecycle beheer.
  */
-export default function VoiceglotAdminPage() {
-  const { logAction } = useAdminTracking();
-  const [stats, setStats] = useState<any>(null);
+export default function VoiceglotMasterPage() {
+  const { playClick } = useSonicDNA();
   const [loading, setLoading] = useState(true);
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [translations, setTranslations] = useState<any[]>([]);
+  const [search, setSearch] = useState('');
+  const [filterLang, setFilterLang] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
 
-  const fetchStats = async () => {
+  useEffect(() => {
+    fetchTranslations();
+  }, []);
+
+  const fetchTranslations = async () => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/admin/voiceglot/stats');
-      if (res.ok) {
-        const data = await res.json();
-        setStats(data);
-      }
+      const res = await fetch('/api/admin/voiceglot/list');
+      const data = await res.json();
+      setTranslations(data.translations || []);
     } catch (e) {
-      console.error('Failed to fetch Voiceglot stats', e);
+      toast.error('Kon vertalingen niet laden.');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const handleHeal = async () => {
-    setIsSyncing(true);
+  const toggleLock = async (id: number, currentLocked: boolean) => {
+    playClick('pro');
     try {
-      // De nieuwe Nuclear Heal-All API
-      const res = await fetch('/api/admin/voiceglot/heal-all', { method: 'POST' });
-      const data = await res.json();
-      toast.success(`Heal voltooid: ${data.healedCount} strings vertaald!`);
-      await fetchStats();
+      const res = await fetch(`/api/admin/voiceglot/update-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, isLocked: !currentLocked })
+      });
+      if (res.ok) {
+        setTranslations(prev => prev.map(t => t.id === id ? { ...t, isLocked: !currentLocked } : t));
+        toast.success(!currentLocked ? 'Vertaling vergrendeld' : 'Vertaling ontgrendeld');
+      }
     } catch (e) {
-      console.error('Heal failed', e);
-      toast.error('Heal-all proces mislukt.');
-    } finally {
-      setIsSyncing(false);
+      toast.error('Actie mislukt.');
     }
   };
 
+  const filtered = translations.filter(t => {
+    const matchesSearch = t.translationKey.toLowerCase().includes(search.toLowerCase()) || 
+                         t.originalText.toLowerCase().includes(search.toLowerCase()) ||
+                         t.translatedText.toLowerCase().includes(search.toLowerCase());
+    const matchesLang = filterLang === 'all' || t.lang === filterLang;
+    const matchesStatus = filterStatus === 'all' || 
+                         (filterStatus === 'locked' && t.isLocked) ||
+                         (filterStatus === 'auto' && !t.isLocked && !t.isManuallyEdited);
+    return matchesSearch && matchesLang && matchesStatus;
+  });
+
   if (loading) return (
     <ContainerInstrument className="min-h-screen flex items-center justify-center">
-      <Loader2 strokeWidth={1.5} className="animate-spin text-primary" size={40} />
+      <Loader2 className="animate-spin text-primary" size={40} />
     </ContainerInstrument>
   );
 
@@ -73,165 +97,129 @@ export default function VoiceglotAdminPage() {
       {/* Header */}
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-4">
-          <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest">
+          <Link href="/admin/settings/markets" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
-            <VoiceglotText  translationKey="admin.back_to_dashboard" defaultText="Terug" />
+            Terug naar Markt Beheer
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.voiceglot.title" defaultText="Voiceglot Intelligence" /></HeadingInstrument>
-        </ContainerInstrument>
-        
-        <ContainerInstrument className="flex gap-4">
-          <ButtonInstrument 
-            onClick={() => {
-              logAction('voiceglot_heal_all');
-              handleHeal();
-            }}
-            disabled={isSyncing}
-            className={`va-btn-pro !bg-va-black flex items-center gap-2 ${isSyncing ? 'opacity-50' : ''}`}
-          >
-            {isSyncing ? <RefreshCw strokeWidth={1.5} className="animate-spin" size={16} /> : <Sparkles strokeWidth={1.5} size={16} />}
-            <VoiceglotText  translationKey="admin.voiceglot.heal" defaultText="Self-Heal All" />
-          </ButtonInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
+            Voiceglot Registry
+          </HeadingInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* Stats Overview */}
-      <BentoGrid strokeWidth={1.5} columns={4}>
-        <BentoCard span="sm" className="bg-va-black text-white p-8 space-y-4 rounded-[20px]">
-          <ContainerInstrument className="flex items-center gap-3">
-            <ContainerInstrument className="p-2 bg-primary/20 text-primary rounded-[10px]">
-              <Globe strokeWidth={1.5} size={20} />
-            </ContainerInstrument>
-            <TextInstrument className="text-[15px] opacity-40 text-white font-light"><VoiceglotText  translationKey="admin.voiceglot.registry" defaultText="Registry" /></TextInstrument>
-          </ContainerInstrument>
-          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter">
-            {stats?.totalStrings || 0}
-          </HeadingInstrument>
-          <TextInstrument className="text-[15px] font-light tracking-widest opacity-40 text-white"><VoiceglotText  translationKey="admin.voiceglot.unique_strings" defaultText="Unieke Strings Gedetecteerd" /></TextInstrument>
-        </BentoCard>
-
-        {stats?.coverage?.map((c: any) => (
-          <BentoCard key={c.lang} span="sm" className="bg-white border border-black/5 p-8 space-y-4 rounded-[20px]">
-            <ContainerInstrument className="flex justify-between items-center">
-              <ContainerInstrument className="flex items-center gap-3">
-                <ContainerInstrument className="w-8 h-8 bg-va-off-white rounded-full flex items-center justify-center font-light text-[15px] ">
-                  {c.lang}
-                </ContainerInstrument>
-                <TextInstrument className="text-[15px] text-va-black/30 font-light"><VoiceglotText  translationKey="admin.voiceglot.coverage" defaultText="Coverage" /></TextInstrument>
-              </ContainerInstrument>
-              <TextInstrument className="text-xl font-light">{c.percentage}%</TextInstrument>
-            </ContainerInstrument>
-            <ContainerInstrument className="w-full bg-va-off-white h-2 rounded-full overflow-hidden">
-              <ContainerInstrument 
-                className="bg-primary h-full transition-all duration-1000" 
-                style={{ width: `${c.percentage}%` }}
-              />
-            </ContainerInstrument>
-            <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/20">
-              {c.count} <VoiceglotText  translationKey="admin.voiceglot.translated_count" defaultText="vertaalde strings" />
-            </TextInstrument>
-          </BentoCard>
-        ))}
-      </BentoGrid>
-
-      {/* Recent Strings & Health */}
-      <BentoGrid strokeWidth={1.5} columns={3}>
-        <BentoCard span="lg" className="bg-white border border-black/5 p-10 space-y-8 rounded-[20px]">
-          <ContainerInstrument className="flex justify-between items-center">
-            <HeadingInstrument level={3} className="text-2xl font-light tracking-tight"><VoiceglotText  translationKey="admin.voiceglot.recent_title" defaultText="Recent Gedetecteerd" /></HeadingInstrument>
-            <Languages strokeWidth={1.5} size={20} className="text-va-black/10" />
-          </ContainerInstrument>
-          <ContainerInstrument className="space-y-4">
-            {stats?.recentStrings?.map((s: any) => (
-              <ContainerInstrument key={s.id} className="p-4 bg-va-off-white/50 rounded-[10px] flex justify-between items-center group hover:bg-va-off-white transition-all">
-                <ContainerInstrument className="space-y-1">
-                  <TextInstrument className="text-[15px] font-light text-primary tracking-widest">{s.registryKey}</TextInstrument>
-                  <TextInstrument className="text-[15px] font-light text-va-black/60 line-clamp-1">{s.sourceText}</TextInstrument>
-                </ContainerInstrument>
-                <ContainerInstrument className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ButtonInstrument className="p-2 hover:text-primary transition-colors"><Zap strokeWidth={1.5} size={14} /></ButtonInstrument>
-                </ContainerInstrument>
-              </ContainerInstrument>
-            ))}
-          </ContainerInstrument>
-        </BentoCard>
-
-        <BentoCard span="sm" className="bg-primary text-white p-10 space-y-6 flex flex-col justify-between rounded-[20px]">
-          <ContainerInstrument className="space-y-4">
-            <ShieldCheck strokeWidth={1.5} size={40} />
-            <HeadingInstrument level={3} className="text-3xl font-light tracking-tighter leading-none">
-              <VoiceglotText  translationKey="admin.voiceglot.seo_title" defaultText="AI SEO AUTOMATION" />
-            </HeadingInstrument>
-            <TextInstrument className="text-[15px] font-light opacity-80">
-              <VoiceglotText  
-                translationKey="admin.voiceglot.seo_text" 
-                defaultText="Alle slugs en meta-data worden automatisch gesynchroniseerd in 5 talen. Geen handmatige invoer nodig." 
-              />
-            </TextInstrument>
-          </ContainerInstrument>
-          <ContainerInstrument className="p-4 bg-white/10 rounded-[10px] border border-white/10">
-            <ContainerInstrument className="flex justify-between items-center mb-2">
-              <TextInstrument className="text-[15px] font-light tracking-widest"><VoiceglotText  translationKey="admin.voiceglot.seo_status" defaultText="SEO Sync Status" /></TextInstrument>
-              <TextInstrument className="text-[15px] font-light tracking-widest">100%</TextInstrument>
-            </ContainerInstrument>
-            <ContainerInstrument className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-              <ContainerInstrument className="bg-white h-full w-full" />
-            </ContainerInstrument>
-          </ContainerInstrument>
-        </BentoCard>
-      </BentoGrid>
-
-      {/* Warning / Info */}
-      <ContainerInstrument className="p-8 bg-va-black text-white rounded-[20px] flex items-center gap-6">
-        <ContainerInstrument className="w-16 h-16 bg-primary text-white rounded-[10px] flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
-          <Zap strokeWidth={1.5} size={32} />
-        </ContainerInstrument>
-        <ContainerInstrument className="space-y-1">
-          <HeadingInstrument level={4} className="text-primary font-light tracking-tight">
-            <VoiceglotText  translationKey="admin.voiceglot.protocol_title" defaultText="VOICEGLOT PROTOCOL" />
-          </HeadingInstrument>
-          <TextInstrument className="text-[15px] opacity-60 font-light">
-            <VoiceglotText  
-              translationKey="admin.voiceglot.protocol_text" 
-              defaultText="Voiceglot ondersteunt elke taal. Zodra een nieuwe string wordt gedetecteerd in de UI, wordt deze binnen 60 seconden automatisch vertaald door de Intelligence Layer. Slugs worden automatisch 'slugified' per taal om SEO-waarde te maximaliseren." 
-            />
-          </TextInstrument>
-        </ContainerInstrument>
+      {/* Filters */}
+      <ContainerInstrument className="flex gap-4 items-center bg-white p-6 rounded-[24px] shadow-aura border border-black/5">
+        <div className="relative flex-grow">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
+          <InputInstrument 
+            placeholder="Zoek in keys, brontekst of vertaling..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-12 bg-va-off-white border-none rounded-xl py-4"
+          />
+        </div>
+        <select 
+          value={filterLang}
+          onChange={(e) => setFilterLang(e.target.value)}
+          className="bg-va-off-white border-none rounded-xl py-4 px-6 text-[15px] font-medium outline-none focus:ring-2 focus:ring-primary/20"
+        >
+          <option value="all">Alle talen</option>
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="it">Italiano</option>
+          <option value="pt">Português</option>
+          <option value="nl-be">Vlaams</option>
+          <option value="nl-nl">Nederlands</option>
+        </select>
+        <select 
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="bg-va-off-white border-none rounded-xl py-4 px-6 text-[15px] font-medium outline-none focus:ring-2 focus:ring-primary/20"
+        >
+          <option value="all">Alle status</option>
+          <option value="locked">Vergrendeld (Locked)</option>
+          <option value="auto">Automatisch (AI)</option>
+        </select>
       </ContainerInstrument>
 
-      <FixedActionDockInstrument>
-        <ButtonInstrument 
-          onClick={() => {
-            logAction('voiceglot_refresh');
-            fetchStats();
-          }}
-          className="va-btn-pro !bg-va-black flex items-center gap-2"
-        >
-          <RefreshCw strokeWidth={1.5} size={16} className={loading ? 'animate-spin' : ''} />
-          <VoiceglotText translationKey="admin.voiceglot.refresh" defaultText="Status Vernieuwen" />
-        </ButtonInstrument>
-      </FixedActionDockInstrument>
-
-      {/*  LLM CONTEXT (Compliance) */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "VoiceglotAdmin",
-            "name": "Voiceglot Intelligence",
-            "description": "Beheer van meertalige content en AI-vertalingen.",
-            "_llm_context": {
-              "persona": "Architect",
-              "journey": "admin",
-              "intent": "content_localization",
-              "capabilities": ["heal_all_strings", "view_coverage", "monitor_registry"],
-              "lexicon": ["Voiceglot", "Registry", "Coverage", "Self-Heal"],
-              "visual_dna": ["Bento Grid", "Liquid DNA", "Spatial Growth"]
-            }
-          })
-        }}
-      />
+      {/* Table */}
+      <div className="bg-white rounded-[32px] shadow-aura border border-black/5 overflow-hidden">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-va-off-white/50 border-b border-black/5">
+              <th className="px-8 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase">Key & Taal</th>
+              <th className="px-8 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase">Bron (NL)</th>
+              <th className="px-8 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase">Vertaling</th>
+              <th className="px-8 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase">Lifecycle</th>
+              <th className="px-8 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase">Acties</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-black/[0.03]">
+            {filtered.map((t) => (
+              <tr key={t.id} className="group hover:bg-va-off-white/30 transition-colors">
+                <td className="px-8 py-6">
+                  <div className="flex flex-col">
+                    <span className="text-[13px] font-mono text-primary font-bold mb-1">{t.translationKey}</span>
+                    <span className="text-[11px] font-black uppercase text-va-black/20 tracking-widest">{t.lang}</span>
+                  </div>
+                </td>
+                <td className="px-8 py-6">
+                  <TextInstrument className="text-[15px] text-va-black/60 max-w-xs truncate" title={t.originalText}>
+                    {t.originalText}
+                  </TextInstrument>
+                </td>
+                <td className="px-8 py-6">
+                  <div className="flex flex-col gap-1">
+                    <TextInstrument className={cn("text-[15px] font-medium", t.isLocked ? "text-va-black" : "text-blue-600")}>
+                      {t.translatedText}
+                    </TextInstrument>
+                    {t.lastAuditedAt && (
+                      <span className="text-[10px] text-va-black/20 flex items-center gap-1">
+                        <CheckCircle2 size={10} /> Gescand: {new Date(t.lastAuditedAt).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                </td>
+                <td className="px-8 py-6">
+                  <div className="flex items-center gap-3">
+                    {t.isLocked ? (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-va-black text-white rounded-full text-[10px] font-bold uppercase tracking-widest">
+                        <Lock size={10} /> Locked
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-600 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                        <Sparkles size={10} /> Auto
+                      </div>
+                    )}
+                  </div>
+                </td>
+                <td className="px-8 py-6">
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={() => toggleLock(t.id, t.isLocked)}
+                      className={cn(
+                        "p-2 rounded-lg transition-all",
+                        t.isLocked ? "bg-va-black text-white" : "bg-va-off-white text-va-black/40 hover:text-va-black"
+                      )}
+                      title={t.isLocked ? "Ontgrendelen" : "Vergrendelen"}
+                    >
+                      {t.isLocked ? <Lock size={16} /> : <Unlock size={16} />}
+                    </button>
+                    <button 
+                      className="p-2 bg-va-off-white text-va-black/40 hover:text-primary rounded-lg transition-all"
+                      title="Geschiedenis bekijken"
+                    >
+                      <History size={16} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </PageWrapperInstrument>
   );
 }
