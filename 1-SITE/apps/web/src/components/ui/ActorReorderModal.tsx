@@ -24,7 +24,9 @@ import {
   Save, 
   Loader2, 
   Search,
-  CheckCircle2
+  CheckCircle2,
+  Clock,
+  ShoppingBag
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -93,9 +95,32 @@ const SortableActorItem = ({ actor, index }: SortableActorItemProps) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="text-right">
-          <div className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">Positie</div>
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <div className="text-[9px] font-bold text-va-black/20 uppercase tracking-widest flex items-center gap-1 justify-end">
+              <Clock size={10} /> Levering
+            </div>
+            <div className={cn(
+              "text-[12px] font-bold",
+              (actor.delivery_days_max || 0) <= 1 ? "text-green-500" : "text-va-black/60"
+            )}>
+              {actor.delivery_days_max ? `${actor.delivery_days_max}d` : '24u'}
+            </div>
+          </div>
+          
+          <div className="text-right min-w-[60px]">
+            <div className="text-[9px] font-bold text-va-black/20 uppercase tracking-widest flex items-center gap-1 justify-end">
+              <ShoppingBag size={10} /> Sales
+            </div>
+            <div className="text-[12px] font-bold text-va-black/60">
+              {actor.voice_score || 0}
+            </div>
+          </div>
+        </div>
+
+        <div className="text-right min-w-[40px]">
+          <div className="text-[9px] font-bold text-va-black/20 uppercase tracking-widest">Positie</div>
           <div className="text-[14px] font-black text-primary">#{index + 1}</div>
         </div>
       </div>
