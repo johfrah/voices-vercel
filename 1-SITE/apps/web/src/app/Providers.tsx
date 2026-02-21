@@ -15,32 +15,27 @@ import { MarketManager } from '@config/market-manager';
 
 export function Providers({ 
   children,
+  lang,
   initialTranslations = {}
 }: { 
   children: ReactNode;
+  lang: string;
   initialTranslations?: Record<string, string>;
 }) {
   const pathname = usePathname();
   
-  // Detect language from pathname or market
-  const langMatch = pathname.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/);
+  //  CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
+  // to prevent Hydration Mismatch errors (#419).
   
-  //  CHRIS-PROTOCOL: Market-Aware Language Resolution
-  // We check the host to determine the default language for the market.
-  const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
-  const market = MarketManager.getCurrentMarket(host);
-  
-  let lang = langMatch ? langMatch[1] : (market.language || 'nl');
-
   //  BOB'S MANDATE: Admin/Dashboard routes altijd in het Nederlands (NL)
-  if (pathname.startsWith('/admin') || pathname.startsWith('/backoffice') || pathname.startsWith('/studio/beheer')) {
-    lang = 'nl';
-  }
+  const activeLang = (pathname.startsWith('/admin') || pathname.startsWith('/backoffice') || pathname.startsWith('/studio/beheer')) 
+    ? 'nl' 
+    : lang;
 
   return (
     <WatchdogProvider>
       <AuthProvider>
-        <TranslationProvider lang={lang} initialTranslations={initialTranslations}>
+        <TranslationProvider lang={activeLang} initialTranslations={initialTranslations}>
           <EditModeProvider>
             <VoicesStateProvider>
               <GlobalAudioProvider>

@@ -184,7 +184,7 @@ export default async function RootLayout({
   if (isUnderConstruction) {
     return (
       <RootLayoutInstrument lang={lang} className={`${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`}>
-        <Providers initialTranslations={translations}>
+        <Providers lang={lang} initialTranslations={translations}>
           <SonicDNAHandler />
           <PageWrapperInstrument>
             {children}
@@ -200,7 +200,7 @@ export default async function RootLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Providers initialTranslations={translations}>
+      <Providers lang={lang} initialTranslations={translations}>
         <GhostModeBar />
         <EditModeOverlay>
           <LiquidTransitionOverlay />
