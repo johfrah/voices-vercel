@@ -48,7 +48,7 @@ import { AnimatePresence, motion } from 'framer-motion';
  */
 function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfig }: { actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number }, dynamicConfig?: any }) {
   const { user, isAuthenticated } = useAuth();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { state: masterControlState, updateStep, resetFilters } = useMasterControl();
   const { selectActor, state: checkoutState } = useCheckout();
   const { playClick } = useSonicDNA();
