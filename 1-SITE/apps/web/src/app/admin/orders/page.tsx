@@ -31,7 +31,10 @@ import { useEffect, useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 
+export const dynamic = 'force-dynamic';
+
 interface Order {
+
   id: number;
   wpOrderId: number;
   displayOrderId: string | null;

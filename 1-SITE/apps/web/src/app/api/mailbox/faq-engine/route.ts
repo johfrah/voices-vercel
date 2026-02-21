@@ -3,6 +3,8 @@ import { mailContent, faq } from '@db/schema';
 import { desc, eq, and, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 /**
  *  NATURAL FAQ ENGINE (2026)
  * 
@@ -10,6 +12,11 @@ import { NextResponse } from 'next/server';
  * Dit is de basis voor 'Automated Drafting'.
  */
 export async function GET() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json([]);
+  }
+
   try {
     // 1. Haal recente mails op die antwoorden bevatten (bijv. van Johfrah)
     let recentReplies: any[] = [];

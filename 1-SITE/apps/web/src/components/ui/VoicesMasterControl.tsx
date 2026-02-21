@@ -176,17 +176,17 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     const languageConfig = [
       { label: t('language.vlaams', 'Vlaams'), value: 1, icon: FlagBE, langCode: 'nl-be', popular: market.popular_languages.includes('Vlaams') },
       { label: t('language.nederlands', 'Nederlands'), value: 2, icon: FlagNL, langCode: 'nl-nl', popular: market.popular_languages.includes('Nederlands') },
-      { label: t('language.frans', 'Français'), value: 3, icon: FlagBE, langCode: 'fr-be', popular: market.popular_languages.includes('Frans') && market.market_code === 'BE' },
-      { label: t('language.frans', 'Français'), value: 4, icon: FlagFR, langCode: 'fr-fr', popular: market.popular_languages.includes('Frans') && market.market_code !== 'BE' },
-      { label: t('language.engels', 'English'), value: 5, icon: FlagUK, langCode: 'en-gb', popular: market.popular_languages.includes('Engels') },
-      { label: t('language.engels', 'English'), value: 6, icon: FlagUS, langCode: 'en-us', popular: false },
-      { label: t('language.duits', 'Deutsch'), value: 7, icon: FlagDE, langCode: 'de-de', popular: market.popular_languages.includes('Duits') },
-      { label: t('language.spaans', 'Español'), value: 8, icon: FlagES, langCode: 'es-es', popular: market.popular_languages.includes('Spaans') },
-      { label: t('language.italiaans', 'Italiano'), value: 9, icon: FlagIT, langCode: 'it-it', popular: market.popular_languages.includes('Italiaans') },
-      { label: t('language.pools', 'Polski'), value: 10, icon: FlagPL, langCode: 'pl-pl', popular: market.popular_languages.includes('Pools') },
-      { label: t('language.deens', 'Dansk'), value: 11, icon: FlagDK, langCode: 'da-dk', popular: market.popular_languages.includes('Deens') },
-      { label: t('language.portugees', 'Português'), value: 12, icon: FlagPT, langCode: 'pt-pt', popular: market.popular_languages.includes('Portugees') },
-      { label: t('language.zweeds', 'Svenska'), value: 43, icon: Globe, langCode: 'sv-se', popular: market.popular_languages.includes('Zweeds') },
+      { label: t('language.frans', 'Frans'), value: 3, icon: FlagBE, langCode: 'fr-be', popular: market.popular_languages.includes('Frans') && market.market_code === 'BE' },
+      { label: t('language.frans', 'Frans'), value: 4, icon: FlagFR, langCode: 'fr-fr', popular: market.popular_languages.includes('Frans') && market.market_code !== 'BE' },
+      { label: t('language.engels', 'Engels'), value: 5, icon: FlagUK, langCode: 'en-gb', popular: market.popular_languages.includes('Engels') },
+      { label: t('language.engels', 'Engels'), value: 6, icon: FlagUS, langCode: 'en-us', popular: false },
+      { label: t('language.duits', 'Duits'), value: 7, icon: FlagDE, langCode: 'de-de', popular: market.popular_languages.includes('Duits') },
+      { label: t('language.spaans', 'Spaans'), value: 8, icon: FlagES, langCode: 'es-es', popular: market.popular_languages.includes('Spaans') },
+      { label: t('language.italiaans', 'Italiaans'), value: 9, icon: FlagIT, langCode: 'it-it', popular: market.popular_languages.includes('Italiaans') },
+      { label: t('language.pools', 'Pools'), value: 10, icon: FlagPL, langCode: 'pl-pl', popular: market.popular_languages.includes('Pools') },
+      { label: t('language.deens', 'Deens'), value: 11, icon: FlagDK, langCode: 'da-dk', popular: market.popular_languages.includes('Deens') },
+      { label: t('language.portugees', 'Portugees'), value: 12, icon: FlagPT, langCode: 'pt-pt', popular: market.popular_languages.includes('Portugees') },
+      { label: t('language.zweeds', 'Zweeds'), value: 43, icon: Globe, langCode: 'sv-se', popular: market.popular_languages.includes('Zweeds') },
     ];
 
     const mappedConfig = languageConfig.map(lang => ({
@@ -227,12 +227,12 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     };
 
     //  CHRIS-PROTOCOL: Add "Alle talen" option for admin reordering context
-    const allOption = { label: t('filter.all_languages', 'Toutes les langues'), value: 'all', popular: false, hidden: true };
+    const allOption = { label: t('filter.all_languages', 'Alle talen'), value: 'all', popular: false, hidden: true };
 
     const result = [
       allOption,
       ...popularLangs.sort(sortFn),
-      { label: t('filter.other_languages', 'AUTRES LANGUES'), value: '', isHeader: true },
+      { label: t('filter.other_languages', 'OVERIGE TALEN'), value: '', isHeader: true },
       ...otherLangs.sort(sortFn)
     ];
 
@@ -406,14 +406,14 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         <div className="flex-1 h-full flex flex-col justify-center relative group/gender">
                           <VoicesDropdown 
                             options={[
-                              { label: t('gender.everyone', 'Tout le monde'), value: '', icon: Users },
-                              { label: t('gender.male', 'Masculin'), value: 'Mannelijk', icon: User },
-                              { label: t('gender.female', 'Féminin'), value: 'Vrouwelijk', icon: User },
+                              { label: t('gender.everyone', 'Iedereen'), value: '', icon: Users },
+                              { label: t('gender.male', 'Mannelijk'), value: 'Mannelijk', icon: User },
+                              { label: t('gender.female', 'Vrouwelijk'), value: 'Vrouwelijk', icon: User },
                             ]}
                             value={state.filters.gender || ''}
                             onChange={(val) => updateFilters({ gender: val || undefined })}
-                            placeholder={t('gender.everyone', 'Tout le monde')}
-                            label={t('filter.who', 'Qui ?')}
+                            placeholder={t('gender.everyone', 'Iedereen')}
+                            label={t('filter.who', 'Wie?')}
                             className="w-full h-full"
                           />
                         </div>
@@ -558,23 +558,23 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             searchable
                             rounding="right"
                             options={[
-                              { label: t('country.be', 'Belgique'), value: 'BE' },
-                              { label: t('country.nl', 'Pays-Bas'), value: 'NL' },
-                              { label: t('country.fr', 'France'), value: 'FR' },
-                              { label: t('country.de', 'Allemagne'), value: 'DE' },
-                              { label: t('country.uk', 'Royaume-Uni'), value: 'UK' },
-                              { label: t('country.us', 'États-Unis'), value: 'US' },
-                              { label: t('country.es', 'Espagne'), value: 'ES' },
+                              { label: t('country.be', 'België'), value: 'BE' },
+                              { label: t('country.nl', 'Nederland'), value: 'NL' },
+                              { label: t('country.fr', 'Frankrijk'), value: 'FR' },
+                              { label: t('country.de', 'Duitsland'), value: 'DE' },
+                              { label: t('country.uk', 'Verenigd Koninkrijk'), value: 'UK' },
+                              { label: t('country.us', 'Verenigde Staten'), value: 'US' },
+                              { label: t('country.es', 'Spanje'), value: 'ES' },
                               { label: t('country.pt', 'Portugal'), value: 'PT' },
-                              { label: t('country.it', 'Italie'), value: 'IT' },
+                              { label: t('country.it', 'Italië'), value: 'IT' },
                             ]}
                             value={state.filters.countries || [state.filters.country || 'BE']}
                             onChange={(val) => {
                               const countries = Array.isArray(val) ? val : (val ? [val] : []);
                               updateFilters({ countries: countries as any });
                             }}
-                            placeholder={t('filter.select_countries', 'Choisir pays')}
-                            label={t('filter.broadcast_area', 'Zone de diffusion ?')}
+                            placeholder={t('filter.select_countries', 'Kies land(en)')}
+                            label={t('filter.broadcast_area', 'Uitzendgebied?')}
                             className="h-full animate-in fade-in slide-in-from-left-4 duration-500"
                             multiSelect={true}
                           />
@@ -586,15 +586,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         <VoicesDropdown 
                           rounding="right"
                           options={[
-                            { label: t('sort.popularity', 'Popularité'), value: 'popularity', icon: Star },
-                            { label: t('sort.delivery', 'Délai de livraison'), value: 'delivery', icon: Clock },
-                            { label: t('sort.alphabetical_az', 'Nom (A-Z)'), value: 'alphabetical_az', icon: Type },
-                            { label: t('sort.alphabetical_za', 'Nom (Z-A)'), value: 'alphabetical_za', icon: Type },
+                            { label: t('sort.popularity', 'Populariteit'), value: 'popularity', icon: Star },
+                            { label: t('sort.delivery', 'Levertijd'), value: 'delivery', icon: Clock },
+                            { label: t('sort.alphabetical_az', 'Naam (A-Z)'), value: 'alphabetical_az', icon: Type },
+                            { label: t('sort.alphabetical_za', 'Naam (Z-A)'), value: 'alphabetical_za', icon: Type },
                           ]}
                           value={state.filters.sortBy || 'popularity'}
                           onChange={(val) => updateFilters({ sortBy: val as any })}
-                          placeholder={t('sort.placeholder', 'Trier par')}
-                          label={t('filter.sort', 'Trier ?')}
+                          placeholder={t('sort.placeholder', 'Sorteer op')}
+                          label={t('filter.sort', 'Sorteer?')}
                           className="flex-1 h-full"
                         />
                       )}
@@ -657,7 +657,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
               className="absolute right-0 text-[11px] font-bold tracking-widest text-primary uppercase hover:opacity-70 transition-opacity flex items-center gap-2"
             >
               <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-              <VoiceglotText translationKey="action.back_to_casting" defaultText="Retour au Casting" />
+              <VoiceglotText translationKey="action.back_to_casting" defaultText="Terug naar Casting" />
             </button>
           )}
         </ContainerInstrument>

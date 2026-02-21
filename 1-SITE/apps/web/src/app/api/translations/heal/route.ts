@@ -107,6 +107,8 @@ export async function POST(request: NextRequest) {
         cleanTranslation.includes('voldoende context') ||
         cleanTranslation.includes('meer informatie') ||
         cleanTranslation.includes('langere tekst') ||
+        cleanTranslation.includes('tijd nodig om na te denken') ||
+        cleanTranslation.includes('probeer je het zo nog eens') ||
         cleanTranslation.length > 200
       );
 

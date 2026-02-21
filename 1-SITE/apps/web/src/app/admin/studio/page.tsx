@@ -14,13 +14,21 @@ import { workshopEditions } from "@db/schema";
 import { desc } from "drizzle-orm";
 import { ArrowRight, DollarSign, Mail, Settings, Upload, Plus } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
+export const dynamic = 'force-dynamic';
 
 /**
  * STUDIO ADMIN HUB
  *  VOICES OS: Exclusief voor Johfrah/Admin.
- * Hier worden de uploads gedaan, mails verstuurd en de financin beheerd.
+ * Hier worden de uploads gedaan, mails verstuurd en de financiën beheerd.
  */
 export default async function StudioAdminPage() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return <ContainerInstrument className="p-20 text-center">Skipping admin render during build...</ContainerInstrument>;
+  }
+
   // 1. Haal alle edities op (voor overzicht)
   let allEditions: any[] = [];
   try {
@@ -75,7 +83,7 @@ export default async function StudioAdminPage() {
             <DollarSign strokeWidth={1.5} className="text-primary mb-6" size={24} />
             <TextInstrument className="text-[15px] font-black tracking-widest text-white/30"><VoiceglotText  translationKey="admin.studio.total_revenue" defaultText="Totale Omzet Studio" /></TextInstrument>
             <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter mt-2">
-              {financeStats.totalRevenue.toLocaleString('nl-BE')}
+              {(financeStats?.totalRevenue || 0).toLocaleString('nl-BE')}
             </HeadingInstrument>
           </ContainerInstrument>
           
@@ -84,20 +92,20 @@ export default async function StudioAdminPage() {
               <TextInstrument className="text-[13px] font-bold text-white/20 tracking-widest uppercase">
                 Externe Kosten
               </TextInstrument>
-              <TextInstrument className="text-[13px] font-black text-white/60">{financeStats.externalCosts.toLocaleString('nl-BE')}</TextInstrument>
+              <TextInstrument className="text-[13px] font-black text-white/60">{(financeStats?.externalCosts || 0).toLocaleString('nl-BE')}</TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex justify-between items-center">
               <TextInstrument className="text-[13px] font-bold text-white/20 tracking-widest uppercase">
                 Partner Payouts
               </TextInstrument>
-              <TextInstrument className="text-[13px] font-black text-white/60">{financeStats.partnerPayouts.toLocaleString('nl-BE')}</TextInstrument>
+              <TextInstrument className="text-[13px] font-black text-white/60">{(financeStats?.partnerPayouts || 0).toLocaleString('nl-BE')}</TextInstrument>
             </ContainerInstrument>
-            {financeStats.pendingRevenue > 0 && (
+            {financeStats?.pendingRevenue > 0 && (
               <ContainerInstrument className="flex justify-between items-center">
                 <TextInstrument className="text-[13px] font-bold text-primary/40 tracking-widest uppercase">
                    Onbetaalde Orders
                 </TextInstrument>
-                <TextInstrument className="text-[13px] font-black text-primary/60">{financeStats.pendingRevenue.toLocaleString('nl-BE')}</TextInstrument>
+                <TextInstrument className="text-[13px] font-black text-primary/60">{(financeStats?.pendingRevenue || 0).toLocaleString('nl-BE')}</TextInstrument>
               </ContainerInstrument>
             )}
             <div className="pt-2 border-t border-white/5">
@@ -105,28 +113,28 @@ export default async function StudioAdminPage() {
                 <TextInstrument className="text-[15px] font-bold text-white/40 tracking-widest">
                   <VoiceglotText  translationKey="common.net_profit" defaultText="De Pot (Winst)" />
                 </TextInstrument>
-                <TextInstrument className="text-[15px] font-black text-primary">{financeStats.netProfit.toLocaleString('nl-BE')}</TextInstrument>
+                <TextInstrument className="text-[15px] font-black text-primary">{(financeStats?.netProfit || 0).toLocaleString('nl-BE')}</TextInstrument>
               </ContainerInstrument>
             </div>
             <ContainerInstrument className="flex justify-between items-center bg-primary/10 p-3 rounded-xl mt-2">
               <TextInstrument className="text-[13px] font-bold text-primary tracking-widest uppercase">
                 Aandeel p.p. (50/50)
               </TextInstrument>
-              <TextInstrument className="text-[15px] font-black text-primary">{financeStats.partnerShare.toLocaleString('nl-BE')}</TextInstrument>
+              <TextInstrument className="text-[15px] font-black text-primary">{(financeStats?.partnerShare || 0).toLocaleString('nl-BE')}</TextInstrument>
             </ContainerInstrument>
-            {financeStats.forecastProfit && financeStats.forecastProfit > financeStats.netProfit && (
+            {financeStats?.forecastProfit && financeStats?.forecastProfit > (financeStats?.netProfit || 0) && (
               <ContainerInstrument className="flex justify-between items-center pt-2 border-t border-white/5 mt-2">
                 <TextInstrument className="text-[11px] font-bold text-white/20 tracking-widest uppercase">
                    Prognose (incl. onbetaald)
                 </TextInstrument>
-                <TextInstrument className="text-[11px] font-black text-white/40">{financeStats.forecastProfit.toLocaleString('nl-BE')}</TextInstrument>
+                <TextInstrument className="text-[11px] font-black text-white/40">{(financeStats?.forecastProfit || 0).toLocaleString('nl-BE')}</TextInstrument>
               </ContainerInstrument>
             )}
             <ContainerInstrument className="flex justify-between items-center">
               <TextInstrument className="text-[13px] font-bold text-white/20 tracking-widest">
                 <VoiceglotText  translationKey="common.margin" defaultText="Marge" />
               </TextInstrument>
-              <TextInstrument className="text-[13px] font-black">{financeStats.marginPercentage.toFixed(1)}%</TextInstrument>
+              <TextInstrument className="text-[13px] font-black">{(financeStats?.marginPercentage || 0).toFixed(1)}%</TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </BentoCard>

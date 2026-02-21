@@ -3,6 +3,8 @@ import { db } from '@db';
 import { orders } from '@db/schema';
 import { eq, and, lt, isNull } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * DELIVERY WATCHDOG (NUCLEAR LOGIC 2026)
  * 
@@ -14,6 +16,11 @@ import { eq, and, lt, isNull } from 'drizzle-orm';
  */
 
 export async function GET() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, delayedCount: 0 });
+  }
+
   try {
     const now = new Date();
     const deadlineThreshold = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // 24 uur geleden

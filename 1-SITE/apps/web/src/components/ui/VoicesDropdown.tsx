@@ -400,9 +400,9 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                 <span className="text-[11px] font-bold text-primary min-w-[65px] text-center uppercase tracking-tight">
                                   {(() => {
                                     const r = mediaRegion[item.value] || 'national';
-                                    if (r === 'national') return t('common.national', 'National');
-                                    if (r === 'regional') return t('common.regional', 'Régional');
-                                    return t('common.local', 'Local');
+                                    if (r === 'national') return t('common.national', 'Nationaal');
+                                    if (r === 'regional') return t('common.regional', 'Regionaal');
+                                    return t('common.local', 'Lokaal');
                                   })()}
                                 </span>
                                 <button 
@@ -456,7 +456,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                           {onYearsChange && (
                             <div className="flex items-center justify-between">
                               <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
-                                {isPodcast ? <VoiceglotText translationKey="common.license" defaultText="Licence" /> : <VoiceglotText translationKey="common.duration" defaultText="Durée" />}
+                                {isPodcast ? <VoiceglotText translationKey="common.license" defaultText="Licentie" /> : <VoiceglotText translationKey="common.duration" defaultText="Looptijd" />}
                               </span>
                               <div className="flex items-center gap-3">
                                   <button 
@@ -481,12 +481,12 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                   </button>
                                   <span className="text-[11px] font-bold text-primary min-w-[40px] text-center">
                                     {isPodcast ? (
-                                      years === 0.25 ? t('common.3_months', "3 mois") :
-                                      years === 0.5 ? t('common.6_months', "6 mois") :
-                                      years === 0.75 ? t('common.9_months', "9 mois") :
-                                      t('common.years_count', `${years} an(s)`, { count: years })
+                                      years === 0.25 ? t('common.3_months', "3 maanden") :
+                                      years === 0.5 ? t('common.6_months', "6 maanden") :
+                                      years === 0.75 ? t('common.9_months', "9 maanden") :
+                                      t('common.years_count', `${years} jaar`, { count: years })
                                     ) : (
-                                      years === 1 ? t('common.1_year', "1 an") : t('common.years_count', `${years} ans`, { count: years })
+                                      years === 1 ? t('common.1_year', "1 jaar") : t('common.years_count', `${years} jaar`, { count: years })
                                     )}
                                   </span>
                                   <button 
