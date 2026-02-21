@@ -17,7 +17,7 @@ export const VoicyBridge: React.FC = () => {
     if (typeof window === 'undefined') return;
 
     // Intelligent Intent Detection
-    const intent = PredictiveRouter.determineIntent(pathname, searchParams);
+    const intent = searchParams ? PredictiveRouter.determineIntent(pathname, searchParams) : null;
     if (intent && intent.greeting) {
       console.log(`Voicy Intent Detected: ${intent.intent} (${intent.reason})`);
       (window as any).voicy_next_greeting = intent.greeting;

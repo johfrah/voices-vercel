@@ -103,6 +103,8 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Notificatie naar Admin (Post-Action Info)
+    // CHRIS-PROTOCOL: Disabled per User Request - No more self-healing emails.
+    /*
     try {
       //  CHRIS-PROTOCOL: Skip notification for initial load key to prevent spam
       if (key !== 'initial_load') {
@@ -132,6 +134,7 @@ export async function POST(request: NextRequest) {
     } catch (mailErr) {
       console.error(' Failed to send self-heal notification:', mailErr);
     }
+    */
 
     return NextResponse.json({ 
       success: true, 

@@ -64,11 +64,12 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
         }
       }
 
-      // Final fallback to a generic placeholder
-      setCurrentSrc('/assets/common/branding/voicy/voicy-avatar.png');
+      // Final fallback to a generic placeholder for actors
+      setCurrentSrc('/assets/common/placeholders/placeholder-voice.jpg');
     } else {
-      // Generic fallback for other images
-      setCurrentSrc('/assets/common/branding/voicy/voicy-avatar.png');
+      //  CHRIS-PROTOCOL: No Voicy fallback for branding/system assets
+      // We prefer a broken image icon over a confusing avatar
+      console.warn(`[VoiceglotImage] Asset failed to load: ${currentSrc}`);
     }
   };
 
@@ -130,21 +131,23 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     !currentSrc.endsWith('/image/');
 
   //  CHRIS-PROTOCOL: Automatic Proxy Wrapping (2026 Mandate)
-  // Ensure all local assets go through the proxy to enable WebP optimization
+  // We only use the proxy for external assets (Supabase) or relative paths 
+  // that need optimization. Local assets in /assets/ are served directly.
   const finalSrc = React.useMemo(() => {
     if (!isValidSrc) return currentSrc;
     
     // If it's already a proxy URL, don't wrap it again
     if (isProxied) return currentSrc;
 
-    //  FIX: Supabase URLs also through proxy to avoid 400 Bad Request from Next.js Image optimizer
+    //  FIX: Supabase URLs through proxy to avoid 400 Bad Request from Next.js Image optimizer
     if (isSupabase) {
       return `/api/proxy/?path=${encodeURIComponent(currentSrc)}`;
     }
 
+    //  CHRIS-PROTOCOL: Local assets in /assets/ do NOT need the proxy.
+    // They are served directly from the public folder.
     if (currentSrc.startsWith('/assets/')) {
-      const pathOnly = currentSrc.replace('/assets/', '');
-      return `/api/proxy/?path=${encodeURIComponent(pathOnly)}`;
+      return currentSrc;
     }
 
     // If it's a relative path that doesn't start with /assets/, it might be a direct Supabase path (e.g. "active/voicecards/...")

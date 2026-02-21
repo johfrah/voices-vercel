@@ -105,27 +105,34 @@ export async function POST(request: Request) {
     //  CHRIS-PROTOCOL: Use the proxied URL for immediate frontend display
     const proxiedUrl = `/api/proxy/?path=${encodeURIComponent(filePath)}`;
 
-    //  CHRIS-PROTOCOL: Return immediately for maximum speed (Bob-methode)
-    // We link in the media table in the background to not block the UI
-    const responseData = { 
-      success: true, 
-      url: proxiedUrl,
-      publicUrl: publicUrl,
-      path: filePath,
-      _forensic: `Photo uploaded successfully to ${filePath}. Linking in background.`
-    };
+    //  CHRIS-PROTOCOL: Link in media table IMMEDIATELY to get mediaId (Bob-methode)
+    // We do AI analysis in the background.
+    let mediaId = 0;
+    try {
+      console.log(' ADMIN: Linking in media table...');
+      const { db } = await import('@/lib/sync/bridge');
+      const { media } = await import('@db/schema');
+      
+      const [mediaResult] = await db.insert(media).values({
+        fileName: fileName,
+        filePath: filePath,
+        fileType: file.type || 'image/webp',
+        fileSize: file.size,
+        journey: 'agency',
+        category: 'voices',
+        isPublic: true,
+        isManuallyEdited: true,
+        updatedAt: new Date()
+      }).returning({ id: media.id });
+      
+      mediaId = mediaResult.id;
+      console.log(' ADMIN: Media record created:', mediaId);
 
-    // Background task for DB linking and AI analysis
-    const mediaPromise = (async () => {
-      try {
-        console.log(' ADMIN: Linking in media table (background)...');
-        const { db } = await import('@/lib/sync/bridge');
-        const { media } = await import('@db/schema');
-        
-        //  CHRIS-PROTOCOL: AI Intelligence (2026)
-        // We analyze the image in the background to generate labels and alt-text
-        let aiMetadata = {};
+      // Background task for AI analysis
+      (async () => {
         try {
+          console.log(' ADMIN: Starting background AI analysis...');
+          let aiMetadata = {};
           const { GeminiService } = await import('@/services/GeminiService');
           const gemini = GeminiService.getInstance();
           const buffer = Buffer.from(await file.arrayBuffer());
@@ -144,42 +151,31 @@ export async function POST(request: Request) {
               ai_confidence: analysis.confidence,
               suggested_alt: analysis.suggested_alt
             };
+
+            // Update the media record with AI data
+            await db.update(media)
+              .set({ 
+                altText: analysis.suggested_alt || null,
+                labels: analysis.labels || [],
+                metadata: aiMetadata 
+              })
+              .where(eq(media.id, mediaId));
           }
         } catch (aiError) {
-          console.error(' ADMIN: AI Analysis failed (silent fallback):', aiError);
+          console.error(' ADMIN: Background AI Analysis failed:', aiError);
         }
+      })();
+    } catch (dbError: any) {
+      console.error(' ADMIN: DB Link Failure:', dbError);
+    }
 
-        const [mediaResult] = await db.insert(media).values({
-          fileName: fileName,
-          filePath: filePath,
-          fileType: file.type || 'image/webp',
-          fileSize: file.size,
-          journey: 'agency',
-          category: 'voices',
-          isPublic: true,
-          isManuallyEdited: true,
-          altText: (aiMetadata as any).suggested_alt || null,
-          labels: (aiMetadata as any).ai_labels || [],
-          metadata: aiMetadata,
-          updatedAt: new Date()
-        }).returning({ id: media.id });
-        console.log(' ADMIN: Media record created in background:', mediaResult.id);
-        return mediaResult.id;
-      } catch (dbError: any) {
-        console.error(' ADMIN: Background DB Link Failure:', dbError);
-        return 0;
-      }
-    })();
-
-    // Wait for media record creation if it's fast enough
-    const mediaId = await Promise.race([
-      mediaPromise,
-      new Promise<number>(resolve => setTimeout(() => resolve(0), 2000))
-    ]);
-
-    return NextResponse.json({
-      ...responseData,
-      mediaId: mediaId
+    return NextResponse.json({ 
+      success: true, 
+      url: proxiedUrl,
+      publicUrl: publicUrl,
+      path: filePath,
+      mediaId: mediaId,
+      _forensic: `Photo uploaded and linked successfully to ${filePath}. AI analysis in background.`
     });
 
   } catch (error: any) {

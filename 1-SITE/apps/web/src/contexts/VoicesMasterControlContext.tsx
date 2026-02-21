@@ -243,7 +243,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
         const urlState = detectStateFromUrl(currentUrl);
 
         setState(prev => {
-          const journey = urlState.journey || (searchParams.get('journey') as JourneyType) || savedState.journey || prev.journey;
+          const journey = urlState.journey || (searchParams?.get('journey') as JourneyType) || savedState.journey || prev.journey;
           
           return {
             ...prev,
@@ -252,11 +252,11 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
             filters: {
               ...prev.filters,
               ...savedState.filters,
-              language: urlState.language || (searchParams.get('language') ? MarketManager.getLanguageLabel(searchParams.get('language')!) : (savedState.filters?.language || prev.filters.language)),
-              gender: urlState.gender || searchParams.get('gender') || savedState.filters?.gender || prev.filters.gender,
-              media: searchParams.get('media') ? searchParams.get('media')?.split(',') : (savedState.filters?.media || prev.filters.media),
+              language: urlState.language || (searchParams?.get('language') ? MarketManager.getLanguageLabel(searchParams?.get('language')!) : (savedState.filters?.language || prev.filters.language)),
+              gender: urlState.gender || searchParams?.get('gender') || savedState.filters?.gender || prev.filters.gender,
+              media: searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || prev.filters.media),
             },
-            currentStep: urlState.step || (searchParams.get('step') as any) || 'voice'
+            currentStep: urlState.step || (searchParams?.get('step') as any) || 'voice'
           };
         });
       } catch (e) {}

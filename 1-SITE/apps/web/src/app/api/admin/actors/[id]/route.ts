@@ -49,7 +49,7 @@ export async function PATCH(
       nativeLang: body.native_lang,
       extraLangs: body.extra_langs,
       dropboxUrl: body.photo_url,
-      photoId: body.photo_id || body.photoId || undefined,
+      photoId: body.photo_id !== undefined ? body.photo_id : (body.photoId !== undefined ? body.photoId : undefined),
       deliveryConfig: body.delivery_config || undefined,
       studioSpecs: body.studioSpecs || undefined,
       connectivity: body.connectivity || undefined,

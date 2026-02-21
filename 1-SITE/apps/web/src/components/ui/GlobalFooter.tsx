@@ -478,11 +478,11 @@ export default function GlobalFooter() {
                 <VoiceglotImage  
                   src={market.logo_url} 
                   alt={market.name} 
-                  width={142} 
-                  height={56}
+                  width={200} 
+                  height={80}
                   journey="common"
                   category="branding"
-                  className="h-14 w-auto transition-transform duration-500 group-hover:scale-105"
+                  className="h-10 md:h-12 w-auto transition-transform duration-500 group-hover:scale-105"
                 />
               )}
             </ButtonInstrument>

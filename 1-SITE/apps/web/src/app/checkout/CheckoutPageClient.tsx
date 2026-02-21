@@ -93,9 +93,9 @@ export default function CheckoutPageClient() {
 
   if (state.items.length === 0) {
     return (
-      <ContainerInstrument className="min-h-screen bg-va-off-white flex items-center justify-center p-6 relative z-[10]">
+      <ContainerInstrument plain className="min-h-screen bg-va-off-white flex items-center justify-center p-6 relative z-[10]">
         <LiquidBackground />
-        <ContainerInstrument className="text-center space-y-8 max-w-md relative z-[11]">
+        <ContainerInstrument plain className="text-center space-y-8 max-w-md relative z-[11]">
           <ContainerInstrument className="w-24 h-24 bg-va-off-white rounded-[20px] flex items-center justify-center mx-auto text-va-black/10">
             <Image  src="/assets/common/branding/icons/CART.svg" width={48} height={48} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.1 }} />
           </ContainerInstrument>
@@ -116,7 +116,7 @@ export default function CheckoutPageClient() {
   }
 
   return (
-    <ContainerInstrument className="min-h-screen bg-va-off-white pb-24 relative z-10">
+    <ContainerInstrument plain className="min-h-screen bg-va-off-white pb-24 relative z-10">
       <LiquidBackground />
       <SectionInstrument className="max-w-6xl mx-auto px-0 md:px-6 pt-20">
         <ContainerInstrument className="mb-16 flex flex-col items-center justify-center gap-8 text-center px-6 md:px-0">

@@ -69,7 +69,7 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
               <>
                 <VoiceglotText key={`t1-${state.journey}`} translationKey={titleKeyPart1} defaultText={activeTitle.p1} />
                 {" "}
-                <TextInstrument as="span" className="text-primary italic font-light">
+                <TextInstrument as="span" className="text-primary italic font-light text-inherit">
                   <VoiceglotText key={`th-${state.journey}`} translationKey={titleKeyHighlight} defaultText={activeTitle.h} />
                 </TextInstrument>
                 <br />
