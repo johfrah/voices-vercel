@@ -47,6 +47,10 @@ const nextConfig = {
         source: '/voicy.png',
         destination: '/assets/common/branding/voicy/voicy-avatar.png',
       },
+      {
+        source: '/johfrah.png',
+        destination: '/assets/common/branding/founder/johfrah.png',
+      },
     ];
   },
   // Skip linting during build to speed up
