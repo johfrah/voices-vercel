@@ -40,20 +40,23 @@ export async function POST(request: NextRequest) {
       // We loggen de payload voor we inserten om de root cause van de 'Failed query' te vinden.
       console.log('[RegisterAPI] Attempting registry insert:', { key, sourceText });
 
-      await db.insert(translationRegistry).values({
-        stringHash: key, 
-        originalText: sourceText,
-        lastSeen: new Date(),
-        context: 'auto-registered'
-      }).onConflictDoUpdate({
-        target: [translationRegistry.stringHash],
-        set: { 
+      if (key && sourceText) {
+        await db.insert(translationRegistry).values({
+          stringHash: key, 
           originalText: sourceText,
-          lastSeen: new Date() 
-        }
-      });
-      
-      console.log('[RegisterAPI] Registry insert success for key:', key);
+          lastSeen: new Date(),
+          context: 'auto-registered'
+        }).onConflictDoUpdate({
+          target: [translationRegistry.stringHash],
+          set: { 
+            originalText: sourceText,
+            lastSeen: new Date() 
+          }
+        });
+        console.log('[RegisterAPI] Registry insert success for key:', key);
+      } else {
+        console.warn('[RegisterAPI] Skipping insert: key or sourceText is missing');
+      }
     } catch (dbError: any) {
       console.error('[RegisterAPI] Registry insert failed for key:', key, 'Error:', dbError.message);
       // We gaan door, want de registry is secundair aan de vertaling zelf
