@@ -85,8 +85,12 @@ export const BriefingStep: React.FC = () => {
                 <Zap size={20} fill="currentColor" />
               </div>
               <div>
-                <HeadingInstrument level={4} className="text-[15px] font-bold tracking-tight">Johfrai AI Preview</HeadingInstrument>
-                <TextInstrument className="text-[11px] text-va-black/40 uppercase tracking-widest font-medium">Check je timing & cadans</TextInstrument>
+                <HeadingInstrument level={4} className="text-[15px] font-bold tracking-tight">
+                  <VoiceglotText translationKey="checkout.briefing.johfrai_preview" defaultText="Johfrai AI Preview" />
+                </HeadingInstrument>
+                <TextInstrument className="text-[11px] text-va-black/40 uppercase tracking-widest font-medium">
+                  <VoiceglotText translationKey="checkout.briefing.johfrai_subtitle" defaultText="Check je timing & cadans" />
+                </TextInstrument>
               </div>
             </div>
 

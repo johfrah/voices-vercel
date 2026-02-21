@@ -81,6 +81,7 @@ async function LessonGrid() {
 }
 
 async function AcademyReviewsWrapper() {
+  const { t } = useTranslation();
   let dbReviews: any[] = [];
   try {
     const dbReviewsRaw = await db.execute(sql`SELECT * FROM reviews WHERE business_slug = 'academy' LIMIT 10`);
@@ -94,7 +95,7 @@ async function AcademyReviewsWrapper() {
     name: r.author_name || r.authorName,
     text: r.text_nl || r.textNl || r.text_en || r.textEn,
     rating: r.rating,
-    date: new Date(r.created_at || r.createdAt || Date.now()).toLocaleDateString('nl-BE'),
+    date: new Date(r.created_at || r.createdAt || Date.now()).toLocaleDateString(t('common.date_format', 'nl-BE')),
     authorPhotoUrl: r.author_photo_url || r.authorPhotoUrl
   }));
 
@@ -114,7 +115,7 @@ async function AcademyReviewsWrapper() {
 export default async function AcademyPage() {
   const headerList = headers();
   const lang = headerList.get('x-voices-lang') || 'nl';
-  const t = (key: string, def: string) => def; // Fallback for server component if needed, but we use VoiceglotText mostly
+  const t = (key: string, def: string) => def; // Fallback for server component
 
   const supabase = createClient();
   const supabaseUser = supabase ? (await supabase.auth.getUser()).data.user : null;
@@ -307,7 +308,7 @@ export default async function AcademyPage() {
               <ContainerInstrument className="aspect-square bg-va-black rounded-[40px] overflow-hidden shadow-aura-lg relative group border border-black/5">
                 <Image 
                   src="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/visuals/common/studio-mic.webp"
-                  alt="Professional Microphone"
+                  alt={t('academy.visual.mic_alt', "Professional Microphone")}
                   fill
                   className="object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-1000"
                 />
@@ -332,7 +333,7 @@ export default async function AcademyPage() {
                 {johfrah?.photo_url && (
                   <Image  
                     src={johfrah.photo_url} 
-                    alt="Johfrah Lefebvre"
+                    alt={t('common.instructor.johfrah', "Johfrah Lefebvre")}
                     fill
                     className="object-cover transition-transform duration-[3000ms] group-hover:scale-110 va-bezier"
                   />
@@ -350,7 +351,9 @@ export default async function AcademyPage() {
                 </ContainerInstrument>
                 <HeadingInstrument level={2} className="text-6xl md:text-8xl font-extralight tracking-tighter leading-none text-white">
                   Johfrah <br/>
-                  <span className="text-primary/40 italic">Lefebvre</span>
+                  <span className="text-primary/40 italic">
+                    <VoiceglotText translationKey="common.instructor.johfrah.last_name" defaultText="Lefebvre" noTranslate={true} />
+                  </span>
                 </HeadingInstrument>
               </div>
               <TextInstrument className="text-xl text-white/60 font-light leading-relaxed">

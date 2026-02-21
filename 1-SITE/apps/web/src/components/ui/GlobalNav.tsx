@@ -465,7 +465,7 @@ export default function GlobalNav() {
           <Link href="/" className="flex items-center gap-3 group">
             <Image  
               src="/assets/common/branding/Voices-Artists-LOGO.webp" 
-              alt="Voices Artists" 
+              alt={t('common.voices_artists', "Voices Artists")} 
               width={160} 
               height={50}
               priority
@@ -606,7 +606,7 @@ export default function GlobalNav() {
         ) : pathname.startsWith('/academy') ? (
           <Image  
           src="/assets/studio/common/branding/VACADEMY.webp" 
-          alt="Voices Academy" 
+          alt={t('common.voices_academy', "Voices Academy")} 
           width={240} 
           height={80}
           priority
@@ -616,7 +616,7 @@ export default function GlobalNav() {
         ) : isStudioJourney ? (
           <Image  
           src="/assets/studio/common/branding/VSTUDIO.webp" 
-          alt="Voices Studio" 
+          alt={t('common.voices_studio', "Voices Studio")} 
           width={240} 
           height={80}
           priority
@@ -626,7 +626,7 @@ export default function GlobalNav() {
       ) : (
         <Image  
           src={market.logo_url} 
-          alt={market.name} 
+          alt={t(`market.name.${market.market_code.toLowerCase()}`, market.name)} 
           width={200} 
           height={80}
           priority
@@ -770,7 +770,7 @@ export default function GlobalNav() {
         {showPortfolioAdmin && (
           <HeaderIcon 
             icon={Settings} 
-            alt="Portfolio Beheer"
+            alt={t('nav.portfolio_admin_alt', "Portfolio Beheer")}
             href={getPortfolioHref('/admin')}
             isActive={pathname.includes('/admin')}
             badgeText="ADMIN"

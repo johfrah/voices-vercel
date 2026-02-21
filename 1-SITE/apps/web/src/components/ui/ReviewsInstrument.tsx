@@ -11,38 +11,43 @@ import { useEditMode } from "@/contexts/EditModeContext";
 import { useSonicDNA } from "@/lib/sonic-dna";
 import toast from "react-hot-toast";
 
+import { useTranslation } from "@/contexts/TranslationContext";
+
 /**
  * REVIEWS SKELETON (MOBY-STANDARD 2026)
  * Voorkomt layout shifts tijdens het laden van social proof.
  */
-const ReviewSkeleton = () => (
-  <div className="min-w-[320px] md:min-w-[450px] animate-pulse">
-    <div className="bg-va-off-white/50 border border-black/[0.03] p-12 flex flex-col justify-between h-[400px] rounded-[40px]">
-      <div className="space-y-8">
-        <div className="flex justify-between items-center">
-          <div className="flex gap-1">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="w-3.5 h-3.5 bg-va-black/5 rounded-full" />
-            ))}
+const ReviewSkeleton = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="min-w-[320px] md:min-w-[450px] animate-pulse">
+      <div className="bg-va-off-white/50 border border-black/[0.03] p-12 flex flex-col justify-between h-[400px] rounded-[40px]">
+        <div className="space-y-8">
+          <div className="flex justify-between items-center">
+            <div className="flex gap-1">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="w-3.5 h-3.5 bg-va-black/5 rounded-full" />
+              ))}
+            </div>
+            <div className="w-8 h-8 bg-va-black/5 rounded-lg" />
           </div>
-          <div className="w-8 h-8 bg-va-black/5 rounded-lg" />
+          <div className="space-y-3">
+            <div className="h-4 bg-va-black/5 rounded w-full" />
+            <div className="h-4 bg-va-black/5 rounded w-5/6" />
+            <div className="h-4 bg-va-black/5 rounded w-4/6" />
+          </div>
         </div>
-        <div className="space-y-3">
-          <div className="h-4 bg-va-black/5 rounded w-full" />
-          <div className="h-4 bg-va-black/5 rounded w-5/6" />
-          <div className="h-4 bg-va-black/5 rounded w-4/6" />
-        </div>
-      </div>
-      <div className="mt-12 pt-8 border-t border-black/5 flex items-center gap-5">
-        <div className="w-14 h-14 rounded-2xl bg-va-black/5" />
-        <div className="space-y-2">
-          <div className="h-4 bg-va-black/5 rounded w-32" />
-          <div className="h-3 bg-va-black/5 rounded w-20" />
+        <div className="mt-12 pt-8 border-t border-black/5 flex items-center gap-5">
+          <div className="w-14 h-14 rounded-2xl bg-va-black/5" />
+          <div className="space-y-2">
+            <div className="h-4 bg-va-black/5 rounded w-32" />
+            <div className="h-3 bg-va-black/5 rounded w-20" />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 /**
  * REVIEWS INSTRUMENT (MOBY-STANDARD 2026)
@@ -79,6 +84,7 @@ export const ReviewsInstrument: React.FC<{
 }) => {
   const { isEditMode } = useEditMode();
   const { playClick } = useSonicDNA();
+  const { t } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -252,7 +258,9 @@ export const ReviewsInstrument: React.FC<{
             <div className="max-w-3xl space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/5 rounded-full border border-primary/10 mb-2">
                 <Star size={12} className="text-primary" fill="currentColor" />
-                <span className="text-[10px] font-light text-primary uppercase tracking-[0.2em]">Social Proof</span>
+                <span className="text-[10px] font-light text-primary uppercase tracking-[0.2em]">
+                  <VoiceglotText translationKey="common.social_proof" defaultText="Social Proof" />
+                </span>
               </div>
               <HeadingInstrument level={2} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.85] text-va-black">
                 <VoiceglotText translationKey={`${translationKeyPrefix}.title`} defaultText={title || "Echte verhalen van echte klanten."} />
@@ -449,7 +457,9 @@ export const ReviewsInstrument: React.FC<{
                           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.16H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.84l3.66-2.75z" />
                           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.16l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                         </svg>
-                        <span className="text-[9px] font-bold text-[#4285F4] uppercase tracking-widest">Google</span>
+                        <span className="text-[9px] font-bold text-[#4285F4] uppercase tracking-widest">
+                          <VoiceglotText translationKey="common.google" defaultText="Google" />
+                        </span>
                       </div>
                     ) : (
                       <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center border border-primary/10">

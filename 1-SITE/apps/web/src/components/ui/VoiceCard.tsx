@@ -500,7 +500,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           >
             {videoFilename && (
               <track 
-                label="Nederlands"
+                label={t('common.language.dutch', "Nederlands")}
                 kind="subtitles"
                 srcLang="nl"
                 src={`/assets/studio/workshops/subtitles/${videoFilename}-nl.vtt`}
@@ -841,7 +841,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                           type="text"
                           value={tagSearchQuery}
                           onChange={(e) => setTagSearchQuery(e.target.value)}
-                          placeholder="Zoek of voeg tag toe..."
+                          placeholder={t('action.search_or_add_tag', "Zoek of voeg tag toe...")}
                           className="bg-transparent border-none outline-none text-[13px] font-medium w-full"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && tagSearchQuery.trim()) {
@@ -944,7 +944,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                       defaultText={onSelect ? "Kies stem" : "Proefopname +"} 
                     />
                     {!onSelect && (
-                      <span className="text-[8px] font-black tracking-[0.2em] opacity-50">GRATIS</span>
+                      <span className="text-[8px] font-black tracking-[0.2em] opacity-50">
+                        <VoiceglotText translationKey="common.free" defaultText="GRATIS" />
+                      </span>
                     )}
                   </div>
                 )}

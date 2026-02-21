@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function OverOnsPage() {
+  const { t } = useTranslation();
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pt-32 pb-40 px-6">
       <ContainerInstrument className="max-w-5xl mx-auto">
@@ -36,7 +37,7 @@ export default function OverOnsPage() {
           <ContainerInstrument className="relative aspect-square rounded-[20px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
             <Image  
               src="/assets/common/founder/johfrah-avatar-be.png" 
-              alt="Johfrah Lefebvre"
+              alt={t('common.instructor.johfrah', "Johfrah Lefebvre")}
               fill
               className="object-cover"
             />
@@ -82,7 +83,7 @@ export default function OverOnsPage() {
           <ContainerInstrument className="order-1 md:order-2 relative aspect-square rounded-[20px] overflow-hidden shadow-aura-lg grayscale hover:grayscale-0 transition-all duration-1000">
             <Image  
               src="/assets/common/coaches/bernadette.jpg" 
-              alt="Bernadette Timmermans"
+              alt={t('common.instructor.bernadette', "Bernadette Timmermans")}
               fill
               className="object-cover"
             />

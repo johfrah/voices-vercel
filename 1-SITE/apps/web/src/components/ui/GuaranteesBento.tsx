@@ -6,12 +6,15 @@ import { BentoCard, BentoGrid } from "./BentoGrid";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
 import { VoiceglotText } from "./VoiceglotText";
 
+import { useTranslation } from "@/contexts/TranslationContext";
+
 /**
  * GUARANTEES BENTO
  * Focus: Vertrouwen & Kwaliteit (Bob-methode)
  * Verpakt de content uit 'guarantees.md' in een high-end Bento Grid.
  */
 export const GuaranteesBento = () => {
+  const { t } = useTranslation();
   return (
     <BentoGrid strokeWidth={1.5} className="mb-32">
       {/*  MAIN CARD: 100% Tevredenheid */}
@@ -19,7 +22,7 @@ export const GuaranteesBento = () => {
         <ContainerInstrument className="absolute inset-0 z-0">
           <Image  
             src="/assets/service-photo.jpg" 
-            alt="Service" 
+            alt={t('common.service', "Service")} 
             fill 
             sizes="(max-width: 768px) 100vw, 1140px"
             className="object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-1000"

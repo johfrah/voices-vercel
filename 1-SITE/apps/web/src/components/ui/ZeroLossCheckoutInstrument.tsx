@@ -14,6 +14,7 @@ import { PricingTooltipInstrument } from '@/components/ui/PricingTooltipInstrume
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { User, Mail, Phone, Briefcase, ArrowRight, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { BentoCard } from '@/components/ui/BentoGrid';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 /**
  *  ZERO-LOSS CHECKOUT INSTRUMENT
@@ -29,6 +30,7 @@ export const ZeroLossCheckoutInstrument = ({
   onComplete: (data: any) => void;
 }) => {
   const { playClick } = useSonicDNA();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -83,11 +85,11 @@ export const ZeroLossCheckoutInstrument = ({
                     <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText  translationKey="auto.zerolosscheckoutinstrument.voornaam.75a044" defaultText="Voornaam" /></TextInstrument>
                     <ContainerInstrument className="relative">
                       <User strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
-                      <InputInstrument 
+                        <InputInstrument 
                         value={formData.firstName}
                         onChange={(e) => { handleInputChange('firstName', e.target.value); }}
                         className="w-full pl-14 pr-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px]" 
-                        placeholder="Julie" 
+                        placeholder={t('common.placeholder.first_name', "Julie")} 
                       />
                     </ContainerInstrument>
                   </ContainerInstrument>
@@ -97,7 +99,7 @@ export const ZeroLossCheckoutInstrument = ({
                       value={formData.lastName}
                       onChange={(e) => { handleInputChange('lastName', e.target.value); }}
                       className="w-full px-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px]" 
-                      placeholder="Vandamme" 
+                      placeholder={t('common.placeholder.last_name', "Vandamme")} 
                     />
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -111,7 +113,7 @@ export const ZeroLossCheckoutInstrument = ({
                       value={formData.email}
                       onChange={(e) => { handleInputChange('email', e.target.value); }}
                       className="w-full pl-14 pr-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium" 
-                      placeholder="julie@voorbeeld.com" 
+                      placeholder={t('common.placeholder.email_example', "julie@voorbeeld.com")} 
                     />
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -136,7 +138,7 @@ export const ZeroLossCheckoutInstrument = ({
                       value={formData.company}
                       onChange={(e) => { handleInputChange('company', e.target.value); }}
                       className="w-full pl-14 pr-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium" 
-                      placeholder="Mijn Bedrijf BV" 
+                      placeholder={t('common.placeholder.company_example', "Mijn Bedrijf BV")} 
                     />
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -149,7 +151,7 @@ export const ZeroLossCheckoutInstrument = ({
                       value={formData.vatNumber}
                       onChange={(e) => { handleInputChange('vatNumber', e.target.value); }}
                       className="w-full pl-14 pr-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium" 
-                      placeholder="BE 0123.456.789" 
+                      placeholder={t('common.placeholder.vat_example', "BE 0123.456.789")} 
                     />
                   </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-medium text-va-black/20 ml-4 tracking-widest"><VoiceglotText  translationKey="auto.zerolosscheckoutinstrument.we_valideren_dit_dir.fd2fff" defaultText="We valideren dit direct voor een factuur zonder BTW (indien van toepassing)." /></TextInstrument>

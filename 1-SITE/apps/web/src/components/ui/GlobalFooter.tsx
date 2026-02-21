@@ -261,7 +261,7 @@ export default function GlobalFooter() {
               <Link href="/" className="flex items-center gap-3 group justify-start">
                 <Image  
                   src="/assets/common/branding/Voices-Artists-LOGO.png" 
-                  alt="Voices Artists" 
+                  alt={t('common.voices_artists', "Voices Artists")} 
                   width={180} 
                   height={60}
                   className="h-12 w-auto transition-transform duration-500 group-hover:scale-105"
@@ -874,10 +874,10 @@ export default function GlobalFooter() {
             {/* Trust Logos (Kelly-Mandate) */}
             {!isSpecial && (
               <div className="flex items-center gap-6 opacity-20 grayscale hover:grayscale-0 hover:opacity-50 transition-all duration-700">
-                <Image src="/assets/common/branding/payment/mollie.svg" alt="Mollie" width={60} height={20} className="h-4 w-auto" />
-                <Image src="/assets/common/branding/payment/bancontact.svg" alt="Bancontact" width={30} height={20} className="h-5 w-auto" />
-                <Image src="/assets/common/branding/payment/visa.svg" alt="Visa" width={40} height={20} className="h-3 w-auto" />
-                <Image src="/assets/common/branding/payment/mastercard.svg" alt="Mastercard" width={30} height={20} className="h-5 w-auto" />
+                <Image src="/assets/common/branding/payment/mollie.svg" alt={t('common.payment.mollie', "Mollie")} width={60} height={20} className="h-4 w-auto" />
+                <Image src="/assets/common/branding/payment/bancontact.svg" alt={t('common.payment.bancontact', "Bancontact")} width={30} height={20} className="h-5 w-auto" />
+                <Image src="/assets/common/branding/payment/visa.svg" alt={t('common.payment.visa', "Visa")} width={40} height={20} className="h-3 w-auto" />
+                <Image src="/assets/common/branding/payment/mastercard.svg" alt={t('common.payment.mastercard', "Mastercard")} width={30} height={20} className="h-5 w-auto" />
               </div>
             )}
           </div>

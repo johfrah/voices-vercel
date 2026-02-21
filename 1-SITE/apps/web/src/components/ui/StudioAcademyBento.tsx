@@ -20,7 +20,7 @@ export const StudioAcademyBento = () => {
         <ContainerInstrument className="absolute inset-0 z-0">
           <Image  
             src="/assets/perfect-photo.jpg" 
-            alt="Studio" 
+            alt={t('common.studio', "Studio")} 
             fill 
             className="object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-1000"
           />
@@ -68,5 +68,7 @@ export const StudioAcademyBento = () => {
         </ContainerInstrument>
       </BentoCard>
     </BentoGrid>
+  );
+};
   );
 };

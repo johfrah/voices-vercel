@@ -702,19 +702,19 @@ function JohfraiContent() {
                       <ContainerInstrument className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
                         <ContainerInstrument className="relative">
                           <User strokeWidth={1.5} size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/20" />
-                          <InputInstrument type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Voornaam" className="!py-2 !pl-8 !pr-3 !text-[15px] !font-bold w-full shadow-sm" />
+                          <InputInstrument type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={t('common.first_name', "Voornaam")} className="!py-2 !pl-8 !pr-3 !text-[15px] !font-bold w-full shadow-sm" />
                         </ContainerInstrument>
                         <ContainerInstrument className="relative">
                           <User strokeWidth={1.5} size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/20" />
-                          <InputInstrument type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Achternaam" className="!py-2 !pl-8 !pr-3 !text-[15px] !font-bold w-full shadow-sm" />
+                          <InputInstrument type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t('common.last_name', "Achternaam")} className="!py-2 !pl-8 !pr-3 !text-[15px] !font-bold w-full shadow-sm" />
                         </ContainerInstrument>
                         <ContainerInstrument className="relative">
                           <Building2 strokeWidth={1.5} size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/20" />
-                          <InputInstrument type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Bedrijf" className="!py-2 !pl-8 !pr-3 !text-[15px] !font-bold w-full shadow-sm" />
+                          <InputInstrument type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder={t('common.company', "Bedrijf")} className="!py-2 !pl-8 !pr-3 !text-[15px] !font-bold w-full shadow-sm" />
                         </ContainerInstrument>
                         <ContainerInstrument className="relative">
                           <Mail strokeWidth={1.5} size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/20" />
-                          <InputInstrument type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="E-mail" className="!py-2 !pl-8 !pr-3 !text-[15px] !font-bold w-full shadow-sm" />
+                          <InputInstrument type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('common.email', "E-mail")} className="!py-2 !pl-8 !pr-3 !text-[15px] !font-bold w-full shadow-sm" />
                         </ContainerInstrument>
                       </ContainerInstrument>
                       <ButtonInstrument onClick={handleShare} disabled={isSharing || !text} className={cn("va-btn-nav !px-6 !py-2 !shadow-sm shrink-0", shareSuccess ? "bg-green-500 text-white" : "")}>
@@ -756,7 +756,7 @@ function JohfraiContent() {
                       value={text} 
                       onChange={(e) => setText(e.target.value)} 
                       onKeyDown={handleKeyDown}
-                      placeholder="Typ hier je welkomstboodschap... Gebruik (Titel) voor meerdere bestanden." 
+                      placeholder={t('johfrai.editor.placeholder', "Typ hier je welkomstboodschap... Gebruik (Titel) voor meerdere bestanden.")} 
                       className="w-full bg-va-off-white/30 border-2 border-transparent focus:border-primary/20 rounded-[32px] p-8 pb-32 text-xl md:text-2xl font-medium min-h-[450px] outline-none transition-all placeholder:text-va-black/30 text-va-black resize-none relative z-10 caret-primary" 
                     />
                     
@@ -865,19 +865,19 @@ function JohfraiContent() {
                             <ContainerInstrument className="space-y-4">
                               <ContainerInstrument className="space-y-2">
                                 <LabelInstrument className="flex items-center gap-2 !ml-0"><Building2 strokeWidth={1.5} size={12} /> <VoiceglotText  translationKey="johfrai.template.company" defaultText="Bedrijfsnaam" /></LabelInstrument>
-                                <InputInstrument type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Bijv. Voices.be" className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
+                                <InputInstrument type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder={t('johfrai.template.company_placeholder', "Bijv. Voices.be")} className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
                               </ContainerInstrument>
                               <ContainerInstrument className="space-y-2">
                                 <LabelInstrument className="flex items-center gap-2 !ml-0"><Clock4 strokeWidth={1.5} size={12} /> <VoiceglotText  translationKey="johfrai.template.hours" defaultText="Openingsuren" /></LabelInstrument>
-                                <InputInstrument type="text" value={openingHours} onChange={(e) => setOpeningHours(e.target.value)} placeholder="Bijv. ma-vrij 9u tot 17u" className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
+                                <InputInstrument type="text" value={openingHours} onChange={(e) => setOpeningHours(e.target.value)} placeholder={t('johfrai.template.hours_placeholder', "Bijv. ma-vrij 9u tot 17u")} className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
                               </ContainerInstrument>
                               <ContainerInstrument className="space-y-2">
                                 <LabelInstrument className="flex items-center gap-2 !ml-0"><Mail strokeWidth={1.5} size={12} /> <VoiceglotText  translationKey="johfrai.template.email" defaultText="Support E-mail" /></LabelInstrument>
-                                <InputInstrument type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Bijv. info@voices.be" className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
+                                <InputInstrument type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('johfrai.template.email_placeholder', "Bijv. info@voices.be")} className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
                               </ContainerInstrument>
                               <ContainerInstrument className="space-y-2">
                                 <LabelInstrument className="flex items-center gap-2 !ml-0"><Globe strokeWidth={1.5} size={12} /> <VoiceglotText  translationKey="johfrai.template.website" defaultText="Website" /></LabelInstrument>
-                                <InputInstrument type="text" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="Bijv. www.voices.be" className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
+                                <InputInstrument type="text" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder={t('johfrai.template.website_placeholder', "Bijv. www.voices.be")} className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
                               </ContainerInstrument>
                             </ContainerInstrument>
                             <ContainerInstrument className="space-y-4">
@@ -885,16 +885,16 @@ function JohfraiContent() {
                               <ContainerInstrument className="grid grid-cols-2 gap-3">
                                 <ContainerInstrument className="space-y-1">
                                   <TextInstrument as="span" className="text-[15px] font-black text-va-black/20"><VoiceglotText  translationKey="common.from" defaultText="Van" /></TextInstrument>
-                                  <InputInstrument type="text" value={holidayFrom} onChange={(e) => setHolidayFrom(e.target.value)} placeholder="1 juli" className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
+                                  <InputInstrument type="text" value={holidayFrom} onChange={(e) => setHolidayFrom(e.target.value)} placeholder={t('common.date_example_start', "1 juli")} className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
                                 </ContainerInstrument>
                                 <ContainerInstrument className="space-y-1">
                                   <TextInstrument as="span" className="text-[15px] font-black text-va-black/20"><VoiceglotText  translationKey="common.to" defaultText="Tot" /></TextInstrument>
-                                  <InputInstrument type="text" value={holidayTo} onChange={(e) => setHolidayTo(e.target.value)} placeholder="15 juli" className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
+                                  <InputInstrument type="text" value={holidayTo} onChange={(e) => setHolidayTo(e.target.value)} placeholder={t('common.date_example_end', "15 juli")} className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
                                 </ContainerInstrument>
                               </ContainerInstrument>
                               <ContainerInstrument className="space-y-1">
                                 <TextInstrument as="span" className="text-[15px] font-black text-va-black/20"><VoiceglotText  translationKey="common.back_on" defaultText="Terug op" /></TextInstrument>
-                                <InputInstrument type="text" value={holidayBack} onChange={(e) => setHolidayBack(e.target.value)} placeholder="16 juli" className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
+                                <InputInstrument type="text" value={holidayBack} onChange={(e) => setHolidayBack(e.target.value)} placeholder={t('common.date_example_back', "16 juli")} className="w-full !py-3 !px-4 !text-[15px] !font-bold" />
                               </ContainerInstrument>
                             </ContainerInstrument>
                           </ContainerInstrument>
@@ -967,7 +967,7 @@ function JohfraiContent() {
                                   <TextInstrument className={cn("text-[15px] font-black uppercase tracking-widest", checkoutState.music.trackId === track.id ? "text-primary" : "text-va-black/40")}>{track.title}</TextInstrument>
                                   <TextInstrument className="text-[15px] font-bold text-va-black/20 tracking-tighter leading-none">{track.vibe}</TextInstrument>
                                 </ButtonInstrument>
-                                <ButtonInstrument type="button" onClick={(e) => { e.stopPropagation(); const audio = new Audio(track.preview); audio.play(); }} className="absolute top-2 right-2 p-1.5 rounded-[20px] bg-va-black/5 text-va-black/20 hover:bg-primary hover:text-white transition-all opacity-0 group-hover/track:opacity-100" title="Beluister demo"><Play strokeWidth={1.5} size={10} fill="currentColor" /></ButtonInstrument>
+                                <ButtonInstrument type="button" onClick={(e) => { e.stopPropagation(); const audio = new Audio(track.preview); audio.play(); }} className="absolute top-2 right-2 p-1.5 rounded-[20px] bg-va-black/5 text-va-black/20 hover:bg-primary hover:text-white transition-all opacity-0 group-hover/track:opacity-100" title={t('action.listen_demo', "Beluister demo")}><Play strokeWidth={1.5} size={10} fill="currentColor" /></ButtonInstrument>
                               </ContainerInstrument>
                             ))
                           )}

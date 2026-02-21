@@ -8,15 +8,17 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 export default function BedanktMeetingPage() {
+  const { t } = useTranslation();
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white flex items-center justify-center px-6">
       <ContainerInstrument className="max-w-xl w-full bg-white p-12 md:p-16 rounded-[40px] shadow-aura text-center space-y-8 border border-black/5">
         <ContainerInstrument className="relative w-48 h-12 mx-auto mb-8">
           <Image  
             src="/assets/studio/vstudio-logo.webp" 
-            alt="Voices Studio" 
+            alt={t('common.voices_studio', "Voices Studio")} 
             fill
             className="object-contain"
             priority

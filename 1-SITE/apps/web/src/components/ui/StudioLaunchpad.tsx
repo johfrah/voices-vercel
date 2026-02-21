@@ -153,7 +153,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
       }
     } catch (err) {
       console.error('Launch error:', err);
-      alert('Er is iets misgegaan bij het aanvragen. Probeer het later opnieuw.');
+      alert(t('launchpad.error.submit', 'Er is iets misgegaan bij het aanvragen. Probeer het later opnieuw.'));
       setIsLaunching(false);
     }
   };
@@ -178,10 +178,10 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
   };
 
   const mediaOptions = [
-    { id: 'online', label: 'Online & Socials', sub: 'YouTube, Meta, LinkedIn', icon: Globe },
-    { id: 'podcast', label: 'Podcast', sub: 'Pre-roll, Mid-roll', icon: Mic2 },
-    { id: 'radio_national', label: 'Radio', sub: 'Landelijke Radio', icon: Radio },
-    { id: 'tv_national', label: 'TV', sub: 'Landelijke TV', icon: Tv }
+    { id: 'online', label: t('common.media.online', 'Online & Socials'), sub: t('common.media.online.desc', 'YouTube, Meta, LinkedIn'), icon: Globe },
+    { id: 'podcast', label: t('common.media.podcast', 'Podcast'), sub: t('common.media.podcast.desc', 'Pre-roll, Mid-roll'), icon: Mic2 },
+    { id: 'radio_national', label: t('common.media.radio', 'Radio'), sub: t('common.media.radio.desc', 'Landelijke Radio'), icon: Radio },
+    { id: 'tv_national', label: t('common.media.tv', 'TV'), sub: t('common.media.tv.desc', 'Landelijke TV'), icon: Tv }
   ];
 
   return (
@@ -262,13 +262,13 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                         <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                           <VoiceglotText translationKey="common.project_name" defaultText="Projectnaam" />
                         </LabelInstrument>
-                        <InputInstrument value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="Bijv. Zomer Campagne 2026" className="w-full h-14 bg-va-off-white/50" />
+                        <InputInstrument value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder={t('launchpad.placeholder.project', "Bijv. Zomer Campagne 2026")} className="w-full h-14 bg-va-off-white/50" />
                       </div>
                       <div className="space-y-3">
                         <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                           <VoiceglotText translationKey="common.email" defaultText="E-mailadres" />
                         </LabelInstrument>
-                        <InputInstrument type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="naam@bedrijf.be" className="w-full h-14 bg-va-off-white/50" />
+                        <InputInstrument type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder={t('common.placeholder.email', "naam@bedrijf.be")} className="w-full h-14 bg-va-off-white/50" />
                       </div>
                     </div>
 
@@ -372,7 +372,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
 
                   <div className="flex justify-end pt-8 border-t border-black/5">
                     <ButtonInstrument variant="primary" onClick={handleNext} disabled={!clientEmail || !projectName} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3">
-                      Volgende stap <ArrowRight size={20} />
+                      <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} />
                     </ButtonInstrument>
                   </div>
                 </ContainerInstrument>
@@ -390,8 +390,8 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                       <div className="py-20 text-center space-y-6"><Link href="/agency" className="inline-block bg-va-black text-white px-8 py-4 rounded-[10px] font-medium tracking-widest uppercase hover:scale-105 transition-all">Bekijk stemmen</Link></div>
                     )}
                     <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
-                      <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} />Vorige</ButtonInstrument>
-                      <ButtonInstrument variant="primary" onClick={handleNext} disabled={selectedActors.length === 0} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3">Volgende stap <ArrowRight size={20} /></ButtonInstrument>
+                      <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></ButtonInstrument>
+                      <ButtonInstrument variant="primary" onClick={handleNext} disabled={selectedActors.length === 0} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3"><VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} /></ButtonInstrument>
                     </div>
                   </ContainerInstrument>
                 </div>
@@ -404,7 +404,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
                   <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
                     <div className="flex items-center justify-between mb-8"><HeadingInstrument level={3} className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step3.title" defaultText="Het Script" /></HeadingInstrument><button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 text-primary text-[15px] font-light hover:opacity-80 transition-opacity tracking-widest uppercase">{isMatching ? <Loader2 size={16} className="animate-spin" /> : <LucideUpload size={16} strokeWidth={1.5} />}<VoiceglotText translationKey="launchpad.upload" defaultText={isMatching ? "Bezig..." : "Upload bestand"} /></button><input type="file" ref={fileInputRef} className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) console.log('File uploaded:', file.name); }} accept=".pdf,.doc,.docx,.txt" /></div>
                     <div className={cn("relative min-h-[320px] rounded-[20px] transition-all duration-500 overflow-hidden", isDragging ? "bg-primary/5 ring-2 ring-primary ring-inset scale-[0.99]" : "bg-va-off-white")} onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleFileDrop}>
-                      <textarea value={script} onChange={(e) => setScript(e.target.value)} placeholder="Plak hier je tekst of sleep een bestand..." className="w-full h-80 bg-transparent rounded-[20px] p-8 text-lg font-light leading-relaxed border-none focus:ring-2 focus:ring-primary/10 transition-all resize-none relative z-10" spellCheck={false} />
+                      <textarea value={script} onChange={(e) => setScript(e.target.value)} placeholder={t('launchpad.placeholder.script', "Plak hier je tekst of sleep een bestand...")} className="w-full h-80 bg-transparent rounded-[20px] p-8 text-lg font-light leading-relaxed border-none focus:ring-2 focus:ring-primary/10 transition-all resize-none relative z-10" spellCheck={false} />
                     </div>
                     <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
                       <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></ButtonInstrument>

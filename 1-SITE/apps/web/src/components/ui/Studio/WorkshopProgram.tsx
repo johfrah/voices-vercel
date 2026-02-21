@@ -7,12 +7,15 @@ import Image from 'next/image';
 import React from 'react';
 import { BentoCard } from '../BentoGrid';
 
+import { useTranslation } from '@/contexts/TranslationContext';
+
 interface WorkshopProgramProps {
   dagindeling?: string;
   image?: string;
 }
 
 export const WorkshopProgram: React.FC<WorkshopProgramProps> = ({ dagindeling, image }) => {
+  const { t } = useTranslation();
   return (
     <BentoCard span="lg" className="bg-va-off-white p-12">
       <h3 className="text-3xl font-light tracking-tight mb-10">
@@ -43,7 +46,7 @@ export const WorkshopProgram: React.FC<WorkshopProgramProps> = ({ dagindeling, i
         <div className="relative rounded-[32px] overflow-hidden aspect-square md:aspect-auto">
           <Image  
             src={image || "/assets/studio/programma.jpg"} 
-            alt="Programma"
+            alt={t('common.program', "Programma")}
             fill
             className="object-cover grayscale"
           />

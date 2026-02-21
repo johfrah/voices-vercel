@@ -436,7 +436,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
           <SectionInstrument id="about" className="mb-32 grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
             <ContainerInstrument className="prose leading-relaxed font-medium text-white/70 text-[15px]">
               <HeadingInstrument level={2} className="text-4xl font-black uppercase tracking-tighter mb-8 text-white">
-                The <span className="text-[#FFC421] italic">Story</span>
+                <VoiceglotText translationKey="artist.story.title_prefix" defaultText="The" /> <span className="text-[#FFC421] italic"><VoiceglotText translationKey="artist.story.title_suffix" defaultText="Story" /></span>
               </HeadingInstrument>
               {artistData.bio?.split('\n').map((para: string, i: number) => (
                 <TextInstrument key={i} className="mb-4 font-medium leading-relaxed text-[15px]">{para}</TextInstrument>
@@ -448,7 +448,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
               <div className="bg-white/5 p-10 rounded-[32px] border border-white/5 relative overflow-hidden backdrop-blur-md">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FFC421]/20 to-transparent" />
                 <HeadingInstrument level={2} className="text-3xl font-black uppercase tracking-tighter mb-6 text-white">
-                  The <span className="text-[#FFC421] italic">Vision</span>
+                  <VoiceglotText translationKey="artist.vision.title_prefix" defaultText="The" /> <span className="text-[#FFC421] italic"><VoiceglotText translationKey="artist.vision.title_suffix" defaultText="Vision" /></span>
                 </HeadingInstrument>
                 <TextInstrument className="text-white/60 font-medium leading-relaxed italic text-[15px]">
                   &ldquo;{artistData.vision}&rdquo;
@@ -500,7 +500,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
             <div className="flex items-center gap-6 mb-16">
               <div className="h-px flex-grow bg-white/10" />
               <HeadingInstrument level={2} className="text-4xl font-black uppercase tracking-tighter text-white">
-                The <span className="text-[#FFC421] italic">Music</span>
+                <VoiceglotText translationKey="artist.music.title_prefix" defaultText="The" /> <span className="text-[#FFC421] italic"><VoiceglotText translationKey="artist.music.title_suffix" defaultText="Music" /></span>
               </HeadingInstrument>
               <div className="h-px flex-grow bg-white/10" />
             </div>
@@ -567,7 +567,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
 
             <div className="flex items-center gap-6 mb-12">
               <HeadingInstrument level={3} className="text-xl font-black uppercase tracking-widest text-white/40">
-                Live <span className="text-white">Performances</span>
+                <VoiceglotText translationKey="artist.performances.title_prefix" defaultText="Live" /> <span className="text-white"><VoiceglotText translationKey="artist.performances.title_suffix" defaultText="Performances" /></span>
               </HeadingInstrument>
               <div className="h-px flex-grow bg-white/5" />
             </div>

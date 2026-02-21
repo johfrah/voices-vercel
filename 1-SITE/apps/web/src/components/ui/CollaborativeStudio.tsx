@@ -94,7 +94,9 @@ export const CollaborativeStudio = ({
               onClick={() => window.open(dropboxUrl, '_blank')}
             >
               <LucideFolderOpen size={18} strokeWidth={1.5} className="text-primary" />
-              <span className="text-[15px] font-light">Projectmap</span>
+              <span className="text-[15px] font-light">
+                <VoiceglotText translationKey="studio.project_folder" defaultText="Projectmap" />
+              </span>
             </ButtonInstrument>
           )}
         </ContainerInstrument>

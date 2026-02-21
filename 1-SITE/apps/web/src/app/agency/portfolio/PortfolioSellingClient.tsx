@@ -48,7 +48,9 @@ export function PortfolioSellingClient({ products }: { products: any[] }) {
             <div className="lg:col-span-5 space-y-10">
               <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-1.5 bg-primary/5 rounded-full">
                 <Star strokeWidth={1.5} size={16} className="text-primary" />
-                <TextInstrument className="text-[11px] font-bold tracking-widest text-primary uppercase">Live Case Study</TextInstrument>
+                <TextInstrument className="text-[11px] font-bold tracking-widest text-primary uppercase">
+                  <VoiceglotText translationKey="common.live_case_study" defaultText="Live Case Study" />
+                </TextInstrument>
               </ContainerInstrument>
               <HeadingInstrument level={2} className="text-5xl lg:text-6xl font-light tracking-tighter text-va-black leading-none">
                 johfrah.be
@@ -71,7 +73,7 @@ export function PortfolioSellingClient({ products }: { products: any[] }) {
               <ContainerInstrument className="aspect-video rounded-[20px] overflow-hidden shadow-aura-lg border border-black/5 relative">
                 <Image 
                   src="/assets/common/branding/johfrah/johfrah-hero.jpg" 
-                  alt="Johfrah.be Portfolio"
+                  alt={t('portfolio.johfrah.hero_alt', "Johfrah.be Portfolio")}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-[3000ms] va-bezier"
                 />
@@ -130,38 +132,38 @@ export function PortfolioSellingClient({ products }: { products: any[] }) {
           <BoxedFeature 
             index="01"
             icon={<Zap className="text-primary/40" strokeWidth={1.5} />}
-            title="Slimme uploads met AI"
-            description="Gooi al je audio en video in één keer in de tool. Onze AI luistert mee, labelt je demo's automatisch en zet ze direct in de juiste categorie."
+            title={t('portfolio_selling.feature.01.title', "Slimme uploads met AI")}
+            description={t('portfolio_selling.feature.01.desc', "Gooi al je audio en video in één keer in de tool. Onze AI luistert mee, labelt je demo's automatisch en zet ze direct in de juiste categorie.")}
           />
           <BoxedFeature 
             index="02"
             icon={<Layout className="text-primary/40" strokeWidth={1.5} />}
-            title="Geen website-gedoe meer"
-            description="Stop met het prutsen aan updates of dode links. Wij beheren de techniek op je eigen domein, zodat je site altijd razendsnel en up-to-date is."
+            title={t('portfolio_selling.feature.02.title', "Geen website-gedoe meer")}
+            description={t('portfolio_selling.feature.02.desc', "Stop met het prutsen aan updates of dode links. Wij beheren de techniek op je eigen domein, zodat je site altijd razendsnel en up-to-date is.")}
           />
           <BoxedFeature 
             index="03"
             icon={<Zap className="text-primary/40" strokeWidth={1.5} />}
-            title="Verkoop terwijl je slaapt"
-            description="Je winkel rekent zelf de juiste prijs uit voor je klant. Geen gemail meer over tarieven; je klant bestelt en betaalt direct."
+            title={t('portfolio_selling.feature.03.title', "Verkoop terwijl je slaapt")}
+            description={t('portfolio_selling.feature.03.desc', "Je winkel rekent zelf de juiste prijs uit voor je klant. Geen gemail meer over tarieven; je klant bestelt en betaalt direct.")}
           />
           <BoxedFeature 
             index="04"
             icon={<Shield className="text-primary/40" strokeWidth={1.5} />}
-            title="Zorgeloze Kassa"
-            description="Wij regelen de betaling met je klant via ons beveiligde systeem. De klant betaalt vooraf, zodat jij altijd zeker bent van je geld."
+            title={t('portfolio_selling.feature.04.title', "Zorgeloze Kassa")}
+            description={t('portfolio_selling.feature.04.desc', "Wij regelen de betaling met je klant via ons beveiligde systeem. De klant betaalt vooraf, zodat jij altijd zeker bent van je geld.")}
           />
           <BoxedFeature 
             index="05"
             icon={<BarChart3 className="text-primary/40" strokeWidth={1.5} />}
-            title="Wie kijkt er mee?"
-            description="Zie wie er op je site komt en naar welke demo's ze luisteren. Zo weet je precies wat je klanten zoeken."
+            title={t('portfolio_selling.feature.05.title', "Wie kijkt er mee?")}
+            description={t('portfolio_selling.feature.05.desc', "Zie wie er op je site komt en naar welke demo's ze luisteren. Zo weet je precies wat je klanten zoeken.")}
           />
           <BoxedFeature 
             index="06"
             icon={<MessageSquare className="text-primary/40" strokeWidth={1.5} />}
-            title="Je eigen assistent"
-            description="Een digitale assistent beantwoordt 24/7 de eerste vragen van je klanten. Zo kun jij ongestoord in de studio staan."
+            title={t('portfolio_selling.feature.06.title', "Je eigen assistent")}
+            description={t('portfolio_selling.feature.06.desc', "Een digitale assistent beantwoordt 24/7 de eerste vragen van je klanten. Zo kun jij ongestoord in de studio staan.")}
           />
         </div>
       </SectionInstrument>
@@ -173,7 +175,9 @@ export function PortfolioSellingClient({ products }: { products: any[] }) {
             <header className="space-y-6">
               <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-1.5 bg-primary/10 rounded-full text-primary">
                 <Sparkles size={18} className="animate-pulse" />
-                <span className="text-[11px] font-bold tracking-widest uppercase">Instant Magic</span>
+                <span className="text-[11px] font-bold tracking-widest uppercase">
+                  <VoiceglotText translationKey="common.instant_magic" defaultText="Instant Magic" />
+                </span>
               </ContainerInstrument>
               <HeadingInstrument level={2} className="text-5xl lg:text-7xl font-light tracking-tighter text-va-black">
                 <VoiceglotText translationKey="portfolio_selling.instant.title" defaultText="Jouw winkel online in 10 minuten." />
@@ -282,7 +286,7 @@ function PricingCard({ tier, price, description, features, highlighted = false }
     )}>
       {highlighted && (
         <ContainerInstrument className="absolute top-6 right-6 px-3 py-1 bg-primary rounded-full text-[10px] font-bold tracking-widest text-white uppercase">
-          Most Popular
+          <VoiceglotText translationKey="common.most_popular" defaultText="Most Popular" />
         </ContainerInstrument>
       )}
       <ContainerInstrument className="mb-12">
