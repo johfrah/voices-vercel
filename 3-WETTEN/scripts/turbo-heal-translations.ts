@@ -48,7 +48,7 @@ async function turboHeal() {
           Vertaling:
         `;
 
-        const translatedText = await GeminiService.generateText(prompt);
+        const translatedText = await GeminiService.generateText(prompt, { lang: lang });
         const cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
 
         // 4. Injecteer in database

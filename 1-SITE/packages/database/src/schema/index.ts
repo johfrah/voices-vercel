@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { bigint, boolean, decimal, integer, jsonb, pgEnum, pgTable, serial, text, timestamp, unique, customType, uniqueIndex, index } from 'drizzle-orm/pg-core';
+import { bigint, boolean, decimal, integer, jsonb, pgEnum, pgTable, serial, text, timestamp, unique, customType, uniqueIndex, index, foreignKey } from 'drizzle-orm/pg-core';
 
 /**
  * VOICES OS - MASTER DATABASE SCHEMA (2026)
@@ -1562,3 +1562,59 @@ export const lessonsRelations = relations(lessons, ({ one }) => ({
     references: [courses.id],
   }),
 }));
+
+export const castingListsRelations = relations(castingLists, ({ one, many }) => ({
+  user: one(users, {
+    fields: [castingLists.userId],
+    references: [users.id],
+  }),
+  items: many(castingListItems),
+}));
+
+export const castingListItemsRelations = relations(castingListItems, ({ one }) => ({
+  list: one(castingLists, {
+    fields: [castingListItems.listId],
+    references: [castingLists.id],
+  }),
+  actor: one(actors, {
+    fields: [castingListItems.actorId],
+    references: [actors.id],
+  }),
+}));
+
+export const castingLists = pgTable("casting_lists", {
+	id: serial().primaryKey().notNull(),
+	userId: integer("user_id"),
+	name: text().notNull(),
+	hash: text().unique().notNull(), // Voor de Pitch Link: /pitch/[hash]
+	isPublic: boolean("is_public").default(true),
+	settings: jsonb().default({}),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "casting_lists_user_id_users_id_fk"
+	}),
+]);
+
+export const castingListItems = pgTable("casting_list_items", {
+	id: serial().primaryKey().notNull(),
+	listId: integer("list_id").notNull(),
+	actorId: integer("actor_id").notNull(),
+	displayOrder: integer("display_order").default(0),
+	notes: text(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.listId],
+		foreignColumns: [castingLists.id],
+		name: "casting_list_items_list_id_casting_lists_id_fk"
+	}).onDelete("cascade"),
+	foreignKey({
+		columns: [table.actorId],
+		foreignColumns: [actors.id],
+		name: "casting_list_items_actor_id_actors_id_fk"
+	}),
+]);
