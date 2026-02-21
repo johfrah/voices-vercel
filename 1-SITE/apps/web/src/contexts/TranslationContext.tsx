@@ -3,7 +3,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 interface TranslationContextType {
-  t: (key: string, defaultText: string) => string;
+  t: (key: string, defaultText: string, values?: Record<string, string | number>) => string;
   language: string;
   loading: boolean;
 }
@@ -43,36 +43,45 @@ export const TranslationProvider: React.FC<{
     fetchTranslations();
   }, [lang]);
 
-  const t = (key: string, defaultText: string): string => {
-    if (lang === 'nl' || key.startsWith('admin.') || key.startsWith('command.')) return defaultText;
-    const translation = translations[key];
+  const t = (key: string, defaultText: string, values?: Record<string, string | number>): string => {
+    let text = defaultText;
     
-    //  STABILITEIT: Als de vertaling ontbreekt of leeg is, gebruik de defaultText (NL)
-    if (!translation || translation.trim() === '' || 
-        translation.includes('voldoende context') || 
-        translation.includes('meer informatie') || 
-        translation.includes('langere tekst') ||
-        translation.includes('niet compleet') ||
-        translation.includes('accuraat') ||
-        translation.includes('zou je') ||
-        translation.includes('het lijkt erop')) {
-      //  SELF-HEALING TRIGGER (Silent)
-      // We triggeren de healing alleen als we niet al aan het healen zijn voor deze specifieke key
-      if (typeof window !== 'undefined' && !healingKeys.current.has(key)) {
-        healingKeys.current.add(key);
-        fetch('/api/translations/heal', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key, originalText: defaultText, currentLang: lang })
-        }).catch(() => {
-          // Bij error, verwijder uit set zodat we het later opnieuw kunnen proberen
-          healingKeys.current.delete(key);
-        }); 
+    if (lang !== 'nl' && !key.startsWith('admin.') && !key.startsWith('command.')) {
+      const translation = translations[key];
+      
+      //  STABILITEIT: Als de vertaling ontbreekt of leeg is, gebruik de defaultText (NL)
+      if (!translation || translation.trim() === '' || 
+          translation.includes('voldoende context') || 
+          translation.includes('meer informatie') || 
+          translation.includes('langere tekst') ||
+          translation.includes('niet compleet') ||
+          translation.includes('accuraat') ||
+          translation.includes('zou je') ||
+          translation.includes('het lijkt erop')) {
+        //  SELF-HEALING TRIGGER (Silent)
+        if (typeof window !== 'undefined' && !healingKeys.current.has(key)) {
+          healingKeys.current.add(key);
+          fetch('/api/translations/heal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key, originalText: defaultText, currentLang: lang })
+          }).catch(() => {
+            healingKeys.current.delete(key);
+          }); 
+        }
+      } else {
+        text = translation;
       }
-      return defaultText;
     }
     
-    return translation;
+    //  PLACEHOLDER REPLACEMENT (Nuclear 2026)
+    if (values) {
+      Object.entries(values).forEach(([k, v]) => {
+        text = text.replace(new RegExp(`{${k}}`, 'g'), String(v));
+      });
+    }
+    
+    return text;
   };
 
   return (
