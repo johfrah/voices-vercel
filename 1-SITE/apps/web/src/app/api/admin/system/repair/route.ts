@@ -15,6 +15,11 @@ import { requireAdmin } from '@/lib/auth/api-auth';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, message: 'Skipping repair during build' });
+  }
+
   // 🛡️ CHRIS-PROTOCOL: Veiligheid eerst. Alleen admins mogen repareren.
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) {
@@ -44,7 +49,7 @@ export async function GET(request: NextRequest) {
       source: 'AI-Healer',
       message: `Reparatie gestart voor event #${eventId}`,
       details: { originalEvent: event },
-      createdAt: new Date().toISOString()
+      createdAt: new Date()
     });
 
     // 3. NUCLEAR ACTION: Trigger GitHub Workflow of Webhook

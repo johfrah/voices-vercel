@@ -87,7 +87,7 @@ export default function NotFound() {
                 <Sparkles strokeWidth={1.5} size={12} /><VoiceglotText  translationKey="auto.not_found.voicy_ghost_content_.432daf" defaultText="Voicy Ghost Content (Live Generated)" />
               </ContainerInstrument>
               <ContainerInstrument className="prose prose-va max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: ghostContent.replace(/\n/g, '<br/>') }} />
+                <div dangerouslySetInnerHTML={{ __html: ghostContent ? ghostContent.replace(/\n/g, '<br/>') : '' }} />
               </ContainerInstrument>
               <Link  
                 href="/agency" 

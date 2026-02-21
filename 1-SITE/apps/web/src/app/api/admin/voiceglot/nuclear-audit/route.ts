@@ -14,6 +14,11 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, improved: 0 });
+  }
+
   try {
     const body = await request.json();
     const { lang, scope = 'all', auth } = body;

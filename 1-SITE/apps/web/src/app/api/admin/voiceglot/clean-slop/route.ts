@@ -10,7 +10,14 @@ import { requireAdmin } from '@/lib/auth/api-auth';
  * Doel: Verwijdert AI-foutmeldingen die per ongeluk als vertaling zijn opgeslagen.
  */
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, count: 0, deletedItems: [] });
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 

@@ -3,6 +3,8 @@ import { db } from '@/lib/sync/bridge';
 import { actors } from '@db/schema';
 import { eq, or } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
+
 /**
  *  ADMIN ACTOR UPDATE API (GOD MODE 2026)
  * 
@@ -10,9 +12,14 @@ import { eq, or } from 'drizzle-orm';
  * Alleen toegankelijk voor admins.
  */
 export async function PATCH(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true });
+  }
+
   const id = parseInt(params.id);
   
   try {

@@ -4,12 +4,19 @@ import { actors } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
+export const dynamic = 'force-dynamic';
+
 /**
  *  ADMIN ACTOR TAGS API (GOD MODE 2026)
  * 
  * Haalt alle unieke tone_of_voice tags op uit de database.
  */
 export async function GET() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, tags: [] });
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 

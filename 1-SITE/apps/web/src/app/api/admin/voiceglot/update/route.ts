@@ -9,7 +9,14 @@ import { workshops } from '@db/schema';
  *  VOICEGLOT ADMIN API
  * Slaat handmatige wijzigingen direct op in de database.
  */
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true });
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 

@@ -34,7 +34,7 @@ export const VoicesLink = ({
 
   // 1. Bepaal de finale URL
   const getLocalizedHref = () => {
-    const rawHref = href.toString();
+    const rawHref = href?.toString() || '/';
     
     // Uitzonderingen: externe links, anchors, of mailto/tel
     if (rawHref.startsWith('http') || rawHref.startsWith('#') || rawHref.startsWith('mailto:') || rawHref.startsWith('tel:')) {

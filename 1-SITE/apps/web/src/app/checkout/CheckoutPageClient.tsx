@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 
@@ -28,6 +29,7 @@ const ReviewsInstrument = dynamic(() => import("@/components/ui/ReviewsInstrumen
  *  CHECKOUT PAGE (NUCLEAR 2026)
  */
 export default function CheckoutPageClient() {
+  const { t } = useTranslation();
   const { state, setJourney } = useCheckout();
   const [reviews, setReviews] = React.useState<any[]>([]);
   const [reviewStats, setReviewStats] = React.useState<{ averageRating: number, totalCount: number } | null>(null);

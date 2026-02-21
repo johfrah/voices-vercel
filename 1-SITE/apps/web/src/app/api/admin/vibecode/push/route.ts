@@ -15,7 +15,14 @@ const execAsync = promisify(exec);
  * - Lokaal: Voert git commando's uit op de machine.
  * - Productie (Vercel): Triggert Bob via GitHub Actions voor een 'Super Push' (Lint + DB + Deploy).
  */
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, mode: 'build', message: 'Skipping push during build' });
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 
