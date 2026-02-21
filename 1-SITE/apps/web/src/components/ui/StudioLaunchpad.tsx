@@ -145,7 +145,9 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
       const data = await response.json();
       if (data.success) {
         localStorage.removeItem('voices_proefopname_draft');
-        router.push(`/casting/session/${data.sessionHash}`);
+        if (typeof window !== 'undefined') {
+          window.location.href = `/casting/session/${data.sessionHash}`;
+        }
       } else {
         throw new Error(data.error || 'Fout bij het indienen');
       }

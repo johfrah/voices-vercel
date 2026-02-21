@@ -1,9 +1,10 @@
 "use client";
 
 import { useTranslation } from '@/contexts/TranslationContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, ChevronDown, Globe, Minus, Plus, Search } from 'lucide-react';
+import { Check, ChevronDown, Globe, GripVertical, Minus, Plus, Search } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';

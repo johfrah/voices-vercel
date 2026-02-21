@@ -231,17 +231,28 @@ export class VoiceFilterEngine {
           // CHRIS-PROTOCOL: If no manual order, prioritize market-specific languages.
           const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
           const market = MarketManager.getCurrentMarket(host);
+          const primaryLang = market.primary_language.toLowerCase();
           
           const getLangScore = (actor: Actor) => {
             const actorNative = (actor.native_lang_label || actor.native_lang || '').toLowerCase();
+            
+            // 1. Primary Language of the market
+            if (actorNative === primaryLang) return 1;
+            
+            // 2. English (Global standard)
+            if (actorNative === 'engels' || actorNative === 'en-gb' || actorNative === 'en-us') return 2;
+            
+            // 3. Market-specific secondary priorities
             if (market.market_code === 'BE') {
-              if (actorNative === 'vlaams') return 1;
-              if (actorNative === 'nederlands') return 2;
-              if (actorNative === 'frans') return 3;
+              if (actorNative === 'nederlands') return 3;
+              if (actorNative === 'frans') return 4;
+              if (actorNative === 'duits') return 5;
             } else if (market.market_code === 'NLNL') {
-              if (actorNative === 'nederlands') return 1;
-              if (actorNative === 'vlaams') return 2;
+              if (actorNative === 'vlaams') return 3;
+              if (actorNative === 'duits') return 4;
+              if (actorNative === 'frans') return 5;
             }
+            
             return 100;
           };
 
