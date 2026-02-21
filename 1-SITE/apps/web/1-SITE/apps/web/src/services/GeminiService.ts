@@ -95,8 +95,8 @@ ${prompt}
   /**
    * Static shortcut voor generateText (compat met heal-routes).
    */
-  static async generateText(prompt: string): Promise<string> {
-    return GeminiService.getInstance().generateText(prompt);
+  static async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string }): Promise<string> {
+    return GeminiService.getInstance().generateText(prompt, options);
   }
 
   /**

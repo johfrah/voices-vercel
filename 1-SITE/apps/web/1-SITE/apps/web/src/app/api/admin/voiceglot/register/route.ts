@@ -30,12 +30,12 @@ export async function POST(request: NextRequest) {
     await db.insert(translationRegistry).values({
       stringHash: key, // We gebruiken de key als hash voor VoiceglotText compatibiliteit
       originalText: sourceText,
-      lastSeen: new Date().toISOString()
+      lastSeen: new Date()
     }).onConflictDoUpdate({
       target: [translationRegistry.stringHash],
       set: { 
         originalText: sourceText,
-        lastSeen: new Date().toISOString() 
+        lastSeen: new Date() 
       }
     });
 
