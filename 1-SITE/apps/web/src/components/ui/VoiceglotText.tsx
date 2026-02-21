@@ -174,7 +174,6 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     <Component 
       className={cn(
         "relative group/edit inline-block transition-all duration-300",
-        !className.includes('text-') && "text-inherit", // Force inheritance if no size specified
         isEditMode && !noTranslate && "cursor-text hover:bg-primary/5 px-1 -mx-1 rounded-md min-w-[20px]",
         (isSaving || isHealing) && "opacity-50 pointer-events-none",
         className,

@@ -152,13 +152,16 @@ export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumen
   ...props
 }, ref) => {
   const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+  
+  //  CHRIS-PROTOCOL: Headings inherit font-size naturally. 
+  // We only force weight and family.
   return (
     <Tag 
       ref={ref} 
       className={cn(
-        !className.includes('font-') && "font-light", // Default to light if no weight specified
+        !className.includes('font-') && "font-light",
         noTranslate && "notranslate",
-        className.includes('va-text-soft') && "text-va-black/60", // Increased contrast
+        className.includes('va-text-soft') && "text-va-black/60",
         className
       )} 
       translate={noTranslate ? "no" : undefined}
@@ -191,14 +194,15 @@ export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({
   ariaHidden,
   ...props
 }, ref) => {
+  //  CHRIS-PROTOCOL: TextInstrument defaults to body size (15px) via globals.css
+  // We don't force it here to avoid inheritance conflicts in nested elements (like Hero titles).
   return (
     <Component 
       ref={ref} 
       className={cn(
-        !className.includes('text-') && "text-[15px]", // Default to 15px ONLY if no other text size is specified
-        !className.includes('font-') && "font-light", // Default to light if no weight specified
+        !className.includes('font-') && "font-light",
         noTranslate && "notranslate",
-        className.includes('va-text-soft') && "text-va-black/60", // Increased contrast
+        className.includes('va-text-soft') && "text-va-black/60",
         className
       )} 
       translate={noTranslate ? "no" : undefined}
