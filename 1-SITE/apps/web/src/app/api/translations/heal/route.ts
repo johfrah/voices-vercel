@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     let body;
     try { body = JSON.parse(bodyText); } catch (e) { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }); }
 
-    const { key, originalText, currentLang = 'nl', forceAudit = false, context = '', maxChars } = body;
+    const { key, originalText, currentLang = 'nl', forceAudit = false, context = '', maxChars, values } = body;
 
     if (!key || !originalText) {
       return NextResponse.json({ error: 'Key and originalText required' }, { status: 400 });
@@ -52,18 +52,26 @@ export async function POST(request: NextRequest) {
     // 2. Live AI Vertaling / Audit via OpenAI GPT-4o
     let cleanTranslation = '';
     try {
+      const valueContext = values ? `\nBESCHIKBARE WAARDEN VOOR PLACEHOLDERS: ${JSON.stringify(values)}` : '';
+      
       const prompt = forceAudit 
         ? `
           Je bent een native speaker ${currentLang} en een expert in copywriting voor high-end merken.
           Audit de volgende vertaling van het Nederlands naar het ${currentLang}.
           
           CONTEXT: Voices.be is een premium voice-over agency. De toon is warm, professioneel, en direct (geen marketing-yoga).
-          SPECIFIEKE CONTEXT: ${context || 'Algemene website tekst'}
+          SPECIFIEKE CONTEXT: ${context || 'Algemene website tekst'}${valueContext}
           
           BELANGRIJK: 
           - Gebruik ALTIJD de beleefdheidsvorm (votre/vous in het Frans, Sie in het Duits).
           - Let op "valse vrienden" (zoals 'chaud' voor een stem, wat in het Frans 'geil' kan betekenen. Gebruik liever 'grave' of 'chaleureux').
           - De tekst moet natuurlijk en high-end aanvoelen voor een native speaker.
+          
+          TEMPLATE PLACEHOLDERS:
+          - Behoud placeholders zoals {name}, {price}, {count}, {id}, {email} exact.
+          - Vertaal de tekst eromheen en zet de placeholder op de grammaticaal juiste plek.
+          - Vertaal NOOIT het woord binnen de accolades.
+          
           ${maxChars ? `- STRIKTE LIMIET: Maximaal ${maxChars} tekens (inclusief spaties). Gebruik kortere synoniemen indien nodig.` : ''}
           
           Bron (NL): "${originalText}"
@@ -76,12 +84,18 @@ export async function POST(request: NextRequest) {
         : `
           Vertaal de volgende tekst van het Nederlands naar het ${currentLang}.
           Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
-          SPECIFIEKE CONTEXT: ${context || 'Algemene website tekst'}
+          SPECIFIEKE CONTEXT: ${context || 'Algemene website tekst'}${valueContext}
           
           BELANGRIJK:
           - Gebruik ALTIJD de beleefdheidsvorm (votre/vous in het Frans, Sie in het Duits).
           - Let op context-specifieke nuances (bijv. stemkenmerken).
-          - Geen AI-bingo woorden, geen em-dashes, max 15 woorden.
+          - Geen AI-bingo woorden, geen em-dashes, max 15 words.
+          
+          TEMPLATE PLACEHOLDERS:
+          - Behoud placeholders zoals {name}, {price}, {count}, {id}, {email} exact.
+          - Vertaal de tekst eromheen en zet de placeholder op de grammaticaal juiste plek.
+          - Vertaal NOOIT het woord binnen de accolades.
+          
           ${maxChars ? `- STRIKTE LIMIET: Maximaal ${maxChars} tekens (inclusief spaties).` : ''}
           
           Tekst: "${originalText}"

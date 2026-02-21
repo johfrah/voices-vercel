@@ -23,7 +23,11 @@ export const OrderHeader: React.FC<OrderHeaderProps> = ({ id, date, journey, sta
     <ContainerInstrument className="flex justify-between items-center">
       <ContainerInstrument>
         <HeadingInstrument level={1} className="text-4xl font-light tracking-tight text-va-black">
-          <VoiceglotText  translationKey="order.header.title" defaultText="Order #" />{id}
+          <VoiceglotText 
+            translationKey="order.header.title_v2" 
+            defaultText="Order #{id}" 
+            values={{ id }}
+          />
         </HeadingInstrument>
         <TextInstrument className="text-va-black/40 mt-1 font-light">
           {date}

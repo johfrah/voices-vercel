@@ -3,8 +3,8 @@ const path = require('path');
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
 // CHRIS-PROTOCOL: Using absolute paths to avoid Russian Doll directory issues
-const { db, seedInstructorBios, syncAllData } = require('/Users/voices/Library/CloudStorage/Dropbox/voices-headless/1-SITE/apps/web/src/lib/sync/bridge');
-const { OpenAIService } = require('/Users/voices/Library/CloudStorage/Dropbox/voices-headless/1-SITE/apps/web/src/services/OpenAIService');
+const { db, seedInstructorBios, syncAllData } = require('/Users/voices/Library/CloudStorage/Dropbox/voices-headless/1-SITE/apps/web/1-SITE/apps/web/src/lib/sync/bridge');
+const { OpenAIService } = require('/Users/voices/Library/CloudStorage/Dropbox/voices-headless/1-SITE/apps/web/1-SITE/apps/web/src/services/OpenAIService');
 const { contentArticles, contentBlocks, translations } = require('/Users/voices/Library/CloudStorage/Dropbox/voices-headless/1-SITE/packages/database/src/schema/index');
 const { eq, and, ilike, or, not } = require("drizzle-orm");
 

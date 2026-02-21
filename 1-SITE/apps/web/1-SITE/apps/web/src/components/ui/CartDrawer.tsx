@@ -48,7 +48,13 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 />
               </div>
       <h2 className="text-xl font-light tracking-tighter">
-                <VoiceglotText translationKey="nav.cart.your" defaultText="Jouw" /> <span className="text-primary"><VoiceglotText  translationKey="auto.cartdrawer.mandje.65a3a2" defaultText="Mandje" /></span>
+                <VoiceglotText 
+                  translationKey="nav.cart.your_cart_v2" 
+                  defaultText="Jouw {cart}" 
+                  components={{
+                    cart: (children) => <span className="text-primary">{children === 'cart' ? t('common.cart_word', 'Mandje') : children}</span>
+                  }}
+                />
               </h2>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-va-off-white rounded-full transition-all">

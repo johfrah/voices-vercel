@@ -584,7 +584,11 @@ const TotalsSection: React.FC<any> = ({
             <div className="flex items-center gap-2">
               <Tag size={14} strokeWidth={2} />
               <TextInstrument className="font-light tracking-widest">
-                <VoiceglotText translationKey="common.discount" defaultText="Korting" /> ({state.customer.active_coupon.code})
+                <VoiceglotText 
+                  translationKey="checkout.discount_label_v2" 
+                  defaultText="Korting ({code})" 
+                  values={{ code: state.customer.active_coupon.code }}
+                />
               </TextInstrument>
             </div>
             <TextInstrument className="font-medium">- € {discountAmount.toFixed(2)}</TextInstrument>

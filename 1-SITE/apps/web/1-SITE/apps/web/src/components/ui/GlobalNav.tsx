@@ -1152,7 +1152,11 @@ export default function GlobalNav() {
                         {loginMessage}
                       </TextInstrument>
                       <TextInstrument className="text-[10px] text-green-600/60 mt-1">
-                        <VoiceglotText translationKey="nav.login.link_sent_to" defaultText="Link verstuurd naar" /> {loginEmail}
+                        <VoiceglotText 
+                          translationKey="nav.login.link_sent_to_v2" 
+                          defaultText="Link verstuurd naar {email}" 
+                          values={{ email: loginEmail }}
+                        />
                       </TextInstrument>
                     </ContainerInstrument>
                   ) : (

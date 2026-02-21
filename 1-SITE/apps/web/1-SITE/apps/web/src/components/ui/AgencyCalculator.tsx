@@ -654,7 +654,13 @@ export const AgencyCalculator = ({
         <div className="lg:col-span-5 p-12 bg-white space-y-12">
           <div className="space-y-2">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tight text-va-black">
-              <VoiceglotText translationKey="calculator.how_it_works.title" defaultText="Hoe werkt de" /> <span className="text-primary italic"><VoiceglotText translationKey="calculator.how_it_works.title_highlight" defaultText="prijs?" /></span>
+              <VoiceglotText 
+                translationKey="calculator.how_it_works.title_v2" 
+                defaultText="Hoe werkt de {price}?" 
+                components={{
+                  price: (children) => <span className="text-primary italic">{children === 'price' ? t('common.price', 'prijs?') : children}</span>
+                }}
+              />
             </HeadingInstrument>
             <TextInstrument className="text-[11px] text-va-black/30 font-bold tracking-[0.2em] uppercase">
               {usageSteps.subtitle}
