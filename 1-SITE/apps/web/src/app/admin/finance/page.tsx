@@ -27,13 +27,21 @@ import Link from "next/link";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
 import { redirect } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Financial Dashboard | Voices Admin',
   description: 'Een centraal overzicht van alle inkomsten en kosten.',
 };
 
 export default async function FinancialDashboardPage() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return <ContainerInstrument className="p-20 text-center">Skipping finance render during build...</ContainerInstrument>;
+  }
+
   const user = await getServerUser();
+
   if (!user || !isAdminUser(user)) redirect('/studio');
 
   const studioStats = await StudioDataBridge.getFinancialStatsByJourney('studio');

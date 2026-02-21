@@ -18,12 +18,19 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
+export const dynamic = 'force-dynamic';
+
 /**
  *  ADMIN USERS (NUCLEAR 2026)
  * 
  * "Beheer van de Freedom Machine community."
  */
 export default function AdminUsersPage() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return <ContainerInstrument className="p-20 text-center">Skipping users render during build...</ContainerInstrument>;
+  }
+
   const { logAction } = useAdminTracking();
   const { impersonate } = useAuth();
   const [users, setUsers] = useState<any[]>([]);

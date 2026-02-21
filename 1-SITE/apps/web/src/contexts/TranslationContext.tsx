@@ -57,6 +57,8 @@ export const TranslationProvider: React.FC<{
           translation.includes('niet compleet') ||
           translation.includes('accuraat') ||
           translation.includes('zou je') ||
+          translation.includes('tijd nodig om na te denken') ||
+          translation.includes('probeer je het zo nog eens') ||
           translation.includes('het lijkt erop')) {
         //  SELF-HEALING TRIGGER (Silent)
         if (typeof window !== 'undefined' && !healingKeys.current.has(key)) {

@@ -37,7 +37,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export default function AdminDashboard() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return <ContainerInstrument className="p-20 text-center">Skipping dashboard render during build...</ContainerInstrument>;
+  }
+
   const [recentHeals, setRecentHeals] = useState<any[]>([]);
   const { logAction } = useAdminTracking();
 

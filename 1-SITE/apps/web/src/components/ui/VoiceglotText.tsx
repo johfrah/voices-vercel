@@ -55,6 +55,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
           currentT.includes('niet compleet') ||
           currentT.includes('accuraat') ||
           currentT.includes('zou je') ||
+          currentT.includes('tijd nodig om na te denken') ||
+          currentT.includes('probeer je het zo nog eens') ||
           currentT.includes('het lijkt erop')) {
         setContent(defaultText);
       } else {

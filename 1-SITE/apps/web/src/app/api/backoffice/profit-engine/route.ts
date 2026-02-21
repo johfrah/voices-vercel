@@ -3,6 +3,8 @@ import { db } from '@db';
 import { orders, orderItems, users } from '@db/schema';
 import { eq, sql, and, isNotNull } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
+
 /**
  *  NUCLEAR PROFIT ENGINE (GODMODE 2026)
  * 
@@ -11,6 +13,11 @@ import { eq, sql, and, isNotNull } from 'drizzle-orm';
  */
 
 export async function GET(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ summary: { revenue: 0, costs: 0, profit: 0, margin: '0%' }, topPerformers: [] });
+  }
+
   try {
     // 1. Bereken Totale Omzet (Mollie/Orders)
     const revenueData = await db

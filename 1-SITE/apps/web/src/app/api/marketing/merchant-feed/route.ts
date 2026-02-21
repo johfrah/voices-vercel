@@ -16,9 +16,14 @@ import { eq, and, asc } from "drizzle-orm";
  */
 
 export const runtime = 'nodejs';
-export const revalidate = 3600; // Cache voor 1 uur
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return new NextResponse('Skipping merchant feed during build', { status: 200 });
+  }
+
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.voices.be';
 
