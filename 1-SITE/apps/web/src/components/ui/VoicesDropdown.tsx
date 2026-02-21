@@ -65,7 +65,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
   onMediaRegionChange,
   onOrderClick
 }) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchSearchQuery] = useState('');

@@ -62,7 +62,7 @@ export const AgencyCalculator = ({
   totalPages = 1,
   onPageChange
 }: AgencyCalculatorProps) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const router = useRouter();
   const { playClick } = useSonicDNA();
   const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(initialJourney);
