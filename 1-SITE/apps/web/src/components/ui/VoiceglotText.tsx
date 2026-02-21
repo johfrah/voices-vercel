@@ -38,6 +38,32 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   const [isHealing, setIsHealing] = useState(false);
   const textRef = useRef<HTMLSpanElement>(null);
 
+  //  REGISTRATION LOGIC (Nuclear 2026)
+  // Zorgt ervoor dat nieuwe strings direct in de registry komen en vertaald worden
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const registerString = async () => {
+      try {
+        await fetch('/api/admin/voiceglot/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: translationKey, sourceText: defaultText })
+        });
+      } catch (e) {
+        // Silent fail
+      }
+    };
+
+    // Alleen registreren als we in de bron-taal (NL) zitten of in Edit Mode
+    const isYoussefMarket = window.location.pathname.includes('/artist/youssef') || window.location.host.includes('youssefzaki.eu');
+    const sourceLang = isYoussefMarket ? 'en' : 'nl';
+    
+    if (language === sourceLang || isEditMode) {
+      registerString();
+    }
+  }, [translationKey, defaultText, language, isEditMode]);
+
   //  SELF-HEALING LOGIC
   useEffect(() => {
     // CHRIS-PROTOCOL: Determine default language based on market
