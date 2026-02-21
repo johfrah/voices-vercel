@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import * as path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -6,7 +6,14 @@ import { requireAdmin } from '@/lib/auth/api-auth';
 
 const execAsync = promisify(exec);
 
-export async function GET(request: Request) {
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return new NextResponse('Build phase', { status: 200 });
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 

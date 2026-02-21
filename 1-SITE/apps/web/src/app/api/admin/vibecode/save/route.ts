@@ -14,7 +14,14 @@ import { commitFileToGitHub } from '@/lib/github-api';
  * - Productie (Vercel): Schrijft direct naar GitHub (commit), wat een deploy triggert.
  */
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, mode: 'build', message: 'Skipping save during build' });
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 

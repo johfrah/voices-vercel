@@ -2,6 +2,8 @@ import { GeminiService } from '@/services/GeminiService';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
+export const dynamic = 'force-dynamic';
+
 /**
  *  API: SCRIPT ANALYZE (GOD MODE 2026)
  * 
@@ -9,6 +11,11 @@ import { requireAdmin } from '@/lib/auth/api-auth';
  * Voorkomt 'Slop' en 'Gibberish' in de configurator.
  */
 export async function POST(req: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ is_valid: true, insights: [] });
+  }
+
   try {
     const { script, usage, languages, actorId } = await req.json();
 

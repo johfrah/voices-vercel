@@ -10,6 +10,8 @@ import { requireAdmin } from '@/lib/auth/api-auth';
  * Doel: Beheer van markten en hun configuratie in de database.
  */
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   //  CHRIS-PROTOCOL: Build Safety
   if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
@@ -28,6 +30,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true });
+  }
+
   try {
     await requireAdmin();
     

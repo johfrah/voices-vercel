@@ -4,7 +4,14 @@ import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json([]);
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 
@@ -26,6 +33,6 @@ export async function GET() {
     return NextResponse.json(autoMatched);
   } catch (error: any) {
     console.error('Auto-matched fetch error:', error);
-    return new NextResponse(error.message, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

@@ -14,6 +14,11 @@ export const dynamic = 'force-dynamic';
 // export const runtime = 'edge'; // Drizzle with postgres-js requires Node.js runtime
 
 export async function GET(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, translations: {} });
+  }
+
   const { searchParams } = new URL(request.url);
   const lang = searchParams.get('lang') || 'nl';
 

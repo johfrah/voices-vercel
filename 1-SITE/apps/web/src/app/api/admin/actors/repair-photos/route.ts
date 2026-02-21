@@ -5,6 +5,8 @@ import { eq, isNull, and, or, ilike } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/api-auth";
 
+export const dynamic = 'force-dynamic';
+
 /**
  *  API: ADMIN PHOTO REPAIR (GOD MODE 2026)
  * 
@@ -15,6 +17,11 @@ import { requireAdmin } from "@/lib/auth/api-auth";
  * 3. Schoont dubbele proxy prefixen op.
  */
 export async function POST() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, repairedCount: 0, logs: [] });
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 

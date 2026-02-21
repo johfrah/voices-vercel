@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import * as path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -7,7 +7,14 @@ import { GeminiService } from '@/services/GeminiService';
 
 const execAsync = promisify(exec);
 
-export async function GET(request: Request) {
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({});
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 
@@ -16,9 +23,9 @@ export async function GET(request: Request) {
   const contextStr = searchParams.get('context');
   const context = contextStr ? JSON.parse(contextStr) : null;
 
-  if (!filePath) {
-    return new NextResponse('Missing path', { status: 400 });
-  }
+    if (!filePath) {
+      return NextResponse.json({ error: 'Missing path' }, { status: 400 });
+    }
 
   try {
     // 1. Haal de afbeelding op van de server via SSH (zelfde als serve route)
@@ -37,6 +44,6 @@ export async function GET(request: Request) {
     return NextResponse.json(analysis);
   } catch (error) {
     console.error('Vision analysis error:', error);
-    return new NextResponse('Analysis failed', { status: 500 });
+    return NextResponse.json({ error: 'Analysis failed' }, { status: 500 });
   }
 }

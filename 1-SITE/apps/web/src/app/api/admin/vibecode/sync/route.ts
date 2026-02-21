@@ -10,7 +10,14 @@ import { requireAdmin } from '@/lib/auth/api-auth';
  * naar de Vibecode Engine zodat de Shadow Layer volledig gebriefd is.
  */
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, syncedCount: 0, files: [], message: 'Skipping sync during build' });
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 

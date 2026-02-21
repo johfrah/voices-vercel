@@ -20,6 +20,11 @@ export const revalidate = 0;
  */
 
 export async function GET(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({});
+  }
+
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type');
 
@@ -92,6 +97,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true });
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 

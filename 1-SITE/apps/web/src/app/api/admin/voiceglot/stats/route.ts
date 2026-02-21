@@ -8,7 +8,14 @@ import { requireAdmin } from '@/lib/auth/api-auth';
  *  API: VOICEGLOT STATS (2026)
  */
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ totalStrings: 0, coverage: [] });
+  }
+
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 
