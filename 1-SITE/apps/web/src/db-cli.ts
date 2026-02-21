@@ -1,16 +1,93 @@
-import * as dotenv from 'dotenv';
-import path from 'path';
-dotenv.config({ path: path.join(process.cwd(), '1-SITE/apps/web/.env.local') });
+const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
-import { contentArticles, contentBlocks } from '../../../packages/database/src/schema';
-import { eq } from "drizzle-orm";
-import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
+// CHRIS-PROTOCOL: Using absolute paths to avoid Russian Doll directory issues
+const { db, seedInstructorBios, syncAllData } = require('/Users/voices/Library/CloudStorage/Dropbox/voices-headless/1-SITE/apps/web/src/lib/sync/bridge');
+const { OpenAIService } = require('/Users/voices/Library/CloudStorage/Dropbox/voices-headless/1-SITE/apps/web/src/services/OpenAIService');
+const { contentArticles, contentBlocks, translations } = require('/Users/voices/Library/CloudStorage/Dropbox/voices-headless/1-SITE/packages/database/src/schema/index');
+const { eq, and, ilike, or, not } = require("drizzle-orm");
 
 /**
  * VOICES OS - DATABASE CLI TOOL (MARK & MOBY EDITION)
  * 
  * Gebruik: npx ts-node src/db-cli.ts <command>
  */
+
+async function fixFrTranslations() {
+  console.log(" CHRIS-PROTOCOL: Fixing French translations (Polite form & Hero)...");
+
+  try {
+    // 1. Fix Hero Video
+    await db.update(translations)
+      .set({ translatedText: 'Donnez à votre vidéo', context: 'Agency Hero Title Part 1' })
+      .where(and(eq(translations.lang, 'fr'), eq(translations.translationKey, 'agency.hero.title_part1_video')));
+    
+    await db.update(translations)
+      .set({ translatedText: 'sa propre voix.', context: 'Agency Hero Title Part 2' })
+      .where(and(eq(translations.lang, 'fr'), eq(translations.translationKey, 'agency.hero.title_part2_video')));
+
+    // 2. Fix 'Vertaling' leak in French
+    await db.update(translations)
+      .set({ translatedText: 'Traduction' })
+      .where(and(eq(translations.lang, 'fr'), ilike(translations.translatedText, '%Vertaling%')));
+
+    console.log(' French translations fixed successfully.');
+  } catch (e) {
+    console.error(' Error fixing French translations:', e);
+  }
+}
+
+async function auditTones() {
+  console.log(" CHRIS-PROTOCOL: Auditing all Voice Tones across all languages...");
+
+  try {
+    const toneTranslations = await db.select().from(translations)
+      .where(and(
+        ilike(translations.translationKey, 'actor.%.tone.%'),
+        not(eq(translations.lang, 'nl'))
+      ));
+
+    console.log(`Found ${toneTranslations.length} tone translations to audit.`);
+
+    for (const row of toneTranslations) {
+      console.log(`Auditing [${row.lang}] ${row.originalText} (${row.translatedText})...`);
+      
+      const prompt = `
+        Je bent een native speaker ${row.lang} en een expert in voice-over terminologie.
+        Audit de volgende vertaling van een stemkenmerk (tone of voice).
+        
+        CONTEXT: Voices.be is een premium voice-over agency.
+        DOEL: De term moet de klank van een stem accuraat en professioneel beschrijven voor een native speaker.
+        LET OP: Vermijd termen die seksueel getint kunnen zijn (zoals 'chaud' in het Frans voor 'warm', gebruik liever 'chaleureux' of 'grave' als het om diepte gaat).
+        
+        Bron (NL): "${row.originalText}"
+        Huidige vertaling: "${row.translatedText}"
+        
+        Is de huidige vertaling perfect native en correct voor een stemkenmerk? Zo nee, geef de verbeterde versie.
+        Geef UITSLUITEND de verbeterde tekst terug, geen uitleg.
+        Verbeterde tekst:
+      `;
+
+      const improved = await OpenAIService.generateText(prompt, "gpt-4o");
+      const cleanImproved = improved.trim().replace(/^"|"$/g, '');
+
+      if (cleanImproved && cleanImproved !== row.translatedText && cleanImproved.length < 50) {
+        await db.update(translations)
+          .set({ 
+            translatedText: cleanImproved,
+            context: "Voice characteristic / Tone of voice",
+            updatedAt: new Date()
+          })
+          .where(eq(translations.id, row.id));
+        console.log(`  -> Updated to: ${cleanImproved}`);
+      }
+    }
+    console.log(" Audit completed.");
+  } catch (e) {
+    console.error(" Audit failed:", e);
+  }
+}
 
 async function injectMarkMobyContent() {
   console.log(" MARK & MOBY: Start injectie 'Zo werkt het', 'Garanties', 'FAQ', 'Scripts', 'Stories' & 'Muziek'...");
@@ -220,145 +297,12 @@ async function injectMarkMobyContent() {
     }).returning();
 
     await db.delete(contentBlocks).where(eq(contentBlocks.articleId, scriptArticle.id));
-    for (const cat of scriptCategories) {
+    for (const script of scriptCategories) {
       await db.insert(contentBlocks).values({
         articleId: scriptArticle.id,
         type: 'thematic', 
-        content: `## ${cat.title}\n${cat.content}`,
-        displayOrder: cat.order,
-        isManuallyEdited: true
-      });
-    }
-
-    // Inject Coolblue (Inspiratie)
-    const coolSlug = "coolblue-story";
-    const coolTitle = "Audio Branding: Het geheim van Coolblue";
-    const coolIntro = "Waarom het klantvriendelijkste bedrijf van de Benelux zweert bij een herkenbare audio-branding.";
-    console.log(` MARK: Upserting article [${coolSlug}]...`);
-    const [coolArticle] = await db.insert(contentArticles).values({
-      title: coolTitle,
-      slug: coolSlug,
-      content: coolIntro,
-      status: 'publish',
-      iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Inspiratie' },
-      isManuallyEdited: true,
-      updatedAt: now as any
-    }).onConflictDoUpdate({
-      target: [contentArticles.slug],
-      set: { title: coolTitle, content: coolIntro, iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Inspiratie' }, updatedAt: now as any, isManuallyEdited: true }
-    }).returning();
-
-    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, coolArticle.id));
-    await db.insert(contentBlocks).values({
-      articleId: coolArticle.id,
-      type: 'story-layout',
-      content: "## De Strategie\nCoolblue begrijpt dat elk contactmoment telt. Hun audio-branding is een essentieel onderdeel van de 'glimlach' die ze beloven.",
-      displayOrder: 1,
-      isManuallyEdited: true
-    });
-
-    // Inject SKYGGE Story (Stories)
-    console.log(` MARK: Upserting story [${storySlug}]...`);
-    const [storyArticle] = await db.insert(contentArticles).values({
-      title: storyTitle,
-      slug: storySlug,
-      content: storyIntro,
-      status: 'publish',
-      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
-      isManuallyEdited: true,
-      updatedAt: now as any
-    }).onConflictDoUpdate({
-      target: [contentArticles.slug],
-      set: { title: storyTitle, content: storyIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
-    }).returning();
-
-    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, storyArticle.id));
-    for (const block of storyBlocks) {
-      await db.insert(contentBlocks).values({
-        articleId: storyArticle.id,
-        type: 'story-layout', 
-        content: block.content,
-        displayOrder: block.order,
-        isManuallyEdited: true
-      });
-    }
-
-    // Inject CREO Story (Stories)
-    const creoSlug = "story-creo";
-    const creoTitle = "CREO | De eerste indruk";
-    const creoIntro = "Waarom het telefonisch onthaal voor een onderwijsinstelling het belangrijkste visitekaartje is.";
-    console.log(` MARK: Upserting story [${creoSlug}]...`);
-    const [creoArticle] = await db.insert(contentArticles).values({
-      title: creoTitle,
-      slug: creoSlug,
-      content: creoIntro,
-      status: 'publish',
-      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
-      isManuallyEdited: true,
-      updatedAt: now as any
-    }).onConflictDoUpdate({
-      target: [contentArticles.slug],
-      set: { title: creoTitle, content: creoIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
-    }).returning();
-
-    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, creoArticle.id));
-    await db.insert(contentBlocks).values({
-      articleId: creoArticle.id,
-      type: 'story-layout',
-      content: "## Het Belang\n'Het is zoals wanneer je iemand voor de eerste keer ziet. Die eerste indruk telt.'",
-      displayOrder: 1,
-      isManuallyEdited: true
-    });
-
-    // Inject Jokershop Story (Stories)
-    const jokerSlug = "jokershop";
-    const jokerTitle = "Jokershop | Fun & Kwaliteit";
-    const jokerIntro = "Waarom ook een feestwinkel kiest voor een professionele uitstraling aan de telefoon.";
-    console.log(` MARK: Upserting story [${jokerSlug}]...`);
-    const [jokerArticle] = await db.insert(contentArticles).values({
-      title: jokerTitle,
-      slug: jokerSlug,
-      content: jokerIntro,
-      status: 'publish',
-      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
-      isManuallyEdited: true,
-      updatedAt: now as any
-    }).onConflictDoUpdate({
-      target: [contentArticles.slug],
-      set: { title: jokerTitle, content: jokerIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
-    }).returning();
-
-    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, jokerArticle.id));
-    await db.insert(contentBlocks).values({
-      articleId: jokerArticle.id,
-      type: 'story-layout',
-      content: "## De Beleving\nOntdek hoe audio bijdraagt aan de fun-factor van Jokershop zonder in te boeten op professionaliteit.",
-      displayOrder: 1,
-      isManuallyEdited: true
-    });
-
-    // Inject Muziek (Beleving)
-    console.log(` MARK: Upserting music [${musicSlug}]...`);
-    const [musicArticle] = await db.insert(contentArticles).values({
-      title: musicTitle,
-      slug: musicSlug,
-      content: musicIntro,
-      status: 'publish',
-      iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Beleving' },
-      isManuallyEdited: true,
-      updatedAt: now as any
-    }).onConflictDoUpdate({
-      target: [contentArticles.slug],
-      set: { title: musicTitle, content: musicIntro, iapContext: { journey: 'telephony', fase: 'awareness', theme: 'Beleving' }, updatedAt: now as any, isManuallyEdited: true }
-    }).returning();
-
-    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, musicArticle.id));
-    for (const block of musicBlocks) {
-      await db.insert(contentBlocks).values({
-        articleId: musicArticle.id,
-        type: 'lifestyle-overlay', 
-        content: block.content,
-        displayOrder: block.order,
+        content: script.content,
+        displayOrder: script.order,
         isManuallyEdited: true
       });
     }
@@ -391,114 +335,6 @@ async function injectMarkMobyContent() {
       set: { title: termsTitle, content: termsIntro, updatedAt: now as any, isManuallyEdited: true }
     });
 
-    // 7. SLV Belgium Story (Stories)
-    const slvSlug = "slv-belgium";
-    const slvTitle = "SLV Belgium | Rust door professionalisering";
-    const slvIntro = "Hoe een marktleider in verlichting koos voor een uniform visitekaartje aan de telefoon.";
-    console.log(` MARK: Upserting story [${slvSlug}]...`);
-    const [slvArticle] = await db.insert(contentArticles).values({
-      title: slvTitle,
-      slug: slvSlug,
-      content: slvIntro,
-      status: 'publish',
-      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
-      isManuallyEdited: true,
-      updatedAt: now as any
-    }).onConflictDoUpdate({
-      target: [contentArticles.slug],
-      set: { title: slvTitle, content: slvIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
-    }).returning();
-
-    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, slvArticle.id));
-    await db.insert(contentBlocks).values({
-      articleId: slvArticle.id,
-      type: 'story-layout',
-      content: "## De Transformatie\nSLV Belgium koos voor een consistente audio-branding over al hun afdelingen heen. Dit zorgde niet alleen voor meer rust bij de klant, maar ook voor een professionelere uitstraling.",
-      displayOrder: 1,
-      isManuallyEdited: true
-    });
-
-    // 8. NKC Story (Stories)
-    const nkcSlug = "nkc";
-    const nkcTitle = "NKC | Evolutie in audio";
-    const nkcIntro = "Hoe technologische vooruitgang en een warme aanpak samengaan in de klantendienst.";
-    console.log(` MARK: Upserting story [${nkcSlug}]...`);
-    const [nkcArticle] = await db.insert(contentArticles).values({
-      title: nkcTitle,
-      slug: nkcSlug,
-      content: nkcIntro,
-      status: 'publish',
-      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
-      isManuallyEdited: true,
-      updatedAt: now as any
-    }).onConflictDoUpdate({
-      target: [contentArticles.slug],
-      set: { title: nkcTitle, content: nkcIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
-    }).returning();
-
-    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, nkcArticle.id));
-    await db.insert(contentBlocks).values({
-      articleId: nkcArticle.id,
-      type: 'story-layout',
-      content: "## De Doelgroep\nMet 35.000 telefoontjes per jaar is een glashelder keuzemenu onontbeerlijk. Een rustige, professionele stem die perfect matcht met de doelgroep.",
-      displayOrder: 1,
-      isManuallyEdited: true
-    });
-
-    // 9. Ticket Team Story (Stories)
-    const ttSlug = "ticketteam";
-    const ttTitle = "Ticket Team | Strak onthaal";
-    const ttIntro = "Van een rommeltje naar een professioneel visitekaartje aan de telefoon.";
-    console.log(` MARK: Upserting story [${ttSlug}]...`);
-    const [ttArticle] = await db.insert(contentArticles).values({
-      title: ttTitle,
-      slug: ttSlug,
-      content: ttIntro,
-      status: 'publish',
-      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
-      isManuallyEdited: true,
-      updatedAt: now as any
-    }).onConflictDoUpdate({
-      target: [contentArticles.slug],
-      set: { title: ttTitle, content: ttIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
-    }).returning();
-
-    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, ttArticle.id));
-    await db.insert(contentBlocks).values({
-      articleId: ttArticle.id,
-      type: 'story-layout',
-      content: "## De Uniformiteit\nHet 'rommeltje' aan verschillende stemmen en volumes werd achtergelaten voor een duidelijke stem die klanten snel en professioneel verder gidst.",
-      displayOrder: 1,
-      isManuallyEdited: true
-    });
-
-    // 10. Jokershop Interview (Stories)
-    const jokerIntSlug = "jokershop-be-investeert-in-een-warm-onthaal";
-    const jokerIntTitle = "Jokershop | Investering in een warm onthaal";
-    const jokerIntIntro = "Roel van Jokershop vertelt waarom een professionele telefooncentrale cruciaal is voor hun groei.";
-    console.log(` MARK: Upserting story [${jokerIntSlug}]...`);
-    const [jokerIntArticle] = await db.insert(contentArticles).values({
-      title: jokerIntTitle,
-      slug: jokerIntSlug,
-      content: jokerIntIntro,
-      status: 'publish',
-      iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' },
-      isManuallyEdited: true,
-      updatedAt: now as any
-    }).onConflictDoUpdate({
-      target: [contentArticles.slug],
-      set: { title: jokerIntTitle, content: jokerIntIntro, iapContext: { journey: 'telephony', fase: 'decision', theme: 'Stories' }, updatedAt: now as any, isManuallyEdited: true }
-    }).returning();
-
-    await db.delete(contentBlocks).where(eq(contentBlocks.articleId, jokerIntArticle.id));
-    await db.insert(contentBlocks).values({
-      articleId: jokerIntArticle.id,
-      type: 'story-layout',
-      content: "## De Klik\n'Tijdens onze zoektocht kwamen we al snel bij Voices.be uit. De klik was er meteen. Hun manier van communiceren voelt goed en natuurlijk aan.'",
-      displayOrder: 1,
-      isManuallyEdited: true
-    });
-
     console.log(" MARK & MOBY: Alles is nu live in de database met de juiste thema-tags.");
   } catch (error) {
     console.error(" MARK: Injectie mislukt:", error);
@@ -506,8 +342,19 @@ async function injectMarkMobyContent() {
   }
 }
 
+async function checkKey(key: string) {
+  console.log(` CHRIS-PROTOCOL: Checking translations for key: ${key}`);
+  try {
+    const results = await db.select().from(translations).where(eq(translations.translationKey, key));
+    console.table(results.map((r: any) => ({ lang: r.lang, text: r.translatedText })));
+  } catch (e) {
+    console.error(' Error checking key:', e);
+  }
+}
+
 async function main() {
   const command = process.argv[2];
+  const arg = process.argv[3];
 
   if (command === 'sync') {
     await syncAllData();
@@ -518,9 +365,18 @@ async function main() {
   } else if (command === 'inject-mark-moby') {
     await injectMarkMobyContent();
     process.exit(0);
+  } else if (command === 'fix-fr') {
+    await fixFrTranslations();
+    process.exit(0);
+  } else if (command === 'audit-tones') {
+    await auditTones();
+    process.exit(0);
+  } else if (command === 'check' && arg) {
+    await checkKey(arg);
+    process.exit(0);
   } else {
-    console.log('Usage: npx ts-node src/db-cli.ts <command>');
-    console.log('Available commands: sync, seed-instructors, inject-mark-moby');
+    console.log('Usage: npx ts-node src/db-cli.ts <command> [arg]');
+    console.log('Available commands: sync, seed-instructors, inject-mark-moby, fix-fr, audit-tones, check <key>');
     process.exit(1);
   }
 }
