@@ -13,7 +13,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { LiquidBackground } from '@/components/ui/LiquidBackground';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { SlimmeKassa } from '@/lib/slimme-kassa';
+import { SlimmeKassa } from '@/lib/pricing-engine';
 
 export const dynamic = 'force-dynamic';
 
