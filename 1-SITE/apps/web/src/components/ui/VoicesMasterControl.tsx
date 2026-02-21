@@ -239,7 +239,11 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       return a.label.localeCompare(b.label);
     };
 
+    //  CHRIS-PROTOCOL: Add "Alle talen" option for admin reordering context
+    const allOption = { label: t('filter.all_languages', 'Alle talen'), value: 'all', popular: true, tLabel: 'Alle talen' };
+
     const result = [
+      allOption,
       ...popularLangs.sort(sortFn),
       { label: t('filter.other_languages', 'OVERIGE TALEN'), value: '', isHeader: true },
       ...otherLangs.sort(sortFn)

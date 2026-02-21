@@ -143,13 +143,40 @@ export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialAc
 
   useEffect(() => {
     if (isOpen) {
-      // Filter actors by language and sort by current menuOrder
+      //  CHRIS-PROTOCOL: Intelligent Market-Aware Sorting (Bob-methode)
+      // If "Alle talen" is selected, we sort by market priority first, then menu_order.
+      const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+      const market = MarketManager.getCurrentMarket(host);
+      
       const filtered = initialActors
         .filter(a => {
+          if (language === 'Alle talen') return true;
           const native = (a.native_lang_label || a.native_lang || '').toLowerCase();
           return native === language.toLowerCase();
         })
-        .sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0));
+        .sort((a, b) => {
+          // If sorting "Alle talen", prioritize market primary language
+          if (language === 'Alle talen') {
+            const getPriorityScore = (actor: any) => {
+              const actorNative = (actor.native_lang_label || actor.native_lang || '').toLowerCase();
+              if (market.market_code === 'BE') {
+                if (actorNative === 'vlaams') return 1;
+                if (actorNative === 'nederlands') return 2;
+                if (actorNative === 'frans') return 3;
+              } else if (market.market_code === 'NLNL') {
+                if (actorNative === 'nederlands') return 1;
+                if (actorNative === 'vlaams') return 2;
+              }
+              return 100;
+            };
+
+            const scoreA = getPriorityScore(a);
+            const scoreB = getPriorityScore(b);
+            if (scoreA !== scoreB) return scoreA - scoreB;
+          }
+
+          return (a.menu_order || 0) - (b.menu_order || 0);
+        });
       
       setItems(filtered);
     }
