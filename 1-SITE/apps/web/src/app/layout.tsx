@@ -54,7 +54,7 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
-  const host = headersList.get("host") || "voices.be";
+  const host = headersList.get("x-voices-host") || headersList.get("host") || "voices.be";
   const market = await getMarketSafe(host);
   const baseUrl = `https://${host}`;
 
@@ -120,7 +120,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const headersList = headers();
-  const host = headersList.get("host") || "voices.be";
+  const host = headersList.get("x-voices-host") || headersList.get("host") || "voices.be";
   const market = await getMarketSafe(host);
   const isAdeming = market.market_code === 'ADEMING';
   const isJohfrah = market.market_code === 'JOHFRAH';

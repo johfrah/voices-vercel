@@ -25,12 +25,15 @@ export function Providers({
   const pathname = usePathname();
   
   //  CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
-  // to prevent Hydration Mismatch errors (#419).
+  // to prevent Hydration Mismatch errors (#419, #425).
   
   //  BOB'S MANDATE: Admin/Dashboard routes altijd in het Nederlands (NL)
-  const activeLang = (pathname.startsWith('/admin') || pathname.startsWith('/backoffice') || pathname.startsWith('/studio/beheer')) 
-    ? 'nl' 
-    : lang;
+  // We checken zowel de URL prefix als de ruwe route om leaks te voorkomen.
+  const isAdminPath = pathname?.includes('/admin') || 
+                      pathname?.includes('/backoffice') || 
+                      pathname?.includes('/studio/beheer');
+                      
+  const activeLang = isAdminPath ? 'nl' : lang;
 
   return (
     <WatchdogProvider>
