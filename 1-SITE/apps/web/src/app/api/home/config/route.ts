@@ -5,8 +5,14 @@ import { NextResponse } from 'next/server';
 import { voicesConfig } from '@/lib/edge-config';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, message: 'Skipping home config during build' });
+  }
+
   try {
     const campaignMessage = await voicesConfig.getCampaignMessage();
     const [homeConfig] = await db.select().from(appConfigs).where(eq(appConfigs.key, 'home_journey_content')).limit(1);

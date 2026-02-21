@@ -14,11 +14,19 @@ import { requireAdmin } from '@/lib/auth/api-auth';
  * Dit zorgt ervoor dat we niet hoeven te wachten op een bezoeker.
  */
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   // We laten registratie toe zonder admin check voor de frontend, 
   // maar we beperken de rate of we checken de origin in productie.
   
   try {
+    //  CHRIS-PROTOCOL: Build Safety
+    // We registreren geen strings tijdens de build fase.
+    if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+      return NextResponse.json({ success: true, message: 'Skipping registration during build' });
+    }
+
     const { key, sourceText } = await request.json();
 
     if (!key || !sourceText) {
@@ -27,17 +35,29 @@ export async function POST(request: NextRequest) {
 
     // 1. Registreer in de registry (Source of Truth)
     // We gebruiken een hash of de key als unieke identifier
-    await db.insert(translationRegistry).values({
-      stringHash: key, // We gebruiken de key als hash voor VoiceglotText compatibiliteit
-      originalText: sourceText,
-      lastSeen: new Date()
-    }).onConflictDoUpdate({
-      target: [translationRegistry.stringHash],
-      set: { 
+    try {
+      //  CHRIS-PROTOCOL: Forensische Database Check
+      // We loggen de payload voor we inserten om de root cause van de 'Failed query' te vinden.
+      console.log('[RegisterAPI] Attempting registry insert:', { key, sourceText });
+
+      await db.insert(translationRegistry).values({
+        stringHash: key, 
         originalText: sourceText,
-        lastSeen: new Date() 
-      }
-    });
+        lastSeen: new Date(),
+        context: 'auto-registered'
+      }).onConflictDoUpdate({
+        target: [translationRegistry.stringHash],
+        set: { 
+          originalText: sourceText,
+          lastSeen: new Date() 
+        }
+      });
+      
+      console.log('[RegisterAPI] Registry insert success for key:', key);
+    } catch (dbError: any) {
+      console.error('[RegisterAPI] Registry insert failed for key:', key, 'Error:', dbError.message);
+      // We gaan door, want de registry is secundair aan de vertaling zelf
+    }
 
     // 2. NUCLEAR HEALING: Trigger vertalingen voor alle talen ASYNC
     // We wachten hier niet op, de client krijgt direct antwoord.

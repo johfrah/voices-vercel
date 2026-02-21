@@ -18,6 +18,7 @@ import { VoiceglotText } from './VoiceglotText';
 import { NavConfig } from '@/lib/config-bridge';
 import { Plus, Trash2, Link as LinkIcon, Search, X, Check, ArrowRight, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState, useCallback } from 'react';
 

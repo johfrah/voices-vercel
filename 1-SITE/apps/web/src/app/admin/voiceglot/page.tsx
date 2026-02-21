@@ -22,7 +22,8 @@ import {
   ArrowLeft,
   Loader2,
   Filter,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
