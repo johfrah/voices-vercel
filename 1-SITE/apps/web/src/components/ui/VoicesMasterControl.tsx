@@ -235,7 +235,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     };
 
     //  CHRIS-PROTOCOL: Add "Alle talen" option for admin reordering context
-    const allOption = { label: t('filter.all_languages', 'Alle talen'), value: 'all', popular: true, tLabel: 'Alle talen' };
+    const allOption = { label: t('filter.all_languages', 'Alle talen'), value: 'all', popular: false, tLabel: 'Alle talen', hidden: true };
 
     const result = [
       allOption,
