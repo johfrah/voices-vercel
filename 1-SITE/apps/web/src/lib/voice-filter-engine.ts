@@ -227,6 +227,28 @@ export class VoiceFilterEngine {
             return aOrder - bOrder;
           }
 
+          // 1.5 Market-Aware Language Priority (Bob-methode)
+          // CHRIS-PROTOCOL: If no manual order, prioritize market-specific languages.
+          const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+          const market = MarketManager.getCurrentMarket(host);
+          
+          const getLangScore = (actor: Actor) => {
+            const actorNative = (actor.native_lang_label || actor.native_lang || '').toLowerCase();
+            if (market.market_code === 'BE') {
+              if (actorNative === 'vlaams') return 1;
+              if (actorNative === 'nederlands') return 2;
+              if (actorNative === 'frans') return 3;
+            } else if (market.market_code === 'NLNL') {
+              if (actorNative === 'nederlands') return 1;
+              if (actorNative === 'vlaams') return 2;
+            }
+            return 100;
+          };
+
+          const langScoreA = getLangScore(a);
+          const langScoreB = getLangScore(b);
+          if (langScoreA !== langScoreB) return langScoreA - langScoreB;
+
           // 2. delivery_date_min_priority (Nuclear Speed Priority)
           // CHRIS-PROTOCOL: High priority actors (e.g. Christina) should appear first.
           const aSpeedPrio = a.delivery_date_min_priority || 0;
