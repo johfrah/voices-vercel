@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
           }
 
           const auditEntry = {
-            timestamp: new Date().toISOString(),
+            timestamp: new Date(),
             old: row.translatedText,
             new: cleanImproved,
             reason: 'Autonomous Native Peer Review'
