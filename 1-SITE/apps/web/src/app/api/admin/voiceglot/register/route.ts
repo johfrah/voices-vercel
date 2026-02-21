@@ -70,9 +70,18 @@ export async function POST(request: NextRequest) {
             `;
 
             const translatedText = await GeminiService.generateText(prompt);
-            const cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
+            let cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
 
-            if (cleanTranslation) {
+            //  CHRIS-PROTOCOL: Slop Filter
+            // Als de AI een foutmelding of conversatie teruggeeft, negeren we deze.
+            const isSlop = (
+              cleanTranslation.includes('Het lijkt erop dat') ||
+              cleanTranslation.includes('Zou je de tekst') ||
+              cleanTranslation.includes('niet compleet is') ||
+              cleanTranslation.length > 200 // Vertalingen van labels zijn zelden zo lang
+            );
+
+            if (cleanTranslation && !isSlop) {
               await db.insert(translations).values({
                 translationKey: key,
                 lang: lang,
