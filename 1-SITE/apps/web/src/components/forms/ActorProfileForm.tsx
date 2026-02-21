@@ -13,6 +13,7 @@ import {
   OptionInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { 
   User, 
   Globe, 
@@ -69,6 +70,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
   });
 
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function loadTaxonomies() {
@@ -104,7 +106,9 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
 
   const vaBezier = [0.23, 1, 0.32, 1];
 
-  if (loading) return <div className="p-20 text-center font-light opacity-40">Laden van Master Taxonomies...</div>;
+  if (loading) return <div className="p-20 text-center font-light opacity-40">
+    <VoiceglotText translationKey="form.loading_taxonomies" defaultText="Laden van Master Taxonomies..." />
+  </div>;
 
   return (
     <ContainerInstrument plain className="max-w-4xl mx-auto">
@@ -146,52 +150,64 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                 <User size={24} strokeWidth={1.5} />
               </div>
               <div>
-                <HeadingInstrument level={2} className="text-3xl tracking-tighter">Wie ben je?</HeadingInstrument>
-                <TextInstrument className="text-va-black/40">Laten we beginnen met de basis.</TextInstrument>
+                <HeadingInstrument level={2} className="text-3xl tracking-tighter">
+                  <VoiceglotText translationKey="form.identity.title" defaultText="Wie ben je?" />
+                </HeadingInstrument>
+                <TextInstrument className="text-va-black/40">
+                  <VoiceglotText translationKey="form.identity.subtitle" defaultText="Laten we beginnen met de basis." />
+                </TextInstrument>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
-                <LabelInstrument>Voornaam</LabelInstrument>
+                <LabelInstrument>
+                  <VoiceglotText translationKey="form.label.first_name" defaultText="Voornaam" />
+                </LabelInstrument>
                 <InputInstrument 
                   value={formData.firstName}
                   onChange={(e) => updateField('firstName', e.target.value)}
-                  placeholder="Bijv. Serge"
+                  placeholder={t('form.placeholder.first_name_example', "Bijv. Serge")}
                 />
               </div>
               <div className="space-y-2">
-                <LabelInstrument>Achternaam</LabelInstrument>
+                <LabelInstrument>
+                  <VoiceglotText translationKey="form.label.last_name" defaultText="Achternaam" />
+                </LabelInstrument>
                 <InputInstrument 
                   value={formData.lastName}
                   onChange={(e) => updateField('lastName', e.target.value)}
-                  placeholder="Bijv. Heyninck"
+                  placeholder={t('form.placeholder.last_name_example', "Bijv. Heyninck")}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
-                <LabelInstrument>Geslacht</LabelInstrument>
+                <LabelInstrument>
+                  <VoiceglotText translationKey="form.label.gender" defaultText="Geslacht" />
+                </LabelInstrument>
                 <SelectInstrument 
                   value={formData.gender}
                   onChange={(e) => updateField('gender', e.target.value)}
                   className="w-full"
                 >
-                  <OptionInstrument value="">Kies geslacht...</OptionInstrument>
-                  <OptionInstrument value="male">Mannelijk</OptionInstrument>
-                  <OptionInstrument value="female">Vrouwelijk</OptionInstrument>
-                  <OptionInstrument value="non-binary">Non-binair</OptionInstrument>
+                  <OptionInstrument value="">{t('form.placeholder.gender', "Kies geslacht...")}</OptionInstrument>
+                  <OptionInstrument value="male">{t('common.gender.male', "Mannelijk")}</OptionInstrument>
+                  <OptionInstrument value="female">{t('common.gender.female', "Vrouwelijk")}</OptionInstrument>
+                  <OptionInstrument value="non-binary">{t('common.gender.non_binary', "Non-binair")}</OptionInstrument>
                 </SelectInstrument>
               </div>
               <div className="space-y-2">
-                <LabelInstrument>Uitzendgebied (Land)</LabelInstrument>
+                <LabelInstrument>
+                  <VoiceglotText translationKey="form.label.country" defaultText="Uitzendgebied (Land)" />
+                </LabelInstrument>
                 <SelectInstrument 
                   value={formData.countryId}
                   onChange={(e) => updateField('countryId', e.target.value)}
                   className="w-full"
                 >
-                  <OptionInstrument value="">Kies land...</OptionInstrument>
+                  <OptionInstrument value="">{t('form.placeholder.country', "Kies land...")}</OptionInstrument>
                   {taxonomies.countries.map(c => (
                     <OptionInstrument key={c.id} value={c.id}>{c.label}</OptionInstrument>
                   ))}
@@ -201,7 +217,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
 
             <div className="pt-8 flex justify-end">
               <ButtonInstrument onClick={nextStep} className="va-btn-pro group">
-                Volgende stap
+                <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" />
                 <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
               </ButtonInstrument>
             </div>
@@ -222,20 +238,26 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                 <Languages size={24} strokeWidth={1.5} />
               </div>
               <div>
-                <HeadingInstrument level={2} className="text-3xl tracking-tighter">Lingustiek</HeadingInstrument>
-                <TextInstrument className="text-va-black/40">In welke talen blink je uit?</TextInstrument>
+                <HeadingInstrument level={2} className="text-3xl tracking-tighter">
+                  <VoiceglotText translationKey="form.linguistics.title" defaultText="Lingustiek" />
+                </HeadingInstrument>
+                <TextInstrument className="text-va-black/40">
+                  <VoiceglotText translationKey="form.linguistics.subtitle" defaultText="In welke talen blink je uit?" />
+                </TextInstrument>
               </div>
             </div>
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <LabelInstrument>Wat is je moedertaal?</LabelInstrument>
+                <LabelInstrument>
+                  <VoiceglotText translationKey="form.label.native_language" defaultText="Wat is je moedertaal?" />
+                </LabelInstrument>
                 <SelectInstrument 
                   value={formData.nativeLangId}
                   onChange={(e) => updateField('nativeLangId', e.target.value)}
                   className="w-full"
                 >
-                  <OptionInstrument value="">Kies je moedertaal...</OptionInstrument>
+                  <OptionInstrument value="">{t('form.placeholder.native_language', "Kies je moedertaal...")}</OptionInstrument>
                   {taxonomies.languages.map(l => (
                     <OptionInstrument key={l.id} value={l.id}>{l.label}</OptionInstrument>
                   ))}
@@ -248,7 +270,9 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-4 pt-4 border-t border-black/[0.03]"
                 >
-                  <LabelInstrument>Welke andere talen spreek je vloeiend?</LabelInstrument>
+                  <LabelInstrument>
+                    <VoiceglotText translationKey="form.label.extra_languages" defaultText="Welke andere talen spreek je vloeiend?" />
+                  </LabelInstrument>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {taxonomies.languages
                       .filter(l => l.id.toString() !== formData.nativeLangId.toString() && !l.isNativeOnly)
@@ -278,10 +302,10 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
             <div className="pt-8 flex justify-between">
               <ButtonInstrument variant="ghost" onClick={prevStep} className="text-va-black/40 hover:text-va-black">
                 <ChevronLeft size={18} className="mr-2" />
-                Vorige
+                <VoiceglotText translationKey="common.previous" defaultText="Vorige" />
               </ButtonInstrument>
               <ButtonInstrument onClick={nextStep} className="va-btn-pro group">
-                Volgende stap
+                <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" />
                 <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
               </ButtonInstrument>
             </div>
@@ -302,13 +326,19 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                 <Sparkles size={24} strokeWidth={1.5} />
               </div>
               <div>
-                <HeadingInstrument level={2} className="text-3xl tracking-tighter">Karakter & Toon</HeadingInstrument>
-                <TextInstrument className="text-va-black/40">Hoe omschrijven klanten jouw stem?</TextInstrument>
+                <HeadingInstrument level={2} className="text-3xl tracking-tighter">
+                  <VoiceglotText translationKey="form.character.title" defaultText="Karakter & Toon" />
+                </HeadingInstrument>
+                <TextInstrument className="text-va-black/40">
+                  <VoiceglotText translationKey="form.character.subtitle" defaultText="Hoe omschrijven klanten jouw stem?" />
+                </TextInstrument>
               </div>
             </div>
 
             <div className="space-y-4">
-              <LabelInstrument>Kies de toonhoogtes die bij je passen (max. 5)</LabelInstrument>
+              <LabelInstrument>
+                <VoiceglotText translationKey="form.label.tones" defaultText="Kies de toonhoogtes die bij je passen (max. 5)" />
+              </LabelInstrument>
               <div className="flex flex-wrap gap-3">
                 {taxonomies.tones.map(t => {
                   const isSelected = formData.toneIds.includes(t.id);
@@ -333,11 +363,85 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
             <div className="pt-12 flex justify-between">
               <ButtonInstrument variant="ghost" onClick={prevStep} className="text-va-black/40 hover:text-va-black">
                 <ChevronLeft size={18} className="mr-2" />
-                Vorige
+                <VoiceglotText translationKey="common.previous" defaultText="Vorige" />
               </ButtonInstrument>
               <ButtonInstrument onClick={nextStep} className="va-btn-pro group">
-                Volgende stap
+                <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" />
                 <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+              </ButtonInstrument>
+            </div>
+          </motion.div>
+        )}
+
+        {step === 4 && (
+          <motion.div
+            key="step4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.6, ease: vaBezier }}
+            className="bg-white p-12 rounded-[40px] shadow-aura border border-black/[0.02] space-y-8"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                <Clock size={24} strokeWidth={1.5} />
+              </div>
+              <div>
+                <HeadingInstrument level={2} className="text-3xl tracking-tighter">
+                  <VoiceglotText translationKey="form.delivery.title" defaultText="Levering" />
+                </HeadingInstrument>
+                <TextInstrument className="text-va-black/40">
+                  <VoiceglotText translationKey="form.delivery.subtitle" defaultText="Hoe snel kun je leveren?" />
+                </TextInstrument>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <LabelInstrument>
+                    <VoiceglotText translationKey="form.label.delivery_min" defaultText="Min. Levertijd (dagen)" />
+                  </LabelInstrument>
+                  <InputInstrument 
+                    type="number"
+                    min={1}
+                    value={formData.deliveryDaysMin}
+                    onChange={(e) => updateField('deliveryDaysMin', parseInt(e.target.value))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <LabelInstrument>
+                    <VoiceglotText translationKey="form.label.delivery_max" defaultText="Max. Levertijd (dagen)" />
+                  </LabelInstrument>
+                  <InputInstrument 
+                    type="number"
+                    min={1}
+                    value={formData.deliveryDaysMax}
+                    onChange={(e) => updateField('deliveryDaysMax', parseInt(e.target.value))}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <LabelInstrument>
+                  <VoiceglotText translationKey="form.label.cutoff_time" defaultText="Dagelijkse Deadline (Cutoff)" />
+                </LabelInstrument>
+                <InputInstrument 
+                  type="time"
+                  value={formData.cutoffTime}
+                  onChange={(e) => updateField('cutoffTime', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="pt-12 flex justify-between">
+              <ButtonInstrument variant="ghost" onClick={prevStep} className="text-va-black/40 hover:text-va-black">
+                <ChevronLeft size={18} className="mr-2" />
+                <VoiceglotText translationKey="common.previous" defaultText="Vorige" />
+              </ButtonInstrument>
+              <ButtonInstrument onClick={() => onSave(formData)} className="va-btn-pro group">
+                <VoiceglotText translationKey="common.save_profile" defaultText="Profiel Opslaan" />
+                <Check size={18} className="ml-2" />
               </ButtonInstrument>
             </div>
           </motion.div>

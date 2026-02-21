@@ -32,12 +32,13 @@ const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 import { AcademyPdfButton } from "@/components/ui/AcademyPdfButton";
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const t = (key: string, def: string) => def; // Fallback for metadata
   try {
     const data = await getAcademyLesson(params.id);
     if (!data || data.type === 'notice') return {};
 
     const title = `${data.header.title} - Voices Academy Les ${params.id} | Voices.be`;
-    const description = data.header.subtitle || `Volg les ${params.id} van de Voices Academy. Leer alles over stemgebruik, techniek en de business.`;
+    const description = data.header.subtitle || `${t('academy.lesson.description_prefix', "Volg les")} ${params.id} ${t('academy.lesson.description_suffix', "van de Voices Academy. Leer alles over stemgebruik, techniek en de business.")}`;
 
     return {
       title,
@@ -72,6 +73,7 @@ export default function LessonPage({ params, searchParams }: { params: { id: str
 }
 
 async function LessonContent({ params, searchParams }: { params: { id: string }, searchParams: { preview?: string } }) {
+  const t = (key: string, def: string) => def; // Fallback for server component
   const data = await getAcademyLesson(params.id);
   const supabase = createClient();
   const supabaseUser = supabase ? (await supabase.auth.getUser()).data.user : null;
@@ -202,7 +204,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
             </ContainerInstrument>
             <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none"><VoiceglotText  
                 translationKey={isLockedByDrip ? "academy.drip.title" : "academy.paywall.title"} 
-                defaultText={reason === "previous_incomplete" ? "Eerst de vorige les afronden" : isLockedByDrip ? "Even laten bezinken..." : "Deze les is vergrendeld"} 
+                defaultText={reason === "previous_incomplete" ? t('academy.drip.title.previous_incomplete', "Eerst de vorige les afronden") : isLockedByDrip ? t('academy.drip.title.wait_period', "Even laten bezinken...") : t('academy.paywall.title', "Deze les is vergrendeld")} 
               /></HeadingInstrument>
             <TextInstrument className="text-xl text-white/60 font-medium max-w-xl mx-auto">
               {reason === "previous_incomplete" ? (
@@ -213,7 +215,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
               ) : reason === "wait_period" ? (
                 <VoiceglotText  
                   translationKey="academy.drip.wait" 
-                  defaultText={`Goed gewerkt in de vorige les. Neem nu even de tijd om het te laten bezinken. Deze les komt vrij op ${availableDate?.toLocaleDateString('nl-BE')}.`} 
+                  defaultText={`${t('academy.drip.wait_prefix', "Goed gewerkt in de vorige les. Neem nu even de tijd om het te laten bezinken. Deze les komt vrij op")} ${availableDate?.toLocaleDateString('nl-BE')}.`} 
                 />
               ) : (
                 <VoiceglotText  
@@ -228,7 +230,7 @@ async function LessonContent({ params, searchParams }: { params: { id: string },
                 className="va-btn-pro !bg-white !text-black !px-12 !py-4"
               ><VoiceglotText  
                   translationKey={isLockedByDrip ? "academy.drip.cta" : "academy.paywall.cta"} 
-                  defaultText={isLockedByDrip ? "Terug naar overzicht" : "Bekijk Inschrijfmogelijkheden"} 
+                  defaultText={isLockedByDrip ? t('common.back_to_overview', "Terug naar overzicht") : t('academy.paywall.cta', "Bekijk Inschrijfmogelijkheden")} 
                 /></Link>
             </ContainerInstrument>
           </BentoCard>

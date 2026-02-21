@@ -145,7 +145,7 @@ export default async function StudioPage() {
                 <VoiceglotText translationKey="studio.pillars.uitspraak.title" defaultText="1. Uitspraak" />
               </HeadingInstrument>
               <TextInstrument className="text-lg text-black/50 font-light leading-relaxed">
-                <VoiceglotText translationKey="studio.pillars.uitspraak.text" defaultText="Leer alles over correct stemgebruik, perfecte uitspraak en intonatie, 3 essentile vaardigheden voor elke professionele spreker." />
+                <VoiceglotText translationKey="studio.pillars.uitspraak.text" defaultText="Leer alles over correct stemgebruik, perfecte uitspraak en intonatie, 3 essentiële vaardigheden voor elke professionele spreker." />
               </TextInstrument>
             </ContainerInstrument>
 
@@ -186,7 +186,7 @@ export default async function StudioPage() {
               <VoiceglotText translationKey="studio.instructors.label" defaultText="Wij staan klaar om je te coachen" />
             </TextInstrument>
             <HeadingInstrument level={2} className="text-6xl md:text-7xl font-light tracking-tighter leading-none text-va-black">
-              <VoiceglotText translationKey="studio.instructors.title" defaultText="Ontmeet je instructeurs." />
+              <VoiceglotText translationKey="studio.instructors.title" defaultText="Ontmoet je instructeurs." />
             </HeadingInstrument>
             <TextInstrument className="text-xl text-black/40 font-light leading-relaxed">
               <VoiceglotText translationKey="studio.instructors.intro" defaultText="Bernadette Timmermans en Johfrah Lefebvre bieden workshops aan voor iedereen die zijn spreekvaardigheden naar een hoger niveau wil tillen." />
@@ -208,7 +208,9 @@ export default async function StudioPage() {
                   <TextInstrument className="text-white/60 text-[15px] font-light tracking-widest mb-2 ">
                     <VoiceglotText translationKey="studio.instructor.bernadette.tagline" defaultText="VRT Stemcoach & Auteur" />
                   </TextInstrument>
-                  <HeadingInstrument level={3} className="text-4xl font-light text-white tracking-tighter">Bernadette Timmermans</HeadingInstrument>
+                  <HeadingInstrument level={3} className="text-4xl font-light text-white tracking-tighter">
+                    <VoiceglotText translationKey="studio.instructor.bernadette.name" defaultText="Bernadette Timmermans" noTranslate={true} />
+                  </HeadingInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="space-y-6 px-4">
@@ -221,7 +223,7 @@ export default async function StudioPage() {
                 <TextInstrument className="text-base text-black/40 font-light leading-relaxed">
                   <VoiceglotText 
                     translationKey="studio.instructor.bernadette.bio_extra" 
-                    defaultText="Bernadette geeft sinds 1984 les aan studenten radio aan het RITCS en is docent stem in BATAC Radio. Ze heeft talloze workshops gegeven en werkt als adviseur voor mediahuizen zoals VRT, DPG Belgie en Nederland en ATV. Bernadette is ook auteur van meerdere boeken over stemgebruik, waaronder de bekende uitspraak- en intonatiegids 'Klink Klaar'." 
+                    defaultText="Bernadette geeft sinds 1984 les aan studenten radio aan het RITCS en is docent stem in BATAC Radio. Ze heeft talloze workshops gegeven en werkt als adviseur voor mediahuizen zoals VRT, DPG België en Nederland en ATV. Bernadette is ook auteur van meerdere boeken over stemgebruik, waaronder de bekende uitspraak- en intonatiegids 'Klink Klaar'." 
                   />
                 </TextInstrument>
               </ContainerInstrument>
@@ -241,7 +243,9 @@ export default async function StudioPage() {
                   <TextInstrument className="text-white/60 text-[15px] font-light tracking-widest mb-2 ">
                     <VoiceglotText translationKey="studio.instructor.johfrah.tagline" defaultText="Founder & Stemacteur" />
                   </TextInstrument>
-                  <HeadingInstrument level={3} className="text-4xl font-light text-white tracking-tighter">Johfrah Lefebvre</HeadingInstrument>
+                  <HeadingInstrument level={3} className="text-4xl font-light text-white tracking-tighter">
+                    <VoiceglotText translationKey="studio.instructor.johfrah.name" defaultText="Johfrah Lefebvre" noTranslate={true} />
+                  </HeadingInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="space-y-6 px-4">

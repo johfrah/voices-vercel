@@ -1,5 +1,6 @@
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument, LoadingScreenInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { db } from '@db';
 import { contentArticles, actors, artists } from '@db/schema';
 import { eq, or, ilike } from 'drizzle-orm';
@@ -190,6 +191,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   const [firstSegment, journey, medium] = segments;
   const headersList = headers();
   const lang = headersList.get('x-voices-lang') || 'nl';
+  const t = (key: string, def: string) => def; // Fallback for server components if needed, but we use VoiceglotText mostly
 
   // 1. Artist Journey (Youssef Mandate)
   try {
@@ -265,7 +267,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           <ContainerInstrument className="py-48 max-w-5xl mx-auto">
             <header className="mb-20 text-center">
               <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-6 block uppercase">
-                Casting Selectie
+                <VoiceglotText translationKey="casting.selection_title" defaultText="Casting Selectie" />
               </TextInstrument>
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-8 text-va-black">
                 {list.name}
@@ -289,7 +291,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                     <div>
                       <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.firstName}</HeadingInstrument>
                       <TextInstrument className="text-[15px] text-va-black/40">
-                        {item.actor.actorLanguages?.find(al => al.isNative)?.language?.label || 'Voice-over Stem'}
+                        <VoiceglotText 
+                          translationKey={`common.language.${item.actor.actorLanguages?.find(al => al.isNative)?.language?.code || 'nl'}`} 
+                          defaultText={item.actor.actorLanguages?.find(al => al.isNative)?.language?.label || t('common.voice_actor', 'Voice-over Stem')} 
+                        />
                       </TextInstrument>
                     </div>
                   </div>
@@ -297,13 +302,15 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                     <div className="w-8 h-8 bg-va-black rounded-full flex items-center justify-center text-white">
                       <ArrowRight size={14} />
                     </div>
-                    <TextInstrument className="text-[13px] font-medium tracking-widest text-va-black/40 uppercase">Bekijk Profiel</TextInstrument>
+                    <TextInstrument className="text-[13px] font-medium tracking-widest text-va-black/40 uppercase">
+                      <VoiceglotText translationKey="action.view_profile" defaultText="Bekijk Profiel" />
+                    </TextInstrument>
                   </div>
                   <Link 
                     href={`/${item.actor.slug}`}
                     className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
                   >
-                    Selecteer deze stem
+                    <VoiceglotText translationKey="action.select_voice" defaultText="Selecteer deze stem" />
                   </Link>
                 </ContainerInstrument>
               ))}
@@ -311,9 +318,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
             <footer className="mt-32 text-center">
               <ContainerInstrument className="bg-va-black text-white p-16 rounded-[20px] shadow-aura-lg">
-                <HeadingInstrument level={2} className="text-4xl font-light mb-8">Niet de juiste match?</HeadingInstrument>
+                <HeadingInstrument level={2} className="text-4xl font-light mb-8">
+                  <VoiceglotText translationKey="casting.no_match_title" defaultText="Niet de juiste match?" />
+                </HeadingInstrument>
                 <Link href="/agency" className="va-btn-pro inline-flex items-center gap-2">
-                  Bekijk alle stemmen <ArrowRight size={18} />
+                  <VoiceglotText translationKey="action.view_all_voices" defaultText="Bekijk alle stemmen" /> <ArrowRight size={18} />
                 </Link>
               </ContainerInstrument>
             </footer>

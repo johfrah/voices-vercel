@@ -30,6 +30,7 @@ export default async function AgencyDynamicPage({
 
   const headersList = headers();
   const lang = headersList.get('x-voices-lang') || 'nl';
+  const t = (key: string, def: string, params?: any) => def; // Fallback for server component
 
   const searchResults = await getActors(filters, lang);
   const actors = searchResults.results;
@@ -72,8 +73,8 @@ export default async function AgencyDynamicPage({
         <LiquidBackground strokeWidth={1.5} />
       </Suspense>
       <AgencyHeroInstrument 
-        title={filters.language ? `${filters.language.toUpperCase()} Stemmen` : undefined} 
-        subtitle="Vind de perfecte stem voor uw project."
+        title={filters.language ? t('agency.hero.language_title', `${filters.language.toUpperCase()} Stemmen`, { language: filters.language.toUpperCase() }) : undefined} 
+        subtitle={t('agency.hero.subtitle', "Vind de perfecte stem voor uw project.")}
         filters={searchResults.filters}
         searchParams={filters}
       />

@@ -24,6 +24,7 @@ import {
   LucideFolderOpen
 } from 'lucide-react';
 import { VoiceglotText } from './VoiceglotText';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface StudioSessionProps {
   mode?: 'demo' | 'production' | 'archive';
@@ -44,6 +45,7 @@ export const CollaborativeStudio = ({
   onUpload, 
   onSelect 
 }: StudioSessionProps) => {
+  const { t } = useTranslation();
   const [activeTrack, setActiveTrack] = useState<number | null>(null);
   const [waveformCount] = useState(40);
 
@@ -262,7 +264,7 @@ export const CollaborativeStudio = ({
               <ContainerInstrument className="p-4 md:p-6 border-t border-va-black/5">
                 <ContainerInstrument className="relative">
                   <InputInstrument 
-                    placeholder="Stuur een bericht..." 
+                    placeholder={t('studio.chat.placeholder', "Stuur een bericht...")} 
                     className="w-full bg-va-off-white border-none rounded-[10px] px-4 md:px-6 py-3 md:py-4 text-[15px] focus:ring-2 focus:ring-primary/10 transition-all"
                   />
                 </ContainerInstrument>

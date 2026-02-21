@@ -165,6 +165,8 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
     return Array.from(langs);
   }, [state.selectedActor]);
 
+  const { t } = useTranslation();
+
   // Effect: Zet de geselecteerde taal op de moedertaal van de acteur als die beschikbaar is
   React.useEffect(() => {
     if (state.selectedActor?.native_lang) {
@@ -287,7 +289,9 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
           {/* Taalkeuze gebaseerd op stem */}
           {availableLangs.length > 1 && (
             <div className="flex flex-col gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-va-black/30 px-1">Taal van script</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-va-black/30 px-1">
+                <VoiceglotText translationKey="checkout.telephony.suggestions.script_language" defaultText="Taal van script" />
+              </span>
               <div className="flex items-center gap-1 bg-va-off-white p-1 rounded-xl border border-black/[0.03]">
                 {availableLangs.map(lang => (
                   <button
@@ -310,9 +314,9 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
             <button 
               onClick={onMinimize}
               className="hidden md:flex w-10 h-10 rounded-full bg-va-off-white items-center justify-center text-va-black/20 hover:text-primary transition-all hover:scale-110"
-              title="Minimaliseer"
+              title={t('common.minimize', "Minimaliseer")}
             >
-              <ChevronUp size={20} strokeWidth={2.5} />
+              <X size={20} strokeWidth={2.5} />
             </button>
           )}
         </div>
@@ -321,37 +325,37 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
         <div className="space-y-2 group/input">
           <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/20 group-focus-within/input:text-primary transition-colors">
-            <MapPin size={12} strokeWidth={2.5} /> Bedrijfsnaam
+            <MapPin size={12} strokeWidth={2.5} /> <VoiceglotText translationKey="common.company_name" defaultText="Bedrijfsnaam" />
           </label>
           <input
             type="text"
             value={companyName}
             onChange={(e) => { setCompanyName(e.target.value); updateCustomer({ company: e.target.value }); }}
-            placeholder="Bijv. Voices.be"
+            placeholder={t('common.placeholder.company', "Bijv. Voices.be")}
             className="w-full bg-va-off-white border-2 border-transparent focus:border-primary/10 focus:bg-white rounded-[15px] py-4 px-5 text-[15px] font-light transition-all outline-none"
           />
         </div>
         <div className="space-y-2 group/input">
           <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/20 group-focus-within/input:text-primary transition-colors">
-            <Mail size={12} strokeWidth={2.5} /> E-mail
+            <Mail size={12} strokeWidth={2.5} /> <VoiceglotText translationKey="common.email" defaultText="E-mail" />
           </label>
           <input
             type="text"
             value={email}
             onChange={(e) => { setEmail(e.target.value); updateCustomer({ email: e.target.value }); }}
-            placeholder="info@bedrijf.be"
+            placeholder={t('common.placeholder.email', "info@bedrijf.be")}
             className="w-full bg-va-off-white border-2 border-transparent focus:border-primary/10 focus:bg-white rounded-[15px] py-4 px-5 text-[15px] font-light transition-all outline-none"
           />
         </div>
         <div className="space-y-2 group/input">
           <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/20 group-focus-within/input:text-primary transition-colors">
-            <Clock size={12} strokeWidth={2.5} /> Openingsuren
+            <Clock size={12} strokeWidth={2.5} /> <VoiceglotText translationKey="common.opening_hours" defaultText="Openingsuren" />
           </label>
           <input
             type="text"
             value={hours}
             onChange={(e) => setHours(e.target.value)}
-            placeholder="ma-vrij 9u-17u"
+            placeholder={t('common.placeholder.hours', "ma-vrij 9u-17u")}
             className="w-full bg-va-off-white border-2 border-transparent focus:border-primary/10 focus:bg-white rounded-[15px] py-4 px-5 text-[15px] font-light transition-all outline-none"
           />
         </div>
@@ -360,7 +364,9 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
       <div className="space-y-4 relative z-10">
         <div className="flex items-center gap-2 px-1">
           <Sparkles size={14} className="text-primary/40" />
-          <span className="text-[11px] font-bold uppercase tracking-widest text-va-black/30">Beschikbare bouwstenen</span>
+          <span className="text-[11px] font-bold uppercase tracking-widest text-va-black/30">
+            <VoiceglotText translationKey="checkout.telephony.suggestions.available_blocks" defaultText="Beschikbare bouwstenen" />
+          </span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {(TELEPHONY_TEMPLATES[selectedLang] || TELEPHONY_TEMPLATES['en'] || []).map((template) => (

@@ -5,6 +5,8 @@ import { ArrowRight, Megaphone, Mic2, Phone, Video, Zap, GraduationCap } from 'l
 import Link from 'next/link';
 import React from 'react';
 
+import { VoiceglotText } from './VoiceglotText';
+
 interface JourneyCtaProps {
   journey: 'telephony' | 'video' | 'commercial' | 'general';
 }
@@ -17,7 +19,8 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       cta: 'Start configuratie',
       href: '/configurator',
       icon: Phone,
-      color: 'bg-blue-600'
+      color: 'bg-blue-600',
+      key: 'telephony'
     },
     video: {
       title: 'Breng je beelden tot leven',
@@ -25,7 +28,8 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       cta: 'Bekijk stemmen',
       href: '/agency?category=video',
       icon: Video,
-      color: 'bg-purple-600'
+      color: 'bg-purple-600',
+      key: 'video'
     },
     commercial: {
       title: 'Maak impact met je campagne',
@@ -33,7 +37,8 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       cta: 'Bereken campagne-prijs',
       href: '/tarieven?journey=commercial',
       icon: Megaphone,
-      color: 'bg-primary'
+      color: 'bg-primary',
+      key: 'commercial'
     },
     general: {
       title: 'De perfecte stem gevonden?',
@@ -41,7 +46,8 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       cta: 'Bereken tarief',
       href: '/tarieven',
       icon: Zap,
-      color: 'bg-primary'
+      color: 'bg-primary',
+      key: 'general'
     },
     studio: {
       title: 'Klaar om je stem te laten horen?',
@@ -49,7 +55,8 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       cta: 'Bekijk aanbod',
       href: '/studio',
       icon: Mic2,
-      color: 'bg-primary'
+      color: 'bg-primary',
+      key: 'studio'
     },
     academy: {
       title: 'Klaar om het ambacht te leren?',
@@ -57,7 +64,8 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       cta: 'Bekijk het traject',
       href: '/academy',
       icon: GraduationCap,
-      color: 'bg-[#6366f1]'
+      color: 'bg-[#6366f1]',
+      key: 'academy'
     }
   };
 
@@ -72,15 +80,19 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
         <div className="w-12 h-12 rounded-[10px] bg-white/10 flex items-center justify-center mx-auto md:mx-0">
           <Icon strokeWidth={1.5} size={24} />
         </div>
-        <h3 className="text-3xl font-medium tracking-tighter leading-none">{config.title}</h3>
-        <p className="text-white/90 text-[15px] font-medium max-w-md">{config.text}</p>
+        <h3 className="text-3xl font-medium tracking-tighter leading-none">
+          <VoiceglotText translationKey={`cta.${config.key}.title`} defaultText={config.title} />
+        </h3>
+        <p className="text-white/90 text-[15px] font-medium max-w-md">
+          <VoiceglotText translationKey={`cta.${config.key}.text`} defaultText={config.text} />
+        </p>
       </div>
       
       <Link  
         href={config.href}
         className="relative z-10 px-10 py-5 bg-white text-va-black rounded-[10px] font-medium tracking-widest text-[15px] hover:scale-105 transition-all flex items-center gap-3 shadow-xl "
       >
-        {config.cta} <ArrowRight strokeWidth={1.5} size={16} />
+        <VoiceglotText translationKey={`cta.${config.key}.button`} defaultText={config.cta} /> <ArrowRight strokeWidth={1.5} size={16} />
       </Link>
 
       {/* Decorative background elements */}

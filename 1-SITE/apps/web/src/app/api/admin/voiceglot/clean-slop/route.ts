@@ -20,6 +20,9 @@ export async function GET() {
     '%Het lijkt erop dat de tekst%',
     '%Zou je de tekst%',
     '%niet compleet is%',
+    '%context biedt%',
+    '%meer informatie%',
+    '%langere tekst%',
     '%Initial Load%'
   ];
 

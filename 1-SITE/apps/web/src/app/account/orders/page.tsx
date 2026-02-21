@@ -12,11 +12,14 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { LiquidBackground } from '@/components/ui/LiquidBackground';
+import { useTranslation } from '@/contexts/TranslationContext';
+import { SlimmeKassa } from '@/lib/slimme-kassa';
 
 export const dynamic = 'force-dynamic';
 
 export default function OrdersPage() {
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const highlightedOrderId = searchParams?.get('orderId');
   const [ordersList, setOrdersList] = useState<any[]>([]);
@@ -46,7 +49,7 @@ export default function OrdersPage() {
     }
   }, [highlightedOrderId, ordersList]);
 
-  if (isLoading) return <LoadingScreenInstrument message="Bestellingen laden..." />;
+  if (isLoading) return <LoadingScreenInstrument message={t('account.orders.loading', "Bestellingen laden...")} />;
 
   return (
     <PageWrapperInstrument>
@@ -98,12 +101,12 @@ export default function OrdersPage() {
                         "text-[15px] font-light tracking-widest uppercase",
                         order.status === 'completed' ? 'text-green-500' : 'text-primary animate-pulse'
                       )}>
-                        {order.status === 'completed' ? 'Voltooid' : 'In behandeling'}
+                        {order.status === 'completed' ? <VoiceglotText translationKey="order.status.completed" defaultText="Voltooid" /> : <VoiceglotText translationKey="order.status.processing" defaultText="In behandeling" />}
                       </TextInstrument>
                       <HeadingInstrument level={3} className="text-3xl font-light tracking-tighter">
-                        {order.journey === 'agency' ? 'Voice-over Project' : (order.journey === 'artist' ? 'Artist Support' : 'Academy Workshop')}
+                        {order.journey === 'agency' ? <VoiceglotText translationKey="order.journey.agency" defaultText="Voice-over Project" /> : (order.journey === 'artist' ? <VoiceglotText translationKey="order.journey.artist" defaultText="Artist Support" /> : <VoiceglotText translationKey="order.journey.academy" defaultText="Academy Workshop" />)}
                         <TextInstrument className="text-[15px] font-light text-va-black/40 tracking-widest ml-4">
-                          Order #{order.wpOrderId || order.id}
+                          <VoiceglotText translationKey="order.number" defaultText={`Order #${order.wpOrderId || order.id}`} noTranslate={true} />
                         </TextInstrument>
                       </HeadingInstrument>
                     </ContainerInstrument>
@@ -131,14 +134,14 @@ export default function OrdersPage() {
                             <TextInstrument className="text-[16px] font-medium text-va-black">{item.name}</TextInstrument>
                             {item.metaData?.usage && (
                               <TextInstrument className="text-[12px] text-va-black/40 uppercase tracking-widest mt-0.5">
-                                {item.metaData.usage} • {Array.isArray(item.metaData.mediaTypes) ? item.metaData.mediaTypes.join(', ') : item.metaData.mediaTypes}
+                                <VoiceglotText translationKey={`common.usage.${item.metaData.usage}`} defaultText={item.metaData.usage} /> • {Array.isArray(item.metaData.mediaTypes) ? item.metaData.mediaTypes.join(', ') : item.metaData.mediaTypes}
                               </TextInstrument>
                             )}
                           </div>
                         </div>
                         <div className="text-right">
-                          <TextInstrument className="text-[18px] font-light text-va-black">€ {parseFloat(item.price).toFixed(2)}</TextInstrument>
-                          <TextInstrument className="text-[10px] text-va-black/20 uppercase tracking-widest">Excl. BTW</TextInstrument>
+                          <TextInstrument className="text-[18px] font-light text-va-black">{SlimmeKassa.format(parseFloat(item.price))}</TextInstrument>
+                          <TextInstrument className="text-[10px] text-va-black/20 uppercase tracking-widest"><VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" /></TextInstrument>
                         </div>
                       </div>
                     ))}
@@ -185,16 +188,16 @@ export default function OrdersPage() {
                       )} />
                       <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/60">
                         {order.status === 'completed' 
-                          ? 'Project succesvol opgeleverd' 
-                          : 'Verwachte oplevering: binnen 48 uur'}
+                          ? <VoiceglotText translationKey="order.delivery.success" defaultText="Project succesvol opgeleverd" /> 
+                          : <VoiceglotText translationKey="order.delivery.expected" defaultText="Verwachte oplevering: binnen 48 uur" />}
                       </TextInstrument>
                     </ContainerInstrument>
                     <ContainerInstrument className="flex items-center gap-6">
                       <ButtonInstrument className="text-[15px] font-light tracking-widest text-va-black/30 hover:text-primary transition-colors">
-                        Script bekijken
+                        <VoiceglotText translationKey="order.view_script" defaultText="Script bekijken" />
                       </ButtonInstrument>
                       <ButtonInstrument className="text-[15px] font-light tracking-widest text-primary hover:underline">
-                        Hulp nodig?
+                        <VoiceglotText translationKey="common.need_help" defaultText="Hulp nodig?" />
                       </ButtonInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>

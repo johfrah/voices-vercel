@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/contexts/TranslationContext";
 import { 
   ButtonInstrument, 
   ContainerInstrument, 
@@ -61,6 +62,7 @@ export const AgencyCalculator = ({
   totalPages = 1,
   onPageChange
 }: AgencyCalculatorProps) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { playClick } = useSonicDNA();
   const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(initialJourney);
@@ -99,45 +101,45 @@ export const AgencyCalculator = ({
 
   const calculatorRates: Record<string, { label: string, sub: string, icon: any, national: number, regional?: number, usage: "unpaid" | "paid" | "telefonie" }> = {
     webvideo: { 
-      label: "Webvideo", 
-      sub: "Corporate & Web",
+      label: t('common.webvideo', "Webvideo"), 
+      sub: t('common.webvideo.sub', "Corporate & Web"),
       icon: Video,
       usage: "unpaid",
       national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 249
     },
     social: { 
-      label: "Social Ad", 
-      sub: "Social Ads",
+      label: t('common.social_ad', "Social Ad"), 
+      sub: t('common.social_ad.sub', "Social Ads"),
       icon: Megaphone,
       usage: "paid",
       national: ((pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 249) + 50
     },
     radio: { 
-      label: "Radio", 
-      sub: "Radio Ads",
+      label: t('common.radio', "Radio"), 
+      sub: t('common.radio.sub', "Radio Ads"),
       icon: Radio,
       usage: "paid",
       national: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199) + 150,
       regional: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199)
     },
     tv: { 
-      label: "TV Ad", 
-      sub: "TV Ads",
+      label: t('common.tv_ad', "TV Ad"), 
+      sub: t('common.tv_ad.sub', "TV Ads"),
       icon: Tv,
       usage: "paid",
       national: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199) + 250,
       regional: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199) + 50
     },
     podcast: { 
-      label: "Podcast Ad", 
-      sub: "Pre-roll",
+      label: t('common.podcast_ad', "Podcast Ad"), 
+      sub: t('common.podcast_ad.sub', "Pre-roll"),
       icon: Mic2,
       usage: "paid",
       national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 249
     },
     ivr: { 
-      label: "Telefoon", 
-      sub: "Voicemail & IVR",
+      label: t('common.telephony', "Telefoon"), 
+      sub: t('common.telephony.sub', "Voicemail & IVR"),
       icon: Phone,
       usage: "telefonie",
       national: (pricingConfig?.telephonyBasePrice / 100) || pricingConfig?.ivr_base || 89
@@ -179,39 +181,39 @@ export const AgencyCalculator = ({
     
     // CHRIS-PROTOCOL: Smart mapping between Drizzle/JSON keys and SlimmeKassaConfig
     const telephonyBase = (config.telephonyBasePrice / 100) || config.ivr_base || 89;
-    const videoBase = (config.videoBasePrice / 100) || config.unpaid_base || 249;
+    const videoBase = (config.videoPrice / 100) || config.unpaid_base || 249;
     const currentBsf = (config.basePrice / 100) || config.entry_price_base === 9 ? 199 : (config.entry_price_base || 199); // Handle weird 9 value
     const liveSurcharge = (config.liveSessionSurcharge / 100) || config.live_regie || 50;
 
     switch (calcUsage) {
       case 'telefonie':
         return {
-          title: "Hoe werkt de prijs?",
-          subtitle: "VOOR TELEFONIE & IVR",
+          title: t('calculator.telephony.title', "Hoe werkt de prijs?"),
+          subtitle: t('calculator.telephony.subtitle', "VOOR TELEFONIE & IVR"),
           steps: [
-            { num: 1, title: "De Basis", desc: `Voor alle stemmen op Voices.be geldt hetzelfde vaste starttarief van €${telephonyBase} voor de eerste ${config.telephonyWordThreshold || 25} woorden.` },
-            { num: 2, title: "Volume", desc: "Daarbovenop betaal je een transparante prijs per prompt. Hoe meer prompts, hoe voordeliger." },
-            { num: 3, title: "Meertalig", desc: "Onze stemmen zijn meertalig inzetbaar voor een consistente merkbeleving." }
+            { num: 1, title: t('calculator.telephony.step1.title', "De Basis"), desc: t('calculator.telephony.step1.desc', `Voor alle stemmen op Voices.be geldt hetzelfde vaste starttarief van €${telephonyBase} voor de eerste ${config.telephonyWordThreshold || 25} woorden.`, { price: telephonyBase, words: config.telephonyWordThreshold || 25 }) },
+            { num: 2, title: t('calculator.telephony.step2.title', "Volume"), desc: t('calculator.telephony.step2.desc', "Daarbovenop betaal je een transparante prijs per prompt. Hoe meer prompts, hoe voordeliger.") },
+            { num: 3, title: t('calculator.telephony.step3.title', "Meertalig"), desc: t('calculator.telephony.step3.desc', "Onze stemmen zijn meertalig inzetbaar voor een consistente merkbeleving.") }
           ]
         };
       case 'paid':
         return {
-          title: "Hoe werkt de prijs?",
-          subtitle: "VOOR ADVERTENTIES",
+          title: t('calculator.paid.title', "Hoe werkt de prijs?"),
+          subtitle: t('calculator.paid.subtitle', "VOOR ADVERTENTIES"),
           steps: [
-            { num: 1, title: "De Opname", desc: `Voor alle stemmen op Voices.be geldt hetzelfde vaste tarief van €${currentBsf} voor de studiotijd. Dit is de basis voor je sessie.` },
-            { num: 2, title: "De Buyout", desc: calcType === 'social' ? "Vergoeding voor gebruik op social media kanalen." : calcType === 'podcast' ? "Vergoeding voor pre-roll of sponsoring in podcasts." : "Vergoeding voor uitzendrecht op radio/TV." },
-            { num: 3, title: "Live Regie (Optioneel)", desc: `Regisseer de stem live tijdens de sessie. Het tarief hiervoor wordt bepaald door de gekozen stemacteur.` }
+            { num: 1, title: t('calculator.paid.step1.title', "De Opname"), desc: t('calculator.paid.step1.desc', `Voor alle stemmen op Voices.be geldt hetzelfde vaste tarief van €${currentBsf} voor de studiotijd. Dit is de basis voor je sessie.`, { price: currentBsf }) },
+            { num: 2, title: t('calculator.paid.step2.title', "De Buyout"), desc: calcType === 'social' ? t('calculator.paid.step2.desc.social', "Vergoeding voor gebruik op social media kanalen.") : calcType === 'podcast' ? t('calculator.paid.step2.desc.podcast', "Vergoeding voor pre-roll of sponsoring in podcasts.") : t('calculator.paid.step2.desc.broadcast', "Vergoeding voor uitzendrecht op radio/TV.") },
+            { num: 3, title: t('calculator.paid.step3.title', "Live Regie (Optioneel)"), desc: t('calculator.paid.step3.desc', `Regisseer de stem live tijdens de sessie. Het tarief hiervoor wordt bepaald door de gekozen stemacteur.`) }
           ]
         };
       default:
         return {
-          title: "Hoe werkt de prijs?",
-          subtitle: "VOOR BEDRIJFSVIDEO'S",
+          title: t('calculator.unpaid.title', "Hoe werkt de prijs?"),
+          subtitle: t('calculator.unpaid.subtitle', "VOOR BEDRIJFSVIDEO'S"),
           steps: [
-            { num: 1, title: "De Opname", desc: `Voor alle stemmen op Voices.be geldt hetzelfde vaste tarief van €${videoBase} voor de studiotijd. Dit is de basis voor je project.` },
-            { num: 2, title: "Het Gebruik", desc: "Voor niet-betaalde media is het gebruiksrecht onbeperkt inbegrepen." },
-            { num: 3, title: "Kwaliteit", desc: "Je ontvangt een professionele opname in 48kHz, klaar voor gebruik in al je eigen kanalen." }
+            { num: 1, title: t('calculator.unpaid.step1.title', "De Opname"), desc: t('calculator.unpaid.step1.desc', `Voor alle stemmen op Voices.be geldt hetzelfde vaste tarief van €${videoBase} voor de studiotijd. Dit is de basis voor je project.`, { price: videoBase }) },
+            { num: 2, title: t('calculator.unpaid.step2.title', "Het Gebruik"), desc: t('calculator.unpaid.step2.desc', "Voor niet-betaalde media is het gebruiksrecht onbeperkt inbegrepen.") },
+            { num: 3, title: t('calculator.unpaid.step3.title', "Kwaliteit"), desc: t('calculator.unpaid.step3.desc', "Je ontvangt een professionele opname in 48kHz, klaar voor gebruik in al je eigen kanalen.") }
           ]
         };
     }
@@ -231,9 +233,9 @@ export const AgencyCalculator = ({
             <div className="flex justify-center">
               <div className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm">
                 {[
-                  { id: 'telefonie', label: 'Telefonie', sub: 'Voicemail & IVR', icon: Phone },
-                  { id: 'unpaid', label: 'Video', sub: 'Corporate & Web', icon: Video },
-                  { id: 'paid', label: 'Advertentie', sub: 'Radio, TV & Ads', icon: Megaphone }
+                  { id: 'telefonie', label: t('common.telephony', 'Telefonie'), sub: t('common.telephony.sub', 'Voicemail & IVR'), icon: Phone },
+                  { id: 'unpaid', label: t('common.video', 'Video'), sub: t('common.video.sub', 'Corporate & Web'), icon: Video },
+                  { id: 'paid', label: t('common.commercial', 'Advertentie'), sub: t('common.commercial.sub', 'Radio, TV & Ads'), icon: Megaphone }
                 ].map((u) => (
                   <button 
                     key={u.id}
@@ -266,7 +268,9 @@ export const AgencyCalculator = ({
                 <div className="space-y-10">
                   {/* Medium Grid */}
                   <div className="space-y-4">
-                    <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Kies je medium</LabelInstrument>
+                    <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                      <VoiceglotText translationKey="common.choose_medium" defaultText="Kies je medium" />
+                    </LabelInstrument>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {Object.entries(calculatorRates)
                         .filter(([_, val]) => val.usage === 'paid')
@@ -295,8 +299,12 @@ export const AgencyCalculator = ({
                             {calcType === key && <CheckCircle2 size={16} className="text-primary" />}
                           </div>
                           <div>
-                            <span className={cn("font-bold text-[13px] block leading-tight", calcType === key ? "text-va-black" : "text-va-black/40")}>{val.label}</span>
-                            <span className="text-[9px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">{val.sub}</span>
+                            <span className={cn("font-bold text-[13px] block leading-tight", calcType === key ? "text-va-black" : "text-va-black/40")}>
+                              <VoiceglotText translationKey={`common.media.${key}`} defaultText={val.label} />
+                            </span>
+                            <span className="text-[9px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">
+                              <VoiceglotText translationKey={`common.media.${key}.sub`} defaultText={val.sub} />
+                            </span>
                           </div>
                         </button>
                       ))}
@@ -306,7 +314,9 @@ export const AgencyCalculator = ({
                   {/* Spots Grid */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Aantal spots</LabelInstrument>
+                      <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                        <VoiceglotText translationKey="common.spots_count" defaultText="Aantal spots" />
+                      </LabelInstrument>
                     </div>
                     <div className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm h-[64px]">
                       {[1, 2, 3, 4, 5].map((num) => (
@@ -318,33 +328,33 @@ export const AgencyCalculator = ({
                             calcSpots === num ? "bg-va-off-white text-primary shadow-inner" : "text-va-black/30 hover:text-va-black"
                           )}
                         >
-                          {num} {num === 1 ? 'Spot' : 'Spots'}
+                          {num} {num === 1 ? t('common.spot', 'Spot') : t('common.spots', 'Spots')}
                         </button>
                       ))}
                     </div>
                     <TextInstrument className="text-[10px] text-va-black/30 leading-relaxed italic px-1">
-                      Een campagne bestaat meestal uit 1 hoofdspot met variaties (vb. 30s, 20s en 6s) of verschillende call-to-actions. Elke variatie telt als een aparte spot.
+                      <VoiceglotText translationKey="calculator.spots_info" defaultText="Een campagne bestaat meestal uit 1 hoofdspot met variaties (vb. 30s, 20s en 6s) of verschillende call-to-actions. Elke variatie telt als een aparte spot." />
                     </TextInstrument>
                   </div>
 
                   {/* Duration Grid */}
                   <div className="space-y-4">
                     <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
-                      {calcType === 'podcast' ? 'Duurtijd (Periode)' : 'Duurtijd (Licentie)'}
+                      {calcType === 'podcast' ? <VoiceglotText translationKey="common.duration_period" defaultText="Duurtijd (Periode)" /> : <VoiceglotText translationKey="common.duration_license" defaultText="Duurtijd (Licentie)" />}
                     </LabelInstrument>
                     <div className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm h-[64px]">
                       {calcType === 'podcast' ? [3, 6, 12].map((m) => (
                         <button key={m} onClick={() => setCalcYears(m / 12)} className={cn("flex-1 rounded-xl text-[13px] font-bold transition-all", calcYears === m / 12 ? "bg-va-off-white text-primary shadow-inner" : "text-va-black/30 hover:text-va-black")}>
-                          {m} Maanden
+                          {m} <VoiceglotText translationKey="common.months" defaultText="Maanden" />
                         </button>
                       )) : [1, 2, 3, 5].map((y) => (
                         <button key={y} onClick={() => setCalcYears(y)} className={cn("flex-1 rounded-xl text-[13px] font-bold transition-all", calcYears === y ? "bg-va-off-white text-primary shadow-inner" : "text-va-black/30 hover:text-va-black")}>
-                          {y} {y === 1 ? 'Jaar' : 'Jaar'}
+                          {y} {y === 1 ? t('common.year', 'Jaar') : t('common.years', 'Jaar')}
                         </button>
                       ))}
                     </div>
                     <TextInstrument className="text-[10px] text-va-black/30 leading-relaxed italic px-1">
-                      De periode waarin de advertentie actief gepusht wordt (met mediabudget) op radio, TV of online. Na deze termijn kan de licentie eenvoudig worden verlengd.
+                      <VoiceglotText translationKey="calculator.duration_info" defaultText="De periode waarin de advertentie actief gepusht wordt (met mediabudget) op radio, TV of online. Na deze termijn kan de licentie eenvoudig worden verlengd." />
                     </TextInstrument>
                   </div>
                 </div>
@@ -353,9 +363,11 @@ export const AgencyCalculator = ({
                 <div className="space-y-8">
                   <div className="bg-white rounded-[32px] p-8 border border-black/5 shadow-aura">
                     <div className="flex justify-between items-center mb-8">
-                      <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Hoeveelheid?</LabelInstrument>
+                      <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                        <VoiceglotText translationKey="common.quantity" defaultText="Hoeveelheid?" />
+                      </LabelInstrument>
                       <div className="px-4 py-2 bg-va-off-white rounded-full border border-black/5 shadow-inner flex items-center gap-2">
-                        <span className="font-bold text-primary text-[15px]">{calcWords} woorden</span>
+                        <span className="font-bold text-primary text-[15px]">{calcWords} <VoiceglotText translationKey="common.words" defaultText="woorden" /></span>
                       </div>
                     </div>
                     <div className="space-y-8">
@@ -381,7 +393,9 @@ export const AgencyCalculator = ({
               {/* 4. Extra Options (Live Regie / Wachtmuziek) */}
               {calcUsage !== 'unpaid' && (
                 <div className="pt-8 border-t border-black/5 space-y-4">
-                  <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">Extra Opties</LabelInstrument>
+                  <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                    <VoiceglotText translationKey="common.extra_options" defaultText="Extra Opties" />
+                  </LabelInstrument>
                   
                   {calcUsage === 'paid' ? (
                     <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">
@@ -393,8 +407,12 @@ export const AgencyCalculator = ({
                           <Mic2 size={20} strokeWidth={1.5} />
                         </div>
                         <div>
-                          <span className={cn("font-bold text-[14px] block leading-tight", calcLive ? "text-va-black" : "text-va-black/40")}>Live Regie</span>
-                          <span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">Sessie volgen via Zoom/Teams</span>
+                          <span className={cn("font-bold text-[14px] block leading-tight", calcLive ? "text-va-black" : "text-va-black/40")}>
+                            <VoiceglotText translationKey="common.live_direction" defaultText="Live Regie" />
+                          </span>
+                          <span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">
+                            <VoiceglotText translationKey="common.live_direction_desc" defaultText="Sessie volgen via Zoom/Teams" />
+                          </span>
                         </div>
                       </div>
                       <button 
@@ -420,8 +438,12 @@ export const AgencyCalculator = ({
                           <Music size={20} strokeWidth={1.5} />
                         </div>
                         <div>
-                          <span className={cn("font-bold text-[14px] block leading-tight", calcMusic ? "text-va-black" : "text-va-black/40")}>Wachtmuziek</span>
-                          <span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">Inclusief licentie & mix (+ €59)</span>
+                          <span className={cn("font-bold text-[14px] block leading-tight", calcMusic ? "text-va-black" : "text-va-black/40")}>
+                            <VoiceglotText translationKey="common.hold_music" defaultText="Wachtmuziek" />
+                          </span>
+                          <span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">
+                            <VoiceglotText translationKey="common.hold_music_desc" defaultText="Inclusief licentie & mix (+ €59)" />
+                          </span>
                         </div>
                       </div>
                       <button 
@@ -446,7 +468,9 @@ export const AgencyCalculator = ({
             {(calcUsage === 'telefonie' || calcUsage === 'unpaid') && (
               <div className="pt-10 border-t border-black/[0.03] flex flex-col md:flex-row items-center justify-between gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="text-center md:text-left">
-                  <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold mb-1 uppercase">Indicatie Totaalprijs (excl. BTW)</TextInstrument>
+                  <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold mb-1 uppercase">
+                    <VoiceglotText translationKey="common.total_excl_vat" defaultText="Indicatie Totaalprijs (excl. BTW)" />
+                  </TextInstrument>
                   <div className="text-6xl font-extralight tracking-tighter text-va-black">
                     €{calculateTotal(true)}
                   </div>
@@ -461,7 +485,7 @@ export const AgencyCalculator = ({
                   }} 
                   className="va-btn-pro !bg-va-black !text-white !rounded-2xl px-10 py-6 text-lg shadow-xl hover:scale-105 transition-transform flex items-center gap-3"
                 >
-                  Bekijk alle stemmen <ArrowRight size={20} />
+                  <VoiceglotText translationKey="action.view_all_voices" defaultText="Bekijk alle stemmen" /> <ArrowRight size={20} />
                 </ButtonInstrument>
               </div>
             )}
@@ -470,7 +494,7 @@ export const AgencyCalculator = ({
             <div className="pt-10 border-t border-black/[0.03] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="flex items-center justify-between">
                 <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold uppercase">
-                  {calcUsage === 'paid' ? 'Tarieven per stemacteur (excl. BTW)' : 'Beschikbare stemacteurs'}
+                  {calcUsage === 'paid' ? <VoiceglotText translationKey="calculator.rates_per_actor" defaultText="Tarieven per stemacteur (excl. BTW)" /> : <VoiceglotText translationKey="calculator.available_actors" defaultText="Beschikbare stemacteurs" />}
                 </TextInstrument>
                 <button 
                   onClick={() => {
@@ -482,7 +506,7 @@ export const AgencyCalculator = ({
                   }} 
                   className="text-[11px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity"
                 >
-                  Bekijk alle
+                  <VoiceglotText translationKey="common.view_all" defaultText="Bekijk alle" />
                 </button>
               </div>
               
@@ -491,13 +515,21 @@ export const AgencyCalculator = ({
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-black/5 bg-va-off-white/50">
-                        <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Stemacteur</th>
+                        <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                          <VoiceglotText translationKey="common.voice_actor" defaultText="Stemacteur" />
+                        </th>
                         {calcUsage === 'paid' ? (
-                          <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Totaalprijs</th>
+                          <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                            <VoiceglotText translationKey="common.total_price" defaultText="Totaalprijs" />
+                          </th>
                         ) : calcUsage === 'unpaid' ? (
-                          <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Basisprijs</th>
+                          <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                            <VoiceglotText translationKey="common.base_price" defaultText="Basisprijs" />
+                          </th>
                         ) : (
-                          <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Starttarief</th>
+                          <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                            <VoiceglotText translationKey="common.starting_rate" defaultText="Starttarief" />
+                          </th>
                         )}
                         <th className="px-6 py-4"></th>
                       </tr>
@@ -508,7 +540,9 @@ export const AgencyCalculator = ({
                           <td colSpan={3} className="px-6 py-12 text-center">
                             <div className="flex flex-col items-center gap-3">
                               <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-                              <span className="text-[11px] font-bold text-va-black/20 uppercase tracking-widest">Laden...</span>
+                              <span className="text-[11px] font-bold text-va-black/20 uppercase tracking-widest">
+                                <VoiceglotText translationKey="common.loading" defaultText="Laden..." />
+                              </span>
                             </div>
                           </td>
                         </tr>
@@ -532,7 +566,7 @@ export const AgencyCalculator = ({
                                 <div>
                                   <div className="text-[14px] font-bold text-va-black">{a.display_name}</div>
                                   <div className="text-[10px] text-va-black/40 font-medium uppercase tracking-widest">
-                                    {a.native_lang_label || a.native_lang}
+                                    <VoiceglotText translationKey={`common.language.${a.native_lang}`} defaultText={a.native_lang_label || a.native_lang} noTranslate={true} />
                                   </div>
                                 </div>
                               </div>
@@ -541,7 +575,9 @@ export const AgencyCalculator = ({
                               <div className="text-right md:text-left">
                                 <div className="text-xl font-extralight tracking-tighter text-va-black">
                                   {calculateTotal(true, a) === '0.00' ? (
-                                    <span className="text-[13px] font-bold text-va-black/20 uppercase tracking-widest italic">Prijs op aanvraag</span>
+                                    <span className="text-[13px] font-bold text-va-black/20 uppercase tracking-widest italic">
+                                      <VoiceglotText translationKey="common.price_on_request" defaultText="Prijs op aanvraag" />
+                                    </span>
                                   ) : (
                                     <>€{calculateTotal(true, a)}</>
                                   )}
@@ -549,13 +585,13 @@ export const AgencyCalculator = ({
                                 <div className="text-[9px] text-va-black/30 font-bold uppercase tracking-widest">
                                 {calcLive ? (
                                   <span className="text-primary flex items-center gap-1">
-                                    <CheckCircle2 size={8} /> {parseFloat(a.price_live_regie || '0') > 0 ? `Incl. Regie` : "Regie Gratis"}
+                                    <CheckCircle2 size={8} /> {parseFloat(a.price_live_regie || '0') > 0 ? t('common.incl_direction', `Incl. Regie`) : t('common.direction_free', "Regie Gratis")}
                                   </span>
                                 ) : calcMusic ? (
                                   <span className="text-primary flex items-center gap-1">
-                                    <CheckCircle2 size={8} /> Incl. Wachtmuziek
+                                    <CheckCircle2 size={8} /> <VoiceglotText translationKey="common.incl_hold_music" defaultText="Incl. Wachtmuziek" />
                                   </span>
-                                ) : (calculateTotal(true, a) === '0.00' ? null : (calcUsage === 'paid' ? "All-in" : "Indicatie"))}
+                                ) : (calculateTotal(true, a) === '0.00' ? null : (calcUsage === 'paid' ? t('common.all_in', "All-in") : t('common.indication', "Indicatie")))}
                                 </div>
                               </div>
                             </td>
@@ -569,14 +605,16 @@ export const AgencyCalculator = ({
                                   router.push(`/agency?search=${a.display_name}&usage=${calcUsage}`);
                                 }}
                               >
-                                Boek
+                                <VoiceglotText translationKey="action.book" defaultText="Boek" />
                               </ButtonInstrument>
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={3} className="px-6 py-12 text-center text-va-black/20 italic text-[13px]">Geen stemacteurs gevonden.</td>
+                          <td colSpan={3} className="px-6 py-12 text-center text-va-black/20 italic text-[13px]">
+                            <VoiceglotText translationKey="common.no_actors_found" defaultText="Geen stemacteurs gevonden." />
+                          </td>
                         </tr>
                       )}
                     </tbody>
@@ -616,7 +654,7 @@ export const AgencyCalculator = ({
         <div className="lg:col-span-5 p-12 bg-white space-y-12">
           <div className="space-y-2">
             <HeadingInstrument level={2} className="text-4xl font-light tracking-tight text-va-black">
-              Hoe werkt de <span className="text-primary italic">prijs?</span>
+              <VoiceglotText translationKey="calculator.how_it_works.title" defaultText="Hoe werkt de" /> <span className="text-primary italic"><VoiceglotText translationKey="calculator.how_it_works.title_highlight" defaultText="prijs?" /></span>
             </HeadingInstrument>
             <TextInstrument className="text-[11px] text-va-black/30 font-bold tracking-[0.2em] uppercase">
               {usageSteps.subtitle}
@@ -642,17 +680,17 @@ export const AgencyCalculator = ({
           <div className="pt-8 border-t border-black/[0.03] space-y-6">
               <TextInstrument className="text-[11px] text-va-black/40 leading-relaxed italic">
                 {calcUsage === 'paid' ? (
-                  <>De opnamekosten (€{(pricingConfig?.basePrice / 100) || 199}) zijn slechts één keer verrekend. De buyout is berekend per eenheid (jaar of 3 maanden).</>
+                  t('calculator.paid.footer_note', `De opnamekosten (€${(pricingConfig?.basePrice / 100) || 199}) zijn slechts één keer verrekend. De buyout is berekend per eenheid (jaar of 3 maanden).`, { price: (pricingConfig?.basePrice / 100) || 199 })
                 ) : calcUsage === 'unpaid' ? (
-                  <>Inclusief studio-opname (€{(pricingConfig?.videoBasePrice / 100) || 249}) en onbeperkt gebruiksrecht. {calcWords > (pricingConfig?.videoWordThreshold || 200) && `Toeslag toegepast voor de extra lengte boven ${pricingConfig?.videoWordThreshold || 200} woorden.`}</>
+                  t('calculator.unpaid.footer_note', `Inclusief studio-opname (€${(pricingConfig?.videoBasePrice / 100) || 249}) en onbeperkt gebruiksrecht. ${calcWords > (pricingConfig?.videoWordThreshold || 200) ? `Toeslag toegepast voor de extra lengte boven ${pricingConfig?.videoWordThreshold || 200} woorden.` : ''}`, { price: (pricingConfig?.videoBasePrice / 100) || 249, threshold: pricingConfig?.videoWordThreshold || 200 })
                 ) : (
-                  <>Transparante prijsberekening voor telefonie. {calcWords > (pricingConfig?.telephonyWordThreshold || 25) && "Inclusief eenmalige opstart- en verwerkingskosten."}</>
+                  t('calculator.telephony.footer_note', `Transparante prijsberekening voor telefonie. ${calcWords > (pricingConfig?.telephonyWordThreshold || 25) ? "Inclusief eenmalige opstart- en verwerkingskosten." : ""}`, { threshold: pricingConfig?.telephonyWordThreshold || 25 })
                 )}
               </TextInstrument>
             <div className="flex items-center gap-3 px-5 py-3 bg-va-off-white rounded-full border border-black/5 w-fit shadow-sm">
               <ShieldCheck size={16} className="text-green-500" />
               <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
-                Gegarandeerde Voices.be Kwaliteit
+                <VoiceglotText translationKey="common.guaranteed_quality" defaultText="Gegarandeerde Voices.be Kwaliteit" />
               </TextInstrument>
             </div>
           </div>

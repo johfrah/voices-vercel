@@ -6,6 +6,7 @@ import { Check, Globe, Users, Mic2, CheckCircle2 } from 'lucide-react';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { MarketManager } from '@config/market-manager';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { 
   ButtonInstrument, 
   ContainerInstrument, 
@@ -26,6 +27,7 @@ export const AgencyFilterSheet: React.FC<{
   isOpen: boolean,
   onClose: () => void
 }> = ({ filters, activeParams, onUpdate, isOpen, onClose }) => {
+  const { t } = useTranslation();
   const { playClick } = useSonicDNA();
 
   const handleSelect = (key: string, value: string) => {
@@ -116,7 +118,7 @@ export const AgencyFilterSheet: React.FC<{
                     {sortedLanguages.map(lang => (
                       <FilterChip strokeWidth={1.5} 
                         key={lang} 
-                        label={lang} 
+                        label={t(`common.language.${lang.toLowerCase()}`, lang)} 
                         selected={activeParams.language === lang} 
                         onClick={() => { handleSelect('language', lang); }} 
                       />
@@ -134,7 +136,7 @@ export const AgencyFilterSheet: React.FC<{
                     {filters.genders.map(gender => (
                       <FilterChip strokeWidth={1.5} 
                         key={gender} 
-                        label={gender} 
+                        label={t(`common.gender.${gender.toLowerCase()}`, gender)} 
                         selected={activeParams.gender === gender} 
                         onClick={() => { handleSelect('gender', gender); }} 
                       />
@@ -152,7 +154,7 @@ export const AgencyFilterSheet: React.FC<{
                     {filters.styles.map(style => (
                       <FilterChip strokeWidth={1.5} 
                         key={style} 
-                        label={style} 
+                        label={t(`common.style.${style.toLowerCase().replace(/\s+/g, '_')}`, style)} 
                         selected={activeParams.style?.toLowerCase() === style.toLowerCase()} 
                         onClick={() => { handleSelect('style', style); }} 
                       />

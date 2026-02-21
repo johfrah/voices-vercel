@@ -80,6 +80,9 @@ export async function POST(request: NextRequest) {
         cleanTranslation.includes('Het lijkt erop dat') ||
         cleanTranslation.includes('Zou je de tekst') ||
         cleanTranslation.includes('niet compleet is') ||
+        cleanTranslation.includes('voldoende context') ||
+        cleanTranslation.includes('meer informatie') ||
+        cleanTranslation.includes('langere tekst') ||
         cleanTranslation.length > 200
       );
 

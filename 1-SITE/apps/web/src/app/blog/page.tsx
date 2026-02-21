@@ -248,7 +248,7 @@ export default function BlogPage() {
                   <ContainerInstrument className="flex items-center gap-4 mb-6">
                     <ContainerInstrument className="px-3 py-1 bg-va-off-white rounded-full text-[15px] font-light tracking-widest text-va-black/40 border border-black/5 flex items-center gap-2 ">
                       <Icon strokeWidth={1.5} size={10} className="text-primary" />
-                      {theme}
+                      <VoiceglotText translationKey={`theme.${theme.toLowerCase()}`} defaultText={theme} />
                     </ContainerInstrument>
                     <TextInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
                       <Calendar strokeWidth={1.5} size={12} /> {new Date(article.createdAt).toLocaleDateString('nl-BE')}
@@ -256,11 +256,11 @@ export default function BlogPage() {
                   </ContainerInstrument>
                   
                   <HeadingInstrument level={2} className={`${i === 0 ? 'text-4xl' : 'text-xl'} font-light tracking-tight mb-4 group-hover:text-primary transition-colors text-va-black`}>
-                    {article.title}
+                    <VoiceglotText translationKey={`article.${article.id}.title`} defaultText={article.title} />
                   </HeadingInstrument>
                   
                   <TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-8 flex-1">
-                    {article.excerpt || article.content?.substring(0, 150) + '...'}
+                    <VoiceglotText translationKey={`article.${article.id}.excerpt`} defaultText={article.excerpt || article.content?.substring(0, 150) + '...'} />
                   </TextInstrument>
                   
                   <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-primary group-hover:gap-4 transition-all ">

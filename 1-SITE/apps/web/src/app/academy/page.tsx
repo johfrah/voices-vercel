@@ -103,8 +103,8 @@ async function AcademyReviewsWrapper() {
   return (
     <ReviewsInstrument 
       reviews={mappedReviews} 
-      title="Academy Ervaringen"
-      subtitle="Lees hoe anderen hun stem hebben ontdekt."
+      title={t('academy.reviews.title', "Academy Ervaringen")}
+      subtitle={t('academy.reviews.subtitle', "Lees hoe anderen hun stem hebben ontdekt.")}
       averageRating="5.0"
       totalReviews={String(mappedReviews.length)}
     />
@@ -114,6 +114,7 @@ async function AcademyReviewsWrapper() {
 export default async function AcademyPage() {
   const headerList = headers();
   const lang = headerList.get('x-voices-lang') || 'nl';
+  const t = (key: string, def: string) => def; // Fallback for server component if needed, but we use VoiceglotText mostly
 
   const supabase = createClient();
   const supabaseUser = supabase ? (await supabase.auth.getUser()).data.user : null;
@@ -242,12 +243,20 @@ export default async function AcademyPage() {
               </TextInstrument>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t border-black/[0.03]">
                 <div className="space-y-4">
-                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">De Onzekerheid</HeadingInstrument>
-                  <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">Klink ik wel natuurlijk? Waarom klinkt mijn eigen opname zo anders dan wat ik op de radio hoor?</TextInstrument>
+                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
+                    <VoiceglotText translationKey="academy.pain.uncertainty.title" defaultText="De Onzekerheid" />
+                  </HeadingInstrument>
+                  <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
+                    <VoiceglotText translationKey="academy.pain.uncertainty.text" defaultText="Klink ik wel natuurlijk? Waarom klinkt mijn eigen opname zo anders dan wat ik op de radio hoor?" />
+                  </TextInstrument>
                 </div>
                 <div className="space-y-4">
-                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">De Techniek</HeadingInstrument>
-                  <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">Welke microfoon heb ik nodig? En hoe zorg ik dat ik geen last heb van galm of omgevingsgeluid?</TextInstrument>
+                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
+                    <VoiceglotText translationKey="academy.pain.technique.title" defaultText="De Techniek" />
+                  </HeadingInstrument>
+                  <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
+                    <VoiceglotText translationKey="academy.pain.technique.text" defaultText="Welke microfoon heb ik nodig? En hoe zorg ik dat ik geen last heb van galm of omgevingsgeluid?" />
+                  </TextInstrument>
                 </div>
               </div>
             </div>
@@ -268,8 +277,10 @@ export default async function AcademyPage() {
                   </TextInstrument>
                 </ContainerInstrument>
                 <HeadingInstrument level={2} className="text-6xl md:text-7xl font-light tracking-tighter leading-none text-va-black">
-                  Leren in je <br/>
-                  <span className="text-primary italic">eigen tempo</span>.
+                  <VoiceglotText translationKey="academy.solution.title_part1" defaultText="Leren in je" /> <br/>
+                  <span className="text-primary italic">
+                    <VoiceglotText translationKey="academy.solution.tempo" defaultText="eigen tempo" />
+                  </span>.
                 </HeadingInstrument>
               </div>
               <TextInstrument className="text-xl text-va-black/60 font-light leading-relaxed max-w-xl">
@@ -277,15 +288,17 @@ export default async function AcademyPage() {
               </TextInstrument>
               <div className="flex flex-wrap gap-8">
                 {[
-                  { label: "Online Lessen", icon: Video },
-                  { label: "Persoonlijke Feedback", icon: MessageSquare },
-                  { label: "Echte Scripts", icon: Mic }
+                  { label: t('academy.solution.online_lessons', "Online Lessen"), icon: Video, key: 'academy.solution.online_lessons' },
+                  { label: t('academy.solution.personal_feedback', "Persoonlijke Feedback"), icon: MessageSquare, key: 'academy.solution.personal_feedback' },
+                  { label: t('academy.solution.real_scripts', "Echte Scripts"), icon: Mic, key: 'academy.solution.real_scripts' }
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-white shadow-aura flex items-center justify-center text-primary">
                       <item.icon size={18} strokeWidth={1.5} />
                     </div>
-                    <TextInstrument className="text-[13px] font-bold tracking-widest uppercase text-va-black/40">{item.label}</TextInstrument>
+                    <TextInstrument className="text-[13px] font-bold tracking-widest uppercase text-va-black/40">
+                      <VoiceglotText translationKey={item.key} defaultText={item.label} />
+                    </TextInstrument>
                   </div>
                 ))}
               </div>
@@ -346,15 +359,21 @@ export default async function AcademyPage() {
               <div className="flex flex-wrap gap-8">
                 <div className="space-y-2">
                   <TextInstrument className="text-3xl font-extralight text-white leading-none">10+</TextInstrument>
-                  <TextInstrument className="text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Jaar ervaring</TextInstrument>
+                  <TextInstrument className="text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">
+                    <VoiceglotText translationKey="common.years_experience" defaultText="Jaar ervaring" />
+                  </TextInstrument>
                 </div>
                 <div className="space-y-2">
                   <TextInstrument className="text-3xl font-extralight text-white leading-none">5000+</TextInstrument>
-                  <TextInstrument className="text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Producties</TextInstrument>
+                  <TextInstrument className="text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">
+                    <VoiceglotText translationKey="common.productions" defaultText="Producties" />
+                  </TextInstrument>
                 </div>
                 <div className="space-y-2">
                   <TextInstrument className="text-3xl font-extralight text-white leading-none">1</TextInstrument>
-                  <TextInstrument className="text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Missie: Jouw stem</TextInstrument>
+                  <TextInstrument className="text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">
+                    <VoiceglotText translationKey="academy.expert.mission" defaultText="Missie: Jouw stem" />
+                  </TextInstrument>
                 </div>
               </div>
             </div>
@@ -390,12 +409,20 @@ export default async function AcademyPage() {
               </TextInstrument>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t border-black/[0.03]">
                 <div className="space-y-4">
-                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">Geen algoritme</HeadingInstrument>
-                  <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">Echte oren die luisteren naar jouw intentie, uitspraak en klankkleur.</TextInstrument>
+                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
+                    <VoiceglotText translationKey="academy.feedback.no_algorithm.title" defaultText="Geen algoritme" />
+                  </HeadingInstrument>
+                  <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
+                    <VoiceglotText translationKey="academy.feedback.no_algorithm.text" defaultText="Echte oren die luisteren naar jouw intentie, uitspraak en klankkleur." />
+                  </TextInstrument>
                 </div>
                 <div className="space-y-4">
-                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">Directe groei</HeadingInstrument>
-                  <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">Concrete tips waar je in je volgende opname direct mee aan de slag kunt.</TextInstrument>
+                  <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
+                    <VoiceglotText translationKey="academy.feedback.direct_growth.title" defaultText="Directe groei" />
+                  </HeadingInstrument>
+                  <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
+                    <VoiceglotText translationKey="academy.feedback.direct_growth.text" defaultText="Concrete tips waar je in je volgende opname direct mee aan de slag kunt." />
+                  </TextInstrument>
                 </div>
               </div>
             </div>
@@ -440,20 +467,24 @@ export default async function AcademyPage() {
               <TextInstrument className="text-8xl font-extralight tracking-tighter text-va-black leading-none">
                 {enrollmentPrice}
               </TextInstrument>
-              <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Eenmalige investering (excl. BTW)</TextInstrument>
+              <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                <VoiceglotText translationKey="academy.pricing.investment_label" defaultText="Eenmalige investering (excl. BTW)" />
+              </TextInstrument>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">
               {[
-                { title: "20+ Lessen", icon: Video },
-                { title: "Persoonlijke Feedback", icon: MessageSquare },
-                { title: "Levenslang Toegang", icon: Clock }
+                { title: t('academy.pricing.feature.lessons', "20+ Lessen"), icon: Video, key: 'academy.pricing.feature.lessons' },
+                { title: t('academy.pricing.feature.feedback', "Persoonlijke Feedback"), icon: MessageSquare, key: 'academy.pricing.feature.feedback' },
+                { title: t('academy.pricing.feature.access', "Levenslang Toegang"), icon: Clock, key: 'academy.pricing.feature.access' }
               ].map((item, i) => (
                 <div key={i} className="flex flex-col items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">
                     <item.icon size={20} strokeWidth={1.5} />
                   </div>
-                  <TextInstrument className="text-[15px] font-light text-va-black/60">{item.title}</TextInstrument>
+                  <TextInstrument className="text-[15px] font-light text-va-black/60">
+                    <VoiceglotText translationKey={item.key} defaultText={item.title} />
+                  </TextInstrument>
                 </div>
               ))}
             </div>
@@ -488,14 +519,18 @@ export default async function AcademyPage() {
             </div>
             <div className="lg:col-span-8 space-y-12">
               {[
-                { q: "Is de Academy geschikt voor beginners?", a: "Zeker. We beginnen bij de absolute basis en bouwen stap voor stap op naar een professioneel niveau." },
-                { q: "Heb ik dure apparatuur nodig?", a: "Nee, in de eerste lessen leer je juist hoe je met minimale middelen (zoals je smartphone) al goede resultaten haalt, voordat je investeert." },
-                { q: "Krijg ik echt feedback van Johfrah?", a: "Ja, op de cruciale opdrachten in het traject krijg je persoonlijke, audio-gebaseerde feedback van Johfrah zelf." },
-                { q: "Hoe lang heb ik toegang?", a: "Je houdt levenslang toegang tot de cursus, inclusief alle toekomstige updates en nieuwe lessen." }
+                { q: t('academy.faq.q1', "Is de Academy geschikt voor beginners?"), a: t('academy.faq.a1', "Zeker. We beginnen bij de absolute basis en bouwen stap voor stap op naar een professioneel niveau."), key: 'academy.faq.1' },
+                { q: t('academy.faq.q2', "Heb ik dure apparatuur nodig?"), a: t('academy.faq.a2', "Nee, in de eerste lessen leer je juist hoe je met minimale middelen (zoals je smartphone) al goede resultaten haalt, voordat je investeert."), key: 'academy.faq.2' },
+                { q: t('academy.faq.q3', "Krijg ik echt feedback van Johfrah?"), a: t('academy.faq.a3', "Ja, op de cruciale opdrachten in het traject krijg je persoonlijke, audio-gebaseerde feedback van Johfrah zelf."), key: 'academy.faq.3' },
+                { q: t('academy.faq.q4', "Hoe lang heb ik toegang?"), a: t('academy.faq.a4', "Je houdt levenslang toegang tot de cursus, inclusief alle toekomstige updates en nieuwe lessen."), key: 'academy.faq.4' }
               ].map((faq, i) => (
                 <div key={i} className="space-y-4 pb-12 border-b border-black/[0.03] last:border-none last:pb-0">
-                  <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-primary">{faq.q}</HeadingInstrument>
-                  <TextInstrument className="text-lg text-va-black/60 font-light leading-relaxed">{faq.a}</TextInstrument>
+                  <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-primary">
+                    <VoiceglotText translationKey={`academy.faq.q${i+1}`} defaultText={faq.q} />
+                  </HeadingInstrument>
+                  <TextInstrument className="text-lg text-va-black/60 font-light leading-relaxed">
+                    <VoiceglotText translationKey={`academy.faq.a${i+1}`} defaultText={faq.a} />
+                  </TextInstrument>
                 </div>
               ))}
             </div>

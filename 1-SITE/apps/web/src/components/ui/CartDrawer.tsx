@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from '@/contexts/TranslationContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { SlimmeKassa } from '@/lib/pricing-engine';
@@ -9,6 +10,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const { state, subtotal, removeItem, isVatExempt } = useCheckout();
   const [loading, setLoading] = useState(false);
 
@@ -45,7 +47,9 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                   className="brightness-0 invert"
                 />
               </div>
-              <h2 className="text-xl font-light tracking-tighter">Jouw <span className="text-primary"><VoiceglotText  translationKey="auto.cartdrawer.mandje.65a3a2" defaultText="Mandje" /></span></h2>
+      <h2 className="text-xl font-light tracking-tighter">
+                <VoiceglotText translationKey="nav.cart.your" defaultText="Jouw" /> <span className="text-primary"><VoiceglotText  translationKey="auto.cartdrawer.mandje.65a3a2" defaultText="Mandje" /></span>
+              </h2>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-va-off-white rounded-full transition-all">
               <X strokeWidth={1.5} size={24} className="text-va-black/20" />
@@ -69,7 +73,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                       </h4>
                       <div className="flex justify-between items-center">
                         <span className="text-[11px] font-bold text-va-black/30 tracking-widest uppercase">
-                          {item.type === 'voice_over' ? `${item.pricing?.words || 0} woorden` : '1 item'}
+                          {item.type === 'voice_over' ? `${item.pricing?.words || 0} ${t('common.words', 'woorden')}` : `1 ${t('common.item', 'item')}`}
                         </span>
                         <span className="font-black text-va-black">{SlimmeKassa.format(item.pricing?.total ?? item.pricing?.subtotal ?? 0)}</span>
                       </div>
@@ -107,7 +111,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                   <span className="text-va-black">{SlimmeKassa.format(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">
-                  <span>BTW {isVatExempt ? '(vrijgesteld)' : '(21%)'}</span>
+                  <span><VoiceglotText translationKey="common.vat" defaultText="BTW" /> {isVatExempt ? `(${t('common.exempt', 'vrijgesteld')})` : '(21%)'}</span>
                   <span className="text-va-black">{SlimmeKassa.format(vat)}</span>
                 </div>
                 <div className="pt-4 border-t border-black/5 flex justify-between items-center">
@@ -121,7 +125,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 onClick={onClose}
                 className="va-btn-pro w-full flex items-center justify-center gap-3 group !bg-va-black"
               >
-                Doorgaan naar Kassa 
+                <VoiceglotText translationKey="nav.cart.checkout" defaultText="Doorgaan naar Kassa" /> 
                 <Image  
                   src="/assets/common/branding/icons/FORWARD.svg" 
                   alt="Forward" 

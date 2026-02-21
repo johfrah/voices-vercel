@@ -33,7 +33,7 @@ import {
     Loader2,
     Megaphone,
     Mic,
-    Minus, Music,
+    Minus,
     Paperclip,
     Phone,
     Plus,
@@ -45,7 +45,9 @@ import {
     Upload,
     Video,
     X,
-    Zap
+    Zap,
+    ShieldCheck,
+    Music as MusicIcon
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -161,7 +163,7 @@ export default function ConfiguratorPageClient({
       case 'telefonie':
         return [
           { key: 'telephony.warm', text: 'menselijke begroeting', icon: CheckCircle2 },
-          { key: 'telephony.mix', text: 'inclusief muziek-mix', icon: Music },
+          { key: 'telephony.mix', text: 'inclusief muziek-mix', icon: MusicIcon },
           { key: 'telephony.speed', text: '90% binnen 24 uur klaar', icon: Zap }
         ];
       case 'commercial':
@@ -199,12 +201,12 @@ export default function ConfiguratorPageClient({
         // Trigger een proactieve suggestie via Voicy
         window.dispatchEvent(new CustomEvent('voicy:suggestion', {
           detail: {
-            title: "Hulp nodig met je overzicht?",
-            content: "Ik zie dat je het prijs-overzicht bekijkt. Zal ik je helpen om de briefing of de rechten te verfijnen?",
+            title: t('configurator.proactive.title', "Hulp nodig met je overzicht?"),
+            content: t('configurator.proactive.text', "Ik zie dat je het prijs-overzicht bekijkt. Zal ik je helpen om de briefing of de rechten te verfijnen?"),
             type: "proactive_configurator",
             actions: [
-              { label: "Help me met schrijven", action: "ask_how_it_works" },
-              { label: "Bereken prijs", action: "calculate_price" }
+              { label: t('configurator.proactive.action.help', "Help me met schrijven"), action: "ask_how_it_works" },
+              { label: t('configurator.proactive.action.calculate', "Bereken prijs"), action: "calculate_price" }
             ]
           }
         }));
@@ -221,7 +223,7 @@ export default function ConfiguratorPageClient({
       window.removeEventListener('mousemove', recordActivity);
       window.removeEventListener('keydown', recordActivity);
     };
-  }, [state.pricing.total, addedToCart, isEmbedded, minimalMode, state.selectedActor?.id]);
+  }, [state.pricing.total, addedToCart, isEmbedded, minimalMode, state.selectedActor?.id, t]);
   
   const { updateCustomer } = useCheckout();
 
@@ -338,7 +340,7 @@ export default function ConfiguratorPageClient({
     return () => {
       if (analysisTimeoutRef.current) clearTimeout(analysisTimeoutRef.current);
     };
-  }, [localBriefing, state.usage, state.secondaryLanguages]);
+  }, [localBriefing, state.usage, state.secondaryLanguages, state.selectedActor?.id]);
 
   // Auto-Save Logic
   useEffect(() => {
@@ -666,7 +668,7 @@ export default function ConfiguratorPageClient({
   };
 
   const handleUsageSwitch = (usageId: any) => {
-    const projectTypeMap: Record<string, JourneyType> = {
+    const projectTypeMap: Record<string, any> = {
       'telefonie': 'telephony',
       'unpaid': 'video',
       'commercial': 'commercial'
@@ -724,10 +726,6 @@ export default function ConfiguratorPageClient({
     { id: 'unpaid', label: 'Video', icon: Video, key: 'journey.video', description: 'Online, Corporate' },
     { id: 'commercial', label: 'Commercial', icon: Megaphone, key: 'journey.commercial', description: 'Radio, TV, Ads' },
   ];
-
-  const filteredUsageTypes = minimalMode 
-    ? usageTypes 
-    : usageTypes;
 
   const commercialMediaOptions = [
     { id: 'online', label: 'Online / Social', icon: Video, description: 'Web, Social Media' },
@@ -815,7 +813,7 @@ export default function ConfiguratorPageClient({
     //  KELLY-MANDATE: Safety check for 0 price
     if (state.pricing.total <= 0) {
       console.error('[Configurator] Price is 0. Cannot add to cart.');
-      alert('Er is een fout opgetreden bij de prijsberekening (0 euro). Neem contact op met support.');
+      alert(t('configurator.error.zero_price', "Er is een fout opgetreden bij de prijsberekening (0 euro). Neem contact op met support."));
       return;
     }
 
@@ -985,13 +983,13 @@ export default function ConfiguratorPageClient({
                         <div className="flex justify-between text-[13px] items-start">
                           <span className="text-va-black font-medium leading-snug">
                             {fullLabel} <span className="text-[10px] text-va-black/40 block font-normal tracking-wide">
-                              {detail}x {detail === 1 ? 'spot' : 'spots'} • {isPodcast ? (
-                                years === 0.25 ? "3 maanden" :
-                                years === 0.5 ? "6 maanden" :
-                                years === 0.75 ? "9 maanden" :
-                                `${years} jaar`
+                              {detail}x {detail === 1 ? t('common.spot', 'spot') : t('common.spots', 'spots')} • {isPodcast ? (
+                                years === 0.25 ? t('common.3_months', "3 maanden") :
+                                years === 0.5 ? t('common.6_months', "6 maanden") :
+                                years === 0.75 ? t('common.9_months', "9 maanden") :
+                                t('common.years_count', `${years} jaar`, { count: years })
                               ) : (
-                                years === 1 ? "1 jaar" : `${years} jaar`
+                                years === 1 ? t('common.1_year', "1 jaar") : t('common.years_count', `${years} jaar`, { count: years })
                               )}
                             </span>
                           </span>
@@ -999,12 +997,6 @@ export default function ConfiguratorPageClient({
                             {itemPrice > 0 ? `+${SlimmeKassa.format(itemPrice)}` : SlimmeKassa.format(0)}
                           </span>
                         </div>
-                        {/* detail > 1 && (
-                          <div className="flex justify-between text-[9px] text-green-600 font-medium italic pl-1">
-                            <span>Staffelvoordeel ({detail} spots)</span>
-                            <span>In prijs verwerkt</span>
-                          </div>
-                        ) */}
                         {combinationDiscount > 0 && (
                           <div className="flex justify-between text-[10px] text-green-600 font-bold italic pt-1 border-t border-green-600/10">
                             <span><VoiceglotText translationKey="pricing.combo_discount" defaultText="Combinatiekorting" /></span>
@@ -1222,14 +1214,20 @@ export default function ConfiguratorPageClient({
                                   <div className="w-8 h-8 rounded-full bg-va-black text-white flex items-center justify-center">
                                     <opt.icon size={14} strokeWidth={2.5} />
                                   </div>
-                                  <span className="text-[13px] font-bold text-va-black uppercase tracking-tight">{opt.label}</span>
+                                  <span className="text-[13px] font-bold text-va-black uppercase tracking-tight">
+                                    <VoiceglotText translationKey={`common.media.${opt.id}`} defaultText={opt.label} />
+                                  </span>
                                 </div>
-                                <div className="text-[10px] font-black text-primary/40 uppercase tracking-widest bg-primary/5 px-2 py-1 rounded-md">Rechten</div>
+                                <div className="text-[10px] font-black text-primary/40 uppercase tracking-widest bg-primary/5 px-2 py-1 rounded-md">
+                                  <VoiceglotText translationKey="common.rights" defaultText="Rechten" />
+                                </div>
                               </div>
                               <div className="space-y-6">
                                 {hasRegions && (
                                   <div className="space-y-3">
-                                    <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">Regio</span>
+                                    <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
+                                      <VoiceglotText translationKey="common.region" defaultText="Regio" />
+                                    </span>
                                     <div className="flex gap-2">
                                       {regions.map(r => (
                                         <button key={r.id} onClick={() => {
@@ -1239,7 +1237,9 @@ export default function ConfiguratorPageClient({
                                           const newMedia = state.media.map(m => m === mediaId ? newId : m);
                                           updateMedia(newMedia);
                                           setTimeout(() => calculatePricing?.(), 50);
-                                        }} className={cn("flex-1 py-2 rounded-lg border text-[11px] font-bold transition-all", mediaId.includes(r.id.toLowerCase()) ? "bg-primary/10 border-primary/20 text-primary" : "bg-va-off-white/50 border-black/[0.03] text-va-black/40 hover:border-black/10")}>{r.label}</button>
+                                        }} className={cn("flex-1 py-2 rounded-lg border text-[11px] font-bold transition-all", mediaId.includes(r.id.toLowerCase()) ? "bg-primary/10 border-primary/20 text-primary" : "bg-va-off-white/50 border-black/[0.03] text-va-black/40 hover:border-black/10")}>
+                                          <VoiceglotText translationKey={`common.region.${r.id.toLowerCase()}`} defaultText={r.label} />
+                                        </button>
                                       ))}
                                     </div>
                                   </div>
@@ -1270,7 +1270,7 @@ export default function ConfiguratorPageClient({
                                           <VoiceglotText translationKey="configurator.duration" defaultText="Looptijd" />
                                         )}
                                       </span>
-                                      <span className="text-[14px] font-black text-primary">{isPodcast ? (currentYears === 0.25 ? "3 maanden" : currentYears === 0.5 ? "6 maanden" : currentYears === 0.75 ? "9 maanden" : `${currentYears} jaar`) : `${currentYears} jaar`}</span>
+                                      <span className="text-[14px] font-black text-primary">{isPodcast ? (currentYears === 0.25 ? t('common.3_months', "3 maanden") : currentYears === 0.5 ? t('common.6_months', "6 maanden") : currentYears === 0.75 ? t('common.9_months', "9 maanden") : t('common.years_count', `${currentYears} jaar`, { count: currentYears })) : t('common.years_count', `${currentYears} jaar`, { count: currentYears })}</span>
                                     </div>
                                     <div className="flex items-center gap-4">
                                       <button onClick={() => { const next = Math.max(isPodcast ? 0.25 : 1, currentYears - (isPodcast ? 0.25 : 1)); updateYearsDetail({ ...state.yearsDetail, [mediaId]: next }); setTimeout(() => calculatePricing?.(), 50); }} className="w-8 h-8 rounded-xl bg-va-off-white border border-black/5 flex items-center justify-center hover:bg-va-black hover:text-white transition-all active:scale-90"><Minus size={14} strokeWidth={2.5} /></button>
@@ -1308,7 +1308,7 @@ export default function ConfiguratorPageClient({
                   <div className="flex items-center gap-2 text-va-black/40">
                     <Clock size={12} strokeWidth={1.5} />
                     <span className="text-[11px] font-medium uppercase tracking-widest">
-                      ± {isHydrated ? estimatedTime : '0:00'} min
+                      ± {isHydrated ? estimatedTime : '0:00'} {t('common.min_short', 'min')}
                     </span>
                   </div>
                   {isAutoSaving && (
@@ -1346,7 +1346,7 @@ export default function ConfiguratorPageClient({
                     >
                       <Sparkles size={14} className={cn(showAiAssistant ? "text-primary animate-pulse" : "text-primary/40 group-hover/ai:scale-110 transition-transform")} />
                       <span className="text-[11px] font-bold uppercase tracking-widest">
-                        {showAiAssistant ? "Slimme Hulp Aan" : "Hulp bij schrijven?"}
+                        {showAiAssistant ? <VoiceglotText translationKey="configurator.ai_help_on" defaultText="Slimme Hulp Aan" /> : <VoiceglotText translationKey="configurator.ai_help_cta" defaultText="Hulp bij schrijven?" />}
                       </span>
                       {showAiAssistant && (
                         <motion.div 
@@ -1377,7 +1377,9 @@ export default function ConfiguratorPageClient({
                     <div className="w-16 h-16 rounded-2xl bg-primary text-white flex items-center justify-center shadow-xl shadow-primary/20 animate-bounce">
                       <Upload size={32} strokeWidth={2} />
                     </div>
-                    <span className="mt-4 text-[13px] font-bold uppercase tracking-widest text-primary">Laat los om script te uploaden</span>
+                    <span className="mt-4 text-[13px] font-bold uppercase tracking-widest text-primary">
+                      <VoiceglotText translationKey="configurator.drop_to_upload" defaultText="Laat los om script te uploaden" />
+                    </span>
                   </div>
                 )}
                 <div 
@@ -1420,8 +1422,12 @@ export default function ConfiguratorPageClient({
                           <Type size={28} strokeWidth={1} />
                         </div>
                         <div className="flex flex-col items-center">
-                          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-va-black/40">Begin met typen</span>
-                          <span className="text-[10px] text-va-black/20 font-medium">Gebruik de editor</span>
+                          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-va-black/40">
+                            <VoiceglotText translationKey="configurator.start_typing" defaultText="Begin met typen" />
+                          </span>
+                          <span className="text-[10px] text-va-black/20 font-medium">
+                            <VoiceglotText translationKey="configurator.use_editor" defaultText="Gebruik de editor" />
+                          </span>
                         </div>
                       </div>
                       
@@ -1441,8 +1447,12 @@ export default function ConfiguratorPageClient({
                           <Upload size={28} strokeWidth={1.5} />
                         </div>
                         <div className="flex flex-col items-center">
-                          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Of upload je tekst</span>
-                          <span className="text-[10px] text-primary/40 font-medium italic">PDF, Word of Excel</span>
+                          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                            <VoiceglotText translationKey="configurator.upload_text" defaultText="Of upload je tekst" />
+                          </span>
+                          <span className="text-[10px] text-primary/40 font-medium italic">
+                            <VoiceglotText translationKey="configurator.upload_formats" defaultText="PDF, Word of Excel" />
+                          </span>
                         </div>
                       </button>
                     </div>
@@ -1616,7 +1626,7 @@ export default function ConfiguratorPageClient({
                     >
                       <div className="flex items-center gap-4">
                         <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
-                          {(state.music.asBackground || state.music.asHoldMusic) ? <Check size={18} strokeWidth={3} /> : <Music size={18} strokeWidth={1.5} />}
+                          {(state.music.asBackground || state.music.asHoldMusic) ? <Check size={18} strokeWidth={3} /> : <MusicIcon size={18} strokeWidth={1.5} />}
                         </div>
                         <div>
                           <div className={cn("text-[13px] font-bold transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black")}>

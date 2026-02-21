@@ -78,6 +78,9 @@ export async function POST(request: NextRequest) {
               cleanTranslation.includes('Het lijkt erop dat') ||
               cleanTranslation.includes('Zou je de tekst') ||
               cleanTranslation.includes('niet compleet is') ||
+              cleanTranslation.includes('context biedt') ||
+              cleanTranslation.includes('meer informatie') ||
+              cleanTranslation.includes('langere tekst') ||
               cleanTranslation.length > 200 // Vertalingen van labels zijn zelden zo lang
             );
 

@@ -13,21 +13,21 @@ export async function POST(request: Request) {
 
     if (!name?.trim()) {
       return NextResponse.json(
-        { error: 'Naam is verplicht.' },
+        { error: 'Name is required.' },
         { status: 400 }
       );
     }
 
     if (!email?.trim()) {
       return NextResponse.json(
-        { error: 'E-mail is verplicht.' },
+        { error: 'Email is required.' },
         { status: 400 }
       );
     }
 
     if (!message?.trim()) {
       return NextResponse.json(
-        { error: 'Bericht is verplicht.' },
+        { error: 'Message is required.' },
         { status: 400 }
       );
     }
@@ -41,24 +41,24 @@ export async function POST(request: Request) {
       : `[Contact] Bericht van ${String(name).trim()}`;
 
     const textBody = [
-      `Bericht ontvangen via het contactformulier op voices.be`,
+      `Message received via contact form on voices.be`,
       ``,
-      `Van: ${String(name).trim()}`,
+      `From: ${String(name).trim()}`,
       `E-mail: ${String(email).trim()}`,
-      `Onderwerp: ${subject?.trim() || '(niet opgegeven)'}`,
+      `Subject: ${subject?.trim() || '(not specified)'}`,
       ``,
-      `--- Bericht ---`,
+      `--- Message ---`,
       String(message).trim()
     ].join('\n');
 
     const htmlBody = `
       <p style="font-family:sans-serif;font-size:15px;color:#333;">
-        Bericht ontvangen via het contactformulier.
+        Message received via contact form.
       </p>
       <p style="font-family:sans-serif;font-size:15px;color:#666;">
-        <strong>Van:</strong> ${String(name).trim()}<br>
+        <strong>From:</strong> ${String(name).trim()}<br>
         <strong>E-mail:</strong> <a href="mailto:${String(email).trim()}">${String(email).trim()}</a><br>
-        <strong>Onderwerp:</strong> ${subject?.trim() || '(niet opgegeven)'}
+        <strong>Subject:</strong> ${subject?.trim() || '(not specified)'}
       </p>
       <hr style="border:none;border-top:1px solid #ddd;margin:16px 0;">
       <p style="font-family:sans-serif;font-size:15px;color:#333;white-space:pre-wrap;">${String(message).trim().replace(/</g, '&lt;')}</p>
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Contact API error:', error);
     return NextResponse.json(
-      { error: 'De verzending is mislukt. Controleer je verbinding en probeer het opnieuw.' },
+      { error: 'Sending failed. Please check your connection and try again.' },
       { status: 500 }
     );
   }

@@ -24,7 +24,7 @@ export function LoginPageClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const { resetPassword } = useAuth();
+  const { resetPassword, t } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
@@ -36,9 +36,9 @@ export function LoginPageClient() {
   useEffect(() => {
     const errorParam = searchParams?.get('error');
     if (errorParam === 'auth-callback-failed') {
-      setError('Het inloggen via de link is mislukt. De link is mogelijk verlopen of al gebruikt. Vraag een nieuwe link aan.');
+      setError(t('auth.error.callback_failed', 'Het inloggen via de link is mislukt. De link is mogelijk verlopen of al gebruikt. Vraag een nieuwe link aan.'));
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   //  PRE-FILL EMAIL FROM COOKIE
   useEffect(() => {
@@ -85,7 +85,7 @@ export function LoginPageClient() {
     setMessage('');
 
     if (supabaseUnavailable) {
-      setError('De inlogservice is tijdelijk niet beschikbaar.');
+      setError(t('auth.error.supabase_unavailable', 'De inlogservice is tijdelijk niet beschikbaar.'));
       setIsLoading(false);
       return;
     }
@@ -104,19 +104,19 @@ export function LoginPageClient() {
         console.error('[LoginPage] API Error:', result);
         // CHRIS-PROTOCOL: Vertaal bekende fouten
         if (result.error?.includes('rate limit') || result.error?.includes('security purposes')) {
-          setError('Om veiligheidsredenen kun je pas over enkele seconden een nieuwe link aanvragen.');
+          setError(t('auth.error.rate_limit', 'Om veiligheidsredenen kun je pas over enkele seconden een nieuwe link aanvragen.'));
         } else if (result.error?.includes('Service role key')) {
-          setError('Systeemfout: Auth configuratie ontbreekt (Service role key).');
+          setError(t('auth.error.system', 'Systeemfout: Auth configuratie ontbreekt (Service role key).'));
         } else {
-          setError(`Fout: ${result.error || 'Onbekende fout'}`);
+          setError(t('auth.error.generic', `Fout: ${result.error || 'Onbekende fout'}`, { error: result.error }));
         }
       } else {
         document.cookie = `voices_remembered_email=${encodeURIComponent(email)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-        setMessage('Check je inbox! We hebben een magische inloglink gestuurd.');
+        setMessage(t('auth.login.success_message', 'Check je inbox! We hebben een magische inloglink gestuurd.'));
       }
     } catch (err) {
       console.error('[LoginPage] Custom auth failed:', err);
-      setError('Er is een fout opgetreden bij het versturen van de inloglink.');
+      setError(t('auth.error.submission', 'Er is een fout opgetreden bij het versturen van de inloglink.'));
     } finally {
       setIsLoading(false);
     }
@@ -138,7 +138,7 @@ export function LoginPageClient() {
             <VoiceglotText  translationKey="auth.login.title_prefix" defaultText="Toegang tot" />
             <br />
             <span className="text-primary italic">
-              <VoiceglotText  translationKey="auto.loginpageclient.voices.d342f8" defaultText="Voices" />
+              <VoiceglotText  translationKey="common.voices" defaultText="Voices" />
             </span>
           </HeadingInstrument>
           <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
@@ -154,11 +154,13 @@ export function LoginPageClient() {
               </ContainerInstrument>
               <ContainerInstrument className="space-y-2">
                 <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter">
-                  Check je inbox!
+                  <VoiceglotText translationKey="auth.login.success.title" defaultText="Check je inbox!" />
                 </HeadingInstrument>
                 <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
-                  We hebben een magische inloglink gestuurd naar <span className="text-va-black font-medium">{email}</span>.<br />
-                  Klik op de link in de e-mail om direct toegang te krijgen.
+                  <VoiceglotText 
+                    translationKey="auth.login.success.text" 
+                    defaultText={`${t('auth.login.success.text_prefix', "We hebben een magische inloglink gestuurd naar")} ${email}. ${t('auth.login.success.text_suffix', "Klik op de link in de e-mail om direct toegang te krijgen.")}`}
+                  />
                 </TextInstrument>
               </ContainerInstrument>
               <ButtonInstrument 
@@ -166,7 +168,7 @@ export function LoginPageClient() {
                 variant="ghost"
                 className="text-[13px] text-va-black/30 hover:text-va-black transition-colors"
               >
-                Opnieuw proberen met een ander e-mailadres
+                <VoiceglotText translationKey="auth.login.try_again_email" defaultText="Opnieuw proberen met een ander e-mailadres" />
               </ButtonInstrument>
             </ContainerInstrument>
           ) : (
@@ -179,7 +181,7 @@ export function LoginPageClient() {
               <FormInstrument onSubmit={handleSubmit} className="space-y-8">
                 {error && (
                   <ContainerInstrument className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-[15px] font-light tracking-widest rounded-r-xl animate-in fade-in slide-in-from-top-2">
-                    {error}
+                    <VoiceglotText translationKey="auth.login.error" defaultText={error} noTranslate={true} />
                   </ContainerInstrument>
                 )}
 
@@ -190,7 +192,7 @@ export function LoginPageClient() {
                   type="email"
                   name="email"
                   autoComplete="email"
-                  placeholder="E-mailadres"
+                  placeholder={t('auth.login.email_placeholder', "E-mailadres")}
                   className="w-full !py-6 !pl-16 !pr-6 !rounded-2xl bg-va-off-white/50 border-transparent focus:bg-white transition-all shadow-inner"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -209,7 +211,9 @@ export function LoginPageClient() {
                 ) : (
                   <>
                     <ContainerInstrument className="flex items-center gap-3">
-                      <span className="text-lg font-light tracking-widest uppercase">Stuur Magische Link</span>
+                      <span className="text-lg font-light tracking-widest uppercase">
+                        <VoiceglotText translationKey="auth.login.send_link" defaultText="Stuur Magische Link" />
+                      </span>
                       <ArrowRight strokeWidth={1.5} size={20} className="group-hover:translate-x-1 transition-transform" />
                     </ContainerInstrument>
                   </>
@@ -231,7 +235,7 @@ export function LoginPageClient() {
           <ContainerInstrument className="flex items-center justify-center gap-2 text-va-black">
             <Star strokeWidth={1.5} size={10} fill="currentColor" />
             <TextInstrument as="span" className="text-[11px] font-bold tracking-[0.3em] uppercase">
-              <VoiceglotText  translationKey="auth.login.footer" defaultText="Voices" />
+              <VoiceglotText  translationKey="common.voices" defaultText="Voices" />
             </TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

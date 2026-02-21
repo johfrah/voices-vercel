@@ -170,8 +170,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     const video = videoRef.current;
     const handleTimeUpdate = () => {
       const time = video.currentTime;
-      if (time > 1 && time < 4) setActiveSubtitle("Professionele voice-overs...");
-      else if (time > 4 && time < 8) setActiveSubtitle("Voor al uw projecten.");
+      if (time > 1 && time < 4) setActiveSubtitle(t('voice.video.subtitle1', "Professionele voice-overs..."));
+      else if (time > 4 && time < 8) setActiveSubtitle(t('voice.video.subtitle2', "Voor al uw projecten."));
       else setActiveSubtitle(null);
     };
 
@@ -200,9 +200,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   const cleanDemoTitle = (title: string, category?: string) => {
     if (category) {
       const cat = category.toLowerCase();
-      if (cat.includes('telephony') || cat.includes('iv')) return 'Telefonie';
-      if (cat.includes('corporate') || cat.includes('video')) return 'Corporate';
-      if (cat.includes('commercial') || cat.includes('advertentie')) return 'Commercial';
+      if (cat.includes('telephony') || cat.includes('iv')) return t('category.telephony', 'Telefonie');
+      if (cat.includes('corporate') || cat.includes('video')) return t('category.corporate', 'Corporate');
+      if (cat.includes('commercial') || cat.includes('advertentie')) return t('category.commercial', 'Commercial');
     }
 
     if (!title) return '';
@@ -429,13 +429,13 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     if (!voice) return null;
     const company = getPlaceholderValue('company_name');
     switch (state.current_sector) {
-      case 'gezondheidszorg': return `Welkom bij ${company}. Voor dringende medische hulp, bel 112. Voor een afspraak, blijf aan de lijn.`;
-      case 'bouw': return `Bedankt voor het bellen naar ${company}. Wij realiseren uw droomproject van fundering tot dak.`;
-      case 'it': return `U bent verbonden met de support desk van ${company}. Al onze consultants zijn momenteel in gesprek.`;
-      case 'juridisch': return `Welkom bij ${company}. Onze advocaten staan u graag bij met deskundig juridisch advies.`;
+      case 'gezondheidszorg': return t('sector.demo.healthcare', `Welkom bij ${company}. Voor dringende medische hulp, bel 112. Voor een afspraak, blijf aan de lijn.`, { company });
+      case 'bouw': return t('sector.demo.construction', `Bedankt voor het bellen naar ${company}. Wij realiseren uw droomproject van fundering tot dak.`, { company });
+      case 'it': return t('sector.demo.it', `U bent verbonden met de support desk van ${company}. Al onze consultants zijn momenteel in gesprek.`, { company });
+      case 'juridisch': return t('sector.demo.legal', `Welkom bij ${company}. Onze advocaten staan u graag bij met deskundig juridisch advies.`, { company });
       default: return null;
     }
-  }, [voice, state.current_sector, getPlaceholderValue]);
+  }, [voice, state.current_sector, getPlaceholderValue, t]);
 
   if (!voice || !displayPrice) {
     return null;

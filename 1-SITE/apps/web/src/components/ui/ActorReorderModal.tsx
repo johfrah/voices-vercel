@@ -99,7 +99,7 @@ const SortableActorItem = ({ actor, index }: SortableActorItemProps) => {
         <div className="flex items-center gap-4">
           <div className="text-right">
             <div className="text-[9px] font-bold text-va-black/20 uppercase tracking-widest flex items-center gap-1 justify-end">
-              <Clock size={10} /> Levering
+              <Clock size={10} /> <VoiceglotText translationKey="common.delivery" defaultText="Levering" />
             </div>
             <div className={cn(
               "text-[12px] font-bold",
@@ -111,7 +111,7 @@ const SortableActorItem = ({ actor, index }: SortableActorItemProps) => {
           
           <div className="text-right min-w-[60px]">
             <div className="text-[9px] font-bold text-va-black/20 uppercase tracking-widest flex items-center gap-1 justify-end">
-              <ShoppingBag size={10} /> Sales
+              <ShoppingBag size={10} /> <VoiceglotText translationKey="common.sales" defaultText="Sales" />
             </div>
             <div className="text-[12px] font-bold text-va-black/60">
               {actor.voice_score || 0}
@@ -120,7 +120,9 @@ const SortableActorItem = ({ actor, index }: SortableActorItemProps) => {
         </div>
 
         <div className="text-right min-w-[40px]">
-          <div className="text-[9px] font-bold text-va-black/20 uppercase tracking-widest">Positie</div>
+          <div className="text-[9px] font-bold text-va-black/20 uppercase tracking-widest">
+            <VoiceglotText translationKey="common.position" defaultText="Positie" />
+          </div>
           <div className="text-[14px] font-black text-primary">#{index + 1}</div>
         </div>
       </div>
@@ -330,7 +332,9 @@ export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialAc
             {filteredItems.length === 0 && (
               <div className="py-20 text-center opacity-20">
                 <Search size={48} className="mx-auto mb-4" />
-                <TextInstrument className="text-lg font-light">Geen stemmen gevonden voor deze zoekopdracht.</TextInstrument>
+                <TextInstrument className="text-lg font-light">
+                  <VoiceglotText translationKey="common.no_voices_found" defaultText="Geen stemmen gevonden voor deze zoekopdracht." />
+                </TextInstrument>
               </div>
             )}
           </div>
@@ -338,7 +342,7 @@ export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialAc
           {/* Footer */}
           <div className="p-8 bg-white border-t border-black/5 flex justify-between items-center shrink-0">
             <TextInstrument className="text-[11px] text-va-black/40 italic max-w-[240px]">
-              De nieuwe volgorde is direct live na het opslaan.
+              <VoiceglotText translationKey="reorder.live_note" defaultText="De nieuwe volgorde is direct live na het opslaan." />
             </TextInstrument>
             <div className="flex gap-3">
               <ButtonInstrument 
@@ -346,7 +350,7 @@ export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialAc
                 onClick={onClose}
                 className="px-6 py-3 text-[13px] font-bold tracking-widest uppercase text-va-black/40"
               >
-                Annuleren
+                <VoiceglotText translationKey="common.cancel" defaultText="Annuleren" />
               </ButtonInstrument>
               <ButtonInstrument 
                 onClick={handleSave}
@@ -354,7 +358,9 @@ export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialAc
                 className="va-btn-pro !bg-va-black !text-white px-8 py-4 flex items-center gap-2 shadow-xl hover:scale-105 transition-all"
               >
                 {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                <span className="text-[13px] font-bold tracking-widest uppercase">Volgorde Opslaan</span>
+                <span className="text-[13px] font-bold tracking-widest uppercase">
+                  <VoiceglotText translationKey="action.save_order" defaultText="Volgorde Opslaan" />
+                </span>
               </ButtonInstrument>
             </div>
           </div>

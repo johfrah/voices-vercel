@@ -9,11 +9,13 @@ import { cn } from '@/lib/utils';
 import { useState, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from "next/dynamic";
+import { useTranslation } from '@/contexts/TranslationContext';
 
 //  NUCLEAR LOADING MANDATE
 const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 
 export function PortfolioSellingClient({ products }: { products: any[] }) {
+  const { t } = useTranslation();
   return (
     <PageWrapperInstrument className="bg-va-off-white min-h-screen">
       <Suspense fallback={null}>
@@ -185,7 +187,7 @@ export function PortfolioSellingClient({ products }: { products: any[] }) {
               <ContainerInstrument className="flex-1 relative">
                 <input 
                   type="text" 
-                  placeholder="Jouw volledige naam..." 
+                  placeholder={t('portfolio_selling.instant.placeholder', "Jouw volledige naam...")} 
                   className="w-full h-16 px-8 rounded-[15px] border border-black/5 bg-white text-lg font-light focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </ContainerInstrument>
@@ -289,7 +291,7 @@ function PricingCard({ tier, price, description, features, highlighted = false }
         </TextInstrument>
         <ContainerInstrument className="flex items-baseline gap-2 mb-6">
           <span className="text-6xl font-extralight tracking-tighter">€{price}</span>
-          <span className={cn("text-sm font-light", highlighted ? "text-white/40" : "text-va-black/40")}>/ maand</span>
+          <span className={cn("text-sm font-light", highlighted ? "text-white/40" : "text-va-black/40")}>{t('common.per_month', "/ maand")}</span>
         </ContainerInstrument>
         <TextInstrument className={cn("text-base font-light leading-relaxed", highlighted ? "text-white/60" : "text-va-black/60")}>
           <VoiceglotText translationKey={`portfolio_selling.pricing.${tier.toLowerCase().replace(' ', '_')}.desc`} defaultText={description} />

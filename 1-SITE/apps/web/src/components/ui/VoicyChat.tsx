@@ -191,8 +191,8 @@ export const VoicyChatV2: React.FC = () => {
               return [...prev, {
                 id: `demo-${params.actorId}`,
                 role: 'assistant',
-                content: `Luister hier naar de demo:`,
-                media: [{ title: 'Stem Demo', type: 'audio', url: params.demoUrl }],
+                content: t('chat.demo.listen', `Luister hier naar de demo:`),
+                media: [{ title: t('chat.demo.title', 'Stem Demo'), type: 'audio', url: params.demoUrl }],
                 timestamp: new Date().toISOString()
               }];
             });
@@ -211,14 +211,14 @@ export const VoicyChatV2: React.FC = () => {
                   setMessages(prev => [...prev, {
                     id: `vat-success-${Date.now()}`,
                     role: 'assistant',
-                    content: `Ik heb het BTW-nummer voor ${data.companyName} geverifieerd en je gegevens klaargezet.`,
+                    content: t('chat.vat.success', `Ik heb het BTW-nummer voor ${data.companyName} geverifieerd en je gegevens klaargezet.`),
                     timestamp: new Date().toISOString()
                   }]);
                 } else {
                   setMessages(prev => [...prev, {
                     id: `vat-fail-${Date.now()}`,
                     role: 'assistant',
-                    content: `Ik kon het BTW-nummer ${params.vatNumber} helaas niet valideren. Kun je het nog eens controleren?`,
+                    content: t('chat.vat.fail', `Ik kon het BTW-nummer ${params.vatNumber} helaas niet valideren. Kun je het nog eens controleren?`),
                     timestamp: new Date().toISOString()
                   }]);
                 }
@@ -233,10 +233,10 @@ export const VoicyChatV2: React.FC = () => {
             const target = params.targetDuration || 30;
             const diff = estSeconds - target;
             
-            let advice = `Je script heeft ${words} woorden. Dat is ongeveer ${estSeconds} seconden aan audio. `;
-            if (Math.abs(diff) <= 5) advice += "Dit past perfect!";
-            else if (diff > 0) advice += `Dat is ${diff} seconden te lang voor je doel van ${target}s. Zal ik helpen het script in te korten?`;
-            else advice += `Dat is ${Math.abs(diff)} seconden te kort. Je kunt nog wat extra informatie toevoegen.`;
+            let advice = t('chat.script.analysis', `Je script heeft ${words} woorden. Dat is ongeveer ${estSeconds} seconden aan audio. `, { words, seconds: estSeconds });
+            if (Math.abs(diff) <= 5) advice += t('chat.script.perfect', "Dit past perfect!");
+            else if (diff > 0) advice += t('chat.script.too_long', `Dat is ${diff} seconden te lang voor je doel van ${target}s. Zal ik helpen het script in te korten?`, { seconds: diff, target });
+            else advice += t('chat.script.too_short', `Dat is ${Math.abs(diff)} seconden te kort. Je kunt nog wat extra informatie toevoegen.`, { seconds: Math.abs(diff) });
             
             setMessages(prev => [...prev, {
               id: `script-analysis-${Date.now()}`,
@@ -282,7 +282,7 @@ export const VoicyChatV2: React.FC = () => {
                 }]);
                 playSonicClick('success');
               } else {
-                throw new Error("Geen checkout URL ontvangen");
+                throw new Error(t('chat.error.no_checkout_url', "Geen checkout URL ontvangen"));
               }
             })
             .catch(err => {
@@ -291,7 +291,7 @@ export const VoicyChatV2: React.FC = () => {
               setMessages(prev => [...prev, {
                 id: `order-fail-${Date.now()}`,
                 role: 'assistant',
-                content: `Er ging iets mis bij het voorbereiden van je bestelling. Zal ik je doorverbinden met een medewerker?`,
+                content: t('chat.error.order_failed', `Er ging iets mis bij het voorbereiden van je bestelling. Zal ik je doorverbinden met een medewerker?`),
                 timestamp: new Date().toISOString()
               }]);
             });
@@ -315,7 +315,7 @@ export const VoicyChatV2: React.FC = () => {
             setMessages(prev => [...prev, {
               id: `cart-add-${Date.now()}`,
               role: 'assistant',
-              content: `Ik heb ${state.selectedActor?.first_name} toegevoegd aan je mandje. Wil je nog een stem zoeken of zal ik de checkout voorbereiden?`,
+              content: t('chat.cart.added', `Ik heb ${state.selectedActor?.first_name} toegevoegd aan je mandje. Wil je nog een stem zoeken of zal ik de checkout voorbereiden?`, { name: state.selectedActor?.first_name }),
               timestamp: new Date().toISOString()
             }]);
             
@@ -326,7 +326,7 @@ export const VoicyChatV2: React.FC = () => {
             setMessages(prev => [...prev, {
               id: `cart-fail-${Date.now()}`,
               role: 'assistant',
-              content: `Ik kon de stem niet toevoegen. Zorg dat je een stem hebt geselecteerd en de prijs is berekend.`,
+              content: t('chat.cart.fail', `Ik kon de stem niet toevoegen. Zorg dat je een stem hebt geselecteerd en de prijs is berekend.`),
               timestamp: new Date().toISOString()
             }]);
           }
@@ -565,13 +565,13 @@ export const VoicyChatV2: React.FC = () => {
           id: 'welcome',
           role: 'assistant',
           content: isPortfolioJourney 
-            ? 'Hallo! Ik ben de assistent van deze stemacteur. Hoe kan ik je helpen met je project of een prijsberekening?'
-            : 'Hallo! Ik ben Voicy, je AI-assistent. Hoe kan ik je vandaag helpen?',
+            ? t('chat.welcome.portfolio', 'Hallo! Ik ben de assistent van deze stemacteur. Hoe kan ik je helpen met je project of een prijsberekening?')
+            : t('chat.welcome.general', 'Hallo! Ik ben Voicy, je AI-assistent. Hoe kan ik je vandaag helpen?'),
           timestamp: new Date().toISOString()
         }
       ]);
     }
-  }, [messages.length, isInitialLoading, isPortfolioJourney]);
+  }, [messages.length, isInitialLoading, isPortfolioJourney, t]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -808,32 +808,32 @@ export const VoicyChatV2: React.FC = () => {
     //  Context-based chips (Journey Aware)
     if (isAgencyJourney) {
       if (state.selectedActor) {
-        chips.push({ label: `Prijs voor ${state.selectedActor.first_name}`, action: "calculate_price", icon: Info });
-        chips.push({ label: "Direct Boeken", action: "check", icon: Check });
+        chips.push({ label: t('chat.chip.price_for', `Prijs voor ${state.selectedActor.first_name}`, { name: state.selectedActor.first_name }), action: "calculate_price", icon: Info });
+        chips.push({ label: t('chat.chip.book_direct', "Direct Boeken"), action: "check", icon: Check });
       } else {
-        chips.push({ label: "Stemmen Zoeken", action: "browse_voices", icon: Search });
+        chips.push({ label: t('chat.chip.browse_voices', "Stemmen Zoeken"), action: "browse_voices", icon: Search });
       }
 
       if (state.vat_number) {
-        chips.push({ label: "Check BTW Status", action: "check_vat", icon: Shield });
+        chips.push({ label: t('chat.chip.check_vat', "Check BTW Status"), action: "check_vat", icon: Shield });
       }
 
-      chips.push({ label: "Tarieven", action: "ask_pricing", icon: ShoppingCart });
+      chips.push({ label: t('chat.chip.rates', "Tarieven"), action: "ask_pricing", icon: ShoppingCart });
     }
 
     if (isStudioJourney) {
-      chips.push({ label: "Workshop Data", action: "ask_workshop_dates", icon: Calendar });
-      chips.push({ label: "Locatie & Studio", action: "ask_location", icon: MapPin });
-      chips.push({ label: "Aan de slag", action: "ask_enrollment", icon: Zap });
+      chips.push({ label: t('chat.chip.workshop_dates', "Workshop Data"), action: "ask_workshop_dates", icon: Calendar });
+      chips.push({ label: t('chat.chip.location_studio', "Locatie & Studio"), action: "ask_location", icon: MapPin });
+      chips.push({ label: t('chat.chip.get_started', "Aan de slag"), action: "ask_enrollment", icon: Zap });
     }
 
     if (isAcademyJourney) {
-      chips.push({ label: "Cursus Aanbod", action: "browse_courses", icon: Info });
-      chips.push({ label: "Gratis Proefles", action: "start_free_lesson", icon: PlayCircle });
-      chips.push({ label: "Hoe werkt de Academy?", action: "ask_how_it_works", icon: HelpCircle });
+      chips.push({ label: t('chat.chip.course_offering', "Cursus Aanbod"), action: "browse_courses", icon: Info });
+      chips.push({ label: t('chat.chip.free_lesson', "Gratis Proefles"), action: "start_free_lesson", icon: PlayCircle });
+      chips.push({ label: t('chat.chip.how_it_works_academy', "Hoe werkt de Academy?"), action: "ask_how_it_works", icon: HelpCircle });
     }
 
-    chips.push({ label: "Hoe werkt het?", action: "ask_how_it_works", icon: HelpCircle });
+    chips.push({ label: t('chat.chip.how_it_works', "Hoe werkt het?"), action: "ask_how_it_works", icon: HelpCircle });
 
     return chips.filter(chip => !clickedChips.includes(chip.label));
   };
@@ -918,7 +918,7 @@ export const VoicyChatV2: React.FC = () => {
             <HeadingInstrument level={3} className="text-base font-light tracking-tighter">
               {activeTab === 'chat' && (
                 isJohfrah 
-                  ? <VoiceglotText translationKey="chat.title.johfrah" defaultText="Johfrah Lefebvre" />
+                  ? <VoiceglotText translationKey="chat.title.johfrah" defaultText="Johfrah Lefebvre" noTranslate={true} />
                   : <VoiceglotText translationKey="chat.title" defaultText="Voicy" />
               )}
               {activeTab === 'mail' && <VoiceglotText translationKey="chat.mail.title" defaultText="Mail ons" />}
@@ -1019,7 +1019,7 @@ export const VoicyChatV2: React.FC = () => {
                                   onClick={() => handleSend(undefined, messages[messages.length-2]?.content)}
                                   className="w-full py-2 bg-va-black text-white rounded-xl text-[15px] font-light tracking-widest hover:opacity-80 transition-all"
                                 >
-                                  <VoiceglotText translationKey="auto.voicychat.opnieuw_proberen" defaultText="OPNIEUW PROBEREN" />
+                                  <VoiceglotText translationKey="chat.action.try_again" defaultText="OPNIEUW PROBEREN" />
                                 </ButtonInstrument>
                               </ContainerInstrument>
                             ) : msg.content}
@@ -1037,7 +1037,7 @@ export const VoicyChatV2: React.FC = () => {
                                       setMessages(prev => [...prev, {
                                         id: Date.now().toString(),
                                         role: 'assistant',
-                                        content: "Ik heb Johfrah een seintje gegeven. Hij neemt de chat zo snel mogelijk van me over!",
+                                        content: t('chat.johfrah.takeover', "Ik heb Johfrah een seintje gegeven. Hij neemt de chat zo snel mogelijk van me over!"),
                                         timestamp: new Date().toISOString()
                                       }]);
                                       return;
@@ -1047,7 +1047,7 @@ export const VoicyChatV2: React.FC = () => {
                                       setMessages(prev => [...prev, {
                                         id: Date.now().toString(),
                                         role: 'assistant',
-                                        content: `Edit Mode is nu ${!isEditMode ? 'ingeschakeld' : 'uitgeschakeld'}.`,
+                                        content: t('chat.admin.edit_mode_toggled', `Edit Mode is nu ${!isEditMode ? 'ingeschakeld' : 'uitgeschakeld'}.`, { status: !isEditMode ? 'ingeschakeld' : 'uitgeschakeld' }),
                                         timestamp: new Date().toISOString()
                                       }]);
                                       return;
@@ -1107,7 +1107,7 @@ export const VoicyChatV2: React.FC = () => {
                                       return;
                                     }
 
-                                    const result = typeof action.action === 'function' ? action.action() : `Actie uitgevoerd: ${action.label}`;
+                                    const result = typeof action.action === 'function' ? action.action() : t('chat.action.executed', `Actie uitgevoerd: ${action.label}`, { label: action.label });
                                     setMessages(prev => [...prev, {
                                       id: Date.now().toString(),
                                       role: 'assistant',
@@ -1128,7 +1128,7 @@ export const VoicyChatV2: React.FC = () => {
                                 {msg.media.map((item: any, i: number) => (
                                   <ContainerInstrument plain key={i} className="bg-white/10 rounded-2xl p-3 backdrop-blur-sm">
                                     <TextInstrument className="text-[15px] font-black tracking-widest mb-2 opacity-60">
-                                      {item.title}
+                                      <VoiceglotText translationKey={`chat.media.${item.title.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.title} />
                                     </TextInstrument>
                                     {item.type === 'audio' ? (
                                       <audio controls className="w-full h-8 accent-primary">
@@ -1189,7 +1189,7 @@ export const VoicyChatV2: React.FC = () => {
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      placeholder="Typ je bericht..."
+                      placeholder={t('chat.input.placeholder', "Typ je bericht...")}
                       className="w-full bg-va-off-white border-none rounded-full py-3 md:py-4 pl-5 md:pl-6 pr-12 md:pr-14 text-[15px] font-light placeholder:text-va-black/40 focus:ring-2 focus:ring-va-black/10 transition-all"
                     />
                     <ButtonInstrument
@@ -1210,29 +1210,33 @@ export const VoicyChatV2: React.FC = () => {
                     <ContainerInstrument plain className="bg-white rounded-3xl p-6 shadow-sm space-y-4">
                       <ContainerInstrument plain className="flex justify-between items-center">
                         <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText  translationKey="common.type" defaultText="Type" /></TextInstrument>
-                        <TextInstrument className="text-[15px] font-light ">{state.usage}</TextInstrument>
+                        <TextInstrument className="text-[15px] font-light ">
+                          <VoiceglotText translationKey={`common.usage.${state.usage}`} defaultText={state.usage} />
+                        </TextInstrument>
                       </ContainerInstrument>
                       <ContainerInstrument plain className="flex justify-between items-center">
-                        <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText  translationKey="auto.voicychat.woorden.721081" defaultText="Woorden" /></TextInstrument>
+                        <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText  translationKey="common.words" defaultText="Woorden" /></TextInstrument>
                         <TextInstrument className="text-[15px] font-light">{state.briefing.split(/\s+/).filter(Boolean).length}</TextInstrument>
                       </ContainerInstrument>
                       <ContainerInstrument plain className="pt-4 border-t border-black/5 flex justify-between items-center">
-                        <TextInstrument className="text-[15px] font-light tracking-widest text-primary"><VoiceglotText  translationKey="auto.voicychat.totaal.e28895" defaultText="Totaal" /></TextInstrument>
-                        <TextInstrument className="text-lg font-light text-primary"> {state.pricing.total.toFixed(2)}</TextInstrument>
+                        <TextInstrument className="text-[15px] font-light tracking-widest text-primary"><VoiceglotText  translationKey="common.total" defaultText="Totaal" /></TextInstrument>
+                        <TextInstrument className="text-lg font-light text-primary">€ {state.pricing.total.toFixed(2)}</TextInstrument>
                       </ContainerInstrument>
                     </ContainerInstrument>
                   </ContainerInstrument>
 
                   {state.selectedActor && (
                     <ContainerInstrument plain>
-                      <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/30 mb-6"><VoiceglotText  translationKey="auto.voicychat.geselecteerde_stem.4b43a4" defaultText="Geselecteerde Stem" /></HeadingInstrument>
+                      <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/30 mb-6"><VoiceglotText  translationKey="common.selected_voice" defaultText="Geselecteerde Stem" /></HeadingInstrument>
                       <ContainerInstrument plain className="bg-white rounded-3xl p-6 shadow-sm flex items-center gap-4">
                         <ContainerInstrument plain className="w-12 h-12 rounded-full bg-va-black/5 flex items-center justify-center font-light text-va-black">
                           {state.selectedActor.first_name[0]}
                         </ContainerInstrument>
                         <ContainerInstrument plain>
                           <TextInstrument className="text-[15px] font-light">{state.selectedActor.first_name}</TextInstrument>
-                          <TextInstrument className="text-[15px] font-light opacity-40">{state.selectedActor.native_lang}</TextInstrument>
+                          <TextInstrument className="text-[15px] font-light opacity-40">
+                            <VoiceglotText translationKey={`common.language.${state.selectedActor.native_lang}`} defaultText={state.selectedActor.native_lang} noTranslate={true} />
+                          </TextInstrument>
                         </ContainerInstrument>
                       </ContainerInstrument>
                     </ContainerInstrument>
@@ -1305,7 +1309,7 @@ export const VoicyChatV2: React.FC = () => {
                           required
                           value={mailForm.email}
                           onChange={(e) => setMailForm(prev => ({ ...prev, email: e.target.value }))}
-                          placeholder="naam@bedrijf.be"
+                          placeholder={t('chat.mail.placeholder.email', "naam@bedrijf.be")}
                           className="w-full bg-va-off-white border-none rounded-xl py-3 pl-12 pr-5 text-[14px] font-light focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/60"
                         />
                       </ContainerInstrument>
@@ -1317,7 +1321,7 @@ export const VoicyChatV2: React.FC = () => {
                           required
                           value={mailForm.message}
                           onChange={(e) => setMailForm(prev => ({ ...prev, message: e.target.value }))}
-                          placeholder="Hoe kunnen we je helpen?"
+                          placeholder={t('chat.mail.placeholder.message', "Hoe kunnen we je helpen?")}
                           className="w-full bg-va-off-white border-none rounded-xl py-3 pl-12 pr-5 text-[14px] font-light min-h-[100px] focus:ring-2 focus:ring-va-black/10 transition-all resize-none outline-none placeholder:text-va-black/60"
                         />
                       </ContainerInstrument>
@@ -1327,7 +1331,9 @@ export const VoicyChatV2: React.FC = () => {
                         className="w-full py-4 bg-va-black text-white rounded-xl text-[14px] font-medium tracking-widest hover:opacity-80 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
                       >
                         {isSendingMail ? <Loader2 className="animate-spin" size={16} /> : <Send strokeWidth={1.5} size={14} />}
-                        <TextInstrument className="font-black tracking-widest text-[14px] uppercase">BERICHT VERSTUREN</TextInstrument>
+                        <TextInstrument className="font-black tracking-widest text-[14px] uppercase">
+                          <VoiceglotText translationKey="chat.mail.send_button" defaultText="BERICHT VERSTUREN" />
+                        </TextInstrument>
                       </ButtonInstrument>
                     </FormInstrument>
 
@@ -1409,7 +1415,7 @@ export const VoicyChatV2: React.FC = () => {
                               const next = generalSettings?.phone_hours ? getNextOpeningTime(generalSettings.phone_hours) : null;
                               return next ? (
                                 <span className="block mt-1 font-medium text-primary text-[12px]">
-                                  Terug vanaf {next.day} {next.time}
+                                  <VoiceglotText translationKey="chat.phone.back_at" defaultText={`Terug vanaf ${next.day} ${next.time}`} noTranslate={true} />
                                 </span>
                               ) : null;
                             })()}
@@ -1426,14 +1432,14 @@ export const VoicyChatV2: React.FC = () => {
                           </div>
                           <InputInstrument 
                             type="tel"
-                            placeholder="0475 00 00 00"
+                            placeholder={t('chat.phone.placeholder', "0475 00 00 00")}
                             className="w-full bg-va-off-white border-none rounded-xl py-3 pl-12 pr-5 text-[14px] font-light focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/60"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                           />
                           {callError && (
                             <TextInstrument className="text-red-500 text-[11px] mt-1 text-center">
-                              {callError}
+                              <VoiceglotText translationKey="chat.phone.error" defaultText={callError} noTranslate={true} />
                             </TextInstrument>
                           )}
                         </ContainerInstrument>
@@ -1452,14 +1458,20 @@ export const VoicyChatV2: React.FC = () => {
                             ) : (
                               <Zap size={14} className="text-primary animate-pulse" />
                             )}
-                            <TextInstrument className="font-black tracking-widest text-[14px] uppercase">BEL MIJ NU</TextInstrument>
+                            <TextInstrument className="font-black tracking-widest text-[14px] uppercase">
+                              <VoiceglotText translationKey="chat.phone.call_me_now" defaultText="BEL MIJ NU" />
+                            </TextInstrument>
                           </div>
-                          <TextInstrument className="text-[9px] opacity-60 font-light tracking-widest uppercase">Je telefoon gaat direct over</TextInstrument>
+                          <TextInstrument className="text-[9px] opacity-60 font-light tracking-widest uppercase">
+                            <VoiceglotText translationKey="chat.phone.call_me_now_desc" defaultText="Je telefoon gaat direct over" />
+                          </TextInstrument>
                         </ButtonInstrument>
 
                         <div className="flex items-center gap-3 py-1">
                           <div className="flex-1 h-px bg-black/5" />
-                          <TextInstrument className="text-[10px] text-va-black/20 tracking-widest uppercase">of</TextInstrument>
+                          <TextInstrument className="text-[10px] text-va-black/20 tracking-widest uppercase">
+                            <VoiceglotText translationKey="common.or" defaultText="of" />
+                          </TextInstrument>
                           <div className="flex-1 h-px bg-black/5" />
                         </div>
 

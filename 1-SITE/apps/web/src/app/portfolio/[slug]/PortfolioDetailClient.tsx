@@ -72,10 +72,10 @@ export function PortfolioDetailClient({ actor }: { actor: any }) {
 
   const data = useMemo(() => {
     return {
-      name: actor?.display_name || "Voice Actor",
-      title: actor?.tagline || "Professional Voice-over",
+      name: actor?.display_name || t('common.job_title.voice_actor', "Voice Actor"),
+      title: actor?.tagline || t('common.job_title.pro_voice_over', "Professional Voice-over"),
       image: actor?.photo_url || "/assets/common/branding/placeholder-actor.jpg",
-      extended_bio: actor?.bio || "Professional voice-over artist.",
+      extended_bio: actor?.bio || t('common.job_title.pro_voice_over_desc', "Professional voice-over artist."),
       reporter_videos: actor?.actor_videos && actor.actor_videos.length > 0
         ? actor.actor_videos.filter((v: any) => (v.type === 'reporter' || v.type === 'host') && v.status !== 'rejected').slice(0, 2).map((v: any) => ({ id: v.url, title: v.name, status: v.status }))
         : [],
@@ -145,10 +145,10 @@ export function PortfolioDetailClient({ actor }: { actor: any }) {
 
   const config = pricingConfig || { basePrice: 0, videoBasePrice: 0 };
   const dynamicRates = useMemo(() => [
-    { label: "Online Media", price: actor?.rates?.GLOBAL?.online || (config.videoBasePrice / 100), desc: "Social media, YouTube, Web" },
-    { label: "E-learning", price: actor?.rates?.GLOBAL?.e_learning || (config.videoBasePrice / 100), desc: "Per module" },
-    { label: "Commercial", price: actor?.rates?.GLOBAL?.radio_national || (config.basePrice / 100), desc: "Radio / TV Nationaal" }
-  ], [actor, config]);
+    { label: t('common.media.online', "Online Media"), price: actor?.rates?.GLOBAL?.online || (config.videoBasePrice / 100), desc: t('common.media.online_desc', "Social media, YouTube, Web") },
+    { label: t('common.media.elearning', "E-learning"), price: actor?.rates?.GLOBAL?.e_learning || (config.videoBasePrice / 100), desc: t('common.media.elearning_desc', "Per module") },
+    { label: t('common.media.commercial', "Commercial"), price: actor?.rates?.GLOBAL?.radio_national || (config.basePrice / 100), desc: t('common.media.commercial_desc', "Radio / TV Nationaal") }
+  ], [actor, config, t]);
 
   if (loading) return <JohfrahPortfolioSkeleton />;
 
@@ -169,7 +169,7 @@ export function PortfolioDetailClient({ actor }: { actor: any }) {
             <ButtonInstrument 
               onClick={() => openEditModal(actor, handleActorUpdate)}
               className="va-btn-pro !rounded-full w-14 h-14 flex items-center justify-center shadow-aura-lg group"
-              title="Edit Profile"
+              title={t('action.edit_profile', "Edit Profile")}
             >
               <Settings size={20} className="group-hover:rotate-90 transition-transform duration-500" />
             </ButtonInstrument>
@@ -179,7 +179,7 @@ export function PortfolioDetailClient({ actor }: { actor: any }) {
                 "!rounded-full w-14 h-14 flex items-center justify-center shadow-aura-lg transition-all duration-500",
                 isEditMode ? "bg-primary text-white" : "bg-white text-va-black/40 hover:text-primary"
               )}
-              title={isEditMode ? "Exit Edit Mode" : "Quick Edit Mode"}
+              title={isEditMode ? t('action.exit_edit_mode', "Exit Edit Mode") : t('action.quick_edit_mode', "Quick Edit Mode")}
             >
               <Zap size={20} fill={isEditMode ? "currentColor" : "none"} />
             </ButtonInstrument>
@@ -397,7 +397,7 @@ export function PortfolioDetailClient({ actor }: { actor: any }) {
                       <ContainerInstrument key={idx} className="group relative aspect-video rounded-[15px] overflow-hidden shadow-aura-sm border border-black/5 bg-va-off-white transition-all duration-700 hover:shadow-aura-lg hover:-translate-y-1">
                         {video.status === 'pending' && (
                           <ContainerInstrument className="absolute top-2 right-2 z-20 px-2 py-1 bg-amber-500/90 backdrop-blur-md rounded text-[8px] font-light text-white tracking-[0.2em] uppercase flex items-center gap-1">
-                            <Clock size={8} /> In review
+                            <Clock size={8} /> <VoiceglotText translationKey="common.status.in_review" defaultText="In review" />
                           </ContainerInstrument>
                         )}
                         <Suspense fallback={<ContainerInstrument className="w-full h-full bg-va-black/5 animate-pulse rounded-[15px]" />}>
@@ -437,7 +437,7 @@ export function PortfolioDetailClient({ actor }: { actor: any }) {
                 >
                   {demo.status === 'pending' && (
                     <ContainerInstrument className="absolute top-4 right-4 px-2 py-1 bg-amber-500/10 border border-amber-500/20 rounded text-[9px] font-light text-amber-600 tracking-[0.2em] uppercase flex items-center gap-1.5">
-                      <Clock size={10} /> In review
+                      <Clock size={10} /> <VoiceglotText translationKey="common.status.in_review" defaultText="In review" />
                     </ContainerInstrument>
                   )}
                   <ContainerInstrument>
@@ -509,9 +509,9 @@ export function PortfolioDetailClient({ actor }: { actor: any }) {
               
               <ContainerInstrument className="space-y-6">
                 {[
-                  { title: "Snelle Levering", desc: "Meestal binnen 24 uur in je mailbox.", icon: Clock },
-                  { title: "Professionele Studio", desc: "Opnames met high-end apparatuur.", icon: Mic },
-                  { title: "Inclusief Retakes", desc: "Kleine aanpassingen in tone-of-voice zijn gratis.", icon: MessageSquare }
+                  { title: t('portfolio.faq.delivery.title', "Snelle Levering"), desc: t('portfolio.faq.delivery.desc', "Meestal binnen 24 uur in je mailbox."), icon: Clock },
+                  { title: t('portfolio.faq.studio.title', "Professionele Studio"), desc: t('portfolio.faq.studio.desc', "Opnames met high-end apparatuur."), icon: Mic },
+                  { title: t('portfolio.faq.retakes.title', "Inclusief Retakes"), desc: t('portfolio.faq.retakes.desc', "Kleine aanpassingen in tone-of-voice zijn gratis."), icon: MessageSquare }
                 ].map((item, i) => (
                   <ContainerInstrument key={i} className="flex gap-4">
                     <ContainerInstrument className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary shrink-0 border border-white/10">
@@ -529,13 +529,13 @@ export function PortfolioDetailClient({ actor }: { actor: any }) {
             <ContainerInstrument className="bg-white/5 backdrop-blur-xl rounded-[40px] p-12 border border-white/10 shadow-2xl">
               <ContainerInstrument className="space-y-8">
                 <ContainerInstrument className="inline-flex items-center gap-2 px-3 py-1 bg-primary/20 rounded-full text-primary text-[10px] font-light tracking-[0.2em] uppercase">
-                  Faq
+                  <VoiceglotText translationKey="common.faq" defaultText="Faq" />
                 </ContainerInstrument>
                 <ContainerInstrument className="space-y-8">
                   {[
-                    { q: "Hoe snel heb ik mijn audio?", a: "Standaard binnen 24 uur." },
-                    { q: "Wat is een buyout?", a: "Een vergoeding voor het gebruiksrecht." },
-                    { q: "Zijn retakes inbegrepen?", a: "Zeker. Kleine aanpassingen zijn kosteloos." }
+                    { q: t('portfolio.faq.q1', "Hoe snel heb ik mijn audio?"), a: t('portfolio.faq.a1', "Standaard binnen 24 uur.") },
+                    { q: t('portfolio.faq.q2', "Wat is een buyout?"), a: t('portfolio.faq.a2', "Een vergoeding voor het gebruiksrecht.") },
+                    { q: t('portfolio.faq.q3', "Zijn retakes inbegrepen?"), a: t('portfolio.faq.a3', "Zeker. Kleine aanpassingen zijn kosteloos.") }
                   ].map((faq, i) => (
                     <ContainerInstrument key={i} className="space-y-2">
                       <TextInstrument className="text-[15px] font-light text-primary">{faq.q}</TextInstrument>
@@ -544,7 +544,7 @@ export function PortfolioDetailClient({ actor }: { actor: any }) {
                   ))}
                 </ContainerInstrument>
                 <ButtonInstrument as="a" href={getPortfolioHref('/tarieven')} variant="ghost" className="w-full text-white/40 hover:text-primary transition-colors text-[11px] font-light tracking-[0.2em] uppercase">
-                  Bekijk alle tarieven & details
+                  <VoiceglotText translationKey="portfolio.cta.view_rates" defaultText="Bekijk alle tarieven & details" />
                 </ButtonInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
@@ -570,7 +570,7 @@ export function PortfolioDetailClient({ actor }: { actor: any }) {
             </ButtonInstrument>
             {data.tier_config.showContactDetails ? (
               <a href={`tel:${actor.phone || '+32475123456'}`} className="text-va-black/40 hover:text-primary transition-colors font-light tracking-[0.2em] uppercase text-[13px]">
-                <VoiceglotText translationKey="portfolio.cta.call_direct" defaultText={`Bel direct: ${actor.phone || '+32 475 12 34 56'}`} />
+                {t('portfolio.cta.call_direct_prefix', "Bel direct:")} {actor.phone || '+32 475 12 34 56'}
               </a>
             ) : (
               <TextInstrument className="text-va-black/20 font-light tracking-[0.2em] uppercase text-[11px]">

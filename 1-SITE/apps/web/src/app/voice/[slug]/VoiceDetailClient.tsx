@@ -142,14 +142,14 @@ export function VoiceDetailClient({
               "name": actor.display_name,
               "description": actor.bio || actor.description,
               "image": actor.photo_url || undefined,
-              "jobTitle": "Voice-over Artist",
+              "jobTitle": t('common.job_title.voice_actor', "Voice-over Artist"),
               "gender": actor.gender,
               "url": `https://www.voices.be/voice/${actor.slug}`,
               "mainEntityOfPage": {
                 "@type": "WebPage",
                 "@id": `https://www.voices.be/voice/${actor.slug}`
               },
-              "knowsAbout": actor.languages?.map((l: any) => l.name) || actor.native_lang ? [actor.native_lang] : ["Nederlands"],
+              "knowsAbout": actor.languages?.map((l: any) => l.name) || actor.native_lang ? [actor.native_lang] : [t('common.language.dutch', "Nederlands")],
               "memberOf": {
                 "@type": "Organization",
                 "name": "Voices",

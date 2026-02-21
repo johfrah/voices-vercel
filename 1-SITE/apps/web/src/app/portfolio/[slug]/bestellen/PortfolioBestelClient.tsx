@@ -12,12 +12,14 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 //  NUCLEAR LOADING MANDATE
 const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 
 export function PortfolioBestelClient({ actor }: { actor: any }) {
   const { state, setStep, selectActor } = useCheckout();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export function PortfolioBestelClient({ actor }: { actor: any }) {
                   <Zap size={24} fill="currentColor" />
                 </ContainerInstrument>
                 <HeadingInstrument level={1} className="text-4xl md:text-5xl font-extralight tracking-tighter text-va-black">
-                  <VoiceglotText translationKey="portfolio.bestellen.title" defaultText="Start je project" /> <span className="text-primary/30 italic">met {actor.display_name}</span>
+                  <VoiceglotText translationKey="portfolio.bestellen.title" defaultText="Start je project" /> <span className="text-primary/30 italic">{t('common.with', "met")} {actor.display_name}</span>
                 </HeadingInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

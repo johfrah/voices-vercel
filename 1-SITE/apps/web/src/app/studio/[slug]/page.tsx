@@ -212,6 +212,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function WorkshopDetailPage({ params }: { params: { slug: string } }) {
   console.log(" WorkshopDetailPage slug:", params.slug);
+  const t = (key: string, def: string) => def; // Fallback for server component
   const workshop = await StudioDataBridge.getWorkshopBySlug(params.slug);
   console.log(" Workshop found:", workshop ? workshop.title : "null");
   const faqs = await getFaqs('studio');
@@ -293,8 +294,8 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
           <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-8">
             <AudioRecorderInstrument 
               mode="practice"
-              title="Test je stem"
-              subtitle="Benieuwd hoe je klinkt? Neem een fragment op en bereid je voor op de workshop."
+              title={t('studio.practice.title', "Test je stem")}
+              subtitle={t('studio.practice.subtitle', "Benieuwd hoe je klinkt? Neem een fragment op en bereid je voor op de workshop.")}
               className="shadow-aura-lg border-none"
             />
             <BentoCard span="full" className="bg-primary/5 border-primary/10 p-8 rounded-[24px]">
@@ -338,8 +339,8 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
           <ContainerInstrument className="max-w-[1140px]">
             <ReviewsInstrument 
               reviews={workshop.reviews} 
-              title={`Ervaringen met deze Workshop`}
-              subtitle={`Lees wat deelnemers zeggen over hun dag in de studio.`}
+              title={t('studio.reviews.title', `Ervaringen met deze Workshop`)}
+              subtitle={t('studio.reviews.subtitle', `Lees wat deelnemers zeggen over hun dag in de studio.`)}
               translationKeyPrefix={`workshop.${workshop.id}.reviews`}
             />
           </ContainerInstrument>

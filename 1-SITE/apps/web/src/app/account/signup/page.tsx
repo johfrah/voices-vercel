@@ -26,11 +26,10 @@ export default function ActorSignupPage() {
             <VoiceglotText translationKey="signup.badge" defaultText="Join the Agency" />
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-7xl font-light tracking-tighter leading-[0.9]">
-            Word een <TextInstrument as="span" className="text-primary font-light italic">Voices</TextInstrument> Stem
+            <VoiceglotText translationKey="signup.title" defaultText="Word een Voices Stem" />
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 text-lg max-w-2xl mx-auto">
-            Sluit je aan bij het meest exclusieve voice-over netwerk van de Benelux. 
-            In drie stappen staat je profiel klaar voor review.
+            <VoiceglotText translationKey="signup.subtitle" defaultText="Sluit je aan bij het meest exclusieve voice-over netwerk van de Benelux. In drie stappen staat je profiel klaar voor review." />
           </TextInstrument>
         </ContainerInstrument>
 
@@ -38,7 +37,7 @@ export default function ActorSignupPage() {
 
         <ContainerInstrument className="text-center pt-8">
           <TextInstrument className="text-va-black/20 text-[13px] font-light italic">
-            Door je aan te melden ga je akkoord met onze algemene voorwaarden voor stemacteurs.
+            <VoiceglotText translationKey="signup.terms_agreement" defaultText="Door je aan te melden ga je akkoord met onze algemene voorwaarden voor stemacteurs." />
           </TextInstrument>
         </ContainerInstrument>
       </SectionInstrument>

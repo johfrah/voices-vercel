@@ -215,50 +215,50 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
     switch (journey) {
       case 'telephony':
         return {
-          titlePart1: "Maak jouw",
-          titleHighlight: "telefooncentrale",
-          titlePart2: "menselijk.",
-          subtitle: "Van welkomstboodschap tot wachtmuziek. Professionele stemmen die jouw klanten direct vertrouwen geven.",
+          titlePart1: t('home.hero.telephony.title_part1', "Maak jouw"),
+          titleHighlight: t('home.hero.telephony.title_highlight', "telefooncentrale"),
+          titlePart2: t('home.hero.telephony.title_part2', "menselijk."),
+          subtitle: t('home.hero.telephony.subtitle', "Van welkomstboodschap tot wachtmuziek. Professionele stemmen die jouw klanten direct vertrouwen geven."),
           usps: [
-            { key: 'telephony.warm', text: 'menselijke begroeting', icon: 'mic' },
-            { key: 'telephony.mix', text: 'inclusief muziek-mix', icon: 'music' },
-            { key: 'telephony.speed', text: '90% binnen 24 uur klaar', icon: 'zap' }
+            { key: 'telephony.warm', text: t('home.usp.telephony.warm', 'menselijke begroeting'), icon: 'mic' },
+            { key: 'telephony.mix', text: t('home.usp.telephony.mix', 'inclusief muziek-mix'), icon: 'music' },
+            { key: 'telephony.speed', text: t('home.usp.telephony.speed', '90% binnen 24 uur klaar'), icon: 'zap' }
           ]
         };
       case 'video':
         return {
-          titlePart1: "Geef jouw",
-          titleHighlight: "video",
-          titlePart2: "een eigen stem.",
-          subtitle: "Bedrijfsfilms, explanimations of documentaires. Vind de perfecte match voor jouw visuele verhaal.",
+          titlePart1: t('home.hero.video.title_part1', "Geef jouw"),
+          titleHighlight: t('home.hero.video.title_highlight', "video"),
+          titlePart2: t('home.hero.video.title_part2', "een eigen stem."),
+          subtitle: t('home.hero.video.subtitle', "Bedrijfsfilms, explanimations of documentaires. Vind de perfecte match voor jouw visuele verhaal."),
           usps: [
-            { key: 'video.timing', text: 'perfecte timing & flow', icon: 'clock' },
-            { key: 'video.guarantee', text: 'foutloze opname-garantie', icon: 'check' },
-            { key: 'video.quality', text: 'technisch perfect (48kHz)', icon: 'shield' }
+            { key: 'video.timing', text: t('home.usp.video.timing', 'perfecte timing & flow'), icon: 'clock' },
+            { key: 'video.guarantee', text: t('home.usp.video.guarantee', 'foutloze opname-garantie'), icon: 'check' },
+            { key: 'video.quality', text: t('home.usp.video.quality', 'technisch perfect (48kHz)'), icon: 'shield' }
           ]
         };
       case 'commercial':
         return {
-          titlePart1: "Scoor met",
-          titleHighlight: "high-end",
-          titlePart2: "commercials.",
-          subtitle: "Radio, TV of Online. Stemmen met autoriteit die jouw merkwaarde en conversie direct verhogen.",
+          titlePart1: t('home.hero.commercial.title_part1', "Scoor met"),
+          titleHighlight: t('home.hero.commercial.title_highlight', "high-end"),
+          titlePart2: t('home.hero.commercial.title_part2', "commercials."),
+          subtitle: t('home.hero.commercial.subtitle', "Radio, TV of Online. Stemmen met autoriteit die jouw merkwaarde en conversie direct verhogen."),
           usps: [
-            { key: 'commercial.buyout', text: 'directe buy-out calculatie', icon: 'pricing' },
-            { key: 'commercial.authority', text: 'stemmen met autoriteit', icon: 'megaphone' },
-            { key: 'commercial.master', text: 'broadcast-ready master', icon: 'zap' }
+            { key: 'commercial.buyout', text: t('home.usp.commercial.buyout', 'directe buy-out calculatie'), icon: 'pricing' },
+            { key: 'commercial.authority', text: t('home.usp.commercial.authority', 'stemmen met autoriteit'), icon: 'megaphone' },
+            { key: 'commercial.master', text: t('home.usp.commercial.master', 'broadcast-ready master'), icon: 'zap' }
           ]
         };
       default:
         return {
-          titlePart1: "Vind de",
-          titleHighlight: "stem",
-          titlePart2: "voor jouw verhaal.",
-          subtitle: "Snel, simpel en technisch perfect. Wij selecteren de beste stemmen zodat jij dat niet hoeft te doen.",
+          titlePart1: t('home.hero.default.title_part1', "Vind de"),
+          titleHighlight: t('home.hero.default.title_highlight', "stem"),
+          titlePart2: t('home.hero.default.title_part2', "voor jouw verhaal."),
+          subtitle: t('home.hero.default.subtitle', "Snel, simpel en technisch perfect. Wij selecteren de beste stemmen zodat jij dat niet hoeft te doen."),
           usps: [
-            { key: 'home.usp.speed', text: '90% binnen 24 uur klaar', icon: 'zap' },
-            { key: 'home.usp.quality', text: 'top-selectie van vakmensen', icon: 'shield' },
-            { key: 'home.usp.retake', text: 'foutloze opname-garantie', icon: 'check' }
+            { key: 'home.usp.speed', text: t('home.usp.default.speed', '90% binnen 24 uur klaar'), icon: 'zap' },
+            { key: 'home.usp.quality', text: t('home.usp.default.quality', 'top-selectie van vakmensen'), icon: 'shield' },
+            { key: 'home.usp.retake', text: t('home.usp.default.retake', 'foutloze opname-garantie'), icon: 'check' }
           ]
         };
     }

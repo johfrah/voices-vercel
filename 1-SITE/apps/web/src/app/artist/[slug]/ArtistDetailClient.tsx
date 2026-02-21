@@ -11,6 +11,7 @@ import {
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { useTranslation } from "@/contexts/TranslationContext";
 import { Heart, Instagram, Music, Play, Youtube, ShieldCheck, Loader2, Clock, Lock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,6 +25,7 @@ const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground"
 const VideoPlayer = dynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
 
 export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] }: { artistData: any, isYoussef: boolean, params: { slug: string }, donors?: any[] }) {
+  const { t } = useTranslation();
   const [isDonationOpen, setIsDonationOpen] = useState(false);
   const [donationAmount, setDonationAmount] = useState(25);
 
@@ -456,26 +458,32 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
               {/* MANIFESTO (The Why, How, What) */}
               <div className="bg-[#FFC421]/5 p-10 rounded-[32px] border border-[#FFC421]/10 relative overflow-hidden backdrop-blur-md">
                 <HeadingInstrument level={3} className="text-[11px] font-black uppercase tracking-[0.2em] text-[#FFC421] mb-8">
-                  Label Manifesto
+                  <VoiceglotText translationKey="artist.manifesto.title" defaultText="Label Manifesto" />
                 </HeadingInstrument>
                 
                 <div className="space-y-8">
                   <div>
-                    <HeadingInstrument level={4} className="text-lg font-black uppercase tracking-tight text-white mb-2">Why</HeadingInstrument>
+                    <HeadingInstrument level={4} className="text-lg font-black uppercase tracking-tight text-white mb-2">
+                      <VoiceglotText translationKey="artist.manifesto.why.title" defaultText="Why" />
+                    </HeadingInstrument>
                     <TextInstrument className="text-white/50 text-[14px] leading-relaxed">
                       {manifesto?.why || "We believe a real voice can move people. Voices that connect, not impress. That’s where music becomes meaningful. We believe the most moving music comes from honesty."}
                     </TextInstrument>
                   </div>
                   <div>
-                    <HeadingInstrument level={4} className="text-lg font-black uppercase tracking-tight text-white mb-2">How</HeadingInstrument>
+                    <HeadingInstrument level={4} className="text-lg font-black uppercase tracking-tight text-white mb-2">
+                      <VoiceglotText translationKey="artist.manifesto.how.title" defaultText="How" />
+                    </HeadingInstrument>
                     <TextInstrument className="text-white/50 text-[14px] leading-relaxed">
                       {manifesto?.how || "By working with singers who dare to be themselves. By honoring authenticity, emotion and ownership. By creating a space of care and respect for the human voice."}
                     </TextInstrument>
                   </div>
                   <div>
-                    <HeadingInstrument level={4} className="text-lg font-black uppercase tracking-tight text-white mb-2">What</HeadingInstrument>
+                    <HeadingInstrument level={4} className="text-lg font-black uppercase tracking-tight text-white mb-2">
+                      <VoiceglotText translationKey="artist.manifesto.what.title" defaultText="What" />
+                    </HeadingInstrument>
                     <TextInstrument className="text-white/50 text-[14px] leading-relaxed">
-                      {manifesto?.what || "<strong>VOICES / Artists</strong> is a label for real voices and authentic singers. An independent label supporting and presenting voices from Belgium to their audience."}
+                      <div dangerouslySetInnerHTML={{ __html: manifesto?.what || "<strong>VOICES / Artists</strong> is a label for real voices and authentic singers. An independent label supporting and presenting voices from Belgium to their audience." }} />
                     </TextInstrument>
                   </div>
                 </div>

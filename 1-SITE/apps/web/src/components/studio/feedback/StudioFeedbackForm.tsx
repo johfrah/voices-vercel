@@ -26,9 +26,11 @@ const RATINGS = [
 const OPTIONS = ["Uitstekend", "Goed", "Voldoende", "Onvoldoende"];
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 export const StudioFeedbackForm = () => {
   const { playClick } = useSonicDNA();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSent, setIsSent] = useState(false);
@@ -45,6 +47,21 @@ export const StudioFeedbackForm = () => {
     text_improvement: '',
     text_recommendation: ''
   });
+
+  const RATINGS = [
+    { id: 'relevance', label: t('studio.feedback.rating.relevance', 'Relevantie van de inhoud') },
+    { id: 'balance', label: t('studio.feedback.rating.balance', 'Balans theorie/praktijk') },
+    { id: 'knowledge', label: t('studio.feedback.rating.knowledge', 'Kennis workshopgever') },
+    { id: 'support', label: t('studio.feedback.rating.support', 'Ondersteuning & vragen') },
+    { id: 'organization', label: t('studio.feedback.rating.organization', 'Organisatie & communicatie') }
+  ];
+
+  const OPTIONS = [
+    t('common.rating.excellent', "Uitstekend"), 
+    t('common.rating.good', "Goed"), 
+    t('common.rating.sufficient', "Voldoende"), 
+    t('common.rating.insufficient', "Onvoldoende")
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,13 +96,16 @@ export const StudioFeedbackForm = () => {
           <CheckCircle2 size={48} strokeWidth={1.5} />
         </ContainerInstrument>
         <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter">
-          Bedankt voor je feedback!
+          <VoiceglotText translationKey="studio.feedback.success.title" defaultText="Bedankt voor je feedback!" />
         </HeadingInstrument>
         <TextInstrument className="text-va-black/40 max-w-md mx-auto font-light">
-          Jouw inzichten helpen ons (en Bernadette) om de Voices Experience continu te verbeteren.
+          <VoiceglotText 
+            translationKey="studio.feedback.success.text" 
+            defaultText="Jouw inzichten helpen ons (en Bernadette) om de Voices Experience continu te verbeteren." 
+          />
         </TextInstrument>
         <ButtonInstrument onClick={() => window.location.href = '/studio'} className="va-btn-pro">
-          Terug naar de Studio
+          <VoiceglotText translationKey="studio.feedback.back_to_studio" defaultText="Terug naar de Studio" />
         </ButtonInstrument>
       </ContainerInstrument>
     );
@@ -95,10 +115,12 @@ export const StudioFeedbackForm = () => {
     <form onSubmit={handleSubmit} className="space-y-12 max-w-3xl mx-auto">
       {/* Workshop Select */}
       <SectionInstrument className="space-y-4">
-        <LabelInstrument className="text-xl text-va-black">Welke workshop heb je gevolgd?</LabelInstrument>
+        <LabelInstrument className="text-xl text-va-black">
+          <VoiceglotText translationKey="studio.feedback.which_workshop" defaultText="Welke workshop heb je gevolgd?" />
+        </LabelInstrument>
         <InputInstrument 
           required
-          placeholder="Naam van de workshop..."
+          placeholder={t('studio.feedback.workshop_placeholder', "Naam van de workshop...")}
           value={formData.workshop_name}
           onChange={e => setFormData({...formData, workshop_name: e.target.value})}
           className="w-full text-lg"
@@ -108,7 +130,7 @@ export const StudioFeedbackForm = () => {
       {/* Ratings Grid */}
       <SectionInstrument className="space-y-8">
         <HeadingInstrument level={3} className="text-2xl font-light border-b border-black/5 pb-4">
-          Hoe beoordeel je de volgende punten?
+          <VoiceglotText translationKey="studio.feedback.ratings_title" defaultText="Hoe beoordeel je de volgende punten?" />
         </HeadingInstrument>
         <ContainerInstrument className="grid gap-8">
           {RATINGS.map(r => (
@@ -145,36 +167,42 @@ export const StudioFeedbackForm = () => {
       {/* Open Questions */}
       <SectionInstrument className="space-y-8">
         <HeadingInstrument level={3} className="text-2xl font-light border-b border-black/5 pb-4">
-          Jouw ervaring in detail
+          <VoiceglotText translationKey="studio.feedback.detail_title" defaultText="Jouw ervaring in detail" />
         </HeadingInstrument>
         
         <ContainerInstrument className="space-y-4">
-          <LabelInstrument>Wat vond je het meest waardevol aan deze dag?</LabelInstrument>
+          <LabelInstrument>
+            <VoiceglotText translationKey="studio.feedback.most_valuable" defaultText="Wat vond je het meest waardevol aan deze dag?" />
+          </LabelInstrument>
           <textarea 
             required
             className="w-full bg-va-off-white rounded-[20px] p-6 min-h-[120px] focus:ring-2 focus:ring-primary/20 transition-all border-none text-[15px] font-light"
-            placeholder="Deel je hoogtepunten..."
+            placeholder={t('studio.feedback.valuable_placeholder', "Deel je hoogtepunten...")}
             value={formData.text_most_valuable}
             onChange={e => setFormData({...formData, text_most_valuable: e.target.value})}
           />
         </ContainerInstrument>
 
         <ContainerInstrument className="space-y-4">
-          <LabelInstrument>Heb je suggesties voor verbetering?</LabelInstrument>
+          <LabelInstrument>
+            <VoiceglotText translationKey="studio.feedback.improvement" defaultText="Heb je suggesties voor verbetering?" />
+          </LabelInstrument>
           <textarea 
             className="w-full bg-va-off-white rounded-[20px] p-6 min-h-[120px] focus:ring-2 focus:ring-primary/20 transition-all border-none text-[15px] font-light"
-            placeholder="Wat kan er nog beter?"
+            placeholder={t('studio.feedback.improvement_placeholder', "Wat kan er nog beter?")}
             value={formData.text_improvement}
             onChange={e => setFormData({...formData, text_improvement: e.target.value})}
           />
         </ContainerInstrument>
 
         <ContainerInstrument className="space-y-4">
-          <LabelInstrument>Zou je de workshop aanbevelen? (En waarom?)</LabelInstrument>
+          <LabelInstrument>
+            <VoiceglotText translationKey="studio.feedback.recommend" defaultText="Zou je de workshop aanbevelen? (En waarom?)" />
+          </LabelInstrument>
           <textarea 
             required
             className="w-full bg-va-off-white rounded-[20px] p-6 min-h-[120px] focus:ring-2 focus:ring-primary/20 transition-all border-none text-[15px] font-light"
-            placeholder="Jouw eerlijke mening..."
+            placeholder={t('studio.feedback.recommend_placeholder', "Jouw eerlijke mening...")}
             value={formData.text_recommendation}
             onChange={e => setFormData({...formData, text_recommendation: e.target.value})}
           />
@@ -187,7 +215,7 @@ export const StudioFeedbackForm = () => {
         className="w-full va-btn-pro py-6 text-xl flex items-center justify-center gap-4"
       >
         {isSubmitting ? <Loader2 strokeWidth={1.5} className="animate-spin" /> : <Send strokeWidth={1.5} size={20} />}
-        FEEDBACK VERZENDEN
+        <VoiceglotText translationKey="studio.feedback.submit" defaultText="FEEDBACK VERZENDEN" />
       </ButtonInstrument>
     </form>
   );

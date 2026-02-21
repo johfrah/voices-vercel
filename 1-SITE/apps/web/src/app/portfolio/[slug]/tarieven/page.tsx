@@ -17,6 +17,7 @@ import { useParams } from "next/navigation";
 import { PortfolioTarievenSkeleton } from "@/components/portfolio/PortfolioTarievenSkeleton";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useTranslation } from "@/contexts/TranslationContext";
 import { 
   CheckCircle2, 
   ArrowRight, 
@@ -42,6 +43,7 @@ import { motion, AnimatePresence } from "framer-motion";
  */
 export default function PortfolioTarievenPage() {
   const params = useParams();
+  const { t } = useTranslation();
   const slug = (params.slug as string) || "johfrah";
   
   //  CHRIS-PROTOCOL: All hooks must be at the very top level
@@ -165,7 +167,7 @@ export default function PortfolioTarievenPage() {
     const totalSeconds = Math.round((words / 160) * 60);
     const mins = Math.floor(totalSeconds / 60);
     const secs = totalSeconds % 60;
-    return `${mins}m ${secs.toString().padStart(2, '0')}s`;
+    return `${mins}${t('common.min_short', 'min')} ${secs.toString().padStart(2, '0')}${t('common.sec_short', 'sec')}`;
   };
 
   const getUsageSteps = () => {

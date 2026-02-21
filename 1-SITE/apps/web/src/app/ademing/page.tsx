@@ -36,7 +36,7 @@ async function TrackGrid() {
         >
           <ContainerInstrument className="flex justify-between items-start mb-12">
             <ContainerInstrument className="bg-black/5 text-black/40 text-[15px] font-black px-3 py-1 rounded-full tracking-widest">
-              {track.duration ? `${Math.floor(track.duration / 60)} min` : '10 min'}
+              {track.duration ? `${Math.floor(track.duration / 60)}` : '10'} <VoiceglotText translationKey="common.min_short" defaultText="min" />
             </ContainerInstrument>
           </ContainerInstrument>
 

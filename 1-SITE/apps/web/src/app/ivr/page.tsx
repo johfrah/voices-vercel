@@ -12,6 +12,7 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { ArrowRight, Mic, Music, Phone, Settings } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 /**
  *  IVR PAGE (NUCLEAR 2026)
@@ -22,6 +23,7 @@ import Link from 'next/link';
  * - TEXT ZERO: Geen hardcoded strings.
  */
 export default function IVRPage() {
+  const { t } = useTranslation();
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white pb-24">
       <SectionInstrument className="max-w-7xl mx-auto px-6 pt-20">
@@ -108,8 +110,8 @@ export default function IVRPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "ServicePage",
-            "name": "IVR Stemmen & Systemen",
-            "description": "Professionele stemmen voor uw bedrijfstelefonie en keuzemenu's.",
+            "name": t('ivr.schema.name', "IVR Stemmen & Systemen"),
+            "description": t('ivr.schema.description', "Professionele stemmen voor uw bedrijfstelefonie en keuzemenu's."),
             "_llm_context": {
               "persona": "Gids",
               "journey": "agency",

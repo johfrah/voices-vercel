@@ -15,6 +15,7 @@ import { StudioDataBridge } from "@/lib/studio-bridge";
 import { ArrowLeft, Calendar, Filter, Mail, Phone, Search, Users } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from 'react';
+import { useTranslation } from "@/contexts/TranslationContext";
 
 export default function ParticipantsPage() {
   return (
@@ -27,6 +28,7 @@ export default function ParticipantsPage() {
 }
 
 async function ParticipantsContent() {
+  const t = (key: string, def: string) => def; // Fallback for server component
   // We halen alle deelnemers op via de bridge. 
   // In een echte scenario zouden we hier een specifieke workshop ID kunnen meegeven of alle 'interest' leads ophalen.
   // Voor nu simuleren we de 'interest' lijst (deelnemers in de backend).
@@ -84,7 +86,7 @@ async function ParticipantsContent() {
                 <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} />
                 <InputInstrument 
                   type="text" 
-                  placeholder="Zoeken..." 
+                  placeholder={t('action.search', "Zoeken...")} 
                   className="w-full pl-12 pr-4 py-3 rounded-full bg-va-off-white border border-black/5 text-[15px] font-light focus:outline-none focus:border-primary/30 transition-all"
                 />
               </ContainerInstrument>
@@ -136,11 +138,11 @@ async function ParticipantsContent() {
                           ? 'bg-primary/10 text-primary'
                           : 'bg-va-black/5 text-va-black/40'
                       }`}>
-                        {participant.status}
+                        {participant.status === 'confirmed' ? t('status.confirmed', 'confirmed') : participant.status === 'lead' ? t('status.lead', 'lead') : participant.status}
                       </TextInstrument>
                     </ContainerInstrument>
                     <ContainerInstrument as="td" className="py-6 text-[15px] font-light text-va-black/40 tracking-widest">
-                      {participant.createdAt ? new Date(participant.createdAt).toLocaleDateString('nl-BE') : 'N/A'}
+                      {participant.createdAt ? new Date(participant.createdAt).toLocaleDateString(t('common.date_format', 'nl-BE')) : 'N/A'}
                     </ContainerInstrument>
                     <ContainerInstrument as="td" className="py-6 text-right">
                       <ButtonInstrument className="px-4 py-2 rounded-full bg-va-black text-white text-[15px] font-light tracking-widest opacity-0 group-hover:opacity-100 transition-all shadow-lg"><VoiceglotText  translationKey="common.details" defaultText="Details" /></ButtonInstrument>

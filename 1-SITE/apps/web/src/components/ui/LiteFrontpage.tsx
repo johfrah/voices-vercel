@@ -3,8 +3,10 @@ import { SpotlightDashboard } from "@/components/ui/SpotlightDashboard";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { Construction, Mic, Star, Zap } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 export default function LiteFrontpage() {
+  const { t } = useTranslation();
   return (
     <main className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       <SpotlightDashboard strokeWidth={1.5} />
@@ -89,7 +91,7 @@ export default function LiteFrontpage() {
         <div className="flex w-full md:w-auto gap-4">
           <input 
             type="email" 
-            placeholder="jouw@email.com" 
+            placeholder={t('lite.status.placeholder', "jouw@email.com")} 
             className="flex-1 md:w-80 px-8 py-6 rounded-[10px] bg-white border border-black/5 font-light focus:ring-2 focus:ring-primary/20 outline-none transition-all"
           />
           <button className="va-btn-pro !px-10 font-light tracking-widest"><VoiceglotText  translationKey="lite.status.cta" defaultText="Launch Alert" /></button>
