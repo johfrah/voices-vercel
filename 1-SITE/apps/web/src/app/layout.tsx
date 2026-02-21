@@ -133,7 +133,15 @@ export default async function RootLayout({
   const isYoussefJourney = pathname.includes('/artist/youssef') || market.market_code === 'YOUSSEF';
   
   const lang = langHeader || (isYoussefJourney ? 'en' : (market.language || 'nl'));
-  const translations = await getTranslationsServer(lang);
+  
+  //  CHRIS-PROTOCOL: Safe translation loading to prevent 500 on root layout
+  let translations = {};
+  try {
+    translations = await getTranslationsServer(lang);
+  } catch (err: any) {
+    console.error(' RootLayout: Failed to load translations:', err);
+    // getTranslationsServer already reports to Watchdog, we just ensure we don't crash
+  }
 
   const isYoussefMarket = market.market_code === 'YOUSSEF' || pathname.includes('/artist/youssef') || host.includes('youssefzaki.eu');
   const isArtistJourney = pathname.includes('/artist/') || pathname.includes('/voice/') || host.includes('youssefzaki.eu');

@@ -98,8 +98,19 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'String registered and healing triggered' });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('[API Voiceglot Register Error]:', error);
+    
+    //  CHRIS-PROTOCOL: Report server-side error to Watchdog
+    const { ServerWatchdog } = await import('@/lib/server-watchdog');
+    ServerWatchdog.report({
+      error: `Register API Failure: ${error.message}`,
+      stack: error.stack,
+      component: 'RegisterAPI',
+      url: request.url,
+      level: 'critical'
+    });
+
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

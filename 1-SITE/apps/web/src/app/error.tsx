@@ -27,14 +27,15 @@ export default function Error({
     //  WATCHDOG NOTIFICATION
     const notifyWatchdog = async () => {
       try {
-        await fetch('/api/watchdog/notify', {
+        await fetch('/api/admin/system/watchdog', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            message: error.message,
-            cause: String(error.cause || ''),
-            digest: error.digest,
-            url: window.location.href
+            error: error.message,
+            stack: error.stack,
+            component: 'AppErrorBoundary',
+            url: window.location.href,
+            level: 'critical'
           })
         });
       } catch (e) {
