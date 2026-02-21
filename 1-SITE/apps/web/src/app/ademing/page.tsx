@@ -64,7 +64,8 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdemingPage() {
   const headerList = headers();
-  const market = headerList.get('x-voices-market') || 'NL';
+  const lang = headerList.get('x-voices-lang') || 'nl';
+  const t = (key: string, def: string) => def; // Fallback for server component
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-32 pb-32 bg-va-off-white relative overflow-hidden">
@@ -104,7 +105,7 @@ export default async function AdemingPage() {
               <ContainerInstrument className="w-24 h-24 rounded-[15px] bg-primary/10 flex items-center justify-center overflow-hidden shadow-inner relative">
                 <VoiceglotImage  
                   src="/assets/ademing/julie-avatar.jpg" 
-                  alt="Julie" 
+                  alt={t('common.instructor.julie', "Julie")} 
                   fill 
                   journey="ademing"
                   category="guides"
@@ -127,7 +128,7 @@ export default async function AdemingPage() {
               <ContainerInstrument className="w-24 h-24 rounded-[15px] bg-black/5 flex items-center justify-center overflow-hidden shadow-inner relative">
                 <VoiceglotImage  
                   src="/assets/ademing/johfrah-avatar.jpg" 
-                  alt="Johfrah" 
+                  alt={t('common.instructor.johfrah', "Johfrah")} 
                   fill 
                   journey="ademing"
                   category="guides"

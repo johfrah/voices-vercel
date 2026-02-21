@@ -10,6 +10,7 @@ import {
 import { Heart, Loader2, ShieldCheck, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { VoiceglotText } from "../ui/VoiceglotText";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 interface DonationModalProps {
   artistId: string;
@@ -20,6 +21,7 @@ interface DonationModalProps {
 }
 
 export function DonationModal({ artistId, artistName, isOpen, onClose, initialAmount = 25 }: DonationModalProps) {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState(initialAmount);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -40,7 +42,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose, initialAm
 
   const handleDonate = async () => {
     if (!amount || (!isAnonymous && !name) || !email) {
-      alert("Vul alle velden in.");
+      alert(t('donation.error.fill_fields', "Vul alle velden in."));
       return;
     }
 
@@ -65,11 +67,11 @@ export function DonationModal({ artistId, artistName, isOpen, onClose, initialAm
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       } else {
-        alert("Er ging iets mis bij het starten van de betaling.");
+        alert(t('donation.error.payment_start', "Er ging iets mis bij het starten van de betaling."));
       }
     } catch (err) {
       console.error(err);
-      alert("Netwerkfout. Probeer het later opnieuw.");
+      alert(t('common.error.network', "Netwerkfout. Probeer het later opnieuw."));
     } finally {
       setLoading(false);
     }
@@ -138,7 +140,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose, initialAm
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-6 py-4 rounded-[10px] bg-va-off-white border-none focus:ring-2 focus:ring-[#FFC421]/20 transition-all font-light"
-                    placeholder="Your name"
+                    placeholder={t('common.placeholder.name', "Your name")}
                   />
                 </ContainerInstrument>
               )}
@@ -149,7 +151,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose, initialAm
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-6 py-4 rounded-[10px] bg-va-off-white border-none focus:ring-2 focus:ring-[#FFC421]/20 transition-all font-light"
-                  placeholder="your@email.com"
+                  placeholder={t('common.placeholder.email', "your@email.com")}
                 />
               </ContainerInstrument>
 
@@ -158,7 +160,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose, initialAm
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   className="w-full px-6 py-4 rounded-[10px] bg-va-off-white border-none focus:ring-2 focus:ring-[#FFC421]/20 transition-all font-light text-sm min-h-[80px] resize-none"
-                  placeholder="Personal message for Youssef (optional)"
+                  placeholder={t('donation.placeholder.message', "Personal message for Youssef (optional)")}
                 />
               </ContainerInstrument>
             </ContainerInstrument>

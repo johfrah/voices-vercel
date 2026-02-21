@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { LogOut } from 'lucide-react';
 import { VoiceglotText } from './VoiceglotText';
 
+import { useTranslation } from '@/contexts/TranslationContext';
+
 interface AccountHeroInstrumentProps {
   userEmail?: string;
   onLogout: () => void;
@@ -24,6 +26,7 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
   onLogout,
   isAdmin = false
 }) => {
+  const { t } = useTranslation();
   const userName = userEmail?.split('@')[0] || 'User';
   const isPartner = userEmail?.includes('voices.be') || isAdmin;
 
@@ -36,7 +39,7 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
         <div className="va-account-badge">
           <Image  
             src="/assets/common/branding/icons/ACCOUNT.svg" 
-            alt="User" 
+            alt={t('common.user', "User")} 
             width={12} 
             height={12} 
             className="w-3 h-3"
@@ -44,7 +47,7 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
           /> 
           <VoiceglotText  
             translationKey="account.hero.welcome" 
-            defaultText={`Welkom terug, ${userName}`} 
+            defaultText={`${t('common.welcome_back', "Welkom terug")}, ${userName}`} 
           />
         </div>
         <h1 className="va-account-title font-light">
@@ -63,16 +66,16 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
         {/* Toegang Badges in Hero */}
         <div className="flex gap-2 mt-6">
           <div className="px-3 py-1 bg-va-black/5 border border-black/5 rounded-full text-[10px] font-bold tracking-widest uppercase text-va-black/40">
-            Klant Account
+            <VoiceglotText translationKey="nav.access.customer" defaultText="Klant Account" />
           </div>
           {isAdmin && (
             <div className="px-3 py-1 bg-primary/10 border border-primary/10 rounded-full text-[10px] font-bold tracking-widest uppercase text-primary">
-              Administrator
+              <VoiceglotText translationKey="nav.access.admin" defaultText="Administrator" />
             </div>
           )}
           {isPartner && (
             <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/10 rounded-full text-[10px] font-bold tracking-widest uppercase text-blue-500">
-              Partner Toegang
+              <VoiceglotText translationKey="nav.access.partner" defaultText="Partner Toegang" />
             </div>
           )}
         </div>

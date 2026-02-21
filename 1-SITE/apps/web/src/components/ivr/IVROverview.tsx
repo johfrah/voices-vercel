@@ -3,6 +3,7 @@
 import { Mic2, Music, Phone, Play, Plus, Save, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { VoiceglotText } from '../ui/VoiceglotText';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 /**
  * IVR CONFIGURATOR (GOD MODE 2026)
@@ -18,15 +19,16 @@ interface IVRStep {
 }
 
 export const IVROverview: React.FC = () => {
+  const { t } = useTranslation();
   const [steps, setSteps] = useState<IVRStep[]>([
-    { id: '1', label: 'Welkomstboodschap', action: 'message', value: 'Welkom bij Voices.be' },
-    { id: '2', label: 'Hoofdmenu', action: 'menu', value: 'Druk 1 voor sales, 2 voor support' }
+    { id: '1', label: t('ivr.step.welcome', 'Welkomstboodschap'), action: 'message', value: 'Welkom bij Voices.be' },
+    { id: '2', label: t('ivr.step.main_menu', 'Hoofdmenu'), action: 'menu', value: 'Druk 1 voor sales, 2 voor support' }
   ]);
 
   const addStep = () => {
     const newStep: IVRStep = {
       id: Math.random().toString(36).substring(7),
-      label: 'Nieuwe Stap',
+      label: t('ivr.step.new', 'Nieuwe Stap'),
       action: 'message',
       value: ''
     };
@@ -76,7 +78,7 @@ export const IVROverview: React.FC = () => {
                   setSteps(newSteps);
                 }}
                 className="bg-transparent font-light text-[15px] focus:outline-none"
-                placeholder="Naam van de stap"
+                placeholder={t('ivr.placeholder.step_name', "Naam van de stap")}
               />
               <select 
                 value={step.action}
@@ -87,9 +89,9 @@ export const IVROverview: React.FC = () => {
                 }}
                 className="bg-transparent text-[15px] font-light tracking-widest focus:outline-none"
               >
-                <option value="message">Boodschap</option>
-                <option value="menu">Keuzemenu</option>
-                <option value="transfer">Doorverbinden</option>
+                <option value="message">{t('ivr.action.message', 'Boodschap')}</option>
+                <option value="menu">{t('ivr.action.menu', 'Keuzemenu')}</option>
+                <option value="transfer">{t('ivr.action.transfer', 'Doorverbinden')}</option>
               </select>
               <input 
                 type="text" 
@@ -100,7 +102,7 @@ export const IVROverview: React.FC = () => {
                   setSteps(newSteps);
                 }}
                 className="bg-transparent text-[15px] text-black/60 focus:outline-none font-light"
-                placeholder="Waarde / Tekst"
+                placeholder={t('ivr.placeholder.value', "Waarde / Tekst")}
               />
             </div>
 

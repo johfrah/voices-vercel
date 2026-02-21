@@ -1339,7 +1339,9 @@ export const VoicyChatV2: React.FC = () => {
 
                     <div className="flex items-center gap-3 py-1">
                       <div className="flex-1 h-px bg-black/5" />
-                      <TextInstrument className="text-[10px] text-va-black/20 tracking-widest uppercase">of</TextInstrument>
+                      <TextInstrument className="text-[10px] text-va-black/20 tracking-widest uppercase">
+                        <VoiceglotText translationKey="common.or" defaultText="of" />
+                      </TextInstrument>
                       <div className="flex-1 h-px bg-black/5" />
                     </div>
 

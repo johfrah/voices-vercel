@@ -23,7 +23,7 @@ export function Providers({
   const pathname = usePathname();
   
   // Detect language from pathname or market
-  const langMatch = pathname.match(/^\/(nl|fr|en|de)(\/|$)/);
+  const langMatch = pathname.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/);
   
   //  CHRIS-PROTOCOL: Market-Aware Language Resolution
   // We check the host to determine the default language for the market.

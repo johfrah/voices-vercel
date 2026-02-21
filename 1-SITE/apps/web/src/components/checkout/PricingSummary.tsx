@@ -122,7 +122,7 @@ export const PricingSummary: React.FC<{
           window.location.href = data.checkoutUrl;
         }
       } else {
-        alert(data.message || 'Er is iets misgegaan.');
+        alert(data.message || t('common.error.generic', 'Er is iets misgegaan.'));
         updateIsSubmitting(false);
       }
     } catch (error) {
@@ -268,7 +268,7 @@ export const PricingSummary: React.FC<{
                           setSelectedItem(item);
                         }}
                         className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-primary hover:bg-primary/5 transition-all group/view"
-                        title="Bekijk details"
+                        title={t('action.view_details', "Bekijk details")}
                       >
                         <Eye size={18} strokeWidth={1.5} className="group-hover/view:scale-110 transition-transform" />
                       </button>
@@ -278,7 +278,7 @@ export const PricingSummary: React.FC<{
                           removeItem(item.id);
                         }}
                         className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-red-500 hover:bg-red-50 transition-all group/delete"
-                        title="Verwijder item"
+                        title={t('action.remove_item', "Verwijder item")}
                       >
                         <Trash2 size={18} strokeWidth={1.5} className="group-hover/delete:scale-110 transition-transform" />
                       </button>
@@ -511,7 +511,7 @@ const TotalsSection: React.FC<any> = ({
               <InputInstrument
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                placeholder="Kortingscode"
+                placeholder={t('checkout.coupon.placeholder', "Kortingscode")}
                 className="w-full !pl-10 !py-2 !text-[13px] !rounded-[12px] bg-va-off-white/50 border-transparent focus:bg-white transition-all"
               />
             </div>
@@ -539,7 +539,7 @@ const TotalsSection: React.FC<any> = ({
                   {state.customer.active_coupon.code}
                 </TextInstrument>
                 <TextInstrument className="text-[10px] text-green-600/60 font-light">
-                  {state.customer.active_coupon.type === 'percentage' ? `${state.customer.active_coupon.discount}% korting` : `€${state.customer.active_coupon.discount} korting`}
+                  {state.customer.active_coupon.type === 'percentage' ? `${state.customer.active_coupon.discount}% ${t('common.discount', 'korting')}` : `€${state.customer.active_coupon.discount} ${t('common.discount', 'korting')}`}
                 </TextInstrument>
               </div>
             </div>
@@ -550,7 +550,7 @@ const TotalsSection: React.FC<any> = ({
                 playClick('soft');
               }}
               className="p-1.5 text-green-600/20 hover:text-red-500 transition-colors group/delete"
-              title="Verwijder kortingscode"
+              title={t('action.remove_coupon', "Verwijder kortingscode")}
             >
               <Trash2 size={14} strokeWidth={1.5} className="group-hover/delete:scale-110 transition-transform" />
             </button>

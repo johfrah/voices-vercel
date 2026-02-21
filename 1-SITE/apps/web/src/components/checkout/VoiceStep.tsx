@@ -3,6 +3,7 @@
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { Actor } from '@/types';
 import { Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -21,6 +22,7 @@ export const VoiceStep: React.FC = () => {
   const { state, selectActor, setStep } = useCheckout();
   const { playDemo } = useGlobalAudio();
   const { playClick } = useSonicDNA();
+  const { t } = useTranslation();
   const [actors, setActors] = useState<Actor[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -53,7 +55,7 @@ export const VoiceStep: React.FC = () => {
 
   const handleNext = () => {
     if (!state.selectedActor) {
-      alert('Selecteer a.u.b. een stemacteur.');
+      alert(t('checkout.voice.error_select', 'Selecteer a.u.b. een stemacteur.'));
       return;
     }
     playClick('deep');
@@ -71,7 +73,7 @@ export const VoiceStep: React.FC = () => {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Zoek op naam..."
+          placeholder={t('action.search_by_name', "Zoek op naam...")}
           className="w-full bg-va-off-white border-none rounded-[20px] py-5 pl-14 pr-8 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all"
         />
         <Image  src="/assets/common/branding/icons/SEARCH.svg" width={20} height={20} alt="" className="absolute left-6 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />

@@ -19,41 +19,60 @@ interface Language {
 }
 
 const LANGUAGE_MAP: Record<string, Language> = {
-  nl: { code: 'nl', label: 'Dutch', native: 'Nederlands', flag: '' },
-  fr: { code: 'fr', label: 'French', native: 'Français', flag: '' },
-  en: { code: 'en', label: 'English', native: 'English', flag: '' },
-  de: { code: 'de', label: 'German', native: 'Deutsch', flag: '' },
-  es: { code: 'es', label: 'Spanish', native: 'Español', flag: '' },
-  pt: { code: 'pt', label: 'Portuguese', native: 'Português', flag: '' },
+  nl: { code: 'nl', label: 'Dutch', native: 'Nederlands', flag: '🇧🇪' },
+  fr: { code: 'fr', label: 'French', native: 'Français', flag: '🇫🇷' },
+  en: { code: 'en', label: 'English', native: 'English', flag: '🇬🇧' },
+  de: { code: 'de', label: 'German', native: 'Deutsch', flag: '🇩🇪' },
+  es: { code: 'es', label: 'Spanish', native: 'Español', flag: '🇪🇸' },
+  pt: { code: 'pt', label: 'Portuguese', native: 'Português', flag: '🇵🇹' },
 };
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState<string>('nl');
+  const [currentLang, setCurrentLang] = useState<string>(market.language || 'nl');
   const pathname = usePathname();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<any>(null);
   const { playClick, playSwell } = useSonicDNA();
-  const market = MarketManager.getCurrentMarket();
 
-  const languages = Object.values(LANGUAGE_MAP).sort((a, b) => {
-    if (market.market_code === 'YOUSSEF') {
-      if (a.code === 'en') return -1;
-      if (b.code === 'en') return 1;
+  const languages = React.useMemo(() => {
+    const allLangs = Object.values(LANGUAGE_MAP);
+    
+    // CHRIS-PROTOCOL: Filter en sorteer op basis van markt-instellingen
+    const supportedCodes = market.supported_languages?.map(l => MarketManager.getLanguageCode(l).split('-')[0]) || [];
+    
+    let filtered = allLangs;
+    if (supportedCodes.length > 0) {
+      filtered = allLangs.filter(l => supportedCodes.includes(l.code));
     }
-    return 0;
-  });
+
+    return filtered.sort((a, b) => {
+      // 1. Huidige markt-taal bovenaan
+      if (a.code === market.language) return -1;
+      if (b.code === market.language) return 1;
+      
+      // 2. Populaire talen voor deze markt
+      const popularCodes = market.popular_languages?.map(l => MarketManager.getLanguageCode(l).split('-')[0]) || [];
+      const aIsPopular = popularCodes.includes(a.code);
+      const bIsPopular = popularCodes.includes(b.code);
+      
+      if (aIsPopular && !bIsPopular) return -1;
+      if (!aIsPopular && bIsPopular) return 1;
+      
+      return 0;
+    });
+  }, [market]);
 
   useEffect(() => {
     const langMatch = pathname.match(/^\/(nl|fr|en|de|es|pt)(\/|$)/);
     if (langMatch) {
       setCurrentLang(langMatch[1]);
     } else {
-      // CHRIS-PROTOCOL: Default to 'en' for Youssef market, otherwise 'nl'
-      setCurrentLang(market.market_code === 'YOUSSEF' ? 'en' : 'nl');
+      // CHRIS-PROTOCOL: Gebruik de taal van de huidige markt als default
+      setCurrentLang(market.language || 'nl');
     }
-  }, [pathname, market.market_code]);
+  }, [pathname, market]);
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -75,8 +94,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     newPath = newPath.replace(/^\/(nl|fr|en|de|es|pt)(\/|$)/, '/');
     if (!newPath.startsWith('/')) newPath = '/' + newPath;
     
-    // CHRIS-PROTOCOL: Determine default language for routing
-    const defaultLang = market.market_code === 'YOUSSEF' ? 'en' : 'nl';
+    // CHRIS-PROTOCOL: De default taal van de markt heeft geen prefix in de URL
+    const defaultLang = market.language || 'nl';
     
     if (langCode !== defaultLang) {
       newPath = `/${langCode}${newPath === '/' ? '' : newPath}`;

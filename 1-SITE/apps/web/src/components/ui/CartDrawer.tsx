@@ -41,7 +41,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               <div className="w-10 h-10 bg-va-black rounded-xl flex items-center justify-center text-white">
                 <Image  
                   src="/assets/common/branding/icons/CART.svg" 
-                  alt="Cart" 
+                  alt={t('common.cart', "Cart")} 
                   width={20} 
                   height={20} 
                   className="brightness-0 invert"
@@ -91,7 +91,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               <div className="h-full flex flex-col items-center justify-center text-va-black/20 gap-4">
                 <Image  
                   src="/assets/common/branding/icons/CART.svg" 
-                  alt="Empty Cart" 
+                  alt={t('nav.cart_empty_alt', "Empty Cart")} 
                   width={48} 
                   height={48} 
                   className="opacity-10"
@@ -128,7 +128,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 <VoiceglotText translationKey="nav.cart.checkout" defaultText="Doorgaan naar Kassa" /> 
                 <Image  
                   src="/assets/common/branding/icons/FORWARD.svg" 
-                  alt="Forward" 
+                  alt={t('common.forward', "Forward")} 
                   width={18} 
                   height={18} 
                   className="brightness-0 invert group-hover:translate-x-1 transition-transform"

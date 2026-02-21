@@ -6,10 +6,13 @@ import { BentoCard, BentoGrid } from "./BentoGrid";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
 import { VoiceglotText } from "./VoiceglotText";
 
+import { useTranslation } from "@/contexts/TranslationContext";
+
 /**
  * BENTO SHOWCASE INSTRUMENT
  */
 export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ customerDNA }) => {
+  const { t } = useTranslation();
   const detectedSector = customerDNA?.intelligence?.detectedSector;
   const lastIntent = customerDNA?.intelligence?.lastIntent;
 
@@ -61,7 +64,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
             <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[15px] flex items-center justify-center text-va-black mb-8 shadow-lg shadow-primary/20">
               <Image  
                 src="/assets/common/branding/icons/INFO.svg" 
-                alt="Zap" 
+                alt={t('common.zap', "Zap")} 
                 width={32} 
                 height={32} 
                 style={{ filter: 'invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)' }}
@@ -75,7 +78,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
           <ContainerInstrument plain className="relative z-10 flex gap-4">
             <Link  href="/ivr" className="va-btn-pro flex items-center gap-3 !bg-primary !text-va-black !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText  translationKey="home.showcase.telephony.cta" defaultText="Configureer je keuzemenu" /><Image  
                 src="/assets/common/branding/icons/FORWARD.svg" 
-                alt="Forward" 
+                alt={t('common.forward', "Forward")} 
                 width={18} 
                 height={18} 
                 style={{ filter: 'invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)' }}
@@ -87,7 +90,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
           <ContainerInstrument className="absolute inset-0 z-0">
             <Image  
               src="/assets/visuals/active/voicecards/1760-johfrah-photo-square-1.jpg" 
-              alt="Casting" 
+              alt={t('common.casting', "Casting")} 
               fill 
               className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-1000"
             />
@@ -96,7 +99,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
             <ContainerInstrument plain className="w-16 h-16 bg-primary rounded-[15px] flex items-center justify-center text-white mb-8 shadow-lg shadow-primary/10">
               <Image  
                 src="/assets/common/branding/icons/INFO.svg" 
-                alt="Mic" 
+                alt={t('common.mic', "Mic")} 
                 width={32} 
                 height={32} 
                 className="brightness-0 invert"
@@ -107,7 +110,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
           <ContainerInstrument plain className="relative z-10 flex gap-4">
             <Link  href="/agency" className="va-btn-pro flex items-center gap-3 !bg-va-dark-soft !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText  translationKey="home.showcase.casting.cta" defaultText="Start jouw zoektocht" /><Image  
                 src="/assets/common/branding/icons/FORWARD.svg" 
-                alt="Forward" 
+                alt={t('common.forward', "Forward")} 
                 width={18} 
                 height={18} 
                 className="brightness-0 invert"
@@ -122,7 +125,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
             <ContainerInstrument className="mb-4">
               <Image  
                 src="/assets/common/branding/icons/INFO.svg" 
-                alt="Speed" 
+                alt={t('common.speed', "Speed")} 
                 width={24} 
                 height={24} 
                 style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
@@ -138,7 +141,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
             <ContainerInstrument className="mb-4">
               <Image  
                 src="/assets/common/branding/icons/FAVORITES.svg" 
-                alt="Quality" 
+                alt={t('common.quality', "Quality")} 
                 width={24} 
                 height={24} 
                 className="brightness-0 invert"

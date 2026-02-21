@@ -206,11 +206,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
   );
 };
 
-const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => (
-  <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-[20px] text-[15px] font-light tracking-widest shadow-sm">
-    <TextInstrument>{label}</TextInstrument>
-    <ButtonInstrument onClick={() => { onRemove(); }} className="hover:text-primary transition-colors">
-      <Image  src="/assets/common/branding/icons/BACK.svg" width={12} height={12} alt="Remove" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
-    </ButtonInstrument>
-  </ContainerInstrument>
-);
+const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => {
+  const { t } = useTranslation();
+  return (
+    <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-[20px] text-[15px] font-light tracking-widest shadow-sm">
+      <TextInstrument>{label}</TextInstrument>
+      <ButtonInstrument onClick={() => { onRemove(); }} className="hover:text-primary transition-colors">
+        <Image  src="/assets/common/branding/icons/BACK.svg" width={12} height={12} alt={t('action.remove', "Remove")} style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
+      </ButtonInstrument>
+    </ContainerInstrument>
+  );
+};
