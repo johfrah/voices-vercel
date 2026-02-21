@@ -65,13 +65,13 @@ export async function GET(request: NextRequest) {
     }
 
     // De backend URL (Combell PHP server of Supabase Storage)
-    let BACKEND_URL = process.env.BACKEND_URL || 'https://www.voices.be'; 
+    const requestHost = request.headers.get('host') || 'www.voices.be';
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    let BACKEND_URL = process.env.BACKEND_URL || `${protocol}://${requestHost}`; 
     
     //  DEV-MODE FIX: Als we lokaal draaien en het pad begint met /assets/, fetch dan van localhost
     if (process.env.NODE_ENV === 'development' && cleanPath.startsWith('/assets/')) {
-      const protocol = request.headers.get('x-forwarded-proto') || 'http';
-      const host = request.headers.get('host') || 'localhost:3000';
-      BACKEND_URL = `${protocol}://${host}`;
+      BACKEND_URL = `${protocol}://${requestHost}`;
     }
 
     let normalizedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;

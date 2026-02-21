@@ -90,8 +90,8 @@ export default function SuccessPageClient() {
           <TextInstrument className="text-[13px] font-bold tracking-[0.2em] text-primary uppercase">
             <VoiceglotText  
               translationKey="checkout.success.delivery.info" 
-              defaultText={searchParams.get('delivery') 
-                ? `Verwachte levering: ${searchParams.get('delivery')}` 
+              defaultText={searchParams?.get('delivery') 
+                ? `Verwachte levering: ${searchParams?.get('delivery')}` 
                 : state.selectedActor?.delivery_time 
                   ? `Verwachte levering: ${state.selectedActor.delivery_time}`
                   : "Verwachte levering: binnen 48 uur"} 

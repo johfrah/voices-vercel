@@ -531,13 +531,21 @@ export const AgencyCalculator = ({
                                 </div>
                                 <div>
                                   <div className="text-[14px] font-bold text-va-black">{a.display_name}</div>
-                                  <div className="text-[10px] text-va-black/40 font-medium uppercase tracking-widest">{a.native_lang}</div>
+                                  <div className="text-[10px] text-va-black/40 font-medium uppercase tracking-widest">
+                                    {a.native_lang_label || a.native_lang}
+                                  </div>
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4">
                               <div className="text-right md:text-left">
-                                <div className="text-xl font-extralight tracking-tighter text-va-black">€{calculateTotal(true, a)}</div>
+                                <div className="text-xl font-extralight tracking-tighter text-va-black">
+                                  {calculateTotal(true, a) === '0.00' ? (
+                                    <span className="text-[13px] font-bold text-va-black/20 uppercase tracking-widest italic">Prijs op aanvraag</span>
+                                  ) : (
+                                    <>€{calculateTotal(true, a)}</>
+                                  )}
+                                </div>
                                 <div className="text-[9px] text-va-black/30 font-bold uppercase tracking-widest">
                                 {calcLive ? (
                                   <span className="text-primary flex items-center gap-1">
@@ -547,7 +555,7 @@ export const AgencyCalculator = ({
                                   <span className="text-primary flex items-center gap-1">
                                     <CheckCircle2 size={8} /> Incl. Wachtmuziek
                                   </span>
-                                ) : calcUsage === 'paid' ? "All-in" : "Indicatie"}
+                                ) : (calculateTotal(true, a) === '0.00' ? null : (calcUsage === 'paid' ? "All-in" : "Indicatie"))}
                                 </div>
                               </div>
                             </td>

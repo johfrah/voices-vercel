@@ -336,7 +336,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         }
       }
 
-      const proxiedPhoto = photoUrl.includes('supabase.co') ? photoUrl : (photoUrl ? `/api/proxy/?path=${encodeURIComponent(photoUrl)}` : '');
+      const proxiedPhoto = photoUrl.includes('supabase.co') || photoUrl.includes('/api/proxy') ? photoUrl : (photoUrl ? `/api/proxy/?path=${encodeURIComponent(photoUrl)}` : '');
       
       //  LOUIS-MANDATE: Photo-Matcher Visual Selection
       // If the actor has multiple photos in metadata, select the one that matches the search vibe

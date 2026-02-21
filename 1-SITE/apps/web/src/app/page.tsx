@@ -290,7 +290,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
             <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
               <VoiceglotText translationKey={`home.hero.title_part1_${masterControlState.journey}`} defaultText={journeyContent.titlePart1} />
               {" "}
-              <TextInstrument as="span" className="text-primary italic font-light">
+              <TextInstrument as="span" className="text-primary italic font-light text-inherit">
                 <VoiceglotText translationKey={`home.hero.title_highlight_${masterControlState.journey}`} defaultText={journeyContent.titleHighlight} />
               </TextInstrument>
               <br />

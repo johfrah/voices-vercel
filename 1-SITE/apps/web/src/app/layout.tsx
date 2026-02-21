@@ -207,7 +207,7 @@ export default async function RootLayout({
             </Suspense>
           </div>
           <Analytics />
-          <VercelToolbar />
+          {process.env.NODE_ENV === 'development' && <VercelToolbar />}
           <CommandPalette />
           <SpotlightDashboard />
           <Toaster position="bottom-right" />

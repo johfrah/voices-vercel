@@ -76,7 +76,8 @@ export default function ConfiguratorPageClient({
   hideMediaSelector = false,
   minimalMode = false,
   hideVoiceCard = false,
-  hideUsageSelector = false
+  hideUsageSelector = false,
+  hidePriceBlock = false
 }: { 
   isEmbedded?: boolean,
   hideMediaSelector?: boolean,

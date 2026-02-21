@@ -54,6 +54,7 @@ interface StudioLaunchpadProps {
  * Gebruikt de "Slimme Zwevende Kassa" logica voor projectinformatie.
  */
 export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) => {
+  const router = useRouter();
   const { state, toggleActorSelection, removeActor, campaignMessage } = useVoicesState();
   const selectedActors = state.selected_actors;
   const [currentStep, setCurrentStep] = useState(1);

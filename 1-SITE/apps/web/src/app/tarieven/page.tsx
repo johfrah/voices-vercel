@@ -79,7 +79,11 @@ function PricePageContent() {
         const actorsData = await actorsRes.json();
         const langsData = await langsRes.json();
         
-        const allActors = actorsData.results || [];
+        const mappedActors = actorsData.results || [];
+        const allActors = mappedActors.map((a: any) => ({
+          ...a,
+          native_lang_label: MarketManager.getLanguageLabel(a.native_lang || '')
+        }));
         const allLangs = langsData.results || [];
         
         console.log(`[Tarieven] Fetched ${allActors.length} actors and ${allLangs.length} languages`);
@@ -177,7 +181,7 @@ function PricePageContent() {
             </ContainerInstrument>
             <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
               <VoiceglotText translationKey="pricing.hero.title_part1" defaultText="Bereken je " />
-              <TextInstrument as="span" className="text-primary italic font-light">
+              <TextInstrument as="span" className="text-primary italic font-light text-inherit">
                 <VoiceglotText translationKey="pricing.hero.title_highlight" defaultText="Projectprijs." />
               </TextInstrument>
             </HeadingInstrument>
@@ -188,11 +192,23 @@ function PricePageContent() {
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* Calculator Section */}
+          {/* Calculator Section */}
       <SectionInstrument className="pb-32">
         <ContainerInstrument className="max-w-6xl mx-auto px-6 space-y-12">
-          {/* LANGUAGE FILTERS - Market Aware */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <AgencyCalculator 
+            initialJourney={activeTab} 
+            actors={paginatedActors} 
+            pricingConfig={pricingConfig}
+            selectedLanguageId={selectedLanguageId}
+            onJourneyChange={handleTabChange}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentStepPage(page)}
+          />
+
+          {/* LANGUAGE FILTERS - Market Aware - Moved below calculator, above table */}
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-8 border-t border-black/[0.03]">
             <span className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest mr-2">Filter op taal:</span>
             {languageOptions.map((lang) => (
               <button
@@ -214,18 +230,6 @@ function PricePageContent() {
               </button>
             ))}
           </div>
-
-          <AgencyCalculator 
-            initialJourney={activeTab} 
-            actors={paginatedActors} 
-            pricingConfig={pricingConfig}
-            selectedLanguageId={selectedLanguageId}
-            onJourneyChange={handleTabChange}
-            isLoading={isLoading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => setCurrentStepPage(page)}
-          />
         </ContainerInstrument>
       </SectionInstrument>
 

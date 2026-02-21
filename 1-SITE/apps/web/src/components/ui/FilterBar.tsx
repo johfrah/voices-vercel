@@ -38,7 +38,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
   ] as const;
 
   const updateQuery = (newParams: Record<string, string | undefined>) => {
-    const nextParams = new URLSearchParams(searchParams?.toString() || '');
+    const paramsString = searchParams?.toString() || '';
+    const nextParams = new URLSearchParams(paramsString);
     Object.entries(newParams).forEach(([key, value]) => {
       if (value) nextParams.set(key, value);
       else nextParams.delete(key);
