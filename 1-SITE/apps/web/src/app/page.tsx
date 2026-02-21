@@ -178,12 +178,13 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
 
   //  CHRIS-PROTOCOL: Dynamic Filters from DB
   const filters = useMemo(() => {
+    const lang = language;
     if (dynamicConfig?.languages) {
       return {
         languages: dynamicConfig.languages.map((l: any) => l.label),
         genders: [
-          t('gender.mannelijk', 'Mannelijk'), 
-          t('gender.vrouwelijk', 'Vrouwelijk')
+          t('gender.mannelijk', lang === 'fr' ? 'Masculin' : lang === 'en' ? 'Male' : 'Mannelijk'), 
+          t('gender.vrouwelijk', lang === 'fr' ? 'Féminin' : lang === 'en' ? 'Female' : 'Vrouwelijk')
         ],
         styles: [],
         categories: []
@@ -191,20 +192,20 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
     }
     return {
       languages: [
-        t('language.vlaams', 'Vlaams'), 
-        t('language.nederlands', 'Nederlands'), 
-        t('language.frans', 'Frans'), 
-        t('language.engels', 'Engels'), 
-        t('language.duits', 'Duits')
+        t('language.vlaams', lang === 'fr' ? 'Flamand' : lang === 'en' ? 'Flemish' : 'Vlaams'), 
+        t('language.nederlands', lang === 'fr' ? 'Néerlandais' : lang === 'en' ? 'Dutch' : 'Nederlands'), 
+        t('language.frans', lang === 'fr' ? 'Français' : lang === 'en' ? 'French' : 'Frans'), 
+        t('language.engels', lang === 'fr' ? 'Anglais' : lang === 'en' ? 'English' : 'Engels'), 
+        t('language.duits', lang === 'fr' ? 'Allemand' : lang === 'en' ? 'German' : 'Duits')
       ],
       genders: [
-        t('gender.mannelijk', 'Mannelijk'), 
-        t('gender.vrouwelijk', 'Vrouwelijk')
+        t('gender.mannelijk', lang === 'fr' ? 'Masculin' : lang === 'en' ? 'Male' : 'Mannelijk'), 
+        t('gender.vrouwelijk', lang === 'fr' ? 'Féminin' : lang === 'en' ? 'Female' : 'Vrouwelijk')
       ],
       styles: [],
       categories: []
     };
-  }, [dynamicConfig, t]);
+  }, [dynamicConfig, t, language]);
 
   const journeyContent = useMemo(() => {
     const journey = masterControlState.journey;

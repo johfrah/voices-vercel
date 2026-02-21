@@ -185,35 +185,37 @@ export const AgencyCalculator = ({
     const currentBsf = (config.basePrice / 100) || config.entry_price_base === 9 ? 199 : (config.entry_price_base || 199); // Handle weird 9 value
     const liveSurcharge = (config.liveSessionSurcharge / 100) || config.live_regie || 50;
 
+    const lang = language;
+
     switch (calcUsage) {
       case 'telefonie':
         return {
-          title: t('calculator.telephony.title', "Hoe werkt de prijs?"),
-          subtitle: t('calculator.telephony.subtitle', "VOOR TELEFONIE & IVR"),
+          title: t('calculator.telephony.title', lang === 'fr' ? 'Comment fonctionne le prix?' : lang === 'en' ? 'How does the price work?' : "Hoe werkt de prijs?"),
+          subtitle: t('calculator.telephony.subtitle', lang === 'fr' ? 'POUR LA TÉLÉPHONIE & IVR' : lang === 'en' ? 'FOR TELEPHONY & IVR' : "VOOR TELEFONIE & IVR"),
           steps: [
-            { num: 1, title: t('calculator.telephony.step1.title', "De Basis"), desc: t('calculator.telephony.step1.desc', `Voor alle stemmen op Voices.be geldt hetzelfde vaste starttarief van €${telephonyBase} voor de eerste ${config.telephonyWordThreshold || 25} woorden.`, { price: telephonyBase, words: config.telephonyWordThreshold || 25 }) },
-            { num: 2, title: t('calculator.telephony.step2.title', "Volume"), desc: t('calculator.telephony.step2.desc', "Daarbovenop betaal je een transparante prijs per prompt. Hoe meer prompts, hoe voordeliger.") },
-            { num: 3, title: t('calculator.telephony.step3.title', "Meertalig"), desc: t('calculator.telephony.step3.desc', "Onze stemmen zijn meertalig inzetbaar voor een consistente merkbeleving.") }
+            { num: 1, title: t('calculator.telephony.step1.title', lang === 'fr' ? 'La Base' : lang === 'en' ? 'The Base' : "De Basis"), desc: t('calculator.telephony.step1.desc', lang === 'fr' ? `Pour toutes les voix sur Voices.be, le même tarif de départ fixe de €${telephonyBase} s'applique pour de les premiers ${config.telephonyWordThreshold || 25} mots.` : lang === 'en' ? `For all voices on Voices.be, the same fixed starting rate of €${telephonyBase} applies for the first ${config.telephonyWordThreshold || 25} words.` : `Voor alle stemmen op Voices.be geldt hetzelfde vaste starttarief van €${telephonyBase} voor de eerste ${config.telephonyWordThreshold || 25} woorden.`, { price: telephonyBase, words: config.telephonyWordThreshold || 25 }) },
+            { num: 2, title: t('calculator.telephony.step2.title', lang === 'fr' ? 'Volume' : lang === 'en' ? 'Volume' : "Volume"), desc: t('calculator.telephony.step2.desc', lang === 'fr' ? "En plus de cela, vous payez un prix transparent par message. Plus il y a de messages, plus c'est avantageux." : lang === 'en' ? "On top of that, you pay a transparent price per prompt. The more prompts, the more advantageous." : "Daarbovenop betaal je een transparante prijs per prompt. Hoe meer prompts, hoe voordeliger.") },
+            { num: 3, title: t('calculator.telephony.step3.title', lang === 'fr' ? 'Multilingue' : lang === 'en' ? 'Multilingual' : "Meertalig"), desc: t('calculator.telephony.step3.desc', lang === 'fr' ? "Nos voix peuvent être utilisées dans plusieurs langues pour een expérience de marque cohérente." : lang === 'en' ? "Our voices can be used in multiple languages for a consistent brand experience." : "Onze stemmen zijn meertalig inzetbaar voor een consistente merkbeleving.") }
           ]
         };
       case 'paid':
         return {
-          title: t('calculator.paid.title', "Hoe werkt de prijs?"),
-          subtitle: t('calculator.paid.subtitle', "VOOR ADVERTENTIES"),
+          title: t('calculator.paid.title', lang === 'fr' ? 'Comment fonctionne le prix?' : lang === 'en' ? 'How does the price work?' : "Hoe werkt de prijs?"),
+          subtitle: t('calculator.paid.subtitle', lang === 'fr' ? 'POUR LES PUBLICITÉS' : lang === 'en' ? 'FOR ADVERTISEMENTS' : "VOOR ADVERTENTIES"),
           steps: [
-            { num: 1, title: t('calculator.paid.step1.title', "De Opname"), desc: t('calculator.paid.step1.desc', `Voor alle stemmen op Voices.be geldt hetzelfde vaste tarief van €${currentBsf} voor de studiotijd. Dit is de basis voor je sessie.`, { price: currentBsf }) },
-            { num: 2, title: t('calculator.paid.step2.title', "De Buyout"), desc: calcType === 'social' ? t('calculator.paid.step2.desc.social', "Vergoeding voor gebruik op social media kanalen.") : calcType === 'podcast' ? t('calculator.paid.step2.desc.podcast', "Vergoeding voor pre-roll of sponsoring in podcasts.") : t('calculator.paid.step2.desc.broadcast', "Vergoeding voor uitzendrecht op radio/TV.") },
-            { num: 3, title: t('calculator.paid.step3.title', "Live Regie (Optioneel)"), desc: t('calculator.paid.step3.desc', `Regisseer de stem live tijdens de sessie. Het tarief hiervoor wordt bepaald door de gekozen stemacteur.`) }
+            { num: 1, title: t('calculator.paid.step1.title', lang === 'fr' ? 'L\'Enregistrement' : lang === 'en' ? 'The Recording' : "De Opname"), desc: t('calculator.paid.step1.desc', lang === 'fr' ? `Pour toutes les voix sur Voices.be, le même tarif fixe de €${currentBsf} s'applique pour le temps de studio. C'est la base de votre session.` : lang === 'en' ? `For all voices on Voices.be, the same fixed rate of €${currentBsf} applies for studio time. This is the basis for your session.` : `Voor alle stemmen op Voices.be geldt hetzelfde vaste tarief van €${currentBsf} voor de studiotijd. Dit is de basis voor je sessie.`, { price: currentBsf }) },
+            { num: 2, title: t('calculator.paid.step2.title', lang === 'fr' ? 'Le Rachat' : lang === 'en' ? 'The Buyout' : "De Buyout"), desc: calcType === 'social' ? t('calculator.paid.step2.desc.social', lang === 'fr' ? "Rémunération pour l'utilisation sur les réseaux sociaux." : lang === 'en' ? "Compensation for use on social media channels." : "Vergoeding voor gebruik op social media kanalen.") : calcType === 'podcast' ? t('calculator.paid.step2.desc.podcast', lang === 'fr' ? "Rémunération pour le pré-roll ou le sponsoring dans les podcasts." : lang === 'en' ? "Compensation for pre-roll or sponsorship in podcasts." : "Vergoeding voor pre-roll of sponsoring in podcasts.") : t('calculator.paid.step2.desc.broadcast', lang === 'fr' ? "Rémunération pour le droit de diffusion à la radio/TV." : lang === 'en' ? "Compensation for broadcast rights on radio/TV." : "Vergoeding voor uitzendrecht op radio/TV.") },
+            { num: 3, title: t('calculator.paid.step3.title', lang === 'fr' ? 'Direction Live (Optionnel)' : lang === 'en' ? 'Live Direction (Optional)' : "Live Regie (Optioneel)"), desc: t('calculator.paid.step3.desc', lang === 'fr' ? `Dirigez la voix en direct pendant la session. Le tarif pour cela est déterminé par le comédien voix choisi.` : lang === 'en' ? `Direct the voice live during the session. The rate for this is determined by the chosen voice actor.` : `Regisseer de stem live tijdens de sessie. Het tarief hiervoor wordt bepaald door de gekozen stemacteur.`) }
           ]
         };
       default:
         return {
-          title: t('calculator.unpaid.title', "Hoe werkt de prijs?"),
-          subtitle: t('calculator.unpaid.subtitle', "VOOR BEDRIJFSVIDEO'S"),
+          title: t('calculator.unpaid.title', lang === 'fr' ? 'Comment fonctionne le prix?' : lang === 'en' ? 'How does the price work?' : "Hoe werkt de prijs?"),
+          subtitle: t('calculator.unpaid.subtitle', lang === 'fr' ? 'POUR LES VIDÉOS D\'ENTREPRISE' : lang === 'en' ? 'FOR CORPORATE VIDEOS' : "VOOR BEDRIJFSVIDEO'S"),
           steps: [
-            { num: 1, title: t('calculator.unpaid.step1.title', "De Opname"), desc: t('calculator.unpaid.step1.desc', `Voor alle stemmen op Voices.be geldt hetzelfde vaste tarief van €${videoBase} voor de studiotijd. Dit is de basis voor je project.`, { price: videoBase }) },
-            { num: 2, title: t('calculator.unpaid.step2.title', "Het Gebruik"), desc: t('calculator.unpaid.step2.desc', "Voor niet-betaalde media is het gebruiksrecht onbeperkt inbegrepen.") },
-            { num: 3, title: t('calculator.unpaid.step3.title', "Kwaliteit"), desc: t('calculator.unpaid.step3.desc', "Je ontvangt een professionele opname in 48kHz, klaar voor gebruik in al je eigen kanalen.") }
+            { num: 1, title: t('calculator.unpaid.step1.title', lang === 'fr' ? 'L\'Enregistrement' : lang === 'en' ? 'The Recording' : "De Opname"), desc: t('calculator.unpaid.step1.desc', lang === 'fr' ? `Pour toutes les voix sur Voices.be, le même tarif fixe de €${videoBase} s'applique pour le temps de studio. C'est la base de votre projet.` : lang === 'en' ? `For all voices on Voices.be, the same fixed rate of €${videoBase} applies for studio time. This is the basis for your project.` : `Voor alle stemmen op Voices.be geldt hetzelfde vaste tarief van €${videoBase} voor de studiotijd. Dit is de basis voor je project.`, { price: videoBase }) },
+            { num: 2, title: t('calculator.unpaid.step2.title', lang === 'fr' ? 'L\'Utilisation' : lang === 'en' ? 'The Usage' : "Het Gebruik"), desc: t('calculator.unpaid.step2.desc', lang === 'fr' ? "Pour les médias non payés, le droit d'utilisation est inclus de manière illimitée." : lang === 'en' ? "For unpaid media, the usage right is included indefinitely." : "Voor niet-betaalde media is het gebruiksrecht onbeperkt inbegrepen.") },
+            { num: 3, title: t('calculator.unpaid.step3.title', lang === 'fr' ? 'Qualité' : lang === 'en' ? 'Quality' : "Kwaliteit"), desc: t('calculator.unpaid.step3.desc', lang === 'fr' ? "Vous recevez un enregistrement professionnel en 48kHz, prêt à l'emploi sur tous vos propres canaux." : lang === 'en' ? "You receive a professional recording in 48kHz, ready for use in all your own channels." : "Je ontvangt een professionele opname in 48kHz, klaar voor gebruik in al je eigen kanalen.") }
           ]
         };
     }

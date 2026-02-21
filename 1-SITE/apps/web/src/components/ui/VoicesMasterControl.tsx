@@ -174,19 +174,19 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     };
 
     const languageConfig = [
-      { label: t('language.vlaams', 'Vlaams'), value: 1, icon: FlagBE, langCode: 'nl-be', popular: market.popular_languages.includes('Vlaams') },
-      { label: t('language.nederlands', 'Nederlands'), value: 2, icon: FlagNL, langCode: 'nl-nl', popular: market.popular_languages.includes('Nederlands') },
-      { label: t('language.frans', 'Frans'), value: 3, icon: FlagBE, langCode: 'fr-be', popular: market.popular_languages.includes('Frans') && market.market_code === 'BE' },
-      { label: t('language.frans', 'Frans'), value: 4, icon: FlagFR, langCode: 'fr-fr', popular: market.popular_languages.includes('Frans') && market.market_code !== 'BE' },
-      { label: t('language.engels', 'Engels'), value: 5, icon: FlagUK, langCode: 'en-gb', popular: market.popular_languages.includes('Engels') },
-      { label: t('language.engels', 'Engels'), value: 6, icon: FlagUS, langCode: 'en-us', popular: false },
-      { label: t('language.duits', 'Duits'), value: 7, icon: FlagDE, langCode: 'de-de', popular: market.popular_languages.includes('Duits') },
-      { label: t('language.spaans', 'Spaans'), value: 8, icon: FlagES, langCode: 'es-es', popular: market.popular_languages.includes('Spaans') },
-      { label: t('language.italiaans', 'Italiaans'), value: 9, icon: FlagIT, langCode: 'it-it', popular: market.popular_languages.includes('Italiaans') },
-      { label: t('language.pools', 'Pools'), value: 10, icon: FlagPL, langCode: 'pl-pl', popular: market.popular_languages.includes('Pools') },
-      { label: t('language.deens', 'Deens'), value: 11, icon: FlagDK, langCode: 'da-dk', popular: market.popular_languages.includes('Deens') },
-      { label: t('language.portugees', 'Portugees'), value: 12, icon: FlagPT, langCode: 'pt-pt', popular: market.popular_languages.includes('Portugees') },
-      { label: t('language.zweeds', 'Zweeds'), value: 43, icon: Globe, langCode: 'sv-se', popular: market.popular_languages.includes('Zweeds') },
+      { label: t('language.vlaams', market.language === 'fr' ? 'Flamand' : market.language === 'en' ? 'Flemish' : 'Vlaams'), value: 1, icon: FlagBE, langCode: 'nl-be', popular: market.popular_languages.includes('Vlaams') },
+      { label: t('language.nederlands', market.language === 'fr' ? 'Néerlandais' : market.language === 'en' ? 'Dutch' : 'Nederlands'), value: 2, icon: FlagNL, langCode: 'nl-nl', popular: market.popular_languages.includes('Nederlands') },
+      { label: t('language.frans', market.language === 'fr' ? 'Français' : market.language === 'en' ? 'French' : 'Frans'), value: 3, icon: FlagBE, langCode: 'fr-be', popular: market.popular_languages.includes('Frans') && market.market_code === 'BE' },
+      { label: t('language.frans', market.language === 'fr' ? 'Français' : market.language === 'en' ? 'French' : 'Frans'), value: 4, icon: FlagFR, langCode: 'fr-fr', popular: market.popular_languages.includes('Frans') && market.market_code !== 'BE' },
+      { label: t('language.engels', market.language === 'fr' ? 'Anglais' : market.language === 'en' ? 'English' : 'Engels'), value: 5, icon: FlagUK, langCode: 'en-gb', popular: market.popular_languages.includes('Engels') },
+      { label: t('language.engels', market.language === 'fr' ? 'Anglais' : market.language === 'en' ? 'English' : 'Engels'), value: 6, icon: FlagUS, langCode: 'en-us', popular: false },
+      { label: t('language.duits', market.language === 'fr' ? 'Allemand' : market.language === 'en' ? 'German' : 'Duits'), value: 7, icon: FlagDE, langCode: 'de-de', popular: market.popular_languages.includes('Duits') },
+      { label: t('language.spaans', market.language === 'fr' ? 'Espagnol' : market.language === 'en' ? 'Spanish' : 'Spaans'), value: 8, icon: FlagES, langCode: 'es-es', popular: market.popular_languages.includes('Spaans') },
+      { label: t('language.italiaans', market.language === 'fr' ? 'Italien' : market.language === 'en' ? 'Italian' : 'Italiaans'), value: 9, icon: FlagIT, langCode: 'it-it', popular: market.popular_languages.includes('Italiaans') },
+      { label: t('language.pools', market.language === 'fr' ? 'Polonais' : market.language === 'en' ? 'Polish' : 'Pools'), value: 10, icon: FlagPL, langCode: 'pl-pl', popular: market.popular_languages.includes('Pools') },
+      { label: t('language.deens', market.language === 'fr' ? 'Danois' : market.language === 'en' ? 'Danish' : 'Deens'), value: 11, icon: FlagDK, langCode: 'da-dk', popular: market.popular_languages.includes('Deens') },
+      { label: t('language.portugees', market.language === 'fr' ? 'Portugais' : market.language === 'en' ? 'Portuguese' : 'Portugees'), value: 12, icon: FlagPT, langCode: 'pt-pt', popular: market.popular_languages.includes('Portugees') },
+      { label: t('language.zweeds', market.language === 'fr' ? 'Suédois' : market.language === 'en' ? 'Swedish' : 'Zweeds'), value: 43, icon: Globe, langCode: 'sv-se', popular: market.popular_languages.includes('Zweeds') },
     ];
 
     const mappedConfig = languageConfig.map(lang => ({
@@ -406,14 +406,14 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         <div className="flex-1 h-full flex flex-col justify-center relative group/gender">
                           <VoicesDropdown 
                             options={[
-                              { label: t('gender.everyone', 'Iedereen'), value: '', icon: Users },
-                              { label: t('gender.male', 'Mannelijk'), value: 'Mannelijk', icon: User },
-                              { label: t('gender.female', 'Vrouwelijk'), value: 'Vrouwelijk', icon: User },
+                              { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
+                              { label: t('gender.male', language === 'fr' ? 'Masculin' : language === 'en' ? 'Male' : 'Mannelijk'), value: 'Mannelijk', icon: User },
+                              { label: t('gender.female', language === 'fr' ? 'Féminin' : language === 'en' ? 'Female' : 'Vrouwelijk'), value: 'Vrouwelijk', icon: User },
                             ]}
                             value={state.filters.gender || ''}
                             onChange={(val) => updateFilters({ gender: val || undefined })}
-                            placeholder={t('gender.everyone', 'Iedereen')}
-                            label={t('filter.who', 'Wie?')}
+                            placeholder={t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen')}
+                            label={t('filter.who', language === 'fr' ? 'Qui?' : language === 'en' ? 'Who?' : 'Wie?')}
                             className="w-full h-full"
                           />
                         </div>
@@ -558,23 +558,23 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             searchable
                             rounding="right"
                             options={[
-                              { label: t('country.be', 'België'), value: 'BE' },
-                              { label: t('country.nl', 'Nederland'), value: 'NL' },
-                              { label: t('country.fr', 'Frankrijk'), value: 'FR' },
-                              { label: t('country.de', 'Duitsland'), value: 'DE' },
-                              { label: t('country.uk', 'Verenigd Koninkrijk'), value: 'UK' },
-                              { label: t('country.us', 'Verenigde Staten'), value: 'US' },
-                              { label: t('country.es', 'Spanje'), value: 'ES' },
-                              { label: t('country.pt', 'Portugal'), value: 'PT' },
-                              { label: t('country.it', 'Italië'), value: 'IT' },
+                              { label: t('country.be', language === 'fr' ? 'Belgique' : language === 'en' ? 'Belgium' : 'België'), value: 'BE' },
+                              { label: t('country.nl', language === 'fr' ? 'Pays-Bas' : language === 'en' ? 'Netherlands' : 'Nederland'), value: 'NL' },
+                              { label: t('country.fr', language === 'fr' ? 'France' : language === 'en' ? 'France' : 'Frankrijk'), value: 'FR' },
+                              { label: t('country.de', language === 'fr' ? 'Allemagne' : language === 'en' ? 'Germany' : 'Duitsland'), value: 'DE' },
+                              { label: t('country.uk', language === 'fr' ? 'Royaume-Uni' : language === 'en' ? 'United Kingdom' : 'Verenigd Koninkrijk'), value: 'UK' },
+                              { label: t('country.us', language === 'fr' ? 'États-Unis' : language === 'en' ? 'United States' : 'Verenigde Staten'), value: 'US' },
+                              { label: t('country.es', language === 'fr' ? 'Espagne' : language === 'en' ? 'Spain' : 'Spanje'), value: 'ES' },
+                              { label: t('country.pt', language === 'fr' ? 'Portugal' : language === 'en' ? 'Portugal' : 'Portugal'), value: 'PT' },
+                              { label: t('country.it', language === 'fr' ? 'Italie' : language === 'en' ? 'Italy' : 'Italië'), value: 'IT' },
                             ]}
                             value={state.filters.countries || [state.filters.country || 'BE']}
                             onChange={(val) => {
                               const countries = Array.isArray(val) ? val : (val ? [val] : []);
                               updateFilters({ countries: countries as any });
                             }}
-                            placeholder={t('filter.select_countries', 'Kies land(en)')}
-                            label={t('filter.broadcast_area', 'Uitzendgebied?')}
+                            placeholder={t('filter.select_countries', language === 'fr' ? 'Choisir pays' : language === 'en' ? 'Select countries' : 'Kies land(en)')}
+                            label={t('filter.broadcast_area', language === 'fr' ? 'Zone de diffusion?' : language === 'en' ? 'Broadcast area?' : 'Uitzendgebied?')}
                             className="h-full animate-in fade-in slide-in-from-left-4 duration-500"
                             multiSelect={true}
                           />
@@ -586,15 +586,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         <VoicesDropdown 
                           rounding="right"
                           options={[
-                            { label: t('sort.popularity', 'Populariteit'), value: 'popularity', icon: Star },
-                            { label: t('sort.delivery', 'Levertijd'), value: 'delivery', icon: Clock },
-                            { label: t('sort.alphabetical_az', 'Naam (A-Z)'), value: 'alphabetical_az', icon: Type },
-                            { label: t('sort.alphabetical_za', 'Naam (Z-A)'), value: 'alphabetical_za', icon: Type },
+                            { label: t('sort.popularity', language === 'fr' ? 'Popularité' : language === 'en' ? 'Popularity' : 'Populariteit'), value: 'popularity', icon: Star },
+                            { label: t('sort.delivery', language === 'fr' ? 'Délai de livraison' : language === 'en' ? 'Delivery time' : 'Levertijd'), value: 'delivery', icon: Clock },
+                            { label: t('sort.alphabetical_az', language === 'fr' ? 'Nom (A-Z)' : language === 'en' ? 'Name (A-Z)' : 'Naam (A-Z)'), value: 'alphabetical_az', icon: Type },
+                            { label: t('sort.alphabetical_za', language === 'fr' ? 'Nom (Z-A)' : language === 'en' ? 'Name (Z-A)' : 'Naam (Z-A)'), value: 'alphabetical_za', icon: Type },
                           ]}
                           value={state.filters.sortBy || 'popularity'}
                           onChange={(val) => updateFilters({ sortBy: val as any })}
-                          placeholder={t('sort.placeholder', 'Sorteer op')}
-                          label={t('filter.sort', 'Sorteer?')}
+                          placeholder={t('sort.placeholder', language === 'fr' ? 'Trier par' : language === 'en' ? 'Sort by' : 'Sorteer op')}
+                          label={t('filter.sort', language === 'fr' ? 'Trier?' : language === 'en' ? 'Sort?' : 'Sorteer?')}
                           className="flex-1 h-full"
                         />
                       )}
