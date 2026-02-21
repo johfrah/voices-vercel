@@ -156,7 +156,6 @@ export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumen
     <Tag 
       ref={ref} 
       className={cn(
-        "text-[15px]", //  CHRIS MANDATE: Default to 15px
         !className.includes('font-') && "font-light", // Default to light if no weight specified
         noTranslate && "notranslate",
         className.includes('va-text-soft') && "text-va-black/60", // Increased contrast
@@ -196,7 +195,7 @@ export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({
     <Component 
       ref={ref} 
       className={cn(
-        "text-[15px]", //  CHRIS MANDATE: Default to 15px
+        !className.includes('text-') && "text-[15px]", // Default to 15px ONLY if no other text size is specified
         !className.includes('font-') && "font-light", // Default to light if no weight specified
         noTranslate && "notranslate",
         className.includes('va-text-soft') && "text-va-black/60", // Increased contrast

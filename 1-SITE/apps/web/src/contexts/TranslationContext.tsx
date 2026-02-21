@@ -48,7 +48,14 @@ export const TranslationProvider: React.FC<{
     const translation = translations[key];
     
     //  STABILITEIT: Als de vertaling ontbreekt of leeg is, gebruik de defaultText (NL)
-    if (!translation || translation.trim() === '' || translation.includes('voldoende context') || translation.includes('meer informatie') || translation.includes('langere tekst')) {
+    if (!translation || translation.trim() === '' || 
+        translation.includes('voldoende context') || 
+        translation.includes('meer informatie') || 
+        translation.includes('langere tekst') ||
+        translation.includes('niet compleet') ||
+        translation.includes('accuraat') ||
+        translation.includes('zou je') ||
+        translation.includes('het lijkt erop')) {
       //  SELF-HEALING TRIGGER (Silent)
       // We triggeren de healing alleen als we niet al aan het healen zijn voor deze specifieke key
       if (typeof window !== 'undefined' && !healingKeys.current.has(key)) {

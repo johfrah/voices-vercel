@@ -45,7 +45,13 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     } else {
       const currentT = t(translationKey, defaultText);
       //  STABILITEIT: Als de vertaling een AI-foutmelding is, gebruik de defaultText
-      if (currentT.includes('voldoende context') || currentT.includes('meer informatie') || currentT.includes('langere tekst')) {
+      if (currentT.includes('voldoende context') || 
+          currentT.includes('meer informatie') || 
+          currentT.includes('langere tekst') ||
+          currentT.includes('niet compleet') ||
+          currentT.includes('accuraat') ||
+          currentT.includes('zou je') ||
+          currentT.includes('het lijkt erop')) {
         setContent(defaultText);
       } else {
         setContent(currentT);
@@ -168,6 +174,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     <Component 
       className={cn(
         "relative group/edit inline-block transition-all duration-300",
+        !className.includes('text-') && "text-inherit", // Force inheritance if no size specified
         isEditMode && !noTranslate && "cursor-text hover:bg-primary/5 px-1 -mx-1 rounded-md min-w-[20px]",
         (isSaving || isHealing) && "opacity-50 pointer-events-none",
         className,
