@@ -51,6 +51,14 @@ const nextConfig = {
         source: '/johfrah.png',
         destination: '/assets/common/branding/founder/johfrah.png',
       },
+      {
+        source: '/wp-content/uploads/2025/07/workshop-2.webp',
+        destination: '/wp-content/uploads/2025/07/Workshop-2.webp',
+      },
+      {
+        source: '/wp-content/uploads/2025/06/vstudio.webp',
+        destination: '/wp-content/uploads/2025/06/VSTUDIO.webp',
+      },
     ];
   },
   // Skip linting during build to speed up
