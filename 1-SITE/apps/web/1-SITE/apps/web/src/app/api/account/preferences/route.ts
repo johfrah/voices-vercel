@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     await db.update(users)
       .set({ 
         preferences: updatedPreferences,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date()
       })
       .where(eq(users.email, user.email!));
 

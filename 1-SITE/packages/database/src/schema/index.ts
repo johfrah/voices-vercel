@@ -844,6 +844,9 @@ export const translations = pgTable('translations', {
   context: text('context'),
   status: text('status').default('active'),
   isManuallyEdited: boolean('is_manually_edited').default(false), // 🛡️ NUCLEAR LOCK MANDATE
+  isLocked: boolean('is_locked').default(false), // 🔒 Weglot-style lock
+  lastAuditedAt: timestamp('last_audited_at'), // 🔍 Wanneer voor het laatst gescand door AI
+  auditLog: jsonb('audit_log').default([]), // 📝 Geschiedenis van wijzigingen
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => [
   unique("translations_key_lang_unique").on(table.translationKey, table.lang),
