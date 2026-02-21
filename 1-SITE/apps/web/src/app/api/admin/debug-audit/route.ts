@@ -4,6 +4,11 @@ import { orders, users, refunds } from "@db/schema";
 import { eq, ilike, inArray } from "drizzle-orm";
 
 export async function GET() {
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return NextResponse.json({ success: true, message: 'Skipping debug-audit during build' });
+  }
+
   try {
     const evelyneOrders = await db.select({
       wpOrderId: orders.wpOrderId,
