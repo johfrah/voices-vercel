@@ -790,22 +790,38 @@ export async function getWorkshops(limit: number = 50): Promise<any[]> {
 export async function getTranslationsServer(lang: string): Promise<Record<string, string>> {
   if (lang === 'nl') return {};
   
-  const data = await db.select({
-    translationKey: translations.translationKey,
-    translatedText: translations.translatedText,
-    originalText: translations.originalText
-  })
-  .from(translations)
-  .where(eq(translations.lang, lang));
-  
-  const translationMap: Record<string, string> = {};
-  data?.forEach(row => {
-    if (row.translationKey) {
-      translationMap[row.translationKey] = row.translatedText || row.originalText || '';
-    }
-  });
-  
-  return translationMap;
+  try {
+    const data = await db.select({
+      translationKey: translations.translationKey,
+      translatedText: translations.translatedText,
+      originalText: translations.originalText
+    })
+    .from(translations)
+    .where(eq(translations.lang, lang));
+    
+    const translationMap: Record<string, string> = {};
+    data?.forEach(row => {
+      if (row.translationKey) {
+        translationMap[row.translationKey] = row.translatedText || row.originalText || '';
+      }
+    });
+    
+    return translationMap;
+  } catch (error: any) {
+    console.error(`[getTranslationsServer] Failed for ${lang}:`, error);
+    
+    //  CHRIS-PROTOCOL: Report server-side failure to Watchdog
+    const { ServerWatchdog } = await import('./server-watchdog');
+    ServerWatchdog.report({
+      error: `Server Translation Failure (${lang}): ${error.message}`,
+      stack: error.stack,
+      component: 'ServerTranslations',
+      level: 'critical'
+    });
+
+    // Fallback naar leeg object zodat de site niet crasht
+    return {};
+  }
 }
 
 export async function getProducts(category?: string): Promise<any[]> {
