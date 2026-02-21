@@ -66,7 +66,8 @@ export function useEditMode() {
   const context = useContext(EditModeContext);
   
   // CHRIS-PROTOCOL: Safe context access for SSR
-  if (typeof window === 'undefined') {
+  // We return a stable default that matches the initial client state
+  if (typeof window === 'undefined' || context === undefined) {
     return { 
       isEditMode: false, 
       toggleEditMode: () => {}, 
@@ -77,8 +78,5 @@ export function useEditMode() {
     };
   }
   
-  if (context === undefined) {
-    throw new Error('useEditMode must be used within an EditModeProvider');
-  }
   return context;
 }

@@ -4,7 +4,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import { SlopFilter } from '@/lib/slop-filter';
 
 interface TranslationContextType {
-  t: (key: string, defaultText: string, values?: Record<string, string | number>) => string;
+  t: (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement?: boolean) => string;
   language: string;
   loading: boolean;
 }
@@ -44,7 +44,7 @@ export const TranslationProvider: React.FC<{
     fetchTranslations();
   }, [lang]);
 
-  const t = (key: string, defaultText: string, values?: Record<string, string | number>): string => {
+  const t = (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement = false): string => {
     let text = defaultText;
     
     if (lang !== 'nl' && !key.startsWith('admin.') && !key.startsWith('command.')) {
@@ -69,7 +69,7 @@ export const TranslationProvider: React.FC<{
     }
     
     //  PLACEHOLDER REPLACEMENT (Nuclear 2026)
-    if (values) {
+    if (values && !skipPlaceholderReplacement) {
       Object.entries(values).forEach(([k, v]) => {
         text = text.replace(new RegExp(`{${k}}`, 'g'), String(v));
       });

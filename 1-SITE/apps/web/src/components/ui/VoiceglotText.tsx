@@ -38,7 +38,12 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   const { playClick, playSwell } = useSonicDNA();
   const { t, language } = useTranslation();
   
-  const [content, setContent] = useState<string>(noTranslate ? defaultText : t(translationKey, defaultText, values));
+  //  CHRIS-PROTOCOL: Hydration Safety
+  // We initialize with the raw translation but skip placeholder replacement if components are present
+  // to allow renderContent to handle them.
+  const [content, setContent] = useState<string>(
+    noTranslate ? defaultText : t(translationKey, defaultText, values, !!components)
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [isHealing, setIsHealing] = useState(false);
   const textRef = useRef<HTMLSpanElement>(null);
@@ -48,7 +53,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     if (noTranslate) {
       setContent(defaultText);
     } else {
-      const currentT = t(translationKey, defaultText, values);
+      const currentT = t(translationKey, defaultText, values, !!components);
       //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren
       if (SlopFilter.isSlop(currentT, language, defaultText)) {
         setContent(defaultText);
@@ -56,7 +61,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
         setContent(currentT);
       }
     }
-  }, [translationKey, defaultText, t, noTranslate, isEditMode, values, language]);
+  }, [translationKey, defaultText, t, noTranslate, isEditMode, values, language, components]);
 
   //  REGISTRATION LOGIC (Nuclear 2026)
   // Zorgt ervoor dat nieuwe strings direct in de registry komen en vertaald worden
