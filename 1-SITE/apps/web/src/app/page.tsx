@@ -288,13 +288,31 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
         <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0">
           <ContainerInstrument plain className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
             <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
-              <VoiceglotText translationKey={`home.hero.title_part1_${masterControlState.journey}`} defaultText={journeyContent.titlePart1} />
-              {" "}
-              <TextInstrument as="span" className="text-primary italic font-light text-inherit">
-                <VoiceglotText translationKey={`home.hero.title_highlight_${masterControlState.journey}`} defaultText={journeyContent.titleHighlight} />
-              </TextInstrument>
-              <br />
-              <VoiceglotText translationKey={`home.hero.title_part2_${masterControlState.journey}`} defaultText={journeyContent.titlePart2} />
+              <VoiceglotText 
+                translationKey={`home.hero.title_v2_${masterControlState.journey}`} 
+                defaultText={
+                  masterControlState.journey === 'telephony' 
+                    ? "Maak jouw {highlight} menselijk."
+                    : masterControlState.journey === 'video'
+                    ? "Geef jouw {highlight} een eigen stem."
+                    : masterControlState.journey === 'commercial'
+                    ? "Scoor met {highlight} commercials."
+                    : "Vind de {highlight} voor jouw verhaal."
+                }
+                values={{
+                  highlight: masterControlState.journey === 'telephony' ? "telefooncentrale" : masterControlState.journey === 'video' ? "video" : masterControlState.journey === 'commercial' ? "high-end" : "stem"
+                }}
+                components={{
+                  highlight: (key) => (
+                    <TextInstrument as="span" className="text-primary italic font-light text-inherit">
+                      <VoiceglotText 
+                        translationKey={`home.hero.highlight_${masterControlState.journey}`} 
+                        defaultText={key === 'telefooncentrale' ? "telefooncentrale" : key === 'video' ? "video" : key === 'high-end' ? "high-end" : "stem"} 
+                      />
+                    </TextInstrument>
+                  )
+                }}
+              />
             </HeadingInstrument>
             <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
               <VoiceglotText translationKey={`home.hero.subtitle_${masterControlState.journey}`} defaultText={journeyContent.subtitle} />

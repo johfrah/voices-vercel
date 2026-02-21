@@ -68,10 +68,29 @@ export async function POST(request: NextRequest) {
     // 2. Live AI Vertaling via OpenAI
     let cleanTranslation = '';
     try {
+      //  CHRIS-PROTOCOL: Context-Aware Prompting
+      // We gebruiken de key om de AI te vertellen waar de tekst voor dient.
+      let contextHint = "Dit is een algemene tekst op de website.";
+      if (key.startsWith('home.')) contextHint = "Dit is een tekst voor de homepage.";
+      else if (key.startsWith('seo.')) contextHint = "Dit is een SEO titel of beschrijving.";
+      else if (key.startsWith('cta.')) contextHint = "Dit is een Call to Action knop of tekst.";
+      else if (key.startsWith('common.')) contextHint = "Dit is een veelvoorkomend UI label.";
+      else if (key.startsWith('calculator.')) contextHint = "Dit is tekst voor de prijscalculator.";
+      else if (key.startsWith('checkout.')) contextHint = "Dit is tekst voor het afrekenproces.";
+      else if (key.startsWith('actor.')) contextHint = "Dit is informatie over een stemacteur.";
+
       const prompt = `
+        Je bent de senior vertaler voor Voices.be, een high-end castingbureau voor stemmen.
         Vertaal de volgende tekst van het Nederlands naar het ${currentLang}.
-        Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
-        Geen AI-bingo woorden, geen em-dashes, max 15 woorden.
+        
+        Context: ${contextHint}
+        Tone of Voice: warm, gelijkwaardig, vakmanschap, nuchter.
+        
+        Regels:
+        - Geen AI-bingo woorden (zoals 'ontdek', 'passie', 'ervaar').
+        - Geen em-dashes.
+        - Behoud placeholders zoals {price}, {words}, {name} exact zoals ze zijn.
+        - Maximaal 15 woorden.
         
         Tekst: "${originalText}"
         Vertaling:

@@ -13,6 +13,8 @@ interface VoiceglotTextProps {
   className?: string;
   as?: 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div';
   noTranslate?: boolean;
+  components?: Record<string, (children: any) => React.ReactNode>;
+  values?: Record<string, string | number>;
 }
 
 /**
@@ -27,13 +29,15 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   defaultText, 
   className,
   as: Component = 'span',
-  noTranslate = false
+  noTranslate = false,
+  components,
+  values
 }) => {
   const { isEditMode } = useEditMode();
   const { playClick, playSwell } = useSonicDNA();
   const { t, language } = useTranslation();
   
-  const [content, setContent] = useState(noTranslate ? defaultText : t(translationKey, defaultText));
+  const [content, setContent] = useState<string>(noTranslate ? defaultText : t(translationKey, defaultText, values));
   const [isSaving, setIsSaving] = useState(false);
   const [isHealing, setIsHealing] = useState(false);
   const textRef = useRef<HTMLSpanElement>(null);
@@ -43,7 +47,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     if (noTranslate) {
       setContent(defaultText);
     } else {
-      const currentT = t(translationKey, defaultText);
+      const currentT = t(translationKey, defaultText, values);
       //  STABILITEIT: Als de vertaling een AI-foutmelding is, gebruik de defaultText
       if (currentT.includes('voldoende context') || 
           currentT.includes('meer informatie') || 
@@ -57,7 +61,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
         setContent(currentT);
       }
     }
-  }, [translationKey, defaultText, t, noTranslate, isEditMode]);
+  }, [translationKey, defaultText, t, noTranslate, isEditMode, values]);
 
   //  REGISTRATION LOGIC (Nuclear 2026)
   // Zorgt ervoor dat nieuwe strings direct in de registry komen en vertaald worden
@@ -128,9 +132,9 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
       };
       healTranslation();
     } else {
-      setContent(currentTranslation);
+      setContent(t(translationKey, defaultText, values));
     }
-  }, [translationKey, defaultText, t, language, noTranslate, isHealing]);
+  }, [translationKey, defaultText, t, language, noTranslate, isHealing, values]);
 
   const handleBlur = async () => {
     if (noTranslate) return;
@@ -170,6 +174,28 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     }
   };
 
+  //  RENDER LOGIC (Semantic Templates)
+  const renderContent = () => {
+    if (!components || isEditMode) return content;
+
+    // Split content by placeholders {key}
+    const parts = content.split(/({[a-zA-Z0-9_-]+})/g);
+    
+    return parts.map((part, i) => {
+      const match = part.match(/{([a-zA-Z0-9_-]+)}/);
+      if (match) {
+        const key = match[1];
+        const component = components[key];
+        if (component) {
+          // If the placeholder has a component, render it
+          // We pass the key itself as children if no other content is available
+          return <React.Fragment key={i}>{component(key)}</React.Fragment>;
+        }
+      }
+      return part;
+    });
+  };
+
   return (
     <Component 
       className={cn(
@@ -195,7 +221,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
           isHealing && "animate-pulse"
         )}
       >
-        {content}
+        {renderContent()}
       </span>
 
       {isHealing && (
