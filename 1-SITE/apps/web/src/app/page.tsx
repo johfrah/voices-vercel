@@ -290,26 +290,20 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
           <ContainerInstrument plain className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
             <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
               <VoiceglotText 
-                translationKey={`home.hero.title_v2_${masterControlState.journey}`} 
+                translationKey={`home.hero.title_v3_${masterControlState.journey}`} 
                 defaultText={
                   masterControlState.journey === 'telephony' 
-                    ? "Maak jouw {highlight} menselijk."
+                    ? "Maak jouw *telefooncentrale* menselijk."
                     : masterControlState.journey === 'video'
-                    ? "Geef jouw {highlight} een eigen stem."
+                    ? "Geef jouw *video* een eigen stem."
                     : masterControlState.journey === 'commercial'
-                    ? "Scoor met {highlight} commercials."
-                    : "Vind de {highlight} voor jouw verhaal."
+                    ? "Scoor met *high-end* commercials."
+                    : "Vind de *stem* voor jouw verhaal."
                 }
-                values={{
-                  highlight: masterControlState.journey === 'telephony' ? "telefooncentrale" : masterControlState.journey === 'video' ? "video" : masterControlState.journey === 'commercial' ? "high-end" : "stem"
-                }}
                 components={{
-                  highlight: (key) => (
+                  highlight: (children) => (
                     <TextInstrument as="span" className="text-primary italic font-light text-inherit">
-                      <VoiceglotText 
-                        translationKey={`home.hero.highlight_${masterControlState.journey}`} 
-                        defaultText={key === 'telefooncentrale' ? "telefooncentrale" : key === 'video' ? "video" : key === 'high-end' ? "high-end" : "stem"} 
-                      />
+                      {children}
                     </TextInstrument>
                   )
                 }}

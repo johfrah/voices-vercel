@@ -169,23 +169,60 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     }
   };
 
-  //  RENDER LOGIC (Semantic Templates)
+  //  RENDER LOGIC (Semantic Templates & Styling Markers)
   const renderContent = () => {
-    if (!components || isEditMode) return content;
+    if (isEditMode) return content;
 
-    // Split content by placeholders {key}
+    // 1. Handle Styling Markers (e.g., *text*)
+    // Dit zorgt ervoor dat we hele zinnen kunnen vertalen en toch delen kunnen stylen
+    // zonder "verkapte" zinnen in de registry.
+    const styledParts = content.split(/(\*[^*]+\*)/g);
+    const hasMarkers = styledParts.length > 1;
+
+    const processPart = (part: string, keyPrefix: string) => {
+      // 2. Handle Placeholders {key} inside parts
+      if (!components) return part;
+      
+      const parts = part.split(/({[a-zA-Z0-9_-]+})/g);
+      return parts.map((p, i) => {
+        const match = p.match(/{([a-zA-Z0-9_-]+)}/);
+        if (match) {
+          const key = match[1];
+          const component = components[key];
+          if (component) return <React.Fragment key={`${keyPrefix}-${i}`}>{component(key)}</React.Fragment>;
+        }
+        return p;
+      });
+    };
+
+    if (hasMarkers) {
+      return styledParts.map((part, i) => {
+        if (part.startsWith('*') && part.endsWith('*')) {
+          const cleanPart = part.slice(1, -1);
+          // Gebruik de 'highlight' component indien aanwezig, anders standaard styling
+          const HighlightComponent = components?.highlight;
+          if (HighlightComponent) {
+            return <React.Fragment key={i}>{HighlightComponent(processPart(cleanPart, `marker-${i}`))}</React.Fragment>;
+          }
+          return (
+            <span key={i} className="text-primary italic font-light">
+              {processPart(cleanPart, `marker-${i}`)}
+            </span>
+          );
+        }
+        return processPart(part, `text-${i}`);
+      });
+    }
+
+    // 3. Fallback to standard placeholder logic
+    if (!components) return content;
     const parts = content.split(/({[a-zA-Z0-9_-]+})/g);
-    
     return parts.map((part, i) => {
       const match = part.match(/{([a-zA-Z0-9_-]+)}/);
       if (match) {
         const key = match[1];
         const component = components[key];
-        if (component) {
-          // If the placeholder has a component, render it
-          // We pass the key itself as children if no other content is available
-          return <React.Fragment key={i}>{component(key)}</React.Fragment>;
-        }
+        if (component) return <React.Fragment key={i}>{component(key)}</React.Fragment>;
       }
       return part;
     });
