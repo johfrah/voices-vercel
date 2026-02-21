@@ -42,6 +42,8 @@ export default function VoiceglotMasterPage() {
   const [filterLang, setFilterLang] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
 
+  const [isSaving, setIsSaving] = useState(false);
+
   useEffect(() => {
     fetchTranslations();
   }, []);
@@ -56,6 +58,51 @@ export default function VoiceglotMasterPage() {
       toast.error('Kon vertalingen niet laden.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState('');
+
+  const handleStartEdit = (t: any) => {
+    setEditingId(t.id);
+    setEditingText(t.translatedText);
+    playClick('soft');
+  };
+
+  const handleSaveEdit = async (t: any) => {
+    if (editingText === t.translatedText) {
+      setEditingId(null);
+      return;
+    }
+
+    setIsSaving(true);
+    playClick('pro');
+    try {
+      const res = await fetch('/api/admin/voiceglot/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: t.id,
+          key: t.translationKey,
+          lang: t.lang,
+          text: editingText,
+          isManual: true
+        })
+      });
+
+      if (res.ok) {
+        setTranslations(prev => prev.map(item => 
+          item.id === t.id ? { ...item, translatedText: editingText, isLocked: true, isManuallyEdited: true } : item
+        ));
+        toast.success('Vertaling bijgewerkt en vergrendeld');
+        setEditingId(null);
+        playClick('success');
+      }
+    } catch (e) {
+      toast.error('Opslaan mislukt');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -172,10 +219,42 @@ export default function VoiceglotMasterPage() {
                   </TextInstrument>
                 </td>
                 <td className="px-8 py-6">
-                  <div className="flex flex-col gap-1">
-                    <TextInstrument className={cn("text-[15px] font-medium", t.isLocked ? "text-va-black" : "text-blue-600")}>
-                      {t.translatedText}
-                    </TextInstrument>
+                  <div className="flex flex-col gap-1 group/cell">
+                    {editingId === t.id ? (
+                      <div className="flex gap-2 items-center">
+                        <input 
+                          autoFocus
+                          value={editingText}
+                          onChange={(e) => setEditingText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleSaveEdit(t);
+                            if (e.key === 'Escape') setEditingId(null);
+                          }}
+                          className="flex-grow bg-va-off-white border-2 border-primary/20 rounded-lg px-3 py-2 text-[15px] outline-none focus:border-primary transition-all"
+                        />
+                        <button 
+                          onClick={() => handleSaveEdit(t)}
+                          disabled={isSaving}
+                          className="p-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-all disabled:opacity-50"
+                        >
+                          {isSaving ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between gap-4">
+                        <TextInstrument 
+                          className={cn("text-[15px] font-medium cursor-pointer hover:text-primary transition-colors flex-grow", t.isLocked ? "text-va-black" : "text-blue-600")}
+                          onClick={() => handleStartEdit(t)}
+                        >
+                          {t.translatedText}
+                        </TextInstrument>
+                        <Sparkles 
+                          size={14} 
+                          className="text-va-black/10 opacity-0 group-hover/cell:opacity-100 transition-opacity cursor-pointer hover:text-primary" 
+                          onClick={() => handleStartEdit(t)}
+                        />
+                      </div>
+                    )}
                     {t.lastAuditedAt && (
                       <span className="text-[10px] text-va-black/20 flex items-center gap-1">
                         <CheckCircle2 size={10} /> Gescand: {new Date(t.lastAuditedAt).toLocaleDateString()}
