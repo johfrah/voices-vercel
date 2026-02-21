@@ -36,9 +36,9 @@ const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => 
 const inter = Inter({ subsets: ["latin"] });
 
 /** Veilige market-resolutie: voorkomt 500 bij onverwachte hosts (Combell proxy, etc.) */
-function getMarketSafe(host: string) {
+async function getMarketSafe(host: string) {
   try {
-    return MarketManager.getCurrentMarket(host);
+    return await MarketManager.getCurrentMarketAsync(host);
   } catch {
     return MarketManager.getCurrentMarket("voices.be");
   }
@@ -55,7 +55,7 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
   const host = headersList.get("host") || "voices.be";
-  const market = getMarketSafe(host);
+  const market = await getMarketSafe(host);
   const baseUrl = `https://${host}`;
 
   const isAdeming = market.market_code === 'ADEMING';
@@ -121,7 +121,7 @@ export default async function RootLayout({
 }>) {
   const headersList = headers();
   const host = headersList.get("host") || "voices.be";
-  const market = getMarketSafe(host);
+  const market = await getMarketSafe(host);
   const isAdeming = market.market_code === 'ADEMING';
   const isJohfrah = market.market_code === 'JOHFRAH';
   const isUnderConstruction = headersList.get('x-voices-under-construction') === 'true' || 

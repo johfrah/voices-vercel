@@ -25,7 +25,8 @@ import {
   Save, 
   Shield, 
   ArrowLeft,
-  Loader2
+  Loader2,
+  Globe
 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';

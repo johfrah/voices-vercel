@@ -35,7 +35,8 @@ import {
     Video,
     X,
     Zap,
-    Bot
+    Bot,
+    Ghost
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useCallback } from 'react';

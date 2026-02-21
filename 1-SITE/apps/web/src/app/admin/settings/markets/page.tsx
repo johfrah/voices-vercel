@@ -53,8 +53,33 @@ export default function AdminMarketsPage() {
   const [activeLangs, setActiveLangs] = useState(['nl', 'fr', 'en', 'de', 'es', 'it', 'pt']);
 
   useEffect(() => {
-    // Simuleer laden
-    setTimeout(() => setLoading(false), 800);
+    const fetchMarkets = async () => {
+      try {
+        //  CHRIS-PROTOCOL: Build Safety
+        // We fetchen geen markets tijdens de build fase om timeouts te voorkomen.
+        if (typeof window === 'undefined') return;
+
+        const res = await fetch('/api/admin/settings/markets');
+        const data = await res.json();
+        if (data.success && data.markets.length > 0) {
+          const formattedMarkets = data.markets.map((m: any) => ({
+            code: m.market,
+            name: m.name,
+            domains: [m.market.toLowerCase().includes('.') ? m.market : `voices.${m.market.toLowerCase()}`], // Simpele mapping voor nu
+            langs: m.localization?.supported_languages || ['nl'],
+            default: m.localization?.default_lang || 'nl',
+            status: 'active'
+          }));
+          setMarkets(formattedMarkets);
+        }
+      } catch (e) {
+        console.error('Failed to fetch markets:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMarkets();
   }, []);
 
   const handleSlimmeVertaling = async (lang?: string) => {

@@ -10,7 +10,15 @@ import { NextResponse } from 'next/server';
  * Doel: Forceer AI vertalingen voor alle ontbrekende keys in alle talen.
  */
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
+  //  CHRIS-PROTOCOL: Build Safety
+  // We voeren geen turbo-heal uit tijdens de build fase om timeouts en DB-errors te voorkomen.
+  if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL) {
+    return NextResponse.json({ success: true, message: 'Skipping turbo-heal during build' });
+  }
+
   const targetLanguages = ['fr', 'en', 'de', 'es', 'pt'];
   const results: any = {};
 
@@ -20,29 +28,38 @@ export async function GET() {
     for (const lang of targetLanguages) {
       const existing = await db.select({ key: translations.translationKey }).from(translations).where(eq(translations.lang, lang));
       const existingKeys = new Set(existing.map(t => t.key));
-      const missing = allStrings.filter(s => !existingKeys.has(s.translationKey));
+      const missing = allStrings.filter(s => !existingKeys.has(s.stringHash));
       
       results[lang] = { total: allStrings.length, missing: missing.length, healed: 0 };
 
-      // We healen er max 10 per keer om timeouts te voorkomen, 
-      // de rest gebeurt via de normale self-healing of volgende run.
+      // We healen er max 15 per keer om timeouts te voorkomen
       for (const item of missing.slice(0, 15)) {
         try {
-          const prompt = `Vertaal naar het ${lang}: "${item.defaultText}". Voices Tone: warm, vakmanschap. Max 15 woorden.`;
+          //  CHRIS-PROTOCOL: Data Integrity
+          // We checken of de key en tekst wel bestaan voor we de AI aanroepen.
+          const key = item.stringHash || (item as any).translationKey;
+          const text = item.originalText || (item as any).defaultText;
+
+          if (!key || !text) {
+            console.warn(`[TurboHeal] Missing key or text for item:`, item);
+            continue;
+          }
+
+          const prompt = `Vertaal naar het ${lang}: "${text}". Voices Tone: warm, vakmanschap. Max 15 woorden.`;
           const translated = await GeminiService.generateText(prompt, { lang: lang });
           const clean = translated.trim().replace(/^"|"$/g, '');
 
           await db.insert(translations).values({
-            translationKey: item.translationKey,
+            translationKey: key,
             lang: lang,
-            originalText: item.defaultText,
+            originalText: text,
             translatedText: clean,
             status: 'active',
             updatedAt: new Date()
           });
           results[lang].healed++;
         } catch (e) {
-          console.error(`Failed turbo-heal for ${item.translationKey}`, e);
+          console.error(`Failed turbo-heal for item:`, item, e);
         }
       }
     }

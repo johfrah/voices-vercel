@@ -2,6 +2,7 @@
 
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
+import { VoiceglotText } from './VoiceglotText';
 
 interface AgencyHeroInstrumentProps {
   market?: string;
