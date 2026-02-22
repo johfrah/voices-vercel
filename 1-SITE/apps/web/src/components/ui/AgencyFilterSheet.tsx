@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Globe, Users, Mic2, CheckCircle2, Search, Type, Clock, Star, Video, Phone, Megaphone } from 'lucide-react';
+import { Check, Globe, Users, Mic2, CheckCircle2, Search as SearchIcon, Type, Clock, Star, Video, Phone, Megaphone } from 'lucide-react';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { MarketManager } from '@config/market-manager';

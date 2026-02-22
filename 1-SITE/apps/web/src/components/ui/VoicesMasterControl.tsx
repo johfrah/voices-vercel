@@ -9,7 +9,7 @@ import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { MarketManager } from '@config/market-manager';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Clock, Globe, Megaphone, Mic2, Phone, Radio, Star, Tv, Type, User, Users, Video, Search } from 'lucide-react';
+import { Clock, Globe, Megaphone, Mic2, Phone, Radio, Star, Tv, Type, User, Users, Video, Search as SearchIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
@@ -320,7 +320,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                     className="w-full h-16 bg-white rounded-full border border-black/10 shadow-sm flex items-center px-6 gap-4 active:scale-[0.98] transition-all"
                   >
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                      <Search size={18} />
+                      <SearchIcon size={18} />
                     </div>
                     <div className="flex flex-col items-start min-w-0">
                       <span className="text-[13px] font-bold tracking-widest text-va-black uppercase">

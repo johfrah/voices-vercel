@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
 import { MarketManager } from '@config/market-manager';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check, ChevronDown, Clock, Edit3, Mic, Pause, Play, Plus, Search, Settings, ShieldCheck, Zap, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, Clock, Edit3, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, ShieldCheck, Zap, X } from 'lucide-react';
 import { useVoicesRouter } from '@/components/ui/VoicesLink';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, HeadingInstrument, TextInstrument } from './LayoutInstruments';
@@ -842,7 +842,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex items-center gap-2 mb-4 bg-va-off-white px-3 py-2 rounded-full border border-black/5">
-                        <Search size={14} className="text-va-black/30" />
+                        <SearchIcon size={14} className="text-va-black/30" />
                         <input
                           autoFocus
                           type="text"

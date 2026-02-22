@@ -4,7 +4,7 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, ChevronDown, Globe, GripVertical, Minus, Plus, Search } from 'lucide-react';
+import { Check, ChevronDown, Globe, GripVertical, Minus, Plus, Search as SearchIcon } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
@@ -282,7 +282,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
             {searchable && (
               <div className="p-4 border-b border-black/5">
                 <div className="relative">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/30" />
+                  <SearchIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/30" />
                   <input 
                     autoFocus
                     type="text"

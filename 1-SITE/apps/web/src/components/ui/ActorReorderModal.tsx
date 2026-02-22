@@ -23,7 +23,7 @@ import {
   GripVertical, 
   Save, 
   Loader2, 
-  Search,
+  Search as SearchIcon,
   CheckCircle2,
   Clock,
   ShoppingBag
@@ -295,7 +295,7 @@ export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialAc
           {/* Search & Stats */}
           <div className="px-8 py-4 bg-white/50 border-b border-black/5 flex items-center justify-between gap-4 shrink-0">
             <div className="relative flex-1">
-              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" />
+              <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" />
               <input 
                 type="text"
                 value={searchQuery}
@@ -332,7 +332,7 @@ export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialAc
 
             {filteredItems.length === 0 && (
               <div className="py-20 text-center opacity-20">
-                <Search size={48} className="mx-auto mb-4" />
+                <SearchIcon size={48} className="mx-auto mb-4" />
                 <TextInstrument className="text-lg font-light">
                   <VoiceglotText translationKey="common.no_voices_found" defaultText="Geen stemmen gevonden voor deze zoekopdracht." />
                 </TextInstrument>
