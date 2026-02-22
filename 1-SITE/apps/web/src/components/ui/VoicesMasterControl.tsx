@@ -174,19 +174,19 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     };
 
     const languageConfig = [
-      { label: t('language.vlaams', market.language === 'fr' ? 'Flamand' : market.language === 'en' ? 'Flemish' : 'Vlaams'), value: 1, icon: FlagBE, langCode: 'nl-be', popular: market.popular_languages.includes('Vlaams') },
-      { label: t('language.nederlands', market.language === 'fr' ? 'Néerlandais' : market.language === 'en' ? 'Dutch' : 'Nederlands'), value: 2, icon: FlagNL, langCode: 'nl-nl', popular: market.popular_languages.includes('Nederlands') },
-      { label: t('language.frans', market.language === 'fr' ? 'Français' : market.language === 'en' ? 'French' : 'Frans'), value: 3, icon: FlagBE, langCode: 'fr-be', popular: market.popular_languages.includes('Frans') && market.market_code === 'BE' },
-      { label: t('language.frans', market.language === 'fr' ? 'Français' : market.language === 'en' ? 'French' : 'Frans'), value: 4, icon: FlagFR, langCode: 'fr-fr', popular: market.popular_languages.includes('Frans') && market.market_code !== 'BE' },
-      { label: t('language.engels', market.language === 'fr' ? 'Anglais' : market.language === 'en' ? 'English' : 'Engels'), value: 5, icon: FlagUK, langCode: 'en-gb', popular: market.popular_languages.includes('Engels') },
-      { label: t('language.engels', market.language === 'fr' ? 'Anglais' : market.language === 'en' ? 'English' : 'Engels'), value: 6, icon: FlagUS, langCode: 'en-us', popular: false },
-      { label: t('language.duits', market.language === 'fr' ? 'Allemand' : market.language === 'en' ? 'German' : 'Duits'), value: 7, icon: FlagDE, langCode: 'de-de', popular: market.popular_languages.includes('Duits') },
-      { label: t('language.spaans', market.language === 'fr' ? 'Espagnol' : market.language === 'en' ? 'Spanish' : 'Spaans'), value: 8, icon: FlagES, langCode: 'es-es', popular: market.popular_languages.includes('Spaans') },
-      { label: t('language.italiaans', market.language === 'fr' ? 'Italien' : market.language === 'en' ? 'Italian' : 'Italiaans'), value: 9, icon: FlagIT, langCode: 'it-it', popular: market.popular_languages.includes('Italiaans') },
-      { label: t('language.pools', market.language === 'fr' ? 'Polonais' : market.language === 'en' ? 'Polish' : 'Pools'), value: 10, icon: FlagPL, langCode: 'pl-pl', popular: market.popular_languages.includes('Pools') },
-      { label: t('language.deens', market.language === 'fr' ? 'Danois' : market.language === 'en' ? 'Danish' : 'Deens'), value: 11, icon: FlagDK, langCode: 'da-dk', popular: market.popular_languages.includes('Deens') },
-      { label: t('language.portugees', market.language === 'fr' ? 'Portugais' : market.language === 'en' ? 'Portuguese' : 'Portugees'), value: 12, icon: FlagPT, langCode: 'pt-pt', popular: market.popular_languages.includes('Portugees') },
-      { label: t('language.zweeds', market.language === 'fr' ? 'Suédois' : market.language === 'en' ? 'Swedish' : 'Zweeds'), value: 43, icon: Globe, langCode: 'sv-se', popular: market.popular_languages.includes('Zweeds') },
+      { label: t('language.vlaams', market.language === 'fr' ? 'Flamand' : market.language === 'en' ? 'Flemish' : 'Vlaams'), value: 'nl-be', icon: FlagBE, langCode: 'nl-be', popular: market.popular_languages.includes('Vlaams') },
+      { label: t('language.nederlands', market.language === 'fr' ? 'Néerlandais' : market.language === 'en' ? 'Dutch' : 'Nederlands'), value: 'nl-nl', icon: FlagNL, langCode: 'nl-nl', popular: market.popular_languages.includes('Nederlands') },
+      { label: t('language.frans', market.language === 'fr' ? 'Français' : market.language === 'en' ? 'French' : 'Frans'), value: 'fr-be', icon: FlagBE, langCode: 'fr-be', popular: market.popular_languages.includes('Frans') && market.market_code === 'BE' },
+      { label: t('language.frans', market.language === 'fr' ? 'Français' : market.language === 'en' ? 'French' : 'Frans'), value: 'fr-fr', icon: FlagFR, langCode: 'fr-fr', popular: market.popular_languages.includes('Frans') && market.market_code !== 'BE' },
+      { label: t('language.engels', market.language === 'fr' ? 'Anglais' : market.language === 'en' ? 'English' : 'Engels'), value: 'en-gb', icon: FlagUK, langCode: 'en-gb', popular: market.popular_languages.includes('Engels') },
+      { label: t('language.engels', market.language === 'fr' ? 'Anglais' : market.language === 'en' ? 'English' : 'Engels'), value: 'en-us', icon: FlagUS, langCode: 'en-us', popular: false },
+      { label: t('language.duits', market.language === 'fr' ? 'Allemand' : market.language === 'en' ? 'German' : 'Duits'), value: 'de-de', icon: FlagDE, langCode: 'de-de', popular: market.popular_languages.includes('Duits') },
+      { label: t('language.spaans', market.language === 'fr' ? 'Espagnol' : market.language === 'en' ? 'Spanish' : 'Spaans'), value: 'es-es', icon: FlagES, langCode: 'es-es', popular: market.popular_languages.includes('Spaans') },
+      { label: t('language.italiaans', market.language === 'fr' ? 'Italien' : market.language === 'en' ? 'Italian' : 'Italiaans'), value: 'it-it', icon: FlagIT, langCode: 'it-it', popular: market.popular_languages.includes('Italiaans') },
+      { label: t('language.pools', market.language === 'fr' ? 'Polonais' : market.language === 'en' ? 'Polish' : 'Pools'), value: 'pl-pl', icon: FlagPL, langCode: 'pl-pl', popular: market.popular_languages.includes('Pools') },
+      { label: t('language.deens', market.language === 'fr' ? 'Danois' : market.language === 'en' ? 'Danish' : 'Deens'), value: 'da-dk', icon: FlagDK, langCode: 'da-dk', popular: market.popular_languages.includes('Deens') },
+      { label: t('language.portugees', market.language === 'fr' ? 'Portugais' : market.language === 'en' ? 'Portuguese' : 'Portugees'), value: 'pt-pt', icon: FlagPT, langCode: 'pt-pt', popular: market.popular_languages.includes('Portugees') },
+      { label: t('language.zweeds', market.language === 'fr' ? 'Suédois' : market.language === 'en' ? 'Swedish' : 'Zweeds'), value: 'sv-se', icon: Globe, langCode: 'sv-se', popular: market.popular_languages.includes('Zweeds') },
     ];
 
     const mappedConfig = languageConfig.map(lang => ({
@@ -362,7 +362,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           }}
                           onChange={(val) => {
                             if (typeof val === 'number') {
-                              // Hard ID selected
+                              // Hard ID selected (from other contexts if any)
                               updateFilters({ 
                                 languageId: val,
                                 languageIds: [val],
@@ -376,16 +376,23 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 languages: langs
                               });
                             } else {
-                              // Resolve label to ID if possible
-                              const opt = sortedLanguages.find(opt => typeof opt === 'object' && opt.label === val);
-                              if (opt && typeof opt.value === 'number') {
+                              // ISO Code or Label selected
+                              const opt = sortedLanguages.find(opt => typeof opt === 'object' && opt.value === val);
+                              if (opt && typeof opt.value === 'string' && opt.value.includes('-')) {
+                                // Standard ISO Code selected
+                                updateFilters({ 
+                                  language: opt.langCode, // Store the code, not the translated label
+                                  languages: [opt.langCode],
+                                  languageId: undefined // Clear ID if switching to code-based
+                                });
+                              } else if (opt && typeof opt.value === 'number') {
                                 updateFilters({ 
                                   languageId: opt.value,
                                   languageIds: [opt.value],
-                                  language: val
+                                  language: opt.label
                                 });
                               } else {
-                                // Label selected (Legacy support)
+                                // Fallback for labels
                                 updateFilters({ 
                                   language: val || undefined,
                                   languages: val ? [val.toLowerCase()] : undefined 
