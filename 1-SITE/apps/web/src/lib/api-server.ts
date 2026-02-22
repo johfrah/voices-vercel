@@ -417,39 +417,31 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     ]);
     */
     
-    const reviewsRes: any[] = [];
+    //  CHRIS-PROTOCOL: SDK Fallback for secondary data (v2.16)
+    const [reviewsRes, mediaRes] = await Promise.all([
+      supabase.from('reviews')
+        .select('*')
+        .eq('business_slug', 'voices-be')
+        .order('sentiment_velocity', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(30),
+      photoIds.length > 0
+        ? supabase.from('media').select('*').in('id', photoIds)
+        : Promise.resolve({ data: [] })
+    ]);
+    
+    const dbReviewsRaw = reviewsRes.data || [];
+    const mediaResults = mediaRes.data || [];
     const translationMap: Record<string, string> = {};
-    const mediaResults: any[] = [];
 
-    console.log(' API: reviewsRes count:', reviewsRes.length);
+    console.log(' API: reviewsRes count:', dbReviewsRaw.length);
 
-    // CHRIS-PROTOCOL: Fallback to general reviews if specific sector matching returns too few results
-    let finalDbReviews = reviewsRes;
-    /*
-    if (finalDbReviews.length < 10 && (params.sector || params.persona)) {
-      const fallbackReviews = await db.select().from(reviews)
-        .where(eq(reviews.businessSlug, 'voices-be'))
-        .orderBy(desc(reviews.sentimentVelocity), desc(reviews.createdAt))
-        .limit(50)
-        .catch(() => []);
-      finalDbReviews = [...new Set([...finalDbReviews, ...fallbackReviews])].slice(0, 50);
-    }
-    */
-
-    console.log(' API: finalDbReviews count:', finalDbReviews.length);
-
-    const dbReviews = finalDbReviews.filter(r => r && (r.businessSlug === 'voices-be' || !r.businessSlug || r.businessSlug === 'NULL' || r.businessSlug === null || r.businessSlug === 'voices-studio' || r.businessSlug === 'voices-be') && (r.textNl || r.textEn || r.textFr || r.textDe)).slice(0, 30);
+    const dbReviews = dbReviewsRaw.filter(r => r && (r.text_nl || r.text_en || r.text_fr || r.text_de)).slice(0, 30);
     
     console.log(' API: dbReviews count after filter:', dbReviews.length);
-    if (dbReviews.length > 0) {
-      console.log(' API: First review businessSlug:', dbReviews[0].businessSlug);
-    }
-    // const translationMap = transRes as Record<string, string>;
-    // const mediaResults = mediaRes || [];
-
+    
     //  NUCLEAR CALCULATION: Real-time review statistics
-    // const reviewStats = await getReviewStats('voices-be').catch(() => ({ averageRating: 4.9, totalCount: 0, distribution: {} }));
-    const reviewStats = { averageRating: 4.9, totalCount: 0, distribution: {} };
+    const reviewStats = { averageRating: 4.9, totalCount: dbReviewsRaw.length, distribution: {} };
 
     // Get unique languages for filters
     const uniqueLangs = Array.from(new Set(dbResults.map(a => a.nativeLang))).filter(Boolean) as string[];
@@ -463,7 +455,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       if (actor.photoId) {
         const mediaItem = mediaResults.find(m => m.id === actor.photoId);
         if (mediaItem) {
-          const fp = mediaItem.filePath;
+          const fp = mediaItem.file_path || mediaItem.filePath;
           if (fp && (fp.startsWith('agency/') || fp.startsWith('active/') || fp.startsWith('common/') || fp.startsWith('visuals/'))) {
             photoUrl = `${SUPABASE_STORAGE_URL}/${fp}`;
           } else if (fp) {
@@ -577,22 +569,22 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       _nuclear: true,
       _source: 'database',
       reviews: dbReviews.map(r => {
-        const reviewDate = r.createdAt ? new Date(r.createdAt) : new Date();
+        const reviewDate = r.created_at ? new Date(r.created_at) : new Date();
         return {
           id: r.id,
-          name: r.authorName,
-          text: r.textNl || r.textEn || r.textFr || r.textDe || '',
-          authorUrl: r.authorUrl,
-          authorPhotoUrl: r.authorPhotoUrl,
-          author_photo_url: r.authorPhotoUrl,
+          name: r.author_name,
+          text: r.text_nl || r.text_en || r.text_fr || r.text_de || '',
+          authorUrl: r.author_url,
+          authorPhotoUrl: r.author_photo_url,
+          author_photo_url: r.author_photo_url,
           rating: r.rating,
           sector: r.sector,
           persona: r.persona,
-          isHero: r.isHero,
-          businessSlug: r.businessSlug,
+          isHero: r.is_hero,
+          businessSlug: r.business_slug,
           status: r.language === 'hidden' ? 'hidden' : 'published', // We gebruiken language als proxy voor status in de DB voor nu
           date: reviewDate.toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }),
-          rawDate: r.createdAt
+          rawDate: r.created_at
         };
       }),
       reviewStats: reviewStats
