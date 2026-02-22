@@ -16,28 +16,34 @@ export async function GET(request: Request) {
   const lang = searchParams.get('lang') || 'nl';
   
   try {
-    console.log('🔗 SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-    console.log('🔗 SUPABASE_KEY_TYPE:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SERVICE_ROLE' : (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'ANON' : 'NONE'));
-    console.log('🔗 SUPABASE_KEY_PREFIX:', (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)?.substring(0, 5));
+    const params: Record<string, string> = {};
+    searchParams.forEach((value, key) => {
+      params[key] = value;
+    });
 
     const data = await getActors(params, lang).catch((err) => {
       console.error(' [ACTORS API] getActors failure:', err);
-      return { results: [], count: 0, filters: { genders: [], languages: [], styles: [] }, reviews: [], reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } };
+      return { 
+        results: [], 
+        count: 0, 
+        _error: err.message,
+        filters: { genders: [], languages: [], styles: [] }, 
+        reviews: [], 
+        reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } 
+      };
     });
     
     if (!data || !data.results) {
-      return NextResponse.json({ results: [], count: 0, _nuclear_debug: 'No results found' });
+      return NextResponse.json({ results: [], count: 0, _debug: 'No results' });
     }
     
     return NextResponse.json({
       ...data,
-      _nuclear_debug: {
-        timestamp: new Date().toISOString(),
-        version: '2.18'
-      }
+      _v: '2.19',
+      _time: new Date().toISOString()
     });
   } catch (error: any) {
     console.error(' ACTORS API FAILURE:', error.message);
-    return NextResponse.json({ results: [], count: 0 }, { status: 500 });
+    return NextResponse.json({ results: [], count: 0, error: error.message }, { status: 500 });
   }
 }
