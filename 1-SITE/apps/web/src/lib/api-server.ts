@@ -483,6 +483,12 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const result: SearchResults = {
       count: mappedResults.length,
       results: mappedResults as any,
+      _debug: {
+        dbResultsCount: dbResults.length,
+        conditionsCount: conditions.length,
+        lang,
+        params
+      },
       filters: {
         genders: ['Mannelijk', 'Vrouwelijk'],
         languages: finalLangs,
