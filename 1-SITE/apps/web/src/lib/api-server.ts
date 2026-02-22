@@ -125,7 +125,7 @@ function getGlobalCache() {
   return g.apiServerCache;
 }
 
-const ACTORS_CACHE_TTL = 1000 * 5; // 5 seconds (reduced for debugging)
+const ACTORS_CACHE_TTL = 1000 * 6; // 6 seconds (force rebuild)
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
   console.log(' API: getActors called with params:', params);
