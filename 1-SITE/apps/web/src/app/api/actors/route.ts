@@ -28,7 +28,7 @@ export async function GET(request: Request) {
         count: 0, 
         _error: err.message,
         _stack: err.stack,
-        _v: 'v2.9',
+        _v: 'v4.1',
         _env: {
           hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
           hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -42,10 +42,10 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       ...data,
-      _v: 'v3.4'
+      _v: 'v4.1'
     });
   } catch (error: any) {
     console.error(' ACTORS API FAILURE:', error.message);
-    return NextResponse.json({ results: [], count: 0, _v: 'v3.4' }, { status: 500 });
+    return NextResponse.json({ results: [], count: 0, _v: 'v4.1' }, { status: 500 });
   }
 }

@@ -17,7 +17,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { script, usage, languages, actorId } = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      return NextResponse.json({ is_valid: true, insights: [] });
+    }
+    const { script, usage, languages, actorId } = body;
 
     if (!script || script.length < 10) {
       return NextResponse.json({ is_valid: true, insights: [] });

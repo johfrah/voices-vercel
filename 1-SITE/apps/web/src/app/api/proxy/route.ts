@@ -56,6 +56,10 @@ export async function GET(request: NextRequest) {
       cleanPath.startsWith('active/') ||
       cleanPath.startsWith('common/') || 
       cleanPath.startsWith('studio/') || 
+      cleanPath.startsWith('visuals/') ||
+      cleanPath.startsWith('portfolio/') ||
+      cleanPath.startsWith('artists/') ||
+      cleanPath.startsWith('ademing/') ||
       cleanPath.includes('supabase.co/storage/v1/object/public/voices/') ||
       cleanPath.includes('googleusercontent.com') ||
       cleanPath.endsWith('.mp3') ||

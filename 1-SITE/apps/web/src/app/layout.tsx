@@ -6,6 +6,7 @@ import { SpotlightDashboard } from "@/components/ui/SpotlightDashboard";
 import FooterWrapper from "@/components/ui/FooterWrapper";
 import { LoadingScreenInstrument } from "@/components/ui/LayoutInstruments";
 import { PageWrapperInstrument } from "@/components/ui/LayoutInstrumentsServer";
+import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstrumentsServer";
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
@@ -22,6 +23,7 @@ import { Toaster } from 'react-hot-toast';
 import "../styles/globals.css";
 import { Providers } from "./Providers";
 import { getTranslationsServer } from "@/lib/api-server";
+import { cn } from "@/lib/utils";
 
 //  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden (ssr: false) voor 100ms LCP
 const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false });
@@ -221,7 +223,7 @@ export default async function RootLayout({
   // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
   if (isUnderConstruction) {
     return (
-      <html lang={lang} className={htmlClass}>
+      <html lang={lang} className={htmlClass} data-build-id={Date.now()} suppressHydrationWarning>
         <body className={bodyClass}>
           <Providers lang={lang} initialTranslations={translations}>
             <SonicDNAHandler />
@@ -235,7 +237,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang={lang} className={htmlClass}>
+    <html lang={lang} className={htmlClass} data-build-id={Date.now()} suppressHydrationWarning>
       <body className={bodyClass}>
         <script
           type="application/ld+json"

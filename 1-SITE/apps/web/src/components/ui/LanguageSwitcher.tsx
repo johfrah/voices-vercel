@@ -8,7 +8,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
-import { ButtonInstrument, ContainerInstrument, TextInstrument } from './LayoutInstruments';
+import { 
+  ButtonInstrument, 
+  // ContainerInstrument, 
+  // TextInstrument 
+} from './LayoutInstruments';
+import { 
+  ContainerInstrument, 
+  TextInstrument 
+} from './LayoutInstrumentsServer';
 import { VoiceglotText } from './VoiceglotText';
 
 import { useAuth } from '@/contexts/AuthContext';

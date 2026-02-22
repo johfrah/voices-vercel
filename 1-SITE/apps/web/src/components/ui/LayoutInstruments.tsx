@@ -16,9 +16,9 @@ export {
   RootLayoutInstrument, 
   PageWrapperInstrument, 
   SectionInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument 
+  // ContainerInstrument, // Verplaatst naar Server voor root layout stabiliteit
+  // HeadingInstrument,   // Verplaatst naar Server voor root layout stabiliteit
+  // TextInstrument       // Verplaatst naar Server voor root layout stabiliteit
 } from './LayoutInstrumentsServer';
 
 // Import client hooks for client components

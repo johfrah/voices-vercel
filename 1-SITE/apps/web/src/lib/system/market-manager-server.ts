@@ -282,12 +282,16 @@ export class MarketManagerServer {
 
     const config = this.MARKETS_STATIC[cleanHost] || this.MARKETS_STATIC['voices.be'];
 
+    // 🛡️ CHRIS-PROTOCOL: Force ISO-First for all static fallbacks
+    const isoSupported = (config.supported_languages || []).map(l => this.getLanguageCode(l));
+    const isoPopular = (config.popular_languages || []).map(l => this.getLanguageCode(l));
+
     const finalConfig: MarketConfig = {
       market_code: config.market_code || 'BE',
       language: config.language || 'nl',
-      primary_language: config.primary_language || 'Vlaams',
-      supported_languages: config.supported_languages || ['Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits'],
-      popular_languages: config.popular_languages || ['Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits'],
+      primary_language: this.getLanguageCode(config.primary_language || 'nl-BE'),
+      supported_languages: isoSupported.length > 0 ? isoSupported : ['nl-BE', 'nl-NL', 'en-GB', 'fr-FR', 'de-DE'],
+      popular_languages: isoPopular.length > 0 ? isoPopular : ['nl-BE', 'nl-NL', 'en-GB', 'fr-FR', 'de-DE'],
       currency: config.currency || 'EUR',
       name: config.name || 'Voices',
       phone: config.phone || VOICES_CONFIG.company.phone,

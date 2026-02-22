@@ -11,7 +11,13 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
-    const { message, cause, url, digest } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (e) {
+      return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
+    }
+    const { message, cause, url, digest } = body;
     const recipient = process.env.ADMIN_EMAIL;
     if (!recipient) {
       console.warn('[Watchdog Notify] No ADMIN_EMAIL configured');

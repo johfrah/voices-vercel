@@ -10,7 +10,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-//  NUCLEAR VERSION: v3.4 (Stability Hardened)
+//  NUCLEAR VERSION: v4.1 (Emergency Recovery)
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -25,13 +25,8 @@ export async function GET(request: Request) {
     const level = searchParams.get("level");
 
     try {
-      let query = db.select().from(systemEvents);
-
-      if (level && level !== 'all') {
-        query = query.where(eq(systemEvents.level, level)) as any;
-      }
-
-      const results = await query
+      const results = await db.select().from(systemEvents)
+        .where(level && level !== 'all' ? eq(systemEvents.level, level) : undefined)
         .orderBy(desc(systemEvents.createdAt))
         .limit(limit);
 
@@ -61,7 +56,12 @@ export async function GET(request: Request) {
  */
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (e) {
+      return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
+    }
     const { message, level = 'error', source = 'browser', details = {} } = body;
 
     if (!message) {

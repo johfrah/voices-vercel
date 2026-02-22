@@ -12,7 +12,17 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, Building2, ChevronRight, ChevronDown, Globe, Heart, LayoutDashboard, LogOut, Mail, Menu, Mic2, Monitor, Phone, Radio, ShoppingBag, ShoppingCart, User, Info, Settings, Home, Euro, GraduationCap, Quote, Users } from 'lucide-react';
 
 import { VoicesLink, useVoicesRouter } from './VoicesLink';
-import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
+import { 
+  ButtonInstrument, 
+  // ContainerInstrument, // Verplaatst naar Server voor root layout stabiliteit
+  // HeadingInstrument,   // Verplaatst naar Server voor root layout stabiliteit
+  // TextInstrument       // Verplaatst naar Server voor root layout stabiliteit
+} from './LayoutInstruments';
+import { 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument 
+} from './LayoutInstrumentsServer';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 import { NavConfig } from '@/lib/config-bridge';
