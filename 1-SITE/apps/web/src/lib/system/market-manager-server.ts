@@ -2,10 +2,10 @@
  * NUCLEAR MARKET MANAGER SERVER - 2026 EDITION
  * 
  * DIT BESTAND IS ALLEEN VOOR SERVER COMPONENTS & API ROUTES.
- * Het bevat de database-logica die niet in de client bundle mag komen.
+ * Het is verplaatst naar de web-app lib om strikte isolatie van de client bundle te garanderen.
  */
 
-import { MarketManager, MarketConfig } from './market-manager';
+import { MarketManager, MarketConfig } from '@config/market-manager';
 
 export class MarketManagerServer extends MarketManager {
   /**
@@ -23,7 +23,6 @@ export class MarketManagerServer extends MarketManager {
     
     try {
       // 🛡️ CHRIS-PROTOCOL: Dynamic import to isolate DB logic from client bundle
-      // Zelfs in dit server-only bestand gebruiken we dynamic imports voor maximale veiligheid.
       const { db } = await import('@db');
       const { marketConfigs } = await import('@db/schema');
       const { eq } = await import('drizzle-orm');
@@ -56,7 +55,7 @@ export class MarketManagerServer extends MarketManager {
             description: dbConfig.description || undefined,
             og_image: dbConfig.ogImage || undefined,
             schema_type: (dbConfig as any).schemaType || (
-              staticConfig.market_code === 'ADEMING' ? 'WebApplication' : 
+              staticConfig.market_code === 'ADEMING' ? 'Organization' : 
               (staticConfig.market_code === 'PORTFOLIO' || staticConfig.market_code === 'ARTIST') ? 'Person' : 'Organization'
             ),
             locale_code: loc?.locale || (
