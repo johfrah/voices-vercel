@@ -281,7 +281,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         with: {
           demos: {
             limit: 5,
-            where: eq(actorDemos.isPublic, true)
+            where: (demos, { eq }) => eq(demos.isPublic, true)
           },
           country: true,
           actorLanguages: {
