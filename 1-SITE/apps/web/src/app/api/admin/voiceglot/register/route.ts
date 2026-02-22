@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Skipping registration during build' });
     }
 
-    const { key, sourceText } = await request.json();
+    const { key, sourceText, context } = await request.json();
 
     if (!key || !sourceText) {
       return NextResponse.json({ error: 'Key and sourceText required' }, { status: 400 });
@@ -38,19 +38,20 @@ export async function POST(request: NextRequest) {
     try {
       //  CHRIS-PROTOCOL: Forensische Database Check
       // We loggen de payload voor we inserten om de root cause van de 'Failed query' te vinden.
-      console.log('[RegisterAPI] Attempting registry insert:', { key, sourceText });
+      console.log('[RegisterAPI] Attempting registry insert:', { key, sourceText, context });
 
       if (key && sourceText) {
         await db.insert(translationRegistry).values({
           stringHash: key, 
           originalText: sourceText,
           lastSeen: new Date(),
-          context: 'auto-registered'
+          context: context || 'auto-registered'
         }).onConflictDoUpdate({
           target: [translationRegistry.stringHash],
           set: { 
             originalText: sourceText,
-            lastSeen: new Date() 
+            lastSeen: new Date(),
+            context: context || 'auto-registered'
           }
         });
         console.log('[RegisterAPI] Registry insert success for key:', key);
@@ -86,6 +87,7 @@ export async function POST(request: NextRequest) {
           if (!existing || !existing.translatedText || existing.translatedText === sourceText) {
             const prompt = `
               Vertaal de volgende tekst van het Nederlands naar het ${lang}.
+              Context: ${context || 'Algemene website tekst'}
               Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
               Geen AI-bingo woorden, geen em-dashes, max 15 woorden.
               

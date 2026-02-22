@@ -32,20 +32,26 @@ export async function GET() {
       
       results[lang] = { total: allStrings.length, missing: missing.length, healed: 0 };
 
-      // We healen er max 15 per keer om timeouts te voorkomen
-      for (const item of missing.slice(0, 15)) {
+      // We healen er max 50 per keer om timeouts te voorkomen
+      for (const item of missing.slice(0, 50)) {
         try {
           //  CHRIS-PROTOCOL: Data Integrity
-          // We checken of de key en tekst wel bestaan voor we de AI aanroepen.
           const key = item.stringHash || (item as any).translationKey;
           const text = item.originalText || (item as any).defaultText;
+          const context = item.context || 'Algemene website tekst';
 
           if (!key || !text) {
             console.warn(`[TurboHeal] Missing key or text for item:`, item);
             continue;
           }
 
-          const prompt = `Vertaal naar het ${lang}: "${text}". Voices Tone: warm, vakmanschap. Max 15 woorden.`;
+          const prompt = `
+            Vertaal naar het ${lang}: "${text}". 
+            Context: ${context}
+            Voices Tone: warm, vakmanschap, gelijkwaardig. 
+            Geen AI-bingo, geen em-dashes.
+            Max 15 woorden.
+          `;
           const translated = await GeminiService.generateText(prompt, { lang: lang });
           const clean = translated.trim().replace(/^"|"$/g, '');
 

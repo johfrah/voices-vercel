@@ -284,17 +284,17 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                   )}
                 >
                   <Icon size={20} strokeWidth={isActive ? 2 : 1.5} className={cn("transition-all duration-500 shrink-0 md:w-6 md:h-6", isActive && j.color)} />
-                  <div className="flex flex-col">
-                    <span className="text-[12px] md:text-[14px] font-bold tracking-widest leading-none mb-1 whitespace-nowrap">
-                      <VoiceglotText translationKey={j.key} defaultText={j.label} instrument="label" />
-                    </span>
-                    <span className={cn(
-                      "text-[9px] md:text-[10px] font-medium tracking-wider uppercase opacity-60 whitespace-nowrap",
-                      isActive ? "text-white/80" : "text-va-black/40 group-hover/btn:text-va-black/60"
-                    )}>
-                      <VoiceglotText translationKey={`${j.key}.sub`} defaultText={j.subLabel} instrument="label" />
-                    </span>
-                  </div>
+          <div className="flex flex-col">
+            <span className="text-[12px] md:text-[14px] font-bold tracking-widest leading-none mb-1 whitespace-nowrap">
+              <VoiceglotText translationKey={j.key} defaultText={j.label} instrument="label" context={`Navigatie journey label: ${j.label}`} />
+            </span>
+            <span className={cn(
+              "text-[9px] md:text-[10px] font-medium tracking-wider uppercase opacity-60 whitespace-nowrap",
+              isActive ? "text-white/80" : "text-va-black/40 group-hover/btn:text-va-black/60"
+            )}>
+              <VoiceglotText translationKey={`${j.key}.sub`} defaultText={j.subLabel} instrument="label" context={`Navigatie journey sub-label: ${j.subLabel}`} />
+            </span>
+          </div>
                   {isActive && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-auto hidden md:block" />}
                 </button>
               );

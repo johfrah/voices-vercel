@@ -17,6 +17,7 @@ interface VoiceglotTextProps {
   noTranslate?: boolean;
   components?: Record<string, (children: any) => React.ReactNode>;
   values?: Record<string, string | number>;
+  context?: string; //  Added context prop for better AI translations
 }
 
 /**
@@ -33,7 +34,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   as: Component = 'span',
   noTranslate = false,
   components,
-  values
+  values,
+  context //  New prop
 }) => {
   const { isEditMode } = useEditMode();
   const { playClick, playSwell } = useSonicDNA();
@@ -78,7 +80,11 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
         await fetch('/api/admin/voiceglot/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key: translationKey, sourceText: defaultText })
+          body: JSON.stringify({ 
+            key: translationKey, 
+            sourceText: defaultText,
+            context: context || 'auto-registered' //  Pass context to registry
+          })
         });
       } catch (e) {
         // Silent fail
