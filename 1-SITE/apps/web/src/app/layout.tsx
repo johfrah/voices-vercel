@@ -10,6 +10,7 @@ import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
 import { MarketManagerServer } from "@/lib/system/market-manager-server";
+import { MarketManager } from "@config/market-manager";
 import { Analytics } from "@vercel/analytics/react";
 import { VercelToolbar } from "@vercel/toolbar/next";
 import type { Metadata, Viewport } from "next";
@@ -89,7 +90,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${market.name}`,
     },
     description,
-    metadataBase: new URL(baseUrl),
+    metadataBase: host ? new URL(baseUrl) : undefined,
     alternates: {
       canonical: "/",
       languages: alternateLanguages,
@@ -170,25 +171,25 @@ export default async function RootLayout({
     "@type": market.seo_data?.schema_type || (market.market_code === 'ADEMING' ? "WebApplication" : (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? "Person" : "Organization"),
     "name": market.name,
     "url": `https://${host}`,
-    "logo": `https://${host}${market.logo_url}`,
+    "logo": `https://${host}${market.logo_url || ''}`,
     "description": market.seo_data?.description || (
       market.market_code === 'ADEMING' ? "Platform voor meditatie en innerlijke rust." : 
       market.market_code === 'PORTFOLIO' ? "Vlaamse voice-over & regisseur." : 
       "Het vriendelijkste stemmenbureau."
     ),
     "sameAs": Object.values(market.social_links || {}).filter(Boolean),
-    "jobTitle": (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? market.seo_data?.description?.split('.')[0] : undefined,
+    "jobTitle": (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? (market.seo_data?.description || '').split('.')[0] : undefined,
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": market.phone,
       "contactType": "customer service",
       "email": market.email,
-      "availableLanguage": market.supported_languages
+      "availableLanguage": market.supported_languages || []
     },
     "founder": (market.market_code !== 'PORTFOLIO' && market.market_code !== 'ARTIST') ? {
       "@type": "Person",
       "name": "Johfrah Lefebvre",
-      "sameAs": MarketManager.getMarketDomains()['BE']
+      "sameAs": (MarketManager.getMarketDomains() || {})['BE']
     } : undefined
   };
 

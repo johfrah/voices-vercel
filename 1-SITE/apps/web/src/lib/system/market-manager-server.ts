@@ -138,7 +138,9 @@ export class MarketManagerServer extends MarketManager {
           m.market === 'EU' ? 'en-EU' : 'nl-BE'
         );
         const domain = (m as any).canonicalDomain || staticDomains[m.market] || `https://www.voices.be`;
-        locales[locale] = domain;
+        if (locale) {
+          locales[locale] = domain;
+        }
       });
 
       const finalLocales = Object.keys(locales).length > 0 ? locales : {
