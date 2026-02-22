@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import path from 'path';
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
-import { contentArticles, contentBlocks, translations, appConfigs } from '../../../packages/database/src/schema/index';
+import { contentArticles, contentBlocks, translations, appConfigs } from '../../../../packages/database/src/schema/index';
 import { eq, and, ilike, or } from "drizzle-orm";
 import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
 import { VOICES_CONFIG } from '../../../packages/config/config';

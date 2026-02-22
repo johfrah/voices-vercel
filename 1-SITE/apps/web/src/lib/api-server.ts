@@ -125,7 +125,7 @@ function getGlobalCache() {
   return g.apiServerCache;
 }
 
-const ACTORS_CACHE_TTL = 1000 * 60 * 10; // 10 minutes (increased for stability)
+const ACTORS_CACHE_TTL = 1000 * 5; // 5 seconds (reduced for debugging)
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
   console.log(' API: getActors called with params:', params);
@@ -146,6 +146,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
   try {
     const lowLang = language?.toLowerCase() || '';
     const dbLang = language ? MarketManager.getLanguageCode(lowLang) : null;
+    console.log(' [getActors] language:', language, 'lowLang:', lowLang, 'dbLang:', dbLang);
     const lowGender = gender?.toLowerCase() || '';
     const dbGender = gender ? (lowGender.includes('mannelijk') ? 'male' : lowGender.includes('vrouwelijk') ? 'female' : lowGender) : null;
     
@@ -194,6 +195,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     }
 
     console.log(' API: Executing findMany with conditions:', conditions.length);
+    console.log(' API: Conditions details:', JSON.stringify(conditions.map(c => c ? 'condition' : 'null')));
+    
     if (!db.query || !db.query.actors) {
       console.error(' API: db.query.actors is not available! Drizzle initialization might have failed.');
       throw new Error('Database query engine not available');
