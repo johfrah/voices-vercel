@@ -5,7 +5,8 @@ import { CommandPalette } from "@/components/ui/CommandPalette";
 import { SpotlightDashboard } from "@/components/ui/SpotlightDashboard";
 import FooterWrapper from "@/components/ui/FooterWrapper";
 import { TopBar } from "@/components/ui/TopBar";
-import { LoadingScreenInstrument, PageWrapperInstrument, RootLayoutInstrument } from "@/components/ui/LayoutInstruments";
+import { LoadingScreenInstrument } from "@/components/ui/LayoutInstruments";
+import { PageWrapperInstrument } from "@/components/ui/LayoutInstrumentsServer";
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
@@ -183,69 +184,73 @@ export default async function RootLayout({
   // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
   if (isUnderConstruction) {
     return (
-      <RootLayoutInstrument lang={lang} className={`${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`}>
-        <Providers lang={lang} initialTranslations={translations}>
-          <SonicDNAHandler />
-          <PageWrapperInstrument>
-            {children}
-          </PageWrapperInstrument>
-        </Providers>
-      </RootLayoutInstrument>
+      <html lang={lang} className={`${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`}>
+        <body className="pb-24 md:pb-0 touch-manipulation va-main-layout">
+          <Providers lang={lang} initialTranslations={translations}>
+            <SonicDNAHandler />
+            <PageWrapperInstrument>
+              {children}
+            </PageWrapperInstrument>
+          </Providers>
+        </body>
+      </html>
     );
   }
 
   return (
-    <RootLayoutInstrument lang={lang} className={`${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <Providers lang={lang} initialTranslations={translations}>
-        <GhostModeBar />
-        <EditModeOverlay>
-          <LiquidTransitionOverlay />
-          <CodyPreviewBanner />
-          <Suspense fallback={null}>
-            <VoicejarTracker />
-          </Suspense>
-          <div className="fixed top-0 left-0 right-0 z-[200]">
-            <Suspense fallback={<div className="h-10 bg-va-off-white/50 animate-pulse" />}>
-              {showTopBar && <TopBar />}
-              {showGlobalNav && <GlobalNav />}
-            </Suspense>
-          </div>
-          <Analytics />
-          {process.env.NODE_ENV === 'development' && <VercelToolbar />}
-          <CommandPalette />
-          <SpotlightDashboard />
-          <Toaster position="bottom-right" />
-          <GlobalModalManager />
-          <PageWrapperInstrument>
-            <Suspense fallback={<LoadingScreenInstrument />}>
-              {children}
-            </Suspense>
-          </PageWrapperInstrument>
-          {!isArtistJourney && (
+    <html lang={lang} className={`${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`}>
+      <body className="pb-24 md:pb-0 touch-manipulation va-main-layout">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <Providers lang={lang} initialTranslations={translations}>
+          <GhostModeBar />
+          <EditModeOverlay>
+            <LiquidTransitionOverlay />
+            <CodyPreviewBanner />
             <Suspense fallback={null}>
-              <JohfrahActionDock />
-              <JohfrahConfiguratorSPA />
-              <CastingDock />
+              <VoicejarTracker />
             </Suspense>
-          )}
-          <Suspense fallback={null}>
-            <SonicDNAHandler />
-            <GlobalAudioOrchestrator />
-          </Suspense>
-          {showVoicy && (
+            <div className="fixed top-0 left-0 right-0 z-[200]">
+              <Suspense fallback={<div className="h-10 bg-va-off-white/50 animate-pulse" />}>
+                {showTopBar && <TopBar />}
+                {showGlobalNav && <GlobalNav />}
+              </Suspense>
+            </div>
+            <Analytics />
+            {process.env.NODE_ENV === 'development' && <VercelToolbar />}
+            <CommandPalette />
+            <SpotlightDashboard />
+            <Toaster position="bottom-right" />
+            <GlobalModalManager />
+            <PageWrapperInstrument>
+              <Suspense fallback={<LoadingScreenInstrument />}>
+                {children}
+              </Suspense>
+            </PageWrapperInstrument>
+            {!isArtistJourney && (
+              <Suspense fallback={null}>
+                <JohfrahActionDock />
+                <JohfrahConfiguratorSPA />
+                <CastingDock />
+              </Suspense>
+            )}
             <Suspense fallback={null}>
-              <VoicyBridge />
-              <VoicyChat />
+              <SonicDNAHandler />
+              <GlobalAudioOrchestrator />
             </Suspense>
-          )}
-          <CookieBanner />
-          <FooterWrapper />
-        </EditModeOverlay>
-      </Providers>
-    </RootLayoutInstrument>
+            {showVoicy && (
+              <Suspense fallback={null}>
+                <VoicyBridge />
+                <VoicyChat />
+              </Suspense>
+            )}
+            <CookieBanner />
+            <FooterWrapper />
+          </EditModeOverlay>
+        </Providers>
+      </body>
+    </html>
   );
 }

@@ -59,7 +59,7 @@ o/bKiIz+Fq8=
       (globalThis as any).dbInstance = drizzle(client, { 
         schema
       });
-      console.log('✅ Drizzle initialized (Pool size:', 5, ')');
+      console.log('✅ Drizzle initialized (Pool size:', 10, ')');
     } catch (e) {
       console.error('❌ Failed to initialize Drizzle:', e);
       return null;
