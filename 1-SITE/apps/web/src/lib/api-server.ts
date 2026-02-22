@@ -136,9 +136,23 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         let query = supabase
           .from('users')
           .select('*')
-          .limit(10);
+          .eq('status', 'live')
+          .eq('is_public', true);
           
-        const { data: sdkData, error: sdkError } = await query;
+        if (language || lang) {
+          const targetLang = language || lang;
+          if (targetLang === 'nl') {
+            query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
+          } else {
+            query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
+          }
+        }
+        
+        if (gender) {
+          query = query.eq('gender', gender);
+        }
+        
+        const { data: sdkData, error: sdkError } = await query.limit(100);
           
         if (sdkError) {
           console.error(' [getActors] SDK Error:', sdkError);
