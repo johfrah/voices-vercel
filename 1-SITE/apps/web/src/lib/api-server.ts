@@ -244,7 +244,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         display_name: actor.firstName,
         first_name: actor.firstName,
         last_name: actor.lastName || '',
-        slug: actor.firstName?.toLowerCase(),
+        slug: actor.slug || actor.firstName?.toLowerCase(),
         gender: actor.gender,
         native_lang: actor.nativeLang,
         photo_url: photoUrl,
