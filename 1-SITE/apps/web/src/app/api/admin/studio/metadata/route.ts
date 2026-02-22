@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const [allLocations, allInstructors] = await Promise.all([
-      db.select().from(locations),
-      db.select().from(instructors)
+      db.select().from(locations).catch(() => []),
+      db.select().from(instructors).catch(() => [])
     ]);
 
     return NextResponse.json({

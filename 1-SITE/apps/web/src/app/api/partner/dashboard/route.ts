@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // 1. Haal partner info op
-    const [partner] = await db.select().from(users).where(eq(users.role, 'partner')).limit(1); // Placeholder logic
+    const [partner] = await db.select().from(users).where(eq(users.role, 'partner')).limit(1).catch(() => []); // Placeholder logic
     
     if (!partner) {
       return NextResponse.json({ error: 'Partner not found' }, { status: 404 });
@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
         totalRevenue: sum(orders.total),
       })
       .from(orders)
-      .where(eq(orders.userId, partner.id));
+      .where(eq(orders.userId, partner.id))
+      .catch(() => []);
 
     // 3. Haal recente orders op
     const recentOrders = await db
@@ -39,7 +40,8 @@ export async function GET(request: NextRequest) {
       .from(orders)
       .where(eq(orders.userId, partner.id))
       .orderBy(sql`${orders.createdAt} DESC`)
-      .limit(5);
+      .limit(5)
+      .catch(() => []);
 
     return NextResponse.json({
       partner: {

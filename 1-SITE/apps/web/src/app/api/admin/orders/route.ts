@@ -34,7 +34,8 @@ export async function GET(request: NextRequest) {
     .from(orders)
     .leftJoin(users, eq(orders.userId, users.id))
     .orderBy(desc(orders.createdAt))
-    .limit(50);
+    .limit(50)
+    .catch(() => []);
 
     return NextResponse.json(allOrders);
   } catch (error) {

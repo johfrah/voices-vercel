@@ -28,7 +28,8 @@ export async function GET() {
     .from(media)
     .leftJoin(actors, eq(actors.photoId, media.id))
     .where(sql`metadata->>'autoMatched' = 'true'`)
-    .limit(100);
+    .limit(100)
+    .catch(() => []);
 
     return NextResponse.json(autoMatched);
   } catch (error: any) {

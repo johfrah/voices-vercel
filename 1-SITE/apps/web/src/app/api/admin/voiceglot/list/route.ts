@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const results = await db.select().from(translations).orderBy(desc(translations.updatedAt));
+    const results = await db.select().from(translations).orderBy(desc(translations.updatedAt)).catch(() => []);
     return NextResponse.json({ translations: results });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

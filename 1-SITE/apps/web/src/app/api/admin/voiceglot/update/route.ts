@@ -49,7 +49,8 @@ export async function POST(req: Request) {
         eq(translations.translationKey, key),
         eq(translations.lang, lang)
       ))
-      .limit(1);
+      .limit(1)
+      .catch(() => []);
 
     await db.transaction(async (tx) => {
       if (existing.length > 0) {

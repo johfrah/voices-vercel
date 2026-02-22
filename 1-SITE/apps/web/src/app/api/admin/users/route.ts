@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const allUsers = await db.select().from(users).orderBy(desc(users.createdAt));
+    const allUsers = await db.select().from(users).orderBy(desc(users.createdAt)).catch(() => []);
     return NextResponse.json(allUsers);
   } catch (error) {
     console.error('[Admin Users GET Error]:', error);

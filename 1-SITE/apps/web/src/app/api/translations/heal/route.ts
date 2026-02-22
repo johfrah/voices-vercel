@@ -133,6 +133,8 @@ export async function POST(request: NextRequest) {
           translatedText: cleanTranslation,
           updatedAt: new Date()
         }
+      }).catch((err) => {
+        console.error(`[heal] DB Insert/Update Error for ${key}:`, err);
       });
     }
 

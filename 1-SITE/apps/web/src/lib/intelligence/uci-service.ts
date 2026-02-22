@@ -210,6 +210,9 @@ export class UCIService {
         customerInsights: insights,
         updatedAt: new Date() 
       })
-      .where(eq(users.id, userId));
+      .where(eq(users.id, userId))
+      .catch((err) => {
+        console.error(`[UCI Service] updateInsights failed for ${userId}:`, err);
+      });
   }
 }

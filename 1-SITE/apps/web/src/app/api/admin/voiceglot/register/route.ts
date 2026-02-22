@@ -80,7 +80,8 @@ export async function POST(request: NextRequest) {
                 eq(translations.lang, lang)
               )
             )
-            .limit(1);
+            .limit(1)
+            .catch(() => []);
 
           if (!existing || !existing.translatedText || existing.translatedText === sourceText) {
             const prompt = `

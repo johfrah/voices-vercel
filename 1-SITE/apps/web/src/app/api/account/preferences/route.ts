@@ -43,7 +43,10 @@ export async function POST(request: Request) {
         preferences: updatedPreferences,
         updatedAt: new Date()
       })
-      .where(eq(users.email, user.email!));
+      .where(eq(users.email, user.email!))
+      .catch((err) => {
+        console.error(`[preferences] DB Update Error for ${user.email}:`, err);
+      });
 
     return NextResponse.json({ success: true, preferences: updatedPreferences });
   } catch (error: any) {

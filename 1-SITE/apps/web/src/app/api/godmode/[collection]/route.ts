@@ -42,7 +42,7 @@ export async function GET(
 
   try {
     if (id) {
-      const [result] = await db.select().from(table).where(eq((table as any).id, parseInt(id))).limit(1);
+      const [result] = await db.select().from(table).where(eq((table as any).id, parseInt(id))).limit(1).catch(() => []);
       return NextResponse.json(result || { error: 'Not found' }, { status: result ? 200 : 404 });
     }
 
@@ -51,7 +51,8 @@ export async function GET(
       .from(table)
       .limit(limit)
       .offset(offset)
-      .orderBy(desc((table as any).createdAt || (table as any).id));
+      .orderBy(desc((table as any).createdAt || (table as any).id))
+      .catch(() => []);
 
     return NextResponse.json({
       collection: collectionName,

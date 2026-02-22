@@ -29,7 +29,8 @@ export async function GET(request: NextRequest) {
     .from(reviews)
     .leftJoin(actors, sql`${reviews.iapContext}->>'actorId' = ${actors.id.toString()}`)
     .leftJoin(users, eq(reviews.authorName, users.firstName)) // This join is weak, but authors in reviews are often strings
-    .orderBy(desc(reviews.createdAt));
+    .orderBy(desc(reviews.createdAt))
+    .catch(() => []);
 
     return NextResponse.json(allReviews);
   } catch (error) {

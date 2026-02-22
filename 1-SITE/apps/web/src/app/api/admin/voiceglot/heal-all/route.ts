@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
 
     // 1. Haal alle unieke strings uit de registry
-    const registryItems = await db.select().from(translationRegistry);
+    const registryItems = await db.select().from(translationRegistry).catch(() => []);
 
     for (const item of registryItems) {
       for (const lang of targetLanguages) {
@@ -48,7 +48,8 @@ export async function POST(request: NextRequest) {
               eq(translations.lang, lang)
             )
           )
-          .limit(1);
+          .limit(1)
+          .catch(() => []);
 
         if (!existing || !existing.translatedText) {
           // 2. Vertaal via AI

@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     // Echter, de 'id' kolom is momenteel bigint en niet serial in de schema definitie (id: bigint('id', { mode: 'number' }).primaryKey()).
     
     // We zoeken de hoogste ID en doen +1
-    const highestIdRes = await db.select({ id: workshops.id }).from(workshops).orderBy(workshops.id).limit(1);
+    const highestIdRes = await db.select({ id: workshops.id }).from(workshops).orderBy(workshops.id).limit(1).catch(() => []);
     const nextId = (highestIdRes[0]?.id || 1000000) + 1;
 
     await db.insert(workshops)

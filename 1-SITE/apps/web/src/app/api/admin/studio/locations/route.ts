@@ -11,7 +11,7 @@ export async function GET() {
   }
 
   try {
-    const results = await db.select().from(locations);
+    const results = await db.select().from(locations).catch(() => []);
     return NextResponse.json(results);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

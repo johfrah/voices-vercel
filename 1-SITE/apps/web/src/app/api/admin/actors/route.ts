@@ -28,10 +28,10 @@ export async function GET() {
         actorVideos: true,
         actorLanguages: true
       }
-    });
+    }).catch(() => []);
 
     //  CHRIS-PROTOCOL: Map relational languages to flat ID fields for frontend compatibility
-    const mappedActors = allActors.map(actor => {
+    const mappedActors = (allActors || []).map(actor => {
       const nativeLink = actor.actorLanguages?.find(al => al.isNative);
       const extraLinks = actor.actorLanguages?.filter(al => !al.isNative) || [];
       

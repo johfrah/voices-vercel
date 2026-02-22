@@ -24,7 +24,7 @@ async function checkIsAdmin(email: string | undefined): Promise<boolean> {
   if (adminEmail && email === adminEmail) return true;
 
   try {
-    const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, email)).limit(1);
+    const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, email)).limit(1).catch(() => []);
     return dbUser?.role === 'admin';
   } catch (dbError) {
     console.warn(' Customer 360 Drizzle failed, falling back to SDK');

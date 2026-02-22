@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
       },
       orderBy: [desc(voicejarSessions.updatedAt)],
       limit: 50
-    });
+    }).catch(() => []);
 
     // 3. Formatteer voor de cockpit
     const visitors = activeSessions.map(session => ({

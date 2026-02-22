@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
         .select()
         .from(reviews)
         .where(sql`${reviews.iapContext}->>'actorId' = ${actorId}`)
-        .orderBy(desc(reviews.createdAt));
+        .orderBy(desc(reviews.createdAt))
+        .catch(() => []);
 
       const avgConversion = actorReviews.reduce((acc, r) => acc + Number(r.conversionScore || 0), 0) / (actorReviews.length || 1);
 
@@ -53,7 +54,8 @@ export async function GET(request: NextRequest) {
       .groupBy(sql`${reviews.iapContext}->>'actorId'`)
       .having(sql`AVG(${reviews.rating}) >= ${minRating}`)
       .orderBy(desc(sql`SUM(${reviews.conversionScore})`))
-      .limit(10);
+      .limit(10)
+      .catch(() => []);
 
     return NextResponse.json(topActors);
   } catch (error) {
