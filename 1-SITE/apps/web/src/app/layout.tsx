@@ -170,8 +170,8 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": market.seo_data?.schema_type || (market.market_code === 'ADEMING' ? "WebApplication" : (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? "Person" : "Organization"),
     "name": market.name,
-    "url": `https://${host}`,
-    "logo": `https://${host}${market.logo_url || ''}`,
+    "url": host ? `https://${host}` : '',
+    "logo": market.logo_url?.startsWith('http') ? market.logo_url : `https://${host}${market.logo_url || ''}`,
     "description": market.seo_data?.description || (
       market.market_code === 'ADEMING' ? "Platform voor meditatie en innerlijke rust." : 
       market.market_code === 'PORTFOLIO' ? "Vlaamse voice-over & regisseur." : 
