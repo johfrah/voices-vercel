@@ -136,8 +136,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       let query = supabase
         .from('actors')
         .select('*')
-        .eq('status', 'live')
-        .eq('is_public', true);
+        .eq('status', 'live');
+        
+      // .eq('is_public', true);
         
       /*
       if (dbLang || lang) {
