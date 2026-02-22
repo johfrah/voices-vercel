@@ -29,7 +29,7 @@ export async function GET(request: Request) {
       query = query.or(`native_lang.ilike.${lang},native_lang.ilike.${lang}-%`);
     }
     
-    const { data, error } = await query.limit(50);
+    const { data, error } = await query.order('menu_order', { ascending: true }).limit(50);
     
     if (error) throw error;
     
