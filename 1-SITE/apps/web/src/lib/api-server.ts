@@ -173,6 +173,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     
     // 🛡️ CHRIS-PROTOCOL: Language filter is mandatory for the initial load to prevent empty lists
     // We match on nativeLang OR extraLangs (via sub-query or simple ilike)
+    /*
     if (dbLang || lang) {
       const targetLang = dbLang || lang;
       const langConditions = [
@@ -189,6 +190,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         conditions.push(or(...langConditions) as any);
       }
     }
+    */
     
     if (dbGender) {
       conditions.push(eq(actors.gender, dbGender));
