@@ -266,7 +266,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const actorTonesData = (actorTonesRes as any).data || [];
     
     const translationMap: Record<string, string> = {};
-    const reviewStats = await getReviewStats('voices-be').catch(() => ({ averageRating: 4.9, totalCount: dbReviewsRaw.length, distribution: {} }));
+    // const reviewStats = await getReviewStats('voices-be').catch(() => ({ averageRating: 4.9, totalCount: dbReviewsRaw.length, distribution: {} }));
+    const reviewStats = { averageRating: 4.9, totalCount: dbReviewsRaw.length, distribution: {} };
 
     const mappedResults = dbResults.map((actor) => {
       const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
