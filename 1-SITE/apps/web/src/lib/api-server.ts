@@ -130,10 +130,6 @@ const ACTORS_CACHE_TTL = 1000 * 5; // 5 seconds (reduced for debugging)
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
   console.log(' API: getActors called with params:', params);
   
-  if (params.dummy === 'true') {
-    return { results: [{ id: 999, first_name: 'Dummy' }] as any, count: 1, filters: { genders: [], languages: [], styles: [] }, reviews: [], reviewStats: { averageRating: 5, totalCount: 1, distribution: {} } };
-  }
-  
   const { language, search, gender, style, market } = params;
   
   const cache = getGlobalCache();
@@ -175,8 +171,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     // Alleen live acteurs tonen op de frontend
     // @ts-ignore
     conditions.push(eq(actors.status, 'live'));
-    
-    /*
     // @ts-ignore
     conditions.push(eq(actors.isPublic, true));
     
@@ -202,14 +196,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     if (dbGender) {
       conditions.push(eq(actors.gender, dbGender));
     }
-    */
 
     console.log(' API: Executing findMany with conditions:', conditions.length);
     console.log(' API: Conditions details:', JSON.stringify(conditions.map(c => c ? 'condition' : 'null')));
-    
-    // DEBUG: Raw query check
-    const rawCheck = await db.select({ count: sql`count(*)` }).from(actors).where(and(...conditions));
-    console.log(' API: Raw check count:', rawCheck[0]?.count);
     
     if (!db.query || !db.query.actors) {
       console.error(' API: db.query.actors is not available! Drizzle initialization might have failed.');

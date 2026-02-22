@@ -18,12 +18,15 @@ const getDb = () => {
                   let connectionString = process.env.DATABASE_URL!;
                   if (!connectionString) return null;
                   
-                  // CHRIS-PROTOCOL: Force Direct Connection for Stability (v2.13)
-                  // The Supabase Pooler (6543) is currently hanging on translation queries.
-                  // We switch to direct port 5432 for better reliability.
-                  if (connectionString.includes(':6543')) {
-                    console.log('🔄 Switching to direct DB connection (port 5432) for stability...');
-                    connectionString = connectionString.replace(':6543', ':5432').replace('pgbouncer=true', 'pgbouncer=false');
+                  // CHRIS-PROTOCOL: Transaction Mode for Serverless Stability (v2.14)
+                  // We use port 6543 (Transaction Mode) with a small pool size to avoid saturation.
+                  if (connectionString.includes(':5432')) {
+                    console.log('🔄 Switching to transaction mode pooler (port 6543) for stability...');
+                    connectionString = connectionString.replace(':5432', ':6543').replace('pgbouncer=false', 'pgbouncer=true');
+                  }
+                  
+                  if (!connectionString.includes('pgbouncer=true')) {
+                    connectionString += (connectionString.includes('?') ? '&' : '?') + 'pgbouncer=true';
                   }
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
@@ -49,7 +52,7 @@ CMTyZKG3XEu5Ghl1LEnI3QmEKsqaCLv12BnVjbkSeZsMnevJPs1Ye6TjjJwdik5P
 o/bKiIz+Fq8=
 -----END CERTIFICATE-----`;
 
-      const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 3 : 10);
+      const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 1 : 10);
       const client = postgres(connectionString, { 
         prepare: false, 
         ssl: {
