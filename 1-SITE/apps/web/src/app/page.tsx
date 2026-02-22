@@ -12,7 +12,7 @@ import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
 import { SlimmeKassa } from '@/lib/pricing-engine';
 import { VoiceFilterEngine } from "@/lib/voice-filter-engine";
 import { Actor } from "@/types";
-import { MarketManager } from "@config/market-manager";
+import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import dynamic from "next/dynamic";
 

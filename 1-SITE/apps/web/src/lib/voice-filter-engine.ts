@@ -10,7 +10,7 @@
  * - Antifragile: Kan omgaan met zowel ISO-codes als UI-labels.
  */
 
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { Actor } from '@/types';
 import { SlimmeKassa, CommercialMediaType } from './pricing-engine';
 

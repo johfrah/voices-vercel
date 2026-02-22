@@ -36,7 +36,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { isOfficeOpen, getNextOpeningTime } from '@/lib/delivery-logic';
 import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 export const VoicyChatV2: React.FC = () => {
   const { 

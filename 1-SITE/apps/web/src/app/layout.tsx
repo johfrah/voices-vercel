@@ -10,7 +10,6 @@ import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
 import { MarketManagerServer } from "@/lib/system/market-manager-server";
-import { MarketManager } from "@config/market-manager";
 import { Analytics } from "@vercel/analytics/react";
 import { VercelToolbar } from "@vercel/toolbar/next";
 import type { Metadata, Viewport } from "next";
@@ -56,7 +55,7 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
-  const domains = MarketManager.getMarketDomains();
+  const domains = MarketManagerServer.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || 'www.voices.be';
   const cleanHost = host.replace(/^https?:\/\//, '');
@@ -141,7 +140,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const headersList = headers();
-  const domains = MarketManager.getMarketDomains();
+  const domains = MarketManagerServer.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || 'www.voices.be';
   const cleanHost = host.replace(/^https?:\/\//, '');
@@ -211,7 +210,7 @@ export default async function RootLayout({
     "founder": (market.market_code !== 'PORTFOLIO' && market.market_code !== 'ARTIST') ? {
       "@type": "Person",
       "name": "Johfrah Lefebvre",
-      "sameAs": (MarketManager.getMarketDomains() || {})['BE']
+      "sameAs": (MarketManagerServer.getMarketDomains() || {})['BE']
     } : undefined
   };
 
@@ -254,7 +253,6 @@ export default async function RootLayout({
             <Suspense fallback={null}>
               <VoicejarTracker />
             </Suspense>
-            <script dangerouslySetInnerHTML={{ __html: `console.log('🚀 [Voices] Nuclear Version: v3.2 (Cache Purged)');` }} />
             <div className="fixed top-0 left-0 right-0 z-[200]">
               <Suspense fallback={<div className="h-10 bg-va-off-white/50 animate-pulse" />}>
                 {showTopBar && <TopBar />}

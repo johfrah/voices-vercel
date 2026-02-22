@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { CommercialMediaType, SlimmeKassa } from '@/lib/pricing-engine';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Clock, Globe, Megaphone, Mic2, Phone, Radio, Star, Tv, Type, User, Users, Video, Search as SearchIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';

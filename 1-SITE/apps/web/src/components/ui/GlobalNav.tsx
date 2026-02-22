@@ -7,7 +7,7 @@ import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, Building2, ChevronRight, ChevronDown, Globe, Heart, LayoutDashboard, LogOut, Mail, Menu, Mic2, Monitor, Phone, Radio, ShoppingBag, ShoppingCart, User, Info, Settings, Home, Euro, GraduationCap, Quote, Users } from 'lucide-react';
 

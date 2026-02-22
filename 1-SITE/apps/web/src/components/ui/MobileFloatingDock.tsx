@@ -2,7 +2,7 @@
 
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Mic2, LucideChevronRight, Home, Users, Search, Euro, User } from 'lucide-react';
 import Image from 'next/image';

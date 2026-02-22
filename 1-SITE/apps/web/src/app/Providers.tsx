@@ -27,6 +27,7 @@ export function Providers({
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
   React.useEffect(() => {
     ClientLogger.init();
+    console.log('🚀 [Voices] Nuclear Version: v3.3 (TDZ & Hydration Fix)');
   }, []);
   
   //  CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)

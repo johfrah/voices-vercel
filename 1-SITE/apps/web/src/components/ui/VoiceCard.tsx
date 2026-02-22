@@ -12,7 +12,7 @@ import { SlimmeKassa } from '@/lib/pricing-engine';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Check, ChevronDown, Clock, Edit3, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, ShieldCheck, Zap, X } from 'lucide-react';
 import { useVoicesRouter } from '@/components/ui/VoicesLink';

@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { Mail, Phone, UserCircle, Zap } from 'lucide-react';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { ContainerInstrument, TextInstrument, ButtonInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
