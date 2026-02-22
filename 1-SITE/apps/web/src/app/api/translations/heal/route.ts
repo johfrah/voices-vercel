@@ -1,5 +1,5 @@
 import { OpenAIService } from '@/services/OpenAIService';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer } from '@/lib/system/market-manager-server';
 import { db } from '@db';
 import { translations } from '@db/schema';
 import { and, eq } from 'drizzle-orm';
@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
 
     //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
-    const market = MarketManager.getCurrentMarket(host);
-    const adminEmail = process.env.ADMIN_EMAIL || market.email;
+    const market = await MarketManagerServer.getCurrentMarketAsync(host);
+    const adminEmail = process.env.ADMIN_EMAIL || market?.email || 'bob@voices.be';
 
     // 1. Check of de key al bestaat voor deze taal
     const [existing] = await db

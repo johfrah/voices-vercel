@@ -60,7 +60,11 @@ export const TranslationProvider: React.FC<{
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ key, originalText: defaultText, currentLang: lang })
           }).catch(() => {
-            healingKeys.current.delete(key);
+            // STABILITEIT: Bij een fout wachten we 30 seconden voordat we het opnieuw proberen
+            // om request-floods te voorkomen bij server-side issues.
+            setTimeout(() => {
+              healingKeys.current.delete(key);
+            }, 30000);
           }); 
         }
       } else {

@@ -47,6 +47,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   );
   const [isSaving, setIsSaving] = useState(false);
   const [isHealing, setIsHealing] = useState(false);
+  const failedHeals = useRef<Set<string>>(new Set());
   const textRef = useRef<HTMLSpanElement>(null);
 
   //  CHRIS-PROTOCOL: Force content update when translation or edit mode changes
@@ -103,13 +104,13 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     
     // Als de vertaling gelijk is aan de default (Source) maar we zitten in een andere taal,
     // dan is er een grote kans dat de vertaling ontbreekt.
-    if (currentTranslation === defaultText && language !== sourceLang && !isHealing) {
+    if (currentTranslation === defaultText && language !== sourceLang && !isHealing && !failedHeals.current.has(translationKey)) {
       const healTranslation = async () => {
         setIsHealing(true);
         
         //  ANNA-PROTOCOL: Small random delay to prevent "request storms" 
         // when many translations are missing on a single page.
-        await new Promise(resolve => setTimeout(resolve, Math.random() * 2000));
+        await new Promise(resolve => setTimeout(resolve, Math.random() * 3000));
 
         try {
           const res = await fetch('/api/translations/heal', {
@@ -121,12 +122,19 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
               currentLang: language
             })
           });
+          
+          if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+          
           const data = await res.json();
           if (data.success && data.text) {
             setContent(data.text);
           }
         } catch (e) {
           console.error(' Self-healing failed:', e);
+          // STABILITEIT: Markeer als gefaald om loop te stoppen
+          failedHeals.current.add(translationKey);
+          // Na 1 minuut mag het eventueel opnieuw
+          setTimeout(() => failedHeals.current.delete(translationKey), 60000);
         } finally {
           setIsHealing(false);
         }
