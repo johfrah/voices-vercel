@@ -4,7 +4,6 @@ import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { SpotlightDashboard } from "@/components/ui/SpotlightDashboard";
 import FooterWrapper from "@/components/ui/FooterWrapper";
-import { TopBar } from "@/components/ui/TopBar";
 import { LoadingScreenInstrument } from "@/components/ui/LayoutInstruments";
 import { PageWrapperInstrument } from "@/components/ui/LayoutInstrumentsServer";
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
@@ -30,6 +29,7 @@ const JohfrahConfiguratorSPA = dynamic(() => import("@/components/portfolio/Johf
 const CastingDock = dynamic(() => import("@/components/ui/CastingDock").then(mod => mod.CastingDock), { ssr: false });
 const SonicDNAHandler = dynamic(() => import("@/components/ui/SonicDNA").then(mod => mod.SonicDNAHandler), { ssr: false });
 const GlobalAudioOrchestrator = dynamic(() => import("@/components/ui/GlobalAudioOrchestrator").then(mod => mod.GlobalAudioOrchestrator), { ssr: false });
+const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { ssr: false });
 const GlobalNav = dynamic(() => import("@/components/ui/GlobalNav"), { ssr: false });
 const VoicejarTracker = dynamic(() => import("@/components/ui/VoicejarTracker").then(mod => mod.VoicejarTracker), { ssr: false });
 const VoicyBridge = dynamic(() => import("@/components/ui/VoicyBridge").then(mod => mod.VoicyBridge), { ssr: false });
