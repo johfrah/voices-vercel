@@ -224,6 +224,10 @@ export class MarketManager {
     }
   };
 
+  private static isServer() {
+    return typeof window === 'undefined';
+  }
+
   /**
    * Haalt alle actieve markt-domeinen op voor SEO alternates
    */
@@ -249,7 +253,7 @@ export class MarketManager {
   static getCurrentMarket(host?: string): MarketConfig {
     let activeHost = host;
     
-    if (!activeHost && typeof window !== 'undefined') {
+    if (!activeHost && !this.isServer()) {
       activeHost = window.location.host;
     }
     
@@ -258,7 +262,7 @@ export class MarketManager {
     let cleanHost = activeHost.replace('www.', '').replace('https://', '').replace('http://', '').split('/')[0];
     
     // 🛡️ CHRIS-PROTOCOL: Sub-journey detection for static resolution (e.g. voices.be/studio)
-    if (cleanHost === 'voices.be' && typeof window !== 'undefined') {
+    if (cleanHost === 'voices.be' && !this.isServer()) {
       if (window.location.pathname.startsWith('/studio')) cleanHost = 'voices.be/studio';
       if (window.location.pathname.startsWith('/academy')) cleanHost = 'voices.be/academy';
     }
@@ -294,6 +298,10 @@ export class MarketManager {
    * Async versie voor Server Components die DIRECT uit de DB leest.
    */
   static async getCurrentMarketAsync(host?: string): Promise<MarketConfig> {
+    if (!this.isServer()) {
+      return this.getCurrentMarket(host);
+    }
+
     // 🛡️ CHRIS-PROTOCOL: If host contains a path (from middleware), use it for sub-journey detection
     let lookupHost = host || '';
     if (lookupHost.includes('voices.be')) {
@@ -318,7 +326,6 @@ export class MarketManager {
       if (dbConfig) {
         const loc = dbConfig.localization as any;
         const social = dbConfig.socialLinks as any;
-        const legal = dbConfig.legal as any;
         
         return {
           ...staticConfig,
@@ -362,6 +369,15 @@ export class MarketManager {
    * Haalt alle actieve locales op voor SEO alternates (Suzy Precision)
    */
   static async getAllLocalesAsync(): Promise<Record<string, string>> {
+    if (!this.isServer()) {
+      return {
+        'nl-BE': 'https://www.voices.be',
+        'nl-NL': 'https://www.voices.nl',
+        'fr-FR': 'https://www.voices.fr',
+        'en-EU': 'https://www.voices.eu'
+      };
+    }
+
     try {
       // 🛡️ CHRIS-PROTOCOL: Dynamic import to isolate DB logic from client bundle
       const { db } = await import('@db');
