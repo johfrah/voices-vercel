@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import path from 'path';
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
-import { contentArticles, contentBlocks, translations, appConfigs } from '/Users/voices/Library/CloudStorage/Dropbox/voices-headless/1-SITE/packages/database/src/schema/index';
+import { contentArticles, contentBlocks, translations, appConfigs } from '../../../packages/database/src/schema/index';
 import { eq, and, ilike, or } from "drizzle-orm";
 import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
 
@@ -13,141 +13,199 @@ import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
  */
 
 async function seedMarkets() {
+  console.log('🚀 Starting seedMarkets...');
   const MARKETS = {
     'voices.be': {
       market_code: 'BE',
       language: 'nl',
-      primary_language: 'Vlaams',
+      primary_language: 'nl-BE',
       supported_languages: [
-        'Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits', 
-        'Spaans', 'Italiaans', 'Pools', 'Portugees', 'Turks', 
-        'Deens', 'Zweeds', 'Noors', 'Fins', 'Grieks', 
-        'Russisch', 'Arabisch', 'Chinees', 'Japans'
+        'nl-BE', 'nl-NL', 'en-GB', 'fr-FR', 'de-DE', 
+        'es-ES', 'it-IT', 'pl-PL', 'pt-PT', 'tr-TR', 
+        'da-DK', 'sv-SE', 'nb-NO', 'fi-FI', 'el-GR', 
+        'ru-RU', 'ar-SA', 'zh-CN', 'ja-JP'
       ],
-      popular_languages: ['Vlaams', 'Nederlands', 'Frans', 'Engels', 'Duits'],
+      popular_languages: ['nl-BE', 'nl-NL', 'fr-FR', 'en-GB', 'de-DE'],
       name: 'België',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      logo_url: '/assets/common/branding/Voices-LOGO-Animated.svg',
+      hero_images: [
+        { url: "/assets/agency/voices/nl/nl/female/kristel-A-216105/kristel-photo.jpg", name: "Kristel", role: "Stemactrice" },
+        { url: "/assets/agency/voices/be/nl/male/johfrah-A-182508/johfrah-photo.jpg", name: "Johfrah Lefebvre", role: "Founder & Stemacteur" },
+        { url: "/assets/agency/voices/nl/nl/female/carolina-A-186284/carolina-photo.jpg", name: "Carolina", role: "Stemactrice" }
+      ],
+      hero_cta: { href: '/agency', text: 'Vind jouw stem' },
       theme: 'voices',
       is_inclusive: true
     },
     'voices.nl': {
       market_code: 'NLNL',
       language: 'nl',
-      primary_language: 'Nederlands',
-      supported_languages: ['Nederlands', 'Vlaams', 'Engels', 'Duits', 'Frans', 'Spaans', 'Italiaans'],
-      popular_languages: ['Nederlands', 'Vlaams', 'Engels', 'Duits', 'Frans'],
+      primary_language: 'nl-NL',
+      supported_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR', 'es-ES', 'it-IT'],
+      popular_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
       name: 'Nederland',
       phone: '+31 (0)85 016 34 60',
       email: 'johfrah@voices.nl',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      logo_url: '/assets/common/branding/Voices_LOGO_NL.svg',
       theme: 'voices',
       is_inclusive: true
     },
     'voices.fr': {
       market_code: 'FR',
       language: 'fr',
-      primary_language: 'Frans',
-      supported_languages: ['Frans', 'Engels', 'Nederlands', 'Vlaams', 'Duits', 'Spaans', 'Italiaans'],
-      popular_languages: ['Frans', 'Engels', 'Nederlands', 'Vlaams', 'Duits'],
+      primary_language: 'fr-FR',
+      supported_languages: ['fr-FR', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE', 'es-ES', 'it-IT'],
+      popular_languages: ['fr-FR', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
       name: 'France',
       email: 'johfrah@voices.fr',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      logo_url: '/assets/common/branding/Voices_LOGO_FR.svg',
       theme: 'voices',
       is_inclusive: true
     },
     'voices.es': {
       market_code: 'ES',
       language: 'es',
-      primary_language: 'Spaans',
-      supported_languages: ['Spaans', 'Engels', 'Frans', 'Portugees', 'Italiaans'],
-      popular_languages: ['Spaans', 'Engels', 'Portugees'],
+      primary_language: 'es-ES',
+      supported_languages: ['es-ES', 'en-GB', 'fr-FR', 'pt-PT', 'it-IT'],
+      popular_languages: ['es-ES', 'en-GB', 'pt-PT'],
       name: 'España',
       email: 'johfrah@voices.es',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      logo_url: '/assets/common/branding/Voices_LOGO_ES.svg',
       theme: 'voices',
       is_inclusive: true
     },
     'voices.pt': {
       market_code: 'PT',
       language: 'pt',
-      primary_language: 'Portugees',
-      supported_languages: ['Portugees', 'Engels', 'Spaans', 'Frans'],
-      popular_languages: ['Portugees', 'Engels', 'Spaans'],
+      primary_language: 'pt-PT',
+      supported_languages: ['pt-PT', 'en-GB', 'es-ES', 'fr-FR'],
+      popular_languages: ['pt-PT', 'en-GB', 'es-ES'],
       name: 'Portugal',
       email: 'johfrah@voices.pt',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      logo_url: '/assets/common/branding/Voices_LOGO_PT.svg',
       theme: 'voices',
       is_inclusive: true
     },
     'voices.eu': {
       market_code: 'EU',
       language: 'en',
-      primary_language: 'Engels',
-      supported_languages: ['Engels', 'Duits', 'Vlaams', 'Nederlands', 'Frans', 'Spaans', 'Italiaans'],
-      popular_languages: ['Engels', 'Duits', 'Frans', 'Nederlands', 'Vlaams'],
+      primary_language: 'en-GB',
+      supported_languages: ['en-GB', 'de-DE', 'nl-BE', 'nl-NL', 'fr-FR', 'es-ES', 'it-IT'],
+      popular_languages: ['en-GB', 'de-DE', 'fr-FR', 'nl-NL', 'nl-BE'],
       name: 'Europe',
       email: 'johfrah@voices.eu',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      logo_url: '/assets/common/branding/Voices_LOGO_EU.svg',
       theme: 'voices',
       is_inclusive: true
     },
     'johfrah.be': {
-      market_code: 'JOHFRAH',
+      market_code: 'PORTFOLIO',
       language: 'nl',
-      primary_language: 'Vlaams',
-      supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
-      popular_languages: ['Vlaams', 'Nederlands', 'Engels'],
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Johfrah',
       email: 'info@johfrah.be',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      logo_url: '/assets/common/branding/johfrah.be_LOGO.svg',
+      hero_images: [
+        { url: "/assets/agency/voices/be/nl/male/johfrah-A-182508/johfrah-photo.jpg", name: "Johfrah Lefebvre", role: "Voice-over & Host" }
+      ],
+      hero_cta: { href: '/demos', text: 'Bekijk mijn stemmen' },
+      nav_links: [
+        { 
+          name: 'Voice-over', 
+          href: '/demos', 
+          key: 'nav.johfrah.voiceover',
+          submenu: [
+            { name: 'Beluister demo\'s', href: '/demos', key: 'nav.johfrah.demos' },
+            { name: 'Hoe werkt het?', href: '/over-mij', key: 'nav.johfrah.how_it_works' },
+            { name: 'Voice-over tarieven', href: '/tarieven', key: 'nav.johfrah.rates' },
+            { name: 'Direct bestellen', href: '/bestellen', key: 'nav.johfrah.order' },
+          ]
+        },
+        { name: 'Host', href: '/host', key: 'nav.johfrah.host' },
+        { name: 'Contact', href: '/contact', key: 'nav.johfrah.contact' }
+      ],
       theme: 'johfrah',
       is_inclusive: true
     },
     'ademing.be': {
       market_code: 'ADEMING',
       language: 'nl',
-      primary_language: 'Vlaams',
-      supported_languages: ['Vlaams', 'Nederlands'],
-      popular_languages: ['Vlaams', 'Nederlands'],
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL'],
+      popular_languages: ['nl-BE', 'nl-NL'],
       name: 'Ademing',
-      email: 'info@ademing.be',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      email: 'johfrah@voices.be',
+      logo_url: '/assets/common/branding/Voices-LOGO-Animated.svg',
+      hero_cta: { href: '/ademing', text: 'Start met luisteren' },
+      nav_links: [
+        { name: 'Meditaties', href: '/ademing', key: 'nav.ademing.meditations' },
+        { name: 'Over Ademing', href: '/over-ademing', key: 'nav.ademing.about' },
+        { name: 'Contact', href: '/contact', key: 'nav.ademing.contact' }
+      ],
+      footer_sections: [
+        {
+          title: 'Ademing',
+          links: [
+            { name: 'Meditaties', href: '/ademing' },
+            { name: 'Over Ademing', href: '/over-ademing' },
+            { name: 'Contact', href: '/contact' }
+          ]
+        },
+        {
+          title: 'Legal',
+          links: [
+            { name: 'Privacy', href: '/privacy' },
+            { name: 'Voorwaarden', href: '/voorwaarden' }
+          ]
+        }
+      ],
       theme: 'ademing',
       is_inclusive: true
     },
     'youssefzaki.eu': {
-      market_code: 'YOUSSEF',
+      market_code: 'ARTIST',
       language: 'en',
-      primary_language: 'Engels',
-      supported_languages: ['Engels', 'Nederlands', 'Vlaams', 'Frans', 'Duits'],
-      popular_languages: ['Engels', 'Nederlands', 'Vlaams', 'Frans', 'Duits'],
+      primary_language: 'en-GB',
+      supported_languages: ['en-GB', 'nl-NL', 'nl-BE', 'fr-FR', 'de-DE'],
+      popular_languages: ['en-GB', 'nl-NL', 'nl-BE', 'fr-FR', 'de-DE'],
       name: 'Youssef Zaki',
-      email: 'info@youssefzaki.eu',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      email: 'johfrah@voices.be',
+      logo_url: '/assets/common/branding/Voices-LOGO-Animated.svg',
+      hero_images: [
+        { url: "/assets/common/branding/founder/youssef-poster.jpg", name: "Youssef Zaki", role: "Artist" }
+      ],
+      hero_cta: { href: '/music', text: 'Listen to my music' },
+      nav_links: [
+        { name: 'Story', href: '/story', key: 'nav.artist.story' },
+        { name: 'Music', href: '/music', key: 'nav.artist.music' },
+        { name: 'Support', href: '/support', key: 'nav.artist.support' }
+      ],
       theme: 'youssef',
       is_inclusive: true
     },
     'voices.academy': {
       market_code: 'ACADEMY',
       language: 'nl',
-      primary_language: 'Vlaams',
-      supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
-      popular_languages: ['Vlaams', 'Nederlands', 'Engels'],
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Voices Academy',
       email: 'johfrah@voices.be',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      logo_url: '/assets/common/branding/Voices-LOGO-Animated.svg',
       theme: 'voices',
       is_inclusive: true
     },
     'johfrai.be': {
       market_code: 'JOHFRAI',
       language: 'nl',
-      primary_language: 'Vlaams',
-      supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
-      popular_languages: ['Vlaams', 'Nederlands', 'Engels'],
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Johfrai',
-      email: 'info@johfrai.be',
-      logo_url: '/assets/common/branding/Voices-Artists-LOGO.png',
+      email: 'johfrah@voices.be',
+      logo_url: '/assets/common/branding/Voices-LOGO-Animated.svg',
       theme: 'johfrai',
       is_inclusive: true
     }

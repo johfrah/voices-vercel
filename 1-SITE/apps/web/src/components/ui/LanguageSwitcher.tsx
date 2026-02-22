@@ -140,7 +140,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         className={className || `relative p-1 rounded-[8px] transition-all duration-500 cursor-pointer group flex items-center justify-center min-w-[32px] h-[32px] ${
           isOpen 
             ? 'bg-primary/10 text-primary' 
-            : market.market_code === 'YOUSSEF' 
+            : market.market_code === 'ARTIST' 
               ? 'hover:bg-white/5 text-white' 
               : 'hover:bg-va-black/5 text-va-black'
         }`}

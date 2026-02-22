@@ -52,30 +52,11 @@ export default function CheckoutPageClient() {
     // Fetch reviews for social proof
     const fetchReviews = async () => {
       try {
-        const res = await fetch('/api/proxy?path=' + encodeURIComponent('https://www.voices.be/api/admin/actors')); // Fallback to actors API which returns reviews or use a dedicated one
-        // Better: use the actors list to get reviews
-        const actorsRes = await fetch('/api/proxy?path=' + encodeURIComponent('https://www.voices.be/api/admin/actors'));
-        // Actually, we can just fetch from the public actors endpoint which we know returns reviews
-        const publicRes = await fetch('/api/proxy?path=' + encodeURIComponent('https://www.voices.be/api/admin/actors'));
-        // Wait, I should probably just use a direct fetch if possible or mock for now if API is internal
-        // Let's assume we want to show the 'Hero' reviews we just labeled
         setIsReviewsLoading(true);
-        // For now, we'll use a placeholder or wait for the user to confirm the API
-        // But wait, I can see getActors in api-server.ts returns reviews!
-        // Since this is a client component, I'll fetch from an endpoint that calls getActors
-      } catch (e) {
-        console.error('Failed to fetch reviews:', e);
-      } finally {
-        setIsReviewsLoading(false);
-      }
-    };
-  }, [searchParams, setJourney]);
-
-  useEffect(() => {
-    const loadSocialProof = async () => {
-      try {
-        const res = await fetch('/api/proxy?path=' + encodeURIComponent('https://www.voices.be/api/admin/actors'));
+        // We gebruiken de interne actors API die reviews en stats bevat
+        const res = await fetch('/api/actors');
         const data = await res.json();
+        
         if (data.reviews) {
           setReviews(data.reviews);
         }
@@ -83,13 +64,13 @@ export default function CheckoutPageClient() {
           setReviewStats(data.reviewStats);
         }
       } catch (e) {
-        setReviews([]);
+        console.error('Failed to fetch reviews:', e);
       } finally {
         setIsReviewsLoading(false);
       }
     };
-    loadSocialProof();
-  }, []);
+    fetchReviews();
+  }, [searchParams, setJourney]);
 
   if (isLoading) return <LoadingScreenInstrument />;
 

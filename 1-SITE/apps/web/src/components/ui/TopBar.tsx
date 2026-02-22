@@ -42,8 +42,8 @@ export const TopBar = () => {
   };
 
   const isAdeming = market.market_code === 'ADEMING';
-  const isJohfrah = market.market_code === 'JOHFRAH';
-  const isYoussef = market.market_code === 'YOUSSEF' || (typeof window !== 'undefined' && window.location.host.includes('youssefzaki.eu'));
+  const isPortfolio = market.market_code === 'PORTFOLIO';
+  const isArtist = market.market_code === 'ARTIST';
   const isStudioJourney = pathname.startsWith('/studio');
   const isAcademyJourney = pathname.startsWith('/academy');
   const isPortfolioPage = pathname.includes('/portfolio/') || 
@@ -51,7 +51,7 @@ export const TopBar = () => {
                            '/demos/', '/host/', '/tarieven/', '/bestellen/', '/contact/', '/over-mij/'].includes(pathname);
 
   // Alleen tonen op de Agency journey (Voices.be / Voices.nl etc.)
-  if (isJohfrah || isAdeming || isYoussef || pathname.startsWith('/artist/') || pathname.startsWith('/voice/') || isPortfolioPage || isStudioJourney || isAcademyJourney) return null;
+  if (isPortfolio || isAdeming || isArtist || pathname.startsWith('/artist/') || pathname.startsWith('/voice/') || isPortfolioPage || isStudioJourney || isAcademyJourney) return null;
 
   return (
     <ContainerInstrument 

@@ -135,6 +135,7 @@ const menuItems: MenuItem[] = [
 
   //  SYSTEMS
   { title: 'Systeem Instellingen', icon: Settings, href: '/admin/settings', color: 'text-va-black/40', group: 'Systems', journey: 'all' },
+  { title: 'Market SEO Manager', icon: Globe, href: '/admin/settings/markets', color: 'text-emerald-600', group: 'Systems', journey: 'all' },
   { title: 'Voiceglot Registry', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Systems', journey: 'all' },
   { title: 'OpenAI Intelligence', icon: Brain, href: '/admin/ai-settings', color: 'text-pink-400', group: 'Systems', journey: 'all' },
   { title: 'Core Locks', icon: Lock, href: '/admin/locks', color: 'text-red-500', group: 'Systems', journey: 'all' },

@@ -1,0 +1,30 @@
+---
+description: Master audit rule to prevent 150+ common mistakes in Project Atomic
+globs: **/*
+alwaysApply: true
+---
+
+# 🛡️ Atomic Audit Mandate
+
+Vóór elke taak, edit of push MOET de agent een "Forensische Zelf-Audit" uitvoeren tegen de 150+ common mistakes.
+
+## 🔍 De "Atomic Check" Procedure
+
+1. **Symbol Trace**: Traceer elk symbool (markt, taal, config) terug naar de `MarketManager`.
+2. **Hardcode Hunt**: Zoek naar verboden strings (`voices.be`, `johfrah.be`, hardcoded emails/telefoons).
+3. **ISO Verify**: Controleer of taal-codes strikt ISO-5 zijn (`nl-BE`, niet `nl` of `Vlaams`).
+4. **Instrument Check**: Controleer of er rauwe HTML wordt gebruikt ipv `LayoutInstruments`.
+5. **Nuclear Lock**: Verifieer of `isManuallyEdited` velden worden gerespecteerd in sync-scripts.
+
+## 🚫 Verboden Patronen (Zero Tolerance)
+
+- **GEEN** `host.includes()` in UI componenten. Gebruik `market.market_code`.
+- **GEEN** hardcoded fallbacks voor contactgegevens. Gebruik `market.email` / `market.phone`.
+- **GEEN** hashtags in URLs (`#demos`). Gebruik clean routes (`/demos`).
+- **GEEN** Uppercase in koppen. Gebruik Natural Capitalization.
+- **GEEN** `any` types. Gebruik strikte interfaces.
+
+## 🚀 De "Chris-Protocol" Veto
+Als een wijziging één van de bovenstaande regels schendt, is de code "Slop" en mag deze NIET gepusht worden. Chris eist 100% Masterclass kwaliteit.
+
+"Beter 10x controleren dan 1x slop introduceren." - Chris/Autist

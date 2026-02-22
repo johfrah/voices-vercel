@@ -12,11 +12,11 @@ export const VOICES_CONFIG = {
   
   // 🏢 COMPANY DEFAULTS (Shared across markets)
   company: {
-    name: 'Johfrah Comm.V.',
-    vat: 'BE 0662.426.460',
-    email: 'johfrah@voices.be',
-    phone: '+32 (0)2 793 19 91',
-    address: 'Jules Delhaziestraat, Brussel / Antwerpen, België'
+    name: process.env.NEXT_PUBLIC_COMPANY_NAME || '',
+    vat: process.env.NEXT_PUBLIC_COMPANY_VAT || '',
+    email: process.env.NEXT_PUBLIC_COMPANY_EMAIL || '',
+    phone: process.env.NEXT_PUBLIC_COMPANY_PHONE || '',
+    address: process.env.NEXT_PUBLIC_COMPANY_ADDRESS || ''
   },
 
   // 🎨 ASSET ARCHITECTURE

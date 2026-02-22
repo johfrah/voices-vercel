@@ -56,50 +56,59 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
   const host = headersList.get("x-voices-host") || headersList.get("host") || "voices.be";
-  const market = await getMarketSafe(host);
+  const pathname = headersList.get('x-voices-pathname') || '';
+  
+  // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
+  let lookupHost = host;
+  if (pathname.startsWith('/studio')) lookupHost = `${host}/studio`;
+  else if (pathname.startsWith('/academy')) lookupHost = `${host}/academy`;
+
+  const market = await getMarketSafe(lookupHost);
   const baseUrl = `https://${host}`;
 
   const isAdeming = market.market_code === 'ADEMING';
-  const isJohfrah = market.market_code === 'JOHFRAH';
+  const isPortfolioMarket = market.market_code === 'PORTFOLIO';
+  const isArtistMarket = market.market_code === 'ARTIST';
+  const isStudioMarket = market.market_code === 'STUDIO';
+  const isAcademyMarket = market.market_code === 'ACADEMY';
+
+  //  CHRIS-PROTOCOL: Dynamically generate alternate languages from MarketManager (Data-Driven)
+  const alternateLanguages = await MarketManager.getAllLocalesAsync();
 
   return {
     title: {
-      default: isAdeming ? "Ademing | Kom tot rust" : isJohfrah ? "Johfrah Lefebvre | Vlaamse Voice-over & Regisseur" : "Voices | Het Vriendelijkste Stemmenbureau",
-      template: isAdeming ? "%s | Ademing" : isJohfrah ? "%s | Johfrah Lefebvre" : "%s | Voices",
+      default: isAdeming ? "Ademing | Kom tot rust" : isPortfolioMarket ? `${market.name} | Vlaamse Voice-over & Regisseur` : isArtistMarket ? `${market.name} | Artist & Singer` : "Voices | Het Vriendelijkste Stemmenbureau",
+      template: isAdeming ? "%s | Ademing" : isPortfolioMarket ? `%s | ${market.name}` : isArtistMarket ? `%s | ${market.name}` : "%s | Voices",
     },
-    description: isAdeming 
+    description: market.seo_data?.description || (isAdeming 
       ? "Adem in. Kom tot rust. Luister en verbind met de stilte in jezelf." 
-      : isJohfrah
+      : isPortfolioMarket
       ? "De stem achter het verhaal. Warme, natuurlijke Vlaamse voice-over & host voor nationale TV-spots en corporate video's."
-      : "Een warm en vertrouwd geluid voor elk project. Wij helpen je de perfecte stem te vinden.",
+      : isArtistMarket
+      ? "The voice of a new generation. Discover the music and story of Youssef Zaki."
+      : isStudioMarket
+      ? "Professionele voice-over workshops."
+      : isAcademyMarket
+      ? "Leer de kunst van voice-over bij de Voices Academy."
+      : "Een warm en vertrouwd geluid voor elk project. Wij helpen je de perfecte stem te vinden."),
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: "/",
-      languages: {
-        "nl-BE": "https://voices.be",
-        "nl-NL": "https://voices.nl",
-        "fr-FR": "https://voices.fr",
-        "de-DE": "https://voices.de",
-      },
+      languages: alternateLanguages,
     },
     openGraph: {
       type: "website",
-      locale: market.language === "nl" ? "nl_BE" : "fr_FR",
+      locale: market.seo_data?.locale_code?.replace('-', '_') || (market.language === "nl" ? "nl_BE" : "fr_FR"),
       url: baseUrl,
-      siteName: isJohfrah ? "Johfrah Lefebvre" : "Voices",
+      siteName: market.name,
       images: [
         {
-          url: isJohfrah ? "/assets/common/branding/johfrah/johfrah-hero.jpg" : "/assets/common/og-image.jpg",
+          url: isPortfolioMarket ? "/assets/common/branding/johfrah/johfrah-hero.jpg" : "/assets/common/og-image.jpg",
           width: 1200,
           height: 630,
-          alt: isJohfrah ? "Johfrah Lefebvre - Vlaamse Voice-over" : "Voices - Het Vriendelijkste Stemmenbureau",
+          alt: `${market.name} - ${market.seo_data?.description?.substring(0, 50) || 'Voices'}`,
         },
       ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      site: "@voices",
-      creator: "@johfrah",
     },
     robots: {
       index: true,
@@ -122,16 +131,26 @@ export default async function RootLayout({
 }>) {
   const headersList = headers();
   const host = headersList.get("x-voices-host") || headersList.get("host") || "voices.be";
-  const market = await getMarketSafe(host);
+  const pathname = headersList.get('x-voices-pathname') || '';
+  
+  // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
+  let lookupHost = host;
+  if (pathname.startsWith('/studio')) lookupHost = `${host}/studio`;
+  else if (pathname.startsWith('/academy')) lookupHost = `${host}/academy`;
+
+  const market = await getMarketSafe(lookupHost);
   const isAdeming = market.market_code === 'ADEMING';
-  const isJohfrah = market.market_code === 'JOHFRAH';
+  const isPortfolioMarket = market.market_code === 'PORTFOLIO';
+  const isArtistMarket = market.market_code === 'ARTIST';
+  const isStudioMarket = market.market_code === 'STUDIO';
+  const isAcademyMarket = market.market_code === 'ACADEMY';
+  
   const isUnderConstruction = headersList.get('x-voices-under-construction') === 'true' || 
-    headersList.get('x-voices-pathname') === '/under-construction' ||
-    headersList.get('x-voices-pathname') === '/under-construction/';
+    pathname === '/under-construction' ||
+    pathname === '/under-construction/';
   
   const langHeader = headersList.get('x-voices-lang');
-  const pathname = headersList.get('x-voices-pathname') || '';
-  const isYoussefJourney = pathname.includes('/artist/youssef') || market.market_code === 'YOUSSEF';
+  const isYoussefJourney = pathname.includes('/artist/youssef') || market.market_code === 'ARTIST';
   
   const lang = langHeader || (isYoussefJourney ? 'en' : (market.language || 'nl'));
   
@@ -141,51 +160,54 @@ export default async function RootLayout({
     translations = await getTranslationsServer(lang);
   } catch (err: any) {
     console.error(' RootLayout: Failed to load translations:', err);
-    // getTranslationsServer already reports to Watchdog, we just ensure we don't crash
   }
 
-  const isYoussefMarket = market.market_code === 'YOUSSEF' || pathname.includes('/artist/youssef') || host.includes('youssefzaki.eu');
-  const isArtistJourney = pathname.includes('/artist/') || pathname.includes('/voice/') || host.includes('youssefzaki.eu');
+  const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
   const showVoicy = !isArtistJourney && !isUnderConstruction;
   const showTopBar = !isArtistJourney && !isUnderConstruction;
   const showGlobalNav = !isUnderConstruction;
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": isAdeming ? "WebApplication" : isJohfrah ? "Person" : isYoussefMarket ? "Person" : "Organization",
-    "name": isAdeming ? "Ademing" : isJohfrah ? "Johfrah Lefebvre" : isYoussefMarket ? "Youssef Zaki" : "Voices",
+    "@type": market.seo_data?.schema_type || (isAdeming ? "WebApplication" : (isPortfolioMarket || isArtistMarket) ? "Person" : "Organization"),
+    "name": market.name,
     "url": `https://${host}`,
-    "logo": isYoussefMarket ? `https://${host}/assets/common/branding/Voices-Artists-LOGO.webp` : `https://${host}${market.logo_url}`,
-    "sameAs": isJohfrah ? [
-      "https://www.instagram.com/johfrah",
-      "https://www.linkedin.com/in/johfrah"
-    ] : isYoussefMarket ? [
-      "https://www.instagram.com/youssefzaki.eu",
-      "https://www.youtube.com/@youssefzaki"
-    ] : [
-      "https://www.instagram.com/voices.be",
-      "https://www.linkedin.com/company/voices-be"
-    ],
-    "jobTitle": isJohfrah ? "Voice-over & Regisseur" : isYoussefMarket ? "Artist & Singer" : undefined,
+    "logo": `https://${host}${market.logo_url}`,
+    "description": market.seo_data?.description || (isAdeming 
+      ? "Platform voor meditatie en innerlijke rust." 
+      : isPortfolioMarket 
+      ? "Vlaamse voice-over & regisseur." 
+      : isArtistMarket 
+      ? "Artist and Singer." 
+      : isStudioMarket
+      ? "Professionele voice-over workshops."
+      : isAcademyMarket
+      ? "Leer de kunst van voice-over bij de Voices Academy."
+      : "Het vriendelijkste stemmenbureau."),
+    "sameAs": Object.values(market.social_links || {}).filter(Boolean),
+    "jobTitle": (isPortfolioMarket || isArtistMarket) ? market.seo_data?.description?.split('.')[0] : undefined,
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": market.phone,
       "contactType": "customer service",
       "email": market.email,
-      "availableLanguage": ["Dutch", "French", "English"]
+      "availableLanguage": market.supported_languages
     },
-    "founder": (!isJohfrah && !isYoussefMarket) ? {
+    "founder": (!isPortfolioMarket && !isArtistMarket) ? {
       "@type": "Person",
       "name": "Johfrah Lefebvre",
       "sameAs": "https://www.johfrah.be"
     } : undefined
   };
 
+  const htmlClass = `${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`;
+  const bodyClass = "pb-24 md:pb-0 touch-manipulation va-main-layout";
+
   // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
   if (isUnderConstruction) {
     return (
-      <html lang={lang} className={`${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`}>
-        <body className="pb-24 md:pb-0 touch-manipulation va-main-layout">
+      <html lang={lang} className={htmlClass}>
+        <body className={bodyClass}>
           <Providers lang={lang} initialTranslations={translations}>
             <SonicDNAHandler />
             <PageWrapperInstrument>
@@ -198,15 +220,20 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang={lang} className={`${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`}>
-      <body className="pb-24 md:pb-0 touch-manipulation va-main-layout">
+    <html lang={lang} className={htmlClass}>
+      <body className={bodyClass}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <Providers lang={lang} initialTranslations={translations}>
-          <GhostModeBar />
+          <PageWrapperInstrument>
+            <Suspense fallback={<LoadingScreenInstrument />}>
+              {children}
+            </Suspense>
+          </PageWrapperInstrument>
           <EditModeOverlay>
+            <GhostModeBar />
             <LiquidTransitionOverlay />
             <CodyPreviewBanner />
             <Suspense fallback={null}>
@@ -224,11 +251,6 @@ export default async function RootLayout({
             <SpotlightDashboard />
             <Toaster position="bottom-right" />
             <GlobalModalManager />
-            <PageWrapperInstrument>
-              <Suspense fallback={<LoadingScreenInstrument />}>
-                {children}
-              </Suspense>
-            </PageWrapperInstrument>
             {!isArtistJourney && (
               <Suspense fallback={null}>
                 <JohfrahActionDock />

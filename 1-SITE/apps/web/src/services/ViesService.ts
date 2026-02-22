@@ -27,8 +27,7 @@ export class ViesService {
   }
 
   /**
-   * Valideert een BTW-nummer en haalt data op.
-   * Voorlopig gebruiken we de gratis EU SOAP service fallback of een mock voor de dry-run.
+   * Valideert een BTW-nummer en haalt data op via de EU VIES API.
    */
   async validateVat(vatNumber: string): Promise<ViesCompanyData | null> {
     const cleanVat = vatNumber.replace(/[^A-Z0-9]/g, '').toUpperCase();
@@ -38,27 +37,22 @@ export class ViesService {
     console.log(` VIES check voor ${cleanVat}...`);
 
     try {
-      // In een productie-omgeving zouden we hier een echte fetch doen naar viesapi.eu of de EU SOAP service.
-      // Voor de dry-run simuleren we de respons voor bekende nummers of een generieke succes-respons.
+      // In een productie-omgeving doen we hier een echte fetch naar de VIES API.
+      // We gebruiken de officiële EU VIES REST API (of een bridge).
+      const response = await fetch(`https://ec.europa.eu/taxation_customs/vies/rest-api/ms/${countryCode}/vat/${vatOnly}`);
       
-      // MOCK DATA voor de test
-      if (cleanVat === 'BE0823232169') {
-        return {
-          name: 'RESPIRO LANGELE',
-          address: 'Langelede 146, 9185 Wachtebeke',
-          countryCode: 'BE',
-          vatNumber: '0823232169',
-          isValid: true
-        };
+      if (!response.ok) {
+        throw new Error(`VIES API Error: ${response.statusText}`);
       }
 
-      // Generieke fallback (simuleert succesvolle API call)
+      const data = await response.json();
+      
       return {
-        name: `Bedrijf ${cleanVat}`,
-        address: 'Adres onbekend (VIES Mock)',
-        countryCode,
-        vatNumber: vatOnly,
-        isValid: true
+        name: data.name || '',
+        address: data.address || '',
+        countryCode: data.countryCode || countryCode,
+        vatNumber: data.vatNumber || vatOnly,
+        isValid: data.isValid || false
       };
 
     } catch (error) {

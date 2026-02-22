@@ -19,13 +19,13 @@ export default function FooterWrapper() {
   if (!mounted) return null;
 
   // Verberg footer in de mailbox
-  if (window.location.pathname.startsWith('/admin/mailbox')) {
+  if (pathname.startsWith('/admin/mailbox')) {
     return null;
   }
 
   //  LOUIS: Hide global footer on artist pages to allow for custom artist footer
   // UITZONDERING: Op portfolio pagina's willen we de footer WEL zien (header/footer mandate)
-  if (window.location.pathname.startsWith('/artist/') && !window.location.pathname.includes('/portfolio/')) {
+  if (pathname.startsWith('/artist/') && !pathname.includes('/portfolio/')) {
     return null;
   }
 

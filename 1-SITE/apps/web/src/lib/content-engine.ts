@@ -9,6 +9,8 @@ import { eq, sql } from "drizzle-orm";
 import { VoiceglotBridge } from "./voiceglot-bridge";
 import md5 from "md5";
 
+import { MarketManager } from "@config/market-manager";
+
 /**
  *  NUCLEAR CONTENT ENGINE (2026)
  * 
@@ -223,22 +225,16 @@ export class ContentEngine {
    * Vertaalt voices.be naar het actuele domein op basis van de markt.
    */
   private static localizeDomain(text: string, locale: string): string {
-    const host = typeof window !== 'undefined' ? window.location.host : '';
-    const isNL = locale.toLowerCase().includes("nl") || host.includes('voices.nl');
-    const isFR = locale.toLowerCase().includes("fr") || host.includes('voices.fr');
-    const isES = locale.toLowerCase().includes("es") || host.includes('voices.es');
-    const isPT = locale.toLowerCase().includes("pt") || host.includes('voices.pt');
-    const isEU = locale.toLowerCase().includes("en") || host.includes('voices.eu');
+    const market = MarketManager.getCurrentMarket();
+    const host = market.market_code === 'BE' ? 'voices.be' : 
+                 market.market_code === 'NLNL' ? 'voices.nl' :
+                 market.market_code === 'FR' ? 'voices.fr' :
+                 market.market_code === 'ES' ? 'voices.es' :
+                 market.market_code === 'PT' ? 'voices.pt' :
+                 market.market_code === 'EU' ? 'voices.eu' : 'voices.be';
 
-    let targetDomain = "voices.be";
-    if (isNL) targetDomain = "voices.nl";
-    else if (isFR) targetDomain = "voices.fr";
-    else if (isES) targetDomain = "voices.es";
-    else if (isPT) targetDomain = "voices.pt";
-    else if (isEU) targetDomain = "voices.eu";
-
-    if (targetDomain !== "voices.be") {
-      return text.replace(/voices\.be/gi, targetDomain);
+    if (host !== "voices.be") {
+      return text.replace(/voices\.be/gi, host);
     }
     
     return text;

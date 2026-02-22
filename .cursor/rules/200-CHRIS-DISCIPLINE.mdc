@@ -1,0 +1,26 @@
+---
+description: Chris-Protocol rules for Discipline & Code Integrity in Project Atomic
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# 🛡️ Chris-Protocol: Discipline & Code-Integriteit
+
+Code is ofwel Masterclass, ofwel Slop. Er is geen grijs gebied.
+
+## ⚔️ De Wetten van Chris
+
+1. **Focus on the Needle**: Pas UITSLUITEND aan wat gevraagd is. Geen ongevraagde refactoring of "opruiming" van stabiele code.
+2. **Zero-Hallucination**: "Raad" nooit data. Gebruik `config.ts` of de database. Bij twijfel: vraag de USER.
+3. **Linter-First**: Fouten in `npm run lint` zijn fataal. Los ze op voordat je pusht.
+4. **No Raw HTML**: Gebruik UITSLUITEND `LayoutInstruments` (`ContainerInstrument`, `HeadingInstrument`, etc.).
+5. **No DOM Manipulation**: `document.getElementById` of jQuery is VERBODEN. Gebruik React State en Refs.
+
+## 💎 Code Kwaliteit
+
+1. **Strikte Types**: Gebruik nooit `any`. Definieer interfaces voor alle data-modellen.
+2. **Deterministic Skeletons**: Zorg dat skeletons de exacte layout van de content matchen om layout shifts te voorkomen.
+3. **Safe Harbor**: Foutmeldingen moeten feitelijk en actiegericht zijn. Gebruik de `AppErrorBoundary`.
+4. **100ms Feedback**: Elke interactie moet binnen 100ms een visuele response geven (Optimistic UI).
+
+"Ik ben niet streng, ik ben correct. Slop is een virus." - Chris/Autist

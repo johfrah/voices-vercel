@@ -33,9 +33,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const supabase = createClient();
 
   const fetchNotifications = useCallback(async () => {
-    // CHRIS-PROTOCOL: Alleen klanten laden hun eigen notificaties via dit systeem.
-    // Admin notificaties zijn momenteel hardcoded/mocked in GlobalNav of komen uit system_events.
-    if (!isAuthenticated || isAdmin || !supabase) {
+    // CHRIS-PROTOCOL: Alleen klanten en admins laden hun eigen notificaties via dit systeem.
+    if (!isAuthenticated || !supabase) {
       setNotifications([]);
       return;
     }

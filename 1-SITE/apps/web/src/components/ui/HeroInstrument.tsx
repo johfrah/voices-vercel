@@ -33,18 +33,32 @@ const HERO_IMAGES = [
  */
 export const HeroInstrument: React.FC = () => {
   const market = MarketManager.getCurrentMarket();
-  const isPortfolio = market.market_code === 'JOHFRAH';
-  const ctaHref = isPortfolio ? '/#demos' : '/agency';
+  const isPortfolio = market.market_code === 'PORTFOLIO';
+  const isArtist = market.market_code === 'ARTIST';
+  const isAdeming = market.market_code === 'ADEMING';
+  
+  const ctaHref = market.hero_cta?.href || (isPortfolio ? '/demos' : isArtist ? '/music' : isAdeming ? '/ademing' : '/agency');
+  const ctaText = market.hero_cta?.text || (isPortfolio ? "Bekijk mijn stemmen" : isArtist ? "Listen to my music" : isAdeming ? "Start met luisteren" : "Vind jouw stem");
+  
   const [imageIndex, setImageIndex] = React.useState(0);
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setImageIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 8000); //  Trager: Elke 8 seconden wisselen
-    return () => clearInterval(timer);
-  }, []);
+  // Filter images based on market theme
+  const filteredImages = React.useMemo(() => {
+    if (market.hero_images && market.hero_images.length > 0) {
+      return market.hero_images;
+    }
+    return HERO_IMAGES;
+  }, [market.hero_images]);
 
-  const currentActor = HERO_IMAGES[imageIndex];
+  React.useEffect(() => {
+    if (filteredImages.length <= 1) return;
+    const timer = setInterval(() => {
+      setImageIndex((prev) => (prev + 1) % filteredImages.length);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, [filteredImages]);
+
+  const currentActor = filteredImages[imageIndex % filteredImages.length];
 
   return (
     <div className="va-hero-container relative overflow-hidden py-24 md:py-32">
@@ -63,7 +77,7 @@ export const HeroInstrument: React.FC = () => {
             <VoiceglotText  translationKey="home.hero.subtitle" defaultText="Van bedrijfsfilm tot commercial. Wij vinden de beste stem voor jouw boodschap." />
           </p>
           <div className="flex items-center gap-4">
-            <Link  href={ctaHref} className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px]"><VoiceglotText  translationKey="home.hero.cta_primary" defaultText={isPortfolio ? "Bekijk mijn stemmen" : "Vind jouw stem"} /></Link>
+            <Link  href={ctaHref} className="va-btn-pro !px-10 !py-6 text-base !rounded-[10px]"><VoiceglotText  translationKey="home.hero.cta_primary" defaultText={ctaText} /></Link>
           </div>
         </div>
 

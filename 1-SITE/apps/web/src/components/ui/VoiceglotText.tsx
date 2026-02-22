@@ -81,8 +81,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     };
 
     // Alleen registreren als we in de bron-taal (NL) zitten of in Edit Mode
-    const isYoussefMarket = window.location.pathname.includes('/artist/youssef') || window.location.host.includes('youssefzaki.eu');
-    const sourceLang = isYoussefMarket ? 'en' : 'nl';
+    const market = MarketManager.getCurrentMarket();
+    const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';
     
     if (language === sourceLang || isEditMode) {
       registerString();
@@ -93,8 +93,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   useEffect(() => {
     // CHRIS-PROTOCOL: Determine default language based on market
     // In Youssef market, 'en' is the source of truth, otherwise 'nl'
-    const isYoussefMarket = typeof window !== 'undefined' && (window.location.pathname.includes('/artist/youssef') || window.location.host.includes('youssefzaki.eu'));
-    const sourceLang = isYoussefMarket ? 'en' : 'nl';
+    const market = MarketManager.getCurrentMarket();
+    const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';
 
     if (noTranslate || language === sourceLang) return;
 

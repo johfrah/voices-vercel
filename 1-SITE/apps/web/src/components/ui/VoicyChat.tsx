@@ -36,6 +36,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { isOfficeOpen, getNextOpeningTime } from '@/lib/delivery-logic';
 import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
+import { MarketManager } from '@config/market-manager';
 
 export const VoicyChatV2: React.FC = () => {
   const { 
@@ -56,6 +57,14 @@ export const VoicyChatV2: React.FC = () => {
   const { user, isAuthenticated, isAdmin } = useAuth();
   const { isEditMode, toggleEditMode } = useEditMode();
   const pathname = usePathname();
+
+  const market = MarketManager.getCurrentMarket();
+  const isPortfolioJourney = market.market_code === 'PORTFOLIO';
+  const isArtistPage = market.market_code === 'ARTIST' || pathname?.startsWith('/voice/');
+  const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
+
+  const activeEmail = market.email;
+  const activePhone = market.phone;
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
@@ -429,9 +438,12 @@ export const VoicyChatV2: React.FC = () => {
   //  Determine Journey
   const isAcademyJourney = pathname?.includes('/academy');
   const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
-  const isPortfolioJourney = pathname?.includes('/portfolio') || (typeof window !== 'undefined' && window.location.hostname !== 'www.voices.be' && window.location.hostname !== 'localhost');
-  const isArtistPage = pathname?.startsWith('/artist/') || pathname?.startsWith('/voice/');
+  const isPortfolioJourney = market.market_code === 'PORTFOLIO';
+  const isArtistPage = market.market_code === 'ARTIST' || pathname?.startsWith('/voice/');
   const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
+
+  const activeEmail = market.email;
+  const activePhone = market.phone;
 
   //  Get current language
   const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';
@@ -442,7 +454,7 @@ export const VoicyChatV2: React.FC = () => {
       const { title, content, type, actions, tab } = e.detail || {};
       
       //  CHRIS-PROTOCOL: Geen Voicy op Artist pagina's
-      if (window.location.pathname.startsWith('/artist/') || window.location.pathname.startsWith('/voice/')) return;
+      if (market.market_code === 'ARTIST' || pathname?.startsWith('/voice/')) return;
 
       setIsOpen(true);
       if (tab) setActiveTab(tab);
@@ -1345,12 +1357,14 @@ export const VoicyChatV2: React.FC = () => {
                       <div className="flex-1 h-px bg-black/5" />
                     </div>
 
-                    <ContainerInstrument plain className="text-center">
-                      <ButtonInstrument as="a" href="mailto:johfrah@voices.be" className="w-full py-3 bg-va-off-white border border-black/5 rounded-xl flex items-center justify-center gap-2 hover:bg-black/5 transition-all group">
-                        <Mail size={14} strokeWidth={1.5} className="text-va-black/40 group-hover:text-primary transition-colors" />
-                        <TextInstrument className="text-[14px] font-light tracking-widest">johfrah@voices.be</TextInstrument>
-                      </ButtonInstrument>
-                    </ContainerInstrument>
+                        <ButtonInstrument 
+                          as="a" 
+                          href={`mailto:${activeEmail}`} 
+                          className="w-full py-3 bg-va-off-white border border-black/5 rounded-xl flex items-center justify-center gap-2 hover:bg-black/5 transition-all group"
+                        >
+                          <Mail size={14} strokeWidth={1.5} className="text-va-black/40 group-hover:text-primary transition-colors" />
+                          <TextInstrument className="text-[14px] font-light tracking-widest">{activeEmail}</TextInstrument>
+                        </ButtonInstrument>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1479,11 +1493,11 @@ export const VoicyChatV2: React.FC = () => {
 
                         <ButtonInstrument 
                           as="a" 
-                          href="tel:+3227931991" 
+                          href={`tel:${activePhone.replace(/\s+/g, '')}`} 
                           className="w-full py-3 bg-va-off-white border border-black/5 rounded-xl flex items-center justify-center gap-2 hover:bg-black/5 transition-all group"
                         >
                           <Phone size={14} strokeWidth={1.5} className="text-va-black/40 group-hover:text-primary transition-colors" />
-                          <TextInstrument className="text-[14px] font-light tracking-widest">+32 (0)2 793 19 91</TextInstrument>
+                          <TextInstrument className="text-[14px] font-light tracking-widest">{activePhone}</TextInstrument>
                         </ButtonInstrument>
                       </ContainerInstrument>
                     )}

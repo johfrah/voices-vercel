@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { ArrowRight, Megaphone, Mic2, Phone, Video, Zap, GraduationCap } from 'lucide-react';
 import { VoicesLink } from './VoicesLink';
 import React from 'react';
+import { MarketManager } from '@config/market-manager';
 
 import { VoiceglotText } from './VoiceglotText';
 
@@ -69,8 +70,9 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
     }
   };
 
-  const isStudio = typeof window !== 'undefined' && window.location.pathname.startsWith('/studio');
-  const isAcademy = typeof window !== 'undefined' && window.location.pathname.startsWith('/academy');
+  const market = MarketManager.getCurrentMarket();
+  const isStudio = market.market_code === 'STUDIO';
+  const isAcademy = market.market_code === 'ACADEMY';
   const config = isStudio ? configs.studio : isAcademy ? configs.academy : (configs[journey] || configs.general);
   const Icon = config.icon;
 

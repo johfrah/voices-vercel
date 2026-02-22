@@ -243,8 +243,7 @@ export default function GlobalNav() {
   const { notifications: customerNotifications, unreadCount: customerUnreadCount, markAsRead: markCustomerAsRead, markAllAsRead: markAllCustomerAsRead } = useNotifications();
   const auth = useAuth();
   const isAdmin = auth.isAdmin;
-  const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
-  const market = MarketManager.getCurrentMarket(host); 
+  const market = MarketManager.getCurrentMarket(); 
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -284,14 +283,15 @@ export default function GlobalNav() {
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const getJourneyKey = useCallback(() => {
-    let journeyKey = 'agency';
-    if (market.market_code === 'ADEMING') journeyKey = 'ademing';
-    else if (market.market_code === 'JOHFRAH') journeyKey = 'johfrah';
-    else if (market.market_code === 'YOUSSEF') journeyKey = 'youssef';
-    else if (pathname.startsWith('/studio')) journeyKey = 'studio';
-    else if (pathname.startsWith('/academy')) journeyKey = 'academy';
-    return journeyKey;
-  }, [market.market_code, pathname]);
+    switch (market.market_code) {
+      case 'ADEMING': return 'ademing';
+      case 'PORTFOLIO': return 'portfolio';
+      case 'ARTIST': return 'artist';
+      case 'STUDIO': return 'studio';
+      case 'ACADEMY': return 'academy';
+      default: return 'agency';
+    }
+  }, [market.market_code]);
 
   useEffect(() => {
     setMounted(true);
@@ -425,40 +425,15 @@ export default function GlobalNav() {
 
   if (!mounted) return null;
 
-  const isJohfrah = market.market_code === 'JOHFRAH' || 
-    (typeof window !== 'undefined' && (
-      window.location.host.includes('johfrah.be') || 
-      window.location.pathname.includes('/portfolio/johfrah') ||
-      pathname.includes('/portfolio/johfrah')
-    ));
-  const isSpecialJourney = isJohfrah || market.market_code === 'YOUSSEF' || market.market_code === 'ADEMING';
-  const isStudioJourney = pathname.startsWith('/studio') || pathname.startsWith('/academy');
-
-  const isArtistPage = pathname.startsWith('/artist/');
-  const isVoicePage = pathname.startsWith('/voice/');
-  const isPortfolioPage = pathname.includes('/portfolio/') || 
-                          pathname === '/demos' || 
-                          pathname === '/host' || 
-                          pathname === '/tarieven' || 
-                          pathname === '/bestellen' || 
-                          pathname === '/contact' || 
-                          pathname === '/over-mij' ||
-                          pathname === '/demos/' || 
-                          pathname === '/host/' || 
-                          pathname === '/tarieven/' || 
-                          pathname === '/bestellen/' || 
-                          pathname === '/contact/' || 
-                          pathname === '/over-mij/';
-
-  const isJohfrahMarket = market.market_code === 'JOHFRAH';
-  const isAdemingMarket = market.market_code === 'ADEMING';
-  const isYoussefMarket = market.market_code === 'YOUSSEF';
-  const isArtist = isYoussefMarket || pathname.includes('/artist/') || pathname.includes('/voice/') || (typeof window !== 'undefined' && window.location.host.includes('youssefzaki.eu'));
+  const isPortfolioMarket = market.market_code === 'PORTFOLIO';
+  const isSpecialJourney = ['PORTFOLIO', 'ARTIST', 'ADEMING'].includes(market.market_code);
+  const isStudioJourney = ['STUDIO', 'ACADEMY'].includes(market.market_code);
+  const isArtist = market.market_code === 'ARTIST';
   
   //  CHRIS-PROTOCOL: Hide GlobalNav completely for specific standalone pages
   // UITZONDERING: Op de Youssef artist pagina willen we de nav WEL zien voor de taalswitcher en logo
   // UITZONDERING: Op portfolio pagina's willen we de nav WEL zien (header/footer mandate)
-  if ((isArtistPage || isVoicePage) && !isYoussefMarket && !pathname.includes('/artist/youssef')) return null;
+  if ((pathname.startsWith('/artist/') || pathname.startsWith('/voice/')) && !isArtist && !pathname.includes('/artist/youssef')) return null;
 
   //  CHRIS-PROTOCOL: For Youssef Artist Journey, use a simpler nav without TopBar and specific FABs
   if (isArtist) {
@@ -467,8 +442,8 @@ export default function GlobalNav() {
         <ContainerInstrument plain className="flex-1 flex justify-start">
           <Link href="/" className="flex items-center gap-3 group">
             <Image  
-              src="/assets/common/branding/Voices-Artists-LOGO.webp" 
-              alt={t('common.voices_artists', "Voices Artists")} 
+              src={market.logo_url} 
+              alt={market.name} 
               width={160} 
               height={50}
               priority
@@ -479,32 +454,17 @@ export default function GlobalNav() {
 
         <ContainerInstrument plain className="hidden md:flex gap-8 items-center justify-center">
           {[
-            { name: 'Story', href: '#story', key: 'nav.artist.story' },
-            { name: 'Music', href: '#music', key: 'nav.artist.music' },
-            { name: 'Support', href: '#support', key: 'nav.artist.support' }
+            { name: 'Story', href: '/story', key: 'nav.artist.story' },
+            { name: 'Music', href: '/music', key: 'nav.artist.music' },
+            { name: 'Support', href: '/support', key: 'nav.artist.support' }
           ].map((link) => (
-            <button 
+            <VoicesLink 
               key={link.name} 
-              onClick={(e) => {
-                e.preventDefault();
-                const element = document.getElementById(link.href.replace('#', ''));
-                if (element) {
-                  const offset = 100; // Offset voor de sticky header
-                  const bodyRect = document.body.getBoundingClientRect().top;
-                  const elementRect = element.getBoundingClientRect().top;
-                  const elementPosition = elementRect - bodyRect;
-                  const offsetPosition = elementPosition - offset;
-
-                  window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                  });
-                }
-              }}
+              href={link.href}
               className="text-[13px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-[#FFC421] transition-all hover:tracking-[0.25em] cursor-pointer"
             >
               <VoiceglotText translationKey={link.key} defaultText={link.name} />
-            </button>
+            </VoicesLink>
           ))}
         </ContainerInstrument>
 
@@ -527,14 +487,14 @@ export default function GlobalNav() {
   //  ICON VISIBILITY LOGIC
   // CHRIS-PROTOCOL: Admins ALWAYS see all icons and links to ensure persistence during editing
   const showFavorites = (isAdmin || (navConfig?.icons?.favorites ?? (!isSpecialJourney && !isStudioJourney))) && !isMobile;
-  const showCart = (isAdmin || (navConfig?.icons?.cart ?? (!isSpecialJourney && !isStudioJourney))) && !isJohfrah && !isMobile;
-  const showNotifications = (isAdmin || (navConfig?.icons?.notifications ?? (!isSpecialJourney && !isStudioJourney))) && (isAdmin || (auth.isAuthenticated && notificationsCount > 0)) && !isJohfrah && !isMobile;
+  const showCart = (isAdmin || (navConfig?.icons?.cart ?? (!isSpecialJourney && !isStudioJourney))) && !isPortfolioMarket && !isMobile;
+  const showNotifications = (isAdmin || (navConfig?.icons?.notifications ?? (!isSpecialJourney && !isStudioJourney))) && (isAdmin || (auth.isAuthenticated && notificationsCount > 0)) && !isPortfolioMarket && !isMobile;
   const showLanguage = (isAdmin || (navConfig?.icons?.language ?? true)) && !isMobile;
   const showAccount = (isAdmin || (navConfig?.icons?.account ?? (!isSpecialJourney && !isStudioJourney))) && !isMobile;
   const showMenu = isAdmin || (navConfig?.icons?.menu ?? !isSpecialJourney);
-  const showLinks = (isAdmin || !isSpecialJourney || isJohfrah) && !isMobile; // Show links for Johfrah portfolio or if Admin
+  const showLinks = (isAdmin || !isSpecialJourney || isPortfolioMarket) && !isMobile; // Show links for Johfrah portfolio or if Admin
 
-  const showPortfolioAdmin = isJohfrah && isAdmin;
+  const showPortfolioAdmin = isPortfolioMarket && isAdmin;
 
   const handleSpeakToJohfrah = () => {
     playClick('pro');
@@ -545,30 +505,15 @@ export default function GlobalNav() {
 
   const getPortfolioHref = (subPath: string) => {
     if (typeof window === 'undefined') return `/portfolio/johfrah${subPath}`;
-    const host = window.location.host;
-    if (host.includes('johfrah.be')) {
+    if (market.market_code === 'PORTFOLIO') {
       return subPath;
     }
     return `/portfolio/johfrah${subPath}`;
   };
 
-  const johfrahLinks = [
-    { 
-      name: 'Voice-over', 
-      href: getPortfolioHref('/demos'), 
-      key: 'nav.johfrah.voiceover',
-      submenu: [
-        { name: 'Beluister demo\'s', href: getPortfolioHref('/demos'), key: 'nav.johfrah.demos' },
-        { name: 'Hoe werkt het?', href: getPortfolioHref('/over-mij'), key: 'nav.johfrah.how_it_works' },
-        { name: 'Voice-over tarieven', href: getPortfolioHref('/tarieven'), key: 'nav.johfrah.rates' },
-        { name: 'Direct bestellen', href: getPortfolioHref('/bestellen'), key: 'nav.johfrah.order' },
-      ]
-    },
-    { name: 'Host', href: getPortfolioHref('/host'), key: 'nav.johfrah.host' },
-    { name: 'Contact', href: getPortfolioHref('/contact'), key: 'nav.johfrah.contact' }
-  ];
-
-  const activeLinks = isJohfrah ? johfrahLinks : links;
+  const activeLinks = useMemo(() => {
+    return market.nav_links || links;
+  }, [market.nav_links, links]);
 
   // BOB-DEBUG: Ensure nav is always visible in dev
   const isDev = process.env.NODE_ENV === 'development';
@@ -602,31 +547,11 @@ export default function GlobalNav() {
               className="h-10 md:h-12 w-auto transition-transform duration-500 group-hover:scale-105 relative z-50"
             />
           </div>
-        ) : isJohfrah ? (
-          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.johfrah_name" defaultText="Johfrah Lefebvre" noTranslate={true} /></TextInstrument>
-        ) : market.market_code === 'YOUSSEF' ? (
-          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.youssef_name" defaultText="Youssef Zaki" noTranslate={true} /></TextInstrument>
-        ) : pathname.startsWith('/academy') ? (
-          <Image  
-          src="/assets/studio/common/branding/VACADEMY.webp" 
-          alt={t('common.voices_academy', "Voices Academy")} 
-          width={240} 
-          height={80}
-          priority
-          sizes="(max-width: 768px) 180px, 240px"
-          className="h-12 md:h-14 w-auto transition-transform duration-500 group-hover:scale-105 relative z-50"
-        />
-        ) : isStudioJourney ? (
-          <Image  
-          src="/assets/studio/common/branding/VSTUDIO.webp" 
-          alt={t('common.voices_studio', "Voices Studio")} 
-          width={240} 
-          height={80}
-          priority
-          sizes="(max-width: 768px) 180px, 240px"
-          className="h-12 md:h-14 w-auto transition-transform duration-500 group-hover:scale-105 relative z-50"
-        />
-      ) : (
+        ) : isPortfolioMarket ? (
+          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.portfolio_name" defaultText={market.name} noTranslate={true} /></TextInstrument>
+        ) : market.market_code === 'ARTIST' ? (
+          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.artist_name" defaultText={market.name} noTranslate={true} /></TextInstrument>
+        ) : (
         <Image  
           src={market.logo_url} 
           alt={t(`market.name.${market.market_code.toLowerCase()}`, market.name)} 
@@ -698,7 +623,7 @@ export default function GlobalNav() {
               </div>
             )}
 
-            {isEditMode && !isJohfrah && (
+            {isEditMode && !isPortfolioMarket && (
               <div className="flex items-center gap-0.5 opacity-0 group-hover/link:opacity-100 transition-opacity">
                 <button 
                   onClick={() => {
@@ -758,7 +683,7 @@ export default function GlobalNav() {
           </div>
         );
       })}
-      {isEditMode && !isJohfrah && (
+      {isEditMode && !isPortfolioMarket && (
         <button 
           onClick={addLink}
           className="p-2 text-primary hover:bg-primary/10 rounded-full transition-all"
@@ -1235,16 +1160,23 @@ export default function GlobalNav() {
                     </TextInstrument>
                   </ContainerInstrument>
                   <DropdownItem icon={Home} label={<VoiceglotText translationKey="nav.home" defaultText="Home" />} href="/" />
-                  <DropdownItem icon={Users} label={<VoiceglotText translationKey="nav.my_voice" defaultText="Onze Stemmen" />} href="/agency/" />
-                  <DropdownItem icon={Euro} label={<VoiceglotText translationKey="nav.pricing" defaultText="Tarieven" />} href="/tarieven/" />
+                  {activeLinks.map((link: any) => (
+                    <DropdownItem 
+                      key={link.name}
+                      icon={ChevronRight} 
+                      label={<VoiceglotText translationKey={link.key || `nav.${(link.name || '').toLowerCase().replace(/\s+/g, '_')}`} defaultText={link.name || ''} />} 
+                      href={link.href !== '#' ? link.href : undefined}
+                      onClick={link.onClick} 
+                    />
+                  ))}
                   <DropdownItem icon={Heart} label={<VoiceglotText translationKey="nav.favorites" defaultText="Favorieten" />} href="/account/favorites/" badge={favoritesCount > 0 ? favoritesCount : undefined} />
-                  <DropdownItem icon={ShoppingCart} label={<VoiceglotText translationKey="nav.cart" defaultText="Winkelmandje" />} href="/checkout/" badge={cartCount > 0 ? cartCount : undefined} />
+                  {!isPortfolioMarket && <DropdownItem icon={ShoppingCart} label={<VoiceglotText translationKey="nav.cart" defaultText="Winkelmandje" />} href="/checkout/" badge={cartCount > 0 ? cartCount : undefined} />}
                   <DropdownItem icon={User} label={<VoiceglotText translationKey="nav.account" defaultText={auth.isAuthenticated ? "Mijn Account" : "Inloggen"} />} href="/account/" />
                   <div className="h-px bg-black/5 mx-2 my-1" />
                 </>
               )}
               
-              {links.map((link) => (
+              {!isMobile && activeLinks.map((link) => (
                 <DropdownItem key={link.name}
                   icon={ChevronRight} 
                   label={<VoiceglotText translationKey={link.key || `nav.${(link.name || '').toLowerCase().replace(/\s+/g, '_')}`} defaultText={link.name || ''} />} 
@@ -1253,57 +1185,63 @@ export default function GlobalNav() {
               ))}
 
               {/* Footer Links Integration (Nuclear Sync) */}
-              <ContainerInstrument plain className="mt-1.5 pt-1.5 border-t border-black/5">
-                {[
-                  { name: 'Hoe werkt het', href: '/agency/zo-werkt-het/', icon: Info },
-                  { name: 'Tarieven', href: '/tarieven/', icon: Euro },
-                  { name: 'Ons verhaal', href: '/agency/over-ons/', icon: Quote },
-                ].map((item) => (
-                  <DropdownItem 
-                    key={item.name}
-                    icon={item.icon || ChevronRight}
-                    label={<VoiceglotText translationKey={`nav.extra.${item.name.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.name} />}
-                    href={item.href}
-                  />
-                ))}
-              </ContainerInstrument>
-              
-              <ContainerInstrument plain className="mt-1 px-1 py-1">
-                <div className="px-3 py-3 border-t border-black/5 mb-1">
-                  <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
-                    <VoiceglotText translationKey="nav.menu.categories_title" defaultText="Stemmen per categorie" />
-                  </TextInstrument>
-                </div>
-                
-                <ContainerInstrument plain className="space-y-0.5">
+              {!isSpecialJourney && (
+                <ContainerInstrument plain className="mt-1.5 pt-1.5 border-t border-black/5">
                   {[
-                    { label: 'TV Spot', icon: Monitor, href: '/agency/commercial/tv', key: 'category.tv' },
-                    { label: 'Radio', icon: Radio, href: '/agency/commercial/radio', key: 'category.radio' },
-                    { label: 'Online', icon: Globe, href: '/agency/commercial/online', key: 'category.online' },
-                    { label: 'Podcast', icon: Mic2, href: '/agency/commercial/podcast', key: 'category.podcast' },
-                    { label: 'Telefonie', icon: Phone, href: '/agency/telephony', key: 'category.telefoon' },
-                    { label: 'Corporate', icon: Building2, href: '/agency/video', key: 'category.corporate' }
-                  ].map((cat) => (
+                    { name: 'Hoe werkt het', href: '/agency/zo-werkt-het/', icon: Info, key: 'nav.extra.how_it_works' },
+                    { name: 'Tarieven', href: '/tarieven/', icon: Euro, key: 'nav.extra.rates' },
+                    { name: 'Ons verhaal', href: '/agency/over-ons/', icon: Quote, key: 'nav.extra.story' },
+                  ].map((item) => (
                     <DropdownItem 
-                      key={cat.label}
-                      icon={cat.icon}
-                      label={<VoiceglotText translationKey={cat.key} defaultText={cat.label} />}
-                      href={cat.href}
+                      key={item.name}
+                      icon={item.icon || ChevronRight}
+                      label={<VoiceglotText translationKey={item.key} defaultText={item.name} />}
+                      href={item.href}
                     />
                   ))}
                 </ContainerInstrument>
-                
-                <div className="mt-4 px-1">
-                  <ButtonInstrument 
-                    as={VoicesLink}
-                    href="/agency/"
-                    variant="default"
-                    className="flex items-center justify-center gap-2 w-full py-4 bg-va-black text-white rounded-xl text-[15px] font-light tracking-widest hover:bg-primary transition-all shadow-lg"
-                  >
-                    <VoiceglotText translationKey="nav.menu.discover_all" defaultText="Ontdek alle stemmen" />
-                    <ChevronRight size={16} />
-                  </ButtonInstrument>
-                </div>
+              )}
+              
+              <ContainerInstrument plain className="mt-1 px-1 py-1">
+                {!isSpecialJourney && (
+                  <>
+                    <div className="px-3 py-3 border-t border-black/5 mb-1">
+                      <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                        <VoiceglotText translationKey="nav.menu.categories_title" defaultText="Stemmen per categorie" />
+                      </TextInstrument>
+                    </div>
+                    
+                    <ContainerInstrument plain className="space-y-0.5">
+                      {[
+                        { label: 'TV Spot', icon: Monitor, href: '/agency/commercial/tv', key: 'category.tv' },
+                        { label: 'Radio', icon: Radio, href: '/agency/commercial/radio', key: 'category.radio' },
+                        { label: 'Online', icon: Globe, href: '/agency/commercial/online', key: 'category.online' },
+                        { label: 'Podcast', icon: Mic2, href: '/agency/commercial/podcast', key: 'category.podcast' },
+                        { label: 'Telefonie', icon: Phone, href: '/agency/telephony', key: 'category.telefoon' },
+                        { label: 'Corporate', icon: Building2, href: '/agency/video', key: 'category.corporate' }
+                      ].map((cat) => (
+                        <DropdownItem 
+                          key={cat.label}
+                          icon={cat.icon}
+                          label={<VoiceglotText translationKey={cat.key} defaultText={cat.label} />}
+                          href={cat.href}
+                        />
+                      ))}
+                    </ContainerInstrument>
+                    
+                    <div className="mt-4 px-1">
+                      <ButtonInstrument 
+                        as={VoicesLink}
+                        href="/agency/"
+                        variant="default"
+                        className="flex items-center justify-center gap-2 w-full py-4 bg-va-black text-white rounded-xl text-[15px] font-light tracking-widest hover:bg-primary transition-all shadow-lg"
+                      >
+                        <VoiceglotText translationKey="nav.menu.discover_all" defaultText="Ontdek alle stemmen" />
+                        <ChevronRight size={16} />
+                      </ButtonInstrument>
+                    </div>
+                  </>
+                )}
               </ContainerInstrument>
 
           <ContainerInstrument plain className="mt-2 pt-2 border-t border-black/5">

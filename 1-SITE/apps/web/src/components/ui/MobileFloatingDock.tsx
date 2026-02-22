@@ -30,10 +30,7 @@ export function MobileFloatingDock() {
     setMounted(true);
   }, []);
 
-  const isSpecialJourney = market.market_code === 'JOHFRAH' || 
-    market.market_code === 'YOUSSEF' || 
-    market.market_code === 'ADEMING' || 
-    (typeof window !== 'undefined' && (window.location.host.includes('johfrah.be') || window.location.pathname.includes('/portfolio/johfrah')));
+  const isSpecialJourney = ['PORTFOLIO', 'ARTIST', 'ADEMING', 'STUDIO', 'ACADEMY'].includes(market.market_code);
 
   if (!mounted || isSpecialJourney) return null;
 

@@ -77,12 +77,21 @@ export const AudioRecorderInstrument: React.FC<AudioRecorderProps> = ({
     playClick('pro');
 
     try {
-      //  ATOMIC UPLOAD: Hier zou de upload naar Supabase Storage komen
-      // Simulatie:
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      //  ATOMIC UPLOAD: Hier komt de upload naar Supabase Storage
+      const formData = new FormData();
+      const audioBlob = await fetch(audioUrl).then(r => r.blob());
+      formData.append('file', audioBlob, `briefing-${orderId || 'temp'}.mp3`);
+      formData.append('orderId', String(orderId || ''));
+
+      const response = await fetch('/api/upload/audio-briefing', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('Upload mislukt');
       
-      const mockUrl = `https://storage.voices.be/briefings/order-${orderId || 'temp'}.mp3`;
-      onUploadComplete?.(mockUrl);
+      const { url } = await response.json();
+      onUploadComplete?.(url);
       playClick('success');
       setAudioUrl(null); // Reset na succes
     } catch (err) {

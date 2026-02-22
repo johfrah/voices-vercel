@@ -2,7 +2,7 @@
 
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { BreadcrumbsInstrument } from './BreadcrumbsInstrument';
-import { Star, Check, Phone, Mail, Facebook, Instagram, Linkedin, Twitter, Plus, Trash2, Link as LinkIcon, Search, X, Quote, ChevronDown, Youtube, Music } from 'lucide-react';
+import { Star, Check, Phone, Mail, Facebook, Instagram, Linkedin, Plus, Trash2, Link as LinkIcon, Search, X, Quote, ChevronDown, Youtube, Music } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { MarketManager } from '@config/market-manager';
@@ -57,8 +57,12 @@ export default function GlobalFooter() {
   const [editValue, setEditValue] = useState('');
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
-  const isPortfolio = market.market_code === 'JOHFRAH' || (typeof window !== 'undefined' && (window.location.host.includes('johfrah.be') || pathname.includes('/portfolio/')));
+  const isPortfolio = market.market_code === 'PORTFOLIO';
+  const isArtist = market.market_code === 'ARTIST';
+  const isAdeming = market.market_code === 'ADEMING';
+  const isStudio = market.market_code === 'STUDIO';
+  const isAcademy = market.market_code === 'ACADEMY';
+  const isSpecial = isPortfolio || isArtist || isAdeming || isStudio || isAcademy;
 
   const standardSections = useMemo(() => {
     const sections = [
@@ -210,6 +214,10 @@ export default function GlobalFooter() {
     setIsEditingContact(null);
   };
 
+  const activeSections = useMemo(() => {
+    return market.footer_sections || sections;
+  }, [market.footer_sections, sections]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
@@ -222,10 +230,6 @@ export default function GlobalFooter() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const isArtist = market.market_code === 'YOUSSEF' || pathname.includes('/artist/');
-  const isSpecial = isPortfolio || isArtist || market.market_code === 'ADEMING';
-  const isStudio = typeof window !== 'undefined' && pathname.startsWith('/studio');
-  const isAcademy = typeof window !== 'undefined' && pathname.startsWith('/academy');
   const isOrdering = masterControlState.currentStep !== 'voice';
   const showPortfolioFooter = isPortfolio && actor?.portfolio_tier && actor?.portfolio_tier !== 'none';
 
@@ -235,22 +239,12 @@ export default function GlobalFooter() {
     { id: 'spotify', icon: Music, alt: 'Spotify' },
     { id: 'facebook', icon: Facebook, alt: 'Facebook' },
     { id: 'linkedin', icon: Linkedin, alt: 'LinkedIn' },
-    { id: 'twitter', icon: Twitter, alt: 'Twitter' },
   ];
 
-  const activeSocials: Record<string, string> = marketConfig?.socialLinks || (isArtist ? {
-    instagram: 'https://www.instagram.com/youssefzaki_off/',
-    youtube: 'https://www.youtube.com/watch?v=_MMUUbVj6YY',
-    spotify: 'https://open.spotify.com/artist/youssefzaki',
-    tiktok: 'https://www.tiktok.com/@youssefzaki_of'
-  } : {
-    facebook: 'https://facebook.com/voices.be',
-    instagram: 'https://instagram.com/voices.be',
-    linkedin: 'https://linkedin.com/company/voices-be'
-  });
+  const activeSocials: Record<string, string> = marketConfig?.socialLinks || market.social_links || {};
 
-  const activePhone = marketConfig?.phone || (isArtist ? '+32 474 00 00 00' : (market.phone || '+32 3 281 33 33'));
-  const activeEmail = marketConfig?.email || (isArtist ? 'contact@youssefzaki.eu' : (market.email || 'hello@voices.be'));
+  const activePhone = marketConfig?.phone || market.phone;
+  const activeEmail = marketConfig?.email || market.email;
 
   if (isArtist) {
     return (
@@ -260,8 +254,8 @@ export default function GlobalFooter() {
             <ContainerInstrument className="space-y-8 flex flex-col items-start">
               <VoicesLink href="/" className="flex items-center gap-3 group justify-start">
                 <Image  
-                  src="/assets/common/branding/Voices-Artists-LOGO.png" 
-                  alt={t('common.voices_artists', "Voices Artists")} 
+                  src={market.logo_url} 
+                  alt={market.name} 
                   width={180} 
                   height={60}
                   className="h-12 w-auto transition-transform duration-500 group-hover:scale-105"
@@ -285,26 +279,22 @@ export default function GlobalFooter() {
               </ContainerInstrument>
             </ContainerInstrument>
 
-            <ContainerInstrument className="space-y-6 flex flex-col items-start">
-              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-white/20 uppercase">
-                <VoiceglotText translationKey="footer.label.title" defaultText="Label" />
-              </HeadingInstrument>
-              <ul className="space-y-2">
-                <li><VoicesLink href="/agency/" className="text-[15px] font-light text-white/40 hover:text-white transition-colors">Voices Agency</VoicesLink></li>
-                <li><VoicesLink href="/studio/" className="text-[15px] font-light text-white/40 hover:text-white transition-colors">Voices Studio</VoicesLink></li>
-                <li><VoicesLink href="/academy/" className="text-[15px] font-light text-white/40 hover:text-white transition-colors">Academy</VoicesLink></li>
-              </ul>
-            </ContainerInstrument>
-
-            <ContainerInstrument className="space-y-6 flex flex-col items-start">
-              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-white/20 uppercase">
-                <VoiceglotText translationKey="footer.legal.title" defaultText="Legal" />
-              </HeadingInstrument>
-              <ul className="space-y-2">
-                <li><VoicesLink href="/privacy/" className="text-[15px] font-light text-white/40 hover:text-white transition-colors">Privacy Policy</VoicesLink></li>
-                <li><VoicesLink href="/terms/" className="text-[15px] font-light text-white/40 hover:text-white transition-colors">Terms of Service</VoicesLink></li>
-              </ul>
-            </ContainerInstrument>
+            {activeSections.map((section: any, i: number) => (
+              <ContainerInstrument key={i} className="space-y-6 flex flex-col items-start">
+                <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-white/20 uppercase">
+                  <VoiceglotText translationKey={`footer.section.${i}.title`} defaultText={section.title} />
+                </HeadingInstrument>
+                <ul className="space-y-2">
+                  {section.links.map((link: any, j: number) => (
+                    <li key={j}>
+                      <VoicesLink href={link.href} className="text-[15px] font-light text-white/40 hover:text-white transition-colors">
+                        {link.name}
+                      </VoicesLink>
+                    </li>
+                  ))}
+                </ul>
+              </ContainerInstrument>
+            ))}
 
             <ContainerInstrument className="space-y-6 flex flex-col items-start">
               <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-white/20 uppercase">
@@ -398,10 +388,10 @@ export default function GlobalFooter() {
                 </HeadingInstrument>
                 <ul className="space-y-3">
                   {[
-                    { name: t('common.voiceover', 'Voice-over'), href: '#demos' },
-                    { name: t('common.host_reporter', 'Host & Reporter'), href: '#host' },
-                    { name: t('common.rates', 'Tarieven'), href: '#tarieven' },
-                    { name: t('common.contact', 'Contact'), href: '#contact' },
+                    { name: t('common.voiceover', 'Voice-over'), href: '/demos' },
+                    { name: t('common.host_reporter', 'Host & Reporter'), href: '/host' },
+                    { name: t('common.rates', 'Tarieven'), href: '/tarieven' },
+                    { name: t('common.contact', 'Contact'), href: '/contact' },
                   ].map((link) => (
                     <li key={link.name}>
                       <VoicesLink href={link.href} className="text-[15px] font-light text-va-black/40 hover:text-va-black transition-colors">
@@ -477,7 +467,7 @@ export default function GlobalFooter() {
             <ButtonInstrument as={VoicesLink} href="/" variant="plain" size="none" onClick={() => playClick('light')} className="flex items-center gap-3 group justify-start">
               {isArtist ? (
                 <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black">
-                  <VoiceglotText  translationKey="auto.globalfooter.youssef_zaki.42bcfa" defaultText="YOUSSEF ZAKI" />
+                  <VoiceglotText  translationKey="footer.artist.name" defaultText={actorName.toUpperCase()} />
                 </TextInstrument>
               ) : (
                 <VoiceglotImage  
@@ -729,7 +719,7 @@ export default function GlobalFooter() {
         </ContainerInstrument>
 
         {/* Links Columns */}
-        {sections.map((section, i) => (
+        {activeSections.map((section: any, i: number) => (
           <ContainerInstrument key={i} className="space-y-6 flex flex-col items-start relative group/section w-full md:w-auto">
             {/* Mobile Accordion Header */}
             <button 
@@ -737,7 +727,7 @@ export default function GlobalFooter() {
               className="flex items-center justify-between w-full md:hidden py-4 border-b border-black/5"
             >
               <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase text-left">
-                {section.title}
+                <VoiceglotText translationKey={`footer.section.${i}.title`} defaultText={section.title} />
               </HeadingInstrument>
               <ChevronDown 
                 size={16} 
@@ -747,7 +737,7 @@ export default function GlobalFooter() {
 
             {/* Desktop Header */}
             <HeadingInstrument level={4} className="hidden md:block text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase text-left">
-              {section.title}
+              <VoiceglotText translationKey={`footer.section.${i}.title`} defaultText={section.title} />
             </HeadingInstrument>
 
             <AnimatePresence>
@@ -860,7 +850,7 @@ export default function GlobalFooter() {
       <ContainerInstrument className="pt-12 border-t border-black/5 flex flex-col md:flex-row justify-between items-center gap-8">
         <ContainerInstrument className="flex flex-col md:flex-row items-center gap-8">
           <TextInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/20 ">
-             2026 {isPortfolio ? 'Johfrah Lefebvre' : isArtist ? 'Youssef Zaki' : 'Voices'}. {isSpecial && (
+             2026 {market.name}. {isSpecial && (
               <TextInstrument as="span">
                 <VoiceglotText translationKey="footer.powered_by" defaultText="Powered by" />
                 <ButtonInstrument as="a" href="https://voices.be" variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">

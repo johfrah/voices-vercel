@@ -85,7 +85,7 @@ Dit zijn de meta-keys die we in de code gebruiken, geverifieerd tegen de product
 - **Marketing (AFL WC UTM)**: `wp_afl_wc_utm_active_conversions`, `wp_afl_wc_utm_last_lead_date_local`, `wp_afl_wc_utm_active_has_lead`, `wp_afl_wc_utm_conversion_type`, `wp_afl_wc_utm_cookie_consent`.
 - **CLV & Insights**: `paying_customer`, `_money_spent`, `_order_count`, `_customer_insights`, `aantal_orders`, `totale_waarde`, `laatste_bestel_datum`.
 - **Adres & BTW**: `billing_address_1`, `billing_city`, `billing_postcode`, `billing_country`, `billing_company`, `billing_vat_number`, `yweu_vat_number`, `btw_number`.
-- **Social**: `facebook`, `twitter`, `googleplus`.
+- **Social**: `facebook`, `instagram`, `linkedin`, `youtube`.
 - **Voices Internal**: `voices_customer_notifications`, `voices_faq_visited_pages`, `voices_last_captured_email`, `voices_abandoned_carts`.
 
 ---

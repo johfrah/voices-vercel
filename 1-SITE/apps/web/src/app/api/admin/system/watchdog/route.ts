@@ -3,6 +3,7 @@ import { systemEvents } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
 import { DirectMailService } from '@/services/DirectMailService';
 import { MarketManager } from '@config/market-manager';
+import { desc, gte, and, eq } from 'drizzle-orm';
 
 /**
  *  API: SYSTEM WATCHDOG (SELF-HEALING 2026)
@@ -68,6 +69,46 @@ export async function POST(request: NextRequest) {
     }
 
     if (mailService) {
+      //  BOB'S MANDATE: Rate limiting voor mails (max 1 per 10 minuten)
+      // We checken of er in de afgelopen 10 minuten al een mail is gestuurd.
+      // We gebruiken een speciaal 'source' label voor watchdog mails in de DB.
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+      
+      let recentMailSent = false;
+      try {
+        const recentEvents = await db
+          .select()
+          .from(systemEvents)
+          .where(
+            and(
+              eq(systemEvents.source, 'WatchdogMail'),
+              gte(systemEvents.createdAt, tenMinutesAgo)
+            )
+          )
+          .limit(1);
+        
+        recentMailSent = recentEvents.length > 0;
+      } catch (e) {
+        console.error('[Watchdog] Failed to check recent mails:', e);
+      }
+
+      if (recentMailSent) {
+        console.log('[Watchdog] 🤫 Mail rate-limited. Error logged to DB but no mail sent.');
+        return NextResponse.json({ success: true, eventId, mailSent: false });
+      }
+
+      // Als we hier zijn, sturen we een mail en loggen we dat we dat gedaan hebben
+      try {
+        await db.insert(systemEvents).values({
+          level: 'info',
+          source: 'WatchdogMail',
+          message: 'Watchdog summary mail sent',
+          createdAt: new Date().toISOString()
+        });
+      } catch (e) {
+        console.error('[Watchdog] Failed to log mail event:', e);
+      }
+
       if (isSafeAutoHeal) {
         console.log(`[Watchdog] 🛡️ SAFE AUTO-HEAL TRIGGERED for: ${error}`);
         
@@ -98,7 +139,7 @@ export async function POST(request: NextRequest) {
                 </p>
 
                 <hr style="border: none; border-top: 1px solid #dcfce7; margin: 30px 0;" />
-                <p style="font-size: 10px; color: #999; text-align: center;">Voices OS 2026 - Zero Touch Maintenance</p>
+                <p style="font-size: 10px; color: #999; text-align: center;">Voices OS 2026 - Zero Touch Maintenance (Mails limited to 1 per 10m)</p>
               </div>
             `
           });
@@ -155,7 +196,7 @@ export async function POST(request: NextRequest) {
                 </table>
 
                 <p style="font-size: 10px; color: #ccc; margin-top: 40px; text-align: center;">
-                  Voices OS 2026 - Antifragile Infrastructure
+                  Voices OS 2026 - Antifragile Infrastructure (Mails limited to 1 per 10m)
                 </p>
               </div>
             `
@@ -166,7 +207,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, eventId });
+    return NextResponse.json({ success: true, eventId, mailSent: true });
 
   } catch (err: any) {
     console.error('[Watchdog FATAL]:', err.message);
