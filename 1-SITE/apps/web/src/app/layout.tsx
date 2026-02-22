@@ -11,6 +11,7 @@ import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
 import { MarketManager } from "@config/market-manager";
+import { MarketManagerServer } from "@config/market-manager-server";
 import { Analytics } from "@vercel/analytics/react";
 import { VercelToolbar } from "@vercel/toolbar/next";
 import type { Metadata, Viewport } from "next";
@@ -39,7 +40,7 @@ const inter = Inter({ subsets: ["latin"] });
 /** Veilige market-resolutie: voorkomt 500 bij onverwachte hosts (Combell proxy, etc.) */
 async function getMarketSafe(host: string) {
   try {
-    return await MarketManager.getCurrentMarketAsync(host);
+    return await MarketManagerServer.getCurrentMarketAsync(host);
   } catch {
     return MarketManager.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || "voices.be");
   }
@@ -80,7 +81,7 @@ export async function generateMetadata(): Promise<Metadata> {
   );
 
   //  CHRIS-PROTOCOL: Dynamically generate alternate languages from MarketManager (Data-Driven)
-  const alternateLanguages = await MarketManager.getAllLocalesAsync();
+  const alternateLanguages = await MarketManagerServer.getAllLocalesAsync();
 
   return {
     title: {
