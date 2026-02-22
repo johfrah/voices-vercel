@@ -5,9 +5,13 @@
  * Het is verplaatst naar de web-app lib om strikte isolatie van de client bundle te garanderen.
  */
 
-import { MarketManager, MarketConfig } from '@config/market-manager';
+import { MarketManager, MarketConfig } from '../../../../../packages/config/market-manager';
 
 export class MarketManagerServer extends MarketManager {
+  private static marketCache: Record<string, { data: MarketConfig, timestamp: number }> = {};
+  private static localesCache: { data: Record<string, string>, timestamp: number } | null = null;
+  private static CACHE_TTL = 1000 * 60 * 10; // 10 minutes
+
   /**
    * Async versie voor Server Components die DIRECT uit de DB leest.
    */
@@ -20,6 +24,13 @@ export class MarketManagerServer extends MarketManager {
     }
 
     const staticConfig = this.getCurrentMarket(lookupHost);
+    const cacheKey = staticConfig.market_code;
+
+    // 1. Check Cache
+    const cached = this.marketCache[cacheKey];
+    if (cached && (Date.now() - cached.timestamp) < this.CACHE_TTL) {
+      return cached.data;
+    }
     
     try {
       // 🛡️ CHRIS-PROTOCOL: Dynamic import to isolate DB logic from client bundle
@@ -37,7 +48,7 @@ export class MarketManagerServer extends MarketManager {
         const loc = dbConfig.localization as any;
         const social = dbConfig.socialLinks as any;
         
-        return {
+        const finalConfig: MarketConfig = {
           ...staticConfig,
           name: dbConfig.name || staticConfig.name,
           email: dbConfig.email || staticConfig.email,
@@ -69,6 +80,10 @@ export class MarketManagerServer extends MarketManager {
             canonical_domain: (dbConfig as any).canonicalDomain || staticConfig.logo_url // Fallback logic
           }
         };
+
+        // Update Cache
+        this.marketCache[cacheKey] = { data: finalConfig, timestamp: Date.now() };
+        return finalConfig;
       }
     } catch (e) {
       console.error('[MarketManagerServer] DB Fetch failed, falling back to static:', e);
@@ -81,6 +96,11 @@ export class MarketManagerServer extends MarketManager {
    * Haalt alle actieve locales op voor SEO alternates (Suzy Precision)
    */
   static async getAllLocalesAsync(): Promise<Record<string, string>> {
+    // 1. Check Cache
+    if (this.localesCache && (Date.now() - this.localesCache.timestamp) < this.CACHE_TTL) {
+      return this.localesCache.data;
+    }
+
     try {
       // 🛡️ CHRIS-PROTOCOL: Dynamic import to isolate DB logic from client bundle
       const { db } = await import('@db');
@@ -105,12 +125,16 @@ export class MarketManagerServer extends MarketManager {
         locales[locale] = domain;
       });
 
-      return Object.keys(locales).length > 0 ? locales : {
+      const finalLocales = Object.keys(locales).length > 0 ? locales : {
         'nl-BE': 'https://www.voices.be',
         'nl-NL': 'https://www.voices.nl',
         'fr-FR': 'https://www.voices.fr',
         'en-EU': 'https://www.voices.eu'
       };
+
+      // Update Cache
+      this.localesCache = { data: finalLocales, timestamp: Date.now() };
+      return finalLocales;
     } catch (e) {
       console.error('[MarketManagerServer] Failed to fetch all locales:', e);
       return {

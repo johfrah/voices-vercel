@@ -338,9 +338,9 @@ export async function middleware(request: NextRequest) {
   // INTELLIGENT REDIRECT: Als de bezoeker een franstalige cookie heeft maar op de NL root zit
   // (en het is niet een expliciete taal-switch actie), stuur ze naar de juiste prefix.
   // We doen dit alleen voor de hoofd-domeinen om loops te voorkomen.
-  if (!langMatch && detectedLang && detectedLang !== 'nl' && market === 'BE') {
+  if (!langMatch && detectedLang && detectedLang !== 'nl' && market === 'BE' && pathname === '/') {
     const redirectUrl = url.clone()
-    redirectUrl.pathname = `/${detectedLang}${pathname}`
+    redirectUrl.pathname = `/${detectedLang}${pathname}`.replace(/\/+$/, '/')
     return NextResponse.redirect(redirectUrl)
   }
 
