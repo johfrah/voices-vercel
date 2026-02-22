@@ -31,8 +31,9 @@ const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalcula
  */
 function generateActorSchema(actor: any, marketName: string = 'Voices', host: string = '') {
   const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
-  const market = MarketManager.getCurrentMarket(host || 'www.voices.be');
-  const baseUrl = `https://${host || (market.market_code.toLowerCase() === 'be' ? 'www.voices.be' : 'www.voices.nl')}`;
+  const market = MarketManager.getCurrentMarket(host);
+  const domains = MarketManager.getMarketDomains();
+  const baseUrl = domains[market.market_code] || `https://${host || 'www.voices.be'}`;
   
   // Map internal delivery type to ISO 8601 duration
   const deliveryMap: Record<string, string> = {
@@ -78,8 +79,9 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
  */
 function generateArtistSchema(artist: any, host: string = '') {
   const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
-  const market = MarketManager.getCurrentMarket(host || 'www.voices.be');
-  const baseUrl = `https://${host || (market.market_code.toLowerCase() === 'be' ? 'www.voices.be' : 'www.voices.nl')}`;
+  const market = MarketManager.getCurrentMarket(host);
+  const domains = MarketManager.getMarketDomains();
+  const baseUrl = domains[market.market_code] || `https://${host || 'www.voices.be'}`;
   return {
     "@context": "https://schema.org",
     "@type": "MusicGroup",
@@ -159,7 +161,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const lang = headersList.get('x-voices-lang') || 'nl';
   const normalizedSlug = normalizeSlug(params.slug);
   
-  const siteUrl = `https://${market.market_code.toLowerCase() === 'be' ? 'www.voices.be' : (market.market_code.toLowerCase() === 'nlnl' ? 'www.voices.nl' : host)}`;
+  const domains = MarketManager.getMarketDomains();
+  const siteUrl = domains[market.market_code] || `https://${host}`;
   
   // Resolve de slug naar de originele versie
   const resolved = await resolveSlug(normalizedSlug, lang);

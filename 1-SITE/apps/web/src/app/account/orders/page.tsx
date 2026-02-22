@@ -11,9 +11,11 @@ import { ArrowLeft, ExternalLink, FileText, Package, ShoppingBag, Zap } from 'lu
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { LiquidBackground } from '@/components/ui/LiquidBackground';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { SlimmeKassa } from '@/lib/pricing-engine';
+import dynamic from 'next/dynamic';
+
+const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
 export const dynamic = 'force-dynamic';
 

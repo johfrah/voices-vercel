@@ -204,11 +204,11 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
     }
     return {
       languages: [
-        t('language.vlaams', lang === 'fr' ? 'Flamand' : lang === 'en' ? 'Flemish' : 'Vlaams'), 
-        t('language.nederlands', lang === 'fr' ? 'Néerlandais' : lang === 'en' ? 'Dutch' : 'Nederlands'), 
-        t('language.frans', lang === 'fr' ? 'Français' : lang === 'en' ? 'French' : 'Frans'), 
-        t('language.engels', lang === 'fr' ? 'Anglais' : lang === 'en' ? 'English' : 'Engels'), 
-        t('language.duits', lang === 'fr' ? 'Allemand' : lang === 'en' ? 'German' : 'Duits')
+        MarketManager.getLanguageLabel('nl-be'), 
+        MarketManager.getLanguageLabel('nl-nl'), 
+        MarketManager.getLanguageLabel('fr-fr'), 
+        MarketManager.getLanguageLabel('en-gb'), 
+        MarketManager.getLanguageLabel('de-de')
       ],
       genders: [
         t('gender.mannelijk', lang === 'fr' ? 'Masculin' : lang === 'en' ? 'Male' : 'Mannelijk'), 
@@ -473,8 +473,8 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": marketConfig.name,
-        "url": `https://${(typeof window !== 'undefined' ? window.location.host : 'www.voices.be').replace(/^https?:\/\//, '')}`,
-        "logo": `https://${(typeof window !== 'undefined' ? window.location.host : 'www.voices.be').replace(/^https?:\/\//, '')}${marketConfig.logo_url}`,
+        "url": MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${(typeof window !== 'undefined' ? window.location.host : 'www.voices.be').replace(/^https?:\/\//, '')}`,
+        "logo": `${MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${(typeof window !== 'undefined' ? window.location.host : 'www.voices.be').replace(/^https?:\/\//, '')}`}${marketConfig.logo_url}`,
         "description": marketConfig.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
         "aggregateRating": {
           "@type": "AggregateRating",
