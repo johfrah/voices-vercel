@@ -220,9 +220,9 @@ export class VoiceFilterEngine {
         case 'popularity':
         default:
           // 1. menu_order (Admin override)
-          // CHRIS-PROTOCOL: menu_order is the absolute override. 0 means no override.
-          const aOrder = a.menu_order || 0;
-          const bOrder = b.menu_order || 0;
+          // CHRIS-PROTOCOL: menu_order is the absolute override. 0 means no override (lowest priority).
+          const aOrder = a.menu_order || 999999;
+          const bOrder = b.menu_order || 999999;
           if (aOrder !== bOrder) {
             return aOrder - bOrder;
           }
