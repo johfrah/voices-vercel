@@ -361,26 +361,26 @@ export const ReviewsInstrument: React.FC<{
           </div>
 
           {/* Navigation Controls */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 relative z-50">
             <ButtonInstrument 
               onClick={() => scroll('left')}
               disabled={!canScrollLeft}
               className={cn(
-                "w-12 h-12 rounded-full border border-black/5 flex items-center justify-center transition-all bg-white",
-                canScrollLeft ? "text-va-black shadow-sm hover:border-primary/20 hover:text-primary" : "opacity-20 cursor-not-allowed"
+                "w-12 h-12 rounded-full border border-black/5 flex items-center justify-center transition-all bg-white shadow-sm",
+                canScrollLeft ? "text-va-black hover:border-primary/20 hover:text-primary" : "opacity-20 cursor-not-allowed"
               )}
             >
-              <ChevronLeft size={20} strokeWidth={2} className="relative z-10" />
+              <ChevronLeft size={24} strokeWidth={2.5} className="relative z-10" />
             </ButtonInstrument>
             <ButtonInstrument 
               onClick={() => scroll('right')}
               disabled={!canScrollRight}
               className={cn(
-                "w-12 h-12 rounded-full border border-black/5 flex items-center justify-center transition-all bg-white",
-                canScrollRight ? "text-va-black shadow-sm hover:border-primary/20 hover:text-primary" : "opacity-20 cursor-not-allowed"
+                "w-12 h-12 rounded-full border border-black/5 flex items-center justify-center transition-all bg-white shadow-sm",
+                canScrollRight ? "text-va-black hover:border-primary/20 hover:text-primary" : "opacity-20 cursor-not-allowed"
               )}
             >
-              <ChevronRight size={20} strokeWidth={2} className="relative z-10" />
+              <ChevronRight size={24} strokeWidth={2.5} className="relative z-10" />
             </ButtonInstrument>
           </div>
         </ContainerInstrument>
@@ -468,13 +468,11 @@ export const ReviewsInstrument: React.FC<{
                     )}
                   </div>
 
-                  <TextInstrument className="text-[15px] font-light leading-relaxed text-va-black/70 tracking-tight line-clamp-6 w-full">
-                    &quot;
+                  <TextInstrument className="text-[15px] font-light leading-relaxed text-va-black/70 tracking-tight line-clamp-6 w-full select-none cursor-grab active:cursor-grabbing">
                     <VoiceglotText 
                       translationKey={`${translationKeyPrefix}.review.${i}.text`} 
                       defaultText={(review.text || review.textNl || review.textEn || "Geweldige ervaring!").replace(/\\n/g, ' ')} 
                     />
-                    &quot;
                   </TextInstrument>
                 </ContainerInstrument>
                 

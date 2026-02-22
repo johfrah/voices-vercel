@@ -269,6 +269,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         name: r.author_name || r.authorName,
         text: r.text_nl || r.text_en || '',
         rating: r.rating,
+        provider: r.provider,
+        authorPhotoUrl: r.author_photo_url || r.authorPhotoUrl,
         date: new Date(r.created_at || r.createdAt || Date.now()).toLocaleDateString('nl-BE')
       })),
       reviewStats: { averageRating: 4.9, totalCount: dbReviewsRaw.length, distribution: {} }
