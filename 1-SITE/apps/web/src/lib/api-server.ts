@@ -129,6 +129,11 @@ const ACTORS_CACHE_TTL = 1000 * 5; // 5 seconds (reduced for debugging)
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
   console.log(' API: getActors called with params:', params);
+  
+  if (params.dummy === 'true') {
+    return { results: [{ id: 999, first_name: 'Dummy' }] as any, count: 1, filters: { genders: [], languages: [], styles: [] }, reviews: [], reviewStats: { averageRating: 5, totalCount: 1, distribution: {} } };
+  }
+  
   const { language, search, gender, style, market } = params;
   
   const cache = getGlobalCache();
