@@ -59,14 +59,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const domains = MarketManager.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
+  const cleanHost = host.replace(/^https?:\/\//, '');
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
-  let lookupHost = host;
-  if (pathname.startsWith('/studio')) lookupHost = `${host}/studio`;
-  else if (pathname.startsWith('/academy')) lookupHost = `${host}/academy`;
+  let lookupHost = cleanHost;
+  if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
+  else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
   const market = await getMarketSafe(lookupHost);
-  const baseUrl = `https://${host}`;
+  const baseUrl = `https://${cleanHost}`;
 
   // 🛡️ VISIONARY MANDATE: Title and description exclusively from market data
   const title = market.seo_data?.title || (
@@ -143,11 +144,12 @@ export default async function RootLayout({
   const domains = MarketManager.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
+  const cleanHost = host.replace(/^https?:\/\//, '');
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
-  let lookupHost = host;
-  if (pathname.startsWith('/studio')) lookupHost = `${host}/studio`;
-  else if (pathname.startsWith('/academy')) lookupHost = `${host}/academy`;
+  let lookupHost = cleanHost;
+  if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
+  else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
   const market = await getMarketSafe(lookupHost);
   
@@ -181,8 +183,8 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": market.seo_data?.schema_type || (market.market_code === 'ADEMING' ? "WebApplication" : (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? "Person" : "Organization"),
     "name": market.name,
-    "url": host ? `https://${host}` : '',
-    "logo": market.logo_url?.startsWith('http') ? market.logo_url : `https://${host}${market.logo_url || ''}`,
+    "url": cleanHost ? `https://${cleanHost}` : '',
+    "logo": market.logo_url?.startsWith('http') ? market.logo_url : `https://${cleanHost}${market.logo_url || ''}`,
     "description": market.seo_data?.description || (
       market.market_code === 'ADEMING' ? "Platform voor meditatie en innerlijke rust." : 
       market.market_code === 'PORTFOLIO' ? "Vlaamse voice-over & regisseur." : 
