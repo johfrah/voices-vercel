@@ -20,7 +20,7 @@ import { Plus, Trash2, Link as LinkIcon, Search, X, Check, ArrowRight, Loader2 }
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 
 import { LanguageSwitcher } from './LanguageSwitcher';
 
