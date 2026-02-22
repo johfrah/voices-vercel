@@ -277,7 +277,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           desc(actors.voiceScore), 
           asc(actors.firstName)
         ],
-        limit: 20,
+        limit: 100,
         /*
         with: {
           demos: {
@@ -312,7 +312,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         
       if (dbLang || lang) {
         const targetLang = dbLang || lang;
-        console.log(' [getActors] SDK Fallback filtering for targetLang:', targetLang);
         if (targetLang === 'nl') {
           query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
         } else {
@@ -320,7 +319,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         }
       }
       
-      const { data: sdkData, error: sdkError } = await query.limit(20);
+      const { data: sdkData, error: sdkError } = await query.limit(100);
         
       if (sdkError) {
         console.error(' [getActors] SDK Fallback also failed:', sdkError);
@@ -557,7 +556,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const result: SearchResults = {
       count: mappedResults.length,
       results: mappedResults as any,
-      _dbCount: dbResults.length,
       filters: {
         genders: ['Mannelijk', 'Vrouwelijk'],
         languages: finalLangs,
