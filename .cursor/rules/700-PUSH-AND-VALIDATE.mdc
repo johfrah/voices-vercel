@@ -1,0 +1,37 @@
+---
+description: Standard procedure for pushing code and validating the deployment via forensic logs.
+alwaysApply: true
+---
+
+# 🚀 Push & Validate Standard Procedure (Nuclear Mode)
+
+Dit protocol garandeert dat elke wijziging niet alleen wordt gepusht, maar ook daadwerkelijk succesvol draait in de productie-omgeving zonder rimpels.
+
+## 📋 De Standaard Procedure
+
+Vóór elke afronding van een taak MOET de agent de volgende stappen doorlopen:
+
+1.  **Versiebeheer**: Verhoog de `version` in `1-SITE/apps/web/package.json`.
+2.  **Atomic Audit**: Voer de `000-ATOMIC-AUDIT.mdc` uit.
+3.  **Push**: Voer `git add . && git commit -m "vX.Y.Z: [Bericht]" && git push` uit.
+4.  **Wacht op Build**: Wacht minimaal 60-90 seconden tot Vercel de build heeft voltooid.
+5.  **Forensische Audit**: Voer het validatie-script uit om de live logs te controleren:
+    ```bash
+    npx tsx 3-WETTEN/scripts/forensic-audit.ts
+    ```
+6.  **Certificering**: De taak mag pas als "COMPLETED" worden gemarkeerd als de audit een ✅ groen resultaat geeft.
+
+## 🚫 Verboden Patronen
+
+- **GEEN** push zonder versie-verhoging.
+- **GEEN** taak afronden zonder de live logs te checken.
+- **GEEN** negeren van waarschuwingen in de `forensic-audit.ts`.
+
+## 🛠️ Herstel bij Foutmeldingen
+
+Indien de `forensic-audit.ts` fouten rapporteert:
+1.  Analyseer de stack-trace in de details van het log.
+2.  Pas de code direct aan.
+3.  Herhaal de push-procedure met een nieuwe patch-versie.
+
+"Een push is pas een succes als de logs zwijgen." - Chris/Autist
