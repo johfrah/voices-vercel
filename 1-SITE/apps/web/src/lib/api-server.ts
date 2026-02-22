@@ -314,6 +314,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         
       if (dbLang || lang) {
         const targetLang = dbLang || lang;
+        console.log(' [getActors] SDK Fallback filtering for targetLang:', targetLang);
         if (targetLang === 'nl') {
           query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
         } else {
