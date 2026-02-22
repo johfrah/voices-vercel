@@ -8,6 +8,8 @@ import { VoiceglotText } from './VoiceglotText';
 import { VoicesLink } from './VoicesLink';
 import { ButtonInstrument } from './LayoutInstruments';
 
+import { MarketManager } from '@config/market-manager';
+
 interface ArtistHeroInstrumentProps {
   name: string;
   bio: string;
@@ -27,6 +29,7 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
   bio, 
   image 
 }) => {
+  const market = MarketManager.getCurrentMarket();
   return (
     <header className="va-artist-hero">
       <nav className="va-artist-nav">

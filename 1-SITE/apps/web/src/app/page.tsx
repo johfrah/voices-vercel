@@ -58,6 +58,10 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
   const [customerDNA, setCustomerDNA] = useState<any>(null);
   const [actors, setActors] = useState<Actor[]>(initialActors);
 
+  const market = useMemo(() => {
+    return MarketManager.getCurrentMarket();
+  }, []);
+
   //  CHRIS-PROTOCOL: Sync local state with initial props
   useEffect(() => {
     setActors(initialActors);
