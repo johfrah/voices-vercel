@@ -16,7 +16,8 @@ export async function POST(request: NextRequest) {
   const authHeader = request.headers.get('x-system-secret');
   const isSystemAction = systemSecret && authHeader === systemSecret;
 
-  if (!isSystemAction && (!user || user.email !== 'johfrah@voices.be')) {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (!isSystemAction && (!user || user.email !== adminEmail)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

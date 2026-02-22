@@ -57,7 +57,7 @@ export async function getServerUser(): Promise<ServerUser | null> {
  */
 export function isAdminUser(u: ServerUser | null): boolean {
   if (!u) return false;
-  const adminEmail = process.env.ADMIN_EMAIL || 'johfrah@voices.be';
+  const adminEmail = process.env.ADMIN_EMAIL;
   return u.email === adminEmail || u.role === 'admin';
 }
 

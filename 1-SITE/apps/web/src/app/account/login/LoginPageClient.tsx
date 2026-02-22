@@ -56,8 +56,8 @@ export function LoginPageClient() {
   useEffect(() => {
     if (supabaseUnavailable) return;
     const magic = searchParams?.get('magic');
-    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'johfrah@voices.be';
-    if (magic === 'johfrah') {
+    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+    if (magic === 'johfrah' && adminEmail) {
       const loginMagic = async () => {
         setIsLoading(true);
         try {

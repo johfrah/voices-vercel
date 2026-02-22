@@ -407,7 +407,7 @@ SLIMME KASSA REGELS:
             const market = MarketManager.getCurrentMarket(host);
             
             await mailService.sendMail({
-              to: market.email || 'johfrah@voices.be',
+              to: market.email || process.env.ADMIN_EMAIL || 'admin@voices.be',
               subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
               html: `
                 <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">

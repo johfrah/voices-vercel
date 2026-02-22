@@ -87,9 +87,9 @@ export default function VumeAdminPage() {
       const res = await fetch('/api/admin/test-vume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ templateId: selectedTemplate.id, recipient: 'johfrah@voices.be' })
+        body: JSON.stringify({ templateId: selectedTemplate.id, recipient: 'admin@voices.be' })
       });
-      if (res.ok) alert('Testmail verzonden naar johfrah@voices.be');
+      if (res.ok) alert('Testmail verzonden naar admin@voices.be');
     } catch (e) { alert('Fout bij verzenden'); }
     finally { setIsSending(false); }
   };

@@ -30,8 +30,8 @@ export const SecurityService = {
     }
     
     // Admin heeft altijd toegang (God Mode)
-    const adminEmail = process.env.ADMIN_EMAIL || 'johfrah@voices.be';
-    if (user?.role === 'admin' || user?.email === adminEmail) return true;
+    const adminEmail = process.env.ADMIN_EMAIL;
+    if (user?.role === 'admin' || (adminEmail && user?.email === adminEmail)) return true;
 
     // Check of de gebruiker de 'academy_student' subrol heeft
     const subroles = (user?.subroles as string[]) || [];

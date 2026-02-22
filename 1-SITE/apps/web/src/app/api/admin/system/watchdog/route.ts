@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     );
 
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'johfrah@voices.be';
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL;
     
     //  CHRIS-PROTOCOL: Safe Mail Service initialization
     let mailService;

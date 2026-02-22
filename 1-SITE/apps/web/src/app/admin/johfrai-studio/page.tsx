@@ -70,7 +70,7 @@ export default function JohfraiStudioPage() {
       const formData = new FormData();
       formData.append('audio', audioBlob, 'johfrai-fragment.wav');
       formData.append('text', text);
-      formData.append('email', 'johfrah@voices.be');
+      formData.append('email', 'admin@voices.be');
 
       const response = await fetch('/api/admin/johfrai/mail', {
         method: 'POST',
@@ -79,7 +79,7 @@ export default function JohfraiStudioPage() {
 
       const result = await response.json();
       if (result.success) {
-        alert('Audio succesvol verzonden naar johfrah@voices.be! 🎙️📧');
+        alert('Audio succesvol verzonden naar admin@voices.be! 🎙️📧');
       } else {
         throw new Error(result.error);
       }
