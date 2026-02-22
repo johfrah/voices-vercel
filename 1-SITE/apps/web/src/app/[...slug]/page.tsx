@@ -141,7 +141,7 @@ interface SmartRouteParams {
 export async function generateMetadata({ params }: { params: SmartRouteParams }): Promise<Metadata> {
   const headersList = headers();
   const host = headersList.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
-  const { MarketManager } = await import('@/packages/config/market-manager');
+  const { MarketManager } = await import('@config/market-manager');
   const market = MarketManager.getCurrentMarket(host);
   const lang = headersList.get('x-voices-lang') || 'nl';
   const normalizedSlug = normalizeSlug(params.slug);
@@ -363,7 +363,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   // 2. Pitch Link (Casting List)
   if (firstSegment === 'pitch' && journey) {
     try {
-      const { MarketManager } = await import('@/packages/config/market-manager');
+      const { MarketManager } = await import('@config/market-manager');
       const host = headersList.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
       const market = MarketManager.getCurrentMarket(host);
 
