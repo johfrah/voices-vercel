@@ -10,6 +10,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+//  NUCLEAR VERSION: v3.1 (Stability Hardened)
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 /**
  *  NUCLEAR LOG VIEWER API (2026)
  *  Haalt de laatste systeem-events op voor de admin dashboard.

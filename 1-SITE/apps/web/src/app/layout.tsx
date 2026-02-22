@@ -254,6 +254,7 @@ export default async function RootLayout({
             <Suspense fallback={null}>
               <VoicejarTracker />
             </Suspense>
+            <script dangerouslySetInnerHTML={{ __html: `console.log('🚀 [Voices] Nuclear Version: v3.2 (Cache Purged)');` }} />
             <div className="fixed top-0 left-0 right-0 z-[200]">
               <Suspense fallback={<div className="h-10 bg-va-off-white/50 animate-pulse" />}>
                 {showTopBar && <TopBar />}
