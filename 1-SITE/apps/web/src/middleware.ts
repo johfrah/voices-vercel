@@ -181,7 +181,7 @@ export async function middleware(request: NextRequest) {
 
   // 2. MARKET DETECTION
   let market = 'BE'
-  if (host.includes('voices.nl')) market = 'NL'
+  if (host.includes('voices.nl')) market = 'NLNL'
   else if (host.includes('voices.fr')) market = 'FR'
   else if (host.includes('voices.es')) market = 'ES'
   else if (host.includes('voices.eu')) market = 'EU'
@@ -189,6 +189,18 @@ export async function middleware(request: NextRequest) {
   else if (host.includes('voices.academy')) market = 'ACADEMY'
   else if (host.includes('ademing.be')) market = 'ADEMING'
   else if (host.includes('johfrai.be')) market = 'JOHFRAI'
+  else if (host.includes('johfrah.be')) market = 'PORTFOLIO'
+  else if (host.includes('youssefzaki.eu')) market = 'ARTIST'
+
+  // 2.5 SUB-JOURNEY DETECTION (v2.30)
+  // Voices.be/studio en /academy zijn aparte journeys met eigen branding/socials
+  const isStudioJourney = pathname.startsWith('/studio') || pathname.startsWith('/studio/');
+  const isAcademyJourney = pathname.startsWith('/academy') || pathname.startsWith('/academy/');
+  
+  if (market === 'BE') {
+    if (isStudioJourney) market = 'STUDIO';
+    if (isAcademyJourney) market = 'ACADEMY';
+  }
 
   // 3. JOURNEY ROUTING (DOMAIN BASED REWRITES)
   
@@ -198,7 +210,7 @@ export async function middleware(request: NextRequest) {
     const targetPath = pathname === '/' ? '' : pathname;
     url.pathname = `/portfolio/johfrah${targetPath}`;
     const portfolioResponse = NextResponse.rewrite(url)
-    portfolioResponse.headers.set('x-voices-market', 'JOHFRAH')
+    portfolioResponse.headers.set('x-voices-market', 'PORTFOLIO')
     portfolioResponse.headers.set('x-voices-pathname', pathname)
     portfolioResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
     return portfolioResponse
@@ -251,7 +263,7 @@ export async function middleware(request: NextRequest) {
     const targetPath = pathname.replace('/artist/youssef', '') || '/';
     url.pathname = `/artist/youssef${targetPath}`;
     const artistResponse = NextResponse.rewrite(url)
-    artistResponse.headers.set('x-voices-market', 'YOUSSEF')
+    artistResponse.headers.set('x-voices-market', 'ARTIST')
     artistResponse.headers.set('x-voices-lang', 'en')
     artistResponse.headers.set('x-voices-pathname', pathname)
     artistResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)

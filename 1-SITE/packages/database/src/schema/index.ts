@@ -1063,7 +1063,7 @@ export const marketConfigs = pgTable('market_configs', {
   vatNumber: text('vat_number'),
   cocNumber: text('coc_number'), // KVK nummer voor NL
   address: jsonb('address'), // { street: '', city: '', zip: '' }
-  socialLinks: jsonb('social_links'), // { instagram: '', linkedin: '', facebook: '', twitter: '' }
+  socialLinks: jsonb('social_links'), // { instagram: '', linkedin: '', facebook: '', youtube: '' }
   legal: jsonb('legal'), // { terms_url: '', privacy_url: '', disclaimer: '' }
   localization: jsonb('localization'), // { default_lang: 'nl', currency: 'EUR', locale: 'nl-BE' }
   isManuallyEdited: boolean('is_manually_edited').default(false),

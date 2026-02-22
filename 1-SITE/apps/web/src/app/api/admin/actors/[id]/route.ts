@@ -60,7 +60,7 @@ export async function PATCH(
       deliveryConfig: body.delivery_config || undefined,
       studioSpecs: body.studioSpecs || undefined,
       connectivity: body.connectivity || undefined,
-      portfolioPhotos: body.portfolio_photos || undefined,
+      portfolioPhotos: body.portfolio_photos || body.portfolioPhotos || undefined,
       portfolioTier: body.portfolioTier || undefined,
       website: body.website,
       youtubeUrl: body.youtubeUrl || body.youtube_url,

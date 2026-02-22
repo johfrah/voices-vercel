@@ -49,18 +49,6 @@ async function seedMarkets() {
       logo_url: VOICES_CONFIG.assets.logos.fr,
       theme: 'voices',
       is_inclusive: true
-    },
-    'voices.de': {
-      market_code: 'DE',
-      language: 'de',
-      primary_language: 'Duits',
-      supported_languages: ['Duits', 'Engels', 'Frans', 'Nederlands', 'Vlaams', 'Italiaans', 'Spaans'],
-      popular_languages: ['Duits', 'Engels', 'Frans', 'Nederlands', 'Vlaams'],
-      name: 'Deutschland',
-      email: 'johfrah@voices.de',
-      logo_url: VOICES_CONFIG.assets.logos.eu,
-      theme: 'voices',
-      is_inclusive: true
     }
   };
 

@@ -30,9 +30,11 @@ export const CastingDock = () => {
   const { playClick } = useSonicDNA();
   const selectedActors = state.selected_actors;
   
-  //  CHRIS-PROTOCOL: Geen CastingDock op Artist, Voice of Launchpad pagina's
-  const isExcludedPage = pathname?.startsWith('/artist/') || 
-                         pathname?.startsWith('/voice/') || 
+  const market = MarketManager.getCurrentMarket();
+  
+  //  CHRIS-PROTOCOL: Geen CastingDock op Artist, Portfolio, Voice of Launchpad pagina's
+  const isExcludedMarket = ['ARTIST', 'PORTFOLIO', 'ADEMING'].includes(market.market_code);
+  const isExcludedPage = isExcludedMarket || 
                          pathname?.startsWith('/casting/launchpad');
   const isVisible = selectedActors.length > 0 && !isExcludedPage;
 

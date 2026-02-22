@@ -5,6 +5,8 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { VoiceglotText } from './VoiceglotText';
+import { VoicesLink } from './VoicesLink';
+import { ButtonInstrument } from './LayoutInstruments';
 
 interface ArtistHeroInstrumentProps {
   name: string;
@@ -38,17 +40,22 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
             </Link>
             
             <div className="va-artist-nav-links">
-              {['demos', 'tarieven', 'studio', 'contact'].map((item) => (
-                <a key={item} href={`#${item}`} className="va-artist-nav-link">
-                  {item}
-                  <span className="va-artist-nav-link-indicator"></span>
-                </a>
-              ))}
+              {(market.nav_links || ['demos', 'tarieven', 'studio', 'contact']).map((item: any) => {
+                const name = typeof item === 'string' ? item : item.name;
+                const href = typeof item === 'string' ? `/${item}` : item.href;
+                const key = typeof item === 'string' ? `nav.artist.${item}` : item.key;
+                return (
+                  <VoicesLink key={name} href={href} className="va-artist-nav-link">
+                    {name}
+                    <span className="va-artist-nav-link-indicator"></span>
+                  </VoicesLink>
+                );
+              })}
             </div>
           </div>
 
           <div className="va-artist-nav-right">
-            <button className="va-btn-pro"><VoiceglotText  translationKey="artist.hero.cta_book" defaultText="Direct Boeken" /></button>
+            <ButtonInstrument as="button" className="va-btn-pro"><VoiceglotText  translationKey="artist.hero.cta_book" defaultText="Direct Boeken" /></ButtonInstrument>
           </div>
         </div>
       </nav>
@@ -69,12 +76,12 @@ export const ArtistHeroInstrument: React.FC<ArtistHeroInstrumentProps> = ({
             </p>
             
             <div className="va-artist-hero-actions">
-              <a href="#demos" className="va-btn-pro">
+              <VoicesLink href="/demos" className="va-btn-pro">
                 <VoiceglotText  translationKey="artist.hero.cta_demos" defaultText="Beluister Demo's" />
-              </a>
-              <a href="#tarieven" className="va-artist-btn-secondary">
+              </VoicesLink>
+              <VoicesLink href="/tarieven" className="va-artist-btn-secondary">
                 <VoiceglotText  translationKey="artist.hero.cta_rates" defaultText="Bekijk Tarieven" />
-              </a>
+              </VoicesLink>
             </div>
           </div>
           

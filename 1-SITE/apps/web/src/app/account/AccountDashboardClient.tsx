@@ -91,22 +91,11 @@ export default function AccountDashboardClient() {
     );
   }
 
-  // Mock stats voor de winkelier-ervaring
-  const performanceStats = [
-    { label: t('account.dashboard.stat.visitors', 'Bezoekers (24u)'), value: '124', icon: <Users size={20} />, trend: '+12%' },
-    { label: t('account.dashboard.stat.demo_plays', 'Demo Plays'), value: '42', icon: <Zap size={20} />, trend: '+5' },
-    { label: t('account.dashboard.stat.interest', 'Interesse'), value: 'Burning', icon: <TrendingUp size={20} />, trend: '🔥' },
-    { label: t('account.dashboard.stat.revenue', 'Omzet (30d)'), value: SlimmeKassa.format(1840), icon: <BarChart3 size={20} />, trend: '+15%' },
-  ];
+  // Performance stats (Data-Driven)
+  const performanceStats: any[] = [];
 
-  // Mock notifications voor de demo
-  const mockNotifications = [
-    { id: 1, type: 'order', title: 'Nieuwe Opdracht', message: 'Je hebt een nieuwe boeking voor een online video.', time: '2u geleden', unread: true },
-    { id: 2, type: 'chat', title: 'Chat Interactie', message: 'Een bezoeker op johfrah.be stelt een vraag over tarieven.', time: '4u geleden', unread: true },
-    { id: 3, type: 'lead', title: 'Warme Lead', message: 'Iemand heeft je demo 3x beluisterd in de laatste 10 minuten.', time: '5u geleden', unread: false },
-  ];
-
-  const activeNotifications = notifications.length > 0 ? notifications : mockNotifications;
+  // Notifications (Data-Driven)
+  const activeNotifications = notifications;
 
   return (
     <PageWrapperInstrument>
@@ -123,7 +112,7 @@ export default function AccountDashboardClient() {
           <ContainerInstrument className="va-container">
             
             {/*  Winkelier Overzicht Header (Alleen voor Partners/Stemacteurs) */}
-            {isPartner && (
+            {isPartner && performanceStats.length > 0 && (
               <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="px-3 py-1 bg-primary/10 rounded-full text-primary text-[11px] font-bold tracking-widest uppercase border border-primary/10">
@@ -163,7 +152,7 @@ export default function AccountDashboardClient() {
                 <BentoCard 
                   span="lg" 
                   className="bg-va-black text-white p-10 rounded-[32px] relative overflow-hidden group va-interactive"
-                  onClick={() => window.open('https://johfrah.be', '_blank')}
+                  onClick={() => window.open('https://www.voices.be/portfolio/johfrah', '_blank')}
                 >
                   <div className="relative z-10 h-full flex flex-col justify-between">
                     <div>
@@ -171,7 +160,7 @@ export default function AccountDashboardClient() {
                         <Layout strokeWidth={1.5} size={24} />
                       </div>
                       <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-4">
-                        <VoiceglotText translationKey="account.dashboard.my_shop" defaultText="Mijn Winkel" /> <span className="text-primary/60 text-2xl ml-2 font-light">johfrah.be</span>
+                        <VoiceglotText translationKey="account.dashboard.my_shop" defaultText="Mijn Winkel" />
                       </HeadingInstrument>
                       <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed max-w-md">
                         <VoiceglotText translationKey="account.dashboard.my_shop_desc" defaultText="Beheer je eigen etalage. Pas teksten aan, voeg nieuwe demo's toe en bekijk hoe je winkel eruit ziet voor klanten." />

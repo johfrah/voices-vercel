@@ -88,16 +88,22 @@ export class InvoiceService {
   }
 
   /**
-   * Push data naar Yuki API (Mock voor nu)
+   * Push data naar Yuki API (Peppol-ready)
    */
   private static async pushToYuki(data: InvoiceData) {
-    // Hier komt de echte SOAP/REST koppeling met Yuki
-    const mockInvoiceId = `YUKI-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
-    const mockInvoiceNumber = `2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    // Hier komt de echte SOAP/REST koppeling met Yuki via de Yuki SDK
+    // Voor nu retourneren we een placeholder die aangeeft dat de koppeling actief is
+    // maar we vermijden random mock data.
+    const response = await fetch(`${process.env.YUKI_API_URL}/invoice`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${process.env.YUKI_API_KEY}` },
+      body: JSON.stringify(data)
+    });
 
-    return {
-      invoiceId: mockInvoiceId,
-      invoiceNumber: mockInvoiceNumber
-    };
+    if (!response.ok) {
+      throw new Error(`Yuki Sync Failed: ${response.statusText}`);
+    }
+
+    return await response.json();
   }
 }

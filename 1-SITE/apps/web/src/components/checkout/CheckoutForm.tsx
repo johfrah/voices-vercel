@@ -433,7 +433,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             <ContainerInstrument className="relative">
               <InputInstrument
                 value={formData.vat_number || ''}
-                placeholder={t('checkout.form.vat_placeholder', "Bijv. BE0662426460")}
+                placeholder={t('checkout.form.vat_placeholder', "BE...")}
                 className="w-full !rounded-[10px]"
                 onChange={(e) => handleChange('vat_number', e.target.value.toUpperCase())}
               />

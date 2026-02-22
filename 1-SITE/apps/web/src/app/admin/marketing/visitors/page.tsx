@@ -212,9 +212,9 @@ export default function LiveVisitorDashboard() {
         <ContainerInstrument className="bg-va-black text-white p-10 rounded-[20px] relative overflow-hidden">
           <MousePointer2 strokeWidth={1.5} className="text-primary mb-6" size={32} />
           <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText  translationKey="auto.page.heatmap_insights.66123f" defaultText="Heatmap insights" /><TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText  translationKey="auto.page.meest_geklikte_eleme.7483c3" defaultText="Meest geklikte elementen in de laatste 24 uur. Focus op de &apos;Tarieven&apos; knop bij Agency." /></TextInstrument></HeadingInstrument>
-          <Link  href="#" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2">
+          <ButtonInstrument variant="plain" size="none" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 opacity-40 cursor-not-allowed">
             Bekijk Heatmap <ArrowRight strokeWidth={1.5} size={12} />
-          </Link>
+          </ButtonInstrument>
         </ContainerInstrument>
 
         <ContainerInstrument className="bg-white border border-black/5 p-10 rounded-[20px]">
@@ -228,9 +228,9 @@ export default function LiveVisitorDashboard() {
         <ContainerInstrument className="bg-va-off-white border border-black/5 p-10 rounded-[20px]">
           <Eye strokeWidth={1.5} className="text-va-black/20 mb-6" size={32} />
           <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText  translationKey="auto.page.drop_off_radar.e0c6b4" defaultText="Drop-off radar" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText  translationKey="auto.page.hoge_bounce_rate_op_.61ffa3" defaultText="Hoge bounce-rate op de &apos;Over Ons&apos; pagina. AI stelt voor om de CTA te verduidelijken." /></TextInstrument></HeadingInstrument>
-          <Link  href="#" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
+          <ButtonInstrument variant="plain" size="none" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2 opacity-40 cursor-not-allowed">
             Analyseer Flow <ArrowRight strokeWidth={1.5} size={12} />
-          </Link>
+          </ButtonInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
 

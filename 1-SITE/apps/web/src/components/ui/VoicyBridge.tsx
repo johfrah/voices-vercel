@@ -78,7 +78,7 @@ export const VoicyBridge: React.FC = () => {
       getIntent: () => intent,
       getContext: () => {
         return {
-          url: window.location.pathname,
+          url: pathname,
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent,
           intent: intent,

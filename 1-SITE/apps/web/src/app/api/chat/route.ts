@@ -397,7 +397,7 @@ SLIMME KASSA REGELS:
           createdAt: new Date()
         }).returning();
 
-        //  JOHFRAH NOTIFICATION: Stuur een mail bij elke interactie (Chris-Protocol: Real-time awareness)
+        //  ADMIN NOTIFICATION: Stuur een mail bij elke interactie (Chris-Protocol: Real-time awareness)
         if (senderType === 'user') {
           try {
             const { DirectMailService } = await import('@/services/DirectMailService');

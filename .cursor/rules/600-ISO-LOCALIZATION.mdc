@@ -1,0 +1,23 @@
+---
+description: ISO-First & Localization rules for Project Atomic
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# 🌍 ISO-First & Localization
+
+Geen taal-lekken meer in het Voices ecosysteem.
+
+## 📏 ISO Mandate
+
+1. **ISO-5 Standaard**: Gebruik voor technische opslag en logica ALTIJD officiële ISO-codes (bijv. `nl-BE`, `fr-FR`). 
+2. **Geen Labels in Code**: Gebruik nooit "Vlaams" of "Frans" in de database of code-logica. Mapping naar labels gebeurt uitsluitend in de UI-laag.
+3. **Primary Language**: Elke markt MOET een `primary_language` (ISO-5) hebben voor de Smart Router.
+
+## 🗣️ Vertalingen
+
+1. **VoiceglotText**: Hardcoded tekst in UI is VERBODEN. Gebruik ALTIJD `<VoiceglotText translationKey="..." defaultText="..." />`.
+2. **Slop Filter**: Gebruik de `SlopFilter` om lage kwaliteit AI-vertalingen te detecteren en te weigeren.
+3. **Context Awareness**: Zorg dat vertalingen rekening houden met de journey en persona (bijv. formeel vs informeel).
+
+"Taal is de brug naar de klant, zorg dat hij stevig staat." - Suzy/SEO Suzy

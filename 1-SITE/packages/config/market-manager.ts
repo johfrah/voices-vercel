@@ -27,6 +27,19 @@ export interface MarketConfig {
   theme: 'voices' | 'ademing' | 'johfrah' | 'youssef' | 'johfrai';
   has_voicy?: boolean;
   address?: any;
+  social_links?: {
+    instagram?: string;
+    linkedin?: string;
+    facebook?: string;
+    youtube?: string;
+    spotify?: string;
+  };
+  seo_data?: {
+    description?: string;
+    schema_type?: 'Organization' | 'Person' | 'WebApplication';
+    locale_code?: string;
+    canonical_domain?: string;
+  };
 }
 
 export class MarketManager {
@@ -36,14 +49,9 @@ export class MarketManager {
     'voices.be': {
       market_code: 'BE',
       language: 'nl',
-      primary_language: 'Vlaams',
-      supported_languages: [
-        'Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits', 
-        'Spaans', 'Italiaans', 'Pools', 'Portugees', 'Turks', 
-        'Deens', 'Zweeds', 'Noors', 'Fins', 'Grieks', 
-        'Russisch', 'Arabisch', 'Chinees', 'Japans'
-      ],
-      popular_languages: ['Vlaams', 'Nederlands', 'Frans', 'Engels', 'Duits'],
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL', 'en-GB', 'fr-FR', 'de-DE'],
+      popular_languages: ['nl-BE', 'nl-NL', 'fr-FR', 'en-GB', 'de-DE'],
       name: 'België',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices'
@@ -51,9 +59,9 @@ export class MarketManager {
     'voices.nl': {
       market_code: 'NLNL',
       language: 'nl',
-      primary_language: 'Nederlands',
-      supported_languages: ['Nederlands', 'Vlaams', 'Engels', 'Duits', 'Frans', 'Spaans', 'Italiaans'],
-      popular_languages: ['Nederlands', 'Vlaams', 'Engels', 'Duits', 'Frans'],
+      primary_language: 'nl-NL',
+      supported_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
+      popular_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
       name: 'Nederland',
       phone: '+31 (0)85 016 34 60',
       email: 'johfrah@voices.nl',
@@ -63,9 +71,9 @@ export class MarketManager {
     'voices.fr': {
       market_code: 'FR',
       language: 'fr',
-      primary_language: 'Frans',
-      supported_languages: ['Frans', 'Engels', 'Nederlands', 'Vlaams', 'Duits', 'Spaans', 'Italiaans'],
-      popular_languages: ['Frans', 'Engels', 'Nederlands', 'Vlaams', 'Duits'],
+      primary_language: 'fr-FR',
+      supported_languages: ['fr-FR', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
+      popular_languages: ['fr-FR', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
       name: 'France',
       email: 'johfrah@voices.fr',
       logo_url: VOICES_CONFIG.assets.logos.fr,
@@ -74,9 +82,9 @@ export class MarketManager {
     'voices.es': {
       market_code: 'ES',
       language: 'es',
-      primary_language: 'Spaans',
-      supported_languages: ['Spaans', 'Engels', 'Frans', 'Portugees', 'Italiaans'],
-      popular_languages: ['Spaans', 'Engels', 'Portugees'],
+      primary_language: 'es-ES',
+      supported_languages: ['es-ES', 'en-GB', 'fr-FR', 'pt-PT', 'it-IT'],
+      popular_languages: ['es-ES', 'en-GB', 'pt-PT'],
       name: 'España',
       email: 'johfrah@voices.es',
       logo_url: VOICES_CONFIG.assets.logos.es,
@@ -85,9 +93,9 @@ export class MarketManager {
     'voices.pt': {
       market_code: 'PT',
       language: 'pt',
-      primary_language: 'Portugees',
-      supported_languages: ['Portugees', 'Engels', 'Spaans', 'Frans'],
-      popular_languages: ['Portugees', 'Engels', 'Spaans'],
+      primary_language: 'pt-PT',
+      supported_languages: ['pt-PT', 'en-GB', 'es-ES', 'fr-FR'],
+      popular_languages: ['pt-PT', 'en-GB', 'es-ES'],
       name: 'Portugal',
       email: 'johfrah@voices.pt',
       logo_url: VOICES_CONFIG.assets.logos.pt,
@@ -96,9 +104,9 @@ export class MarketManager {
     'voices.eu': {
       market_code: 'EU',
       language: 'en',
-      primary_language: 'Engels',
-      supported_languages: ['Engels', 'Duits', 'Vlaams', 'Nederlands', 'Frans', 'Spaans', 'Italiaans'],
-      popular_languages: ['Engels', 'Duits', 'Frans', 'Nederlands', 'Vlaams'],
+      primary_language: 'en-GB',
+      supported_languages: ['en-GB', 'de-DE', 'nl-BE', 'nl-NL', 'fr-FR'],
+      popular_languages: ['en-GB', 'de-DE', 'fr-FR', 'nl-NL', 'nl-BE'],
       name: 'Europe',
       email: 'johfrah@voices.eu',
       logo_url: VOICES_CONFIG.assets.logos.eu,
@@ -107,60 +115,145 @@ export class MarketManager {
     'voices.academy': {
       market_code: 'ACADEMY',
       language: 'nl',
-      primary_language: 'Vlaams',
-      supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
-      popular_languages: ['Vlaams', 'Nederlands', 'Engels'],
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Voices Academy',
       email: 'johfrah@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
-      theme: 'voices'
+      theme: 'voices',
+      social_links: {
+        instagram: 'https://www.instagram.com/voices.be',
+        linkedin: 'https://www.linkedin.com/company/voices-be'
+      },
+      seo_data: {
+        description: 'Leer de kunst van voice-over bij de Voices Academy.',
+        schema_type: 'Organization'
+      }
+    },
+    'voices.be/academy': {
+      market_code: 'ACADEMY',
+      language: 'nl',
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      name: 'Voices Academy',
+      email: 'johfrah@voices.be',
+      logo_url: VOICES_CONFIG.assets.logos.be,
+      theme: 'voices',
+      social_links: {
+        instagram: 'https://www.instagram.com/voices.be',
+        linkedin: 'https://www.linkedin.com/company/voices-be'
+      },
+      seo_data: {
+        description: 'Leer de kunst van voice-over bij de Voices Academy.',
+        schema_type: 'Organization'
+      }
+    },
+    'voices.be/studio': {
+      market_code: 'STUDIO',
+      language: 'nl',
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      name: 'Voices Studio',
+      email: 'johfrah@voices.be',
+      logo_url: VOICES_CONFIG.assets.logos.be,
+      theme: 'voices',
+      social_links: {
+        instagram: 'https://www.instagram.com/voices.be_studio/',
+        facebook: 'https://www.facebook.com/voices.studio.be'
+      },
+      seo_data: {
+        description: 'Professionele voice-over workshops en studio-opnames in het hart van België.',
+        schema_type: 'Organization'
+      }
     },
     'johfrah.be': {
-      market_code: 'JOHFRAH',
+      market_code: 'PORTFOLIO',
       language: 'nl',
-      primary_language: 'Vlaams',
-      supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
-      popular_languages: ['Vlaams', 'Nederlands', 'Engels'],
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Johfrah',
       email: 'info@johfrah.be',
       logo_url: VOICES_CONFIG.assets.logos.johfrah,
       theme: 'johfrah',
-      has_voicy: true
+      has_voicy: true,
+      social_links: {
+        instagram: 'https://www.instagram.com/johfrah',
+        linkedin: 'https://www.linkedin.com/in/johfrah'
+      },
+      seo_data: {
+        description: 'De stem achter het verhaal. Warme, natuurlijke Vlaamse voice-over & host voor nationale TV-spots en corporate video\'s.',
+        schema_type: 'Person'
+      }
     },
     'youssefzaki.eu': {
-      market_code: 'YOUSSEF',
+      market_code: 'ARTIST',
       language: 'en',
-      primary_language: 'Engels',
-      supported_languages: ['Engels', 'Nederlands', 'Vlaams', 'Frans', 'Duits'],
-      popular_languages: ['Engels', 'Nederlands', 'Vlaams', 'Frans', 'Duits'],
+      primary_language: 'en-US',
+      supported_languages: ['en-GB', 'nl-NL', 'nl-BE', 'fr-FR', 'de-DE'],
+      popular_languages: ['en-GB', 'nl-NL', 'nl-BE', 'fr-FR', 'de-DE'],
       name: 'Youssef Zaki',
-      email: 'info@youssefzaki.eu',
+      email: 'johfrah@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
-      theme: 'youssef'
+      theme: 'youssef',
+      social_links: {
+        instagram: 'https://www.instagram.com/youssefzaki.eu',
+        youtube: 'https://www.youtube.com/@youssefzaki'
+      },
+      seo_data: {
+        description: 'The voice of a new generation. Discover the music and story of Youssef Zaki.',
+        schema_type: 'Person'
+      }
     },
     'ademing.be': {
       market_code: 'ADEMING',
       language: 'nl',
-      primary_language: 'Vlaams',
-      supported_languages: ['Vlaams', 'Nederlands'],
-      popular_languages: ['Vlaams', 'Nederlands'],
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL'],
+      popular_languages: ['nl-BE', 'nl-NL'],
       name: 'Ademing',
-      email: 'info@ademing.be',
+      email: 'johfrah@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.ademing,
-      theme: 'ademing'
+      theme: 'ademing',
+      seo_data: {
+        description: 'Adem in. Kom tot rust. Luister en verbind met de stilte in jezelf.',
+        schema_type: 'WebApplication'
+      }
     },
     'johfrai.be': {
       market_code: 'JOHFRAI',
       language: 'nl',
-      primary_language: 'Vlaams',
-      supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
-      popular_languages: ['Vlaams', 'Nederlands', 'Engels'],
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Johfrai',
-      email: 'info@johfrai.be',
+      email: 'johfrah@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'johfrai'
     }
   };
+
+  /**
+   * Haalt alle actieve markt-domeinen op voor SEO alternates
+   */
+  static getMarketDomains(): Record<string, string> {
+    return {
+      'BE': 'https://www.voices.be',
+      'NLNL': 'https://www.voices.nl',
+      'FR': 'https://www.voices.fr',
+      'ES': 'https://www.voices.es',
+      'PT': 'https://www.voices.pt',
+      'EU': 'https://www.voices.eu',
+      'ACADEMY': 'https://www.voices.academy',
+      'PORTFOLIO': 'https://www.johfrah.be',
+      'ADEMING': 'https://www.ademing.be',
+      'ARTIST': 'https://www.youssefzaki.eu',
+      'JOHFRAI': 'https://www.johfrai.be'
+    };
+  }
 
   /**
    * Haalt de huidige markt op basis van de host (Server-Side of Client-Side)
@@ -174,8 +267,14 @@ export class MarketManager {
     
     if (!activeHost) activeHost = 'voices.be';
 
-    const cleanHost = activeHost.replace('www.', '');
+    let cleanHost = activeHost.replace('www.', '').replace('https://', '').replace('http://', '').split('/')[0];
     
+    // 🛡️ CHRIS-PROTOCOL: Sub-journey detection for static resolution (e.g. voices.be/studio)
+    if (cleanHost === 'voices.be' && typeof window !== 'undefined') {
+      if (window.location.pathname.startsWith('/studio')) cleanHost = 'voices.be/studio';
+      if (window.location.pathname.startsWith('/academy')) cleanHost = 'voices.be/academy';
+    }
+
     // Check cache first
     if (this.cache[cleanHost]) return this.cache[cleanHost];
 
@@ -207,7 +306,14 @@ export class MarketManager {
    * Async versie voor Server Components die DIRECT uit de DB leest.
    */
   static async getCurrentMarketAsync(host?: string): Promise<MarketConfig> {
-    const staticConfig = this.getCurrentMarket(host);
+    // 🛡️ CHRIS-PROTOCOL: If host contains a path (from middleware), use it for sub-journey detection
+    let lookupHost = host || '';
+    if (lookupHost.includes('voices.be')) {
+      if (lookupHost.includes('/studio')) lookupHost = 'voices.be/studio';
+      if (lookupHost.includes('/academy')) lookupHost = 'voices.be/academy';
+    }
+
+    const staticConfig = this.getCurrentMarket(lookupHost);
     
     try {
       const [dbConfig] = await db
@@ -218,17 +324,38 @@ export class MarketManager {
 
       if (dbConfig) {
         const loc = dbConfig.localization as any;
+        const social = dbConfig.socialLinks as any;
+        const legal = dbConfig.legal as any;
+        
         return {
           ...staticConfig,
           name: dbConfig.name || staticConfig.name,
           email: dbConfig.email || staticConfig.email,
           phone: dbConfig.phone || staticConfig.phone,
           language: loc?.default_lang || staticConfig.language,
+          supported_languages: loc?.supported_languages || staticConfig.supported_languages,
+          popular_languages: loc?.popular_languages || staticConfig.popular_languages,
           currency: loc?.currency || staticConfig.currency,
           theme: (dbConfig.theme as any) || staticConfig.theme,
           address: dbConfig.address || staticConfig.address,
           vat_number: dbConfig.vatNumber || staticConfig.vat_number,
-          // We kunnen hier meer velden mappen als ze in de DB staan
+          social_links: social || staticConfig.social_links,
+          seo_data: {
+            description: dbConfig.description || undefined,
+            schema_type: (dbConfig as any).schemaType || (
+              staticConfig.market_code === 'ADEMING' ? 'WebApplication' : 
+              (staticConfig.market_code === 'PORTFOLIO' || staticConfig.market_code === 'ARTIST') ? 'Person' : 'Organization'
+            ),
+            locale_code: loc?.locale || (
+              staticConfig.market_code === 'BE' ? 'nl-BE' : 
+              staticConfig.market_code === 'NLNL' ? 'nl-NL' : 
+              staticConfig.market_code === 'FR' ? 'fr-FR' : 
+              staticConfig.market_code === 'ES' ? 'es-ES' : 
+              staticConfig.market_code === 'PT' ? 'pt-PT' : 
+              staticConfig.market_code === 'EU' ? 'en-EU' : 'nl-BE'
+            ),
+            canonical_domain: (dbConfig as any).canonicalDomain || staticConfig.logo_url // Fallback logic
+          }
         };
       }
     } catch (e) {
@@ -236,6 +363,47 @@ export class MarketManager {
     }
 
     return staticConfig;
+  }
+
+  /**
+   * Haalt alle actieve locales op voor SEO alternates (Suzy Precision)
+   */
+  static async getAllLocalesAsync(): Promise<Record<string, string>> {
+    try {
+      const allMarkets = await db.select().from(marketConfigs);
+      const locales: Record<string, string> = {};
+      
+      const staticDomains = this.getMarketDomains();
+
+      allMarkets.forEach(m => {
+        const loc = m.localization as any;
+        const locale = loc?.locale || (
+          m.market === 'BE' ? 'nl-BE' : 
+          m.market === 'NLNL' ? 'nl-NL' : 
+          m.market === 'FR' ? 'fr-FR' : 
+          m.market === 'ES' ? 'es-ES' : 
+          m.market === 'PT' ? 'pt-PT' : 
+          m.market === 'EU' ? 'en-EU' : 'nl-BE'
+        );
+        const domain = (m as any).canonicalDomain || staticDomains[m.market] || `https://www.voices.be`;
+        locales[locale] = domain;
+      });
+
+      return Object.keys(locales).length > 0 ? locales : {
+        'nl-BE': 'https://www.voices.be',
+        'nl-NL': 'https://www.voices.nl',
+        'fr-FR': 'https://www.voices.fr',
+        'en-EU': 'https://www.voices.eu'
+      };
+    } catch (e) {
+      console.error('[MarketManager] Failed to fetch all locales:', e);
+      return {
+        'nl-BE': 'https://www.voices.be',
+        'nl-NL': 'https://www.voices.nl',
+        'fr-FR': 'https://www.voices.fr',
+        'en-EU': 'https://www.voices.eu'
+      };
+    }
   }
 
   /**

@@ -56,32 +56,32 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
   const fetchArtist = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/actors');
+      // Haal de specifieke artist op via de ID-route
+      const res = await fetch(`/api/admin/actors/${params.id}`);
       const data = await res.json();
-      if (data.success) {
-        const found = data.actors.find((a: any) => a.slug === params.slug || a.id.toString() === params.id);
-        if (found) {
-          // Parse extra metadata if stored in extraLangs or similar
-          let metadata = {};
-          try {
-            if (found.extraLangs && found.extraLangs.startsWith('{')) {
-              metadata = JSON.parse(found.extraLangs);
-            }
-          } catch (e) {}
-          
-          // Map demos to songs for the UI
-          const songs = (found.demos || []).map((d: any) => ({
-            id: d.id,
-            title: d.title || d.name,
-            category: d.category || d.type,
-            audio_url: d.audio_url || d.url
-          }));
+      
+      if (data.success && data.actor) {
+        const found = data.actor;
+        // Parse extra metadata
+        let metadata = {};
+        try {
+          if (found.extraLangs && found.extraLangs.startsWith('{')) {
+            metadata = JSON.parse(found.extraLangs);
+          }
+        } catch (e) {}
+        
+        // Map demos to songs
+        const songs = (found.demos || []).map((d: any) => ({
+          id: d.id,
+          title: d.name,
+          category: d.type,
+          audio_url: d.url
+        }));
 
-          setArtist({ ...found, metadata, demos: songs });
-        } else {
-          toast.error('Artist niet gevonden');
-          router.push('/admin/artists');
-        }
+        setArtist({ ...found, metadata, demos: songs });
+      } else {
+        toast.error('Artist niet gevonden');
+        router.push('/admin/artists');
       }
     } catch (error) {
       console.error('Failed to fetch artist:', error);
@@ -99,7 +99,8 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...artist,
-          extra_langs: JSON.stringify(artist.metadata)
+          extra_langs: JSON.stringify(artist.metadata),
+          portfolio_photos: artist.portfolioPhotos // Zorg dat de gallery wordt meegestuurd
         })
       });
 
@@ -297,19 +298,25 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                {/* We simulate gallery from photo_url and placeholder logic for now */}
-                {[1, 2, 3, 4, 5, 6, 7].map((num) => (
-                  <div key={num} className="relative aspect-[3/4] rounded-2xl overflow-hidden group border border-black/5 shadow-sm">
-                    <img 
-                      src={`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/2026/01/youssef-zaki-${num}.webp`} 
-                      alt="" 
-                      className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-va-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                      <button className="w-10 h-10 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-110 transition-transform shadow-lg"><Trash2 size={16} /></button>
+                {artist.portfolioPhotos && Array.isArray(artist.portfolioPhotos) && artist.portfolioPhotos.length > 0 ? (
+                  artist.portfolioPhotos.map((photo: any, i: number) => (
+                    <div key={i} className="relative aspect-[3/4] rounded-2xl overflow-hidden group border border-black/5 shadow-sm">
+                      <img 
+                        src={photo.url} 
+                        alt="" 
+                        className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-va-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <button className="w-10 h-10 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-110 transition-transform shadow-lg"><Trash2 size={16} /></button>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="col-span-full py-20 text-center bg-va-off-white rounded-[32px] border border-dashed border-black/10">
+                    <ImageIcon className="mx-auto text-va-black/10 mb-4" size={48} />
+                    <TextInstrument className="text-va-black/30 font-light">Geen foto's in de gallery</TextInstrument>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           )}

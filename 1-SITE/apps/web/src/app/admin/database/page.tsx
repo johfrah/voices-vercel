@@ -49,15 +49,20 @@ export default function AdminDatabasePage() {
   };
 
   useEffect(() => {
-    // In een echte omgeving zouden we hier een lijst van tabellen ophalen
-    // Voor nu gebruiken we een representatieve lijst gebaseerd op de schema's
-    const mockTables = [
-      'users', 'actors', 'orders', 'conversations', 'messages', 
-      'approval_queue', 'app_configs', 'articles', 'reviews',
-      'voiceglot_translations', 'yuki_logs', 'mollie_payments'
-    ];
-    setTables(mockTables);
-    setLoading(false);
+    const fetchTables = async () => {
+      try {
+        const res = await fetch('/api/admin/database/tables');
+        const data = await res.json();
+        if (data.tables) {
+          setTables(data.tables);
+        }
+      } catch (err) {
+        console.error('Failed to fetch tables:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTables();
   }, []);
 
   const filteredTables = tables.filter(t => t.toLowerCase().includes(searchQuery.toLowerCase()));

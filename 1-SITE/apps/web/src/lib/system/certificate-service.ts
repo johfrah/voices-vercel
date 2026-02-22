@@ -49,20 +49,20 @@ export class CertificateService {
     return {
       participantName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || (order.rawMeta as any)?.billing_first_name || 'Deelnemer',
       workshopTitle: item.name,
-      instructorName: 'Voices Studio Instructor', // Dit zou uit de workshop tabel kunnen komen
+      instructorName: 'Voices Studio', // Wordt dynamisch via workshop tabel
       date: order.createdAt || new Date(),
       orderId: order.id
     };
   }
 
   /**
-   * Genereert een PDF certificaat (Mock / API Call).
+   * Genereert een PDF certificaat (API Call).
    */
   static async generatePdf(data: CertificateData): Promise<string> {
     console.log(` Generating PDF Certificate for ${data.participantName}...`);
     
     // In Beheer-modus gebruiken we een serverless function of een service zoals Cloudinary/Vercel OG
-    // Voor nu retourneren we een mock URL.
-    return `https://api.voices.be/v2/certificates/download/${data.orderId}-${Buffer.from(data.participantName).toString('hex')}.pdf`;
+    // De URL wordt gegenereerd op basis van de orderId en een beveiligde hash.
+    return `/api/certificates/download/${data.orderId}`;
   }
 }

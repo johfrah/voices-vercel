@@ -511,8 +511,7 @@ export default function Home() {
   useEffect(() => {
     if (!mounted) return;
 
-    const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
-    const market = MarketManager.getCurrentMarket(host);
+    const market = MarketManager.getCurrentMarket();
     
     //  CHRIS-PROTOCOL: Forceer de fetch op basis van de huidige URL (filters)
     const params = new URLSearchParams(searchParamsKey);

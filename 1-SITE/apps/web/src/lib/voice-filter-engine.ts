@@ -229,8 +229,7 @@ export class VoiceFilterEngine {
 
           // 1.5 Market-Aware Language Priority (Bob-methode)
           // CHRIS-PROTOCOL: If no manual order, prioritize market-specific languages.
-          const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
-          const market = MarketManager.getCurrentMarket(host);
+          const market = MarketManager.getCurrentMarket();
           const primaryLang = market.primary_language.toLowerCase();
           
           const getLangScore = (actor: Actor) => {
