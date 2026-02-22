@@ -76,8 +76,8 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     
     const initialLanguageParam = searchParams?.get('language');
     const initialLanguage = initialLanguageParam 
-      ? MarketManager.getLanguageLabel(initialLanguageParam) 
-      : MarketManager.getLanguageLabel(MarketManager.getLanguageCode(market.primary_language));
+      ? MarketManager.getLanguageCode(initialLanguageParam) 
+      : MarketManager.getLanguageCode(market.primary_language);
       
     const initialLanguages = searchParams?.get('languages') ? searchParams?.get('languages')?.split(',') : [initialLanguage.toLowerCase()];
     const initialWordsParam = searchParams?.get('words');
@@ -252,7 +252,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
             filters: {
               ...prev.filters,
               ...savedState.filters,
-              language: urlState.language || (searchParams?.get('language') ? MarketManager.getLanguageLabel(searchParams?.get('language')!) : (savedState.filters?.language || prev.filters.language)),
+              language: urlState.language || (searchParams?.get('language') ? MarketManager.getLanguageCode(searchParams?.get('language')!) : (savedState.filters?.language || prev.filters.language)),
               gender: urlState.gender || searchParams?.get('gender') || savedState.filters?.gender || prev.filters.gender,
               media: searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || prev.filters.media),
             },
@@ -506,7 +506,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
   const resetFilters = useCallback(() => {
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
-    const defaultLang = MarketManager.getLanguageLabel(MarketManager.getLanguageCode(market.primary_language));
+    const defaultLang = MarketManager.getLanguageCode(market.primary_language);
     
     const defaultFilters: Partial<MasterControlState['filters']> = {
       language: defaultLang,
