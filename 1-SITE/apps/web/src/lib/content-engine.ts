@@ -226,10 +226,11 @@ export class ContentEngine {
    */
   private static localizeDomain(text: string, locale: string): string {
     const market = MarketManager.getCurrentMarket();
-    // NUCLEAR: Use dynamic host from MarketManager lookup
-    const host = Object.keys(MarketManager.MARKETS_STATIC).find(h => MarketManager.MARKETS_STATIC[h].market_code === market.market_code) || 'voices.be';
+    // 🛡️ CHRIS-PROTOCOL: Use dynamic host from MarketManager lookup
+    const domains = MarketManager.getMarketDomains();
+    const host = domains[market.market_code]?.replace('https://www.', '').replace('https://', '') || 'voices.be';
 
-    const defaultHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
+    const defaultHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://www.', '').replace('https://', '') || 'voices.be';
     if (host !== defaultHost) {
       return text.replace(/voices\.be/gi, host);
     }

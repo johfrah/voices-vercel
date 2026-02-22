@@ -15,11 +15,30 @@ export class ServerWatchdog {
     level?: 'info' | 'error' | 'critical';
   }) {
     try {
-      const host = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+      // 🛡️ CHRIS-PROTOCOL: Use internal URL for server-to-server communication to avoid DNS/Vercel loops
+      const internalUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
       
-      // We gebruiken fetch naar de interne API route
-      // We wachten hier niet op (fire and forget) om de main thread niet te blokkeren
-      fetch(`${host}/api/admin/system/watchdog`, {
+      // 🛡️ CHRIS-PROTOCOL: Direct DB logging fallback if API is unreachable
+      try {
+        const { db } = await import('@db');
+        const { systemEvents } = await import('@db/schema');
+        
+        await db.insert(systemEvents).values({
+          level: options.level || 'error',
+          source: options.component || 'ServerWatchdog',
+          message: options.error,
+          details: {
+            stack: options.stack,
+            url: options.url || 'Server-Side',
+            timestamp: new Date().toISOString()
+          },
+          createdAt: new Date().toISOString()
+        }).catch(e => console.warn('[ServerWatchdog] Direct DB logging failed, falling back to fetch:', e));
+      } catch (dbErr) {
+        // Fallback to fetch if DB is not available
+      }
+
+      fetch(`${internalUrl}/api/admin/system/watchdog`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

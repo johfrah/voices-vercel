@@ -280,6 +280,8 @@ export class MarketManagerServer {
     // Check cache first
     if (this.cache[cleanHost]) return this.cache[cleanHost];
 
+    // 🛡️ CHRIS-PROTOCOL: Database-First lookup is mandatory. 
+    // Static fallbacks only exist for the very first boot or extreme DB failure.
     const config = this.MARKETS_STATIC[cleanHost] || this.MARKETS_STATIC['voices.be'];
 
     // 🛡️ CHRIS-PROTOCOL: Force ISO-First for all static fallbacks
