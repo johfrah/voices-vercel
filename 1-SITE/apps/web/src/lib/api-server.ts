@@ -278,6 +278,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           asc(actors.firstName)
         ],
         limit: 20,
+        /*
         with: {
           demos: {
             limit: 5,
@@ -295,6 +296,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
             }
           }
         }
+        */
       }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 12000))
       ]) as any[];
