@@ -275,7 +275,7 @@ export async function POST(request: Request) {
             (async () => {
               try {
                 const { VumeEngine } = await import('@/lib/mail/VumeEngine');
-                const { MarketManager } = await import('@config/market-manager');
+                const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
                 const market = MarketManager.getCurrentMarket(host);
                 await VumeEngine.send({
                   to: email,
@@ -459,7 +459,7 @@ export async function POST(request: Request) {
     }
 
     if (mollieLines.length === 0 && amount > 0) {
-      const { MarketManager } = await import('@config/market-manager');
+      const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
       const market = MarketManager.getCurrentMarket(host);
       mollieLines.push({
         name: `${market.name} ${newOrder.journey.charAt(0).toUpperCase() + newOrder.journey.slice(1)}`,

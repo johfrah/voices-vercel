@@ -138,27 +138,27 @@ export function VoiceDetailClient({
             {
               "@context": "https://schema.org",
               "@type": "Person",
-              "@id": `https://www.voices.be/voice/${actor.slug}#person`,
+              "@id": `https://${host || 'www.voices.be'}/voice/${actor.slug}#person`,
               "name": actor.display_name,
               "description": actor.bio || actor.description,
               "image": actor.photo_url || undefined,
               "jobTitle": t('common.job_title.voice_actor', "Voice-over Artist"),
               "gender": actor.gender,
-              "url": `https://www.voices.be/voice/${actor.slug}`,
+              "url": `https://${host || 'www.voices.be'}/voice/${actor.slug}`,
               "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": `https://www.voices.be/voice/${actor.slug}`
+                "@id": `https://${host || 'www.voices.be'}/voice/${actor.slug}`
               },
               "knowsAbout": actor.languages?.map((l: any) => l.name) || actor.native_lang ? [actor.native_lang] : [t('common.language.dutch', "Nederlands")],
               "memberOf": {
                 "@type": "Organization",
                 "name": "Voices",
-                "url": "https://www.voices.be"
+                "url": `https://${host || 'www.voices.be'}`
               },
               "worksFor": {
                 "@type": "Organization",
                 "name": "Voices",
-                "url": "https://www.voices.be"
+                "url": `https://${host || 'www.voices.be'}`
               },
               "sameAs": [
                 actor.website,
@@ -185,7 +185,7 @@ export function VoiceDetailClient({
                     "priceCurrency": "EUR",
                     "price": basePrice,
                     "availability": "https://schema.org/InStock",
-                    "seller": { "@type": "Organization", "name": "Voices", "url": "https://www.voices.be" }
+                    "seller": { "@type": "Organization", "name": "Voices", "url": `https://${host || 'www.voices.be'}` }
                   });
                 }
                 const ivr = parseFloat(String(actor.price_ivr || 0));
@@ -195,7 +195,8 @@ export function VoiceDetailClient({
                     "itemOffered": { "@type": "Service", "name": "IVR / Telefonie voice-over" },
                     "priceCurrency": "EUR",
                     "price": ivr,
-                    "availability": "https://schema.org/InStock"
+                    "availability": "https://schema.org/InStock",
+                    "seller": { "@type": "Organization", "name": "Voices", "url": `https://${host || 'www.voices.be'}` }
                   });
                 }
                 return offers.length > 0 ? offers : undefined;
@@ -213,19 +214,19 @@ export function VoiceDetailClient({
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Home",
-                  "item": "https://www.voices.be"
+                  "item": `https://${host || 'www.voices.be'}`
                 },
                 {
                   "@type": "ListItem",
                   "position": 2,
                   "name": "Agency",
-                  "item": "https://www.voices.be/agency"
+                  "item": `https://${host || 'www.voices.be'}/agency`
                 },
                 {
                   "@type": "ListItem",
                   "position": 3,
                   "name": actor.display_name,
-                  "item": `https://www.voices.be/voice/${actor.slug}`
+                  "item": `https://${host || 'www.voices.be'}/voice/${actor.slug}`
                 }
               ]
             }

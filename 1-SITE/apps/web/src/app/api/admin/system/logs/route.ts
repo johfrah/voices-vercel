@@ -10,7 +10,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-//  NUCLEAR VERSION: v3.1 (Stability Hardened)
+//  NUCLEAR VERSION: v3.4 (Stability Hardened)
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 

@@ -30,7 +30,9 @@ const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalcula
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
  */
 function generateActorSchema(actor: any, marketName: string = 'Voices', host: string = '') {
-  const baseUrl = `https://${host || 'www.voices.be'}`;
+  const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+  const market = MarketManager.getCurrentMarket(host || 'www.voices.be');
+  const baseUrl = `https://${host || (market.market_code.toLowerCase() === 'be' ? 'www.voices.be' : 'www.voices.nl')}`;
   
   // Map internal delivery type to ISO 8601 duration
   const deliveryMap: Record<string, string> = {
@@ -75,7 +77,9 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Artists
  */
 function generateArtistSchema(artist: any, host: string = '') {
-  const baseUrl = `https://${host || 'www.voices.be'}`;
+  const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+  const market = MarketManager.getCurrentMarket(host || 'www.voices.be');
+  const baseUrl = `https://${host || (market.market_code.toLowerCase() === 'be' ? 'www.voices.be' : 'www.voices.nl')}`;
   return {
     "@context": "https://schema.org",
     "@type": "MusicGroup",
@@ -150,7 +154,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 
   const headersList = headers();
   const host = (headersList.get('host') || 'www.voices.be').replace(/^https?:\/\//, '');
-  const { MarketManager } = await import('@config/market-manager');
+  const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
   const market = MarketManager.getCurrentMarket(host);
   const lang = headersList.get('x-voices-lang') || 'nl';
   const normalizedSlug = normalizeSlug(params.slug);
@@ -377,7 +381,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   // 2. Pitch Link (Casting List)
   if (firstSegment === 'pitch' && journey) {
     try {
-      const { MarketManager } = await import('@config/market-manager');
+      const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
       const host = headersList.get('host') || 'www.voices.be';
       const market = MarketManager.getCurrentMarket(host);
 

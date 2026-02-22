@@ -1,6 +1,6 @@
 "use client";
 
-import { MarketManager } from "@config/market-manager";
+import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";

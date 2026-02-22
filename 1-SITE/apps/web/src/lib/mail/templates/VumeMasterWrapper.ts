@@ -1,4 +1,4 @@
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 /**
  *  VUME MASTER WRAPPER (2026) - MARK & LAYA EDITION

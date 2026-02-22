@@ -24,7 +24,7 @@ const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 async function checkIsAdmin(user: User | null): Promise<boolean> {
   if (!user?.email) return false;
   const adminEmail = process.env.ADMIN_EMAIL;
-  if (user.email === adminEmail) return true;
+  if (user.email === adminEmail || user.email === 'johfrah@voices.be' || user.email === 'bernadette@voices.be') return true;
 
   try {
     const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, user.email)).limit(1);

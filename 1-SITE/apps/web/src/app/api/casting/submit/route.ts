@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { DirectMailService } from '@/services/DirectMailService';
 import { DropboxService } from '@/services/DropboxService';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { nanoid } from 'nanoid';
 
 /**

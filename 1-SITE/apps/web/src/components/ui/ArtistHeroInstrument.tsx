@@ -8,7 +8,7 @@ import { VoiceglotText } from './VoiceglotText';
 import { VoicesLink } from './VoicesLink';
 import { ButtonInstrument } from './LayoutInstruments';
 
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 interface ArtistHeroInstrumentProps {
   name: string;

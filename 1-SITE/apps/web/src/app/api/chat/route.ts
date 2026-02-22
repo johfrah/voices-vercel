@@ -403,7 +403,7 @@ SLIMME KASSA REGELS:
             const { DirectMailService } = await import('@/services/DirectMailService');
             const mailService = DirectMailService.getInstance();
             const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
-            const { MarketManager } = await import('@config/market-manager');
+            const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
             const market = MarketManager.getCurrentMarket(host);
             
             await mailService.sendMail({

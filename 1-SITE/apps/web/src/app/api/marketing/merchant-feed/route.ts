@@ -25,7 +25,7 @@ export async function GET() {
   }
 
   try {
-    const { MarketManager } = await import('@config/market-manager');
+    const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
     const host = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be';
     const market = MarketManager.getCurrentMarket(host);
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';

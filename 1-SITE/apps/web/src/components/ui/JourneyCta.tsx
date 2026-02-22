@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { ArrowRight, Megaphone, Mic2, Phone, Video, Zap, GraduationCap } from 'lucide-react';
 import { VoicesLink } from './VoicesLink';
 import React from 'react';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 import { VoiceglotText } from './VoiceglotText';
 

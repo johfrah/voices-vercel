@@ -71,17 +71,18 @@ const HeaderIcon = ({
       onMouseLeave={() => { handleMouseLeave(); }}
     >
       <ButtonInstrument 
-        variant="plain"
-        size="none"
+        variant="ghost"
+        size="icon"
         as={href && !children ? Link : 'button'}
         href={href && !children ? href : undefined}
         onClick={() => {
           playClick('soft');
           if (onClick) onClick();
         }}
-        className={`w-10 h-10 rounded-full transition-all duration-500 cursor-pointer group/icon flex items-center justify-center relative ${
-          isActive ? 'bg-primary text-white shadow-aura-sm' : 'hover:bg-va-black/5 text-va-black/40 hover:text-va-black'
-        }`}
+        className={cn(
+          "w-10 h-10 !rounded-full transition-all duration-500 cursor-pointer group/icon flex items-center justify-center relative",
+          isActive ? "!bg-primary text-white shadow-aura-sm" : "hover:bg-va-black/5 text-va-black/40 hover:text-va-black"
+        )}
       >
         {src ? (
           <Image  

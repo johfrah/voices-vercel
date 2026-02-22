@@ -3,7 +3,7 @@ import { DirectMailService } from './DirectMailService';
 import { db } from '@db';
 import { approvalQueue } from '@db/schema';
 import { InvoiceReceivedTemplate } from '@legacy/php-codebase/backend-services/email-service/src/templates/invoice-received';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 /**
  *  AUTO-REPLY SERVICE v2.3 (2026)

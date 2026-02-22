@@ -1,4 +1,5 @@
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { db } from "@db";
 //  CHRIS-PROTOCOL: Source of Truth from Drizzle Schema
 import { actors, actorDemos, actorVideos, contentArticles, contentBlocks, faq, lessons, media, products, reviews, translations } from "@db/schema";

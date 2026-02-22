@@ -4,7 +4,7 @@ import { orders, orderNotes, users, orderItems, actors } from '@db/schema';
 import { eq, sql, inArray } from 'drizzle-orm';
 import { MollieService } from '@/lib/payments/mollie';
 import { UCIService } from '@/lib/intelligence/uci-service';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { MusicDeliveryService } from '@/services/MusicDeliveryService';
 
 /**

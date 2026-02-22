@@ -1,4 +1,4 @@
-import { MarketManager } from "@config/market-manager";
+import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 
 /**
  *  SERVER WATCHDOG (2026)

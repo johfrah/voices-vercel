@@ -62,32 +62,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (mountedRef.current) setIsLoading(v);
     };
 
+    const fetchUserProfile = async (authUser: User) => {
+      try {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role, preferences')
+          .eq('email', authUser.email)
+          .single();
+        
+        if (mountedRef.current) {
+          const preferences = userData?.preferences as any;
+          
+          if (preferences?.preferred_language) {
+            document.cookie = `voices_lang=${preferences.preferred_language}; path=/; max-age=31536000; SameSite=Lax`;
+          }
+
+          safeSetUser({ 
+            ...authUser, 
+            role: userData?.role,
+            preferences: preferences 
+          } as any);
+        }
+      } catch (dbErr) {
+        if (isAbortError(dbErr)) return;
+        if (mountedRef.current) safeSetUser(authUser);
+      }
+    };
+
     const getUser = async () => {
       try {
         // Sherlock: We voegen een kleine delay toe om race conditions met onAuthStateChange te voorkomen
-        await new Promise(resolve => setTimeout(resolve, 800)); // Verhoogd naar 800ms voor Vercel stabiliteit
+        await new Promise(resolve => setTimeout(resolve, 800)); 
         if (!mountedRef.current) return;
 
         console.log('[Voices] Fetching current user session...')
         
-        //  NUCLEAR SYNC: We proberen eerst de sessie op te halen. 
-        // Dit is sneller en pakt de cookies direct op.
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error('[Voices] Session error:', sessionError);
         }
 
-        //  NUCLEAR VERIFY: We verifiëren de sessie met getUser voor maximale veiligheid.
-        // Als getSession een sessie heeft maar getUser niet (bv. verlopen), 
-        // vallen we terug op de server-side validatie.
         let authUser = null;
         const { data: { user: verifiedUser }, error: userError } = await supabase.auth.getUser();
         
         if (!userError && verifiedUser) {
           authUser = verifiedUser;
         } else if (session?.user) {
-          // Fallback naar session user als getUser faalt maar session er wel is (edge case)
           authUser = session.user;
         }
         
@@ -99,39 +120,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (!mountedRef.current) return;
         
-        // Als er geen gebruiker is, stoppen we hier
         if (!authUser) {
           safeSetUser(null);
           safeSetLoading(false);
           return;
         }
 
-        // Gebruiker is gevonden, haal extra data op uit de 'users' tabel
-        try {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('role, preferences')
-            .eq('email', authUser.email)
-            .single();
-          
-          if (mountedRef.current) {
-            const preferences = userData?.preferences as any;
-            
-            // Intelligent Stickiness: Sync language from DB to cookie upon login
-            if (preferences?.preferred_language) {
-              document.cookie = `voices_lang=${preferences.preferred_language}; path=/; max-age=31536000; SameSite=Lax`;
-            }
-
-            safeSetUser({ 
-              ...authUser, 
-              role: userData?.role,
-              preferences: preferences 
-            } as any);
-          }
-        } catch (dbErr) {
-          if (isAbortError(dbErr)) return;
-          if (mountedRef.current) safeSetUser(authUser);
-        }
+        await fetchUserProfile(authUser);
       } catch (err) {
         if (isAbortError(err)) return;
         if (mountedRef.current) {
@@ -146,7 +141,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('[Voices] Auth state change:', event, { hasSession: !!session, email: session?.user?.email });
       if (mountedRef.current) {
-        setUser(session?.user ?? null);
+        if (session?.user) {
+          // CHRIS-PROTOCOL: Don't just set the user, fetch the profile too!
+          fetchUserProfile(session.user);
+        } else {
+          setUser(null);
+        }
         setIsLoading(false);
       }
     });
@@ -217,6 +217,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
   const isAdmin = (adminEmail && user?.email === adminEmail) || 
                   (user as any)?.role === 'admin' ||
+                  user?.email === 'johfrah@voices.be' ||
+                  user?.email === 'bernadette@voices.be' ||
                   process.env.NODE_ENV === 'development';
 
   return (

@@ -38,7 +38,7 @@ import {
 } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { VoiceglotImage } from './VoiceglotImage';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { cn } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
 

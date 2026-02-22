@@ -1,5 +1,6 @@
 import { DirectMailService } from '../../services/DirectMailService';
 import { MarketManagerServer } from './market-manager-server';
+import { MarketDatabaseService } from './market-manager-db';
 
 /**
  *  FIX NOTIFIER (NUCLEAR 2026)
@@ -13,7 +14,7 @@ export class FixNotifier {
       const mailService = DirectMailService.getInstance();
       
       //  CHRIS-PROTOCOL: Haal admin e-mail uit ENV of MarketManager (geen hardcoding)
-      const market = await MarketManagerServer.getCurrentMarketAsync('voices.be');
+      const market = await MarketDatabaseService.getCurrentMarketAsync('voices.be');
       const adminEmail = process.env.ADMIN_EMAIL || market?.email || 'johfrah@voices.be';
       
       await mailService.sendMail({

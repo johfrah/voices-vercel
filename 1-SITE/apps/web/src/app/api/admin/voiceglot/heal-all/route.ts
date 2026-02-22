@@ -3,7 +3,7 @@ import { translations, translationRegistry } from '@db/schema';
 import { eq, and, notInArray, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { GeminiService } from '@/services/GeminiService';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**

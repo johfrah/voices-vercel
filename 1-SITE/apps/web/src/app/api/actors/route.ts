@@ -42,10 +42,10 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       ...data,
-      _v: 'v2.9'
+      _v: 'v3.4'
     });
   } catch (error: any) {
     console.error(' ACTORS API FAILURE:', error.message);
-    return NextResponse.json({ results: [], count: 0 }, { status: 500 });
+    return NextResponse.json({ results: [], count: 0, _v: 'v3.4' }, { status: 500 });
   }
 }

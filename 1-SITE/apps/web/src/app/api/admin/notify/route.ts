@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { VoicesMailEngine } from '@/services/VoicesMailEngine';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 export const dynamic = 'force-dynamic';
 

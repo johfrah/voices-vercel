@@ -129,7 +129,7 @@ export class VoicesMailEngine {
    * Specifieke helper voor de Magic Link (meertalig)
    */
   public async sendMagicLink(email: string, link: string, lang: string = 'nl', host?: string) {
-    const { MarketManager } = require('@config/market-manager');
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
     const market = MarketManager.getCurrentMarket(host);
     const marketName = market.name || 'Voices';
 

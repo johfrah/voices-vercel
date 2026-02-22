@@ -1,6 +1,6 @@
 "use client";
 
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { Construction, Mail } from "lucide-react";
 

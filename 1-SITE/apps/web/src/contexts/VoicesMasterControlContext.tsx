@@ -1,7 +1,7 @@
 "use client";
 
 import { UsageType } from '@/lib/pricing-engine';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useCheckout } from './CheckoutContext';

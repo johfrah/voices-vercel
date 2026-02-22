@@ -2,7 +2,7 @@ import { db } from '@db';
 import { systemEvents } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
 import { DirectMailService } from '@/services/DirectMailService';
-import { MarketManager } from '@config/market-manager';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { desc, gte, and, eq } from 'drizzle-orm';
 
 /**
