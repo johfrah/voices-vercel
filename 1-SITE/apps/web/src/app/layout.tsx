@@ -9,7 +9,6 @@ import { PageWrapperInstrument } from "@/components/ui/LayoutInstrumentsServer";
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
-import { MarketManager } from "@config/market-manager";
 import { MarketManagerServer } from "@/lib/system/market-manager-server";
 import { Analytics } from "@vercel/analytics/react";
 import { VercelToolbar } from "@vercel/toolbar/next";
@@ -42,7 +41,7 @@ async function getMarketSafe(host: string) {
   try {
     return await MarketManagerServer.getCurrentMarketAsync(host);
   } catch {
-    return MarketManager.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || "voices.be");
+    return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || "voices.be");
   }
 }
 const raleway = Raleway({ subsets: ["latin"], variable: '--font-raleway' });

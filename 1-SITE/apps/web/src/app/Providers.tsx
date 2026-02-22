@@ -11,7 +11,6 @@ import { VoicesMasterControlProvider } from '@/contexts/VoicesMasterControlConte
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import { WatchdogProvider } from '@/contexts/WatchdogContext';
 import { usePathname } from 'next/navigation';
-import { MarketManager } from '@config/market-manager';
 import { ClientLogger } from '@/lib/system/client-logger';
 
 export function Providers({ 
