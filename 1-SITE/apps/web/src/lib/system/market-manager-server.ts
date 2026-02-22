@@ -101,7 +101,11 @@ export class MarketManagerServer extends MarketManager {
         return finalConfig;
       }
     } catch (e) {
-      console.error('[MarketManagerServer] DB Fetch failed, falling back to static:', e);
+      console.error('[MarketManagerServer] DB Fetch failed, checking for stale cache fallback:', e);
+      if (cached) {
+        console.log(` [MarketManagerServer] SUCCESS: Serving stale cache fallback for ${cacheKey}`);
+        return cached.data;
+      }
     }
 
     return staticConfig;

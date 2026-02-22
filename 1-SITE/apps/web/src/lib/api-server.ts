@@ -196,93 +196,103 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     }
     
     // 🛡️ CHRIS-PROTOCOL: Use a timeout for heavy actor queries
-    const dbResults = await Promise.race([
-      db.query.actors.findMany({
-        columns: {
-          id: true,
-          wpProductId: true,
-          userId: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          gender: true,
-          nativeLang: true,
-          countryId: true,
-          deliveryTime: true,
-          extraLangs: true,
-          bio: true,
-          whyVoices: true,
-          tagline: true,
-          toneOfVoice: true,
-          photoId: true,
-          logoId: true,
-          voiceScore: true,
-          totalSales: true,
-          priceUnpaid: true,
-          priceOnline: true,
-          priceIvr: true,
-          priceLiveRegie: true,
-          dropboxUrl: true,
-          status: true,
-          isPublic: true,
-          isAi: true,
-          elevenlabsId: true,
-          internalNotes: true,
-          createdAt: true,
-          updatedAt: true,
-          slug: true,
-          youtubeUrl: true,
-          menuOrder: true,
-          rates: true,
-          deliveryDaysMin: true,
-          deliveryDaysMax: true,
-          cutoffTime: true,
-          samedayDelivery: true,
-          pendingBio: true,
-          pendingTagline: true,
-          experienceLevel: true,
-          studioSpecs: true,
-          connectivity: true,
-          availability: true,
-          isManuallyEdited: true,
-          website: true,
-          clients: true,
-          linkedin: true,
-          birthYear: true,
-          location: true,
-          aiTags: true,
-          deliveryDateMin: true,
-          deliveryDateMinPriority: true,
-          // allowFreeTrial: true
-        },
-        // @ts-ignore
-        where: and(...conditions),
-        orderBy: [
-          asc(actors.menuOrder), 
-          desc(actors.deliveryDateMinPriority),
-          sql`delivery_date_min ASC NULLS LAST`, 
-          desc(actors.totalSales),
-          desc(actors.voiceScore), 
-          asc(actors.firstName)
-        ],
-        limit: 200,
-        with: {
-          demos: true,
-          country: true,
-          actorLanguages: {
-            with: {
-              language: true
-            }
+    let dbResults: any[] = [];
+    try {
+      dbResults = await Promise.race([
+        db.query.actors.findMany({
+          columns: {
+            id: true,
+            wpProductId: true,
+            userId: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            gender: true,
+            nativeLang: true,
+            countryId: true,
+            deliveryTime: true,
+            extraLangs: true,
+            bio: true,
+            whyVoices: true,
+            tagline: true,
+            toneOfVoice: true,
+            photoId: true,
+            logoId: true,
+            voiceScore: true,
+            totalSales: true,
+            priceUnpaid: true,
+            priceOnline: true,
+            priceIvr: true,
+            priceLiveRegie: true,
+            dropboxUrl: true,
+            status: true,
+            isPublic: true,
+            isAi: true,
+            elevenlabsId: true,
+            internalNotes: true,
+            createdAt: true,
+            updatedAt: true,
+            slug: true,
+            youtubeUrl: true,
+            menuOrder: true,
+            rates: true,
+            deliveryDaysMin: true,
+            deliveryDaysMax: true,
+            cutoffTime: true,
+            samedayDelivery: true,
+            pendingBio: true,
+            pendingTagline: true,
+            experienceLevel: true,
+            studioSpecs: true,
+            connectivity: true,
+            availability: true,
+            isManuallyEdited: true,
+            website: true,
+            clients: true,
+            linkedin: true,
+            birthYear: true,
+            location: true,
+            aiTags: true,
+            deliveryDateMin: true,
+            deliveryDateMinPriority: true,
+            // allowFreeTrial: true
           },
-          actorTones: {
-            with: {
-              tone: true
+          // @ts-ignore
+          where: and(...conditions),
+          orderBy: [
+            asc(actors.menuOrder), 
+            desc(actors.deliveryDateMinPriority),
+            sql`delivery_date_min ASC NULLS LAST`, 
+            desc(actors.totalSales),
+            desc(actors.voiceScore), 
+            asc(actors.firstName)
+          ],
+          limit: 200,
+          with: {
+            demos: true,
+            country: true,
+            actorLanguages: {
+              with: {
+                language: true
+              }
+            },
+            actorTones: {
+              with: {
+                tone: true
+              }
             }
           }
-        }
-      }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 12000))
-    ]) as any[];
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 12000))
+      ]) as any[];
+    } catch (dbError) {
+      console.error(' [getActors] DB Query failed, checking for stale cache fallback...', dbError);
+      if (cached) {
+        console.log(' [getActors] SUCCESS: Serving stale cache fallback to prevent empty list.');
+        return cached.data;
+      }
+      throw dbError; // No cache and no DB, still have to throw
+    }
 
     console.log(' API: DB returned', dbResults.length, 'results');
     
