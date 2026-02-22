@@ -228,7 +228,7 @@ export const ReviewsInstrument: React.FC<{
         "ratingValue": review.rating,
         "bestRating": "5"
       },
-      "reviewBody": review.text || review.textNl || review.textEn || "Geweldige ervaring!",
+      "reviewBody": review.text || "Geweldige ervaring!",
       "publisher": {
         "@type": "Organization",
         "name": "Google",
@@ -361,26 +361,26 @@ export const ReviewsInstrument: React.FC<{
           </div>
 
           {/* Navigation Controls */}
-          <div className="flex gap-2 relative z-50">
+          <div className="flex gap-3 relative z-[100]">
             <ButtonInstrument 
               onClick={() => scroll('left')}
               disabled={!canScrollLeft}
               className={cn(
-                "w-12 h-12 rounded-full border border-black/5 flex items-center justify-center transition-all bg-white shadow-sm",
-                canScrollLeft ? "text-va-black hover:border-primary/20 hover:text-primary" : "opacity-20 cursor-not-allowed"
+                "w-14 h-14 rounded-full border border-black/10 flex items-center justify-center transition-all bg-white shadow-aura-sm",
+                canScrollLeft ? "text-va-black hover:border-primary/40 hover:text-primary hover:scale-110 active:scale-95" : "opacity-10 cursor-not-allowed"
               )}
             >
-              <ChevronLeft size={24} strokeWidth={2.5} className="relative z-10" />
+              <ChevronLeft size={28} strokeWidth={2.5} className="relative z-10" />
             </ButtonInstrument>
             <ButtonInstrument 
               onClick={() => scroll('right')}
               disabled={!canScrollRight}
               className={cn(
-                "w-12 h-12 rounded-full border border-black/5 flex items-center justify-center transition-all bg-white shadow-sm",
-                canScrollRight ? "text-va-black hover:border-primary/20 hover:text-primary" : "opacity-20 cursor-not-allowed"
+                "w-14 h-14 rounded-full border border-black/10 flex items-center justify-center transition-all bg-white shadow-aura-sm",
+                canScrollRight ? "text-va-black hover:border-primary/40 hover:text-primary hover:scale-110 active:scale-95" : "opacity-10 cursor-not-allowed"
               )}
             >
-              <ChevronRight size={24} strokeWidth={2.5} className="relative z-10" />
+              <ChevronRight size={28} strokeWidth={2.5} className="relative z-10" />
             </ButtonInstrument>
           </div>
         </ContainerInstrument>
@@ -401,7 +401,7 @@ export const ReviewsInstrument: React.FC<{
             <div 
               key={review.id || i} 
               className={cn(
-                "min-w-[320px] md:min-w-[400px] snap-center relative group/card-container flex self-stretch",
+                "min-w-[320px] md:min-w-[400px] snap-center relative group/card-container flex self-stretch cursor-grab active:cursor-grabbing",
                 review.status === 'hidden' && "opacity-40 grayscale"
               )}
             >
@@ -449,7 +449,7 @@ export const ReviewsInstrument: React.FC<{
                         />
                       ))}
                     </div>
-                    {review.provider === 'google_places' || review.author_photo_url?.includes('googleusercontent') || review.authorPhotoUrl?.includes('googleusercontent') ? (
+                    {review.provider === 'google_places' || (review.authorPhotoUrl && review.authorPhotoUrl.includes('googleusercontent')) ? (
                       <div className="flex items-center gap-2 px-2 py-1 bg-[#4285F4]/5 rounded-lg border border-[#4285F4]/10">
                         <svg viewBox="0 0 24 24" className="w-3 h-3 text-[#4285F4] fill-current">
                           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />

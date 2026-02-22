@@ -58,11 +58,16 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
   const [customerDNA, setCustomerDNA] = useState<any>(null);
   const [actors, setActors] = useState<Actor[]>(initialActors);
 
-  const marketConfig = useMemo(() => {
-    return MarketManager.getCurrentMarket();
+  const [market, setMarket] = useState('BE');
+
+  //  CHRIS-PROTOCOL: Avoid hydration mismatch by setting market after mount
+  useEffect(() => {
+    setMarket(MarketManager.getCurrentMarket().market_code);
   }, []);
 
-  const market = marketConfig.market_code;
+  const marketConfig = useMemo(() => {
+    return MarketManager.getCurrentMarket(typeof window !== 'undefined' ? window.location.host : 'voices.be');
+  }, []);
 
   //  CHRIS-PROTOCOL: Sync local state with initial props
   useEffect(() => {
@@ -481,7 +486,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
           "@type": "Review",
           "author": { "@type": "Person", "name": r.name || r.authorName },
           "reviewRating": { "@type": "Rating", "ratingValue": r.rating },
-          "reviewBody": r.text || r.textNl || r.textFr || r.textEn
+          "reviewBody": r.text || "Geweldige ervaring!"
         })),
         "founder": {
           "@type": "Person",
