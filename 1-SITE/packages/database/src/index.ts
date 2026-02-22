@@ -53,19 +53,22 @@ o/bKiIz+Fq8=
 -----END CERTIFICATE-----`;
 
       const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 1 : 10);
-      const client = postgres(connectionString, { 
-        prepare: false, 
-        ssl: {
-          ca: supabaseRootCA,
-          rejectUnauthorized: false,
-        },
-        connect_timeout: 20,
-        onnotice: () => {},
-        idle_timeout: 20,
-        max: poolSize,
-      });
+      
+      if (!(globalThis as any).postgresClient) {
+        (globalThis as any).postgresClient = postgres(connectionString, { 
+          prepare: false, 
+          ssl: {
+            ca: supabaseRootCA,
+            rejectUnauthorized: false,
+          },
+          connect_timeout: 20,
+          onnotice: () => {},
+          idle_timeout: 20,
+          max: poolSize,
+        });
+      }
 
-      (globalThis as any).dbInstance = drizzle(client, { 
+      (globalThis as any).dbInstance = drizzle((globalThis as any).postgresClient, { 
         schema
       });
       console.log(`✅ Drizzle initialized (Pool size: ${poolSize})`);
