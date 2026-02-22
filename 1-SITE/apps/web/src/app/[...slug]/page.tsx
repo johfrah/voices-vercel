@@ -140,10 +140,10 @@ interface SmartRouteParams {
 }
 
 export async function generateMetadata({ params }: { params: SmartRouteParams }): Promise<Metadata> {
-  const [firstSegment] = params.slug;
+  const [initialSegment] = params.slug;
   const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'favicon.ico', 'robots.txt', 'sitemap.xml'];
   
-  if (reserved.includes(firstSegment)) {
+  if (reserved.includes(initialSegment)) {
     return {};
   }
 
