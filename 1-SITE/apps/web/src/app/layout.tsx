@@ -55,7 +55,8 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
-  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || "voices.be";
+  const domains = MarketManager.getMarketDomains();
+  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || (domains[market.market_code] || domains['BE']).replace('https://www.', '').replace('https://', '');
   const pathname = headersList.get('x-voices-pathname') || '';
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
@@ -127,7 +128,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const headersList = headers();
-  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || "voices.be";
+  const domains = MarketManager.getMarketDomains();
+  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || (domains[market.market_code] || domains['BE']).replace('https://www.', '').replace('https://', '');
   const pathname = headersList.get('x-voices-pathname') || '';
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
@@ -160,7 +162,7 @@ export default async function RootLayout({
 
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
   const showVoicy = market.has_voicy !== false && !isArtistJourney && !isUnderConstruction;
-  const showTopBar = market.market_code !== 'ARTIST' && !isArtistJourney && !isUnderConstruction;
+  const showTopBar = !isUnderConstruction;
   const showGlobalNav = !isUnderConstruction;
 
   const jsonLd = {
@@ -186,7 +188,7 @@ export default async function RootLayout({
     "founder": (market.market_code !== 'PORTFOLIO' && market.market_code !== 'ARTIST') ? {
       "@type": "Person",
       "name": "Johfrah Lefebvre",
-      "sameAs": "https://www.voices.be"
+      "sameAs": MarketManager.getMarketDomains()['BE']
     } : undefined
   };
 

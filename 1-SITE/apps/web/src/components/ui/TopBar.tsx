@@ -50,8 +50,8 @@ export const TopBar = () => {
                           ['/demos', '/host', '/tarieven', '/bestellen', '/contact', '/over-mij', 
                            '/demos/', '/host/', '/tarieven/', '/bestellen/', '/contact/', '/over-mij/'].includes(pathname);
 
-  // Alleen tonen op de Agency journey (Voices.be / Voices.nl etc.)
-  if (isPortfolio || isAdeming || isArtist || pathname.startsWith('/artist/') || pathname.startsWith('/voice/') || isPortfolioPage || isStudioJourney || isAcademyJourney) return null;
+  // Altijd tonen tenzij onder constructie (layout.tsx regelt dit al)
+  // if (isPortfolio || isAdeming || isArtist || pathname.startsWith('/artist/') || pathname.startsWith('/voice/') || isPortfolioPage || isStudioJourney || isAcademyJourney) return null;
 
   const activeEmail = market.email;
   const activePhone = market.phone;

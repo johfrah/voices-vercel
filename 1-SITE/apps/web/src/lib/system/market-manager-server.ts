@@ -11,9 +11,18 @@ import { MarketManager, MarketConfig } from '../../../../../packages/config/mark
 export { MarketManager, type MarketConfig };
 
 export class MarketManagerServer extends MarketManager {
-  private static marketCache: Record<string, { data: MarketConfig, timestamp: number }> = {};
-  private static localesCache: { data: Record<string, string>, timestamp: number } | null = null;
-  private static CACHE_TTL = 1000 * 60 * 10; // 10 minutes
+  private static get globalCache() {
+    const g = global as any;
+    if (!g.marketManagerCache) {
+      g.marketManagerCache = {
+        marketCache: {},
+        localesCache: null
+      };
+    }
+    return g.marketManagerCache;
+  }
+
+  private static CACHE_TTL = 1000 * 60 * 60; // 60 minutes
 
   /**
    * Async versie voor Server Components die DIRECT uit de DB leest.
@@ -30,12 +39,13 @@ export class MarketManagerServer extends MarketManager {
     const cacheKey = staticConfig.market_code;
 
     // 1. Check Cache
-    const cached = this.marketCache[cacheKey];
+    const cached = this.globalCache.marketCache[cacheKey];
     if (cached && (Date.now() - cached.timestamp) < this.CACHE_TTL) {
       return cached.data;
     }
     
     try {
+      console.log(` [MarketManagerServer] Cache miss for ${cacheKey}, querying DB...`);
       // 🛡️ CHRIS-PROTOCOL: Dynamic import to isolate DB logic from client bundle
       const { db } = await import('@db');
       const { marketConfigs } = await import('@db/schema');
@@ -85,7 +95,7 @@ export class MarketManagerServer extends MarketManager {
         };
 
         // Update Cache
-        this.marketCache[cacheKey] = { data: finalConfig, timestamp: Date.now() };
+        this.globalCache.marketCache[cacheKey] = { data: finalConfig, timestamp: Date.now() };
         return finalConfig;
       }
     } catch (e) {
@@ -100,11 +110,12 @@ export class MarketManagerServer extends MarketManager {
    */
   static async getAllLocalesAsync(): Promise<Record<string, string>> {
     // 1. Check Cache
-    if (this.localesCache && (Date.now() - this.localesCache.timestamp) < this.CACHE_TTL) {
-      return this.localesCache.data;
+    if (this.globalCache.localesCache && (Date.now() - this.globalCache.localesCache.timestamp) < this.CACHE_TTL) {
+      return this.globalCache.localesCache.data;
     }
 
     try {
+      console.log(` [MarketManagerServer] Locales cache miss, querying DB...`);
       // 🛡️ CHRIS-PROTOCOL: Dynamic import to isolate DB logic from client bundle
       const { db } = await import('@db');
       const { marketConfigs } = await import('@db/schema');
@@ -136,7 +147,7 @@ export class MarketManagerServer extends MarketManager {
       };
 
       // Update Cache
-      this.localesCache = { data: finalLocales, timestamp: Date.now() };
+      this.globalCache.localesCache = { data: finalLocales, timestamp: Date.now() };
       return finalLocales;
     } catch (e) {
       console.error('[MarketManagerServer] Failed to fetch all locales:', e);
