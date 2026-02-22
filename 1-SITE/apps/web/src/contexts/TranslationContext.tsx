@@ -52,7 +52,8 @@ export const TranslationProvider: React.FC<{
       
       //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren
       if (!translation || translation.trim() === '' || SlopFilter.isSlop(translation, lang, defaultText)) {
-        //  SELF-HEALING TRIGGER (Silent)
+        //  SELF-HEALING TRIGGER (Disabled temporarily for stability)
+        /*
         if (typeof window !== 'undefined' && !healingKeys.current.has(key)) {
           healingKeys.current.add(key);
           fetch('/api/translations/heal', {
@@ -67,6 +68,7 @@ export const TranslationProvider: React.FC<{
             }, 30000);
           }); 
         }
+        */
       } else {
         text = translation;
       }

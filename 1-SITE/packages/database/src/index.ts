@@ -15,12 +15,16 @@ const getDb = () => {
   
     if (!(globalThis as any).dbInstance) {
     try {
-                  const connectionString = process.env.DATABASE_URL!;
+                  let connectionString = process.env.DATABASE_URL!;
                   if (!connectionString) return null;
                   
-                  // CHRIS-PROTOCOL: Pooler Bypass for Serverless Stability (v2.12)
-                  // If we are in production and the pooler is saturated, we might want to use the direct connection.
-                  // However, for now we just log it and stick to the provided URL.
+                  // CHRIS-PROTOCOL: Force Direct Connection for Stability (v2.13)
+                  // The Supabase Pooler (6543) is currently hanging on translation queries.
+                  // We switch to direct port 5432 for better reliability.
+                  if (connectionString.includes(':6543')) {
+                    console.log('🔄 Switching to direct DB connection (port 5432) for stability...');
+                    connectionString = connectionString.replace(':6543', ':5432').replace('pgbouncer=true', 'pgbouncer=false');
+                  }
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
 BQAwazELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5l
@@ -45,6 +49,7 @@ CMTyZKG3XEu5Ghl1LEnI3QmEKsqaCLv12BnVjbkSeZsMnevJPs1Ye6TjjJwdik5P
 o/bKiIz+Fq8=
 -----END CERTIFICATE-----`;
 
+      const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 3 : 10);
       const client = postgres(connectionString, { 
         prepare: false, 
         ssl: {
@@ -54,13 +59,13 @@ o/bKiIz+Fq8=
         connect_timeout: 20,
         onnotice: () => {},
         idle_timeout: 20,
-        max: process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 3 : 10),
+        max: poolSize,
       });
 
       (globalThis as any).dbInstance = drizzle(client, { 
         schema
       });
-      console.log('✅ Drizzle initialized (Pool size:', process.env.NODE_ENV === 'production' ? 1 : 10, ')');
+      console.log(`✅ Drizzle initialized (Pool size: ${poolSize})`);
     } catch (e) {
       console.error('❌ Failed to initialize Drizzle:', e);
       return null;

@@ -268,25 +268,28 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
             desc(actors.deliveryDateMinPriority),
             sql`delivery_date_min ASC NULLS LAST`, 
             desc(actors.totalSales),
-            desc(actors.voiceScore), 
-            asc(actors.firstName)
-          ],
-          limit: 200,
-          with: {
-            demos: true,
-            country: true,
-            actorLanguages: {
-              with: {
-                language: true
-              }
-            },
-            actorTones: {
-              with: {
-                tone: true
-              }
+          desc(actors.voiceScore), 
+          asc(actors.firstName)
+        ],
+        limit: 100,
+        with: {
+          demos: {
+            limit: 5,
+            where: eq(actorDemos.isPublic, true)
+          },
+          country: true,
+          actorLanguages: {
+            with: {
+              language: true
+            }
+          },
+          actorTones: {
+            with: {
+              tone: true
             }
           }
-        }),
+        }
+      }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 12000))
       ]) as any[];
     } catch (dbError) {
