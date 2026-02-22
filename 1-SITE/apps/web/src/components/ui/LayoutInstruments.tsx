@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * LAYOUT INSTRUMENTS (VOICES 2026)
  * 
@@ -9,291 +7,30 @@
  * @lock-file
  */
 
-import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import React, { ButtonHTMLAttributes, ElementType, FormHTMLAttributes, forwardRef, HTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
 
-/**
- * ROOT LAYOUT INSTRUMENT
- * De vervanger voor <html> en <body>
- */
-export const RootLayoutInstrument = ({ 
-  children, 
-  lang = 'nl',
-  className = 'va-main-layout'
-}: { 
-  children: ReactNode; 
-  lang?: string;
-  className?: string;
-}) => {
-  return (
-    <html lang={lang}>
-      <body className={cn(className, "pb-24 md:pb-0 touch-manipulation")}>
-        {children}
-      </body>
-    </html>
-  );
-};
+// Re-export server components
+export { 
+  RootLayoutInstrument, 
+  PageWrapperInstrument, 
+  SectionInstrument, 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument 
+} from './LayoutInstrumentsServer';
 
-/**
- * PAGE WRAPPER INSTRUMENT
- * De vervanger voor <main> op pagina niveau
- */
-export const PageWrapperInstrument = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(({ 
-  children, 
-  className = 'va-page-wrapper',
-  ...props
-}, ref) => {
-  return (
-    <main 
-      ref={ref} 
-      className={cn(className, "va-render-optimize")} 
-      style={{ contentVisibility: 'auto' } as React.CSSProperties}
-      {...props}
-    >
-      {children}
-    </main>
-  );
-});
-PageWrapperInstrument.displayName = 'PageWrapperInstrument';
-
-/**
- * SECTION INSTRUMENT
- * De vervanger voor <section>
- */
-export const SectionInstrument = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(({ 
-  children, 
-  className = 'va-section',
-  ...props
-}, ref) => {
-  return (
-    <section ref={ref} className={className} {...props}>
-      {children}
-    </section>
-  );
-});
-SectionInstrument.displayName = 'SectionInstrument';
-
-/**
- * CONTAINER INSTRUMENT
- * De vervanger voor <div>
- */
-export interface ContainerInstrumentProps extends HTMLAttributes<HTMLElement> {
-  as?: ElementType;
-  noTranslate?: boolean;
-  ariaLabel?: string;
-  role?: string;
-  plain?: boolean;
-}
-
-export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentProps>(({ 
-  children, 
-  className = '',
-  as: Component = 'div',
-  noTranslate,
-  ariaLabel,
-  role,
-  plain = false,
-  ...props
-}, ref) => {
-  //  ANTI-PADDING-OVERLAP LOGIC (VOICES 2026)
-  // Een container mag NOOIT dubbele padding krijgen.
-  // We blokkeren de standaard "va-container" (40px padding) als:
-  // 1. De prop 'plain' op true staat.
-  // 2. Er handmatig padding is toegevoegd (p-, px-, py-).
-  // 3. Er een max-width (max-w-) is ingesteld.
-  // 4. Het element een lijst-item (li), lijst (ul), of nav is.
-  // 5. Er flex/grid logica aanwezig is.
-  // 6. Het element een 'as' prop heeft die niet 'div' of 'section' is (bijv. motion.div).
-  const isStructural = Component === 'div' || Component === 'section' || Component === 'main' || Component === 'footer' || Component === 'header';
-  const isListOrNav = Component === 'ul' || Component === 'li' || Component === 'nav';
-  const hasManualPadding = /\bp[xy]?-\d+/.test(className) || className.includes('p-0') || className.includes('!px-0');
-  const hasMaxWidth = className.includes('max-w-');
-  const hasFlexLogic = className.includes('flex') || className.includes('grid') || className.includes('space-y-') || className.includes('space-x-');
-  
-  // We voegen ALLEEN padding toe als het een puur structureel element is ZONDER handmatige layout-classes.
-  const shouldBePlain = plain || !isStructural || isListOrNav || hasManualPadding || hasMaxWidth || hasFlexLogic;
-
-  return (
-    <Component 
-      ref={ref} 
-      className={cn(
-        shouldBePlain ? className : cn("va-container", className),
-        noTranslate && "notranslate"
-      )} 
-      translate={noTranslate ? "no" : undefined}
-      aria-label={ariaLabel}
-      role={role}
-      {...props}
-    >
-      {children}
-    </Component>
-  );
-});
-ContainerInstrument.displayName = 'ContainerInstrument';
-
-/**
- * HEADING INSTRUMENT
- * De vervanger voor <h1> t/m <h6>
- */
-export interface HeadingInstrumentProps extends HTMLAttributes<HTMLHeadingElement> {
-  level?: 1 | 2 | 3 | 4 | 5 | 6;
-  noTranslate?: boolean;
-  ariaLabel?: string;
-}
-
-export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumentProps>(({ 
-  children, 
-  level = 1,
-  className = '',
-  noTranslate,
-  ariaLabel,
-  ...props
-}, ref) => {
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
-  
-  //  CHRIS-PROTOCOL: Headings inherit font-size naturally. 
-  // We only force weight and family.
-  return (
-    <Tag 
-      ref={ref} 
-      className={cn(
-        !className.includes('font-') && "font-light",
-        noTranslate && "notranslate",
-        className.includes('va-text-soft') && "text-va-black/60",
-        className
-      )} 
-      translate={noTranslate ? "no" : undefined}
-      aria-label={ariaLabel}
-      {...props}
-    >
-      {children}
-    </Tag>
-  );
-});
-HeadingInstrument.displayName = 'HeadingInstrument';
-
-/**
- * TEXT INSTRUMENT
- * De vervanger voor <p> of <span>
- */
-export interface TextInstrumentProps extends HTMLAttributes<HTMLElement> {
-  as?: ElementType;
-  noTranslate?: boolean;
-  ariaLabel?: string;
-  ariaHidden?: boolean;
-}
-
-export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({ 
-  children, 
-  as: Component = 'p',
-  className = '',
-  noTranslate,
-  ariaLabel,
-  ariaHidden,
-  ...props
-}, ref) => {
-  //  CHRIS-PROTOCOL: TextInstrument defaults to body size (15px) via globals.css
-  // We don't force it here to avoid inheritance conflicts in nested elements (like Hero titles).
-  return (
-    <Component 
-      ref={ref} 
-      className={cn(
-        !className.includes('font-') && "font-light",
-        noTranslate && "notranslate",
-        className.includes('va-text-soft') && "text-va-black/60",
-        className
-      )} 
-      translate={noTranslate ? "no" : undefined}
-      aria-label={ariaLabel}
-      aria-hidden={ariaHidden}
-      {...props}
-    >
-      {children}
-    </Component>
-  );
-});
-TextInstrument.displayName = 'TextInstrument';
+// Import client hooks for client components
+import { ClientButtonInstrument } from './LayoutInstrumentsClient';
 
 /**
  * BUTTON INSTRUMENT
- * De vervanger voor <button>
  */
-export interface ButtonInstrumentProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  as?: ElementType;
-  href?: string; // Add href for cases where it's used as an 'a' tag
-  variant?: 'default' | 'outline' | 'ghost' | 'link' | 'danger' | 'nav' | 'pure' | 'plain';
-  size?: 'default' | 'sm' | 'lg' | 'icon' | 'none';
-  noTranslate?: boolean;
-  ariaLabel?: string;
-}
-
-export const ButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentProps>(({ 
-  children, 
-  className = '',
-  as: Component = 'button',
-  type = 'button',
-  variant = 'default',
-  size = 'default',
-  noTranslate,
-  ariaLabel,
-  ...props
-}, ref) => {
-  const { playClick } = useSonicDNA();
-  const { href, ...otherProps } = props;
-  
-  const variantClasses = {
-    default: "bg-va-black text-white hover:bg-va-black/90",
-    primary: "bg-primary text-white hover:bg-primary/90",
-    outline: "border border-primary/20 bg-transparent hover:bg-primary/5 text-primary",
-    ghost: "bg-transparent border-none shadow-none",
-    link: "bg-transparent underline-offset-4 hover:underline text-primary p-0 h-auto justify-start inline-flex",
-    danger: "bg-red-500 text-white hover:bg-red-600",
-    nav: "bg-transparent border-none shadow-none hover:bg-va-black/5 active:scale-100",
-    pure: "bg-transparent border-none shadow-none rounded-none active:scale-100",
-    plain: "bg-transparent border-none shadow-none p-0 h-auto !rounded-none !scale-100 !bg-none justify-start inline-flex"
-  };
-
-  const sizeClasses = {
-    default: "px-6 py-3",
-    sm: "px-4 py-2 text-xs",
-    lg: "px-8 py-4 text-lg",
-    icon: "p-3",
-    none: "p-0 !min-h-0 !min-w-0 !rounded-none !m-0"
-  };
-
-  return (
-    <Component 
-      ref={ref}
-      type={Component === 'button' ? type : undefined}
-      href={(Component === 'a' || Component === Link) ? href : undefined}
-      className={cn(
-        "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] ease-va-bezier inline-flex items-center justify-center whitespace-nowrap cursor-pointer",
-        !className.includes('font-') && "font-light",
-        variantClasses[variant],
-        sizeClasses[size],
-        (variant === 'link' || variant === 'plain') && "justify-start",
-        className,
-        noTranslate && "notranslate"
-      )}
-      translate={noTranslate ? "no" : undefined}
-      aria-label={ariaLabel}
-      onClick={(e: any) => {
-        playClick('soft');
-        if (props.onClick) props.onClick(e);
-      }}
-      {...otherProps}
-    >
-      {children}
-    </Component>
-  );
-});
-ButtonInstrument.displayName = 'ButtonInstrument';
+export const ButtonInstrument = ClientButtonInstrument;
 
 /**
  * INPUT INSTRUMENT
- * De vervanger voor <input>
  */
 export const InputInstrument = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(({ 
   className = '',
@@ -335,8 +72,6 @@ export const OptionInstrument = ({
   children, 
   ...props
 }: React.OptionHTMLAttributes<HTMLOptionElement>) => {
-  //  CHRIS-PROTOCOL: No <span> inside <option> (Hydration Error prevention)
-  // We recursively strip elements and only keep text content
   const getTextContent = (node: React.ReactNode): string => {
     if (typeof node === 'string' || typeof node === 'number') return String(node);
     if (Array.isArray(node)) return node.map(getTextContent).join('');
@@ -393,7 +128,7 @@ export const LabelInstrument = ({
 };
 
 /**
- *  CHRIS-PROTOCOL: Circular Flag Components (Centralized)
+ * CIRCULAR FLAG COMPONENTS
  */
 export const FlagBE = ({ size = 20 }: { size?: number }) => (
   <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0">
@@ -516,7 +251,6 @@ export const FlagPT = ({ size = 20 }: { size?: number }) => (
 
 /**
  * FIXED ACTION DOCK INSTRUMENT
- * Een zwevend paneel onderaan voor primaire acties (Thumb-Zone optimized)
  */
 export const FixedActionDockInstrument = ({ 
   children, 
@@ -546,7 +280,7 @@ export const LoadingScreenInstrument = ({
   text?: string;
 }) => {
   return (
-    <ContainerInstrument className="fixed inset-0 bg-va-off-white z-[9999] flex flex-col items-center justify-center">
+    <div className="fixed inset-0 bg-va-off-white z-[9999] flex flex-col items-center justify-center">
       <div className="relative w-32 h-32">
         <svg viewBox="0 0 1000 1000" className="w-full h-full">
           <defs>
@@ -584,10 +318,10 @@ export const LoadingScreenInstrument = ({
         </svg>
       </div>
       {text && (
-        <TextInstrument className="mt-12 text-[13px] font-bold text-va-black/20 uppercase tracking-[0.3em] animate-pulse">
+        <p className="mt-12 text-[13px] font-bold text-va-black/20 uppercase tracking-[0.3em] animate-pulse">
           {text}
-        </TextInstrument>
+        </p>
       )}
-    </ContainerInstrument>
+    </div>
   );
 };

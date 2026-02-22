@@ -7,6 +7,9 @@
  */
 
 import { VOICES_CONFIG } from './config';
+import { db } from '@db';
+import { marketConfigs } from '@db/schema';
+import { eq } from 'drizzle-orm';
 
 export interface MarketConfig {
   market_code: string;
@@ -23,10 +26,13 @@ export interface MarketConfig {
   vat_number: string;
   theme: 'voices' | 'ademing' | 'johfrah' | 'youssef' | 'johfrai';
   has_voicy?: boolean;
+  address?: any;
 }
 
 export class MarketManager {
-  private static MARKETS: Record<string, Partial<MarketConfig>> = {
+  private static cache: Record<string, MarketConfig> = {};
+
+  private static MARKETS_STATIC: Record<string, Partial<MarketConfig>> = {
     'voices.be': {
       market_code: 'BE',
       language: 'nl',
@@ -91,22 +97,22 @@ export class MarketManager {
       market_code: 'EU',
       language: 'en',
       primary_language: 'Engels',
-      supported_languages: ['Engels', 'Vlaams', 'Nederlands', 'Frans', 'Duits', 'Spaans', 'Italiaans'],
-      popular_languages: ['Engels', 'Frans', 'Duits', 'Nederlands', 'Vlaams'],
+      supported_languages: ['Engels', 'Duits', 'Vlaams', 'Nederlands', 'Frans', 'Spaans', 'Italiaans'],
+      popular_languages: ['Engels', 'Duits', 'Frans', 'Nederlands', 'Vlaams'],
       name: 'Europe',
       email: 'johfrah@voices.eu',
       logo_url: VOICES_CONFIG.assets.logos.eu,
       theme: 'voices'
     },
-    'voices.de': {
-      market_code: 'DE',
-      language: 'de',
-      primary_language: 'Duits',
-      supported_languages: ['Duits', 'Engels', 'Frans', 'Nederlands', 'Vlaams', 'Italiaans', 'Spaans'],
-      popular_languages: ['Duits', 'Engels', 'Frans', 'Nederlands', 'Vlaams'],
-      name: 'Deutschland',
-      email: 'johfrah@voices.de',
-      logo_url: VOICES_CONFIG.assets.logos.eu, // Fallback to EU logo
+    'voices.academy': {
+      market_code: 'ACADEMY',
+      language: 'nl',
+      primary_language: 'Vlaams',
+      supported_languages: ['Vlaams', 'Nederlands', 'Engels'],
+      popular_languages: ['Vlaams', 'Nederlands', 'Engels'],
+      name: 'Voices Academy',
+      email: 'johfrah@voices.be',
+      logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices'
     },
     'johfrah.be': {
@@ -157,7 +163,7 @@ export class MarketManager {
   };
 
   /**
-   * Haalt de huidige markt op basis van de host
+   * Haalt de huidige markt op basis van de host (Server-Side of Client-Side)
    */
   static getCurrentMarket(host?: string): MarketConfig {
     let activeHost = host;
@@ -169,10 +175,13 @@ export class MarketManager {
     if (!activeHost) activeHost = 'voices.be';
 
     const cleanHost = activeHost.replace('www.', '');
-    const config = this.MARKETS[cleanHost] || this.MARKETS['voices.be'];
+    
+    // Check cache first
+    if (this.cache[cleanHost]) return this.cache[cleanHost];
 
-    // Merge met defaults uit VOICES_CONFIG
-    return {
+    const config = this.MARKETS_STATIC[cleanHost] || this.MARKETS_STATIC['voices.be'];
+
+    const finalConfig: MarketConfig = {
       market_code: config.market_code || 'BE',
       language: config.language || 'nl',
       primary_language: config.primary_language || 'Vlaams',
@@ -189,6 +198,44 @@ export class MarketManager {
       theme: config.theme || 'voices',
       has_voicy: config.has_voicy ?? false
     };
+
+    this.cache[cleanHost] = finalConfig;
+    return finalConfig;
+  }
+
+  /**
+   * Async versie voor Server Components die DIRECT uit de DB leest.
+   */
+  static async getCurrentMarketAsync(host?: string): Promise<MarketConfig> {
+    const staticConfig = this.getCurrentMarket(host);
+    
+    try {
+      const [dbConfig] = await db
+        .select()
+        .from(marketConfigs)
+        .where(eq(marketConfigs.market, staticConfig.market_code))
+        .limit(1);
+
+      if (dbConfig) {
+        const loc = dbConfig.localization as any;
+        return {
+          ...staticConfig,
+          name: dbConfig.name || staticConfig.name,
+          email: dbConfig.email || staticConfig.email,
+          phone: dbConfig.phone || staticConfig.phone,
+          language: loc?.default_lang || staticConfig.language,
+          currency: loc?.currency || staticConfig.currency,
+          theme: (dbConfig.theme as any) || staticConfig.theme,
+          address: dbConfig.address || staticConfig.address,
+          vat_number: dbConfig.vatNumber || staticConfig.vat_number,
+          // We kunnen hier meer velden mappen als ze in de DB staan
+        };
+      }
+    } catch (e) {
+      console.error('[MarketManager] DB Fetch failed, falling back to static:', e);
+    }
+
+    return staticConfig;
   }
 
   /**
