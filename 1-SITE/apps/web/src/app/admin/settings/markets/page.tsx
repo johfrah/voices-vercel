@@ -41,16 +41,9 @@ export default function AdminMarketsPage() {
   const [saving, setSaving] = useState(false);
   
   // Mock data voor nu, wordt later uit app_configs gehaald
-  const [markets, setMarkets] = useState([
-    { code: 'BE', name: 'België', domains: ['voices.be'], langs: ['nl', 'fr', 'en'], default: 'nl', status: 'active' },
-    { code: 'NL', name: 'Nederland', domains: ['voices.nl'], langs: ['nl', 'en'], default: 'nl', status: 'active' },
-    { code: 'FR', name: 'Frankrijk', domains: ['voices.fr'], langs: ['fr', 'en'], default: 'fr', status: 'active' },
-    { code: 'ES', name: 'Spanje', domains: ['voices.es'], langs: ['es', 'en'], default: 'es', status: 'active' },
-    { code: 'PT', name: 'Portugal', domains: ['voices.pt'], langs: ['pt', 'en'], default: 'pt', status: 'active' },
-    { code: 'EU', name: 'Europa', domains: ['voices.eu'], langs: ['en', 'de', 'fr', 'es', 'it', 'pt'], default: 'en', status: 'active' }
-  ]);
+  const [markets, setMarkets] = useState<any[]>([]);
 
-  const [activeLangs, setActiveLangs] = useState(['nl', 'fr', 'en', 'de', 'es', 'it', 'pt']);
+  const [activeLangs, setActiveLangs] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchMarkets = async () => {

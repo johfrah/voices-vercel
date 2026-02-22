@@ -253,6 +253,13 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
 
   if (state.usage !== 'telefonie') return null;
 
+  const market = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      return MarketManager.getCurrentMarket(window.location.host);
+    }
+    return MarketManager.getCurrentMarket('voices.be');
+  }, []);
+
   return (
     <div className="bg-white rounded-[32px] p-8 border border-black/5 shadow-aura-lg space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden">
       {/* Background Decor */}
@@ -331,7 +338,7 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
             type="text"
             value={companyName}
             onChange={(e) => { setCompanyName(e.target.value); updateCustomer({ company: e.target.value }); }}
-            placeholder={t('common.placeholder.company', "Bijv. Voices.be")}
+            placeholder={t('common.placeholder.company', `Bijv. ${market.name}`)}
             className="w-full bg-va-off-white border-2 border-transparent focus:border-primary/10 focus:bg-white rounded-[15px] py-4 px-5 text-[15px] font-light transition-all outline-none"
           />
         </div>

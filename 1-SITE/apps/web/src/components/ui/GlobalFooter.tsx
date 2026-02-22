@@ -428,8 +428,8 @@ export default function GlobalFooter() {
                2026 {actorName}. 
               <TextInstrument as="span">
                 <VoiceglotText translationKey="footer.powered_by" defaultText="Powered by" />
-                <ButtonInstrument as="a" href="https://voices.be" variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
-                  Voices.be
+                <ButtonInstrument as="a" href={`https://${market.market_code.toLowerCase() === 'be' ? 'voices.be' : 'voices.eu'}`} variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
+                  {market.market_code.toLowerCase() === 'be' ? 'Voices.be' : 'Voices'}
                 </ButtonInstrument>
               </TextInstrument>
             </TextInstrument>
@@ -853,8 +853,8 @@ export default function GlobalFooter() {
              2026 {market.name}. {isSpecial && (
               <TextInstrument as="span">
                 <VoiceglotText translationKey="footer.powered_by" defaultText="Powered by" />
-                <ButtonInstrument as="a" href="https://voices.be" variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
-                  <VoiceglotText  translationKey="auto.globalfooter.voices_be.46435e" defaultText="Voices.be" />
+                <ButtonInstrument as="a" href={`https://${market.market_code.toLowerCase() === 'be' ? 'voices.be' : 'voices.eu'}`} variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
+                  <VoiceglotText  translationKey="auto.globalfooter.voices_be.46435e" defaultText={market.market_code.toLowerCase() === 'be' ? 'Voices.be' : 'Voices'} />
                 </ButtonInstrument>
               </TextInstrument>
             )}

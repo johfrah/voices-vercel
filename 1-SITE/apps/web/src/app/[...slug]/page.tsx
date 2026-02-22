@@ -28,8 +28,8 @@ const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalcula
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
  */
-function generateActorSchema(actor: any) {
-  const baseUrl = 'https://www.voices.be';
+function generateActorSchema(actor: any, marketName: string = 'Voices', host: string = 'voices.be') {
+  const baseUrl = `https://${host}`;
   
   // Map internal delivery type to ISO 8601 duration
   const deliveryMap: Record<string, string> = {
@@ -49,7 +49,7 @@ function generateActorSchema(actor: any) {
     'description': actor.bio || actor.tagline,
     'provider': {
       '@type': 'LocalBusiness',
-      'name': 'Voices.be',
+      'name': marketName,
       'url': baseUrl
     },
     'areaServed': 'BE',
@@ -73,13 +73,13 @@ function generateActorSchema(actor: any) {
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Artists
  */
-function generateArtistSchema(artist: any) {
+function generateArtistSchema(artist: any, host: string = 'voices.be') {
   return {
     "@context": "https://schema.org",
     "@type": "MusicGroup",
     "name": artist.displayName,
     "description": artist.bio,
-    "url": `https://www.voices.be/artist/${artist.slug}`,
+    "url": `https://${host}/artist/${artist.slug}`,
     "genre": artist.iapContext?.genre || "Pop",
     "sameAs": [
       artist.spotifyUrl,
@@ -140,6 +140,9 @@ interface SmartRouteParams {
 
 export async function generateMetadata({ params }: { params: SmartRouteParams }): Promise<Metadata> {
   const headersList = headers();
+  const host = headersList.get('host') || 'voices.be';
+  const { MarketManager } = await import('@/packages/config/market-manager');
+  const market = MarketManager.getCurrentMarket(host);
   const lang = headersList.get('x-voices-lang') || 'nl';
   const normalizedSlug = normalizeSlug(params.slug);
   
@@ -164,14 +167,14 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 
   // 0. Agency Journey SEO
   if (firstSegment === "agency" || firstSegment === "stemmen" || firstSegment === "voix" || firstSegment === "stimmen") {
-    const title = await getTranslatedSEO('seo.agency.title', 'Voice-over Agency | Vind de perfecte stem | Voices.be');
-    const description = await getTranslatedSEO('seo.agency.description', 'Ontdek meer dan 500+ professionele voice-over stemmen voor video, commercial en telefonie. Directe prijsberekening en 24u levering.');
+    const title = await getTranslatedSEO('seo.agency.title', `Voice-over Agency | Vind de perfecte stem | ${market.name}`);
+    const description = await getTranslatedSEO('seo.agency.description', `Ontdek meer dan 500+ professionele voice-over stemmen voor video, commercial en telefonie. Directe prijsberekening en 24u levering bij ${market.name}.`);
     
     return {
       title,
       description,
       alternates: {
-        canonical: `https://www.voices.be/${lang !== 'nl' ? lang + '/' : ''}${normalizedSlug}`,
+        canonical: `https://www.${market.market_code.toLowerCase() === 'be' ? 'voices.be' : (market.market_code.toLowerCase() === 'nlnl' ? 'voices.nl' : host)}/${lang !== 'nl' ? lang + '/' : ''}${normalizedSlug}`,
       }
     };
   }
@@ -180,14 +183,14 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   try {
     const artist = await getArtist(firstSegment, lang);
     if (artist) {
-      const title = await getTranslatedSEO(`seo.artist.${artist.id}.title`, `${artist.displayName} | Voices Artist`);
+      const title = await getTranslatedSEO(`seo.artist.${artist.id}.title`, `${artist.displayName} | ${market.name} Artist`);
       const description = await getTranslatedSEO(`seo.artist.${artist.id}.description`, artist.bio);
 
       return {
         title,
         description,
         other: {
-          'script:ld+json': JSON.stringify(generateArtistSchema(artist))
+          'script:ld+json': JSON.stringify(generateArtistSchema(artist, host))
         }
       };
     }
@@ -197,15 +200,15 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   try {
     const actor = await getActor(firstSegment, lang);
     if (actor) {
-      const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.firstName} - Voice-over Stem | Voices.be`);
-      const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.firstName} op Voices.be.`);
-      const schema = generateActorSchema(actor);
+      const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.firstName} - Voice-over Stem | ${market.name}`);
+      const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.firstName} op ${market.name}.`);
+      const schema = generateActorSchema(actor, market.name, host);
 
       return {
         title,
         description,
         alternates: {
-          canonical: `https://www.voices.be/${lang !== 'nl' ? lang + '/' : ''}${params.slug.join('/')}`,
+          canonical: `https://www.${market.market_code.toLowerCase() === 'be' ? 'voices.be' : host}/${lang !== 'nl' ? lang + '/' : ''}${params.slug.join('/')}`,
         },
         other: {
           'script:ld+json': JSON.stringify(schema)
@@ -223,13 +226,13 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
     }).catch(() => null);
 
     if (page) {
-      const title = await getTranslatedSEO(`seo.page.${page.slug}.title`, `${page.title} | Voices.be`);
-      const description = await getTranslatedSEO(`seo.page.${page.slug}.description`, page.description || `Ontdek meer over ${page.title} op Voices.be.`);
+      const title = await getTranslatedSEO(`seo.page.${page.slug}.title`, `${page.title} | ${market.name}`);
+      const description = await getTranslatedSEO(`seo.page.${page.slug}.description`, page.description || `Ontdek meer over ${page.title} op ${market.name}.`);
       return {
         title,
         description,
         alternates: {
-          canonical: `https://www.voices.be/${lang !== 'nl' ? lang + '/' : ''}${firstSegment}`,
+          canonical: `https://www.${market.market_code.toLowerCase() === 'be' ? 'voices.be' : host}/${lang !== 'nl' ? lang + '/' : ''}${firstSegment}`,
         }
       };
     }
@@ -360,6 +363,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   // 2. Pitch Link (Casting List)
   if (firstSegment === 'pitch' && journey) {
     try {
+      const { MarketManager } = await import('@/packages/config/market-manager');
+      const host = headersList.get('host') || 'voices.be';
+      const market = MarketManager.getCurrentMarket(host);
+
       //  CHRIS-PROTOCOL: Fetch real casting list from DB
       const list = await db.query.castingLists.findFirst({
         where: eq(castingLists.hash, journey),
@@ -396,7 +403,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             'name': item.actor.firstName,
             'provider': {
               '@type': 'LocalBusiness',
-              'name': 'Voices.be'
+              'name': market.name
             }
           }
         }))

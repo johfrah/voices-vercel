@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     let totalHealed = 0;
 
     //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
-    const host = request.headers.get('host') || 'voices.be';
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
 

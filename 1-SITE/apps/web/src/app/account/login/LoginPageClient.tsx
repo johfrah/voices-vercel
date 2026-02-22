@@ -56,12 +56,13 @@ export function LoginPageClient() {
   useEffect(() => {
     if (supabaseUnavailable) return;
     const magic = searchParams?.get('magic');
+    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'johfrah@voices.be';
     if (magic === 'johfrah') {
       const loginMagic = async () => {
         setIsLoading(true);
         try {
           const { error: authError } = await supabase!.auth.signInWithPassword({
-            email: 'johfrah@voices.be',
+            email: adminEmail,
             password: process.env.NEXT_PUBLIC_ADMIN_MAGIC_PASSWORD || 'voices2026',
           });
 

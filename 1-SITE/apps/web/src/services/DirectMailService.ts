@@ -138,7 +138,7 @@ export class DirectMailService {
     let smtpPass = this.config.password;
 
     //  Intelligence Layer: SMTP Routing
-    if (from.includes('voices.be')) {
+    if (from.includes(market.market_code.toLowerCase() === 'be' ? 'voices.be' : host)) {
       smtpHost = process.env.SMTP_SERVER_VOICES || 'smtp-auth.mailprotect.be';
       smtpPass = process.env.IMAP_PASS_VOICES || this.config.password;
     } else if (from.includes('invoice@')) {
@@ -156,10 +156,8 @@ export class DirectMailService {
       }
     });
 
-    // 🛡️ CHRIS-PROTOCOL: Forceer "Voices.be" als afzender voor professionele uitstraling
-    // We gebruiken de company_name uit de market config, maar overriden deze naar Voices.be
-    // als het een algemene platform mail is.
-    const senderDisplayName = from.includes('voices.be') ? 'Voices.be' : market.company_name;
+    // 🛡️ CHRIS-PROTOCOL: Forceer de market name als afzender voor professionele uitstraling
+    const senderDisplayName = from.includes(market.market_code.toLowerCase() === 'be' ? 'voices.be' : host) ? market.name : market.company_name;
 
     await transporter.sendMail({
       from: `"${senderDisplayName}" <${from}>`,

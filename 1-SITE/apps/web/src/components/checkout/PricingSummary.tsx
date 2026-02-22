@@ -42,7 +42,8 @@ export const PricingSummary: React.FC<{
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch('/api/proxy?path=' + encodeURIComponent('https://www.voices.be/api/admin/actors'));
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+        const res = await fetch('/api/proxy?path=' + encodeURIComponent(`${baseUrl}/api/admin/actors`));
         const data = await res.json();
         if (data.reviewStats) setReviewStats(data.reviewStats);
       } catch (e) {}

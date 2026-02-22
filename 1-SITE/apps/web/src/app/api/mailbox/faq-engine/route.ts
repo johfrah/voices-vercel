@@ -20,9 +20,10 @@ export async function GET() {
   try {
     // 1. Haal recente mails op die antwoorden bevatten (bijv. van Johfrah)
     let recentReplies: any[] = [];
+    const adminEmail = process.env.ADMIN_EMAIL || 'johfrah@voices.be';
     try {
       recentReplies = await db.query.mailContent.findMany({
-        where: sql`${mailContent.sender} LIKE '%johfrah@voices.be%'`,
+        where: sql`${mailContent.sender} LIKE ${'%' + adminEmail + '%'}`,
         orderBy: [desc(mailContent.date)],
         limit: 20
       });

@@ -231,7 +231,10 @@ export class ContentEngine {
                  market.market_code === 'FR' ? 'voices.fr' :
                  market.market_code === 'ES' ? 'voices.es' :
                  market.market_code === 'PT' ? 'voices.pt' :
-                 market.market_code === 'EU' ? 'voices.eu' : 'voices.be';
+                 market.market_code === 'EU' ? 'voices.eu' : 
+                 market.market_code === 'PORTFOLIO' ? 'johfrah.be' :
+                 market.market_code === 'ARTIST' ? 'youssefzaki.eu' :
+                 market.market_code === 'ADEMING' ? 'ademing.be' : 'voices.be';
 
     if (host !== "voices.be") {
       return text.replace(/voices\.be/gi, host);

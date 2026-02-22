@@ -41,11 +41,11 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     headerImage,
     instructorName = 'Johfrah Lefebvre',
     instructorRole = 'Voice-over en coach',
-    instructorImage = 'https://voices-vercel.vercel.app/assets/common/branding/founder/johfrah.png?v=20260213',
+    instructorImage = 'https://www.voices.be/assets/common/branding/founder/johfrah.png?v=20260213',
     description = 'In deze workshop leer je de basis van voice-overs inspreken: van stemopwarming tot tekstbegrip en intonatie en spreken in de microfoon.',
     learningPoints = 'Tijdens deze praktijkgerichte workshop werk je intensief met tekst en microfoon. Je doet niet alleen nieuwe vaardigheden op, maar gaat ook naar huis met een hoogwaardige opname.',
     schedule = '09u45: Aankomst\n10u00: Kennismaking\n10u15: Workshop deel 1\n13u30: Lunch\n14u15: Workshop deel 2\n17u00: Einde',
-    videoThumbnail = 'https://voices-vercel.vercel.app/assets/studio/common/branding/VSTUDIO.webp',
+    videoThumbnail = 'https://www.voices.be/assets/studio/common/branding/VSTUDIO.webp',
     videoUrl = 'https://www.voices.be/studio/',
     aftermovieText = 'Ontdek hoe deelnemers hun stem leren inzetten om teksten echt te laten leven.',
     optOutToken,
@@ -151,12 +151,10 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
       </div>
 
       <!-- SIGNATURE -->
-      <div style="padding-top: 32px; border-top: 1px solid #eee;">
-        <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #111;">
+      <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #111;">
           ${content.footer}<br />
-          <a href="https://${host}/studio/" style="color: #111; font-weight: bold; text-decoration: underline;">${content.studioLink}</a>
+          <a href="https://${host}/studio/" style="color: #111; font-weight: bold; text-decoration: underline;">www.${host}/studio/</a>
         </p>
-      </div>
     </div>
   `;
 
@@ -165,7 +163,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     previewText: workshopName,
     journey: 'studio',
     host,
-    headerImage: headerImage || 'https://voices-vercel.vercel.app/assets/studio/common/branding/VSTUDIO.webp',
+    headerImage: headerImage || 'https://www.voices.be/assets/studio/common/branding/VSTUDIO.webp',
     optOutUrl
   });
 }

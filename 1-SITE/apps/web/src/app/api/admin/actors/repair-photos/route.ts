@@ -64,8 +64,9 @@ export async function POST() {
       }
 
       // FIX B: Dubbele proxy URLs
-      if (actor.dropboxUrl?.includes('https://www.voices.be/api/proxy')) {
-        updateData.dropboxUrl = actor.dropboxUrl.replace('https://www.voices.be', '');
+      if (actor.dropboxUrl?.includes('/api/proxy') && actor.dropboxUrl.includes('http')) {
+        const urlObj = new URL(actor.dropboxUrl);
+        updateData.dropboxUrl = urlObj.pathname + urlObj.search;
         needsUpdate = true;
         logs.push(`Cleaned double proxy for ${actor.firstName}`);
       }

@@ -52,7 +52,8 @@ export class TwilioService {
       let twiml = '';
       
       if (whisperMode === 'audio') {
-        twiml = `<Response><Play>https://www.voices.be/assets/audio/system/call-intro-johfrah.mp3</Play><Dial>${destination}</Dial></Response>`;
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+        twiml = `<Response><Play>${baseUrl}/assets/audio/system/call-intro-johfrah.mp3</Play><Dial>${destination}</Dial></Response>`;
       } else if (whisperMode === 'silent') {
         twiml = `<Response><Pause length="1"/><Dial>${destination}</Dial></Response>`;
       } else {

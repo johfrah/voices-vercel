@@ -25,7 +25,9 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
 }) => {
   const { playClick } = useSonicDNA();
   const { t } = useTranslation();
-  const [message, setMessage] = React.useState(t('quote.preview.default_message', `Dag ${customerName},\n\nBedankt voor je aanvraag bij Voices.be! Hierbij ontvang je de vrijblijvende offerte voor je project.\n\nDetails:\n${items.map(item => `- ${item.name}`).join('\n')}\n\nTotaalbedrag: ${totalAmount} (excl. BTW)\n\nJe kunt deze offerte direct online bevestigen via de link in de bijlage. Heb je nog vragen? Laat het me gerust weten!\n\nMet vriendelijke groet,\n\nJohfrah\nVoices.be`));
+  const { MarketManager } = require('@/packages/config/market-manager');
+  const market = MarketManager.getCurrentMarket();
+  const [message, setMessage] = React.useState(t('quote.preview.default_message', `Dag ${customerName},\n\nBedankt voor je aanvraag bij ${market.name}! Hierbij ontvang je de vrijblijvende offerte voor je project.\n\nDetails:\n${items.map(item => `- ${item.name}`).join('\n')}\n\nTotaalbedrag: ${totalAmount} (excl. BTW)\n\nJe kunt deze offerte direct online bevestigen via de link in de bijlage. Heb je nog vragen? Laat het me gerust weten!\n\nMet vriendelijke groet,\n\nJohfrah\n${market.name}`));
 
   if (!isOpen) return null;
 

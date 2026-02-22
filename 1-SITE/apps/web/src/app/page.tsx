@@ -460,10 +460,10 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "Voices",
-        "url": "https://www.voices.be",
-        "logo": "https://www.voices.be/assets/common/logo-voices-be.png",
-        "description": "Castingbureau voor stemacteurs en voice-overs.",
+        "name": market.name,
+        "url": `https://${typeof window !== 'undefined' ? window.location.host : 'voices.be'}`,
+        "logo": `https://${typeof window !== 'undefined' ? window.location.host : 'voices.be'}${market.logo_url}`,
+        "description": market.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": reviewStats?.averageRating || 4.9,

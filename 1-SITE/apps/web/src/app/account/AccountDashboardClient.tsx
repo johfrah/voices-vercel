@@ -103,7 +103,7 @@ export default function AccountDashboardClient() {
       <div className="va-home-container">
         {/*  ACCOUNT HERO */}
         <AccountHeroInstrument 
-          userEmail={user?.email || 'user@voices.be'} 
+          userEmail={user?.email || `user@${typeof window !== 'undefined' ? window.location.host : 'voices.be'}`} 
           onLogout={logout}
           isAdmin={isAdmin}
         />
@@ -152,7 +152,7 @@ export default function AccountDashboardClient() {
                 <BentoCard 
                   span="lg" 
                   className="bg-va-black text-white p-10 rounded-[32px] relative overflow-hidden group va-interactive"
-                  onClick={() => window.open('https://www.voices.be/portfolio/johfrah', '_blank')}
+                  onClick={() => window.open(`https://${typeof window !== 'undefined' ? window.location.host : 'voices.be'}/portfolio/johfrah`, '_blank')}
                 >
                   <div className="relative z-10 h-full flex flex-col justify-between">
                     <div>

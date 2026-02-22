@@ -121,7 +121,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   }, [state.journey, checkoutState.usage]);
 
   const sortedLanguages = useMemo(() => {
-    const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+    const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
     
     //  CHRIS-PROTOCOL: Map extra languages available for each primary language

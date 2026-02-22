@@ -1,4 +1,5 @@
 import { VumeMasterWrapper } from './VumeMasterWrapper';
+import { MarketManager } from '@config/market-manager';
 
 /**
  *  VUME DONATION THANK YOU TEMPLATE (2026)
@@ -18,6 +19,7 @@ interface DonationThankYouProps {
 
 export const VumeDonationThankYouTemplate = (props: DonationThankYouProps) => {
   const { name, amount, artistName, host = 'voices.be', language = 'nl' } = props;
+  const market = MarketManager.getCurrentMarket(host);
 
   const isNl = language === 'nl';
 
