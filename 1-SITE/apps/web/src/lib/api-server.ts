@@ -279,7 +279,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           asc(actors.firstName)
         ],
         */
-        limit: 100,
+        limit: 20,
         /*
         with: {
           demos: {
@@ -322,7 +322,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         }
       }
       
-      const { data: sdkData, error: sdkError } = await query.limit(100);
+      const { data: sdkData, error: sdkError } = await query.limit(20);
         
       if (sdkError) {
         console.error(' [getActors] SDK Fallback also failed:', sdkError);
