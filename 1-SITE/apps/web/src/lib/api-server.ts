@@ -112,19 +112,30 @@ export async function getReviewStats(businessSlug: string = 'voices-be') {
 
 //  CHRIS-PROTOCOL: In-memory cache for actors to reduce heavy DB load
 // We use a global variable to persist cache across requests in the same lambda instance
-if (!globalCache.actorsCache) {
-  globalCache.actorsCache = {};
+function getGlobalCache() {
+  if (typeof window !== 'undefined') return { actorsCache: {}, translationCache: {} };
+  
+  const g = global as any;
+  if (!g.apiServerCache) {
+    g.apiServerCache = {
+      actorsCache: {},
+      translationCache: {}
+    };
+  }
+  return g.apiServerCache;
 }
-const actorsCache = globalCache.actorsCache;
+
 const ACTORS_CACHE_TTL = 1000 * 60 * 10; // 10 minutes (increased for stability)
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
   console.log(' API: getActors called with params:', params);
   const { language, search, gender, style, market } = params;
   
+  const cache = getGlobalCache();
+  
   // 1. Check Cache
   const cacheKey = JSON.stringify({ params, lang });
-  const cached = actorsCache[cacheKey];
+  const cached = cache.actorsCache[cacheKey];
   if (cached && (Date.now() - cached.timestamp) < ACTORS_CACHE_TTL) {
     console.log(` [getActors] Returning cached results for ${cacheKey}`);
     return cached.data;
@@ -470,7 +481,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     };
 
     // 2. Update Cache
-    actorsCache[cacheKey] = { data: result, timestamp: Date.now() };
+    cache.actorsCache[cacheKey] = { data: result, timestamp: Date.now() };
 
     return result;
   } catch (error: any) {
@@ -812,19 +823,15 @@ export async function getWorkshops(limit: number = 50): Promise<any[]> {
 }
 
 //  CHRIS-PROTOCOL: In-memory cache for translations to reduce DB load
-// We use a global variable to persist cache across requests in the same lambda instance
-const globalCache = global as any;
-if (!globalCache.translationCache) {
-  globalCache.translationCache = {};
-}
-const translationCache = globalCache.translationCache;
 const CACHE_TTL = 1000 * 60 * 60; // 60 minutes (more aggressive for stability)
 
 export async function getTranslationsServer(lang: string): Promise<Record<string, string>> {
   if (lang === 'nl') return {};
   
+  const cache = getGlobalCache();
+  
   // 1. Check Cache First
-  const cached = translationCache[lang];
+  const cached = cache.translationCache[lang];
   if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
     console.log(` [getTranslationsServer] Returning cached translations for ${lang}`);
     return cached.data;
@@ -857,7 +864,7 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
       });
       
       // 2. Update Cache
-      translationCache[lang] = {
+      cache.translationCache[lang] = {
         data: translationMap,
         timestamp: Date.now()
       };
