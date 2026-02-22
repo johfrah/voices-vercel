@@ -1,16 +1,11 @@
 /**
  * NUCLEAR MARKET MANAGER - 2026 EDITION
  * 
- * Deze service vervangt de PHP MarketManager logica.
- * Het beheert land-specifieke instellingen op basis van het domein
- * en orkestreert de internationale ervaring in de Next.js layer.
+ * Deze service beheert land-specifieke instellingen op basis van het domein.
+ * DIT IS DE CLIENT-SAFE VERSIE (Geen DB imports).
  */
 
 import { VOICES_CONFIG } from './config';
-
-// 🛡️ CHRIS-PROTOCOL: Prevent DB leaks into Client Components
-// Use dynamic imports for DB-related logic to ensure 'postgres' (net/tls/fs) 
-// is never bundled into the client-side experience.
 
 export interface MarketConfig {
   market_code: string;
@@ -36,17 +31,19 @@ export interface MarketConfig {
     spotify?: string;
   };
   seo_data?: {
+    title?: string;
     description?: string;
     schema_type?: 'Organization' | 'Person' | 'WebApplication';
     locale_code?: string;
     canonical_domain?: string;
+    og_image?: string;
   };
 }
 
 export class MarketManager {
-  private static cache: Record<string, MarketConfig> = {};
+  protected static cache: Record<string, MarketConfig> = {};
 
-  private static MARKETS_STATIC: Record<string, Partial<MarketConfig>> = {
+  public static MARKETS_STATIC: Record<string, Partial<MarketConfig>> = {
     'voices.be': {
       market_code: 'BE',
       language: 'nl',
@@ -224,10 +221,6 @@ export class MarketManager {
     }
   };
 
-  private static isServer() {
-    return typeof window === 'undefined';
-  }
-
   /**
    * Haalt alle actieve markt-domeinen op voor SEO alternates
    */
@@ -253,7 +246,7 @@ export class MarketManager {
   static getCurrentMarket(host?: string): MarketConfig {
     let activeHost = host;
     
-    if (!activeHost && !this.isServer()) {
+    if (!activeHost && typeof window !== 'undefined') {
       activeHost = window.location.host;
     }
     
@@ -262,7 +255,7 @@ export class MarketManager {
     let cleanHost = activeHost.replace('www.', '').replace('https://', '').replace('http://', '').split('/')[0];
     
     // 🛡️ CHRIS-PROTOCOL: Sub-journey detection for static resolution (e.g. voices.be/studio)
-    if (cleanHost === 'voices.be' && !this.isServer()) {
+    if (cleanHost === 'voices.be' && typeof window !== 'undefined') {
       if (window.location.pathname.startsWith('/studio')) cleanHost = 'voices.be/studio';
       if (window.location.pathname.startsWith('/academy')) cleanHost = 'voices.be/academy';
     }
@@ -292,131 +285,6 @@ export class MarketManager {
 
     this.cache[cleanHost] = finalConfig;
     return finalConfig;
-  }
-
-  /**
-   * Async versie voor Server Components die DIRECT uit de DB leest.
-   */
-  static async getCurrentMarketAsync(host?: string): Promise<MarketConfig> {
-    if (!this.isServer()) {
-      return this.getCurrentMarket(host);
-    }
-
-    // 🛡️ CHRIS-PROTOCOL: If host contains a path (from middleware), use it for sub-journey detection
-    let lookupHost = host || '';
-    if (lookupHost.includes('voices.be')) {
-      if (lookupHost.includes('/studio')) lookupHost = 'voices.be/studio';
-      if (lookupHost.includes('/academy')) lookupHost = 'voices.be/academy';
-    }
-
-    const staticConfig = this.getCurrentMarket(lookupHost);
-    
-    try {
-      // 🛡️ CHRIS-PROTOCOL: Dynamic import to isolate DB logic from client bundle
-      const { db } = await import('@db');
-      const { marketConfigs } = await import('@db/schema');
-      const { eq } = await import('drizzle-orm');
-
-      const [dbConfig] = await db
-        .select()
-        .from(marketConfigs)
-        .where(eq(marketConfigs.market, staticConfig.market_code))
-        .limit(1);
-
-      if (dbConfig) {
-        const loc = dbConfig.localization as any;
-        const social = dbConfig.socialLinks as any;
-        
-        return {
-          ...staticConfig,
-          name: dbConfig.name || staticConfig.name,
-          email: dbConfig.email || staticConfig.email,
-          phone: dbConfig.phone || staticConfig.phone,
-          language: loc?.default_lang || staticConfig.language,
-          supported_languages: loc?.supported_languages || staticConfig.supported_languages,
-          popular_languages: loc?.popular_languages || staticConfig.popular_languages,
-          currency: loc?.currency || staticConfig.currency,
-          theme: (dbConfig.theme as any) || staticConfig.theme,
-          address: dbConfig.address || staticConfig.address,
-          vat_number: dbConfig.vatNumber || staticConfig.vat_number,
-          social_links: social || staticConfig.social_links,
-          seo_data: {
-            description: dbConfig.description || undefined,
-            schema_type: (dbConfig as any).schemaType || (
-              staticConfig.market_code === 'ADEMING' ? 'WebApplication' : 
-              (staticConfig.market_code === 'PORTFOLIO' || staticConfig.market_code === 'ARTIST') ? 'Person' : 'Organization'
-            ),
-            locale_code: loc?.locale || (
-              staticConfig.market_code === 'BE' ? 'nl-BE' : 
-              staticConfig.market_code === 'NLNL' ? 'nl-NL' : 
-              staticConfig.market_code === 'FR' ? 'fr-FR' : 
-              staticConfig.market_code === 'ES' ? 'es-ES' : 
-              staticConfig.market_code === 'PT' ? 'pt-PT' : 
-              staticConfig.market_code === 'EU' ? 'en-EU' : 'nl-BE'
-            ),
-            canonical_domain: (dbConfig as any).canonicalDomain || staticConfig.logo_url // Fallback logic
-          }
-        };
-      }
-    } catch (e) {
-      console.error('[MarketManager] DB Fetch failed, falling back to static:', e);
-    }
-
-    return staticConfig;
-  }
-
-  /**
-   * Haalt alle actieve locales op voor SEO alternates (Suzy Precision)
-   */
-  static async getAllLocalesAsync(): Promise<Record<string, string>> {
-    if (!this.isServer()) {
-      return {
-        'nl-BE': 'https://www.voices.be',
-        'nl-NL': 'https://www.voices.nl',
-        'fr-FR': 'https://www.voices.fr',
-        'en-EU': 'https://www.voices.eu'
-      };
-    }
-
-    try {
-      // 🛡️ CHRIS-PROTOCOL: Dynamic import to isolate DB logic from client bundle
-      const { db } = await import('@db');
-      const { marketConfigs } = await import('@db/schema');
-
-      const allMarkets = await db.select().from(marketConfigs);
-      const locales: Record<string, string> = {};
-      
-      const staticDomains = this.getMarketDomains();
-
-      allMarkets.forEach(m => {
-        const loc = m.localization as any;
-        const locale = loc?.locale || (
-          m.market === 'BE' ? 'nl-BE' : 
-          m.market === 'NLNL' ? 'nl-NL' : 
-          m.market === 'FR' ? 'fr-FR' : 
-          m.market === 'ES' ? 'es-ES' : 
-          m.market === 'PT' ? 'pt-PT' : 
-          m.market === 'EU' ? 'en-EU' : 'nl-BE'
-        );
-        const domain = (m as any).canonicalDomain || staticDomains[m.market] || `https://www.voices.be`;
-        locales[locale] = domain;
-      });
-
-      return Object.keys(locales).length > 0 ? locales : {
-        'nl-BE': 'https://www.voices.be',
-        'nl-NL': 'https://www.voices.nl',
-        'fr-FR': 'https://www.voices.fr',
-        'en-EU': 'https://www.voices.eu'
-      };
-    } catch (e) {
-      console.error('[MarketManager] Failed to fetch all locales:', e);
-      return {
-        'nl-BE': 'https://www.voices.be',
-        'nl-NL': 'https://www.voices.nl',
-        'fr-FR': 'https://www.voices.fr',
-        'en-EU': 'https://www.voices.eu'
-      };
-    }
   }
 
   /**
@@ -526,7 +394,7 @@ export class MarketManager {
   }
 
   /**
-   * Bepaalt de volgorde van talen op basis van de huidige taal
+   * Bepaalt de volgorde van talen op basis van the huidige taal
    */
   static getLanguageOrder(lang: string = 'nl'): string[] {
     const orders: Record<string, string[]> = {
