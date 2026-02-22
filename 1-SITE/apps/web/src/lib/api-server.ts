@@ -404,8 +404,12 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         .orderBy(desc(reviews.sentimentVelocity), desc(reviews.createdAt))
         .limit(100)
         .catch(() => []),
+      //  CHRIS-PROTOCOL: Disable translation batch for performance (v2.15)
+      /*
       VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang)
         .catch(() => ({})),
+      */
+      Promise.resolve({}),
       photoIds.length > 0
         ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`).catch(() => [])
         : Promise.resolve([])
