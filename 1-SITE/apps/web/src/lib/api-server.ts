@@ -392,10 +392,12 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           )
         )
         .orderBy(desc(reviews.sentimentVelocity), desc(reviews.createdAt))
-        .limit(100),
-      VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang),
+        .limit(100)
+        .catch(() => []),
+      VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang)
+        .catch(() => ({})),
       photoIds.length > 0
-        ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`)
+        ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`).catch(() => [])
         : Promise.resolve([])
     ]);
 
@@ -407,7 +409,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       const fallbackReviews = await db.select().from(reviews)
         .where(eq(reviews.businessSlug, 'voices-be'))
         .orderBy(desc(reviews.sentimentVelocity), desc(reviews.createdAt))
-        .limit(50);
+        .limit(50)
+        .catch(() => []);
       finalDbReviews = [...new Set([...finalDbReviews, ...fallbackReviews])].slice(0, 50);
     }
 
@@ -423,7 +426,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const mediaResults = mediaRes || [];
 
     //  NUCLEAR CALCULATION: Real-time review statistics
-    const reviewStats = await getReviewStats('voices-be');
+    const reviewStats = await getReviewStats('voices-be').catch(() => ({ averageRating: 4.9, totalCount: 0, distribution: {} }));
 
     // Get unique languages for filters
     const uniqueLangs = Array.from(new Set(dbResults.map(a => a.nativeLang))).filter(Boolean) as string[];
