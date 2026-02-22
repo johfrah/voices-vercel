@@ -284,7 +284,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
   // 1. Artist Journey (Youssef Mandate)
   try {
-    const artist = await getArtist(firstSegment, lang);
+    const artist = await getArtist(firstSegment, lang).catch(() => null);
     if (artist) {
       const isYoussef = firstSegment === 'youssef' || firstSegment === 'youssef-zaki';
       return (
@@ -297,7 +297,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         </PageWrapperInstrument>
       );
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error("[SmartRouter] Artist check failed:", e);
+  }
+
   // 1.5 Agency Journey (Voice Casting)
   if (firstSegment === "agency" || firstSegment === "stemmen" || firstSegment === "voix" || firstSegment === "stimmen") {
     const filters: Record<string, string> = {};
@@ -315,9 +318,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       searchResults = await getActors(filters, lang);
     } catch (error) {
       console.error("[SmartRouter] getActors failed:", error);
-      searchResults = { results: [], filters: { genders: [], languages: [], styles: [] } };
+      searchResults = { results: [], filters: { genders: [], languages: [], styles: [] }, reviews: [], reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } };
     }
-    const actors = searchResults.results || [];
+    const actors = searchResults?.results || [];
 
     const mappedActors = actors.map((actor: any) => ({
       id: actor.id,
@@ -360,12 +363,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           <LiquidBackground />
         </Suspense>
         <AgencyHeroInstrument 
-          filters={searchResults.filters}
+          filters={searchResults?.filters || { genders: [], languages: [], styles: [] }}
           market={market}
           searchParams={filters}
         />
         <div className="!pt-0 -mt-24 relative z-40">
-          <AgencyContent mappedActors={mappedActors} filters={searchResults.filters} />
+          <AgencyContent mappedActors={mappedActors} filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} />
         </div>
       </>
     );
@@ -397,7 +400,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             orderBy: (items: any, { asc }: { asc: any }) => [asc(items.displayOrder)]
           }
         }
-      });
+      }).catch(() => null);
 
       if (!list) return notFound();
 
@@ -497,13 +500,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       );
     } catch (e) {
       console.error("Pitch Link Error:", e);
-      return notFound();
     }
   }
 
   // 2. Check voor Stem
   try {
-    const actor = await getActor(firstSegment, lang);
+    const actor = await getActor(firstSegment, lang).catch(() => null);
     if (actor) {
       //  CHRIS-PROTOCOL: Map journey slug to internal journey type
       const journeyMap: Record<string, JourneyType> = {
@@ -523,7 +525,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       );
     }
   } catch (e) {
-    // Geen stem
+    console.error("[SmartRouter] Actor check failed:", e);
   }
 
   // 2. Check voor CMS Artikel (alleen als er maar 1 segment is)
@@ -542,7 +544,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         return <CmsPageContent page={page} slug={firstSegment} />;
       }
     } catch (e) {
-      // CMS Fout
+      console.error("[SmartRouter] CMS check failed:", e);
     }
   }
 

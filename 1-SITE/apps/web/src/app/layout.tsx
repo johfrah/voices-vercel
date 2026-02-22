@@ -82,7 +82,18 @@ export async function generateMetadata(): Promise<Metadata> {
   );
 
   //  CHRIS-PROTOCOL: Dynamically generate alternate languages from MarketManager (Data-Driven)
-  const alternateLanguages = await MarketManagerServer.getAllLocalesAsync();
+  let alternateLanguages = {};
+  try {
+    alternateLanguages = await MarketManagerServer.getAllLocalesAsync();
+  } catch (err) {
+    console.error(' generateMetadata: Failed to load locales:', err);
+    alternateLanguages = {
+      'nl-BE': 'https://www.voices.be',
+      'nl-NL': 'https://www.voices.nl',
+      'fr-FR': 'https://www.voices.fr',
+      'en-EU': 'https://www.voices.eu'
+    };
+  }
 
   return {
     title: {
