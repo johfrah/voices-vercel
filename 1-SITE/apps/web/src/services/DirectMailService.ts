@@ -1,4 +1,4 @@
-import { MarketManager } from '@config/market-manager';
+import { MarketManager } from '../../../../packages/config/market-manager';
 import { OAuth2Client } from 'google-auth-library';
 import { Mail, ShieldCheck } from 'lucide-react';
 import { Attachment, ParsedMail, simpleParser } from 'mailparser';
