@@ -301,7 +301,16 @@ export class MarketManagerServer {
       vat_number: config.vat_number || VOICES_CONFIG.company.vat,
       address: config.address || VOICES_CONFIG.company.address,
       theme: config.theme || 'voices',
-      has_voicy: config.has_voicy ?? false
+      has_voicy: config.has_voicy ?? false,
+      social_links: config.social_links || {
+        instagram: 'https://www.instagram.com/voices.be',
+        linkedin: 'https://www.linkedin.com/company/voices-be'
+      },
+      seo_data: config.seo_data || {
+        title: config.name || 'Voices',
+        description: 'De stem van morgen.',
+        schema_type: 'Organization'
+      }
     };
 
     this.cache[cleanHost] = finalConfig;

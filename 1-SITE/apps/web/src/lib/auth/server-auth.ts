@@ -57,8 +57,9 @@ export async function getServerUser(): Promise<ServerUser | null> {
  */
 export function isAdminUser(u: ServerUser | null): boolean {
   if (!u) return false;
-  const adminEmail = process.env.ADMIN_EMAIL;
-  return u.email === adminEmail || u.role === 'admin' || u.email === 'johfrah@voices.be' || u.email === 'bernadette@voices.be';
+  // 🛡️ CHRIS-PROTOCOL: Role-based auth is the ONLY source of truth. 
+  // Hardcoded emails are forbidden in production.
+  return u.role === 'admin' || u.role === 'superadmin';
 }
 
 /**

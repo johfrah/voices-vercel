@@ -34,26 +34,7 @@ export async function getArtist(slug: string, lang: string = 'nl'): Promise<any>
   console.log(' API: Querying artist from the artists table:', slug);
   
   //  CHRIS-PROTOCOL: Youssef is een Artist, geen Actor.
-  // We gebruiken een harde fallback voor Youssef zolang de artists tabel niet live is in Supabase.
-  if (slug === 'youssef' || slug === 'youssef-zaki') {
-    return {
-      id: 2560,
-      display_name: 'Youssef Zaki',
-      first_name: 'Youssef',
-      last_name: 'Zaki',
-      slug: 'youssef',
-      bio: 'Youssef Zaki is een getalenteerde zanger en artist.',
-      photo_url: '/assets/common/branding/founder/youssef-photo.jpg',
-      donation_goal: 5000,
-      donation_current: 1250,
-      youtube_url: 'https://www.youtube.com/@youssefzaki',
-      status: 'active',
-      is_public: true,
-      demos: [],
-      iapContext: { genre: 'Pop' }
-    };
-  }
-
+  // We gebruiken geen hardcoded fallbacks meer. Alles moet via de database komen.
   const artist = await (db.query as any).artists.findFirst({
     where: (fields: any, { eq }: any) => eq(fields.slug, slug),
   }).catch(() => null);
