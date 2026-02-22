@@ -422,8 +422,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       supabase.from('reviews')
         .select('*')
         .eq('business_slug', 'voices-be')
-        .order('sentiment_velocity', { ascending: false })
-        .order('created_at', { ascending: false })
         .limit(30),
       photoIds.length > 0
         ? supabase.from('media').select('*').in('id', photoIds)
