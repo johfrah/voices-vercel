@@ -2,11 +2,12 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Globe, Users, Mic2, CheckCircle2 } from 'lucide-react';
+import { Check, Globe, Users, Mic2, CheckCircle2, Search, Type, Clock, Star, Video, Phone, Megaphone } from 'lucide-react';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { MarketManager } from '@config/market-manager';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { 
   ButtonInstrument, 
   ContainerInstrument, 
@@ -15,6 +16,7 @@ import {
   TextInstrument 
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { VoicesWordSlider } from './VoicesWordSlider';
 
 /**
  * NATIVE-READY AGENCY FILTER SHEET
@@ -23,14 +25,15 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 export const AgencyFilterSheet: React.FC<{ 
   filters: { languages: string[], genders: string[], styles: string[] },
   activeParams: Record<string, string>,
-  onUpdate: (params: Record<string, string | undefined>) => void,
+  onUpdate: (params: Record<string, any>) => void,
   isOpen: boolean,
   onClose: () => void
 }> = ({ filters, activeParams, onUpdate, isOpen, onClose }) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { playClick } = useSonicDNA();
+  const { state, updateFilters } = useMasterControl();
 
-  const handleSelect = (key: string, value: string) => {
+  const handleSelect = (key: string, value: any) => {
     playClick('soft');
     const current = activeParams[key];
     onUpdate({ [key]: current === value ? undefined : value });
@@ -106,6 +109,39 @@ export const AgencyFilterSheet: React.FC<{
                   </ButtonInstrument>
                 </ContainerInstrument>
 
+                {/* Journey Section (Mobile Only) */}
+                <SectionInstrument className="space-y-4 md:hidden">
+                  <ContainerInstrument className="flex items-center gap-2 text-va-black/40">
+                    <Star strokeWidth={1.5} size={14} />
+                    <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway">
+                      <VoiceglotText translationKey="filter.journey" defaultText="Type Project" />
+                    </HeadingInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="grid grid-cols-1 gap-2">
+                    {[
+                      { id: 'telephony', label: 'Telefonie', icon: Phone },
+                      { id: 'video', label: 'Video', icon: Video },
+                      { id: 'commercial', label: 'Advertentie', icon: Megaphone }
+                    ].map((j) => (
+                      <ButtonInstrument
+                        key={j.id}
+                        onClick={() => {
+                          const usageMap: any = { telephony: 'telefonie', video: 'unpaid', commercial: 'commercial' };
+                          onUpdate({ journey: j.id, usage: usageMap[j.id] });
+                        }}
+                        className={cn(
+                          "w-full px-6 py-4 rounded-2xl flex items-center gap-4 transition-all border-2",
+                          state.journey === j.id ? "bg-va-black text-white border-va-black shadow-lg" : "bg-white border-black/5 text-va-black/60"
+                        )}
+                      >
+                        <j.icon size={18} strokeWidth={state.journey === j.id ? 2 : 1.5} />
+                        <span className="text-[15px] font-bold tracking-widest">{j.label}</span>
+                        {state.journey === j.id && <Check size={16} className="ml-auto text-primary" />}
+                      </ButtonInstrument>
+                    ))}
+                  </ContainerInstrument>
+                </SectionInstrument>
+
                 {/* Language Section */}
                 <SectionInstrument className="space-y-4">
                   <ContainerInstrument className="flex items-center gap-2 text-va-black/40">
@@ -133,7 +169,7 @@ export const AgencyFilterSheet: React.FC<{
                     <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway"><VoiceglotText  translationKey="auto.agencyfiltersheet.geslacht.aa3dc2" defaultText="Geslacht" /></HeadingInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="grid grid-cols-2 gap-3">
-                    {filters.genders.map(gender => (
+                    {['Mannelijk', 'Vrouwelijk'].map(gender => (
                       <FilterChip strokeWidth={1.5} 
                         key={gender} 
                         label={t(`common.gender.${gender.toLowerCase()}`, gender)} 
@@ -144,23 +180,77 @@ export const AgencyFilterSheet: React.FC<{
                   </ContainerInstrument>
                 </SectionInstrument>
 
-                {/* Style Section */}
-                <SectionInstrument className="space-y-4">
-                  <ContainerInstrument className="flex items-center gap-2 text-va-black/40">
-                    <Mic2 strokeWidth={1.5} size={14} />
-                    <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway"><VoiceglotText  translationKey="filter.style" defaultText="Stijl" /></HeadingInstrument>
-                  </ContainerInstrument>
-                  <ContainerInstrument className="grid grid-cols-2 gap-3">
-                    {filters.styles.map(style => (
-                      <FilterChip strokeWidth={1.5} 
-                        key={style} 
-                        label={t(`common.style.${style.toLowerCase().replace(/\s+/g, '_')}`, style)} 
-                        selected={activeParams.style?.toLowerCase() === style.toLowerCase()} 
-                        onClick={() => { handleSelect('style', style); }} 
+                {/* Quantity Section (Mobile Only) */}
+                {(state.journey === 'telephony' || state.journey === 'video') && (
+                  <SectionInstrument className="space-y-4 md:hidden">
+                    <ContainerInstrument className="flex items-center gap-2 text-va-black/40">
+                      <Type strokeWidth={1.5} size={14} />
+                      <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway">
+                        <VoiceglotText translationKey="filter.quantity" defaultText="Hoeveelheid woorden" />
+                      </HeadingInstrument>
+                    </ContainerInstrument>
+                    <ContainerInstrument className="bg-white p-6 rounded-3xl border border-black/5 shadow-sm">
+                      <VoicesWordSlider 
+                        inline
+                        isTelephony={state.journey === 'telephony'}
+                        isVideo={state.journey === 'video'}
+                        value={state.filters.words || (state.journey === 'telephony' ? 25 : 200)}
+                        onChange={(val) => onUpdate({ words: val })}
+                        label=""
                       />
+                    </ContainerInstrument>
+                  </SectionInstrument>
+                )}
+
+                {/* Sorting Section (Mobile Only) */}
+                <SectionInstrument className="space-y-4 md:hidden">
+                  <ContainerInstrument className="flex items-center gap-2 text-va-black/40">
+                    <Clock strokeWidth={1.5} size={14} />
+                    <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway">
+                      <VoiceglotText translationKey="filter.sort" defaultText="Sorteren op" />
+                    </HeadingInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="grid grid-cols-1 gap-2">
+                    {[
+                      { id: 'popularity', label: 'Populariteit', icon: Star },
+                      { id: 'delivery', label: 'Levertijd', icon: Clock },
+                      { id: 'alphabetical_az', label: 'Naam (A-Z)', icon: Type }
+                    ].map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => onUpdate({ sortBy: s.id })}
+                        className={cn(
+                          "w-full px-6 py-4 rounded-2xl flex items-center gap-4 transition-all",
+                          state.filters.sortBy === s.id ? "bg-primary text-va-black font-bold" : "bg-white border border-black/5 text-va-black/60"
+                        )}
+                      >
+                        <s.icon size={16} />
+                        <span className="text-[14px] tracking-widest">{s.label}</span>
+                        {state.filters.sortBy === s.id && <Check size={14} strokeWidth={3} className="ml-auto" />}
+                      </button>
                     ))}
                   </ContainerInstrument>
                 </SectionInstrument>
+
+                {/* Style Section */}
+                {filters.styles.length > 0 && (
+                  <SectionInstrument className="space-y-4">
+                    <ContainerInstrument className="flex items-center gap-2 text-va-black/40">
+                      <Mic2 strokeWidth={1.5} size={14} />
+                      <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway"><VoiceglotText  translationKey="filter.style" defaultText="Stijl" /></HeadingInstrument>
+                    </ContainerInstrument>
+                    <ContainerInstrument className="grid grid-cols-2 gap-3">
+                      {filters.styles.map(style => (
+                        <FilterChip strokeWidth={1.5} 
+                          key={style} 
+                          label={t(`common.style.${style.toLowerCase().replace(/\s+/g, '_')}`, style)} 
+                          selected={activeParams.style?.toLowerCase() === style.toLowerCase()} 
+                          onClick={() => { handleSelect('style', style); }} 
+                        />
+                      ))}
+                    </ContainerInstrument>
+                  </SectionInstrument>
+                )}
               </ContainerInstrument>
             </ContainerInstrument>
 

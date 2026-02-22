@@ -250,57 +250,56 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         
         {/* 1. Journey Selector (Top Row) */}
         <ContainerInstrument plain className={cn(
-          "flex items-center justify-center p-1.5 bg-va-off-white/50 rounded-[32px]",
+          "flex items-center md:justify-center p-1.5 bg-va-off-white/50 rounded-[32px] overflow-x-auto no-scrollbar snap-x snap-mandatory",
           ((state.currentStep === 'voice' || state.journey === 'commercial') && !minimalMode) && "mb-3"
         )}>
-          {journeys.map((j) => {
-            const isActive = activeJourneyId === j.id;
-            const Icon = j.icon;
+          <div className="flex items-center gap-1.5 min-w-full md:min-w-0">
+            {journeys.map((j) => {
+              const isActive = activeJourneyId === j.id;
+              const Icon = j.icon;
 
-            // CHRIS-PROTOCOL: Check if selected actor supports this journey (especially for 'commercial')
-            // We use the SlimmeKassa to determine if the actor has ANY available commercial rates.
-            const isCommercialJourney = j.id === 'commercial';
-            let isUnsupported = false;
-            
-            if (state.currentStep !== 'voice' && checkoutState.selectedActor && isCommercialJourney) {
-              const commercialTypes: CommercialMediaType[] = ['online', 'radio_national', 'tv_national', 'podcast', 'radio_regional', 'radio_local', 'tv_regional', 'tv_local'];
-              // If the actor has NO rates for ANY of these, they don't do commercial
-              const hasAnyCommercialRate = commercialTypes.some(type => 
-                SlimmeKassa.getAvailabilityStatus(checkoutState.selectedActor, [type], state.filters.country || 'BE') === 'available'
+              // CHRIS-PROTOCOL: Check if selected actor supports this journey (especially for 'commercial')
+              const isCommercialJourney = j.id === 'commercial';
+              let isUnsupported = false;
+              
+              if (state.currentStep !== 'voice' && checkoutState.selectedActor && isCommercialJourney) {
+                const commercialTypes: CommercialMediaType[] = ['online', 'radio_national', 'tv_national', 'podcast', 'radio_regional', 'radio_local', 'tv_regional', 'tv_local'];
+                const hasAnyCommercialRate = commercialTypes.some(type => 
+                  SlimmeKassa.getAvailabilityStatus(checkoutState.selectedActor, [type], state.filters.country || 'BE') === 'available'
+                );
+                isUnsupported = !hasAnyCommercialRate;
+              }
+
+              if (isUnsupported) return null;
+
+              return (
+                <button
+                  key={j.id}
+                  onClick={() => handleJourneySwitch(j.id)}
+                  className={cn(
+                    "flex-1 md:flex-none flex items-center justify-start gap-3 md:gap-4 px-4 md:px-6 py-3 rounded-[28px] transition-all duration-500 group/btn text-left snap-center min-w-[140px] md:min-w-0",
+                    isActive 
+                      ? "bg-va-black text-white shadow-xl scale-[1.02] z-10" 
+                      : "text-va-black/40 hover:text-va-black hover:bg-white/50"
+                  )}
+                >
+                  <Icon size={20} strokeWidth={isActive ? 2 : 1.5} className={cn("transition-all duration-500 shrink-0 md:w-6 md:h-6", isActive && j.color)} />
+                  <div className="flex flex-col">
+                    <span className="text-[12px] md:text-[14px] font-bold tracking-widest leading-none mb-1 whitespace-nowrap">
+                      <VoiceglotText translationKey={j.key} defaultText={j.label} instrument="label" />
+                    </span>
+                    <span className={cn(
+                      "text-[9px] md:text-[10px] font-medium tracking-wider uppercase opacity-60 whitespace-nowrap",
+                      isActive ? "text-white/80" : "text-va-black/40 group-hover/btn:text-va-black/60"
+                    )}>
+                      <VoiceglotText translationKey={`${j.key}.sub`} defaultText={j.subLabel} instrument="label" />
+                    </span>
+                  </div>
+                  {isActive && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-auto hidden md:block" />}
+                </button>
               );
-              isUnsupported = !hasAnyCommercialRate;
-            }
-
-            // CHRIS-PROTOCOL: If unsupported, we hide the button entirely to avoid confusion
-            if (isUnsupported) return null;
-
-            return (
-              <button
-                key={j.id}
-                onClick={() => handleJourneySwitch(j.id)}
-                className={cn(
-                  "flex-1 flex items-center justify-start gap-4 px-6 py-3 rounded-[28px] transition-all duration-500 group/btn text-left",
-                  isActive 
-                    ? "bg-va-black text-white shadow-xl scale-[1.02] z-10" 
-                    : "text-va-black/40 hover:text-va-black hover:bg-white/50"
-                )}
-              >
-                <Icon size={24} strokeWidth={isActive ? 2 : 1.5} className={cn("transition-all duration-500 shrink-0", isActive && j.color)} />
-        <div className="flex flex-col">
-          <span className="text-[14px] font-bold tracking-widest leading-none mb-1">
-            <VoiceglotText translationKey={j.key} defaultText={j.label} instrument="label" />
-          </span>
-          <span className={cn(
-            "text-[10px] font-medium tracking-wider uppercase opacity-60",
-            isActive ? "text-white/80" : "text-va-black/40 group-hover/btn:text-va-black/60"
-          )}>
-            <VoiceglotText translationKey={`${j.key}.sub`} defaultText={j.subLabel} instrument="label" />
-          </span>
-        </div>
-                {isActive && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-auto" />}
-              </button>
-            );
-          })}
+            })}
+          </div>
         </ContainerInstrument>
 
         {/* 2. Primary Filter Pill (Airbnb Style) */}
@@ -314,7 +313,28 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                 transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                 className="overflow-visible"
               >
-                <ContainerInstrument plain className="p-1.5">
+                {/* MOBILE FILTER TRIGGER (Moby-methode) */}
+                <div className="md:hidden p-1.5">
+                  <button 
+                    onClick={() => setIsSheetOpen(true)}
+                    className="w-full h-16 bg-white rounded-full border border-black/10 shadow-sm flex items-center px-6 gap-4 active:scale-[0.98] transition-all"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                      <Search size={18} />
+                    </div>
+                    <div className="flex flex-col items-start min-w-0">
+                      <span className="text-[13px] font-bold tracking-widest text-va-black uppercase">
+                        <VoiceglotText translationKey="filter.mobile_trigger" defaultText="Filters & Zoeken" />
+                      </span>
+                      <span className="text-[11px] text-va-black/40 truncate w-full text-left">
+                        {state.filters.language ? t(`common.language.${state.filters.language.toLowerCase()}`, state.filters.language) : t('filter.all_languages', 'Alle talen')} • {state.filters.gender ? t(`common.gender.${state.filters.gender.toLowerCase()}`, state.filters.gender) : t('gender.everyone', 'Iedereen')} • {state.journey === 'commercial' ? (state.filters.media?.length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
+                      </span>
+                    </div>
+                  </button>
+                </div>
+
+                {/* DESKTOP FILTERS */}
+                <ContainerInstrument plain className="hidden md:block p-1.5">
                   <div className="flex flex-col">
                     <ContainerInstrument plain className="flex items-center bg-white rounded-full shadow-md border border-black/10 divide-x divide-black/10 h-20">
                       

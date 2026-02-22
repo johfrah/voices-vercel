@@ -3,6 +3,9 @@ import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     // CHRIS-PROTOCOL: SDK fallback for build stability

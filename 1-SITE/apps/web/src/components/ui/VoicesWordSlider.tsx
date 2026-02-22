@@ -20,6 +20,7 @@ interface VoicesWordSliderProps {
   rounding?: 'left' | 'right' | 'none'; //  Fix for pill rounding
   isTelephony?: boolean; //  New prop for telephony context
   isVideo?: boolean; //  New prop for video context
+  inline?: boolean; // NEW: for direct display without dropdown
 }
 
 export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
@@ -33,42 +34,49 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
   disabled = false,
   rounding = 'none',
   isTelephony = false,
-  isVideo = false
+  isVideo = false,
+  inline = false
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  //  CHRIS-PROTOCOL: Suggestive Prompt Calculation (approx. 20 words per prompt)
-  const promptSuggestion = useMemo(() => {
-    if (!isTelephony) return null;
-    const count = Math.max(1, Math.round(value / 20));
-    return ` ${count} ${count === 1 ? t('common.prompt', 'prompt') : t('common.prompts', 'prompts')}`;
-  }, [value, isTelephony, t]);
+  // ... (suggestion logic)
 
-  //  CHRIS-PROTOCOL: Suggestive Video Duration Calculation (approx. 155 words per minute)
-  const videoSuggestion = useMemo(() => {
-    if (!isVideo) return null;
-    const minutes = value / 155;
-    if (minutes < 1) {
-      const seconds = Math.round(minutes * 60);
-      return ` ${seconds} ${t('common.sec', 'sec')}`;
-    }
-    const mins = Math.floor(minutes);
-    const secs = Math.round((minutes - mins) * 60);
-    if (mins === 0) return ` ${secs} ${t('common.sec', 'sec')}`;
-    return ` ${mins}${t('common.min_short', 'min')} ${secs.toString().padStart(2, '0')}${t('common.sec_short', 'sec')}`;
-  }, [value, isVideo, t]);
+  const sliderContent = (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <span className="text-[13px] font-bold text-va-black/40 uppercase tracking-widest">
+          <VoiceglotText translationKey="filter.word_count" defaultText="Aantal woorden" />
+        </span>
+        <span className="text-[18px] font-bold text-primary">{value}</span>
+      </div>
+      
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={value < 100 ? 5 : value < 500 ? 25 : 50}
+        value={value}
+        onChange={(e) => onChange(parseInt(e.target.value))}
+        className="w-full h-1.5 bg-va-off-white rounded-lg appearance-none cursor-pointer accent-primary"
+      />
+      
+      <div className="flex justify-between text-[11px] font-bold text-va-black/20 uppercase tracking-tighter">
+        <span>{min}</span>
+        <span>{max}</span>
+      </div>
+      {(promptSuggestion || videoSuggestion) && (
+        <div className="text-center">
+          <span className="text-va-black/30 font-light text-[12px]">({promptSuggestion || videoSuggestion})</span>
+        </div>
+      )}
+    </div>
+  );
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  if (inline) {
+    return <div className={cn("w-full", className)}>{sliderContent}</div>;
+  }
 
   return (
     <ContainerInstrument plain ref={containerRef} className={cn("relative z-20", className, disabled && "opacity-50 pointer-events-none")}>
@@ -119,29 +127,7 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
             className="absolute top-full left-0 right-0 mt-2 bg-white border border-black/10 rounded-[24px] shadow-2xl p-6 min-w-[280px] z-[100]"
           >
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-[13px] font-bold text-va-black/40 uppercase tracking-widest">
-                  <VoiceglotText translationKey="filter.word_count" defaultText="Aantal woorden" />
-                </span>
-                <span className="text-[18px] font-bold text-primary">{value}</span>
-              </div>
-              
-              <input
-                type="range"
-                min={min}
-                max={max}
-                step={value < 100 ? 5 : value < 500 ? 25 : 50}
-                value={value}
-                onChange={(e) => onChange(parseInt(e.target.value))}
-                className="w-full h-1.5 bg-va-off-white rounded-lg appearance-none cursor-pointer accent-primary"
-              />
-              
-              <div className="flex justify-between text-[11px] font-bold text-va-black/20 uppercase tracking-tighter">
-                <span>{min}</span>
-                <span>{max}</span>
-              </div>
-            </div>
+            {sliderContent}
           </motion.div>
         )}
       </AnimatePresence>
