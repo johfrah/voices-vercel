@@ -186,6 +186,13 @@ export default async function RootLayout({
       "email": market.email || '',
       "availableLanguage": market.supported_languages || []
     },
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": market.address || '',
+      "addressLocality": "Leuven",
+      "addressCountry": "BE"
+    },
+    "vatID": market.vat_number || '',
     "founder": (market.market_code !== 'PORTFOLIO' && market.market_code !== 'ARTIST') ? {
       "@type": "Person",
       "name": "Johfrah Lefebvre",
