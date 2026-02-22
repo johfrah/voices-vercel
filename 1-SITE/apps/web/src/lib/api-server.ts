@@ -269,6 +269,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           },
           // @ts-ignore
           where: and(...conditions),
+          /*
           orderBy: [
             asc(actors.menuOrder), 
             desc(actors.deliveryDateMinPriority),
@@ -277,6 +278,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           desc(actors.voiceScore), 
           asc(actors.firstName)
         ],
+        */
         limit: 100,
         /*
         with: {
