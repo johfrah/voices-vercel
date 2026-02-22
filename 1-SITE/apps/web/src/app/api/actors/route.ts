@@ -39,8 +39,11 @@ export async function GET(request: Request) {
         reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } 
       };
     });
-    
-    return NextResponse.json(data);
+
+    return NextResponse.json({
+      ...data,
+      _v: 'v2.8'
+    });
   } catch (error: any) {
     console.error(' ACTORS API FAILURE:', error.message);
     return NextResponse.json({ results: [], count: 0 }, { status: 500 });
