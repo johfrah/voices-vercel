@@ -179,34 +179,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       conditions.push(eq(actors.gender, dbGender));
     }
 
-    if (!db.query || !db.query.actors) {
-      console.error(' API: db.query.actors is not available!');
-      throw new Error('Database query engine not available');
-    }
-    
-    // 🛡️ CHRIS-PROTOCOL: Use a timeout for heavy actor queries
+    // 🛡️ CHRIS-PROTOCOL: Use Supabase SDK for everything for stability on Vercel
     let dbResults: any[] = [];
     try {
-      dbResults = await Promise.race([
-        db.query.actors.findMany({
-          // @ts-ignore
-          where: and(...conditions),
-          orderBy: [
-            asc(actors.menuOrder), 
-            desc(actors.deliveryDateMinPriority),
-            sql`delivery_date_min ASC NULLS LAST`, 
-            desc(actors.totalSales),
-            desc(actors.voiceScore), 
-            asc(actors.firstName)
-          ],
-          limit: 100
-        }),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 12000))
-      ]) as any[];
-    } catch (dbError) {
-      console.error(' [getActors] DB Query failed, trying Supabase SDK fallback...', dbError);
-      
-      //  CHRIS-PROTOCOL: SDK Fallback (Rigide & Veilig)
       let query = supabase
         .from('actors')
         .select('*')
@@ -222,13 +197,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         }
       }
       
-      const { data: sdkData, error: sdkError } = await query.limit(100);
+      const { data: sdkData, error: sdkError } = await query.order('menu_order', { ascending: true }).limit(100);
         
-      if (sdkError) {
-        console.error(' [getActors] SDK Fallback also failed:', sdkError);
-        if (cached) return cached.data;
-        throw sdkError;
-      }
+      if (sdkError) throw sdkError;
       
       dbResults = (sdkData || []).map(a => ({
         ...a,
@@ -266,6 +237,10 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         deliveryDateMin: a.delivery_date_min,
         deliveryDateMinPriority: a.delivery_date_min_priority
       }));
+    } catch (dbError) {
+      console.error(' [getActors] SDK Query failed:', dbError);
+      if (cached) return cached.data;
+      throw dbError;
     }
 
     const photoIds = Array.from(new Set(dbResults.map(a => a.photoId).filter(Boolean).map(id => Number(id))));
