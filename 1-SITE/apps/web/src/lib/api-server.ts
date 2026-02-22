@@ -303,12 +303,62 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 12000))
       ]) as any[];
     } catch (dbError) {
-      console.error(' [getActors] DB Query failed, checking for stale cache fallback...', dbError);
-      if (cached) {
-        console.log(' [getActors] SUCCESS: Serving stale cache fallback to prevent empty list.');
-        return cached.data;
+      console.error(' [getActors] DB Query failed, trying Supabase SDK fallback...', dbError);
+      
+      //  CHRIS-PROTOCOL: SDK Fallback (Rigide & Veilig)
+      const { data: sdkData, error: sdkError } = await supabase
+        .from('actors')
+        .select('*')
+        .eq('status', 'live')
+        .eq('is_public', true)
+        .limit(100);
+        
+      if (sdkError) {
+        console.error(' [getActors] SDK Fallback also failed:', sdkError);
+        if (cached) {
+          console.log(' [getActors] SUCCESS: Serving stale cache fallback to prevent empty list.');
+          return cached.data;
+        }
+        throw sdkError;
       }
-      throw dbError; // No cache and no DB, still have to throw
+      
+      console.log(' [getActors] SDK Fallback SUCCESS: Found', sdkData?.length, 'actors');
+      dbResults = (sdkData || []).map(a => ({
+        ...a,
+        firstName: a.first_name,
+        lastName: a.last_name,
+        nativeLang: a.native_lang,
+        countryId: a.country_id,
+        wpProductId: a.wp_product_id,
+        photoId: a.photo_id,
+        voiceScore: a.voice_score,
+        totalSales: a.total_sales,
+        priceUnpaid: a.price_unpaid,
+        priceOnline: a.price_online,
+        priceIvr: a.price_ivr,
+        priceLiveRegie: a.price_live_regie,
+        dropboxUrl: a.dropbox_url,
+        isAi: a.is_ai,
+        elevenlabsId: a.elevenlabs_id,
+        internalNotes: a.internal_notes,
+        createdAt: a.created_at,
+        updatedAt: a.updated_at,
+        youtubeUrl: a.youtube_url,
+        menuOrder: a.menu_order,
+        deliveryDaysMin: a.delivery_days_min,
+        deliveryDaysMax: a.delivery_days_max,
+        cutoffTime: a.cutoff_time,
+        samedayDelivery: a.sameday_delivery,
+        pendingBio: a.pending_bio,
+        pendingTagline: a.pending_tagline,
+        experienceLevel: a.experience_level,
+        studioSpecs: a.studio_specs,
+        isManuallyEdited: a.is_manually_edited,
+        birthYear: a.birth_year,
+        aiTags: a.ai_tags,
+        deliveryDateMin: a.delivery_date_min,
+        deliveryDateMinPriority: a.delivery_date_min_priority
+      }));
     }
 
     console.log(' API: DB returned', dbResults.length, 'results');
