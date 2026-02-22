@@ -24,6 +24,10 @@ export async function GET(request: Request) {
 
     const data = await getActors(params, lang);
     
+    if (!data || !data.results) {
+      throw new Error('getActors returned invalid data structure');
+    }
+    
     return NextResponse.json(data);
   } catch (error: any) {
     console.error(' ACTORS API FAILURE:', {

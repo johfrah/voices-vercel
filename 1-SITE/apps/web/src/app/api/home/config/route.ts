@@ -14,14 +14,14 @@ export async function GET() {
   }
 
   try {
-    const campaignMessage = await voicesConfig.getCampaignMessage();
-    const [homeConfig] = await db.select().from(appConfigs).where(eq(appConfigs.key, 'home_journey_content')).limit(1);
+    const campaignMessage = await voicesConfig.getCampaignMessage().catch(() => null);
+    const [homeConfig] = await db.select().from(appConfigs).where(eq(appConfigs.key, 'home_journey_content')).limit(1).catch(() => []);
     const dbLanguages = await db.select({
       id: languages.id,
       code: languages.code,
       label: languages.label,
       isPopular: languages.isPopular
-    }).from(languages).orderBy(languages.label);
+    }).from(languages).orderBy(languages.label).catch(() => []);
 
     return NextResponse.json({
       journeyContent: homeConfig?.value || null,

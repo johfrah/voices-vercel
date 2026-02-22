@@ -28,7 +28,11 @@ export async function POST(request: Request) {
     const [existingUser] = await db.select({ preferences: users.preferences })
       .from(users)
       .where(eq(users.email, user.email!))
-      .limit(1);
+      .limit(1)
+      .catch((err) => {
+        console.error(`[preferences] DB Select Error for ${user.email}:`, err);
+        return [];
+      });
 
     const currentPreferences = (existingUser?.preferences as any) || {};
     const updatedPreferences = { ...currentPreferences, ...preferences };

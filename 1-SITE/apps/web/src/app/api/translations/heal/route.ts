@@ -58,7 +58,11 @@ export async function POST(request: NextRequest) {
           eq(translations.lang, currentLang)
         )
       )
-      .limit(1);
+      .limit(1)
+      .catch((err) => {
+        console.error(`[heal] DB Select Error for ${key}:`, err);
+        return [];
+      });
 
     if (existing && existing.translatedText && existing.translatedText !== 'Initial Load') {
       return NextResponse.json({ success: true, message: 'Already exists', text: existing.translatedText });

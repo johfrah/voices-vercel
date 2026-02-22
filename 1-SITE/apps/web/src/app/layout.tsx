@@ -181,9 +181,9 @@ export default async function RootLayout({
     "jobTitle": (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? (market.seo_data?.description || '').split('.')[0] : undefined,
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": market.phone,
+      "telephone": market.phone || '',
       "contactType": "customer service",
-      "email": market.email,
+      "email": market.email || '',
       "availableLanguage": market.supported_languages || []
     },
     "founder": (market.market_code !== 'PORTFOLIO' && market.market_code !== 'ARTIST') ? {
