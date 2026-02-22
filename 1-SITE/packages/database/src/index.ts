@@ -28,6 +28,8 @@ const getDb = () => {
                   if (!connectionString.includes('pgbouncer=true')) {
                     connectionString += (connectionString.includes('?') ? '&' : '?') + 'pgbouncer=true';
                   }
+                  
+                  console.log('🔗 Final Connection String (sanitized):', connectionString.replace(/:[^:]+@/, ':****@'));
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
 BQAwazELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5l
