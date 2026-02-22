@@ -12,6 +12,8 @@ export { MarketManager, type MarketConfig };
 
 export class MarketManagerServer extends MarketManager {
   private static get globalCache() {
+    if (typeof window !== 'undefined') return { marketCache: {}, localesCache: null };
+    
     const g = global as any;
     if (!g.marketManagerCache) {
       g.marketManagerCache = {

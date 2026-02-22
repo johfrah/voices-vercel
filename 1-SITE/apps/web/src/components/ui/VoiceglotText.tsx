@@ -52,7 +52,10 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
 
   //  CHRIS-PROTOCOL: Force content update when translation or edit mode changes
   useEffect(() => {
-    if (noTranslate) {
+    // 🛡️ BRAND PROTECTION: 'Ademing' is een brand die niet vertaald mag worden
+    const isAdemingBrand = defaultText.toLowerCase() === 'ademing' || defaultText.toLowerCase() === 'ademing.be';
+    
+    if (noTranslate || isAdemingBrand) {
       setContent(defaultText);
     } else {
       const currentT = t(translationKey, defaultText, values, !!components);
