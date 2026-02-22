@@ -139,6 +139,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         .eq('status', 'live')
         .eq('is_public', true);
         
+      /*
       if (dbLang || lang) {
         const targetLang = dbLang || lang;
         if (targetLang === 'nl') {
@@ -147,6 +148,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
         }
       }
+      */
       
       if (dbGender) {
         query = query.eq('gender', dbGender);
