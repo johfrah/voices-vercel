@@ -9,6 +9,7 @@ import { NextResponse } from 'next/server';
 import { MollieService } from '@/lib/payments/mollie';
 import { SlimmeKassa } from '@/lib/pricing-engine';
 import { generateCartHash } from '@/lib/cart-utils';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 /**
  * MOLLIE V3 HEADLESS CHECKOUT (CORE LOGIC 2026)
@@ -20,6 +21,11 @@ import { generateCartHash } from '@/lib/cart-utils';
  * 
  * @lock-file
  */
+
+//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: Request) {
   try {
@@ -76,9 +82,56 @@ export async function POST(request: Request) {
       ...(selectedActor?.id ? [selectedActor.id] : [])
     ]));
 
-    const dbActors = actorIds.length > 0 
-      ? await db.select().from(actors).where(inArray(actors.id, actorIds as number[]))
-      : [];
+    let dbActors: any[] = [];
+    if (actorIds.length > 0) {
+      try {
+        dbActors = await db.select().from(actors).where(inArray(actors.id, actorIds as number[])).catch(async (err: any) => {
+          console.warn(' [Checkout] Drizzle actor fetch failed, falling back to SDK:', err.message);
+          const { data } = await sdkClient.from('actors').select('*').in('id', actorIds as number[]);
+          return (data || []).map(a => ({
+            ...a,
+            wpProductId: a.wp_product_id,
+            firstName: a.first_name,
+            lastName: a.last_name,
+            nativeLang: a.native_lang,
+            countryId: a.country_id,
+            deliveryTime: a.delivery_time,
+            extraLangs: a.extra_langs,
+            whyVoices: a.why_voices,
+            toneOfVoice: a.tone_of_voice,
+            birthYear: a.birth_year,
+            photoId: a.photo_id,
+            logoId: a.logo_id,
+            voiceScore: a.voice_score,
+            totalSales: a.total_sales,
+            priceUnpaid: a.price_unpaid,
+            priceOnline: a.price_online,
+            priceIvr: a.price_ivr,
+            priceLiveRegie: a.price_live_regie,
+            dropboxUrl: a.dropbox_url,
+            isAi: a.is_ai,
+            elevenlabsId: a.elevenlabs_id,
+            youtubeUrl: a.youtube_url,
+            menuOrder: a.menu_order,
+            deliveryDaysMin: a.delivery_days_min,
+            deliveryDaysMax: a.delivery_days_max,
+            cutoffTime: a.cutoff_time,
+            samedayDelivery: a.sameday_delivery,
+            pendingBio: a.pending_bio,
+            pendingTagline: a.pending_tagline,
+            experienceLevel: a.experience_level,
+            studioSpecs: a.studio_specs,
+            isManuallyEdited: a.is_manually_edited,
+            aiTags: a.ai_tags,
+            deliveryDateMin: a.delivery_date_min,
+            deliveryDateMinPriority: a.delivery_date_min_priority,
+            allowFreeTrial: a.allow_free_trial
+          }));
+        });
+      } catch (e) {
+        console.error(' [Checkout] Fatal actor fetch error:', e);
+      }
+    }
     
     const actorMap = new Map(dbActors.map(a => [a.id, a]));
 

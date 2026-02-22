@@ -29,7 +29,26 @@ export async function GET(request: Request) {
     // 2. Fetch User from DB
     let user = null;
     try {
-      const results = await db.select().from(users).where(eq(users.email, email)).limit(1).catch(() => []);
+      const results = await db.select().from(users).where(eq(users.email, email)).limit(1).catch(async (err: any) => {
+        console.warn(' ADMIN LOOKUP Drizzle failed, falling back to SDK:', err.message);
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+        const { data } = await supabase.from('users').select('*').eq('email', email).single();
+        if (data) {
+          return [{
+            firstName: data.first_name,
+            lastName: data.last_name,
+            phone: data.phone,
+            companyName: data.company_name,
+            vatNumber: data.vat_number,
+            addressStreet: data.address_street,
+            addressZip: data.address_zip,
+            addressCity: data.address_city,
+            addressCountry: data.address_country
+          }];
+        }
+        return [];
+      });
       user = results[0];
     } catch (dbError) {
       console.error(' ADMIN LOOKUP DB ERROR:', dbError);

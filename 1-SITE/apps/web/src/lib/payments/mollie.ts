@@ -79,6 +79,18 @@ export class MollieService {
   }
 
   /**
+   * Maak een nieuwe betaling aan (Legacy support)
+   */
+  static async createPayment(data: any) {
+    try {
+      return await this.request('POST', '/payments', data);
+    } catch (error) {
+      console.error('[Mollie Service]: Payment creation failed:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Maak een nieuwe Order aan (Aanbevolen voor 2026)
    * Dit vervangt createPayment voor betere rapportage en Klarna support.
    */
