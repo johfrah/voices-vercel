@@ -2,6 +2,7 @@
 
 import GlobalFooter from "@/components/ui/GlobalFooter";
 import { useEditMode } from "@/contexts/EditModeContext";
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 /**
@@ -10,6 +11,7 @@ import { useEffect, useState } from 'react';
  */
 export default function FooterWrapper() {
   const { isEditMode } = useEditMode();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
