@@ -12,6 +12,7 @@ import { NotificationProvider } from '@/contexts/NotificationContext';
 import { WatchdogProvider } from '@/contexts/WatchdogContext';
 import { usePathname } from 'next/navigation';
 import { MarketManager } from '@config/market-manager';
+import { ClientLogger } from '@/lib/system/client-logger';
 
 export function Providers({ 
   children,
@@ -23,6 +24,11 @@ export function Providers({
   initialTranslations?: Record<string, string>;
 }) {
   const pathname = usePathname();
+  
+  //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
+  React.useEffect(() => {
+    ClientLogger.init();
+  }, []);
   
   //  CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
