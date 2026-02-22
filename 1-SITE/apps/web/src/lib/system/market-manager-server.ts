@@ -7,6 +7,9 @@
 
 import { MarketManager, MarketConfig } from '../../../../../packages/config/market-manager';
 
+// CHRIS-PROTOCOL: Re-exporting for internal use to avoid path alias issues in scripts
+export { MarketManager, type MarketConfig };
+
 export class MarketManagerServer extends MarketManager {
   private static marketCache: Record<string, { data: MarketConfig, timestamp: number }> = {};
   private static localesCache: { data: Record<string, string>, timestamp: number } | null = null;

@@ -28,8 +28,8 @@ const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalcula
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
  */
-function generateActorSchema(actor: any, marketName: string = 'Voices', host: string = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be')) {
-  const baseUrl = `https://${host}`;
+function generateActorSchema(actor: any, marketName: string = 'Voices', host: string = '') {
+  const baseUrl = `https://${host || 'www.voices.be'}`;
   
   // Map internal delivery type to ISO 8601 duration
   const deliveryMap: Record<string, string> = {
@@ -73,13 +73,14 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Artists
  */
-function generateArtistSchema(artist: any, host: string = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be')) {
+function generateArtistSchema(artist: any, host: string = '') {
+  const baseUrl = `https://${host || 'www.voices.be'}`;
   return {
     "@context": "https://schema.org",
     "@type": "MusicGroup",
     "name": artist.displayName,
     "description": artist.bio,
-    "url": `https://${host}/artist/${artist.slug}`,
+    "url": `${baseUrl}/artist/${artist.slug}`,
     "genre": artist.iapContext?.genre || "Pop",
     "sameAs": [
       artist.spotifyUrl,
@@ -140,11 +141,13 @@ interface SmartRouteParams {
 
 export async function generateMetadata({ params }: { params: SmartRouteParams }): Promise<Metadata> {
   const headersList = headers();
-  const host = headersList.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+  const host = headersList.get('host') || 'www.voices.be';
   const { MarketManager } = await import('@config/market-manager');
   const market = MarketManager.getCurrentMarket(host);
   const lang = headersList.get('x-voices-lang') || 'nl';
   const normalizedSlug = normalizeSlug(params.slug);
+  
+  const siteUrl = `https://www.${market.market_code.toLowerCase() === 'be' ? 'voices.be' : (market.market_code.toLowerCase() === 'nlnl' ? 'voices.nl' : host)}`;
   
   // Resolve de slug naar de originele versie
   const resolved = await resolveSlug(normalizedSlug, lang);
@@ -174,7 +177,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
       title,
       description,
       alternates: {
-        canonical: `https://www.${market.market_code.toLowerCase() === 'be' ? 'voices.be' : (market.market_code.toLowerCase() === 'nlnl' ? 'voices.nl' : host)}/${lang !== 'nl' ? lang + '/' : ''}${normalizedSlug}`,
+        canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${normalizedSlug}`,
       }
     };
   }
@@ -208,7 +211,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
         title,
         description,
         alternates: {
-          canonical: `https://www.${market.market_code.toLowerCase() === 'be' ? 'voices.be' : host}/${lang !== 'nl' ? lang + '/' : ''}${params.slug.join('/')}`,
+          canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${params.slug.join('/')}`,
         },
         other: {
           'script:ld+json': JSON.stringify(schema)
@@ -232,7 +235,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
         title,
         description,
         alternates: {
-          canonical: `https://www.${market.market_code.toLowerCase() === 'be' ? 'voices.be' : host}/${lang !== 'nl' ? lang + '/' : ''}${firstSegment}`,
+          canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${firstSegment}`,
         }
       };
     }
@@ -364,7 +367,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   if (firstSegment === 'pitch' && journey) {
     try {
       const { MarketManager } = await import('@config/market-manager');
-      const host = headersList.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+      const host = headersList.get('host') || 'www.voices.be';
       const market = MarketManager.getCurrentMarket(host);
 
       //  CHRIS-PROTOCOL: Fetch real casting list from DB
