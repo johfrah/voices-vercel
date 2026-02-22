@@ -19,16 +19,17 @@ export async function GET(request: Request) {
     let query = supabase
       .from('actors')
       .select('*')
-      .eq('status', 'live')
-      .eq('is_public', true);
+      .limit(10);
       
+    /*
     if (lang === 'nl') {
       query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
     } else {
       query = query.or(`native_lang.ilike.${lang},native_lang.ilike.${lang}-%`);
     }
+    */
     
-    const { data, error } = await query.order('menu_order', { ascending: true }).limit(50);
+    const { data, error } = await query.limit(10);
     
     if (error) throw error;
     
