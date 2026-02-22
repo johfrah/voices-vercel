@@ -1,7 +1,7 @@
 import { MarketManager } from "@config/market-manager";
 import { db } from "@db";
 //  CHRIS-PROTOCOL: Source of Truth from Drizzle Schema
-import { actors, actorVideos, contentArticles, contentBlocks, faq, lessons, media, products, reviews, translations } from "@db/schema";
+import { actors, actorDemos, actorVideos, contentArticles, contentBlocks, faq, lessons, media, products, reviews, translations } from "@db/schema";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import {
@@ -477,12 +477,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const result: SearchResults = {
       count: mappedResults.length,
       results: mappedResults as any,
-      _debug: {
-        dbResultsCount: dbResults.length,
-        conditionsCount: conditions.length,
-        lang,
-        params
-      },
       filters: {
         genders: ['Mannelijk', 'Vrouwelijk'],
         languages: finalLangs,

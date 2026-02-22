@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 
     const data = await getActors(params, lang).catch((err) => {
       console.error(' [ACTORS API] getActors failure:', err);
-      return { results: [], count: 0, _error: err.message, filters: { genders: [], languages: [], styles: [] }, reviews: [], reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } };
+      return { results: [], count: 0, filters: { genders: [], languages: [], styles: [] }, reviews: [], reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } };
     });
     
     if (!data || !data.results) {
