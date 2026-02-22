@@ -1,5 +1,6 @@
 import { db } from '@db';
 import { systemEvents } from '@db/schema/index';
+import { eq, desc } from 'drizzle-orm';
 
 export class SelfHealingService {
   static async healPageTitle(slug: string, currentTitle: string | null): Promise<string> {
@@ -15,6 +16,21 @@ export class SelfHealingService {
 
   static async logEvent(level: 'info' | 'warn' | 'error', message: string, details: any = {}) {
     try {
+      // 🛡️ CHRIS-PROTOCOL: Consolideer events om mail-spam te voorkomen
+      const recentEvents = await db.select().from(systemEvents)
+        .where(eq(systemEvents.message, message))
+        .orderBy(desc(systemEvents.createdAt))
+        .limit(1);
+
+      if (recentEvents.length > 0) {
+        const lastEvent = recentEvents[0];
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+        if (lastEvent.createdAt && lastEvent.createdAt > tenMinutesAgo) {
+          console.log(` [HEAL] Event geconsolideerd (spam preventie): ${message}`);
+          return;
+        }
+      }
+
       await db.insert(systemEvents).values({
         level,
         source: 'self-healing',
