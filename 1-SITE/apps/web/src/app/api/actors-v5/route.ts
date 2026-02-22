@@ -1,38 +1,32 @@
 import { NextResponse } from 'next/server';
-import { getActors } from '@/lib/api-server';
+import { createClient } from "@supabase/supabase-js";
 
-/**
- *  ACTORS API ROUTE (2026)
- * 
- * Serveert de stemacteurs data aan de client-side componenten.
- * Voldoet aan het Chris-Protocol: Forensische logging en rigide validatie.
- */
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const lang = searchParams.get('lang') || 'nl';
-  
-  try {
-    const params: Record<string, string> = {};
-    searchParams.forEach((value, key) => {
-      params[key] = value;
-    });
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const data = await getActors(params, lang).catch((err) => {
-      console.error(' [ACTORS API] getActors failure:', err);
-      return { results: [], count: 0, filters: { genders: [], languages: [], styles: [] }, reviews: [], reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } };
+export async function GET(request: Request) {
+  try {
+    const { data, error } = await supabase
+      .from('actors')
+      .select('*')
+      .eq('status', 'live')
+      .eq('is_public', true)
+      .limit(10);
+    
+    if (error) throw error;
+    
+    return NextResponse.json({
+      count: data?.length || 0,
+      results: data || [],
+      _v: 5,
+      _time: new Date().toISOString()
     });
-    
-    if (!data || !data.results) {
-      return NextResponse.json({ results: [], count: 0 });
-    }
-    
-    return NextResponse.json(data);
   } catch (error: any) {
-    console.error(' ACTORS API FAILURE:', error.message);
-    return NextResponse.json({ results: [], count: 0 }, { status: 500 });
+    return NextResponse.json({ error: error.message, _v: 5 }, { status: 500 });
   }
 }
