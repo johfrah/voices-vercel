@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     }).returning();
 
     // 2. Initialiseer Mollie betaling
-    const host = request.headers.get('host') || 'voices.be';
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const protocol = host.includes('localhost') ? 'http' : 'https';
     
     const payment = await MollieService.request('POST', '/payments', {

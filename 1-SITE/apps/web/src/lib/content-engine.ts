@@ -226,17 +226,11 @@ export class ContentEngine {
    */
   private static localizeDomain(text: string, locale: string): string {
     const market = MarketManager.getCurrentMarket();
-    const host = market.market_code === 'BE' ? 'voices.be' : 
-                 market.market_code === 'NLNL' ? 'voices.nl' :
-                 market.market_code === 'FR' ? 'voices.fr' :
-                 market.market_code === 'ES' ? 'voices.es' :
-                 market.market_code === 'PT' ? 'voices.pt' :
-                 market.market_code === 'EU' ? 'voices.eu' : 
-                 market.market_code === 'PORTFOLIO' ? 'johfrah.be' :
-                 market.market_code === 'ARTIST' ? 'youssefzaki.eu' :
-                 market.market_code === 'ADEMING' ? 'ademing.be' : 'voices.be';
+    // NUCLEAR: Use dynamic host from MarketManager lookup
+    const host = Object.keys(MarketManager.MARKETS_STATIC).find(h => MarketManager.MARKETS_STATIC[h].market_code === market.market_code) || 'voices.be';
 
-    if (host !== "voices.be") {
+    const defaultHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
+    if (host !== defaultHost) {
       return text.replace(/voices\.be/gi, host);
     }
     

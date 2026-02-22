@@ -407,8 +407,8 @@ export default function MailboxPage() {
                       className="w-full bg-va-black text-white text-[15px] font-light tracking-widest py-3 px-4 rounded-[10px] shadow-lg focus:ring-2 focus:ring-primary/20 outline-none appearance-none cursor-pointer border-none"
                     >
                       <OptionInstrument value="all"> {t('mailbox.accounts.all', 'Alle Accounts')}</OptionInstrument>
-                      <OptionInstrument value={adminEmail}>Voices.be</OptionInstrument>
-                      <OptionInstrument value="info@johfrah.be">Johfrah.be</OptionInstrument>
+                      <OptionInstrument value={adminEmail}>Voices</OptionInstrument>
+                      <OptionInstrument value={process.env.NEXT_PUBLIC_ADMIN_EMAIL || VOICES_CONFIG.company.email}>Voices</OptionInstrument>
                     </SelectInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>

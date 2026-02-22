@@ -1,4 +1,5 @@
 import { Octokit } from '@octokit/rest';
+import { VOICES_CONFIG } from '@config/config';
 
 //  SECURITY: GitHub Token Management
 const GITHUB_TOKEN = process.env.BOB_GITHUB_TOKEN;
@@ -56,7 +57,7 @@ export async function commitFileToGitHub(
       branch: BRANCH,
       committer: {
         name: 'Cody (Vibecode Engine)',
-        email: process.env.ADMIN_EMAIL || 'admin@voices.be'
+        email: process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email
       }
     });
 

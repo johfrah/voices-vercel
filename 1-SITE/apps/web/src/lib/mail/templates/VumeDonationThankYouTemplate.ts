@@ -18,7 +18,7 @@ interface DonationThankYouProps {
 }
 
 export const VumeDonationThankYouTemplate = (props: DonationThankYouProps) => {
-  const { name, amount, artistName, host = 'voices.be', language = 'nl' } = props;
+  const { name, amount, artistName, host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be'), language = 'nl' } = props;
   const market = MarketManager.getCurrentMarket(host);
 
   const isNl = language === 'nl';

@@ -28,7 +28,7 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
 }) => {
   const { t } = useTranslation();
   const userName = userEmail?.split('@')[0] || 'User';
-  const isPartner = userEmail?.includes('voices.be') || isAdmin;
+  const isPartner = userEmail?.includes('voices.') || isAdmin;
 
   //  BOB-METHODE: Toon het dashboard pas als de sessie echt geland is
   if (!userEmail) return null;

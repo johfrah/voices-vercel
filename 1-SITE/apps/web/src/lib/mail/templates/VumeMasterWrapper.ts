@@ -19,7 +19,7 @@ interface WrapperOptions {
 }
 
 export function VumeMasterWrapper(content: string, options: WrapperOptions) {
-  const { title, previewText, journey = 'agency', host = 'voices.be', showSignature = true, headerImage, optOutUrl } = options;
+  const { title, previewText, journey = 'agency', host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be'), showSignature = true, headerImage, optOutUrl } = options;
   const market = MarketManager.getCurrentMarket(host);
   
   //  Laya's Refined Gradients (Voices 2.0 - Liquid DNA)

@@ -22,7 +22,7 @@ const TEMPLATES = [
     icon: <ShieldCheck strokeWidth={1.5} size={20} />,
     description: 'Inloglink voor gebruikers.',
     previewSubject: 'Inloggen op Voices.be',
-    context: { name: 'Johfrah', link: 'https://voices.be/account/callback?token=test' }
+    context: { name: 'Admin', link: `https://${process.env.NEXT_PUBLIC_SITE_URL || 'voices.be'}/account/callback?token=test` }
   },
   {
     id: 'studio-experience',
@@ -87,7 +87,7 @@ export default function VumeAdminPage() {
       const res = await fetch('/api/admin/test-vume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ templateId: selectedTemplate.id, recipient: 'admin@voices.be' })
+        body: JSON.stringify({ templateId: selectedTemplate.id, recipient: VOICES_CONFIG.company.email })
       });
       if (res.ok) alert('Testmail verzonden naar admin@voices.be');
     } catch (e) { alert('Fout bij verzenden'); }
