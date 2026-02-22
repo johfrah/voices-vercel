@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     // 2. Fetch User from DB
     let user = null;
     try {
-      const results = await db.select().from(users).where(eq(users.email, email)).limit(1);
+      const results = await db.select().from(users).where(eq(users.email, email)).limit(1).catch(() => []);
       user = results[0];
     } catch (dbError) {
       console.error(' ADMIN LOOKUP DB ERROR:', dbError);
