@@ -26,6 +26,12 @@ export async function GET(request: Request) {
       return { 
         results: [], 
         count: 0, 
+        _error: err.message,
+        _env: {
+          hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+          hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+          hasAnon: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        },
         filters: { genders: [], languages: [], styles: [] }, 
         reviews: [], 
         reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } 
