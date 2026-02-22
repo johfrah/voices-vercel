@@ -27,10 +27,16 @@ export async function GET(request: Request) {
     });
     
     if (!data || !data.results) {
-      return NextResponse.json({ results: [], count: 0 });
+      return NextResponse.json({ results: [], count: 0, _nuclear_debug: 'No results found' });
     }
     
-    return NextResponse.json(data);
+    return NextResponse.json({
+      ...data,
+      _nuclear_debug: {
+        timestamp: new Date().toISOString(),
+        version: '2.18'
+      }
+    });
   } catch (error: any) {
     console.error(' ACTORS API FAILURE:', error.message);
     return NextResponse.json({ results: [], count: 0 }, { status: 500 });
