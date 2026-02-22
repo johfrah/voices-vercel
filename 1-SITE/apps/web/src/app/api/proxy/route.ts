@@ -148,6 +148,16 @@ export async function GET(request: NextRequest) {
       return { blob, contentType, source: response.url.includes('render/image') ? 'Voices-Core-2026-Supabase-Optimized' : 'Voices-Core-2026-Supabase' };
     }
 
+    //  CHRIS-PROTOCOL: Smart WebP Transformation for Combell/Legacy Assets
+    const isImage = !!cleanPath.match(/\.(jpg|jpeg|png)$/i);
+    const isAlreadyWebP = cleanPath.toLowerCase().endsWith('.webp');
+    
+    if (isImage && !isAlreadyWebP) {
+      // We could potentially use a service here, but for now we just log it
+      // and ensure the Next.js Image component handles the format conversion.
+      console.log(`[Proxy] Legacy image detected: ${cleanPath}. Relying on Next.js Image component for WebP conversion.`);
+    }
+
     //  FIX: Als het pad al een volledige Supabase URL is, fetch deze dan direct
     if (cleanPath.includes('supabase.co/storage/v1/object/public/voices/')) {
       console.log(`[Proxy Direct] Supabase URL detected: ${cleanPath}`);
