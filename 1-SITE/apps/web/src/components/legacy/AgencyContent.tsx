@@ -126,7 +126,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
         window.history.replaceState(null, '', `/agency/${state.journey}` + window.location.search);
       }
     }
-  }, [state.currentStep, checkoutState.selectedActor, checkoutState.usage]);
+  }, [state.currentStep, checkoutState.selectedActor, checkoutState.usage, state.journey]);
 
   const handleActorSelect = (actor: any) => {
     playClick('success');

@@ -62,7 +62,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
     if (baseLangs.includes(secondaryLang)) result.push(secondaryLang);
     
     return [...result, ...filteredLangs];
-  }, [filters.languages, combinedParams.market]);
+  }, [filters.languages, combinedParams.market, t]);
 
   return (
     <ContainerInstrument className="w-full max-w-5xl mx-auto">

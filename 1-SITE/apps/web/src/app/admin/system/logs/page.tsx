@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { AlertCircle, AlertTriangle, Info, RefreshCw, Terminal, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
@@ -18,7 +18,7 @@ export default function SystemLogsPage() {
   const [filter, setFilter] = useState('all');
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     setIsLoading(true);
     try {
       const res = await fetch(`/api/admin/system/logs?level=${filter}&limit=100`);
@@ -31,14 +31,14 @@ export default function SystemLogsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filter]);
 
   useEffect(() => {
     fetchLogs();
     // Auto-refresh elke 30 seconden
     const interval = setInterval(fetchLogs, 30000);
     return () => clearInterval(interval);
-  }, [filter]);
+  }, [filter, fetchLogs]);
 
   const getLevelIcon = (level: string) => {
     switch (level) {

@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 export default function ArtistAdminPage() {
   const { isAdmin, isLoading: authLoading } = useAuth();
@@ -93,7 +94,7 @@ export default function ArtistAdminPage() {
                   <div className="flex justify-between items-start mb-6">
                     <div className="w-16 h-16 rounded-2xl bg-va-off-white overflow-hidden relative">
                       {artist.photo_url ? (
-                        <img src={artist.photo_url} alt={artist.firstName} className="object-cover w-full h-full" />
+                        <Image src={artist.photo_url} alt={artist.firstName} fill className="object-cover" />
                       ) : (
                         <Users className="absolute inset-0 m-auto text-va-black/10" size={24} />
                       )}

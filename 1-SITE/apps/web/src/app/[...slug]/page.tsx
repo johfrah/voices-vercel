@@ -3,10 +3,11 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { VoicesLink } from '@/components/ui/VoicesLink';
 import { db } from '@db';
-import { contentArticles, actors, artists, translations, castingLists } from '@db/schema';
+import { contentArticles, actors, translations, castingLists } from '@db/schema';
 import { eq, or, ilike, and } from 'drizzle-orm';
 import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap } from 'lucide-react';
 import { Metadata } from 'next';
+import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from "react";
 import { getActor, getArtist, getActors } from "@/lib/api-server";
@@ -16,7 +17,7 @@ import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
 import { AgencyContent } from "@/components/legacy/AgencyContent";
 import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
 import nextDynamic from "next/dynamic";
-import { JourneyType } from '@/types/journey';
+import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { normalizeSlug } from '@/lib/system/slug';
 
 //  NUCLEAR LOADING MANDATE
@@ -356,7 +357,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     return (
       <>
         <Suspense fallback={null}>
-          <LiquidBackground strokeWidth={1.5} />
+          <LiquidBackground />
         </Suspense>
         <AgencyHeroInstrument 
           filters={searchResults.filters}
@@ -393,7 +394,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                 }
               }
             },
-            orderBy: (items, { asc }) => [asc(items.displayOrder)]
+            orderBy: (items: any, { asc }: { asc: any }) => [asc(items.displayOrder)]
           }
         }
       });
@@ -405,7 +406,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         '@type': 'ItemList',
         'name': list.name,
         'numberOfItems': list.items.length,
-        'itemListElement': list.items.map((item, i) => ({
+        'itemListElement': list.items.map((item: any, i: number) => ({
           '@type': 'ListItem',
           'position': i + 1,
           'item': {
@@ -426,7 +427,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
           />
           <Suspense fallback={null}>
-            <LiquidBackground strokeWidth={1.5} />
+            <LiquidBackground />
           </Suspense>
           <ContainerInstrument className="py-48 max-w-5xl mx-auto">
             <header className="mb-20 text-center">
@@ -440,15 +441,16 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             </header>
 
             <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {list.items.map((item, i) => (
+              {list.items.map((item: any, i: number) => (
                 <ContainerInstrument key={i} className="bg-white p-8 rounded-[20px] shadow-aura border border-black/5 flex flex-col gap-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden">
+                    <div className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden relative">
                       {item.actor.photoId ? (
-                        <img 
+                        <Image 
                           src={`/api/proxy/?path=${encodeURIComponent(item.actor.dropboxUrl || '')}`} 
                           alt={item.actor.firstName}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
                         />
                       ) : item.actor.firstName[0]}
                     </div>
@@ -456,8 +458,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                       <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.firstName}</HeadingInstrument>
                       <TextInstrument className="text-[15px] text-va-black/40">
                         <VoiceglotText 
-                          translationKey={`common.language.${item.actor.actorLanguages?.find(al => al.isNative)?.language?.code || 'nl'}`} 
-                          defaultText={item.actor.actorLanguages?.find(al => al.isNative)?.language?.label || 'Voice-over Stem'} 
+                          translationKey={`common.language.${item.actor.actorLanguages?.find((al: any) => al.isNative)?.language?.code || 'nl'}`} 
+                          defaultText={item.actor.actorLanguages?.find((al: any) => al.isNative)?.language?.label || 'Voice-over Stem'} 
                         />
                       </TextInstrument>
                     </div>
@@ -531,7 +533,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         where: eq(contentArticles.slug, firstSegment),
         with: {
           blocks: {
-            orderBy: (blocks, { asc }) => [asc(blocks.displayOrder)],
+            orderBy: (blocks: any, { asc }: { asc: any }) => [asc(blocks.displayOrder)],
           },
         },
       }).catch(() => null);
@@ -635,7 +637,7 @@ function CmsPageContent({ page, slug }: { page: any, slug: string }) {
                   >
                     {videoUrl && (
                       <ContainerInstrument className="w-full bg-va-black relative">
-                        <VideoPlayer strokeWidth={1.5} 
+                        <VideoPlayer 
                           url={videoUrl} 
                           title={itemTitle}
                           subtitles={subtitleUrl ? [{
@@ -754,7 +756,7 @@ function CmsPageContent({ page, slug }: { page: any, slug: string }) {
   return (
     <PageWrapperInstrument className="bg-va-off-white">
       <Suspense fallback={null}>
-        <LiquidBackground strokeWidth={1.5} />
+        <LiquidBackground />
       </Suspense>
       <ContainerInstrument className="py-48 relative z-10">
         <header className="mb-64 max-w-5xl animate-in fade-in slide-in-from-bottom-12 duration-1000">

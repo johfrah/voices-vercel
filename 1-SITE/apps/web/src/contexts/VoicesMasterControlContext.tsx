@@ -309,7 +309,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
         }
       }));
     }
-  }, [pathname, detectStateFromUrl]);
+  }, [pathname, detectStateFromUrl, state.currentStep]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

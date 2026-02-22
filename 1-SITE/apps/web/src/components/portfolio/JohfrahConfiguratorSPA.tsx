@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { X } from "lucide-react";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useTranslation } from "@/contexts/TranslationContext";
@@ -19,17 +19,7 @@ export function JohfrahConfiguratorSPA() {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Luister naar URL veranderingen (voor de 'SPA' feel)
-  useEffect(() => {
-    if (pathname.endsWith('/bestellen')) {
-      handleOpen();
-    } else {
-      setIsOpen(false);
-      document.body.style.overflow = 'unset';
-    }
-  }, [pathname]);
-
-  const handleOpen = async () => {
+  const handleOpen = useCallback(async () => {
     // Zorg dat Johfrah geselecteerd is
     if (!state.selectedActor) {
       try {
@@ -42,13 +32,23 @@ export function JohfrahConfiguratorSPA() {
     setIsOpen(true);
     setStep('briefing');
     document.body.style.overflow = 'hidden';
-  };
+  }, [state.selectedActor, selectActor, setStep]);
+
+  // Luister naar URL veranderingen (voor de 'SPA' feel)
+  useEffect(() => {
+    if (pathname.endsWith('/bestellen')) {
+      handleOpen();
+    } else {
+      setIsOpen(false);
+      document.body.style.overflow = 'unset';
+    }
+  }, [pathname, handleOpen]);
 
   // Luister naar custom events om de configurator te openen
   useEffect(() => {
     window.addEventListener('johfrah:open-configurator', handleOpen);
     return () => window.removeEventListener('johfrah:open-configurator', handleOpen);
-  }, [state.selectedActor, selectActor, setStep]);
+  }, [handleOpen]);
 
   const handleClose = () => {
     setIsOpen(false);

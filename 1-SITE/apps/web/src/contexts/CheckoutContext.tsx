@@ -611,7 +611,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
       };
     });
-  }, [state.briefing, state.usage, state.plan, state.journey, state.upsells, state.music, state.customer.vat_number, state.customer.country, state.customer.vat_verified, state.isLocked, state.editionId, state.media, state.country, state.selectedActor, state.spots, state.years, state.spotsDetail, state.yearsDetail, state.liveSession]);
+  }, [state.briefing, state.usage, state.plan, state.journey, state.upsells, state.music, state.customer.vat_number, state.customer.country, state.customer.vat_verified, state.isLocked, state.editionId, state.media, state.country, state.selectedActor, state.spots, state.years, state.spotsDetail, state.yearsDetail, state.liveSession, state.pricingConfig]);
 
   //  KELLY'S SYNC: Re-calculate pricing whenever usage, briefing or other key factors change
   // This effect is the primary driver for price updates in the configurator.

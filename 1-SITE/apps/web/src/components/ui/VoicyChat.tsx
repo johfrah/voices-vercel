@@ -477,7 +477,7 @@ export const VoicyChatV2: React.FC = () => {
 
     window.addEventListener('voicy:suggestion', handleSuggestion);
     return () => window.removeEventListener('voicy:suggestion', handleSuggestion);
-  }, [playSonicClick]);
+  }, [playSonicClick, market.market_code, pathname]);
 
   //  UCI Integration: Fetch Customer 360 data when authenticated
   useEffect(() => {

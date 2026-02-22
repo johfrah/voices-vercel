@@ -60,7 +60,7 @@ export default function AccountDashboardClient() {
       const newUrl = window.location.pathname;
       window.history.replaceState(null, '', newUrl);
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
@@ -145,7 +145,7 @@ export default function AccountDashboardClient() {
               </div>
             )}
 
-            <BentoGrid columns={4} gap={6}>
+            <BentoGrid columns={4}>
               
               {/*  MIJN WINKEL (PORTFOLIO) CARD */}
               {isPartner && (

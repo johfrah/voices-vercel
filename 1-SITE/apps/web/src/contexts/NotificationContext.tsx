@@ -74,7 +74,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated, isAdmin, supabase, user?.email]);
+  }, [isAuthenticated, supabase, user?.email]);
 
   useEffect(() => {
     fetchNotifications();

@@ -79,7 +79,7 @@ export const AgencyCalculator = ({
     if (initialJourney !== calcUsage) {
       setCalcUsage(initialJourney);
     }
-  }, [initialJourney]);
+  }, [initialJourney, calcUsage]);
 
   const [internalPricingConfig, setInternalPricingConfig] = useState<any>(null);
   const pricingConfig = externalPricingConfig || internalPricingConfig;

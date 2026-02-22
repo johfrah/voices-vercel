@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   PageWrapperInstrument, 
   SectionInstrument, 
@@ -42,18 +42,7 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
   const [artist, setArtist] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'general' | 'music' | 'gallery' | 'streaming'>('general');
 
-  useEffect(() => {
-    if (!authLoading && !isAdmin) {
-      router.push('/admin/dashboard');
-      return;
-    }
-    
-    if (isAdmin) {
-      fetchArtist();
-    }
-  }, [isAdmin, authLoading, router, params.id]);
-
-  const fetchArtist = async () => {
+  const fetchArtist = useCallback(async () => {
     setLoading(true);
     try {
       // Haal de specifieke artist op via de ID-route
@@ -89,7 +78,18 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id, router]);
+
+  useEffect(() => {
+    if (!authLoading && !isAdmin) {
+      router.push('/admin/dashboard');
+      return;
+    }
+    
+    if (isAdmin) {
+      fetchArtist();
+    }
+  }, [isAdmin, authLoading, router, params.id, fetchArtist]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -301,10 +301,11 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
                 {artist.portfolioPhotos && Array.isArray(artist.portfolioPhotos) && artist.portfolioPhotos.length > 0 ? (
                   artist.portfolioPhotos.map((photo: any, i: number) => (
                     <div key={i} className="relative aspect-[3/4] rounded-2xl overflow-hidden group border border-black/5 shadow-sm">
-                      <img 
+                      <Image 
                         src={photo.url} 
                         alt="" 
-                        className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-va-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                         <button className="w-10 h-10 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-110 transition-transform shadow-lg"><Trash2 size={16} /></button>

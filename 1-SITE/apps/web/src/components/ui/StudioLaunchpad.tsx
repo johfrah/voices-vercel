@@ -89,7 +89,7 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
       }
     };
     fetchConfig();
-  }, []);
+  }, [calcUsage]);
 
   // Sync selectedMedia with calcUsage
   useEffect(() => {

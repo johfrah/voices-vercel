@@ -267,7 +267,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
           ]
         };
     }
-  }, [masterControlState.journey, dynamicConfig]);
+  }, [masterControlState.journey, dynamicConfig, t]);
 
   const renderUspIcon = (type: string) => {
     switch (type) {
