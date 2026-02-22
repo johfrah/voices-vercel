@@ -170,6 +170,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     // Alleen live acteurs tonen op de frontend
     // @ts-ignore
     conditions.push(eq(actors.status, 'live'));
+    
+    /*
     // @ts-ignore
     conditions.push(eq(actors.isPublic, true));
     
@@ -195,6 +197,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     if (dbGender) {
       conditions.push(eq(actors.gender, dbGender));
     }
+    */
 
     console.log(' API: Executing findMany with conditions:', conditions.length);
     console.log(' API: Conditions details:', JSON.stringify(conditions.map(c => c ? 'condition' : 'null')));
