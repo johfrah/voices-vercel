@@ -17,6 +17,7 @@ import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { VoicesLink, useVoicesRouter } from '@/components/ui/VoicesLink';
+import { MarketManager } from '@config/market-manager';
 
 /**
  * PREMIUM CASTING DOCK (GOD MODE 2026)
