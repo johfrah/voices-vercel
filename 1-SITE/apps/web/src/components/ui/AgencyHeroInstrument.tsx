@@ -39,7 +39,11 @@ export const AgencyHeroInstrument: React.FC<AgencyHeroInstrumentProps> = ({
   // JOURNEY-AWARE TITLES (SALLY-MANDATE: Sync with Frontpage for consistency)
   const journeyTitles: Record<string, { p1: string, h: string, p2: string }> = {
     telephony: { p1: "Maak jouw", h: "telefooncentrale", p2: "menselijk." },
-    video: { p1: "Geef jouw", h: "video", p2: "een eigen stem." },
+    video: { 
+      p1: "De mooiste", 
+      h: "voice-overs", 
+      p2: market === 'BE' ? "van België." : market === 'NLNL' ? "van Nederland." : market === 'FR' ? "de France." : "voor jouw video." 
+    },
     commercial: { p1: "Scoor met", h: "high-end", p2: "commercials." }
   };
 

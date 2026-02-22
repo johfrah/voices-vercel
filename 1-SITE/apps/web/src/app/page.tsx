@@ -58,9 +58,11 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
   const [customerDNA, setCustomerDNA] = useState<any>(null);
   const [actors, setActors] = useState<Actor[]>(initialActors);
 
-  const market = useMemo(() => {
+  const marketConfig = useMemo(() => {
     return MarketManager.getCurrentMarket();
   }, []);
+
+  const market = marketConfig.market_code;
 
   //  CHRIS-PROTOCOL: Sync local state with initial props
   useEffect(() => {
@@ -294,12 +296,12 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
           <ContainerInstrument plain className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
             <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
               <VoiceglotText 
-                translationKey={`home.hero.title_v3_${masterControlState.journey}`} 
+                translationKey={`home.hero.title_v4_${masterControlState.journey}_${market}`} 
                 defaultText={
                   masterControlState.journey === 'telephony' 
                     ? "Maak jouw *telefooncentrale* menselijk."
                     : masterControlState.journey === 'video'
-                    ? "Geef jouw *video* een eigen stem."
+                    ? (market === 'BE' ? "De mooiste *voice-overs* van België." : market === 'NLNL' ? "De mooiste *voice-overs* van Nederland." : market === 'FR' ? "Les meilleures *voix-off* de France." : "De mooiste *voice-overs* voor jouw video.")
                     : masterControlState.journey === 'commercial'
                     ? "Scoor met *high-end* commercials."
                     : "Vind de *stem* voor jouw verhaal."
@@ -464,10 +466,10 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": market.name,
+        "name": marketConfig.name,
         "url": `https://${typeof window !== 'undefined' ? window.location.host : 'voices.be'}`,
-        "logo": `https://${typeof window !== 'undefined' ? window.location.host : 'voices.be'}${market.logo_url}`,
-        "description": market.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
+        "logo": `https://${typeof window !== 'undefined' ? window.location.host : 'voices.be'}${marketConfig.logo_url}`,
+        "description": marketConfig.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": reviewStats?.averageRating || 4.9,
