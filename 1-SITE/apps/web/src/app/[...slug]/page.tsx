@@ -247,7 +247,7 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
   const [firstSegment] = params.slug;
   
   // Gereserveerde routes overslaan (Alleen harde systeem-folders)
-  const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout'];
+  const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'favicon.ico', 'robots.txt', 'sitemap.xml'];
   
   if (reserved.includes(firstSegment)) {
     return notFound();

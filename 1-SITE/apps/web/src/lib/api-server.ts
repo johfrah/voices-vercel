@@ -110,10 +110,22 @@ export async function getReviewStats(businessSlug: string = 'voices-be') {
   };
 }
 
+//  CHRIS-PROTOCOL: In-memory cache for actors to reduce heavy DB load
+const actorsCache: Record<string, { data: SearchResults, timestamp: number }> = {};
+const ACTORS_CACHE_TTL = 1000 * 60 * 2; // 2 minutes
+
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
   console.log(' API: getActors called with params:', params);
   const { language, search, gender, style, market } = params;
   
+  // 1. Check Cache
+  const cacheKey = JSON.stringify({ params, lang });
+  const cached = actorsCache[cacheKey];
+  if (cached && (Date.now() - cached.timestamp) < ACTORS_CACHE_TTL) {
+    console.log(' API: Returning cached actors results');
+    return cached.data;
+  }
+
   try {
     const lowLang = language?.toLowerCase() || '';
     const dbLang = language ? MarketManager.getLanguageCode(lowLang) : null;
@@ -414,7 +426,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const otherLangs = uniqueLangs.filter(l => !priorityLangs.includes(l)).sort();
     const finalLangs = [...priorityLangs.filter(l => uniqueLangs.includes(l)), ...otherLangs];
 
-    return {
+    const result: SearchResults = {
       count: mappedResults.length,
       results: mappedResults as any,
       filters: {
@@ -445,6 +457,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       }),
       reviewStats: reviewStats
     };
+
+    // 2. Update Cache
+    actorsCache[cacheKey] = { data: result, timestamp: Date.now() };
+
+    return result;
   } catch (error: any) {
     console.error('[getActors FATAL ERROR]:', error);
     throw error;
