@@ -190,6 +190,8 @@ export default async function RootLayout({
       "@type": "PostalAddress",
       "streetAddress": market.address || '',
       "addressLocality": "Leuven",
+      "addressRegion": "Vlaams-Brabant",
+      "postalCode": "3000",
       "addressCountry": "BE"
     },
     "vatID": market.vat_number || '',
