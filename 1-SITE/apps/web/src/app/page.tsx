@@ -399,12 +399,12 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
                   <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start w-full">
                     {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
                     <div className="order-1 lg:order-2 lg:col-span-9 w-full">
-                      <ConfiguratorPageClient 
-                        isEmbedded={true} 
-                        hideMediaSelector={true} 
-                        minimalMode={true} 
-                        hidePriceBlock={true}
-                      />
+                          <ConfiguratorPageClient 
+                            isEmbedded={true} 
+                            hideMediaSelector={true} 
+                            minimalMode={true} 
+                            hidePriceBlock={false}
+                          />
                     </div>
 
                     {/* VoiceCard (3 kolommen breed) - LATER op mobiel, compact */}
