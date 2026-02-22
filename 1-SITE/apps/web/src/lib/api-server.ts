@@ -197,6 +197,10 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         }
       }
       
+      if (dbGender) {
+        query = query.eq('gender', dbGender);
+      }
+      
       const { data: sdkData, error: sdkError } = await query.order('menu_order', { ascending: true }).limit(100);
         
       if (sdkError) throw sdkError;
