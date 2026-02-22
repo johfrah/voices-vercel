@@ -181,7 +181,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
               <track 
                 label="Nederlands"
                 kind="subtitles"
-                srcLang="nl"
+                srcLang="nl-BE"
                 src={`/assets/studio/workshops/subtitles/${videoPath.split('/').pop().replace(/\.[^/.]+$/, "")}-nl.vtt`}
                 default
               />

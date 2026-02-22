@@ -179,7 +179,7 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
           <track 
             label="Nederlands"
             kind="subtitles"
-            srcLang="nl"
+            srcLang="nl-BE"
             src={subtitles}
             default
           />
