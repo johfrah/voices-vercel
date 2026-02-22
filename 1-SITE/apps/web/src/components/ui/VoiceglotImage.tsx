@@ -119,6 +119,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   const isProxied = currentSrc?.includes('/api/proxy');
   const isLocal = currentSrc?.startsWith('/') && !isProxied && !currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co');
   const isSupabase = currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co');
+  const isGoogle = currentSrc?.includes('googleusercontent.com');
 
   const isValidSrc = currentSrc && 
     currentSrc !== 'image/' && 
@@ -131,7 +132,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     !currentSrc.endsWith('/image/');
 
   //  CHRIS-PROTOCOL: Automatic Proxy Wrapping (2026 Mandate)
-  // We only use the proxy for external assets (Supabase) or relative paths 
+  // We only use the proxy for external assets (Supabase, Google) or relative paths 
   // that need optimization. Local assets in /assets/ are served directly.
   const finalSrc = React.useMemo(() => {
     if (!isValidSrc) return currentSrc;
@@ -139,8 +140,8 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     // If it's already a proxy URL, don't wrap it again
     if (isProxied) return currentSrc;
 
-    //  FIX: Supabase URLs through proxy to avoid 400 Bad Request from Next.js Image optimizer
-    if (isSupabase) {
+    //  FIX: Supabase and Google URLs through proxy to avoid 400 Bad Request from Next.js Image optimizer
+    if (isSupabase || isGoogle) {
       return `/api/proxy/?path=${encodeURIComponent(currentSrc)}`;
     }
 

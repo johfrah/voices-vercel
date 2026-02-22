@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
       cleanPath.startsWith('common/') || 
       cleanPath.startsWith('studio/') || 
       cleanPath.includes('supabase.co/storage/v1/object/public/voices/') ||
+      cleanPath.includes('googleusercontent.com') ||
       cleanPath.endsWith('.mp3') ||
       cleanPath.endsWith('.wav');
 
@@ -76,13 +77,30 @@ export async function GET(request: NextRequest) {
 
     let normalizedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
 
-    //  SUPABASE STORAGE REDIRECT: Als het pad begint met 'agency/', 'active/', 'common/', 'studio/', 'ademing/', 'portfolio/', 'artists/' of 'visuals/', fetch het dan van Supabase Storage
-    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co')) {
+    //  SUPABASE & GOOGLE STORAGE REDIRECT: Als het pad begint met 'agency/', 'active/', 'common/', 'studio/', 'ademing/', 'portfolio/', 'artists/' of 'visuals/', fetch het dan van Supabase Storage
+    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co') || cleanPath.includes('googleusercontent.com')) {
       const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
       const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1`;
       
       //  FIX: Zorg dat er geen dubbele slashes ontstaan en encodeer het pad segment per segment
       let storagePath = cleanPath;
+      
+      // If it's a Google URL, fetch it directly
+      if (cleanPath.includes('googleusercontent.com')) {
+        const response = await fetch(cleanPath, {
+          headers: { 
+            'User-Agent': 'Voices-Asset-Proxy/1.0',
+            'Cache-Control': 'no-cache'
+          },
+          next: { revalidate: 3600 }
+        });
+        
+        if (!response.ok) return null;
+        const blob = await response.blob();
+        const contentType = response.headers.get('content-type') || 'image/jpeg';
+        return { blob, contentType, source: 'Google-User-Content' };
+      }
+
       if (storagePath.startsWith('https://')) {
         // Extract path after /public/voices/
         const match = storagePath.match(/\/public\/voices\/(.*)/);
