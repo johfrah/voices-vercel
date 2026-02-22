@@ -53,6 +53,9 @@ export const TopBar = () => {
   // Alleen tonen op de Agency journey (Voices.be / Voices.nl etc.)
   if (isPortfolio || isAdeming || isArtist || pathname.startsWith('/artist/') || pathname.startsWith('/voice/') || isPortfolioPage || isStudioJourney || isAcademyJourney) return null;
 
+  const activeEmail = market.email;
+  const activePhone = market.phone;
+
   return (
     <ContainerInstrument 
       as="div" 
@@ -94,7 +97,7 @@ export const TopBar = () => {
         </ButtonInstrument>
 
         {/* Telefoonnummer */}
-        {market.phone && (
+        {activePhone && (
           <ButtonInstrument
             variant="plain"
             size="none"
@@ -103,13 +106,13 @@ export const TopBar = () => {
           >
             <Phone size={12} strokeWidth={2.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
             <TextInstrument className="text-[11px] font-light tracking-[0.1em] text-va-black/40 group-hover:text-va-black transition-colors">
-              {market.phone}
+              {activePhone}
             </TextInstrument>
           </ButtonInstrument>
         )}
 
         {/* Emailadres */}
-        {market.email && (
+        {activeEmail && (
           <ButtonInstrument
             variant="plain"
             size="none"
@@ -118,7 +121,7 @@ export const TopBar = () => {
           >
             <Mail size={12} strokeWidth={2.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
             <TextInstrument className="text-[11px] font-light tracking-[0.1em] text-va-black/40 group-hover:text-va-black transition-colors">
-              {market.email}
+              {activeEmail}
             </TextInstrument>
           </ButtonInstrument>
         )}
