@@ -288,17 +288,24 @@ export async function middleware(request: NextRequest) {
   const langMatch = pathname.match(/^\/(fr|en|nl|de|es|it|pt)(\/|$)/i)
   
   // Intelligent Stickiness: Check cookie, then Accept-Language header
-  let detectedLang = request.cookies.get('voices_lang')?.value
+  const cookieLang = request.cookies.get('voices_lang')?.value
+  let detectedLang = cookieLang
   
   if (!detectedLang) {
-    // Fallback 1: Browser preferences
-    const acceptLang = request.headers.get('accept-language') || ''
-    if (acceptLang.startsWith('fr')) detectedLang = 'fr'
-    else if (acceptLang.startsWith('en')) detectedLang = 'en'
-    else if (acceptLang.startsWith('de')) detectedLang = 'de'
-    else if (acceptLang.startsWith('es')) detectedLang = 'es'
-    else if (acceptLang.startsWith('it')) detectedLang = 'it'
-    else if (acceptLang.startsWith('pt')) detectedLang = 'pt'
+    // 🛡️ CHRIS-PROTOCOL: Only fallback to browser headers if NOT on the root of a specific market
+    // This prevents accidental redirects to /de/ for users with German browsers on voices.be
+    const isRoot = pathname === '/'
+    
+    if (!isRoot) {
+      // Fallback 1: Browser preferences
+      const acceptLang = request.headers.get('accept-language') || ''
+      if (acceptLang.startsWith('fr')) detectedLang = 'fr'
+      else if (acceptLang.startsWith('en')) detectedLang = 'en'
+      else if (acceptLang.startsWith('de')) detectedLang = 'de'
+      else if (acceptLang.startsWith('es')) detectedLang = 'es'
+      else if (acceptLang.startsWith('it')) detectedLang = 'it'
+      else if (acceptLang.startsWith('pt')) detectedLang = 'pt'
+    }
     
     // Fallback 2: Domain-based defaults
     if (!detectedLang) {

@@ -56,8 +56,8 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
   const domains = MarketManager.getMarketDomains();
-  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || (domains[market.market_code] || domains['BE']).replace('https://www.', '').replace('https://', '');
   const pathname = headersList.get('x-voices-pathname') || '';
+  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
   let lookupHost = host;
@@ -129,8 +129,8 @@ export default async function RootLayout({
 }>) {
   const headersList = headers();
   const domains = MarketManager.getMarketDomains();
-  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || (domains[market.market_code] || domains['BE']).replace('https://www.', '').replace('https://', '');
   const pathname = headersList.get('x-voices-pathname') || '';
+  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
   let lookupHost = host;
