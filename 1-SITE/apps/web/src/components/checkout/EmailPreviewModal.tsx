@@ -3,6 +3,7 @@
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { MarketManager } from '@config/market-manager';
 import React from 'react';
 import Image from 'next/image';
 
@@ -25,7 +26,6 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
 }) => {
   const { playClick } = useSonicDNA();
   const { t } = useTranslation();
-  const { MarketManager } = require('@/packages/config/market-manager');
   const market = MarketManager.getCurrentMarket();
   const [message, setMessage] = React.useState(t('quote.preview.default_message', `Dag ${customerName},\n\nBedankt voor je aanvraag bij ${market.name}! Hierbij ontvang je de vrijblijvende offerte voor je project.\n\nDetails:\n${items.map(item => `- ${item.name}`).join('\n')}\n\nTotaalbedrag: ${totalAmount} (excl. BTW)\n\nJe kunt deze offerte direct online bevestigen via de link in de bijlage. Heb je nog vragen? Laat het me gerust weten!\n\nMet vriendelijke groet,\n\nJohfrah\n${market.name}`));
 
