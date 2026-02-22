@@ -190,11 +190,13 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         
       if (dbLang || lang) {
         const targetLang = dbLang || lang;
+        /*
         if (targetLang === 'nl') {
           query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
         } else {
           query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
         }
+        */
       }
       
       if (dbGender) {
