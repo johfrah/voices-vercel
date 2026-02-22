@@ -314,7 +314,7 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
                 ) : (
                   <div className="col-span-full py-20 text-center bg-va-off-white rounded-[32px] border border-dashed border-black/10">
                     <ImageIcon className="mx-auto text-va-black/10 mb-4" size={48} />
-                    <TextInstrument className="text-va-black/30 font-light">Geen foto's in de gallery</TextInstrument>
+                    <TextInstrument className="text-va-black/30 font-light">Geen foto&apos;s in de gallery</TextInstrument>
                   </div>
                 )}
               </div>
