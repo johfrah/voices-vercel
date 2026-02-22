@@ -26,6 +26,34 @@ export class AdminService {
   }
 
   /**
+   * Haalt folder counts op voor een specifiek account.
+   */
+  static async getFolderCounts(account: string) {
+    const res = await fetch(`${this.BASE_URL}/folders/counts?account=${account}`);
+    if (!res.ok) throw new Error(`Failed to fetch folder counts: ${res.statusText}`);
+    return res.json();
+  }
+
+  /**
+   * Start een volledige AI Brain Sync.
+   */
+  static async syncAiBrain() {
+    const res = await fetch(`${this.BASE_URL}/sync`, { method: 'POST' });
+    if (!res.ok) throw new Error(`Failed to start AI Brain sync: ${res.statusText}`);
+    return res.json();
+  }
+
+  /**
+   * Zoekt in de mailbox (semantisch of tekstueel).
+   */
+  static async search(query: string, options: { account: string; folder?: string }) {
+    const { account, folder = 'INBOX' } = options;
+    const res = await fetch(`${this.BASE_URL}/search?q=${encodeURIComponent(query)}&account=${account}&folder=${folder}`);
+    if (!res.ok) throw new Error(`Failed to search mailbox: ${res.statusText}`);
+    return res.json();
+  }
+
+  /**
    * Haalt een specifiek e-mail bericht/thread op.
    */
   static async getMessage(messageId: string) {

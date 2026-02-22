@@ -184,6 +184,13 @@ export default function MailboxPage() {
     }
     const currentOffset = reset ? 0 : offset;
     try {
+      if (semanticQuery && semanticQuery.length >= 3) {
+        const data = await AdminService.search(semanticQuery, { account, folder });
+        setMails(data.results || []);
+        setTotalCount(data.totalCount || 0);
+        return;
+      }
+
       const data = await AdminService.getInbox({
         limit: 50,
         offset: currentOffset,
@@ -212,35 +219,37 @@ export default function MailboxPage() {
     } finally {
       setIsRefreshing(false);
     }
-  }, [activeFolder, activeAccount, offset, sortByValue, handleMailClick]);
+  }, [activeFolder, activeAccount, offset, sortByValue, handleMailClick, semanticQuery]);
 
   const startFullSync = async () => {
     setIsSyncing(true);
-    setSyncProgress({ current: 0, total: 153460 });
-    const interval = setInterval(() => {
-      setSyncProgress(prev => {
-        if (prev.current >= prev.total) {
-          clearInterval(interval);
-          setIsSyncing(false);
-          return prev;
-        }
-        return { ...prev, current: prev.current + Math.floor(Math.random() * 1200) + 300 };
-      });
-    }, 800);
+    try {
+      await AdminService.syncAiBrain();
+      setSyncProgress({ current: 0, total: 153460 });
+      const interval = setInterval(() => {
+        setSyncProgress(prev => {
+          if (prev.current >= prev.total) {
+            clearInterval(interval);
+            setIsSyncing(false);
+            return prev;
+          }
+          return { ...prev, current: prev.current + Math.floor(Math.random() * 1200) + 300 };
+        });
+      }, 800);
+    } catch (e) {
+      console.error('Sync failed:', e);
+      setIsSyncing(false);
+    }
   };
 
   useEffect(() => {
     if (isAdmin) {
       refreshInbox(true, true, activeFolder, activeAccount);
-      ['INBOX', 'INBOX.Archive', 'Sent', 'Trash'].forEach(f => {
-        if (f !== activeFolder) {
-          AdminService.getInbox({ limit: 1, offset: 0, folder: f, account: activeAccount })
-            .then(data => {
-              setFolderCounts(prev => ({ ...prev, [f]: data.totalCount }));
-            })
-            .catch(e => console.error(e));
-        }
-      });
+      
+      // Fetch all folder counts via AdminService
+      AdminService.getFolderCounts(activeAccount)
+        .then(counts => setFolderCounts(counts))
+        .catch(e => console.error(e));
     }
   }, [isAdmin, refreshInbox, activeAccount, activeFolder]);
 
@@ -421,7 +430,16 @@ export default function MailboxPage() {
 
                 <ContainerInstrument className="relative mb-4">
                   <Image  src="/assets/common/branding/icons/SEARCH.svg" width={16} height={16} alt="" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
-                  <InputInstrument type="text" placeholder="Zoek..." className="w-full bg-white border border-black/5 rounded-[10px] py-2.5 pl-12 pr-4 text-[15px] font-light focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
+                  <InputInstrument 
+                    type="text" 
+                    placeholder="Zoek..." 
+                    value={semanticQuery}
+                    onChange={(e) => setSemanticQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') refreshInbox(true);
+                    }}
+                    className="w-full bg-white border border-black/5 rounded-[10px] py-2.5 pl-12 pr-4 text-[15px] font-light focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
+                  />
                 </ContainerInstrument>
                 
                 <ContainerInstrument className="space-y-4">
