@@ -319,6 +319,11 @@ export async function middleware(request: NextRequest) {
     // Update detectedLang to match URL
     detectedLang = urlLang
     
+    // 🛡️ CHRIS-PROTOCOL: Prevent rewrite loops by checking if we are already at the target path
+    if (pathname === pathWithoutLocale) {
+      return response;
+    }
+
     url.pathname = pathWithoutLocale
     const i18nResponse = NextResponse.rewrite(url)
     i18nResponse.headers.set('x-voices-lang', detectedLang)
@@ -339,6 +344,10 @@ export async function middleware(request: NextRequest) {
   // (en het is niet een expliciete taal-switch actie), stuur ze naar de juiste prefix.
   // We doen dit alleen voor de hoofd-domeinen om loops te voorkomen.
   if (!langMatch && detectedLang && detectedLang !== 'nl' && market === 'BE' && pathname === '/') {
+    // 🛡️ CHRIS-PROTOCOL: Extra check to prevent redirect loops
+    if (request.headers.get('x-middleware-rewrite')) {
+       return response;
+    }
     const redirectUrl = url.clone()
     redirectUrl.pathname = `/${detectedLang}${pathname}`.replace(/\/+$/, '/')
     return NextResponse.redirect(redirectUrl)

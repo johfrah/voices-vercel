@@ -111,8 +111,12 @@ export async function getReviewStats(businessSlug: string = 'voices-be') {
 }
 
 //  CHRIS-PROTOCOL: In-memory cache for actors to reduce heavy DB load
-const actorsCache: Record<string, { data: SearchResults, timestamp: number }> = {};
-const ACTORS_CACHE_TTL = 1000 * 60 * 2; // 2 minutes
+// We use a global variable to persist cache across requests in the same lambda instance
+if (!globalCache.actorsCache) {
+  globalCache.actorsCache = {};
+}
+const actorsCache = globalCache.actorsCache;
+const ACTORS_CACHE_TTL = 1000 * 60 * 10; // 10 minutes (increased for stability)
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
   console.log(' API: getActors called with params:', params);
@@ -122,9 +126,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
   const cacheKey = JSON.stringify({ params, lang });
   const cached = actorsCache[cacheKey];
   if (cached && (Date.now() - cached.timestamp) < ACTORS_CACHE_TTL) {
-    console.log(' API: Returning cached actors results');
+    console.log(` [getActors] Returning cached results for ${cacheKey}`);
     return cached.data;
   }
+
+  console.log(` [getActors] Cache miss for ${cacheKey}, querying DB...`);
 
   try {
     const lowLang = language?.toLowerCase() || '';
@@ -801,8 +807,13 @@ export async function getWorkshops(limit: number = 50): Promise<any[]> {
 }
 
 //  CHRIS-PROTOCOL: In-memory cache for translations to reduce DB load
-const translationCache: Record<string, { data: Record<string, string>, timestamp: number }> = {};
-const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+// We use a global variable to persist cache across requests in the same lambda instance
+const globalCache = global as any;
+if (!globalCache.translationCache) {
+  globalCache.translationCache = {};
+}
+const translationCache = globalCache.translationCache;
+const CACHE_TTL = 1000 * 60 * 60; // 60 minutes (more aggressive for stability)
 
 export async function getTranslationsServer(lang: string): Promise<Record<string, string>> {
   if (lang === 'nl') return {};
@@ -810,8 +821,11 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
   // 1. Check Cache First
   const cached = translationCache[lang];
   if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+    console.log(` [getTranslationsServer] Returning cached translations for ${lang}`);
     return cached.data;
   }
+
+  console.log(` [getTranslationsServer] Cache miss for ${lang}, querying DB...`);
 
   let lastError: any = null;
   const maxRetries = 3;

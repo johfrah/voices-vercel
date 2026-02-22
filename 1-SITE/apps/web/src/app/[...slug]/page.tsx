@@ -140,6 +140,13 @@ interface SmartRouteParams {
 }
 
 export async function generateMetadata({ params }: { params: SmartRouteParams }): Promise<Metadata> {
+  const [firstSegment] = params.slug;
+  const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'favicon.ico', 'robots.txt', 'sitemap.xml'];
+  
+  if (reserved.includes(firstSegment)) {
+    return {};
+  }
+
   const headersList = headers();
   const host = headersList.get('host') || 'www.voices.be';
   const { MarketManager } = await import('@config/market-manager');
