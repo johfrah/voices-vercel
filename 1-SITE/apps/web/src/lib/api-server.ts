@@ -215,6 +215,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       .limit(20);
     const mediaRes = photoIds.length > 0 ? await supabase.from('media').select('*').in('id', photoIds) : { data: [] };
     const demosRes = await supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true);
+    const videosRes = await supabase.from('actor_videos').select('*').in('actor_id', actorIds).eq('is_public', true);
     
     //  CHRIS-PROTOCOL: Fetch review stats for the correct business unit
     const statsRes = await supabase
@@ -226,6 +227,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const dbReviewsRaw = reviewsRes.data || [];
     const mediaResults = mediaRes.data || [];
     const demosData = demosRes.data || [];
+    const videosData = videosRes.data || [];
     const statsRaw = statsRes.data || [];
     
     // Calculate stats manually for stability
@@ -265,6 +267,14 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         status: d.status || 'approved'
       }));
 
+      const actorVideosList = videosData.filter((v: any) => v.actor_id === actor.id);
+      const proxiedVideos = actorVideosList.map((v: any) => ({
+        id: v.id,
+        name: v.name,
+        url: v.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(v.url)}` : v.url,
+        type: v.type || 'portfolio'
+      }));
+
       return {
         id: actor.wpProductId || actor.id,
         display_name: actor.firstName,
@@ -284,6 +294,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         delivery_days_min: actor.deliveryDaysMin || 1,
         delivery_days_max: actor.deliveryDaysMax || 3,
         demos: proxiedDemos,
+        actor_videos: proxiedVideos,
         rates: actor.rates || {}
       };
     });
@@ -326,12 +337,72 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 }
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
-  const actor = await (db.query as any).actors.findFirst({
-    where: (fields: any, { eq }: any) => eq(fields.slug, slug),
-    with: { demos: true, country: true }
-  });
-  if (!actor) throw new Error("Actor not found");
-  return { ...actor, display_name: actor.firstName } as any;
+  // 🛡️ CHRIS-PROTOCOL: Use SDK for consistency and field prioritization
+  const { data: actor, error } = await supabase
+    .from('actors')
+    .select('*, country:countries(*)')
+    .eq('slug', slug)
+    .single();
+
+  if (error || !actor) {
+    console.error(`[getActor] Error or not found: ${slug}`, error);
+    throw new Error("Actor not found");
+  }
+
+  // Fetch relations
+  const [demosRes, videosRes] = await Promise.all([
+    supabase.from('actor_demos').select('*').eq('actor_id', actor.id).eq('is_public', true),
+    supabase.from('actor_videos').select('*').eq('actor_id', actor.id).eq('is_public', true)
+  ]);
+
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
+  const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+
+  // Prioritize dropboxUrl for photo
+  let photoUrl = '';
+  if (actor.dropbox_url) {
+    photoUrl = actor.dropbox_url.startsWith('http') ? actor.dropbox_url : `/api/proxy/?path=${encodeURIComponent(actor.dropbox_url)}`;
+  } else if (actor.photo_id) {
+    // We'd need to fetch the media item here if we wanted to be 100% sure, 
+    // but for singular actor pages, we usually have the dropboxUrl set.
+    // For now, let's assume if dropboxUrl is missing, we might need a fallback.
+    // In getActors we fetch all media at once, here we'll do a quick fetch if needed.
+    const { data: mediaItem } = await supabase.from('media').select('*').eq('id', actor.photo_id).single();
+    if (mediaItem) {
+      const fp = mediaItem.file_path || mediaItem.filePath;
+      if (fp) photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
+    }
+  }
+
+  const mappedDemos = (demosRes.data || []).map((d: any) => ({
+    id: d.id,
+    title: d.name,
+    audio_url: d.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url,
+    category: d.type || 'demo',
+    status: d.status || 'approved'
+  }));
+
+  const mappedVideos = (videosRes.data || []).map((v: any) => ({
+    id: v.id,
+    name: v.name,
+    url: v.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(v.url)}` : v.url,
+    type: v.type || 'portfolio'
+  }));
+
+  return {
+    ...actor,
+    id: actor.wp_product_id || actor.id,
+    display_name: actor.first_name,
+    first_name: actor.first_name,
+    last_name: actor.last_name || '',
+    native_lang: actor.native_lang,
+    photo_url: photoUrl,
+    starting_price: parseFloat(actor.price_unpaid || '0'),
+    voice_score: actor.voice_score || 10,
+    demos: mappedDemos,
+    actor_videos: mappedVideos,
+    rates: actor.rates || {}
+  } as any;
 }
 
 export async function getMusicLibrary(category: string = 'music'): Promise<any[]> {
