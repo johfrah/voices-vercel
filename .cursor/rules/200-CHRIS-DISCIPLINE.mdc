@@ -23,4 +23,10 @@ Code is ofwel Masterclass, ofwel Slop. Er is geen grijs gebied.
 3. **Safe Harbor**: Foutmeldingen moeten feitelijk en actiegericht zijn. Gebruik de `AppErrorBoundary`.
 4. **100ms Feedback**: Elke interactie moet binnen 100ms een visuele response geven (Optimistic UI).
 
+## 🛡️ Business Integriteit (Voices Mandate)
+
+1. **Actor Visibility Mandate**: Op de publieke site mogen UITSLUITEND acteurs getoond worden die voldoen aan: `status = 'live'` EN `is_public = true`. Het negeren van dit filter wordt beschouwd als "Slop".
+2. **ISO-First**: Gebruik ALTIJD ISO-5 codes voor talen (`nl-BE`, niet `nl`).
+3. **Market Manager Exclusivity**: De `MarketManager` is de enige bron voor markt-specifieke configuratie.
+
 "Ik ben niet streng, ik ben correct. Slop is een virus." - Chris/Autist

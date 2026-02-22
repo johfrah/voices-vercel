@@ -33,7 +33,8 @@ export async function GET() {
       allStrings = await db.select().from(translationRegistry);
     } catch (dbErr) {
       console.warn(' [TurboHeal API] Drizzle failed to fetch registry, falling back to SDK');
-      const { data } = await supabase.from('translation_registry').select('*');
+      const { data, error } = await supabase.from('translation_registry').select('*');
+      if (error) throw error;
       allStrings = (data || []).map(s => ({
         id: s.id,
         stringHash: s.string_hash,
