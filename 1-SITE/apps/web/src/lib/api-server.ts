@@ -335,17 +335,13 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       
       console.log(' [getActors] SDK Fallback SUCCESS: Found', sdkData?.length, 'actors');
       
-      // Fetch demos, languages and tones for these actors in batch via SDK
+      // Fetch demos for these actors in batch via SDK
       const actorIds = (sdkData || []).map(a => a.id);
-      const [demosRes, actorLangsRes, actorTonesRes] = await Promise.all([
-        supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true),
-        supabase.from('actor_languages').select('*, language:languages(*)').in('actor_id', actorIds),
-        supabase.from('actor_tones').select('*, tone:voice_tones(*)').in('actor_id', actorIds)
+      const [demosRes] = await Promise.all([
+        supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true)
       ]);
       
       const demosData = demosRes.data || [];
-      const actorLangsData = actorLangsRes.data || [];
-      const actorTonesData = actorTonesRes.data || [];
         
       dbResults = (sdkData || []).map(a => ({
         ...a,
@@ -383,14 +379,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         deliveryDateMin: a.delivery_date_min,
         deliveryDateMinPriority: a.delivery_date_min_priority,
         demos: demosData.filter(d => d.actor_id === a.id),
-        actorLanguages: actorLangsData.filter(al => al.actor_id === a.id).map(al => ({
-          ...al,
-          language: al.language
-        })),
-        actorTones: actorTonesData.filter(at => at.actor_id === a.id).map(at => ({
-          ...at,
-          tone: at.tone
-        }))
+        actorLanguages: [],
+        actorTones: []
       }));
       
       console.log(' [getActors] dbResults mapped from SDK:', dbResults.length);
