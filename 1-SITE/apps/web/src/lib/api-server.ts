@@ -310,6 +310,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         .eq('status', 'live')
         .eq('is_public', true);
         
+      /*
       if (dbLang || lang) {
         const targetLang = dbLang || lang;
         if (targetLang === 'nl') {
@@ -318,8 +319,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
         }
       }
+      */
       
-      const { data: sdkData, error: sdkError } = await query.limit(100);
+      const { data: sdkData, error: sdkError } = await query.limit(20);
         
       if (sdkError) {
         console.error(' [getActors] SDK Fallback also failed:', sdkError);
