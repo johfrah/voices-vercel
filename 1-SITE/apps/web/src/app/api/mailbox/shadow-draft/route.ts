@@ -34,7 +34,8 @@ export async function POST(request: Request) {
     const relevantSentMails = await db.execute(sql`
       SELECT text_body as "textBody", subject
       FROM mail_content
-      WHERE sender ILIKE ${'%' + (process.env.ADMIN_EMAIL || 'admin@voices.be') + '%'}
+      WHERE sender ILIKE ${'%' + (process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email) + '%'}
+      OR sender ILIKE '%voices.%'
       AND embedding IS NOT NULL
       AND text_body IS NOT NULL
       ORDER BY embedding <=> ${formattedVector}::vector
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
       styleSample = relevantSentMails.map((m: any) => `ONDERWERP: ${m.subject}\nANTWOORD: ${m.textBody}`).join('\n---\n');
     } else {
       const fallbackMails = await db.query.mailContent.findMany({
-        where: sql`sender ILIKE ${'%' + (process.env.ADMIN_EMAIL || 'admin@voices.be') + '%'}`,
+        where: sql`sender ILIKE ${'%' + (process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email) + '%'} OR sender ILIKE '%voices.%'`,
         limit: 3,
         orderBy: [desc(mailContent.date)]
       });

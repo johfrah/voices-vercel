@@ -1007,7 +1007,7 @@ export default function GlobalNav() {
                           <VoiceglotText translationKey="nav.access.admin" defaultText="Admin" />
                         </div>
                       )}
-                      {(auth.user?.email?.includes(market.market_code.toLowerCase() === 'be' ? 'voices.be' : 'voices.eu') || isAdmin) && (
+                      {(auth.user?.email?.includes('voices.') || isAdmin) && (
                         <div className="px-2 py-0.5 bg-blue-500 text-white text-[9px] font-bold rounded-md tracking-wider uppercase">
                           <VoiceglotText translationKey="nav.access.partner" defaultText="Partner" />
                         </div>

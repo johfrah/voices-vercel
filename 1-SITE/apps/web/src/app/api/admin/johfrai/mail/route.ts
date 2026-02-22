@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(await audioFile.arrayBuffer());
     const mailEngine = VoicesMailEngine.getInstance();
-    const host = request.headers.get('host') || 'voices.be';
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
 
     // CHRIS-PROTOCOL: Gebruik de DirectMailService via VoicesMailEngine voor attachments

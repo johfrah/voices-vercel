@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     let utmCampaign = null;
 
     try {
-      const host = request.headers.get('host') || 'voices.be';
+      const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
       const url = new URL(pathname, `https://${host}`);
       utmSource = url.searchParams.get('utm_source');
       utmMedium = url.searchParams.get('utm_medium');

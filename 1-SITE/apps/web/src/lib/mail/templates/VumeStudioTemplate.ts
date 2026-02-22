@@ -36,7 +36,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     date, 
     time, 
     location = 'Molenbeek (Jules Delhaizestraat 42-2, 1080 Molenbeek)', 
-    host = 'voices.be', 
+    host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be'), 
     language = 'nl', 
     headerImage,
     instructorName = 'Johfrah Lefebvre',

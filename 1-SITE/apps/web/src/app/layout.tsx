@@ -196,7 +196,7 @@ export default async function RootLayout({
     "founder": (!isPortfolioMarket && !isArtistMarket) ? {
       "@type": "Person",
       "name": "Johfrah Lefebvre",
-      "sameAs": "https://www.johfrah.be"
+      "sameAs": "https://www.voices.be"
     } : undefined
   };
 

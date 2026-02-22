@@ -14,7 +14,7 @@ interface MagicLinkOptions {
 }
 
 export function VumeMagicLinkTemplate(options: MagicLinkOptions) {
-  const { name, link, host = 'voices.be', language = 'nl' } = options;
+  const { name, link, host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be'), language = 'nl' } = options;
 
   const content = {
     nl: {

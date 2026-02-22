@@ -84,7 +84,7 @@ export async function middleware(request: NextRequest) {
   // Als de site in 'under construction' modus staat, laten we alleen admins door.
   // We gebruiken een environment variable of een cookie voor de bypass.
   const forceUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true';
-  const isMainDomain = host.includes('voices.be') || host.includes('voices.nl') || host.includes('voices.fr') || host.includes('voices.eu');
+  const isMainDomain = host.includes('voices.') || host.includes('ademing.be') || host.includes('johfrah.be') || host.includes('youssefzaki.eu');
   const isUnderConstruction = false; // Bob: De gate staat nu definitief open voor de lancering! 🚀🏗️
 
   // 1.8 LEGACY REDIRECTS (v2.24)

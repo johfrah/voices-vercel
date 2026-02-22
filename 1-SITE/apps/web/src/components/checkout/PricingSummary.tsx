@@ -222,7 +222,7 @@ export const PricingSummary: React.FC<{
                 {/* Afbeelding links uitgelijnd (LAYA-MANDAAT) */}
                 <ContainerInstrument className="w-16 h-16 rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
                   <Image  
-                    src={item.actor?.photo_url || '/mic-placeholder.png'} 
+                    src={item.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice} 
                     alt={item.actor?.display_name || 'Item'} 
                     fill 
                     sizes="64px"

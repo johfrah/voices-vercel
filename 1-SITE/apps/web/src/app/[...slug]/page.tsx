@@ -28,7 +28,7 @@ const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalcula
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
  */
-function generateActorSchema(actor: any, marketName: string = 'Voices', host: string = 'voices.be') {
+function generateActorSchema(actor: any, marketName: string = 'Voices', host: string = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be')) {
   const baseUrl = `https://${host}`;
   
   // Map internal delivery type to ISO 8601 duration
@@ -73,7 +73,7 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Artists
  */
-function generateArtistSchema(artist: any, host: string = 'voices.be') {
+function generateArtistSchema(artist: any, host: string = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be')) {
   return {
     "@context": "https://schema.org",
     "@type": "MusicGroup",
@@ -140,7 +140,7 @@ interface SmartRouteParams {
 
 export async function generateMetadata({ params }: { params: SmartRouteParams }): Promise<Metadata> {
   const headersList = headers();
-  const host = headersList.get('host') || 'voices.be';
+  const host = headersList.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
   const { MarketManager } = await import('@/packages/config/market-manager');
   const market = MarketManager.getCurrentMarket(host);
   const lang = headersList.get('x-voices-lang') || 'nl';
@@ -364,7 +364,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   if (firstSegment === 'pitch' && journey) {
     try {
       const { MarketManager } = await import('@/packages/config/market-manager');
-      const host = headersList.get('host') || 'voices.be';
+      const host = headersList.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
       const market = MarketManager.getCurrentMarket(host);
 
       //  CHRIS-PROTOCOL: Fetch real casting list from DB
