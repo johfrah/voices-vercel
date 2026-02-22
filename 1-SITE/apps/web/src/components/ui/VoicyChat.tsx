@@ -438,12 +438,14 @@ export const VoicyChatV2: React.FC = () => {
   //  Determine Journey
   const isAcademyJourney = pathname?.includes('/academy');
   const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
-  const isPortfolioJourney = market.market_code === 'PORTFOLIO';
-  const isArtistPage = market.market_code === 'ARTIST' || pathname?.startsWith('/voice/');
-  const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
+  
+  // 🛡️ CHRIS-PROTOCOL: Use existing definitions from top of component
+  // const isPortfolioJourney = market.market_code === 'PORTFOLIO';
+  // const isArtistPage = market.market_code === 'ARTIST' || pathname?.startsWith('/voice/');
+  // const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
 
-  const activeEmail = market.email;
-  const activePhone = market.phone;
+  // const activeEmail = market.email;
+  // const activePhone = market.phone;
 
   //  Get current language
   const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';
