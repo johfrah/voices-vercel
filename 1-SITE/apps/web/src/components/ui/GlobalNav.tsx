@@ -79,7 +79,7 @@ const HeaderIcon = ({
           playClick('soft');
           if (onClick) onClick();
         }}
-        className={`w-10 h-10 rounded-[10px] transition-all duration-500 cursor-pointer group/icon flex items-center justify-center relative ${
+        className={`w-10 h-10 rounded-full transition-all duration-500 cursor-pointer group/icon flex items-center justify-center relative ${
           isActive ? 'bg-primary text-white shadow-aura-sm' : 'hover:bg-va-black/5 text-va-black/40 hover:text-va-black'
         }`}
       >
@@ -968,7 +968,7 @@ export default function GlobalNav() {
 
         {/*  LANGUAGE ICON */}
         {showLanguage && (
-          <LanguageSwitcher className={`w-10 h-10 rounded-[10px] transition-all duration-500 cursor-pointer group flex items-center justify-center relative ${
+          <LanguageSwitcher className={`w-10 h-10 rounded-full transition-all duration-500 cursor-pointer group flex items-center justify-center relative ${
             pathname.includes('/lang/') ? 'bg-primary text-white shadow-aura-sm' : 'hover:bg-va-black/5 text-va-black/40 hover:text-va-black'
           }`} />
         )}
@@ -978,7 +978,7 @@ export default function GlobalNav() {
           <HeaderIcon 
             icon={User} 
             alt={t('nav.account_alt', 'Account')}
-            isActive={auth.isAuthenticated}
+            isActive={auth.isAuthenticated && pathname.startsWith('/account')}
           >
             {auth.isAuthenticated ? (
               <ContainerInstrument plain className="p-1 space-y-0.5">

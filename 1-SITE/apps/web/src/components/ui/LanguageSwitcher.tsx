@@ -137,7 +137,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           playClick('soft');
           setIsOpen(!isOpen);
         }}
-        className={className || `relative p-1 rounded-[8px] transition-all duration-500 cursor-pointer group flex items-center justify-center min-w-[32px] h-[32px] ${
+        className={className || `relative p-1 rounded-full transition-all duration-500 cursor-pointer group flex items-center justify-center min-w-[32px] h-[32px] ${
           isOpen 
             ? 'bg-primary/10 text-primary' 
             : market.market_code === 'ARTIST' 
