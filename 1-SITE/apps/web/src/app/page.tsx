@@ -112,8 +112,9 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
     }));
   };
 
-    // COMMERCIAL & TELEPHONY FILTERING (VoiceFilterEngine Mandate 2026)
     const filteredActors = useMemo(() => {
+      if (!actors || actors.length === 0) return [];
+      
       console.log(`[HomeContent] Filtering ${actors.length} actors with criteria:`, {
         journey: masterControlState.journey,
         language: masterControlState.filters.language,
