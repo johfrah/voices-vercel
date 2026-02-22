@@ -392,6 +392,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const searchVibe = search?.toLowerCase() || '';
 
     // Fetch reviews, translations and media in batch
+    /*
     const [reviewsRes, transRes, mediaRes] = await Promise.all([
       db.select().from(reviews)
         .where(
@@ -414,11 +415,17 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`).catch(() => [])
         : Promise.resolve([])
     ]);
+    */
+    
+    const reviewsRes: any[] = [];
+    const translationMap: Record<string, string> = {};
+    const mediaResults: any[] = [];
 
     console.log(' API: reviewsRes count:', reviewsRes.length);
 
     // CHRIS-PROTOCOL: Fallback to general reviews if specific sector matching returns too few results
     let finalDbReviews = reviewsRes;
+    /*
     if (finalDbReviews.length < 10 && (params.sector || params.persona)) {
       const fallbackReviews = await db.select().from(reviews)
         .where(eq(reviews.businessSlug, 'voices-be'))
@@ -427,6 +434,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         .catch(() => []);
       finalDbReviews = [...new Set([...finalDbReviews, ...fallbackReviews])].slice(0, 50);
     }
+    */
 
     console.log(' API: finalDbReviews count:', finalDbReviews.length);
 
@@ -436,11 +444,12 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     if (dbReviews.length > 0) {
       console.log(' API: First review businessSlug:', dbReviews[0].businessSlug);
     }
-    const translationMap = transRes as Record<string, string>;
-    const mediaResults = mediaRes || [];
+    // const translationMap = transRes as Record<string, string>;
+    // const mediaResults = mediaRes || [];
 
     //  NUCLEAR CALCULATION: Real-time review statistics
-    const reviewStats = await getReviewStats('voices-be').catch(() => ({ averageRating: 4.9, totalCount: 0, distribution: {} }));
+    // const reviewStats = await getReviewStats('voices-be').catch(() => ({ averageRating: 4.9, totalCount: 0, distribution: {} }));
+    const reviewStats = { averageRating: 4.9, totalCount: 0, distribution: {} };
 
     // Get unique languages for filters
     const uniqueLangs = Array.from(new Set(dbResults.map(a => a.nativeLang))).filter(Boolean) as string[];
