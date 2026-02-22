@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
 
     // 6. Notificatie naar Johfrah (Admin Only)
     const mailService = DirectMailService.getInstance();
-    const host = request.headers.get('host') || 'voices.be';
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
 
     const adminHtml = `
@@ -158,8 +158,10 @@ export async function POST(request: NextRequest) {
       </div>
     `;
 
+    const adminEmail = process.env.ADMIN_EMAIL || 'johfrah@voices.be';
+
     await mailService.sendMail({
-      to: 'johfrah@voices.be',
+      to: adminEmail,
       subject: `🚀 Nieuwe Casting: ${projectName} (${clientCompany})`,
       html: adminHtml,
       host: host

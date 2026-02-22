@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) {
     // Als niet ingelogd, redirect naar login met return URL
-    const host = request.headers.get('host') || 'voices.be';
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const loginUrl = new URL('/account', `https://${host}`);
     loginUrl.searchParams.set('returnTo', request.nextUrl.pathname + request.nextUrl.search);
     return NextResponse.redirect(loginUrl);

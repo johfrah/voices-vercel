@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
   
   if (aiBots.some(bot => userAgent.toLowerCase().includes(bot))) {
     console.warn(` NUCLEAR BLOCK: AI Bot detected [${userAgent}] at ${pathname}`)
-    return new NextResponse('AI Training and Scraping is strictly prohibited on Voices.be.', { status: 403 })
+    return new NextResponse('AI Training and Scraping is strictly prohibited.', { status: 403 })
   }
 
   // 1. SECURITY & ASSET BYPASS
@@ -84,7 +84,7 @@ export async function middleware(request: NextRequest) {
   // Als de site in 'under construction' modus staat, laten we alleen admins door.
   // We gebruiken een environment variable of een cookie voor de bypass.
   const forceUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true';
-  const isMainDomain = host === 'voices.be' || host === 'www.voices.be';
+  const isMainDomain = host.includes('voices.be') || host.includes('voices.nl') || host.includes('voices.fr') || host.includes('voices.eu');
   const isUnderConstruction = false; // Bob: De gate staat nu definitief open voor de lancering! 🚀🏗️
 
   // 1.8 LEGACY REDIRECTS (v2.24)
@@ -134,7 +134,7 @@ export async function middleware(request: NextRequest) {
   }
   
   // DOMAIN BYPASS: Specifieke domeinen en staging mogen ALTIJD door (Johfrah, Ademing, Youssef, Staging)
-  const isBypassDomain = host.includes('staging.voices.be') ||
+  const isBypassDomain = host.includes('staging.') ||
                          host.includes('johfrah.be') || 
                          host.includes('ademing.be') || 
                          host.includes('youssefzaki.eu') ||
@@ -180,17 +180,26 @@ export async function middleware(request: NextRequest) {
   }
 
   // 2. MARKET DETECTION
+  const marketMap: Record<string, string> = {
+    'voices.nl': 'NLNL',
+    'voices.fr': 'FR',
+    'voices.es': 'ES',
+    'voices.eu': 'EU',
+    'voices.pt': 'PT',
+    'voices.academy': 'ACADEMY',
+    'ademing.be': 'ADEMING',
+    'johfrai.be': 'JOHFRAI',
+    'johfrah.be': 'PORTFOLIO',
+    'youssefzaki.eu': 'ARTIST'
+  }
+
   let market = 'BE'
-  if (host.includes('voices.nl')) market = 'NLNL'
-  else if (host.includes('voices.fr')) market = 'FR'
-  else if (host.includes('voices.es')) market = 'ES'
-  else if (host.includes('voices.eu')) market = 'EU'
-  else if (host.includes('voices.pt')) market = 'PT'
-  else if (host.includes('voices.academy')) market = 'ACADEMY'
-  else if (host.includes('ademing.be')) market = 'ADEMING'
-  else if (host.includes('johfrai.be')) market = 'JOHFRAI'
-  else if (host.includes('johfrah.be')) market = 'PORTFOLIO'
-  else if (host.includes('youssefzaki.eu')) market = 'ARTIST'
+  for (const [domain, code] of Object.entries(marketMap)) {
+    if (host.includes(domain)) {
+      market = code
+      break
+    }
+  }
 
   // 2.5 SUB-JOURNEY DETECTION (v2.30)
   // Voices.be/studio en /academy zijn aparte journeys met eigen branding/socials
@@ -204,8 +213,23 @@ export async function middleware(request: NextRequest) {
 
   // 3. JOURNEY ROUTING (DOMAIN BASED REWRITES)
   
+  //  CHRIS-PROTOCOL: Localhost Journey Protection
+  if (host.includes('localhost')) {
+    const explicitJourneys = ['/agency', '/artist', '/voice', '/academy', '/ademing', '/johfrai', '/account', '/admin', '/price', '/tarieven'];
+    const firstPart = pathname.split('/').filter(Boolean)[0];
+    const topLevelSubRoutes = ['demos', 'host', 'tarieven', 'contact', 'bestellen', 'over-mij'];
+    
+    if (!explicitJourneys.some(j => pathname.startsWith(j)) && topLevelSubRoutes.includes(firstPart)) {
+      url.pathname = `/portfolio/johfrah/${firstPart}`;
+      const subRouteResponse = NextResponse.rewrite(url);
+      subRouteResponse.headers.set('x-voices-pathname', pathname);
+      subRouteResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`);
+      return subRouteResponse;
+    }
+  }
+
   // Portfolio Journey
-  if (host.includes('johfrah.be')) {
+  if (market === 'PORTFOLIO') {
     //  CHRIS-PROTOCOL: Map all root requests to the Johfrah portfolio directory
     const targetPath = pathname === '/' ? '' : pathname;
     url.pathname = `/portfolio/johfrah${targetPath}`;
@@ -216,40 +240,8 @@ export async function middleware(request: NextRequest) {
     return portfolioResponse
   }
 
-    //  CHRIS-PROTOCOL: Localhost Journey Protection
-    // Voorkom dat specifieke journey routes op localhost in de knoop raken.
-    if (host.includes('localhost')) {
-      // Laat expliciete journey-paden ALTIJD door op localhost
-      const explicitJourneys = ['/agency', '/artist', '/voice', '/academy', '/ademing', '/johfrai', '/account', '/admin', '/price', '/tarieven'];
-      if (explicitJourneys.some(j => pathname.startsWith(j))) {
-        // Continue to final headers
-      } else if (pathname.startsWith('/portfolio/')) {
-        const parts = pathname.split('/').filter(Boolean);
-        const knownPortfolioSlugs = ['johfrah', 'youssef', 'ademing'];
-        
-        if (parts.length < 2 || !knownPortfolioSlugs.includes(parts[1].toLowerCase())) {
-          url.pathname = '/portfolio/johfrah'
-          return NextResponse.redirect(url)
-        }
-      } else {
-        //  CHRIS-PROTOCOL: Handle sub-routes on localhost for testing
-        const topLevelSubRoutes = ['demos', 'host', 'tarieven', 'contact', 'bestellen', 'over-mij'];
-        const firstPart = pathname.split('/').filter(Boolean)[0];
-        const referer = request.headers.get('referer') || '';
-        const isFromPortfolio = referer.includes('/portfolio/johfrah');
-
-        if (topLevelSubRoutes.includes(firstPart) && isFromPortfolio) {
-          url.pathname = `/portfolio/johfrah/${firstPart}`;
-          const subRouteResponse = NextResponse.rewrite(url);
-          subRouteResponse.headers.set('x-voices-pathname', pathname);
-          subRouteResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`);
-          return subRouteResponse;
-        }
-      }
-    }
-
   // JOHFRAI AI DOMAIN
-  if (host.includes('johfrai.be')) {
+  if (market === 'JOHFRAI') {
     url.pathname = `/johfrai${pathname === '/' ? '' : pathname}`
     const johfraiResponse = NextResponse.rewrite(url)
     johfraiResponse.headers.set('x-voices-market', 'JOHFRAI')
@@ -259,7 +251,7 @@ export async function middleware(request: NextRequest) {
   }
   
   // ARTIST DOMAIN (YOUSSEF) - STRICT ISOLATION
-  if (host.includes('youssefzaki.eu') || (host.includes('localhost') && pathname.startsWith('/artist/youssef'))) {
+  if (market === 'ARTIST' || (host.includes('localhost') && pathname.startsWith('/artist/youssef'))) {
     const targetPath = pathname.replace('/artist/youssef', '') || '/';
     url.pathname = `/artist/youssef${targetPath}`;
     const artistResponse = NextResponse.rewrite(url)
@@ -282,7 +274,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Meditation Journey (ADEMING)
-  if (host.includes('ademing.be')) {
+  if (market === 'ADEMING') {
     url.pathname = `/ademing${pathname === '/' ? '' : pathname}`
     const ademingResponse = NextResponse.rewrite(url)
     ademingResponse.headers.set('x-voices-market', 'ADEMING')

@@ -55,7 +55,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const logoHtml = `
     <tr>
       <td align="center" style="padding-bottom: 40px;">
-                  <img src="https://www.voices.be/assets/common/branding/logo-color.png" alt="Voices.be" width="140" style="display: block; border: 0;" />
+                  <img src="https://www.voices.be${market.logo_url}" alt="${market.name}" width="140" style="display: block; border: 0;" />
       </td>
     </tr>
   `;
@@ -70,9 +70,9 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
         </td>
         <td style="vertical-align: middle; padding-left: 31px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">
           <span style="font-weight: 700; color: ${isDark ? '#FFFFFF' : '#1A1A1A'};">Johfrah Lefebvre</span><br />
-          <a href="mailto:johfrah@voices.be" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">johfrah@voices.be</a><br />
-          <a href="tel:+3227931991" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">+3227931991</a><br />
-          <a href="https://www.voices.be/?utm_source=E-mail&utm_medium=be-mail" style="color: #1155CC; text-decoration: none; font-weight: 500;">www.voices.be</a>
+          <a href="mailto:${market.email}" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">${market.email}</a><br />
+          <a href="tel:${market.phone.replace(/\s+/g, '')}" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">${market.phone}</a><br />
+          <a href="https://${host}/?utm_source=E-mail&utm_medium=be-mail" style="color: #1155CC; text-decoration: none; font-weight: 500;">www.${host}</a>
         </td>
       </tr>
     </table>
@@ -82,7 +82,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; text-align: center; color: #999999; font-family: 'Raleway', sans-serif; font-size: 12px; line-height: 1.5;">
       <tr>
         <td style="padding-bottom: 20px;">
-          &copy; 2026 ${market.company_name} &bull; Voices.be<br />
+          &copy; 2026 ${market.company_name} &bull; ${market.name}<br />
           ${optOutUrl ? `<a href="${optOutUrl}" style="color: #999999; text-decoration: underline;">Uitschrijven</a> voor marketing-mails` : ''}
         </td>
       </tr>

@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { type, data } = body;
 
-    const host = request.headers.get('host') || 'voices.be';
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
 

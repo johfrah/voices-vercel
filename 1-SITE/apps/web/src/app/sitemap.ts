@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [];
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.voices.be';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
   const languages = ['', '/en', '/fr', '/de']; // Ondersteunde talen
 
   // 1. Core Pages (Statisch) - Nuclear Deployment Trigger 2026.1

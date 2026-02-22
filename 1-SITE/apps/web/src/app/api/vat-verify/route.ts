@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
+import { ViesService } from '@/services/ViesService';
 
 /**
  *  NUCLEAR VIES VALIDATION (2026)
  * 
- * Gebruikt de VatComply API als betrouwbare proxy voor de EU VIES service.
- * Dit omzeilt de fragiele SOAP connectie en firewall issues van de EU servers.
+ * Gebruikt de ViesService voor betrouwbare validatie via de EU VIES API.
  */
 
 export async function GET(request: Request) {
@@ -15,51 +15,31 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'VAT number required' }, { status: 400 });
   }
 
-  // Schoon het nummer op
-  const cleanVat = vatNumber.replace(/[^A-Z0-9]/gi, '').toUpperCase();
-
-  if (cleanVat.length < 5) {
-    return NextResponse.json({ valid: false, error: 'Invalid format' });
-  }
-
   try {
-    console.log(`[VIES] Validating VAT: ${cleanVat} via VatComply`);
-    
-    const response = await fetch(`https://api.vatcomply.com/vat?vat_number=${cleanVat}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
-      next: { revalidate: 3600 }, 
-      signal: AbortSignal.timeout(5000)
-    });
+    const vies = ViesService.getInstance();
+    const data = await vies.validateVat(vatNumber);
 
-    if (!response.ok) {
-      throw new Error(`VatComply returned ${response.status}`);
+    if (!data) {
+      throw new Error('VIES validation failed');
     }
 
-    const data = await response.json();
-
     return NextResponse.json({
-      vatNumber: cleanVat,
-      valid: data.valid,
-      companyName: data.name && data.name !== '---' ? data.name : null,
-      address: data.address && data.address !== '---' ? data.address : null,
-      countryCode: data.country_code,
+      vatNumber: data.vatNumber,
+      valid: data.isValid,
+      companyName: data.name,
+      address: data.address,
+      countryCode: data.countryCode,
       timestamp: new Date().toISOString(),
-      source: 'VatComply (VIES Proxy)'
+      source: 'EU VIES API'
     });
 
   } catch (error) {
     console.error(' VIES Validation Error:', error);
     
-    //  GRACEFUL FAIL: Als de service down is, blokkeren we de gebruiker niet
-    // maar we geven wel aan dat we niet konden valideren.
     return NextResponse.json({ 
       error: 'SERVICE_UNAVAILABLE',
       details: error instanceof Error ? error.message : 'Unknown error',
-      vatNumber: cleanVat,
-      valid: null, // null betekent: we weten het niet
+      valid: null,
       message: 'BTW-verificatie tijdelijk niet beschikbaar. Je kunt handmatig verder gaan.'
     });
   }

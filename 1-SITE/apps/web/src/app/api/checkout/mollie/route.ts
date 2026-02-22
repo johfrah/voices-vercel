@@ -222,9 +222,11 @@ export async function POST(request: Request) {
             (async () => {
               try {
                 const { VumeEngine } = await import('@/lib/mail/VumeEngine');
+                const { MarketManager } = await import('@config/market-manager');
+                const market = MarketManager.getCurrentMarket(host);
                 await VumeEngine.send({
                   to: email,
-                  subject: 'Welkom bij Voices.be',
+                  subject: `Welkom bij ${market.name}`,
                   template: 'new-account',
                   context: { name: first_name || 'Klant', language: 'nl' },
                   host: host
@@ -404,8 +406,10 @@ export async function POST(request: Request) {
     }
 
     if (mollieLines.length === 0 && amount > 0) {
+      const { MarketManager } = await import('@config/market-manager');
+      const market = MarketManager.getCurrentMarket(host);
       mollieLines.push({
-        name: `Voices.be ${newOrder.journey.charAt(0).toUpperCase() + newOrder.journey.slice(1)}`,
+        name: `${market.name} ${newOrder.journey.charAt(0).toUpperCase() + newOrder.journey.slice(1)}`,
         quantity: 1,
         unitPrice: { currency: 'EUR', value: amount.toFixed(2) },
         totalAmount: { currency: 'EUR', value: amount.toFixed(2) },

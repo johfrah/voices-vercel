@@ -41,7 +41,7 @@ async function getMarketSafe(host: string) {
   try {
     return await MarketManager.getCurrentMarketAsync(host);
   } catch {
-    return MarketManager.getCurrentMarket("voices.be");
+    return MarketManager.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || "voices.be");
   }
 }
 const raleway = Raleway({ subsets: ["latin"], variable: '--font-raleway' });
@@ -55,7 +55,7 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
-  const host = headersList.get("x-voices-host") || headersList.get("host") || "voices.be";
+  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || "voices.be";
   const pathname = headersList.get('x-voices-pathname') || '';
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
@@ -77,8 +77,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: {
-      default: isAdeming ? "Ademing | Kom tot rust" : isPortfolioMarket ? `${market.name} | Vlaamse Voice-over & Regisseur` : isArtistMarket ? `${market.name} | Artist & Singer` : "Voices | Het Vriendelijkste Stemmenbureau",
-      template: isAdeming ? "%s | Ademing" : isPortfolioMarket ? `%s | ${market.name}` : isArtistMarket ? `%s | ${market.name}` : "%s | Voices",
+      default: isAdeming ? "Ademing | Kom tot rust" : isPortfolioMarket ? `${market.name} | Vlaamse Voice-over & Regisseur` : isArtistMarket ? `${market.name} | Artist & Singer` : `${market.name} | Het Vriendelijkste Stemmenbureau`,
+      template: isAdeming ? "%s | Ademing" : isPortfolioMarket ? `%s | ${market.name}` : isArtistMarket ? `%s | ${market.name}` : `%s | ${market.name}`,
     },
     description: market.seo_data?.description || (isAdeming 
       ? "Adem in. Kom tot rust. Luister en verbind met de stilte in jezelf." 
@@ -130,7 +130,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const headersList = headers();
-  const host = headersList.get("x-voices-host") || headersList.get("host") || "voices.be";
+  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || "voices.be";
   const pathname = headersList.get('x-voices-pathname') || '';
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)

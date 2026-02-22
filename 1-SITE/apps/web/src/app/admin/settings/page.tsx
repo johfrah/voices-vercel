@@ -44,12 +44,12 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [configs, setConfigs] = useState<any>({
     company_info: {
-      name: 'Voices.be',
-      address: 'Gent, België',
-      email: 'hello@voices.be',
-      phone: '+32 9 000 00 00',
-      vat: 'BE0000.000.000',
-      iban: 'BE00 0000 0000 0000'
+      name: '',
+      address: '',
+      email: '',
+      phone: '',
+      vat: '',
+      iban: ''
     },
     general_settings: {
       opening_hours: {

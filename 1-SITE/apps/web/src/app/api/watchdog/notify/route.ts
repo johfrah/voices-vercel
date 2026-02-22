@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
   try {
     const { message, cause, url, digest } = await request.json();
-    const recipient = 'johfrah@voices.be';
+    const recipient = process.env.ADMIN_EMAIL || 'johfrah@voices.be';
     
     console.error(` [WATCHDOG] Error detected at ${url}: ${message}`);
 

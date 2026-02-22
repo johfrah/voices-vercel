@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@db';
 import { partnerWidgets, actors, orders, orderItems } from '@db/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { eq, inArray, sql } from 'drizzle-orm';
 
 /**
  *  System (INTEGRATED AGENCY PORTAL) PARTNER API
@@ -45,9 +45,14 @@ export async function GET(request: NextRequest) {
     }
 
     if (action === 'orders') {
-      // In een echte System scenario zouden we orders filteren op partner_id
-      // Voor nu geven we een placeholder of filteren we op meta_data
-      return NextResponse.json({ message: "Partner orders coming soon in Godmode" });
+      // Haal orders op voor deze partner (gefilterd op partnerId in metadata)
+      const partnerOrders = await db
+        .select()
+        .from(orders)
+        .where(sql`${orders.rawMeta}->>'partner_id' = ${partnerId}`)
+        .limit(50);
+
+      return NextResponse.json(partnerOrders);
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });

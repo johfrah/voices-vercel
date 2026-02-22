@@ -25,13 +25,13 @@ export class VoicesMailEngine {
    * Genereert de standaard Voices HTML wrapper
    * Geoptimaliseerd voor maximale compatibiliteit (Spark, Outlook, Gmail)
    */
-  private getHtmlWrapper(content: string, lang: string = 'nl'): string {
+  private getHtmlWrapper(content: string, lang: string = 'nl', marketName: string = 'Voices'): string {
     return `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="${lang}">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <title>Voices.be</title>
+  <title>${marketName}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@200;300;400&display=swap');
@@ -51,7 +51,7 @@ export class VoicesMailEngine {
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 40px; padding: 60px 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.02);">
           <tr>
             <td align="center" style="padding-bottom: 40px;">
-              <div style="font-size: 13px; letter-spacing: 0.4em; text-transform: uppercase; color: #cccccc;">Voices</div>
+              <div style="font-size: 13px; letter-spacing: 0.4em; text-transform: uppercase; color: #cccccc;">${marketName}</div>
             </td>
           </tr>
           <tr>
@@ -63,7 +63,7 @@ export class VoicesMailEngine {
             <td align="center" style="padding-top: 40px;">
               <div style="width: 40px; height: 1px; background-color: #eeeeee; margin-bottom: 30px;"></div>
               <div style="font-size: 10px; letter-spacing: 0.2em; color: #bbbbbb; text-transform: uppercase;">
-                © 2026 Voices.be
+                © 2026 ${marketName}
               </div>
             </td>
           </tr>
@@ -89,8 +89,10 @@ export class VoicesMailEngine {
     from?: string;
     host?: string;
     lang?: string;
+    marketName?: string;
   }) {
     const lang = options.lang || 'nl';
+    const marketName = options.marketName || 'Voices';
     
     const contentHtml = `
       <h1 style="font-size: 36px; font-weight: 200; letter-spacing: -0.02em; margin: 0 0 24px 0; color: #1a1a1a;">${options.title}</h1>
@@ -108,10 +110,10 @@ export class VoicesMailEngine {
       ` : ''}
     `;
 
-    const fullHtml = this.getHtmlWrapper(contentHtml, lang);
+    const fullHtml = this.getHtmlWrapper(contentHtml, lang, marketName);
     
     // Plain text fallback voor clients die geen HTML lusten
-    const plainText = `${options.title}\n\n${options.body}\n\n${options.buttonUrl ? `${options.buttonText || 'Link'}: ${options.buttonUrl}` : ''}\n\n© 2026 Voices.be`;
+    const plainText = `${options.title}\n\n${options.body}\n\n${options.buttonUrl ? `${options.buttonText || 'Link'}: ${options.buttonUrl}` : ''}\n\n© 2026 ${marketName}`;
 
     await this.mailService.sendMail({
       to: options.to,
@@ -127,21 +129,25 @@ export class VoicesMailEngine {
    * Specifieke helper voor de Magic Link (meertalig)
    */
   public async sendMagicLink(email: string, link: string, lang: string = 'nl', host?: string) {
+    const { MarketManager } = require('@config/market-manager');
+    const market = MarketManager.getCurrentMarket(host);
+    const marketName = market.name || 'Voices';
+
     const templates: Record<string, any> = {
       nl: {
-        subject: 'Inloglink voor Voices.be',
+        subject: `Inloglink voor ${marketName}`,
         title: 'Welkom terug.',
         body: 'U heeft een verzoek ingediend om in te loggen op uw account. Gebruik de onderstaande knop om direct toegang te krijgen tot uw account.',
         buttonText: 'Direct inloggen'
       },
       en: {
-        subject: 'Login link for Voices.be',
+        subject: `Login link for ${marketName}`,
         title: 'Welcome back.',
         body: 'You requested a login link for your account. Use the button below to gain direct access to your account.',
         buttonText: 'Log in now'
       },
       fr: {
-        subject: 'Lien de connexion pour Voices.be',
+        subject: `Lien de connexion pour ${marketName}`,
         title: 'Bon retour.',
         body: 'Vous avez demandé un lien de connexion voor uw account. Utilisez le bouton ci-dessous pour accéder directement à votre account.',
         buttonText: 'Se connecter maintenant'
@@ -158,7 +164,8 @@ export class VoicesMailEngine {
       buttonText: t.buttonText,
       buttonUrl: link,
       lang,
-      host
+      host,
+      marketName
     });
   }
 

@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
-    const host = request.headers.get('host') || 'voices.be';
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
 
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       else if (key.startsWith('actor.')) contextHint = "Dit is informatie over een stemacteur.";
 
       const prompt = `
-        Je bent de senior vertaler voor Voices.be, een high-end castingbureau voor stemmen.
+        Je bent de senior vertaler voor een high-end castingbureau voor stemmen.
         Vertaal de volgende tekst van het Nederlands naar het ${currentLang}.
         
         Context: ${contextHint}

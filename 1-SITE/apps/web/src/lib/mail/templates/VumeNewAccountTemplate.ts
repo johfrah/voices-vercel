@@ -6,6 +6,8 @@ import { BaseTemplate } from './VumeMasterWrapper';
  * Doel: Welkomstbericht voor nieuwe klanten na hun eerste bestelling of aanvraag.
  */
 
+import { MarketManager } from '@config/market-manager';
+
 interface NewAccountProps {
   name: string;
   host?: string;
@@ -14,11 +16,12 @@ interface NewAccountProps {
 
 export const VumeNewAccountTemplate = (props: NewAccountProps) => {
   const { name, host, language = 'nl' } = props;
-  const isNl = language === 'nl';
+    const isNl = language === 'nl';
+    const market = MarketManager.getCurrentMarket(host);
 
-  const content = `
+    const content = `
     <div style="margin-bottom: 30px;">
-      <p style="font-size: 18px; color: #1a1a1a;">${isNl ? 'Welkom bij Voices,' : 'Welcome to Voices,'} ${name}!</p>
+      <p style="font-size: 18px; color: #1a1a1a;">${isNl ? `Welkom bij ${market.name},` : `Welcome to ${market.name},`} ${name}!</p>
       <p style="font-size: 16px; line-height: 1.6; color: #666;">
         ${isNl 
           ? 'Je account is succesvol aangemaakt. Vanaf nu heb je direct toegang tot je eigen dashboard waar je projecten kunt volgen, scripts kunt beheren en facturen kunt downloaden.' 
@@ -55,9 +58,9 @@ export const VumeNewAccountTemplate = (props: NewAccountProps) => {
   `;
 
   return BaseTemplate({
-    title: isNl ? 'Welkom bij Voices' : 'Welcome to Voices',
+    title: isNl ? `Welkom bij ${market.name}` : `Welcome to ${market.name}`,
     journey: 'agency',
-    market: 'BE',
+    market: market.market_code,
     children: content
   });
 };

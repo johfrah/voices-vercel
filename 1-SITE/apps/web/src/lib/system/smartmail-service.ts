@@ -49,7 +49,11 @@ export class SmartmailService {
    *  HITL: Mails worden nu eerst in de wachtrij geplaatst voor goedkeuring.
    */
   static async queueSmartmail(opportunity: SmartOpportunity) {
-    const url = process.env.EMAIL_SERVICE_URL || 'http://localhost:3001/api/v2/emails/queue';
+    const url = process.env.EMAIL_SERVICE_URL;
+    if (!url) {
+      console.warn('[Smartmail] No EMAIL_SERVICE_URL configured, skipping mail queue.');
+      return false;
+    }
     
     const response = await fetch(url, {
       method: 'POST',

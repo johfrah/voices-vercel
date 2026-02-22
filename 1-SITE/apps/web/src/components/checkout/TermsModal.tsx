@@ -68,7 +68,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
                   <VoiceglotText translationKey="legal.terms.section1.title" defaultText="1. Toepasselijkheid" />
                 </h4>
                 <p className="text-va-black/60 font-light leading-relaxed">
-                  <VoiceglotText translationKey="legal.terms.section1.text" defaultText="Deze algemene voorwaarden zijn van toepassing op alle aanbiedingen, offertes en overeenkomsten tussen Voices.be en haar opdrachtgevers. Door het plaatsen van een bestelling of het aanvragen van een offerte verklaart de opdrachtgever zich akkoord met deze voorwaarden." />
+                  <VoiceglotText translationKey="legal.terms.section1.text" defaultText="Deze algemene voorwaarden zijn van toepassing op alle aanbiedingen, offertes en overeenkomsten tussen ons en onze opdrachtgevers. Door het plaatsen van een bestelling of het aanvragen van een offerte verklaart de opdrachtgever zich akkoord met deze voorwaarden." />
                 </p>
               </section>
 
@@ -77,13 +77,13 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
                   <VoiceglotText translationKey="legal.terms.section2.title" defaultText="2. Tarieven en Betaling" />
                 </h4>
                 <p className="text-va-black/60 font-light leading-relaxed">
-                  <VoiceglotText translationKey="legal.terms.section2.text" defaultText="Alle genoemde tarieven zijn exclusief BTW, tenzij expliciet anders vermeld. Betaling dient te geschieden via de aangeboden betaalmethoden (Mollie) of, indien overeengekomen, per factuur binnen de gestelde termijn van 14 dagen." />
+                  <VoiceglotText translationKey="legal.terms.section2.text" defaultText="Alle genoemde tarieven zijn exclusief BTW, tenzij expliciet anders vermeld. Betaling dient te geschieden via de aangeboden betaalmethoden of, indien overeengekomen, per factuur binnen de gestelde termijn van 14 dagen." />
                 </p>
               </section>
 
               <section className="space-y-4">
                 <h4 className="text-lg font-bold text-va-black tracking-tight">
-                  <VoiceglotText translationKey="legal.terms.section3.title" defaultText="3. Levering en Gebruiksrechten" />
+                  <VoiceglotText translationKey="legal.terms.section3.title" defaultText="3. Levering en Gebruursrechten" />
                 </h4>
                 <p className="text-va-black/60 font-light leading-relaxed">
                   <VoiceglotText translationKey="legal.terms.section3.text" defaultText="De leveringstermijn wordt per project bepaald. De gebruiksrechten (buy-outs) zijn beperkt tot de media, regio en periode zoals gespecificeerd in de bestelling. Elk ander gebruik dient vooraf schriftelijk te worden overeengekomen en kan leiden tot aanvullende kosten." />
@@ -104,7 +104,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
                   <VoiceglotText translationKey="legal.terms.section5.title" defaultText="5. Aansprakelijkheid" />
                 </h4>
                 <p className="text-va-black/60 font-light leading-relaxed">
-                  <VoiceglotText translationKey="legal.terms.section5.text" defaultText="Voices.be spant zich in voor een optimale kwaliteit van de geleverde diensten, maar is niet aansprakelijk voor indirecte schade of gevolgschade voortvloeiend uit het gebruik van de geleverde audio-opnames." />
+                  <VoiceglotText translationKey="legal.terms.section5.text" defaultText="Wij spannen ons in voor een optimale kwaliteit van de geleverde diensten, maar zijn niet aansprakelijk voor indirecte schade of gevolgschade voortvloeiend uit het gebruik van de geleverde audio-opnames." />
                 </p>
               </section>
             </div>

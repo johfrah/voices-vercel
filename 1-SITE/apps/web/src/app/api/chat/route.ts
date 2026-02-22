@@ -403,9 +403,11 @@ SLIMME KASSA REGELS:
             const { DirectMailService } = await import('@/services/DirectMailService');
             const mailService = DirectMailService.getInstance();
             const host = request.headers.get('host') || 'voices.be';
+            const { MarketManager } = await import('@/packages/config/market-manager');
+            const market = MarketManager.getCurrentMarket(host);
             
             await mailService.sendMail({
-              to: 'johfrah@voices.be',
+              to: market.email || 'johfrah@voices.be',
               subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
               html: `
                 <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">

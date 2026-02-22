@@ -46,10 +46,10 @@ export async function POST(request: NextRequest) {
     // 2. Autonome Loop (Peer Review Protocol)
     for (const row of rows) {
       const prompt = `
-        Je bent een native speaker ${row.lang} en een expert in high-end copywriting.
-        Audit de volgende vertaling op basis van het Voices Market DNA.
+        Je bent een native speaker ${row.lang} en een expert in high-end copywriting voor een internationaal castingbureau.
+        Audit de volgende vertaling op basis van het Market DNA.
         
-        CONTEXT: Voices.be is een premium, inclusief en professioneel voice-over platform.
+        CONTEXT: Het platform is een premium, inclusief en professioneel voice-over platform.
         DOEL: De tekst moet natuurlijk, respectvol (inclusief) en vakbekwaam aanvoelen.
         
         Bron (NL): "${row.originalText}"

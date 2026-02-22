@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
       error.includes('router is not defined')
     );
 
-    const host = request.headers.get('host') || 'voices.be';
-    const adminEmail = process.env.ADMIN_EMAIL || 'johfrah@voices.be';
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'johfrah@voices.be';
     
     //  CHRIS-PROTOCOL: Safe Mail Service initialization
     let mailService;

@@ -15,7 +15,7 @@ interface InvoiceReplyOptions {
 }
 
 export function VumeInvoiceReplyTemplate(options: InvoiceReplyOptions) {
-  const { userName, invoiceNumber, amount, host = 'voices.be', language = 'nl' } = options;
+  const { userName, invoiceNumber, amount, host = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be', language = 'nl' } = options;
 
   const content = {
     nl: {

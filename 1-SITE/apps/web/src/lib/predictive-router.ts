@@ -123,8 +123,9 @@ export class PredictiveRouter {
    */
   static getAutoRoute(user: { roles: string[], subroles?: string[], email: string }): string | null {
     const subroles = user.subroles || [];
+    const adminEmail = process.env.ADMIN_EMAIL || 'johfrah@voices.be';
     if (subroles.includes('academy_student') || user.roles.includes('academy_student')) return '/academy';
-    if (subroles.includes('studio_instructor') || subroles.includes('studio_workshopgever') || user.roles.includes('workshop_partner') || user.email === 'bernadette@voices.be') return '/studio';
+    if (subroles.includes('studio_instructor') || subroles.includes('studio_workshopgever') || user.roles.includes('workshop_partner') || user.email === 'bernadette@voices.be' || user.email === adminEmail) return '/studio';
     return null;
   }
 }

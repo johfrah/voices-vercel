@@ -25,7 +25,10 @@ export async function GET() {
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.voices.be';
+    const { MarketManager } = await import('@config/market-manager');
+    const host = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be';
+    const market = MarketManager.getCurrentMarket(host);
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
 
     // 1. Haal alle data op in parallel
     const [allActors, allWorkshops, allCourses] = await Promise.all([
@@ -46,9 +49,9 @@ export async function GET() {
     let xml = `<?xml version="1.0"?>
 <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
   <channel>
-    <title>Voices.be - Google Merchant Feed</title>
+    <title>${market.name} - Google Merchant Feed</title>
     <link>${baseUrl}</link>
-    <description>De stemmen van Voices.be - Stemacteurs, Workshops en Cursussen</description>`;
+    <description>De stemmen van ${market.name} - Stemacteurs, Workshops en Cursussen</description>`;
 
     // --- STEMACTEURS ---
     allActors.forEach(actor => {
