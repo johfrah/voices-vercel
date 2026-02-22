@@ -130,38 +130,73 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
   if (cached && (Date.now() - cached.timestamp) < ACTORS_CACHE_TTL) return cached.data;
 
   try {
-    const lowLang = language?.toLowerCase() || '';
-    const dbLang = language ? MarketManager.getLanguageCode(lowLang) : null;
-    const lowGender = gender?.toLowerCase() || '';
-    const dbGender = gender ? (lowGender.includes('mannelijk') ? 'male' : lowGender.includes('vrouwelijk') ? 'female' : lowGender) : null;
-    
-    const conditions = [];
-    conditions.push(eq(actors.status, 'live'));
-    conditions.push(eq(actors.isPublic, true));
-    
-    if (dbLang || lang) {
-      const targetLang = dbLang || lang;
-      const langConditions = [
-        ilike(actors.nativeLang, targetLang),
-        ilike(actors.nativeLang, `${targetLang}-%`),
-        targetLang === 'nl-be' || targetLang === 'nl' ? ilike(actors.nativeLang, 'vlaams') : undefined,
-        targetLang === 'nl-nl' || targetLang === 'nl' ? ilike(actors.nativeLang, 'nederlands') : undefined
-      ].filter(Boolean) as any[];
-      if (langConditions.length > 0) conditions.push(or(...langConditions) as any);
+    // 🛡️ CHRIS-PROTOCOL: Use Supabase SDK for everything for stability on Vercel
+    let dbResults: any[] = [];
+    try {
+      let query = supabase
+        .from('actors')
+        .select('*')
+        .eq('status', 'live')
+        .eq('is_public', true);
+        
+      if (dbLang || lang) {
+        const targetLang = dbLang || lang;
+        if (targetLang === 'nl') {
+          query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
+        } else {
+          query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
+        }
+      }
+      
+      if (dbGender) {
+        query = query.eq('gender', dbGender);
+      }
+      
+      const { data: sdkData, error: sdkError } = await query.order('menu_order', { ascending: true }).limit(100);
+        
+      if (sdkError) throw sdkError;
+      
+      dbResults = (sdkData || []).map(a => ({
+        ...a,
+        firstName: a.first_name,
+        lastName: a.last_name,
+        nativeLang: a.native_lang,
+        countryId: a.country_id,
+        wpProductId: a.wp_product_id,
+        photoId: a.photo_id,
+        voiceScore: a.voice_score,
+        totalSales: a.total_sales,
+        priceUnpaid: a.price_unpaid,
+        priceOnline: a.price_online,
+        priceIvr: a.price_ivr,
+        priceLiveRegie: a.price_live_regie,
+        dropboxUrl: a.dropbox_url,
+        isAi: a.is_ai,
+        elevenlabsId: a.elevenlabs_id,
+        internalNotes: a.internal_notes,
+        createdAt: a.created_at,
+        updatedAt: a.updated_at,
+        youtubeUrl: a.youtube_url,
+        menuOrder: a.menu_order,
+        deliveryDaysMin: a.delivery_days_min,
+        deliveryDaysMax: a.delivery_days_max,
+        cutoffTime: a.cutoff_time,
+        samedayDelivery: a.sameday_delivery,
+        pendingBio: a.pending_bio,
+        pendingTagline: a.pending_tagline,
+        experienceLevel: a.experience_level,
+        studioSpecs: a.studio_specs,
+        isManuallyEdited: a.is_manually_edited,
+        birthYear: a.birth_year,
+        aiTags: a.ai_tags,
+        deliveryDateMin: a.delivery_date_min,
+        deliveryDateMinPriority: a.delivery_date_min_priority
+      }));
+    } catch (dbError) {
+      console.error(' [getActors] SDK Query failed:', dbError);
+      if (cached) return cached.data;
+      throw dbError;
     }
-    
-    if (dbGender) conditions.push(eq(actors.gender, dbGender));
-
-    // 🛡️ CHRIS-PROTOCOL: Simple Drizzle query without relations for performance
-    const dbResults = await Promise.race([
-      db.query.actors.findMany({
-        // @ts-ignore
-        where: and(...conditions),
-        orderBy: [asc(actors.menuOrder), desc(actors.totalSales), asc(actors.firstName)],
-        limit: 50
-      }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 8000))
-    ]) as any[];
 
     const photoIds = Array.from(new Set(dbResults.map(a => a.photoId).filter(Boolean).map(id => Number(id))));
     const actorIds = dbResults.map(a => a.id);
