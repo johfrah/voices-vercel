@@ -41,7 +41,10 @@ import { useRouter } from 'next/navigation';
 import React, { useRef, useState, useEffect } from 'react';
 
 import { VoiceCard } from '@/components/ui/VoiceCard';
-import { LiquidBackground } from '@/components/ui/LiquidBackground';
+import dynamic from 'next/dynamic';
+
+const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+
 import { CommercialMediaType, SlimmeKassa } from '@/lib/pricing-engine';
 
 interface StudioLaunchpadProps {

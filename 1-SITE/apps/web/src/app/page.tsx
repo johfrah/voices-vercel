@@ -26,12 +26,17 @@ const ReviewsInstrument = dynamic(() => import("@/components/ui/ReviewsInstrumen
   loading: () => <div className="h-[400px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
 });
 
-import ConfiguratorPageClient from '@/app/checkout/configurator/ConfiguratorPageClient';
 import { VoiceCard } from "@/components/ui/VoiceCard";
 import { VoicesLink, useVoicesRouter } from "@/components/ui/VoicesLink";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useSonicDNA } from "@/lib/sonic-dna";
 import { AnimatePresence, motion } from 'framer-motion';
+
+//  NUCLEAR LOADING MANDATE
+const ConfiguratorPageClient = dynamic(() => import('@/app/checkout/configurator/ConfiguratorPageClient'), { 
+  ssr: false,
+  loading: () => <div className="h-[600px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
+});
 
 /**
  * HOME CONTENT (GOD MODE 2026 - AIRBNB STYLE)
