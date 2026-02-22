@@ -27,6 +27,11 @@ const getDb = () => {
         connectionString = connectionString.split('?')[0]; 
       }
 
+      // LEX-MANDATE: IPv6 is unstable on some build machines. Force IPv4 if direct host.
+      if (connectionString.includes('db.vcbxyyjsxuquytcsskpj.supabase.co')) {
+        // No-op for now, but we keep an eye on it.
+      }
+
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
 BQAwazELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5l
