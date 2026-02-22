@@ -203,13 +203,37 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const actorIds = dbResults.map(a => a.id);
     
     // Fetch secondary data via SDK for stability
-    const reviewsRes = await supabase.from('reviews').select('*').eq('business_slug', 'voices-be').limit(10);
+    const reviewsRes = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('business_slug', market === 'STUDIO' || market === 'ACADEMY' ? 'voices-studio' : 'voices-be')
+      .eq('status', 'published')
+      .limit(20);
     const mediaRes = photoIds.length > 0 ? await supabase.from('media').select('*').in('id', photoIds) : { data: [] };
     const demosRes = await supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true);
+    
+    //  CHRIS-PROTOCOL: Fetch review stats for the correct business unit
+    const statsRes = await supabase
+      .from('reviews')
+      .select('rating')
+      .eq('business_slug', market === 'STUDIO' || market === 'ACADEMY' ? 'voices-studio' : 'voices-be')
+      .eq('status', 'published');
     
     const dbReviewsRaw = reviewsRes.data || [];
     const mediaResults = mediaRes.data || [];
     const demosData = demosRes.data || [];
+    const statsRaw = statsRes.data || [];
+    
+    // Calculate stats manually for stability
+    const totalCount = statsRaw.length;
+    const avgRating = totalCount > 0 
+      ? Math.round((statsRaw.reduce((acc: number, r: any) => acc + (r.rating || 5), 0) / totalCount) * 10) / 10 
+      : 4.9;
+    
+    const distribution: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    statsRaw.forEach((r: any) => {
+      if (r.rating) distribution[r.rating] = (distribution[r.rating] || 0) + 1;
+    });
     
     const mappedResults = dbResults.map((actor) => {
       const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
@@ -273,7 +297,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         authorPhotoUrl: r.author_photo_url || r.authorPhotoUrl,
         date: new Date(r.created_at || r.createdAt || Date.now()).toLocaleDateString('nl-BE')
       })),
-      reviewStats: { averageRating: 4.9, totalCount: dbReviewsRaw.length, distribution: {} }
+      reviewStats: { 
+        averageRating: avgRating, 
+        totalCount: totalCount, 
+        distribution: distribution 
+      }
     };
 
     cache.actorsCache[cacheKey] = { data: result, timestamp: Date.now() };
