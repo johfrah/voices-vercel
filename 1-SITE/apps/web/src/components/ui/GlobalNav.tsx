@@ -394,6 +394,11 @@ export default function GlobalNav() {
   const [loginStatus, setLoginStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [loginMessage, setLoginMessage] = useState('');
 
+  const activeLinks = useMemo(() => {
+    // 🛡️ VISIONARY MANDATE: Links exclusively from database config
+    return navConfig?.links || [];
+  }, [navConfig]);
+
   const handleMagicLinkRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginEmail) return;
@@ -486,13 +491,14 @@ export default function GlobalNav() {
 
   //  ICON VISIBILITY LOGIC
   // CHRIS-PROTOCOL: Admins ALWAYS see all icons and links to ensure persistence during editing
-  const showFavorites = (isAdmin || (navConfig?.icons?.favorites ?? (!isSpecialJourney && !isStudioJourney))) && !isMobile;
-  const showCart = (isAdmin || (navConfig?.icons?.cart ?? (!isSpecialJourney && !isStudioJourney))) && !isPortfolioMarket && !isMobile;
-  const showNotifications = (isAdmin || (navConfig?.icons?.notifications ?? (!isSpecialJourney && !isStudioJourney))) && (isAdmin || (auth.isAuthenticated && notificationsCount > 0)) && !isPortfolioMarket && !isMobile;
-  const showLanguage = (isAdmin || (navConfig?.icons?.language ?? true)) && !isMobile;
-  const showAccount = (isAdmin || (navConfig?.icons?.account ?? (!isSpecialJourney && !isStudioJourney))) && !isMobile;
+  // 🛡️ VISIONARY MANDATE: Icon visibility exclusively from database config (navConfig)
+  const showFavorites = isAdmin || (navConfig?.icons?.favorites ?? (!isSpecialJourney && !isStudioJourney && !isMobile));
+  const showCart = isAdmin || (navConfig?.icons?.cart ?? (!isSpecialJourney && !isStudioJourney && !isPortfolioMarket && !isMobile));
+  const showNotifications = isAdmin || (navConfig?.icons?.notifications ?? (auth.isAuthenticated && notificationsCount > 0 && !isPortfolioMarket && !isMobile));
+  const showLanguage = isAdmin || (navConfig?.icons?.language ?? !isMobile);
+  const showAccount = isAdmin || (navConfig?.icons?.account ?? (!isSpecialJourney && !isStudioJourney && !isMobile));
   const showMenu = isAdmin || (navConfig?.icons?.menu ?? !isSpecialJourney);
-  const showLinks = (isAdmin || !isSpecialJourney || isPortfolioMarket) && !isMobile; // Show links for Johfrah portfolio or if Admin
+  const showLinks = isAdmin || (navConfig?.links?.length > 0 && !isMobile); 
 
   const showPortfolioAdmin = isPortfolioMarket && isAdmin;
 
@@ -510,10 +516,6 @@ export default function GlobalNav() {
     }
     return `/portfolio/johfrah${subPath}`;
   };
-
-  const activeLinks = useMemo(() => {
-    return market.nav_links || links;
-  }, [market.nav_links, links]);
 
   // BOB-DEBUG: Ensure nav is always visible in dev
   const isDev = process.env.NODE_ENV === 'development';
@@ -565,8 +567,8 @@ export default function GlobalNav() {
       </ButtonInstrument>
     </ContainerInstrument>
 
-    <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-50">
-      {links.slice(0, 6).map((link, idx) => {
+      <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-50">
+      {activeLinks.slice(0, 6).map((link: any, idx: number) => {
         const isActive = pathname.startsWith(link.href) && link.href !== '#';
         const hasSubmenu = link.submenu && link.submenu.length > 0;
 
@@ -1176,7 +1178,7 @@ export default function GlobalNav() {
                 </>
               )}
               
-              {!isMobile && activeLinks.map((link) => (
+              {!isMobile && activeLinks.map((link: any) => (
                 <DropdownItem key={link.name}
                   icon={ChevronRight} 
                   label={<VoiceglotText translationKey={link.key || `nav.${(link.name || '').toLowerCase().replace(/\s+/g, '_')}`} defaultText={link.name || ''} />} 

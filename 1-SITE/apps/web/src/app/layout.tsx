@@ -66,31 +66,28 @@ export async function generateMetadata(): Promise<Metadata> {
   const market = await getMarketSafe(lookupHost);
   const baseUrl = `https://${host}`;
 
-  const isAdeming = market.market_code === 'ADEMING';
-  const isPortfolioMarket = market.market_code === 'PORTFOLIO';
-  const isArtistMarket = market.market_code === 'ARTIST';
-  const isStudioMarket = market.market_code === 'STUDIO';
-  const isAcademyMarket = market.market_code === 'ACADEMY';
+  // 🛡️ VISIONARY MANDATE: Title and description exclusively from market data
+  const title = market.seo_data?.title || (
+    market.market_code === 'ADEMING' ? "Ademing | Kom tot rust" : 
+    (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? `${market.name} | Vlaamse Voice-over & Regisseur` : 
+    `${market.name} | Het Vriendelijkste Stemmenbureau`
+  );
+
+  const description = market.seo_data?.description || (
+    market.market_code === 'ADEMING' ? "Adem in. Kom tot rust." :
+    market.market_code === 'PORTFOLIO' ? "De stem achter het verhaal." :
+    "Een warm en vertrouwd geluid voor elk project."
+  );
 
   //  CHRIS-PROTOCOL: Dynamically generate alternate languages from MarketManager (Data-Driven)
   const alternateLanguages = await MarketManager.getAllLocalesAsync();
 
   return {
     title: {
-      default: isAdeming ? "Ademing | Kom tot rust" : isPortfolioMarket ? `${market.name} | Vlaamse Voice-over & Regisseur` : isArtistMarket ? `${market.name} | Artist & Singer` : `${market.name} | Het Vriendelijkste Stemmenbureau`,
-      template: isAdeming ? "%s | Ademing" : isPortfolioMarket ? `%s | ${market.name}` : isArtistMarket ? `%s | ${market.name}` : `%s | ${market.name}`,
+      default: title,
+      template: `%s | ${market.name}`,
     },
-    description: market.seo_data?.description || (isAdeming 
-      ? "Adem in. Kom tot rust. Luister en verbind met de stilte in jezelf." 
-      : isPortfolioMarket
-      ? "De stem achter het verhaal. Warme, natuurlijke Vlaamse voice-over & host voor nationale TV-spots en corporate video's."
-      : isArtistMarket
-      ? "The voice of a new generation. Discover the music and story of Youssef Zaki."
-      : isStudioMarket
-      ? "Professionele voice-over workshops."
-      : isAcademyMarket
-      ? "Leer de kunst van voice-over bij de Voices Academy."
-      : "Een warm en vertrouwd geluid voor elk project. Wij helpen je de perfecte stem te vinden."),
+    description,
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: "/",
@@ -103,10 +100,10 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: market.name,
       images: [
         {
-          url: isPortfolioMarket ? "/assets/common/branding/johfrah/johfrah-hero.jpg" : "/assets/common/og-image.jpg",
+          url: market.seo_data?.og_image || (market.market_code === 'PORTFOLIO' ? "/assets/common/branding/johfrah/johfrah-hero.jpg" : "/assets/common/og-image.jpg"),
           width: 1200,
           height: 630,
-          alt: `${market.name} - ${market.seo_data?.description?.substring(0, 50) || 'Voices'}`,
+          alt: `${market.name} - ${description.substring(0, 50)}`,
         },
       ],
     },
@@ -139,11 +136,10 @@ export default async function RootLayout({
   else if (pathname.startsWith('/academy')) lookupHost = `${host}/academy`;
 
   const market = await getMarketSafe(lookupHost);
-  const isAdeming = market.market_code === 'ADEMING';
-  const isPortfolioMarket = market.market_code === 'PORTFOLIO';
-  const isArtistMarket = market.market_code === 'ARTIST';
-  const isStudioMarket = market.market_code === 'STUDIO';
-  const isAcademyMarket = market.market_code === 'ACADEMY';
+  
+  // 🛡️ VISIONARY MANDATE: Journey logic exclusively from market data
+  const isSpecialJourney = ['ADEMING', 'PORTFOLIO', 'ARTIST'].includes(market.market_code);
+  const isStudioJourney = ['STUDIO', 'ACADEMY'].includes(market.market_code);
   
   const isUnderConstruction = headersList.get('x-voices-under-construction') === 'true' || 
     pathname === '/under-construction' ||
@@ -163,29 +159,23 @@ export default async function RootLayout({
   }
 
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
-  const showVoicy = !isArtistJourney && !isUnderConstruction;
-  const showTopBar = !isArtistJourney && !isUnderConstruction;
+  const showVoicy = market.has_voicy !== false && !isArtistJourney && !isUnderConstruction;
+  const showTopBar = market.market_code !== 'ARTIST' && !isArtistJourney && !isUnderConstruction;
   const showGlobalNav = !isUnderConstruction;
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": market.seo_data?.schema_type || (isAdeming ? "WebApplication" : (isPortfolioMarket || isArtistMarket) ? "Person" : "Organization"),
+    "@type": market.seo_data?.schema_type || (market.market_code === 'ADEMING' ? "WebApplication" : (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? "Person" : "Organization"),
     "name": market.name,
     "url": `https://${host}`,
     "logo": `https://${host}${market.logo_url}`,
-    "description": market.seo_data?.description || (isAdeming 
-      ? "Platform voor meditatie en innerlijke rust." 
-      : isPortfolioMarket 
-      ? "Vlaamse voice-over & regisseur." 
-      : isArtistMarket 
-      ? "Artist and Singer." 
-      : isStudioMarket
-      ? "Professionele voice-over workshops."
-      : isAcademyMarket
-      ? "Leer de kunst van voice-over bij de Voices Academy."
-      : "Het vriendelijkste stemmenbureau."),
+    "description": market.seo_data?.description || (
+      market.market_code === 'ADEMING' ? "Platform voor meditatie en innerlijke rust." : 
+      market.market_code === 'PORTFOLIO' ? "Vlaamse voice-over & regisseur." : 
+      "Het vriendelijkste stemmenbureau."
+    ),
     "sameAs": Object.values(market.social_links || {}).filter(Boolean),
-    "jobTitle": (isPortfolioMarket || isArtistMarket) ? market.seo_data?.description?.split('.')[0] : undefined,
+    "jobTitle": (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? market.seo_data?.description?.split('.')[0] : undefined,
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": market.phone,
@@ -193,7 +183,7 @@ export default async function RootLayout({
       "email": market.email,
       "availableLanguage": market.supported_languages
     },
-    "founder": (!isPortfolioMarket && !isArtistMarket) ? {
+    "founder": (market.market_code !== 'PORTFOLIO' && market.market_code !== 'ARTIST') ? {
       "@type": "Person",
       "name": "Johfrah Lefebvre",
       "sameAs": "https://www.voices.be"
@@ -251,11 +241,11 @@ export default async function RootLayout({
             <SpotlightDashboard />
             <Toaster position="bottom-right" />
             <GlobalModalManager />
-            {!isArtistJourney && (
+            {!isArtistJourney && market.market_code !== 'ARTIST' && (
               <Suspense fallback={null}>
-                <JohfrahActionDock />
-                <JohfrahConfiguratorSPA />
-                <CastingDock />
+                {market.market_code === 'PORTFOLIO' && <JohfrahActionDock />}
+                {market.market_code === 'PORTFOLIO' && <JohfrahConfiguratorSPA />}
+                {market.market_code === 'BE' && <CastingDock />}
               </Suspense>
             )}
             <Suspense fallback={null}>

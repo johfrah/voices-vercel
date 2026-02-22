@@ -40,11 +40,6 @@ import { useEffect, useState } from 'react';
 export const dynamic = 'force-dynamic';
 
 export default function AdminDashboard() {
-  //  CHRIS-PROTOCOL: Build Safety
-  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
-    return <ContainerInstrument className="p-20 text-center">Skipping dashboard render during build...</ContainerInstrument>;
-  }
-
   const [recentHeals, setRecentHeals] = useState<any[]>([]);
   const { logAction } = useAdminTracking();
 
@@ -56,6 +51,11 @@ export default function AdminDashboard() {
       })
       .catch(err => console.error('Failed to fetch heals', err));
   }, []);
+
+  //  CHRIS-PROTOCOL: Build Safety
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    return <ContainerInstrument className="p-20 text-center">Skipping dashboard render during build...</ContainerInstrument>;
+  }
 
   const stats = [
     { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '12', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },

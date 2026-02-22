@@ -1,6 +1,7 @@
 "use client";
 
 import { useCheckout } from '@/contexts/CheckoutContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
 import { MarketManager } from '@config/market-manager';
 import { Check, Mail, MapPin, Clock, Sparkles, Wand2, Type, MessageSquare, Plus, ChevronUp, X } from 'lucide-react';
@@ -140,11 +141,19 @@ const TELEPHONY_TEMPLATES: Record<string, any[]> = {
 
 export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: string) => void, onMinimize?: () => void }> = ({ setLocalBriefing, onMinimize }) => {
   const { state, updateBriefing, updateCustomer } = useCheckout();
+  const { t } = useTranslation();
   const [companyName, setCompanyName] = useState(state.customer.company || '');
   const [email, setEmail] = useState(state.customer.email || '');
   const [hours, setHours] = useState('maandag tot vrijdag van 9u tot 17u');
   const [selectedLang, setSelectedLang] = useState('nl');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const market = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      return MarketManager.getCurrentMarket(window.location.host);
+    }
+    return MarketManager.getCurrentMarket('voices.be');
+  }, []);
 
   // Sherlock: Bepaal beschikbare talen op basis van geselecteerde stemmen
   const availableLangs = useMemo(() => {
@@ -164,8 +173,6 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
     }
     return Array.from(langs);
   }, [state.selectedActor]);
-
-  const { t } = useTranslation();
 
   // Effect: Zet de geselecteerde taal op de moedertaal van de acteur als die beschikbaar is
   React.useEffect(() => {
@@ -210,55 +217,7 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
     return MarketManager.getLanguageLabel(selectedLang);
   }, [selectedLang]);
 
-  const handleApplyTemplate = (templateText: string, id: string) => {
-    // BOB-METHODE: Als de gebruiker een bouwsteen kiest, stoppen we de "Slimme Hulp" (Johfrai)
-    // om verwarring tussen de statische templates en de AI-suggesties te voorkomen.
-    if (onMinimize) onMinimize();
-
-    const templates = TELEPHONY_TEMPLATES[selectedLang] || TELEPHONY_TEMPLATES['en'] || [];
-    const template = templates.find(t => t.id === id);
-    
-    if (!template) return;
-
-    const processedText = templateText
-      .replace(/\[Bedrijf\]/g, companyName || '[Bedrijfsnaam]')
-      .replace(/\[Email\]/g, email || '[Email]')
-      .replace(/\[Uren\]/g, translatedHours);
-    
-    const currentBriefing = state.briefing.trim();
-    const templateTitle = template.title || 'Script';
-    const processedTextWithTitle = `(${templateTitle})\n${processedText}`;
-    
-    const newBriefing = currentBriefing 
-      ? `${currentBriefing}\n\n${processedTextWithTitle}`
-      : processedTextWithTitle;
-    
-    if (setLocalBriefing) {
-      setLocalBriefing(newBriefing);
-    }
-    updateBriefing(newBriefing);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
-  const renderTemplatePreview = (text: string) => {
-    const parts = text.split(/(\[Bedrijf\]|\[Email\]|\[Uren\])/g);
-    return parts.map((part, i) => {
-      if (part === '[Bedrijf]') return <span key={i} className="font-bold text-primary">{companyName || '...'}</span>;
-      if (part === '[Email]') return <span key={i} className="font-bold text-primary">{email || '...'}</span>;
-      if (part === '[Uren]') return <span key={i} className="font-bold text-primary">{translatedHours}</span>;
-      return part;
-    });
-  };
-
   if (state.usage !== 'telefonie') return null;
-
-  const market = useMemo(() => {
-    if (typeof window !== 'undefined') {
-      return MarketManager.getCurrentMarket(window.location.host);
-    }
-    return MarketManager.getCurrentMarket('voices.be');
-  }, []);
 
   return (
     <div className="bg-white rounded-[32px] p-8 border border-black/5 shadow-aura-lg space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden">
