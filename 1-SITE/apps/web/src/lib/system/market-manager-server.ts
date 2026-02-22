@@ -419,11 +419,11 @@ export class MarketManagerServer {
    */
   static getLanguageOrder(lang: string = 'nl'): string[] {
     const orders: Record<string, string[]> = {
-      'nl': ['vlaams', 'nederlands', 'engels', 'frans', 'duits'],
-      'fr': ['frans', 'engels', 'nederlands', 'vlaams', 'duits'],
-      'es': ['spaans', 'engels', 'frans', 'nederlands'],
-      'pt': ['portugees', 'engels', 'frans', 'spaans'],
-      'de': ['duits', 'engels', 'frans', 'nederlands']
+      'nl': ['nl-be', 'nl-nl', 'en-gb', 'fr-fr', 'de-de'],
+      'fr': ['fr-fr', 'en-gb', 'nl-nl', 'nl-be', 'de-de'],
+      'es': ['es-es', 'en-gb', 'fr-fr', 'nl-nl'],
+      'pt': ['pt-pt', 'en-gb', 'fr-fr', 'es-es'],
+      'de': ['de-de', 'en-gb', 'fr-fr', 'nl-nl']
     };
     return orders[lang] || orders['nl'];
   }

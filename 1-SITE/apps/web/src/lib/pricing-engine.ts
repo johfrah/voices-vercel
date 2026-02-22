@@ -513,10 +513,10 @@ export class SlimmeKassa {
     return this.getAvailabilityStatus(actor, mediaTypes, country) === 'available';
   }
 
-  static format(amount: number): string {
-    return new Intl.NumberFormat('nl-BE', {
+  static format(amount: number, locale: string = 'nl-BE', currency: string = 'EUR'): string {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: 'EUR',
+      currency: currency,
       minimumFractionDigits: 2
     }).format(amount);
   }

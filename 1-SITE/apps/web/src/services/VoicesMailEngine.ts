@@ -25,7 +25,7 @@ export class VoicesMailEngine {
    * Genereert de standaard Voices HTML wrapper
    * Geoptimaliseerd voor maximale compatibiliteit (Spark, Outlook, Gmail)
    */
-  private getHtmlWrapper(content: string, lang: string = 'nl', marketName: string = 'Voices'): string {
+  private getHtmlWrapper(content: string, lang: string = 'nl', marketName: string = 'Voices', logoUrl?: string): string {
     return `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="${lang}">
@@ -51,7 +51,7 @@ export class VoicesMailEngine {
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 40px; padding: 60px 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.02);">
           <tr>
             <td align="center" style="padding-bottom: 40px;">
-              <div style="font-size: 13px; letter-spacing: 0.4em; text-transform: uppercase; color: #cccccc;">${marketName}</div>
+              ${logoUrl ? `<img src="${logoUrl}" alt="${marketName}" width="120" style="display: block; outline: none; border: none; height: auto;" />` : `<div style="font-size: 13px; letter-spacing: 0.4em; text-transform: uppercase; color: #cccccc;">${marketName}</div>`}
             </td>
           </tr>
           <tr>
@@ -94,6 +94,11 @@ export class VoicesMailEngine {
     const lang = options.lang || 'nl';
     const marketName = options.marketName || 'Voices';
     
+    // 🛡️ CHRIS-PROTOCOL: Fetch market config for logo and branding
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const market = MarketManager.getCurrentMarket(options.host);
+    const logoUrl = market.logo_url;
+    
     const contentHtml = `
       <h1 style="font-size: 36px; font-weight: 200; letter-spacing: -0.02em; margin: 0 0 24px 0; color: #1a1a1a;">${options.title}</h1>
       <p style="font-size: 16px; font-weight: 300; line-height: 1.6; color: #666666; margin: 0 0 40px 0;">${options.body}</p>
@@ -110,7 +115,7 @@ export class VoicesMailEngine {
       ` : ''}
     `;
 
-    const fullHtml = this.getHtmlWrapper(contentHtml, lang, marketName);
+    const fullHtml = this.getHtmlWrapper(contentHtml, lang, marketName, logoUrl);
     
     // Plain text fallback voor clients die geen HTML lusten
     const plainText = `${options.title}\n\n${options.body}\n\n${options.buttonUrl ? `${options.buttonText || 'Link'}: ${options.buttonUrl}` : ''}\n\n© 2026 ${marketName}`;

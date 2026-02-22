@@ -144,6 +144,12 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           const targetLang = language || lang;
           if (targetLang === 'nl') {
             query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
+          } else if (targetLang === 'en') {
+            query = query.or('native_lang.ilike.en,native_lang.ilike.en-%,native_lang.ilike.engels');
+          } else if (targetLang === 'fr') {
+            query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%,native_lang.ilike.frans');
+          } else if (targetLang === 'de') {
+            query = query.or('native_lang.ilike.de,native_lang.ilike.de-%,native_lang.ilike.duits');
           } else {
             query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
           }

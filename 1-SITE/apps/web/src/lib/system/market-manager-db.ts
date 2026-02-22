@@ -65,8 +65,8 @@ export class MarketDatabaseService {
           email: dbConfig.email || staticConfig.email,
           phone: dbConfig.phone || staticConfig.phone,
           language: loc?.default_lang || staticConfig.language,
-          supported_languages: loc?.supported_languages || staticConfig.supported_languages,
-          popular_languages: loc?.popular_languages || staticConfig.popular_languages,
+          supported_languages: (loc?.supported_languages || staticConfig.supported_languages || []).map((l: string) => MarketManager.getLanguageCode(l)),
+          popular_languages: (loc?.popular_languages || staticConfig.popular_languages || []).map((l: string) => MarketManager.getLanguageCode(l)),
           currency: loc?.currency || staticConfig.currency,
           theme: (dbConfig.theme as any) || staticConfig.theme,
           address: dbConfig.address || staticConfig.address,
@@ -80,14 +80,7 @@ export class MarketDatabaseService {
               staticConfig.market_code === 'ADEMING' ? 'Organization' : 
               (staticConfig.market_code === 'PORTFOLIO' || staticConfig.market_code === 'ARTIST') ? 'Person' : 'Organization'
             ),
-            locale_code: loc?.locale || (
-              staticConfig.market_code === 'BE' ? 'nl-BE' : 
-              staticConfig.market_code === 'NLNL' ? 'nl-NL' : 
-              staticConfig.market_code === 'FR' ? 'fr-FR' : 
-              staticConfig.market_code === 'ES' ? 'es-ES' : 
-              staticConfig.market_code === 'PT' ? 'pt-PT' : 
-              staticConfig.market_code === 'EU' ? 'en-EU' : 'nl-BE'
-            ),
+            locale_code: loc?.locale || MarketManager.getLanguageCode(staticConfig.primary_language),
             canonical_domain: (dbConfig as any).canonicalDomain || staticConfig.logo_url // Fallback logic
           }
         };
@@ -128,14 +121,7 @@ export class MarketDatabaseService {
 
       allMarkets.forEach(m => {
         const loc = m.localization as any;
-        const locale = loc?.locale || (
-          m.market === 'BE' ? 'nl-BE' : 
-          m.market === 'NLNL' ? 'nl-NL' : 
-          m.market === 'FR' ? 'fr-FR' : 
-          m.market === 'ES' ? 'es-ES' : 
-          m.market === 'PT' ? 'pt-PT' : 
-          m.market === 'EU' ? 'en-EU' : 'nl-BE'
-        );
+        const locale = loc?.locale || MarketManager.getLanguageCode(m.market === 'BE' ? 'nl-BE' : m.market === 'NLNL' ? 'nl-NL' : m.market === 'FR' ? 'fr-FR' : m.market === 'ES' ? 'es-ES' : m.market === 'PT' ? 'pt-PT' : m.market === 'EU' ? 'en-GB' : 'nl-BE');
         const domain = (m as any).canonicalDomain || staticDomains[m.market] || `https://www.voices.be`;
         if (locale) {
           locales[locale] = domain;
