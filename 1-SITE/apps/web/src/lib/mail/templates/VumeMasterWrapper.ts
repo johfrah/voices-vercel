@@ -55,7 +55,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const logoHtml = `
     <tr>
       <td align="center" style="padding-bottom: 40px;">
-                  <img src="https://www.voices.be${market.logo_url}" alt="${market.name}" width="140" style="display: block; border: 0;" />
+                  <img src="${market.logo_url.startsWith('http') ? market.logo_url : `https://${host}${market.logo_url}`}" alt="${market.name}" width="140" style="display: block; border: 0;" />
       </td>
     </tr>
   `;
@@ -64,7 +64,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; border-top: 1px solid #F0F0F0; padding-top: 30px;">
       <tr>
         <td width="100" style="vertical-align: middle; text-align: center;">
-          <a href="https://www.voices.be/?utm_source=E-mail&utm_medium=be-mail" style="text-decoration: none;">
+          <a href="https://${host}/?utm_source=E-mail&utm_medium=be-mail" style="text-decoration: none;">
             <img src="https://www.voices.be/assets/common/branding/founder/johfrah.png?v=20260213" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
           </a>
         </td>

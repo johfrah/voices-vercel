@@ -84,9 +84,11 @@ export const VumeDonationThankYouTemplate = (props: DonationThankYouProps) => {
     </div>
   `;
 
-  return VumeMasterWrapper({
-    content,
+  return VumeMasterWrapper(content, {
+    title: isNl ? 'Bedankt voor je support!' : 'Thank you for your support!',
+    previewText: isNl ? `Beste ${name}, je donatie is goed ontvangen.` : `Dear ${name}, your donation has been received.`,
+    journey: 'artist',
     host,
-    language
+    market: market.market_code
   });
 };

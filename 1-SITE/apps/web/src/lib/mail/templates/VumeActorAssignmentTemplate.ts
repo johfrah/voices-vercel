@@ -41,8 +41,8 @@ export const VumeActorAssignmentTemplate = (props: ActorAssignmentProps) => {
       <p style="font-size: 18px; color: #1a1a1a;">${isNl ? 'Beste' : 'Dear'} ${actorName},</p>
       <p style="font-size: 16px; line-height: 1.6; color: #666;">
         ${isNl 
-          ? `Er staat een nieuwe opdracht voor je klaar op <strong>Voices.be</strong>. Hieronder vind je de details en het script.` 
-          : `A new assignment is waiting for you on <strong>Voices.be</strong>. Below you will find the details and the script.`}
+          ? `Er staat een nieuwe opdracht voor je klaar op <strong>${host || 'Voices.be'}</strong>. Hieronder vind je de details en het script.` 
+          : `A new assignment is waiting for you on <strong>${host || 'Voices.be'}</strong>. Below you will find the details and the script.`}
       </p>
     </div>
 
@@ -96,7 +96,7 @@ export const VumeActorAssignmentTemplate = (props: ActorAssignmentProps) => {
   return BaseTemplate({
     title: isNl ? 'Nieuwe Opdracht' : 'New Assignment',
     journey: 'agency',
-    market: 'BE',
+    host,
     children: content
   });
 };

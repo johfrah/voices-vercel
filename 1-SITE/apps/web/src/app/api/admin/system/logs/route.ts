@@ -10,7 +10,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-//  NUCLEAR VERSION: v2.13.8 (Godmode Zero)
+//  NUCLEAR VERSION: v2.13.9 (Godmode Zero)
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
