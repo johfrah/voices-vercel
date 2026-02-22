@@ -51,11 +51,11 @@ o/bKiIz+Fq8=
           ca: supabaseRootCA,
           rejectUnauthorized: false,
         },
-        connect_timeout: 10,
+        connect_timeout: 20,
         onnotice: () => {},
-                    idle_timeout: 5,
-                    max: process.env.NODE_ENV === 'production' ? 1 : 10,
-                  });
+        idle_timeout: 20,
+        max: process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 3 : 10),
+      });
 
       (globalThis as any).dbInstance = drizzle(client, { 
         schema

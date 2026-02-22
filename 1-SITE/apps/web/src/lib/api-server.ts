@@ -157,7 +157,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       search,
       gender,
       dbGender,
-      media: params.media
+      media: params.media,
+      lang // Prop lang
     });
 
     console.log(' API: Querying all live actors with relations...');
@@ -169,15 +170,18 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     // @ts-ignore
     conditions.push(eq(actors.status, 'live'));
     
-    if (dbLang) {
+    // 🛡️ CHRIS-PROTOCOL: Language filter is mandatory for the initial load to prevent empty lists
+    // We match on nativeLang OR extraLangs (via sub-query or simple ilike)
+    if (dbLang || lang) {
+      const targetLang = dbLang || lang;
       const langConditions = [
-        ilike(actors.nativeLang, dbLang),
-        ilike(actors.nativeLang, `${dbLang}-%`),
+        ilike(actors.nativeLang, targetLang),
+        ilike(actors.nativeLang, `${targetLang}-%`),
         //  CHRIS-PROTOCOL: Also match common variations in SQL for broader initial set
-        dbLang === 'nl-be' ? ilike(actors.nativeLang, 'vlaams') : undefined,
-        dbLang === 'nl-nl' ? ilike(actors.nativeLang, 'nederlands') : undefined,
-        dbLang === 'fr-fr' ? ilike(actors.nativeLang, 'frans') : undefined,
-        dbLang === 'en-gb' ? ilike(actors.nativeLang, 'engels') : undefined
+        targetLang === 'nl-be' || targetLang === 'nl' ? ilike(actors.nativeLang, 'vlaams') : undefined,
+        targetLang === 'nl-nl' || targetLang === 'nl' ? ilike(actors.nativeLang, 'nederlands') : undefined,
+        targetLang === 'fr-fr' || targetLang === 'fr' ? ilike(actors.nativeLang, 'frans') : undefined,
+        targetLang === 'en-gb' || targetLang === 'en' ? ilike(actors.nativeLang, 'engels') : undefined
       ].filter(Boolean) as any[];
       
       if (langConditions.length > 0) {

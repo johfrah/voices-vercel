@@ -5,6 +5,7 @@ dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 import { contentArticles, contentBlocks, translations, appConfigs } from '../../../packages/database/src/schema/index';
 import { eq, and, ilike, or } from "drizzle-orm";
 import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
+import { VOICES_CONFIG } from '../../../packages/config/config';
 
 /**
  * VOICES OS - DATABASE CLI TOOL (MARK & MOBY EDITION)
@@ -814,6 +815,16 @@ async function main() {
   } else if (command === 'cleanup-de-market') {
     await db.delete(appConfigs).where(eq(appConfigs.key, 'market_config_voices.de'));
     console.log('✅ Removed market_config_voices.de from database');
+    process.exit(0);
+  } else if (command === 'list-actors') {
+    const { actors } = await import('../../../packages/database/src/schema/index');
+    const { count } = await import('drizzle-orm');
+    const total = await db.select({ value: count() }).from(actors);
+    console.log('Total actors:', total[0].value);
+    const statuses = await db.select({ status: actors.status, count: count() }).from(actors).groupBy(actors.status);
+    console.log('Actor statuses:', statuses);
+    const firstFive = await db.select({ id: actors.id, firstName: actors.firstName, status: actors.status }).from(actors).limit(5);
+    console.log('First 5 actors:', firstFive);
     process.exit(0);
   } else {
     console.log('Usage: npx ts-node src/db-cli.ts <command>');
