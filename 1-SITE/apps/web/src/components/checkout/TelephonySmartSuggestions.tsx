@@ -217,6 +217,47 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
     return MarketManager.getLanguageLabel(selectedLang);
   }, [selectedLang]);
 
+  const handleApplyTemplate = (templateText: string, id: string) => {
+    // BOB-METHODE: Als de gebruiker een bouwsteen kiest, stoppen we de "Slimme Hulp" (Johfrai)
+    // om verwarring tussen de statische templates en de AI-suggesties te voorkomen.
+    if (onMinimize) onMinimize();
+
+    const templates = TELEPHONY_TEMPLATES[selectedLang] || TELEPHONY_TEMPLATES['en'] || [];
+    const template = templates.find(t => t.id === id);
+    
+    if (!template) return;
+
+    const processedText = templateText
+      .replace(/\[Bedrijf\]/g, companyName || '[Bedrijfsnaam]')
+      .replace(/\[Email\]/g, email || '[Email]')
+      .replace(/\[Uren\]/g, translatedHours);
+    
+    const currentBriefing = state.briefing.trim();
+    const templateTitle = template.title || 'Script';
+    const processedTextWithTitle = `(${templateTitle})\n${processedText}`;
+    
+    const newBriefing = currentBriefing 
+      ? `${currentBriefing}\n\n${processedTextWithTitle}`
+      : processedTextWithTitle;
+    
+    if (setLocalBriefing) {
+      setLocalBriefing(newBriefing);
+    }
+    updateBriefing(newBriefing);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const renderTemplatePreview = (text: string) => {
+    const parts = text.split(/(\[Bedrijf\]|\[Email\]|\[Uren\])/g);
+    return parts.map((part, i) => {
+      if (part === '[Bedrijf]') return <span key={i} className="font-bold text-primary">{companyName || '...'}</span>;
+      if (part === '[Email]') return <span key={i} className="font-bold text-primary">{email || '...'}</span>;
+      if (part === '[Uren]') return <span key={i} className="font-bold text-primary">{translatedHours}</span>;
+      return part;
+    });
+  };
+
   if (state.usage !== 'telefonie') return null;
 
   return (
