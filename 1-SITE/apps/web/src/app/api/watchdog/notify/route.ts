@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
  *  WATCHDOG NOTIFIER (NUCLEAR 2026)
  * 
  * Doel: Johfrah direct informeren bij kritieke app-fouten.
- * Verstuurt technische details naar johfrah@voices.be.
+ * Verstuurt technische details naar de admin.
  */
 
 export const dynamic = 'force-dynamic';
@@ -12,7 +12,11 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
   try {
     const { message, cause, url, digest } = await request.json();
-    const recipient = process.env.ADMIN_EMAIL || 'johfrah@voices.be';
+    const recipient = process.env.ADMIN_EMAIL;
+    if (!recipient) {
+      console.warn('[Watchdog Notify] No ADMIN_EMAIL configured');
+      return NextResponse.json({ success: true });
+    }
     
     console.error(` [WATCHDOG] Error detected at ${url}: ${message}`);
 

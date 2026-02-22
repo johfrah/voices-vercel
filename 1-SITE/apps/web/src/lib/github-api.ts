@@ -56,7 +56,7 @@ export async function commitFileToGitHub(
       branch: BRANCH,
       committer: {
         name: 'Cody (Vibecode Engine)',
-        email: 'cody@voices.be'
+        email: process.env.ADMIN_EMAIL || 'admin@voices.be'
       }
     });
 

@@ -40,7 +40,7 @@ export default function MailboxPage() {
   const [mails, setMails] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [activeFolder, setActiveFolder] = useState('INBOX');
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'johfrah@voices.be';
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
   const [activeAccount, setActiveAccount] = useState(adminEmail);
   const [activeTab, setActiveTab] = useState<MailboxTab>('inbox');
   const [offset, setOffset] = useState(0);

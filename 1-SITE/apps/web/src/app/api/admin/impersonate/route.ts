@@ -15,8 +15,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Niet geautoriseerd' }, { status: 401 });
   }
 
-  const isAdmin = adminUser.email === 'johfrah@voices.be' || 
-                  adminUser.email === 'voices@voices.be' || 
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const isAdmin = (adminEmail && adminUser.email === adminEmail) || 
                   (adminUser as any)?.role === 'admin';
 
   if (!isAdmin) {

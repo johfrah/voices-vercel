@@ -64,7 +64,7 @@ export class MarketManager {
       popular_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
       name: 'Nederland',
       phone: '+31 (0)85 016 34 60',
-      email: 'johfrah@voices.nl',
+      email: 'admin@voices.nl',
       logo_url: VOICES_CONFIG.assets.logos.nl,
       theme: 'voices'
     },
@@ -75,7 +75,7 @@ export class MarketManager {
       supported_languages: ['fr-FR', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
       popular_languages: ['fr-FR', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
       name: 'France',
-      email: 'johfrah@voices.fr',
+      email: 'admin@voices.fr',
       logo_url: VOICES_CONFIG.assets.logos.fr,
       theme: 'voices'
     },
@@ -86,7 +86,7 @@ export class MarketManager {
       supported_languages: ['es-ES', 'en-GB', 'fr-FR', 'pt-PT', 'it-IT'],
       popular_languages: ['es-ES', 'en-GB', 'pt-PT'],
       name: 'España',
-      email: 'johfrah@voices.es',
+      email: 'admin@voices.es',
       logo_url: VOICES_CONFIG.assets.logos.es,
       theme: 'voices'
     },
@@ -97,7 +97,7 @@ export class MarketManager {
       supported_languages: ['pt-PT', 'en-GB', 'es-ES', 'fr-FR'],
       popular_languages: ['pt-PT', 'en-GB', 'es-ES'],
       name: 'Portugal',
-      email: 'johfrah@voices.pt',
+      email: 'admin@voices.pt',
       logo_url: VOICES_CONFIG.assets.logos.pt,
       theme: 'voices'
     },
@@ -108,7 +108,7 @@ export class MarketManager {
       supported_languages: ['en-GB', 'de-DE', 'nl-BE', 'nl-NL', 'fr-FR'],
       popular_languages: ['en-GB', 'de-DE', 'fr-FR', 'nl-NL', 'nl-BE'],
       name: 'Europe',
-      email: 'johfrah@voices.eu',
+      email: 'admin@voices.eu',
       logo_url: VOICES_CONFIG.assets.logos.eu,
       theme: 'voices'
     },
@@ -119,7 +119,7 @@ export class MarketManager {
       supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Voices Academy',
-      email: 'johfrah@voices.be',
+      email: 'admin@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices',
       social_links: {
@@ -138,7 +138,7 @@ export class MarketManager {
       supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Voices Academy',
-      email: 'johfrah@voices.be',
+      email: 'admin@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices',
       social_links: {
@@ -157,7 +157,7 @@ export class MarketManager {
       supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Voices Studio',
-      email: 'johfrah@voices.be',
+      email: 'admin@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices',
       social_links: {
@@ -196,7 +196,7 @@ export class MarketManager {
       supported_languages: ['en-GB', 'nl-NL', 'nl-BE', 'fr-FR', 'de-DE'],
       popular_languages: ['en-GB', 'nl-NL', 'nl-BE', 'fr-FR', 'de-DE'],
       name: 'Youssef Zaki',
-      email: 'johfrah@voices.be',
+      email: 'admin@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'youssef',
       social_links: {
@@ -215,7 +215,7 @@ export class MarketManager {
       supported_languages: ['nl-BE', 'nl-NL'],
       popular_languages: ['nl-BE', 'nl-NL'],
       name: 'Ademing',
-      email: 'johfrah@voices.be',
+      email: 'admin@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.ademing,
       theme: 'ademing',
       seo_data: {
@@ -230,7 +230,7 @@ export class MarketManager {
       supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Johfrai',
-      email: 'johfrah@voices.be',
+      email: 'admin@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'johfrai'
     }

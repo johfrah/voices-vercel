@@ -136,7 +136,7 @@ async function seedMarkets() {
       supported_languages: ['nl-BE', 'nl-NL'],
       popular_languages: ['nl-BE', 'nl-NL'],
       name: 'Ademing',
-      email: 'johfrah@voices.be',
+      email: process.env.ADMIN_EMAIL || 'admin@voices.be',
       logo_url: '/assets/common/branding/Voices-LOGO-Animated.svg',
       hero_cta: { href: '/ademing', text: 'Start met luisteren' },
       nav_links: [
@@ -171,7 +171,7 @@ async function seedMarkets() {
       supported_languages: ['en-GB', 'nl-NL', 'nl-BE', 'fr-FR', 'de-DE'],
       popular_languages: ['en-GB', 'nl-NL', 'nl-BE', 'fr-FR', 'de-DE'],
       name: 'Youssef Zaki',
-      email: 'johfrah@voices.be',
+      email: process.env.ADMIN_EMAIL || 'admin@voices.be',
       logo_url: '/assets/common/branding/Voices-LOGO-Animated.svg',
       hero_images: [
         { url: "/assets/common/branding/founder/youssef-poster.jpg", name: "Youssef Zaki", role: "Artist" }
@@ -192,7 +192,7 @@ async function seedMarkets() {
       supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Voices Academy',
-      email: 'johfrah@voices.be',
+      email: process.env.ADMIN_EMAIL || 'admin@voices.be',
       logo_url: '/assets/common/branding/Voices-LOGO-Animated.svg',
       theme: 'voices',
       is_inclusive: true
@@ -204,7 +204,7 @@ async function seedMarkets() {
       supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       name: 'Johfrai',
-      email: 'johfrah@voices.be',
+      email: process.env.ADMIN_EMAIL || 'admin@voices.be',
       logo_url: '/assets/common/branding/Voices-LOGO-Animated.svg',
       theme: 'johfrai',
       is_inclusive: true

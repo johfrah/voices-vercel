@@ -158,14 +158,16 @@ export async function POST(request: NextRequest) {
       </div>
     `;
 
-    const adminEmail = process.env.ADMIN_EMAIL || 'johfrah@voices.be';
+    const adminEmail = process.env.ADMIN_EMAIL;
 
-    await mailService.sendMail({
-      to: adminEmail,
-      subject: `🚀 Nieuwe Casting: ${projectName} (${clientCompany})`,
-      html: adminHtml,
-      host: host
-    });
+    if (adminEmail) {
+      await mailService.sendMail({
+        to: adminEmail,
+        subject: `🚀 Nieuwe Casting: ${projectName} (${clientCompany})`,
+        html: adminHtml,
+        host: host
+      });
+    }
 
     return NextResponse.json({ 
       success: true, 

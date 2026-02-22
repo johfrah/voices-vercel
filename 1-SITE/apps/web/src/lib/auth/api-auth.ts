@@ -2,7 +2,7 @@
  *  API AUTH HELPER (NUCLEAR 2026)
  *
  * Centrale authenticatie voor admin-only API routes.
- * Gebruikt Supabase Auth + users table voor role-check (johfrah@voices.be of role === 'admin').
+ * Gebruikt Supabase Auth + users table voor role-check (ADMIN_EMAIL of role === 'admin').
  */
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
@@ -23,7 +23,8 @@ const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
  */
 async function checkIsAdmin(user: User | null): Promise<boolean> {
   if (!user?.email) return false;
-  if (user.email === 'johfrah@voices.be') return true;
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (user.email === adminEmail) return true;
 
   try {
     const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, user.email)).limit(1);

@@ -12,7 +12,9 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const audioFile = formData.get('audio') as File;
     const text = formData.get('text') as string;
-    const email = formData.get('email') as string || 'johfrah@voices.be';
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const email = formData.get('email') as string || adminEmail;
+    if (!email) return NextResponse.json({ error: 'No recipient email' }, { status: 400 });
 
     if (!audioFile) {
       return NextResponse.json({ success: false, error: 'Geen audiobestand ontvangen' }, { status: 400 });

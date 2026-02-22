@@ -30,11 +30,11 @@ export async function POST(request: Request) {
     const queryVector = await vectorService.generateEmbedding((incomingMail.textBody || incomingMail.subject) || '');
     const formattedVector = `[${queryVector.join(',')}]`;
 
-    // Zoek naar de top 5 meest relevante verzonden mails van Johfrah
+    // Zoek naar de top 5 meest relevante verzonden mails van de admin
     const relevantSentMails = await db.execute(sql`
       SELECT text_body as "textBody", subject
       FROM mail_content
-      WHERE sender ILIKE '%johfrah@voices.be%'
+      WHERE sender ILIKE ${'%' + (process.env.ADMIN_EMAIL || 'admin@voices.be') + '%'}
       AND embedding IS NOT NULL
       AND text_body IS NOT NULL
       ORDER BY embedding <=> ${formattedVector}::vector
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       styleSample = relevantSentMails.map((m: any) => `ONDERWERP: ${m.subject}\nANTWOORD: ${m.textBody}`).join('\n---\n');
     } else {
       const fallbackMails = await db.query.mailContent.findMany({
-        where: sql`sender ILIKE '%johfrah@voices.be%'`,
+        where: sql`sender ILIKE ${'%' + (process.env.ADMIN_EMAIL || 'admin@voices.be') + '%'}`,
         limit: 3,
         orderBy: [desc(mailContent.date)]
       });

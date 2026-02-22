@@ -214,9 +214,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: !error, error: error?.message };
   };
 
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'johfrah@voices.be';
-  const isAdmin = user?.email === adminEmail || 
-                  user?.email === 'voices@voices.be' || 
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  const isAdmin = (adminEmail && user?.email === adminEmail) || 
                   (user as any)?.role === 'admin' ||
                   process.env.NODE_ENV === 'development';
 
