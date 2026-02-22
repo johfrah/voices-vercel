@@ -7,9 +7,10 @@
  */
 
 import { VOICES_CONFIG } from './config';
-import { db } from '@db';
-import { marketConfigs } from '@db/schema';
-import { eq } from 'drizzle-orm';
+
+// 🛡️ CHRIS-PROTOCOL: Prevent DB leaks into Client Components
+// Use dynamic imports for DB-related logic to ensure 'postgres' (net/tls/fs) 
+// is never bundled into the client-side experience.
 
 export interface MarketConfig {
   market_code: string;
@@ -303,6 +304,11 @@ export class MarketManager {
     const staticConfig = this.getCurrentMarket(lookupHost);
     
     try {
+      // 🛡️ CHRIS-PROTOCOL: Dynamic import to isolate DB logic from client bundle
+      const { db } = await import('@db');
+      const { marketConfigs } = await import('@db/schema');
+      const { eq } = await import('drizzle-orm');
+
       const [dbConfig] = await db
         .select()
         .from(marketConfigs)
@@ -357,6 +363,10 @@ export class MarketManager {
    */
   static async getAllLocalesAsync(): Promise<Record<string, string>> {
     try {
+      // 🛡️ CHRIS-PROTOCOL: Dynamic import to isolate DB logic from client bundle
+      const { db } = await import('@db');
+      const { marketConfigs } = await import('@db/schema');
+
       const allMarkets = await db.select().from(marketConfigs);
       const locales: Record<string, string> = {};
       
