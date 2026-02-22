@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
-    const adminEmail = process.env.ADMIN_EMAIL || market.email;
+    const adminEmail = market.email;
 
     const mailEngine = VoicesMailEngine.getInstance();
 

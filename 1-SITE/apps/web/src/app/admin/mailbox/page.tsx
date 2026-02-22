@@ -20,7 +20,9 @@ import { useHotkeys } from '@/hooks/useHotkeys';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { AdminService } from '@/services/AdminService';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 type MailboxTab = 'inbox' | 'insights' | 'faq';
 
@@ -40,7 +42,11 @@ export default function MailboxPage() {
   const [mails, setMails] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [activeFolder, setActiveFolder] = useState('INBOX');
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  
+  // 🛡️ CHRIS-PROTOCOL: Fetch admin email from MarketManager (Source of Truth)
+  const market = useMemo(() => MarketManager.getCurrentMarket(), []);
+  const adminEmail = market.email;
+  
   const [activeAccount, setActiveAccount] = useState(adminEmail);
   const [activeTab, setActiveTab] = useState<MailboxTab>('inbox');
   const [offset, setOffset] = useState(0);
@@ -85,8 +91,12 @@ export default function MailboxPage() {
   const fetchInsights = React.useCallback(async () => {
     setIsInsightsLoading(true);
     try {
-      const res = await fetch(`/api/mailbox/insights?startDate=${dateRange.start}&endDate=${dateRange.end}&compare=${compareWithPrevious}`);
-      if (res.ok) setInsights(await res.json());
+      const data = await AdminService.getInsights({
+        startDate: dateRange.start,
+        endDate: dateRange.end,
+        compare: compareWithPrevious
+      });
+      setInsights(data);
     } catch (e) { console.error(e); }
     finally { setIsInsightsLoading(false); }
   }, [dateRange.start, dateRange.end, compareWithPrevious]);
@@ -94,23 +104,26 @@ export default function MailboxPage() {
   const fetchFaqProposals = React.useCallback(async () => {
     setIsFaqLoading(true);
     try {
-      const res = await fetch(`/api/mailbox/faq-proposals?startDate=${dateRange.start}&endDate=${dateRange.end}`);
-      if (res.ok) setFaqProposals(await res.json());
+      const data = await AdminService.getFaqProposals({
+        startDate: dateRange.start,
+        endDate: dateRange.end
+      });
+      setFaqProposals(data);
     } catch (e) { console.error(e); }
     finally { setIsFaqLoading(false); }
   }, [dateRange.start, dateRange.end]);
 
   const fetchCustomerDna = React.useCallback(async (userId: number) => {
     try {
-      const res = await fetch(`/api/mailbox/customer-dna/${userId}`);
-      if (res.ok) setCustomerDna(await res.json());
+      const data = await AdminService.getCustomerDna(userId);
+      setCustomerDna(data);
     } catch (e) { console.error(e); }
   }, []);
 
   const fetchProjectDna = React.useCallback(async (projectId: string) => {
     try {
-      const res = await fetch(`/api/mailbox/project-dna/${projectId}`);
-      if (res.ok) setProjectDna(await res.json());
+      const data = await AdminService.getProjectDna(projectId);
+      setProjectDna(data);
     } catch (e) { console.error(e); }
   }, []);
 
@@ -135,14 +148,12 @@ export default function MailboxPage() {
       if (isOwner && mail.recipient) {
         const recipientEmail = mail.recipient.replace(/.*<(.+)>$/, '$1').toLowerCase().trim();
         try {
-          const res = await fetch(`/api/mailbox/customer-dna/search?email=${encodeURIComponent(recipientEmail)}`);
-          if (res.ok) {
-            const data = await res.json();
-            setCustomerDna(data);
-          } else {
-            setCustomerDna(null);
-          }
-        } catch (e) { console.error(e); }
+          const data = await AdminService.searchCustomerDna(recipientEmail);
+          setCustomerDna(data);
+        } catch (e) { 
+          console.error(e);
+          setCustomerDna(null);
+        }
       } else {
         fetchCustomerDna(mail.iapContext.userId);
       }
@@ -156,11 +167,8 @@ export default function MailboxPage() {
     else setProjectDna(null);
 
     try {
-      const res = await fetch(`/api/mailbox/message/${mail.id}`);
-      if (res.ok) {
-        const threadData = await res.json();
-        setSelectedThread(threadData);
-      }
+      const threadData = await AdminService.getMessage(mail.id);
+      setSelectedThread(threadData);
     } catch (e) { console.error(e); }
   }, [fetchCustomerDna, fetchProjectDna, activeAccount]);
 
@@ -176,25 +184,29 @@ export default function MailboxPage() {
     }
     const currentOffset = reset ? 0 : offset;
     try {
-      const res = await fetch(`/api/mailbox/inbox?limit=50&offset=${currentOffset}&folder=${folder}&account=${account}&sortByValue=${sortByValue}`);
-      if (res.ok) {
-        const data = await res.json();
-        setTotalCount(data.totalCount);
-        
-        if (reset) {
-          setFolderCounts(prev => ({ ...prev, [folder]: data.totalCount }));
-          setMails(data.mails);
-          setOffset(data.mails.length);
-          if (autoOpenFirst && data.mails.length > 0) {
-            setSelectedIndex(0);
-            handleMailClick(data.mails[0]);
-          }
-        } else {
-          setMails(prev => [...prev, ...data.mails]);
-          setOffset(prev => prev + data.mails.length);
+      const data = await AdminService.getInbox({
+        limit: 50,
+        offset: currentOffset,
+        folder,
+        account,
+        sortByValue
+      });
+      
+      setTotalCount(data.totalCount);
+      
+      if (reset) {
+        setFolderCounts(prev => ({ ...prev, [folder]: data.totalCount }));
+        setMails(data.mails);
+        setOffset(data.mails.length);
+        if (autoOpenFirst && data.mails.length > 0) {
+          setSelectedIndex(0);
+          handleMailClick(data.mails[0]);
         }
-        setHasMore(data.mails.length === 50);
+      } else {
+        setMails(prev => [...prev, ...data.mails]);
+        setOffset(prev => prev + data.mails.length);
       }
+      setHasMore(data.mails.length === 50);
     } catch (error) {
       console.error(' Mailbox Error:', error);
     } finally {
@@ -222,11 +234,11 @@ export default function MailboxPage() {
       refreshInbox(true, true, activeFolder, activeAccount);
       ['INBOX', 'INBOX.Archive', 'Sent', 'Trash'].forEach(f => {
         if (f !== activeFolder) {
-          fetch(`/api/mailbox/inbox?limit=1&offset=0&folder=${f}&account=${activeAccount}`)
-            .then(res => res.json())
+          AdminService.getInbox({ limit: 1, offset: 0, folder: f, account: activeAccount })
             .then(data => {
               setFolderCounts(prev => ({ ...prev, [f]: data.totalCount }));
-            });
+            })
+            .catch(e => console.error(e));
         }
       });
     }
@@ -245,8 +257,7 @@ export default function MailboxPage() {
     setMails(prev => prev.filter(m => m.id !== id.toString() && m.id !== id));
     setTotalCount(prev => Math.max(0, prev - 1));
     try {
-      const response = await fetch(`/api/mailbox/archive/${id}`, { method: 'POST' });
-      if (!response.ok) throw new Error('Archive failed');
+      await AdminService.archiveMail(id);
     } catch (e) {
       setMails(originalMails);
       setTotalCount(originalTotal);
@@ -270,12 +281,8 @@ export default function MailboxPage() {
 
   const handleSendEmail = async (data: { to: string; subject: string; body: string }) => {
     try {
-      const response = await fetch('/api/mailbox/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (response.ok) setIsComposing(false);
+      await AdminService.sendEmail(data);
+      setIsComposing(false);
     } catch (e) { console.error(e); }
   };
 
@@ -407,8 +414,7 @@ export default function MailboxPage() {
                       className="w-full bg-va-black text-white text-[15px] font-light tracking-widest py-3 px-4 rounded-[10px] shadow-lg focus:ring-2 focus:ring-primary/20 outline-none appearance-none cursor-pointer border-none"
                     >
                       <OptionInstrument value="all"> {t('mailbox.accounts.all', 'Alle Accounts')}</OptionInstrument>
-                      <OptionInstrument value={adminEmail}>Voices</OptionInstrument>
-                      <OptionInstrument value={process.env.NEXT_PUBLIC_ADMIN_EMAIL || VOICES_CONFIG.company.email}>Voices</OptionInstrument>
+                      <OptionInstrument value={adminEmail}>Voices ({market.market_code})</OptionInstrument>
                     </SelectInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>

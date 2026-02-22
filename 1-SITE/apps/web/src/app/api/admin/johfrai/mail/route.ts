@@ -12,8 +12,11 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const audioFile = formData.get('audio') as File;
     const text = formData.get('text') as string;
-    const adminEmail = process.env.ADMIN_EMAIL;
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const market = MarketManager.getCurrentMarket(host);
+    const adminEmail = market.email;
     const email = formData.get('email') as string || adminEmail;
+    
     if (!email) return NextResponse.json({ error: 'No recipient email' }, { status: 400 });
 
     if (!audioFile) {
@@ -22,8 +25,6 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(await audioFile.arrayBuffer());
     const mailEngine = VoicesMailEngine.getInstance();
-    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
-    const market = MarketManager.getCurrentMarket(host);
 
     // CHRIS-PROTOCOL: Gebruik de DirectMailService via VoicesMailEngine voor attachments
     const { DirectMailService } = await import('@/services/DirectMailService');
