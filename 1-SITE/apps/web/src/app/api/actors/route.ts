@@ -26,24 +26,15 @@ export async function GET(request: Request) {
       return { 
         results: [], 
         count: 0, 
-        _error: err.message,
         filters: { genders: [], languages: [], styles: [] }, 
         reviews: [], 
         reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } 
       };
     });
     
-    if (!data || !data.results) {
-      return NextResponse.json({ results: [], count: 0, _debug: 'No results' });
-    }
-    
-    return NextResponse.json({
-      ...data,
-      _v: '2.19',
-      _time: new Date().toISOString()
-    });
+    return NextResponse.json(data);
   } catch (error: any) {
     console.error(' ACTORS API FAILURE:', error.message);
-    return NextResponse.json({ results: [], count: 0, error: error.message }, { status: 500 });
+    return NextResponse.json({ results: [], count: 0 }, { status: 500 });
   }
 }
