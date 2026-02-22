@@ -20,6 +20,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@config/*": ["../../packages/config/*"],
+      "@config/market-manager": ["../../packages/config/market-manager.ts"],
       "@db": ["../../packages/database/src/index.ts"],
       "@db/*": ["../../packages/database/src/*"],
       "@db-service": ["./src/lib/db-service.ts"],
