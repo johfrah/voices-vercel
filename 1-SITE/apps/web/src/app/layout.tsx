@@ -193,7 +193,7 @@ export default async function RootLayout({
   };
 
   const htmlClass = `${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`;
-  const bodyClass = "pb-24 md:pb-0 touch-manipulation va-main-layout";
+  const bodyClass = "pb-24 md:pb-0 touch-manipulation va-main-layout pt-[80px] md:pt-[110px]";
 
   // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
   if (isUnderConstruction) {
