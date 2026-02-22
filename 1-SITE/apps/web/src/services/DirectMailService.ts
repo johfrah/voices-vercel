@@ -141,11 +141,13 @@ export class DirectMailService {
     const host = options.host || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     if (from.includes('voices.') || from.includes(host)) {
       smtpHost = process.env.SMTP_SERVER_VOICES || 'smtp-auth.mailprotect.be';
-      smtpPass = process.env.IMAP_PASS_VOICES || this.config.password;
+      smtpPass = process.env.IMAP_PASS_VOICES || process.env.IMAP_PASS || this.config.password;
     } else if (from.includes('invoice@')) {
       smtpHost = process.env.SMTP_SERVER_INVOICES || 'smtp-auth.mailprotect.be';
-      smtpPass = process.env.IMAP_PASS_INVOICES || this.config.password;
+      smtpPass = process.env.IMAP_PASS_INVOICES || process.env.IMAP_PASS || this.config.password;
     }
+
+    // console.log(`[SMTP Debug] Host: ${smtpHost}, User: ${smtpUser}, Pass: ${smtpPass ? '********' : 'MISSING'}`);
 
     const transporter = nodemailer.createTransport({
       host: smtpHost,
