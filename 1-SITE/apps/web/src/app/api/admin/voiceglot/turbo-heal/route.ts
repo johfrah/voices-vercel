@@ -3,6 +3,7 @@ import { translations, translationRegistry } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { GeminiService } from '@/services/GeminiService';
 import { NextResponse } from 'next/server';
+import { createClient } from "@supabase/supabase-js";
 
 /**
  *  API: TURBO HEAL (GOD MODE 2026)
@@ -14,8 +15,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   //  CHRIS-PROTOCOL: Build Safety
-  // We voeren geen turbo-heal uit tijdens de build fase om timeouts en DB-errors te voorkomen.
-  if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL) {
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
     return NextResponse.json({ success: true, message: 'Skipping turbo-heal during build' });
   }
 
@@ -23,11 +23,37 @@ export async function GET() {
   const results: any = {};
 
   try {
-    const allStrings = await db.select().from(translationRegistry);
+    // CHRIS-PROTOCOL: Use SDK fallback for stability
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    let allStrings: any[] = [];
+    try {
+      allStrings = await db.select().from(translationRegistry);
+    } catch (dbErr) {
+      console.warn(' [TurboHeal API] Drizzle failed to fetch registry, falling back to SDK');
+      const { data } = await supabase.from('translation_registry').select('*');
+      allStrings = (data || []).map(s => ({
+        id: s.id,
+        stringHash: s.string_hash,
+        originalText: s.original_text,
+        context: s.context,
+        lastSeen: s.last_seen
+      }));
+    }
     
     for (const lang of targetLanguages) {
-      const existing = await db.select({ key: translations.translationKey }).from(translations).where(eq(translations.lang, lang));
-      const existingKeys = new Set(existing.map(t => t.key));
+      let existingKeys = new Set<string>();
+      try {
+        const existing = await db.select({ key: translations.translationKey }).from(translations).where(eq(translations.lang, lang));
+        existingKeys = new Set(existing.map(t => t.key));
+      } catch (dbErr) {
+        console.warn(` [TurboHeal API] Drizzle failed to fetch existing translations for ${lang}, falling back to SDK`);
+        const { data } = await supabase.from('translations').select('translation_key').eq('lang', lang);
+        existingKeys = new Set((data || []).map(t => t.translation_key));
+      }
+
       const missing = allStrings.filter(s => !existingKeys.has(s.stringHash));
       
       results[lang] = { total: allStrings.length, missing: missing.length, healed: 0 };
@@ -36,14 +62,11 @@ export async function GET() {
       for (const item of missing.slice(0, 50)) {
         try {
           //  CHRIS-PROTOCOL: Data Integrity
-          const key = item.stringHash || (item as any).translationKey;
-          const text = item.originalText || (item as any).defaultText;
+          const key = item.stringHash;
+          const text = item.originalText;
           const context = item.context || 'Algemene website tekst';
 
-          if (!key || !text) {
-            console.warn(`[TurboHeal] Missing key or text for item:`, item);
-            continue;
-          }
+          if (!key || !text) continue;
 
           const prompt = `
             Vertaal naar het ${lang}: "${text}". 
@@ -55,14 +78,26 @@ export async function GET() {
           const translated = await GeminiService.generateText(prompt, { lang: lang });
           const clean = translated.trim().replace(/^"|"$/g, '');
 
-          await db.insert(translations).values({
-            translationKey: key,
-            lang: lang,
-            originalText: text,
-            translatedText: clean,
-            status: 'active',
-            updatedAt: new Date()
-          });
+          try {
+            await db.insert(translations).values({
+              translationKey: key,
+              lang: lang,
+              originalText: text,
+              translatedText: clean,
+              status: 'active',
+              updatedAt: new Date()
+            });
+          } catch (dbInsertErr) {
+            console.warn(` [TurboHeal API] Drizzle failed to insert translation for ${lang}, falling back to SDK`);
+            await supabase.from('translations').insert({
+              translation_key: key,
+              lang: lang,
+              original_text: text,
+              translated_text: clean,
+              status: 'active',
+              updated_at: new Date()
+            });
+          }
           results[lang].healed++;
         } catch (e) {
           console.error(`Failed turbo-heal for item:`, item, e);
