@@ -6,7 +6,7 @@ import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Check, Music, Pause, Play, Search, Upload, X } from 'lucide-react';
+import { Check, Music, Pause, Play, Search as SearchIcon, Upload, X } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TextInstrument } from '../ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
@@ -123,7 +123,7 @@ export const MusicSelector: React.FC = () => {
     >
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative group flex-1">
-          <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" />
+          <SearchIcon size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" />
           <input 
             type="text"
             value={searchQuery}

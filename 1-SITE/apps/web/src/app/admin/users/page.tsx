@@ -13,7 +13,7 @@ import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search, Shield, UserPlus, Users, RefreshCw, Ghost } from 'lucide-react';
+import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -81,7 +81,7 @@ export default function AdminUsersPage() {
         
         <ContainerInstrument className="flex gap-4">
           <ContainerInstrument className="relative group">
-            <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} />
+            <SearchIcon strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} />
             <input 
               type="text" 
               placeholder="Zoek op naam of email..." 
@@ -92,7 +92,8 @@ export default function AdminUsersPage() {
           </ContainerInstrument>
           <ButtonInstrument onClick={() => {
             logAction('users_create_new');
-            // ... logic
+            //  CHRIS-PROTOCOL: Open User Creation Modal
+            window.dispatchEvent(new CustomEvent('admin:user:create'));
           }} className="va-btn-pro !bg-va-black flex items-center gap-2">
             <UserPlus strokeWidth={1.5} size={16} /> <VoiceglotText  translationKey="admin.users.add" defaultText="Nieuwe Gebruiker" />
           </ButtonInstrument>

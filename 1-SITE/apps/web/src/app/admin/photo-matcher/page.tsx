@@ -3,7 +3,7 @@
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
-import { Archive, ArrowRight, Check, ChevronRight, Search, Star, Tag } from 'lucide-react';
+import { Archive, ArrowRight, Check, ChevronRight, Search as SearchIcon, Star, Tag } from 'lucide-react';
 import Image from 'next/image';
 import React, { useCallback, useEffect, useRef, useState, Suspense } from 'react';
 import dynamic from "next/dynamic";
@@ -175,7 +175,7 @@ const SwipeCard = ({
                     onClick={() => setShowSearch(true)}
                     className="w-full px-6 py-4 border border-dashed border-black/10 hover:border-va-primary hover:bg-va-primary/5 rounded-2xl text-[15px] text-va-black/40 flex items-center justify-center gap-2 transition-all"
                   >
-                    <Search strokeWidth={1.5} size={16} /> Find Voice Actor...
+                    <SearchIcon strokeWidth={1.5} size={16} /> Find Voice Actor...
                   </ButtonInstrument>
                 )}
               </ContainerInstrument>
@@ -189,7 +189,7 @@ const SwipeCard = ({
                     placeholder="Type name..."
                     className="w-full pl-12 pr-4 py-4 bg-va-off-white border-none rounded-2xl text-[15px]"
                   />
-                  <Search strokeWidth={1.5} size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" />
+                  <SearchIcon strokeWidth={1.5} size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" />
                   <ButtonInstrument 
                     onClick={() => setShowSearch(false)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-[15px] font-bold text-va-primary"

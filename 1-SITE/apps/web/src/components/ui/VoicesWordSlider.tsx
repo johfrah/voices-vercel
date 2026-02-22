@@ -41,7 +41,20 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // ... (suggestion logic)
+  //  CHRIS-PROTOCOL: Suggestion logic (Nuclear 2026)
+  const promptSuggestion = useMemo(() => {
+    if (isTelephony) return t('filter.telephony_suggestion', '± 30 sec');
+    return null;
+  }, [isTelephony, t]);
+
+  const videoSuggestion = useMemo(() => {
+    if (isVideo) {
+      if (value <= 150) return t('filter.video_suggestion_1', '± 1 min');
+      if (value <= 300) return t('filter.video_suggestion_2', '± 2 min');
+      return t('filter.video_suggestion_3', '± 3+ min');
+    }
+    return null;
+  }, [isVideo, value, t]);
 
   const sliderContent = (
     <div className="space-y-4">

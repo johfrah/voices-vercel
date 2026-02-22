@@ -91,7 +91,17 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
         if (data.campaignMessage) {
           setState(prev => ({ ...prev, campaignMessage: data.campaignMessage }));
         }
-        // ... rest of review stats fetch if needed ...
+        
+        //  CHRIS-PROTOCOL: Nuclear Review Stats Sync
+        if (data.reviewStats) {
+          setState(prev => ({ 
+            ...prev, 
+            reviewStats: {
+              averageRating: data.reviewStats.averageRating || 4.9,
+              totalCount: data.reviewStats.totalCount || 0
+            }
+          }));
+        }
       } catch (e) {
         console.warn('[VoicesState] Failed to fetch config', e);
       }

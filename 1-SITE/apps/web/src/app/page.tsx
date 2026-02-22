@@ -473,8 +473,8 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": marketConfig.name,
-        "url": `https://${typeof window !== 'undefined' ? window.location.host : 'voices.be'}`,
-        "logo": `https://${typeof window !== 'undefined' ? window.location.host : 'voices.be'}${marketConfig.logo_url}`,
+        "url": `https://${(typeof window !== 'undefined' ? window.location.host : 'www.voices.be').replace(/^https?:\/\//, '')}`,
+        "logo": `https://${(typeof window !== 'undefined' ? window.location.host : 'www.voices.be').replace(/^https?:\/\//, '')}${marketConfig.logo_url}`,
         "description": marketConfig.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
         "aggregateRating": {
           "@type": "AggregateRating",
@@ -544,12 +544,22 @@ export default function Home() {
     
     setIsLoading(true);
     
+    //  CHRIS-PROTOCOL: Safety timeout for skeletons (10s)
+    const timeoutId = setTimeout(() => {
+      if (isLoading && !data) {
+        console.warn('[Home] Data fetch timeout reached, showing empty state');
+        setData({ actors: [], reviews: [], dynamicConfig: {} });
+        setIsLoading(false);
+      }
+    }, 10000);
+    
     // Fetch both actors and dynamic home config
     Promise.all([
       fetch(fetchUrl, { signal: controller.signal }).then(res => res.json()),
       fetch('/api/home/config', { signal: controller.signal }).then(res => res.json())
     ])
       .then(([resData, homeConfig]) => {
+        clearTimeout(timeoutId);
         if (!mounted) return;
         if (!resData || !resData.results) {
           setData({ actors: [], reviews: [], dynamicConfig: homeConfig });

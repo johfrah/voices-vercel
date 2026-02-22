@@ -22,7 +22,7 @@ import {
     Mic,
     MousePointer2,
     Music,
-    Search,
+    Search as SearchIcon,
     Settings,
     ShieldCheck,
     ShoppingBag,
@@ -264,7 +264,7 @@ export const SpotlightDashboard: React.FC = () => {
         {/* Search Header */}
         <div className="p-10 border-b border-black/5 flex items-center gap-8">
           <div className="w-12 h-12 bg-primary/10 rounded-[10px] flex items-center justify-center text-primary">
-            <Search strokeWidth={1.5} size={32} />
+            <SearchIcon strokeWidth={1.5} size={32} />
           </div>
           <input 
             autoFocus

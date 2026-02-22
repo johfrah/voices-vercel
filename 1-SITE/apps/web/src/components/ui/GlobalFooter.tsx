@@ -2,7 +2,7 @@
 
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { BreadcrumbsInstrument } from './BreadcrumbsInstrument';
-import { Star, Check, Phone, Mail, Facebook, Instagram, Linkedin, Plus, Trash2, Link as LinkIcon, Search, X, Quote, ChevronDown, Youtube, Music } from 'lucide-react';
+import { Star, Check, Phone, Mail, Facebook, Instagram, Linkedin, Plus, Trash2, Link as LinkIcon, Search as SearchIcon, X, Quote, ChevronDown, Youtube, Music } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { MarketManager } from '@config/market-manager';
@@ -554,7 +554,7 @@ export default function GlobalFooter() {
                           <ContainerInstrument className="flex flex-col gap-3">
                             <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">{social.alt} URL</TextInstrument>
                             <ContainerInstrument className="flex items-center gap-2 bg-va-off-white px-3 py-2 rounded-lg border border-black/5">
-                              <Search size={14} className="text-va-black/30" />
+                              <SearchIcon size={14} className="text-va-black/30" />
                               <input 
                                 autoFocus
                                 type="text" 
@@ -801,7 +801,7 @@ export default function GlobalFooter() {
                                 <VoiceglotText translationKey="common.link_url" defaultText="Link URL" />
                               </TextInstrument>
                               <ContainerInstrument className="flex items-center gap-2 bg-va-off-white px-3 py-2 rounded-lg border border-black/5">
-                                <Search size={14} className="text-va-black/30" />
+                                <SearchIcon size={14} className="text-va-black/30" />
                                 <input 
                                   autoFocus
                                   type="text" 

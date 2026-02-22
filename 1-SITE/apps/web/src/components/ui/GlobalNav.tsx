@@ -16,7 +16,7 @@ import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrumen
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 import { NavConfig } from '@/lib/config-bridge';
-import { Plus, Trash2, Link as LinkIcon, Search, X, Check, ArrowRight, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Link as LinkIcon, Search as SearchIcon, X, Check, ArrowRight, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

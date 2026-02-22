@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, Check, ChevronLeft, ChevronRight, Quote, Search, X, Eye, EyeOff, Anchor, Pin, Trash2, Tag } from "lucide-react";
+import { Star, Check, ChevronLeft, ChevronRight, Quote, Search as SearchIcon, X, Eye, EyeOff, Anchor, Pin, Trash2, Tag } from "lucide-react";
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { BentoCard } from "./BentoGrid";
 import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from "./LayoutInstruments";
@@ -525,7 +525,7 @@ export const ReviewsInstrument: React.FC<{
           ))
         ) : (
           <div className="w-full py-20 flex flex-col items-center justify-center text-va-black/20 space-y-4">
-            <Search size={48} strokeWidth={1} />
+            <SearchIcon size={48} strokeWidth={1} />
             <TextInstrument className="text-lg font-light">
               <VoiceglotText translationKey="reviews.no_results" defaultText="Geen reviews gevonden voor deze selectie." />
             </TextInstrument>

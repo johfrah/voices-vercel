@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { Phone, Video, Megaphone, Search, ChevronDown, Filter, ArrowRight } from 'lucide-react';
+import { Phone, Video, Megaphone, Search as SearchIcon, ChevronDown, Filter, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -98,7 +98,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
         <ContainerInstrument plain className="flex flex-col md:flex-row items-center gap-2 p-1">
           {/* Search */}
           <ContainerInstrument plain className="flex-1 w-full relative group">
-            <Search size={18} strokeWidth={1.5} className="absolute left-5 top-1/2 -translate-y-1/2 text-primary/40 group-focus-within:text-primary transition-colors" />
+            <SearchIcon size={18} strokeWidth={1.5} className="absolute left-5 top-1/2 -translate-y-1/2 text-primary/40 group-focus-within:text-primary transition-colors" />
             <InputInstrument 
               type="text" 
               placeholder={t('agency.filter.search_placeholder', 'Zoek op naam, stijl of kenmerk...')}

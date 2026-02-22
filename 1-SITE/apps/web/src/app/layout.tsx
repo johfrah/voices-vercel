@@ -58,7 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
   const domains = MarketManager.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
-  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
+  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || 'www.voices.be';
   const cleanHost = host.replace(/^https?:\/\//, '');
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
@@ -67,7 +67,7 @@ export async function generateMetadata(): Promise<Metadata> {
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
   const market = await getMarketSafe(lookupHost);
-  const baseUrl = `https://${cleanHost}`;
+  const baseUrl = `https://${market.market_code === 'BE' ? 'www.voices.be' : (market.market_code === 'NLNL' ? 'www.voices.nl' : cleanHost)}`;
 
   // 🛡️ VISIONARY MANDATE: Title and description exclusively from market data
   const title = market.seo_data?.title || (
@@ -143,7 +143,7 @@ export default async function RootLayout({
   const headersList = headers();
   const domains = MarketManager.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
-  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
+  const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || 'www.voices.be';
   const cleanHost = host.replace(/^https?:\/\//, '');
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)

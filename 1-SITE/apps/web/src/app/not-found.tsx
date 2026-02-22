@@ -11,7 +11,7 @@ import {
   ButtonInstrument 
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { Home, Search, ArrowLeft, Heart, Sparkles, Loader2, Compass } from 'lucide-react';
+import { Home, ArrowLeft, Heart, Sparkles, Loader2, Compass } from 'lucide-react';
 import Link from 'next/link';
 import { JourneyCta } from '@/components/ui/JourneyCta';
 import { useSonicDNA } from '@/lib/sonic-dna';

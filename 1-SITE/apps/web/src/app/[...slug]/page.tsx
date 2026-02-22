@@ -149,13 +149,13 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   }
 
   const headersList = headers();
-  const host = headersList.get('host') || 'www.voices.be';
+  const host = (headersList.get('host') || 'www.voices.be').replace(/^https?:\/\//, '');
   const { MarketManager } = await import('@config/market-manager');
   const market = MarketManager.getCurrentMarket(host);
   const lang = headersList.get('x-voices-lang') || 'nl';
   const normalizedSlug = normalizeSlug(params.slug);
   
-  const siteUrl = `https://www.${market.market_code.toLowerCase() === 'be' ? 'voices.be' : (market.market_code.toLowerCase() === 'nlnl' ? 'voices.nl' : host)}`;
+  const siteUrl = `https://${market.market_code.toLowerCase() === 'be' ? 'www.voices.be' : (market.market_code.toLowerCase() === 'nlnl' ? 'www.voices.nl' : host)}`;
   
   // Resolve de slug naar de originele versie
   const resolved = await resolveSlug(normalizedSlug, lang);

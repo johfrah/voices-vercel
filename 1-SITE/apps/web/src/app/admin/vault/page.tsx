@@ -5,7 +5,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { ArrowLeft, Calendar, Download, FileText, Hash, Mic, Search, Shield, User, Video, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Calendar, Download, FileText, Hash, Mic, Search as SearchIcon, Shield, User, Video, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
@@ -84,7 +84,7 @@ export default function VaultBrowserPage() {
           {/* Filters Bar */}
           <ContainerInstrument className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-white p-4 rounded-[20px] border border-black/5 shadow-sm">
             <ContainerInstrument className="relative">
-              <Search strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} />
+              <SearchIcon strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={16} />
               <InputInstrument 
                 placeholder="Zoek op bestandsnaam..." 
                 className="pl-12 py-3 bg-va-off-white border-none rounded-[10px] text-[15px] font-light"
