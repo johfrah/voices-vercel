@@ -22,7 +22,7 @@ const getDb = () => {
                   // We use port 6543 (Transaction Mode) with a small pool size to avoid saturation.
                   if (connectionString.includes(':5432')) {
                     console.log('🔄 Switching to transaction mode pooler (port 6543) for stability...');
-                    connectionString = connectionString.replace(':5432', ':6543').replace('pgbouncer=false', 'pgbouncer=true');
+                    connectionString = connectionString.replace(':5432', ':6543');
                   }
                   
                   if (!connectionString.includes('pgbouncer=true')) {
