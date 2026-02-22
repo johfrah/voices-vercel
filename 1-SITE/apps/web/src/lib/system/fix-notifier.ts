@@ -14,8 +14,8 @@ export class FixNotifier {
       const mailService = DirectMailService.getInstance();
       
       //  CHRIS-PROTOCOL: Haal admin e-mail uit ENV of MarketManager (geen hardcoding)
-      const market = await MarketDatabaseService.getCurrentMarketAsync('voices.be');
-      const adminEmail = process.env.ADMIN_EMAIL || market?.email || 'johfrah@voices.be';
+      const market = MarketManagerServer.getCurrentMarket();
+      const adminEmail = market.email;
       
       await mailService.sendMail({
         to: adminEmail,

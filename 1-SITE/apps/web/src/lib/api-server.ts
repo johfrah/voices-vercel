@@ -425,9 +425,27 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
     data?.forEach((row: any) => { if (row.translationKey) translationMap[row.translationKey] = row.translatedText || row.originalText || ''; });
     cache.translationCache[lang] = { data: translationMap, timestamp: Date.now() };
     return translationMap;
-  } catch { return {}; }
+  } catch (e) { 
+    const { ServerWatchdog } = require('./server-watchdog');
+    ServerWatchdog.report({
+      error: `Failed to fetch translations for lang: ${lang}`,
+      stack: e instanceof Error ? e.stack : String(e),
+      component: 'api-server:getTranslationsServer',
+      level: 'error'
+    });
+    return {}; 
+  }
 }
 
 export async function getProducts(category?: string): Promise<any[]> {
-  return await (db.query as any).products?.findMany({ limit: 10 }).catch(() => []);
+  return await (db.query as any).products?.findMany({ limit: 10 }).catch((e: any) => {
+    const { ServerWatchdog } = require('./server-watchdog');
+    ServerWatchdog.report({
+      error: `Failed to fetch products`,
+      stack: e instanceof Error ? e.stack : String(e),
+      component: 'api-server:getProducts',
+      level: 'error'
+    });
+    return [];
+  });
 }
