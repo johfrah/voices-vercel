@@ -13,7 +13,6 @@ import { VoiceglotBridge } from "./voiceglot-bridge";
 //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt (DNS/Pooler issues)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-console.log('🔗 Supabase SDK Config:', { url: supabaseUrl, hasKey: !!supabaseKey, keyPrefix: supabaseKey?.substring(0, 5) });
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: false,
@@ -54,8 +53,8 @@ export async function getArtist(slug: string, lang: string = 'nl'): Promise<any>
     };
   }
 
-  const artist = await db.query.artists.findFirst({
-    where: eq(artists.slug, slug),
+  const artist = await (db.query as any).artists.findFirst({
+    where: (fields: any, { eq }: any) => eq(fields.slug, slug),
   }).catch(() => null);
 
   if (!artist) {
@@ -75,7 +74,7 @@ export async function getArtist(slug: string, lang: string = 'nl'): Promise<any>
     donation_goal: artist.donationGoal || 0,
     donation_current: artist.donationCurrent || 0,
     spotify_url: artist.spotifyUrl || '',
-    youtube_url: artist.youtubeUrl || '',
+    youtube_url: artist.youtube_url || '',
     instagram_url: artist.instagramUrl || '',
     tiktok_url: artist.tiktokUrl || '',
     demos: [] // Artist portfolio items could be mapped here if needed
@@ -126,11 +125,10 @@ function getGlobalCache() {
   return g.apiServerCache;
 }
 
-const ACTORS_CACHE_TTL = 1000 * 6; // 6 seconds (force rebuild)
+const ACTORS_CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
   console.log(' API: getActors called with params:', params);
-  
   const { language, search, gender, style, market } = params;
   
   const cache = getGlobalCache();
@@ -148,23 +146,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
   try {
     const lowLang = language?.toLowerCase() || '';
     const dbLang = language ? MarketManager.getLanguageCode(lowLang) : null;
-    console.log(' [getActors] language:', language, 'lowLang:', lowLang, 'dbLang:', dbLang);
     const lowGender = gender?.toLowerCase() || '';
     const dbGender = gender ? (lowGender.includes('mannelijk') ? 'male' : lowGender.includes('vrouwelijk') ? 'female' : lowGender) : null;
-    
-    //  CHRIS-PROTOCOL: Debug log in terminal (server-side)
-    console.log(' API: getActors internal params:', { 
-      language, 
-      dbLang, 
-      market,
-      search,
-      gender,
-      dbGender,
-      media: params.media,
-      lang // Prop lang
-    });
-
-    console.log(' API: Querying all live actors with relations...');
     
     //  CHRIS-PROTOCOL: Build filter conditions
     const conditions = [];
@@ -176,13 +159,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     conditions.push(eq(actors.isPublic, true));
     
     // 🛡️ CHRIS-PROTOCOL: Language filter is mandatory for the initial load to prevent empty lists
-    // We match on nativeLang OR extraLangs (via sub-query or simple ilike)
     if (dbLang || lang) {
       const targetLang = dbLang || lang;
       const langConditions = [
         ilike(actors.nativeLang, targetLang),
         ilike(actors.nativeLang, `${targetLang}-%`),
-        //  CHRIS-PROTOCOL: Also match common variations in SQL for broader initial set
         targetLang === 'nl-be' || targetLang === 'nl' ? ilike(actors.nativeLang, 'vlaams') : undefined,
         targetLang === 'nl-nl' || targetLang === 'nl' ? ilike(actors.nativeLang, 'nederlands') : undefined,
         targetLang === 'fr-fr' || targetLang === 'fr' ? ilike(actors.nativeLang, 'frans') : undefined,
@@ -198,11 +179,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       conditions.push(eq(actors.gender, dbGender));
     }
 
-    console.log(' API: Executing findMany with conditions:', conditions.length);
-    console.log(' API: Conditions details:', JSON.stringify(conditions.map(c => c ? 'condition' : 'null')));
-    
     if (!db.query || !db.query.actors) {
-      console.error(' API: db.query.actors is not available! Drizzle initialization might have failed.');
+      console.error(' API: db.query.actors is not available!');
       throw new Error('Database query engine not available');
     }
     
@@ -211,63 +189,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     try {
       dbResults = await Promise.race([
         db.query.actors.findMany({
-          columns: {
-            id: true,
-            wpProductId: true,
-            userId: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            gender: true,
-            nativeLang: true,
-            countryId: true,
-            deliveryTime: true,
-            extraLangs: true,
-            bio: true,
-            whyVoices: true,
-            tagline: true,
-            toneOfVoice: true,
-            photoId: true,
-            logoId: true,
-            voiceScore: true,
-            totalSales: true,
-            priceUnpaid: true,
-            priceOnline: true,
-            priceIvr: true,
-            priceLiveRegie: true,
-            dropboxUrl: true,
-            status: true,
-            isPublic: true,
-            isAi: true,
-            elevenlabsId: true,
-            internalNotes: true,
-            createdAt: true,
-            updatedAt: true,
-            slug: true,
-            youtubeUrl: true,
-            menuOrder: true,
-            rates: true,
-            deliveryDaysMin: true,
-            deliveryDaysMax: true,
-            cutoffTime: true,
-            samedayDelivery: true,
-            pendingBio: true,
-            pendingTagline: true,
-            experienceLevel: true,
-            studioSpecs: true,
-            connectivity: true,
-            availability: true,
-            isManuallyEdited: true,
-            website: true,
-            clients: true,
-            linkedin: true,
-            birthYear: true,
-            location: true,
-            aiTags: true,
-            deliveryDateMin: true,
-            deliveryDateMinPriority: true,
-            // allowFreeTrial: true
-          },
           // @ts-ignore
           where: and(...conditions),
           orderBy: [
@@ -275,30 +196,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
             desc(actors.deliveryDateMinPriority),
             sql`delivery_date_min ASC NULLS LAST`, 
             desc(actors.totalSales),
-          desc(actors.voiceScore), 
-          asc(actors.firstName)
-        ],
-        limit: 100,
-        /*
-        with: {
-          demos: {
-            limit: 5,
-            where: (demos, { eq }) => eq(demos.isPublic, true)
-          },
-          country: true,
-          actorLanguages: {
-            with: {
-              language: true
-            }
-          },
-          actorTones: {
-            with: {
-              tone: true
-            }
-          }
-        }
-        */
-      }),
+            desc(actors.voiceScore), 
+            asc(actors.firstName)
+          ],
+          limit: 100
+        }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 12000))
       ]) as any[];
     } catch (dbError) {
@@ -311,7 +213,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         .eq('status', 'live')
         .eq('is_public', true);
         
-      /*
       if (dbLang || lang) {
         const targetLang = dbLang || lang;
         if (targetLang === 'nl') {
@@ -320,29 +221,15 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
         }
       }
-      */
       
-      const { data: sdkData, error: sdkError } = await query.limit(20);
+      const { data: sdkData, error: sdkError } = await query.limit(100);
         
       if (sdkError) {
         console.error(' [getActors] SDK Fallback also failed:', sdkError);
-        if (cached) {
-          console.log(' [getActors] SUCCESS: Serving stale cache fallback to prevent empty list.');
-          return cached.data;
-        }
+        if (cached) return cached.data;
         throw sdkError;
       }
       
-      console.log(' [getActors] SDK Fallback SUCCESS: Found', sdkData?.length, 'actors');
-      
-      // Fetch demos for these actors in batch via SDK
-      const actorIds = (sdkData || []).map(a => a.id);
-      const [demosRes] = await Promise.all([
-        supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true)
-      ]);
-      
-      const demosData = demosRes.data || [];
-        
       dbResults = (sdkData || []).map(a => ({
         ...a,
         firstName: a.first_name,
@@ -377,88 +264,38 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         birthYear: a.birth_year,
         aiTags: a.ai_tags,
         deliveryDateMin: a.delivery_date_min,
-        deliveryDateMinPriority: a.delivery_date_min_priority,
-        demos: demosData.filter(d => d.actor_id === a.id),
-        actorLanguages: [],
-        actorTones: []
+        deliveryDateMinPriority: a.delivery_date_min_priority
       }));
-      
-      console.log(' [getActors] dbResults mapped from SDK:', dbResults.length);
     }
 
-    console.log(' API: DB returned', dbResults.length, 'results');
-    
     const photoIds = Array.from(new Set(dbResults.map(a => a.photoId).filter(Boolean).map(id => Number(id))));
+    const actorIds = dbResults.map(a => a.id);
     
-    //  CHRIS-PROTOCOL: Photo-Matcher Logic
-    // If a search query is present, we try to match it with actor visual tags
-    const searchVibe = search?.toLowerCase() || '';
-
-    // Fetch reviews, translations and media in batch
-    /*
-    const [reviewsRes, transRes, mediaRes] = await Promise.all([
-      db.select().from(reviews)
-        .where(
-          and(
-            eq(reviews.businessSlug, 'voices-be'), // Alleen Agency reviews
-            params.sector ? eq(reviews.sector, params.sector) : undefined,
-            params.persona ? eq(reviews.persona, params.persona) : undefined
-          )
-        )
-        .orderBy(desc(reviews.sentimentVelocity), desc(reviews.createdAt))
-        .limit(100)
-        .catch(() => []),
-      //  CHRIS-PROTOCOL: Disable translation batch for performance (v2.15)
-      /*
-      VoiceglotBridge.translateBatch([...dbResults.map(a => a.bio || ''), ...dbResults.map(a => a.tagline || '')].filter(Boolean), lang)
-        .catch(() => ({})),
-      */
-      Promise.resolve({}),
-      photoIds.length > 0
-        ? db.select().from(media).where(sql`${media.id} IN (${sql.join(photoIds, sql`, `)})`).catch(() => [])
-        : Promise.resolve([])
-    ]);
-    */
-    
-    //  CHRIS-PROTOCOL: SDK Fallback for secondary data (v2.16)
-    /*
-    const [reviewsRes, mediaRes] = await Promise.all([
-      supabase.from('reviews')
-        .select('*')
-        .eq('business_slug', 'voices-be')
-        .limit(30),
-      photoIds.length > 0
-        ? supabase.from('media').select('*').in('id', photoIds)
-        : Promise.resolve({ data: [] })
+    // Fetch secondary data via SDK for stability
+    const [reviewsRes, mediaRes, demosRes, actorLangsRes, actorTonesRes] = await Promise.all([
+      supabase.from('reviews').select('*').eq('business_slug', 'voices-be').limit(30).catch(() => ({ data: [] })),
+      photoIds.length > 0 ? supabase.from('media').select('*').in('id', photoIds).catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
+      supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true).catch(() => ({ data: [] })),
+      supabase.from('actor_languages').select('*, language:languages(*)').in('actor_id', actorIds).catch(() => ({ data: [] })),
+      supabase.from('actor_tones').select('*, tone:voice_tones(*)').in('actor_id', actorIds).catch(() => ({ data: [] }))
     ]);
     
-    const dbReviewsRaw = reviewsRes.data || [];
-    const mediaResults = mediaRes.data || [];
-    */
-    const dbReviewsRaw: any[] = [];
-    const mediaResults: any[] = [];
+    const dbReviewsRaw = (reviewsRes as any).data || [];
+    const mediaResults = (mediaRes as any).data || [];
+    const demosData = (demosRes as any).data || [];
+    const actorLangsData = (actorLangsRes as any).data || [];
+    const actorTonesData = (actorTonesRes as any).data || [];
+    
     const translationMap: Record<string, string> = {};
-
-    console.log(' API: reviewsRes count:', dbReviewsRaw.length);
-
-    const dbReviews = dbReviewsRaw.filter(r => r && (r.text_nl || r.text_en || r.text_fr || r.text_de)).slice(0, 30);
-    
-    console.log(' API: dbReviews count after filter:', dbReviews.length);
-    
-    //  NUCLEAR CALCULATION: Real-time review statistics
-    const reviewStats = { averageRating: 4.9, totalCount: dbReviewsRaw.length, distribution: {} };
-
-    // Get unique languages for filters
-    const uniqueLangs = Array.from(new Set(dbResults.map(a => a.nativeLang))).filter(Boolean) as string[];
+    const reviewStats = await getReviewStats('voices-be').catch(() => ({ averageRating: 4.9, totalCount: dbReviewsRaw.length, distribution: {} }));
 
     const mappedResults = dbResults.map((actor) => {
-      //  CHRIS-PROTOCOL: The photo_id in the database is the ABSOLUTE Source of Truth
       const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
       const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
       
       let photoUrl = '';
       if (actor.photoId) {
-        const mediaItem = mediaResults.find(m => m.id === actor.photoId);
+        const mediaItem = mediaResults.find((m: any) => m.id === actor.photoId);
         if (mediaItem) {
           const fp = mediaItem.file_path || mediaItem.filePath;
           if (fp && (fp.startsWith('agency/') || fp.startsWith('active/') || fp.startsWith('common/') || fp.startsWith('visuals/'))) {
@@ -484,22 +321,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 
       const proxiedPhoto = photoUrl.includes('supabase.co') || photoUrl.includes('/api/proxy') ? photoUrl : (photoUrl ? `/api/proxy/?path=${encodeURIComponent(photoUrl)}` : '');
       
-      //  LOUIS-MANDATE: Photo-Matcher Visual Selection
-      // If the actor has multiple photos in metadata, select the one that matches the search vibe
-      let matchedPhotoUrl = proxiedPhoto;
-      if (searchVibe && actor.aiTags && Array.isArray(actor.aiTags)) {
-        const matchingTag = (actor.aiTags as any[]).find(tag => 
-          tag.vibe?.toLowerCase().includes(searchVibe) || 
-          tag.label?.toLowerCase().includes(searchVibe)
-        );
-        if (matchingTag?.photoUrl) {
-          matchedPhotoUrl = matchingTag.photoUrl.startsWith('http') 
-            ? matchingTag.photoUrl 
-            : `/api/proxy/?path=${encodeURIComponent(matchingTag.photoUrl)}`;
-        }
-      }
-
-      const proxiedDemos = (actor.demos || []).map((d: any) => ({
+      const actorDemosList = actor.demos || demosData.filter((d: any) => d.actor_id === actor.id);
+      const proxiedDemos = actorDemosList.map((d: any) => ({
         id: d.id,
         title: d.name,
         audio_url: d.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url,
@@ -507,38 +330,34 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         status: d.status || 'approved'
       }));
 
-      const translatedBio = translationMap[actor.bio || ''] || actor.bio || '';
-      const translatedTagline = translationMap[actor.tagline || ''] || actor.tagline || '';
-
-      const nativeLangObj = actor.actorLanguages?.find((al: any) => al.isNative)?.language;
-      const extraLangIds = actor.actorLanguages?.filter((al: any) => !al.isNative).map((al: any) => al.languageId);
-      const tonesList = actor.actorTones?.map((at: any) => at.tone?.label);
-      const toneIds = actor.actorTones?.map((at: any) => at.toneId);
-
-      if (!nativeLangObj?.id) {
-        console.warn(`[api-server] Actor ${actor.id} (${actor.firstName}) missing native_lang_id`);
-      }
+      const actorLangs = actor.actorLanguages || actorLangsData.filter((al: any) => al.actor_id === actor.id);
+      const nativeLangObj = actorLangs.find((al: any) => al.is_native || al.isNative)?.language;
+      const extraLangIds = actorLangs.filter((al: any) => !(al.is_native || al.isNative)).map((al: any) => al.language_id || al.languageId);
+      
+      const actorTones = actor.actorTones || actorTonesData.filter((at: any) => at.actor_id === actor.id);
+      const tonesList = actorTones.map((at: any) => at.tone?.label);
+      const toneIds = actorTones.map((at: any) => at.tone_id || at.toneId);
 
       return {
         id: actor.wpProductId || actor.id,
         display_name: actor.firstName,
         first_name: actor.firstName,
         last_name: actor.lastName || '',
-        slug: actor.firstName?.toLowerCase() || (actor as any).first_name?.toLowerCase(),
+        slug: actor.firstName?.toLowerCase(),
         gender: actor.gender,
         native_lang: nativeLangObj?.code || actor.nativeLang,
-        native_lang_id: nativeLangObj?.id || null, //  Harde ID matching
-        extra_lang_ids: extraLangIds || [], //  Harde ID matching
-        tone_ids: toneIds || [], //  Harde ID matching
-        country_id: actor.countryId || null, //  Harde ID matching
-        photo_url: matchedPhotoUrl || proxiedPhoto,
+        native_lang_id: nativeLangObj?.id || null,
+        extra_lang_ids: extraLangIds || [],
+        tone_ids: toneIds || [],
+        country_id: actor.countryId || null,
+        photo_url: proxiedPhoto,
         starting_price: parseFloat(actor.priceUnpaid || '0'),
         voice_score: actor.voiceScore || 10,
         total_sales: actor.totalSales || 0,
         menu_order: actor.menuOrder || 0,
         ai_enabled: actor.isAi,
-        bio: translatedBio.replace(/<[^>]*>?/gm, '').trim(),
-        tagline: translatedTagline.replace(/<[^>]*>?/gm, '').trim(),
+        bio: (actor.bio || '').replace(/<[^>]*>?/gm, '').trim(),
+        tagline: (actor.tagline || '').replace(/<[^>]*>?/gm, '').trim(),
         tone_of_voice: tonesList?.join(', ') || actor.toneOfVoice || '',
         delivery_days_min: actor.deliveryDaysMin || 1,
         delivery_days_max: actor.deliveryDaysMax || 3,
@@ -549,7 +368,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         delivery_date_min: actor.deliveryDateMin,
         delivery_date_min_priority: actor.deliveryDateMinPriority,
         delivery_config: actor.deliveryConfig as any,
-        // allow_free_trial: actor.allowFreeTrial ?? true,
         demos: proxiedDemos,
         rates: actor.rates || {},
         price_ivr: actor.priceIvr,
@@ -558,8 +376,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       };
     });
 
-    // Priority languages sorting
-    const priorityLangs = ['Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits', 'Spaans', 'Italiaans', 'Pools', 'Portugees', 'Turks', 'Deens', 'Zweeds', 'Noors', 'Fins', 'Grieks', 'Russisch', 'Arabisch', 'Chinees', 'Japans'];
+    const uniqueLangs = Array.from(new Set(dbResults.map(a => a.nativeLang))).filter(Boolean) as string[];
+    const priorityLangs = ['Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits'];
     const otherLangs = uniqueLangs.filter(l => !priorityLangs.includes(l)).sort();
     const finalLangs = [...priorityLangs.filter(l => uniqueLangs.includes(l)), ...otherLangs];
 
@@ -573,31 +391,28 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       },
       _nuclear: true,
       _source: 'database',
-      reviews: dbReviews.map(r => {
-        const reviewDate = r.created_at ? new Date(r.created_at) : new Date();
+      reviews: dbReviewsRaw.map((r: any) => {
+        const reviewDate = r.created_at || r.createdAt ? new Date(r.created_at || r.createdAt) : new Date();
         return {
           id: r.id,
-          name: r.author_name,
-          text: r.text_nl || r.text_en || r.text_fr || r.text_de || '',
-          authorUrl: r.author_url,
-          authorPhotoUrl: r.author_photo_url,
-          author_photo_url: r.author_photo_url,
+          name: r.author_name || r.authorName,
+          text: r.text_nl || r.text_en || r.text_fr || r.text_de || r.textNl || r.textEn || '',
+          authorUrl: r.author_url || r.authorUrl,
+          authorPhotoUrl: r.author_photo_url || r.authorPhotoUrl,
           rating: r.rating,
           sector: r.sector,
           persona: r.persona,
-          isHero: r.is_hero,
-          businessSlug: r.business_slug,
-          status: r.language === 'hidden' ? 'hidden' : 'published', // We gebruiken language als proxy voor status in de DB voor nu
+          isHero: r.is_hero || r.isHero,
+          businessSlug: r.business_slug || r.businessSlug,
+          status: 'published',
           date: reviewDate.toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }),
-          rawDate: r.created_at
+          rawDate: r.created_at || r.createdAt
         };
       }),
       reviewStats: reviewStats
     };
 
-    // 2. Update Cache
     cache.actorsCache[cacheKey] = { data: result, timestamp: Date.now() };
-
     return result;
   } catch (error: any) {
     console.error('[getActors FATAL ERROR]:', error);
@@ -609,10 +424,7 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
   const results = await db.select().from(contentArticles).where(eq(contentArticles.slug, slug)).limit(1);
   const article = results[0];
   
-  if (!article) {
-    console.warn(`[api-server] Article not found for slug: ${slug}`);
-    return null;
-  }
+  if (!article) return null;
 
   const translatedTitle = await VoiceglotBridge.t(`page.${slug}.title`, lang, true);
   const blocks = await db.select().from(contentBlocks).where(eq(contentBlocks.articleId, article.id)).orderBy(asc(contentBlocks.displayOrder));
@@ -625,105 +437,35 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 }
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
-  console.log(' API: Querying actor with relations:', slug);
   const actor = await db.query.actors.findFirst({
-    columns: {
-      id: true,
-      wpProductId: true,
-      userId: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      gender: true,
-      nativeLang: true,
-      countryId: true,
-      deliveryTime: true,
-      extraLangs: true,
-      bio: true,
-      whyVoices: true,
-      tagline: true,
-      toneOfVoice: true,
-      photoId: true,
-      logoId: true,
-      voiceScore: true,
-      totalSales: true,
-      priceUnpaid: true,
-      priceOnline: true,
-      priceIvr: true,
-      priceLiveRegie: true,
-      dropboxUrl: true,
-      status: true,
-      isPublic: true,
-      isAi: true,
-      elevenlabsId: true,
-      internalNotes: true,
-      createdAt: true,
-      updatedAt: true,
-      slug: true,
-      youtubeUrl: true,
-      menuOrder: true,
-      rates: true,
-      deliveryDaysMin: true,
-      deliveryDaysMax: true,
-      cutoffTime: true,
-      samedayDelivery: true,
-      pendingBio: true,
-      pendingTagline: true,
-      experienceLevel: true,
-      studioSpecs: true,
-      connectivity: true,
-      availability: true,
-      isManuallyEdited: true,
-      website: true,
-      clients: true,
-      linkedin: true,
-      birthYear: true,
-      location: true,
-      aiTags: true,
-      deliveryDateMin: true,
-      deliveryDateMinPriority: true
-    },
     where: eq(actors.slug, slug),
     with: {
-      actorLanguages: {
-        with: {
-          language: true
-        }
-      },
-      actorTones: {
-        with: {
-          tone: true
-        }
-      },
+      actorLanguages: { with: { language: true } },
+      actorTones: { with: { tone: true } },
       country: true,
       demos: true,
       videos: true
     }
   });
 
-  if (!actor) {
-    console.warn(`[api-server] Actor not found for slug: ${slug}`);
-    throw new Error("Actor not found");
-  }
+  if (!actor) throw new Error("Actor not found");
 
   const [reviewsRes, mediaRes] = await Promise.all([
-    db.select().from(reviews).where(eq(reviews.businessSlug, slug)).limit(10),
-    actor.photoId ? db.select().from(media).where(eq(media.id, actor.photoId)).limit(1) : Promise.resolve([])
+    db.select().from(reviews).where(eq(reviews.businessSlug, slug)).limit(10).catch(() => []),
+    actor.photoId ? db.select().from(media).where(eq(media.id, actor.photoId)).limit(1).catch(() => []) : Promise.resolve([])
   ]);
   
   const dbReviews = reviewsRes;
   const mediaItem = mediaRes[0] || null;
-  const actorVideosList = actor.videos || [];
 
-  const ASSET_BASE_GLOBAL = process.env.NEXT_PUBLIC_BASE_URL || '';
-  const SUPABASE_URL_GLOBAL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
-  const SUPABASE_STORAGE_URL_GLOBAL = `${SUPABASE_URL_GLOBAL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
+  const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
   
   let photoUrl = '';
   if (actor.photoId && mediaItem) {
     const fp = mediaItem.filePath;
     if (fp && (fp.startsWith('agency/') || fp.startsWith('active/') || fp.startsWith('common/') || fp.startsWith('visuals/'))) {
-      photoUrl = `${SUPABASE_STORAGE_URL_GLOBAL}/${fp}`;
+      photoUrl = `${SUPABASE_STORAGE_URL}/${fp}`;
     } else if (fp) {
       photoUrl = fp.startsWith('http') ? fp : `/api/proxy/?path=${encodeURIComponent(fp)}`;
     }
@@ -733,11 +475,11 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     if (actor.dropboxUrl.includes('supabase.co/storage/v1/object/public/voices/')) {
       photoUrl = actor.dropboxUrl;
     } else if (actor.dropboxUrl.startsWith('visuals/') || actor.dropboxUrl.startsWith('agency/') || actor.dropboxUrl.startsWith('active/') || actor.dropboxUrl.startsWith('common/')) {
-      photoUrl = `${SUPABASE_STORAGE_URL_GLOBAL}/${actor.dropboxUrl}`;
+      photoUrl = `${SUPABASE_STORAGE_URL}/${actor.dropboxUrl}`;
     } else if (actor.dropboxUrl.startsWith('/api/proxy')) {
       photoUrl = actor.dropboxUrl;
     } else {
-      photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${ASSET_BASE_GLOBAL}${actor.dropboxUrl}`;
+      photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${process.env.NEXT_PUBLIC_BASE_URL || ''}${actor.dropboxUrl}`;
     }
   }
 
@@ -745,14 +487,6 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
   const nativeLangObj = actor.actorLanguages?.find((al: any) => al.isNative)?.language;
   const extraLangsList = actor.actorLanguages?.filter((al: any) => !al.isNative).map((al: any) => al.language?.code);
   const tonesList = actor.actorTones?.map((at: any) => at.tone?.label);
-
-  const proxiedDemos = (actor.demos || []).map((d: any) => ({
-    id: d.id,
-    title: d.name,
-    audio_url: d.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url,
-    category: d.type || 'demo',
-    status: d.status || 'approved'
-  }));
 
   return {
     id: actor.wpProductId || actor.id,
@@ -771,17 +505,12 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     price_ivr: parseFloat(actor.priceIvr || '0'),
     price_online: parseFloat(actor.priceOnline || '0'),
     rates: actor.rates || {},
-    pending_rates: actor.pendingRates || {},
     voice_score: actor.voiceScore || 10,
     total_sales: actor.totalSales || 0,
     menu_order: actor.menuOrder || 0,
     ai_enabled: actor.isAi || false,
-    ai_tags: actor.aiTags || '',
     bio: (actor.pendingBio || translatedBio).replace(/<[^>]*>?/gm, '').trim(),
     tagline: (actor.pendingTagline || (actor as any).tagline)?.replace(/<[^>]*>?/gm, '').trim() || '',
-    pending_bio: actor.pendingBio,
-    pending_tagline: actor.pendingTagline,
-    price_unpaid: parseFloat(actor.priceUnpaid || '0'),
     delivery_days_min: actor.deliveryDaysMin || 1,
     delivery_days_max: actor.deliveryDaysMax || 3,
     cutoff_time: actor.cutoffTime || '18:00',
@@ -802,23 +531,17 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     reviews: dbReviews.map(r => ({
       id: r.id,
       name: r.authorName,
-      authorName: r.authorName,
       text: r.textNl || r.textEn || '',
-      textNl: r.textNl,
       rating: r.rating,
-      provider: r.provider,
-      authorPhotoUrl: r.authorPhotoUrl,
-      sector: r.sector,
-      persona: r.persona,
       date: new Date(r.createdAt!).toLocaleDateString('nl-BE')
     })),
-    actor_videos: actorVideosList.map(v => ({
-      id: v.id,
-      name: v.name,
-      url: v.url,
-      status: v.status || 'approved'
-    })),
-    demos: proxiedDemos
+    demos: (actor.demos || []).map((d: any) => ({
+      id: d.id,
+      title: d.name,
+      audio_url: d.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url,
+      category: d.type || 'demo',
+      status: d.status || 'approved'
+    }))
   };
 }
 
@@ -828,18 +551,12 @@ export async function getMusicLibrary(category: string = 'music'): Promise<any[]
       eq(media.category, category),
       sql`${media.metadata}->>'vibe' = 'Onze eigen muziek'`
     )
-  ).orderBy(media.fileName);
+  ).orderBy(media.fileName).catch(() => []);
 
   const mappedMedia = (musicMedia || []).map(m => {
     let title = m.altText;
     if (!title) {
-      title = m.fileName
-        .replace('.mp3', '')
-        .replace('.wav', '')
-        .replace(/-/g, ' ')
-        .replace(/_preview/gi, '')
-        .replace(/music-/gi, '')
-        .trim();
+      title = m.fileName.replace('.mp3', '').replace('.wav', '').replace(/-/g, ' ').replace(/_preview/gi, '').replace(/music-/gi, '').trim();
       title = title.charAt(0).toUpperCase() + title.slice(1);
     }
     const genre = m.labels?.find(l => !['audio', 'music', 'auto-migrated', 'filesystem-sync'].includes(l)) || 'Algemeen';
@@ -851,11 +568,9 @@ export async function getMusicLibrary(category: string = 'music'): Promise<any[]
     };
   });
 
-  const unique = mappedMedia.filter((item, index, self) =>
+  return mappedMedia.filter((item, index, self) =>
     index === self.findIndex((t) => t.title.toLowerCase() === item.title.toLowerCase())
-  );
-
-  return unique.sort((a, b) => a.title.localeCompare(b.title));
+  ).sort((a, b) => a.title.localeCompare(b.title));
 }
 
 export async function getAcademyLesson(id: string): Promise<any> {
@@ -865,25 +580,16 @@ export async function getAcademyLesson(id: string): Promise<any> {
   try {
     const results = await db.select().from(lessons).where(eq(lessons.displayOrder, lessonOrder)).limit(1);
     const lesson = results[0];
-    
-    if (!lesson) {
-      console.warn(`[api-server] Academy lesson not found for id: ${id}`);
-      return null;
-    }
+    if (!lesson) return null;
 
     return {
       id: lesson.id,
-      header: {
-        title: lesson.title,
-        subtitle: lesson.description || ""
-      },
+      header: { title: lesson.title, subtitle: lesson.description || "" },
       video_url: lesson.videoUrl,
       exercise: lesson.content,
       intro_script: lesson.introScript,
       deep_dive_script: lesson.deepDiveScript,
-      progress: {
-        percentage: 0
-      }
+      progress: { percentage: 0 }
     };
   } catch (error) {
     console.error(`❌ getAcademyLesson: Failed to fetch lesson ${id}:`, error);
@@ -893,11 +599,8 @@ export async function getAcademyLesson(id: string): Promise<any> {
 
 export async function getFaqs(category: string, limit: number = 5): Promise<any[]> {
   const data = await db.select().from(faq).where(
-    and(
-      eq(faq.category, category),
-      eq(faq.isPublic, true)
-    )
-  ).limit(limit);
+    and(eq(faq.category, category), eq(faq.isPublic, true))
+  ).limit(limit).catch(() => []);
   
   return (data || []).map(f => ({
     ...f,
@@ -909,109 +612,69 @@ export async function getFaqs(category: string, limit: number = 5): Promise<any[
 }
 
 export async function getWorkshops(limit: number = 50): Promise<any[]> {
-  const workshopsData = await db.query.workshops.findMany({
+  const workshopsData = await (db.query as any).workshops.findMany({
     limit,
-    where: (fields, { and, notLike }) => and(
+    where: (fields: any, { and, notLike }: any) => and(
       notLike(fields.slug, '%academy%'),
       notLike(fields.slug, '%op-maat%'),
       notLike(fields.slug, '%intonatie%'),
       notLike(fields.slug, '%articulatie%'),
       notLike(fields.slug, '%verwen-je-stem%')
     ),
-    orderBy: (fields, { desc }) => [desc(fields.date)],
+    orderBy: (fields: any, { desc }: any) => [desc(fields.date)],
     with: {
       media: true,
       instructor: true,
       editions: {
-        where: (fields, { and, eq, gte }) => and(
+        where: (fields: any, { and, eq, gte }: any) => and(
           eq(fields.status, 'upcoming'),
           gte(fields.date, new Date().toISOString())
         ),
-        orderBy: (fields, { asc }) => [asc(fields.date)],
-        with: {
-          location: true,
-          instructor: true
-        }
+        orderBy: (fields: any, { asc }: any) => [asc(fields.date)],
+        with: { location: true, instructor: true }
       }
     }
-  });
+  }).catch(() => []);
   
   return workshopsData;
 }
 
-//  CHRIS-PROTOCOL: In-memory cache for translations to reduce DB load
-const CACHE_TTL = 1000 * 60 * 60; // 60 minutes (more aggressive for stability)
+const CACHE_TTL = 1000 * 60 * 60; // 60 minutes
 
 export async function getTranslationsServer(lang: string): Promise<Record<string, string>> {
   if (lang === 'nl') return {};
   
   const cache = getGlobalCache();
-  
-  // 1. Check Cache First
   const cached = cache.translationCache[lang];
-  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
-    console.log(` [getTranslationsServer] Returning cached translations for ${lang}`);
-    return cached.data;
-  }
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) return cached.data;
 
   console.log(` [getTranslationsServer] Cache miss for ${lang}, querying DB...`);
 
-  let lastError: any = null;
-  const maxRetries = 3;
-
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      // 🛡️ CHRIS-PROTOCOL: Use a timeout for DB queries to prevent 504s
-      const data = await Promise.race([
-        db.select({
-          translationKey: translations.translationKey,
-          translatedText: translations.translatedText,
-          originalText: translations.originalText
-        })
-        .from(translations)
-        .where(eq(translations.lang, lang)),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 8000))
-      ]) as any[];
-      
-      const translationMap: Record<string, string> = {};
-      data?.forEach(row => {
-        if (row.translationKey) {
-          translationMap[row.translationKey] = row.translatedText || row.originalText || '';
-        }
-      });
-      
-      // 2. Update Cache
-      cache.translationCache[lang] = {
-        data: translationMap,
-        timestamp: Date.now()
-      };
-
-      return translationMap;
-    } catch (error: any) {
-      lastError = error;
-      console.error(`[getTranslationsServer] Attempt ${attempt} failed for ${lang}:`, error.message);
-      
-      // Wait before retry (exponential backoff)
-      if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, 500 * attempt));
-      }
-    }
-  }
+  try {
+    const data = await Promise.race([
+      db.select({
+        translationKey: translations.translationKey,
+        translatedText: translations.translatedText,
+        originalText: translations.originalText
+      })
+      .from(translations)
+      .where(eq(translations.lang, lang)),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 8000))
+    ]) as any[];
     
-  //  CHRIS-PROTOCOL: Report server-side failure to Watchdog after all retries failed
-  // Skip reporting during build phase to avoid connection pool noise
-  if (process.env.NEXT_PHASE !== 'phase-production-build') {
-    const { ServerWatchdog } = await import('./server-watchdog');
-    ServerWatchdog.report({
-      error: `Server Translation Failure (${lang}): ${lastError?.message || 'Unknown error'}`,
-      stack: lastError?.stack,
-      component: 'ServerTranslations',
-      level: 'critical'
+    const translationMap: Record<string, string> = {};
+    data?.forEach(row => {
+      if (row.translationKey) {
+        translationMap[row.translationKey] = row.translatedText || row.originalText || '';
+      }
     });
+    
+    cache.translationCache[lang] = { data: translationMap, timestamp: Date.now() };
+    return translationMap;
+  } catch (error: any) {
+    console.error(`[getTranslationsServer] Failed for ${lang}:`, error.message);
+    return {};
   }
-
-  // Fallback naar leeg object zodat de site niet crasht
-  return {};
 }
 
 export async function getProducts(category?: string): Promise<any[]> {
@@ -1019,11 +682,9 @@ export async function getProducts(category?: string): Promise<any[]> {
   if (category) conditions.push(eq(products.category, category));
   conditions.push(eq(products.status, 'publish'));
 
-  return await db.query.products.findMany({
+  return await (db.query as any).products.findMany({
     where: and(...conditions),
     orderBy: [asc(products.price)],
-    with: {
-      media: true
-    }
-  });
+    with: { media: true }
+  }).catch(() => []);
 }

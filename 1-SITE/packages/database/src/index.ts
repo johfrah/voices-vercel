@@ -13,20 +13,20 @@ const getDb = () => {
     return null;
   }
   
-    if (!(globalThis as any).dbInstance) {
+  if (!(globalThis as any).dbInstance) {
     try {
-                  let connectionString = process.env.DATABASE_URL!;
-                  if (!connectionString) return null;
-                  
-                  // CHRIS-PROTOCOL: Transaction Mode for Serverless Stability (v2.14)
-                  // We use port 6543 (Transaction Mode) with a small pool size to avoid saturation.
-                  if (connectionString.includes('pooler.supabase.com')) {
-                    console.log('🔄 Using direct DB host (port 5432) for speed...');
-                    connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'db.vcbxyyjsxuquytcsskpj.supabase.co');
-                    connectionString = connectionString.replace(':6543', ':5432');
-                    connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
-                    connectionString = connectionString.split('?')[0]; 
-                  }
+      let connectionString = process.env.DATABASE_URL!;
+      if (!connectionString) return null;
+      
+      // CHRIS-PROTOCOL: Direct DB Host for Stability (v2.17)
+      // The Supabase Pooler (6543) is currently unstable. We bypass it and use the direct host.
+      if (connectionString.includes('pooler.supabase.com')) {
+        connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'db.vcbxyyjsxuquytcsskpj.supabase.co');
+        connectionString = connectionString.replace(':6543', ':5432');
+        connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
+        connectionString = connectionString.split('?')[0]; 
+      }
+
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
 BQAwazELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5l
@@ -56,20 +56,14 @@ o/bKiIz+Fq8=
       if (!(globalThis as any).postgresClient) {
         (globalThis as any).postgresClient = postgres(connectionString, { 
           prepare: false, 
-          ssl: {
-            ca: supabaseRootCA,
-            rejectUnauthorized: false,
-          },
+          ssl: { ca: supabaseRootCA, rejectUnauthorized: false },
           connect_timeout: 20,
-          onnotice: () => {},
           idle_timeout: 20,
           max: poolSize,
         });
       }
 
-      (globalThis as any).dbInstance = drizzle((globalThis as any).postgresClient, { 
-        schema
-      });
+      (globalThis as any).dbInstance = drizzle((globalThis as any).postgresClient, { schema });
       console.log(`✅ Drizzle initialized (Pool size: ${poolSize})`);
     } catch (e) {
       console.error('❌ Failed to initialize Drizzle:', e);
@@ -83,9 +77,8 @@ export const db = new Proxy({} as any, {
   get(target, prop) {
     const instance = getDb();
     if (!instance) {
-      // Return a proxy that throws or handles missing DB gracefully
       return (...args: any[]) => {
-        throw new Error(`Database access failed: Drizzle not initialized (Edge runtime or missing URL). Prop: ${String(prop)}`);
+        throw new Error(`Database access failed: Drizzle not initialized. Prop: ${String(prop)}`);
       };
     }
     const value = instance[prop];
