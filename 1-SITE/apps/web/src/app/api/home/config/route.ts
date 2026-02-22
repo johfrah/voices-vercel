@@ -28,8 +28,12 @@ export async function GET() {
       languages: dbLanguages,
       campaignMessage: campaignMessage || null
     });
-  } catch (e) {
+  } catch (e: any) {
     console.error('Failed to fetch home config', e);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Internal Server Error', 
+      message: e.message,
+      _forensic: 'Check server logs for home config failure' 
+    }, { status: 500 });
   }
 }
