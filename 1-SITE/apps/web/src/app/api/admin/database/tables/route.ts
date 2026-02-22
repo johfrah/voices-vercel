@@ -12,7 +12,8 @@ export async function GET() {
       ORDER BY tablename ASC
     `);
 
-    const tables = result.rows.map((row: any) => row.tablename);
+    const rows = Array.isArray(result) ? result : (result?.rows || []);
+    const tables = rows.map((row: any) => row.tablename);
 
     return NextResponse.json({ tables });
   } catch (error) {
