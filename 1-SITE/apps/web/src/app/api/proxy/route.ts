@@ -109,8 +109,9 @@ export async function GET(request: NextRequest) {
       const isAlreadyWebP = cleanPath.toLowerCase().endsWith('.webp');
 
       //  CHRIS-PROTOCOL: Smart WebP Transformation with Fallback
-      // If it's already a WebP, we fetch raw to avoid redundant transformation latency
-      const optimizedUrl = isAlreadyWebP 
+      // If it's already a WebP, we fetch raw to avoid redundant transformation latency.
+      // If it's NOT an image (e.g. .mp3), we MUST fetch raw from the object storage.
+      const optimizedUrl = (isAlreadyWebP || !isImage)
         ? `${SUPABASE_STORAGE_URL}/object/public/voices/${finalSegments.join('/')}`
         : `${SUPABASE_STORAGE_URL}/render/image/public/voices/${finalSegments.join('/')}?width=1080&format=webp&quality=75`;
       
