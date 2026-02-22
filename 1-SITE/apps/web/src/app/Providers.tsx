@@ -38,7 +38,7 @@ export function Providers({
                       pathname?.includes('/backoffice') || 
                       pathname?.includes('/studio/beheer');
                       
-  const activeLang = isAdminPath ? 'nl' : lang;
+  const activeLang = isAdminPath ? 'nl' : (lang || 'nl');
 
   return (
     <WatchdogProvider>
