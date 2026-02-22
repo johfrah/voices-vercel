@@ -21,7 +21,7 @@ const getDb = () => {
                   // CHRIS-PROTOCOL: Transaction Mode for Serverless Stability (v2.14)
                   // We use port 6543 (Transaction Mode) with a small pool size to avoid saturation.
                   if (connectionString.includes('pooler.supabase.com')) {
-                    console.log('🔄 Using direct DB host (port 5432) with small pool for stability...');
+                    console.log('🔄 Using direct DB host (port 5432) for speed...');
                     connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'db.vcbxyyjsxuquytcsskpj.supabase.co');
                     connectionString = connectionString.replace(':6543', ':5432');
                     connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
@@ -51,7 +51,7 @@ CMTyZKG3XEu5Ghl1LEnI3QmEKsqaCLv12BnVjbkSeZsMnevJPs1Ye6TjjJwdik5P
 o/bKiIz+Fq8=
 -----END CERTIFICATE-----`;
 
-      const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 1 : 10);
+      const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 3 : 10);
       
       if (!(globalThis as any).postgresClient) {
         (globalThis as any).postgresClient = postgres(connectionString, { 
