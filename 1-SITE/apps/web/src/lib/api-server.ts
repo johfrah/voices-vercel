@@ -191,15 +191,13 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const actorIds = dbResults.map(a => a.id);
     
     // Fetch secondary data via SDK for stability
-    const [reviewsRes, mediaRes, demosRes] = await Promise.all([
-      supabase.from('reviews').select('*').eq('business_slug', 'voices-be').limit(10).catch(() => ({ data: [] })),
-      photoIds.length > 0 ? supabase.from('media').select('*').in('id', photoIds).catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
-      supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true).catch(() => ({ data: [] }))
-    ]);
+    const reviewsRes = await supabase.from('reviews').select('*').eq('business_slug', 'voices-be').limit(10);
+    const mediaRes = photoIds.length > 0 ? await supabase.from('media').select('*').in('id', photoIds) : { data: [] };
+    const demosRes = await supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true);
     
-    const dbReviewsRaw = (reviewsRes as any).data || [];
-    const mediaResults = (mediaRes as any).data || [];
-    const demosData = (demosRes as any).data || [];
+    const dbReviewsRaw = reviewsRes.data || [];
+    const mediaResults = mediaRes.data || [];
+    const demosData = demosRes.data || [];
     
     const mappedResults = dbResults.map((actor) => {
       const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
