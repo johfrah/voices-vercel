@@ -12,14 +12,14 @@ async function seedMarkets() {
     'voices.be': {
       market_code: 'BE',
       language: 'nl',
-      primary_language: 'Vlaams',
+      primary_language: 'nl-be',
       supported_languages: [
-        'Vlaams', 'Nederlands', 'Engels', 'Frans', 'Duits', 
-        'Spaans', 'Italiaans', 'Pools', 'Portugees', 'Turks', 
-        'Deens', 'Zweeds', 'Noors', 'Fins', 'Grieks', 
-        'Russisch', 'Arabisch', 'Chinees', 'Japans'
+        'nl-be', 'nl-nl', 'en-gb', 'fr-fr', 'de-de', 
+        'es-es', 'it-it', 'pl-pl', 'pt-pt', 'tr-tr', 
+        'da-dk', 'sv-se', 'no-no', 'fi-fi', 'el-gr', 
+        'ru-ru', 'ar-sa', 'zh-cn', 'ja-jp'
       ],
-      popular_languages: ['Vlaams', 'Nederlands', 'Frans', 'Engels', 'Duits'],
+      popular_languages: ['nl-be', 'nl-nl', 'fr-fr', 'en-gb', 'de-de'],
       name: 'België',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices',
@@ -28,9 +28,9 @@ async function seedMarkets() {
     'voices.nl': {
       market_code: 'NLNL',
       language: 'nl',
-      primary_language: 'Nederlands',
-      supported_languages: ['Nederlands', 'Vlaams', 'Engels', 'Duits', 'Frans', 'Spaans', 'Italiaans'],
-      popular_languages: ['Nederlands', 'Vlaams', 'Engels', 'Duits', 'Frans'],
+      primary_language: 'nl-nl',
+      supported_languages: ['nl-nl', 'nl-be', 'en-gb', 'de-de', 'fr-fr', 'es-es', 'it-it'],
+      popular_languages: ['nl-nl', 'nl-be', 'en-gb', 'de-de', 'fr-fr'],
       name: 'Nederland',
       phone: '+31 (0)85 016 34 60',
       email: 'johfrah@voices.nl',
@@ -41,9 +41,9 @@ async function seedMarkets() {
     'voices.fr': {
       market_code: 'FR',
       language: 'fr',
-      primary_language: 'Frans',
-      supported_languages: ['Frans', 'Engels', 'Nederlands', 'Vlaams', 'Duits', 'Spaans', 'Italiaans'],
-      popular_languages: ['Frans', 'Engels', 'Nederlands', 'Vlaams', 'Duits'],
+      primary_language: 'fr-fr',
+      supported_languages: ['fr-fr', 'en-gb', 'nl-nl', 'nl-be', 'de-de', 'es-es', 'it-it'],
+      popular_languages: ['fr-fr', 'en-gb', 'nl-nl', 'nl-be', 'de-de'],
       name: 'France',
       email: 'johfrah@voices.fr',
       logo_url: VOICES_CONFIG.assets.logos.fr,

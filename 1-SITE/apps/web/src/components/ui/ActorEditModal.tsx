@@ -87,7 +87,11 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         );
         if (found && found.code !== formData.native_lang) {
           console.log(` CHRIS-PROTOCOL: Resolving native_lang "${formData.native_lang}" to code "${found.code}"`);
-          setFormData(prev => ({ ...prev, native_lang: found.code }));
+          setFormData(prev => ({ 
+            ...prev, 
+            native_lang: found.code,
+            native_lang_label: found.label 
+          }));
         }
       }
     }

@@ -52,10 +52,12 @@ export const AgencyFilterSheet: React.FC<{
     
     return allAvailableLangs.sort((a, b) => {
       // 1. Primary language ALTIJD op 1
-      if (a === market.primary_language) return -1;
-      if (b === market.primary_language) return 1;
+      const primaryLang = market.primary_language;
+      if (a === primaryLang) return -1;
+      if (b === primaryLang) return 1;
       
       // 2. Check of ze in de market-lijst staan
+      const marketLangs = market.supported_languages;
       const indexA = marketLangs.indexOf(a);
       const indexB = marketLangs.indexOf(b);
       

@@ -119,7 +119,9 @@ const isoToLabel: Record<string, string> = {
   'nl': 'Nederlands', 'fr': 'Frans', 'de': 'Duits', 'en': 'Engels',
   'es': 'Spaans', 'it': 'Italiaans', 'pt': 'Portugees', 'pl': 'Pools',
   'da': 'Deens', 'no': 'Noors', 'sv': 'Zweeds', 'tr': 'Turks',
-  'ro': 'Roemeens', 'cs': 'Tsjechisch', 'vi': 'Vietnamees', 'fi': 'Fins'
+  'ro': 'Roemeens', 'cs': 'Tsjechisch', 'vi': 'Vietnamees', 'fi': 'Fins',
+  'nl-be': 'Vlaams', 'nl-nl': 'Nederlands', 'fr-fr': 'Frans', 'fr-be': 'Frans',
+  'en-gb': 'Engels', 'en-us': 'Engels', 'de-de': 'Duits'
 };
 
 function getCleanedLang(raw: string, country: string, extra: string): string {
@@ -127,25 +129,31 @@ function getCleanedLang(raw: string, country: string, extra: string): string {
   const c = (country || '').toLowerCase().trim();
   const e = (extra || '').toLowerCase().trim();
   
+  // 🛡️ CHRIS-PROTOCOL: Always try to resolve to ISO code first, then use MarketManager for label
+  const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+  
+  const iso = MarketManager.getLanguageCode(l);
+  if (iso && iso !== l) return MarketManager.getLanguageLabel(iso);
+
   const validLangs = ['vlaams', 'nederlands', 'engels', 'frans', 'duits', 'spaans', 'italiaans', 'portugees', 'pools', 'deens'];
   
   // 1. Directe match
-  if (validLangs.includes(l)) return raw.trim();
-  if (l === 'vlaams' || l === 'be') return 'Vlaams';
+  if (validLangs.includes(l)) return MarketManager.getLanguageLabel(l);
+  if (l === 'vlaams' || l === 'be') return MarketManager.getLanguageLabel('nl-be');
 
   // 2. Fallback op extraLangs
   for (const valid of validLangs) {
-    if (e.includes(valid)) return valid.charAt(0).toUpperCase() + valid.slice(1);
+    if (e.includes(valid)) return MarketManager.getLanguageLabel(valid);
   }
 
   // 3. Fallback op country mapping
-  for (const [key, iso] of Object.entries(langToIso)) {
+  for (const [key, isoCode] of Object.entries(langToIso)) {
     if (l.includes(key) || c.includes(key)) {
-      return isoToLabel[iso] || 'Nederlands';
+      return MarketManager.getLanguageLabel(isoCode);
     }
   }
 
-  return 'Nederlands'; // Standaard fallback
+  return MarketManager.getLanguageLabel('nl-nl'); // Standaard fallback
 }
 
 export async function seedInstructorBios() {

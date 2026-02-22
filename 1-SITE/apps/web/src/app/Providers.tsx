@@ -25,10 +25,10 @@ export function Providers({
   const pathname = usePathname();
   
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
-  React.useEffect(() => {
-    ClientLogger.init();
-    console.log('🚀 [Voices] Nuclear Version: v2.13.4 (Godmode Zero)');
-  }, []);
+      React.useEffect(() => {
+        ClientLogger.init();
+        console.log('🚀 [Voices] Nuclear Version: v2.13.7 (Godmode Zero)');
+      }, []);
   
   //  CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).

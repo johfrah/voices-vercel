@@ -65,7 +65,7 @@ interface DataResult {
 
 const journeyInstructions: Record<string, string[]> = {
   agency: [
-    "Zoek op 'Vlaams' of 'Nederlands' om stemmen te filteren.",
+    "Zoek op ISO-codes (nl-BE, fr-FR) om stemmen te filteren.",
     "Klik op een stem om demo's te beluisteren en direct te boeken.",
     "Gebruik Voicy Chat voor een persoonlijke casting op maat."
   ],

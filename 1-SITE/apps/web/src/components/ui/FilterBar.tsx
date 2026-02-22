@@ -7,6 +7,7 @@ import { Phone, Video, Megaphone, Search as SearchIcon, ChevronDown, Filter, Arr
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { ContainerInstrument, OptionInstrument, SelectInstrument, InputInstrument, ButtonInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { VoiceglotImage } from './VoiceglotImage';
@@ -50,8 +51,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
   //  MARKET-BASED LANGUAGE LOGIC
   const sortedLanguages = React.useMemo(() => {
     const market = combinedParams.market || 'BE';
-    const primaryLang = market === 'BE' ? t('language.vlaams', 'Vlaams') : t('language.nederlands', 'Nederlands');
-    const secondaryLang = market === 'BE' ? t('language.nederlands', 'Nederlands') : t('language.vlaams', 'Vlaams');
+    const primaryLang = market === 'BE' ? MarketManager.getLanguageLabel('nl-be') : MarketManager.getLanguageLabel('nl-nl');
+    const secondaryLang = market === 'BE' ? MarketManager.getLanguageLabel('nl-nl') : MarketManager.getLanguageLabel('nl-be');
     
     const baseLangs = [...filters.languages];
     const filteredLangs = baseLangs.filter(l => l !== primaryLang && l !== secondaryLang);
@@ -62,7 +63,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
     if (baseLangs.includes(secondaryLang)) result.push(secondaryLang);
     
     return [...result, ...filteredLangs];
-  }, [filters.languages, combinedParams.market, t]);
+  }, [filters.languages, combinedParams.market]);
 
   return (
     <ContainerInstrument className="w-full max-w-5xl mx-auto">

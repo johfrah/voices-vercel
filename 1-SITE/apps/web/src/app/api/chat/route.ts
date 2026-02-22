@@ -77,8 +77,13 @@ async function handleSendMessage(params: any) {
 
   try {
     //  LANGUAGE ADAPTATION: Voicy past haar taal aan aan de gebruiker
+    const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
     const isEnglish = language === 'en' || /hello|hi|price|how|can you/i.test(message);
     const journey = context?.journey || 'agency';
+    
+    //  CHRIS-PROTOCOL: Map language labels dynamically
+    const langLabel = isEnglish ? MarketManager.getLanguageLabel('en-gb') : MarketManager.getLanguageLabel('nl-nl');
+    const nativeLabel = isEnglish ? MarketManager.getLanguageLabel('en-gb') : MarketManager.getLanguageLabel('nl-nl');
     
     //  NUCLEAR BRAIN: Gebruik Gemini voor complexe vragen als FAQ niet volstaat
     let aiContent = "";
@@ -210,6 +215,11 @@ ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
 - Extra woorden (Video): ${dbPricing.videoWordRate / 100 || 0.20} per woord
 - Wachtmuziek: ${dbPricing.musicSurcharge / 100} per track
 - BTW: ${Math.round((dbPricing.vatRate || 0.21) * 100)}%
+
+TAAL CONTEXT:
+- Huidige taal: ${langLabel}
+- Native label: ${nativeLabel}
+- ISO-First Mandate: Gebruik altijd ISO codes (nl-BE, en-GB) intern.
 
 SLIMME KASSA REGELS:
 1. Als een prijs niet in Supabase staat, bestaat hij niet (€0).

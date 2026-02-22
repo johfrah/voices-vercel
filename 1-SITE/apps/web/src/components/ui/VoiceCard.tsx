@@ -746,15 +746,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-1 animate-in fade-in slide-in-from-left-1 duration-500">
                 {voice.extra_langs.split(',').filter(Boolean).map((l, idx) => {
                   const trimmed = l.trim().toLowerCase();
-                  let label = '';
-                  if (trimmed === 'nl-be' || trimmed === 'vlaams') label = 'Vlaams';
-                  else if (trimmed === 'nl-nl' || trimmed === 'nederlands') label = 'Nederlands';
-                  else if (trimmed === 'fr-fr' || trimmed === 'frans') label = 'Frans';
-                  else if (trimmed === 'fr-be') label = 'Frans (BE)';
-                  else if (trimmed === 'en-gb' || trimmed === 'engels') label = 'Engels';
-                  else if (trimmed === 'en-us') label = 'Engels (US)';
-                  else if (trimmed === 'de-de' || trimmed === 'duits') label = 'Duits';
-                  else label = MarketManager.getLanguageLabel(trimmed);
+                  const label = MarketManager.getLanguageLabel(trimmed);
 
                   return (
                     <div key={idx} className="flex items-center gap-1.5">

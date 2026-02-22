@@ -29,12 +29,12 @@ interface Language {
 }
 
 const LANGUAGE_MAP: Record<string, Language> = {
-  nl: { code: 'nl', label: 'Dutch', native: 'Nederlands', flag: '🇧🇪' },
-  fr: { code: 'fr', label: 'French', native: 'Français', flag: '🇫🇷' },
-  en: { code: 'en', label: 'English', native: 'English', flag: '🇬🇧' },
-  de: { code: 'de', label: 'German', native: 'Deutsch', flag: '🇩🇪' },
-  es: { code: 'es', label: 'Spanish', native: 'Español', flag: '🇪🇸' },
-  pt: { code: 'pt', label: 'Portuguese', native: 'Português', flag: '🇵🇹' },
+  nl: { code: 'nl', label: 'Dutch', native: MarketManager.getLanguageLabel('nl-nl'), flag: '🇧🇪' },
+  fr: { code: 'fr', label: 'French', native: MarketManager.getLanguageLabel('fr-fr'), flag: '🇫🇷' },
+  en: { code: 'en', label: 'English', native: MarketManager.getLanguageLabel('en-gb'), flag: '🇬🇧' },
+  de: { code: 'de', label: 'German', native: MarketManager.getLanguageLabel('de-de'), flag: '🇩🇪' },
+  es: { code: 'es', label: 'Spanish', native: MarketManager.getLanguageLabel('es-es'), flag: '🇪🇸' },
+  pt: { code: 'pt', label: 'Portuguese', native: MarketManager.getLanguageLabel('pt-pt'), flag: '🇵🇹' },
 };
 
 export function LanguageSwitcher({ className }: { className?: string }) {
