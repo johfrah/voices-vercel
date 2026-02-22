@@ -11,7 +11,7 @@ import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
 import { MarketManager } from "@config/market-manager";
-import { MarketManagerServer } from "@config/market-manager-server";
+import { MarketManagerServer } from "@/lib/system/market-manager-server";
 import { Analytics } from "@vercel/analytics/react";
 import { VercelToolbar } from "@vercel/toolbar/next";
 import type { Metadata, Viewport } from "next";
