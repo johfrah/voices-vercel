@@ -244,16 +244,16 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
       
       let photoUrl = '';
-      if (actor.photoId) {
+      
+      //  CHRIS-PROTOCOL: Priority for manually uploaded photo (dropboxUrl)
+      if (actor.dropboxUrl) {
+        photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `/api/proxy/?path=${encodeURIComponent(actor.dropboxUrl)}`;
+      } else if (actor.photoId) {
         const mediaItem = mediaResults.find((m: any) => m.id === actor.photoId);
         if (mediaItem) {
           const fp = mediaItem.file_path || mediaItem.filePath;
           if (fp) photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
         }
-      }
-
-      if (!photoUrl && actor.dropboxUrl) {
-        photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `/api/proxy/?path=${encodeURIComponent(actor.dropboxUrl)}`;
       }
 
       const actorDemosList = demosData.filter((d: any) => d.actor_id === actor.id);
