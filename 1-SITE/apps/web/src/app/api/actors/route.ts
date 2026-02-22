@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     });
     
     return NextResponse.json(
-      { error: 'Failed to fetch actors', _forensic: 'Check server logs for ACTORS API FAILURE' }, 
+      { error: 'Failed to fetch actors', message: error.message, _forensic: 'Check server logs for ACTORS API FAILURE' }, 
       { status: 500 }
     );
   }
