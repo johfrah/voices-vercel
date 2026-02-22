@@ -151,7 +151,10 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           query = query.eq('gender', gender);
         }
         
-        const { data: sdkData, error: sdkError } = await query.limit(500);
+        const { data: sdkData, error: sdkError } = await query
+          .order('menu_order', { ascending: true })
+          .order('voice_score', { ascending: false })
+          .limit(500);
           
         if (sdkError) {
           console.error(' [getActors] SDK Error:', sdkError);
