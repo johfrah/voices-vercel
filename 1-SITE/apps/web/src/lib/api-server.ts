@@ -306,12 +306,22 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       console.error(' [getActors] DB Query failed, trying Supabase SDK fallback...', dbError);
       
       //  CHRIS-PROTOCOL: SDK Fallback (Rigide & Veilig)
-      const { data: sdkData, error: sdkError } = await supabase
+      let query = supabase
         .from('actors')
         .select('*')
         .eq('status', 'live')
-        .eq('is_public', true)
-        .limit(100);
+        .eq('is_public', true);
+        
+      if (dbLang || lang) {
+        const targetLang = dbLang || lang;
+        if (targetLang === 'nl') {
+          query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
+        } else {
+          query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
+        }
+      }
+      
+      const { data: sdkData, error: sdkError } = await query.limit(100);
         
       if (sdkError) {
         console.error(' [getActors] SDK Fallback also failed:', sdkError);
@@ -359,6 +369,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         deliveryDateMin: a.delivery_date_min,
         deliveryDateMinPriority: a.delivery_date_min_priority
       }));
+      
+      console.log(' [getActors] dbResults mapped from SDK:', dbResults.length);
     }
 
     console.log(' API: DB returned', dbResults.length, 'results');
