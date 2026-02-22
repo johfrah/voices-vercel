@@ -276,15 +276,22 @@ export class VoiceFilterEngine {
             }
           }
 
-          // 4. voice_score (Natural popularity)
-          // CHRIS-PROTOCOL: High score means high popularity.
+          // 4. total_sales (Natural popularity)
+          // CHRIS-PROTOCOL: High sales means high popularity.
+          const aSales = a.total_sales || 0;
+          const bSales = b.total_sales || 0;
+          if (aSales !== bSales) {
+            return bSales - aSales; // Meer sales eerst
+          }
+
+          // 5. voice_score (Legacy popularity / Admin boost)
           const aScore = a.voice_score || 0;
           const bScore = b.voice_score || 0;
           if (aScore !== bScore) {
             return bScore - aScore; // Hogere score eerst
           }
 
-          // 5. Alphabetical (Tie-breaker)
+          // 6. Alphabetical (Tie-breaker)
           // CHRIS-PROTOCOL: If scores are equal, we sort by first name.
           return (a.first_name || a.display_name || '').localeCompare(b.first_name || b.display_name || '');
       }

@@ -153,6 +153,7 @@ export const actors = pgTable('actors', {
   photoId: integer('photo_id').references(() => media.id), // 📸 De Actor-specifieke foto (voor Agency)
   logoId: integer('logo_id'),
   voiceScore: integer('voice_score').default(10),
+  totalSales: integer('total_sales').default(0),
   experienceLevel: experienceLevelEnum('experience_level').default('pro'),
   experience_level_new: experienceLevelEnum('experience_level_new').default('pro'), // Temporary for migration
   studioSpecs: jsonb('studio_specs').default({}), // 🎙️ Publiek: { microphone: string, preamp: string, interface: string, booth: string }

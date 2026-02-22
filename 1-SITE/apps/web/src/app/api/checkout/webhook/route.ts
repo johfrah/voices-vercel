@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@db';
-import { orders, orderNotes, users } from '@db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { orders, orderNotes, users, orderItems, actors } from '@db/schema';
+import { eq, sql, inArray } from 'drizzle-orm';
 import { MollieService } from '@/lib/payments/mollie';
 import { UCIService } from '@/lib/intelligence/uci-service';
 import { MarketManager } from '@config/market-manager';
@@ -118,9 +118,27 @@ export async function POST(request: NextRequest) {
         isCustomerNote: false
       });
 
-      //  Als betaald: Lever muziek en update DNA
+      //  Als betaald: Lever muziek en update DNA + Sales
       if (newStatus === 'paid') {
-        //  Lever muziek uit indien aanwezig in de order
+        // 1. Verhoog total_sales voor de betrokken acteurs
+        try {
+          const items = await tx.select({ actorId: orderItems.actorId })
+            .from(orderItems)
+            .where(eq(orderItems.orderId, orderId));
+          
+          const actorIds = items.map(i => i.actorId).filter((id): id is number => id !== null);
+          
+          if (actorIds.length > 0) {
+            await tx.update(actors)
+              .set({ totalSales: sql`${actors.totalSales} + 1` })
+              .where(inArray(actors.id, actorIds));
+            console.log(` Sales: total_sales incremented for actors: ${actorIds.join(', ')}`);
+          }
+        } catch (salesErr) {
+          console.error(' Failed to update actor sales:', salesErr);
+        }
+
+        // 2. Lever muziek uit indien aanwezig in de order
         try {
           await MusicDeliveryService.deliverMusic(orderId);
         } catch (musicErr) {

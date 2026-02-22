@@ -91,6 +91,7 @@ export interface Actor {
   display_name: string;
   slug: string;
   voice_score: number;
+  total_sales?: number;
   price_unpaid: number;
   gender?: string;
   starting_price?: number;
