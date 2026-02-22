@@ -183,88 +183,93 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       console.error(' API: db.query.actors is not available! Drizzle initialization might have failed.');
       throw new Error('Database query engine not available');
     }
-    const dbResults = await db.query.actors.findMany({
-      columns: {
-        id: true,
-        wpProductId: true,
-        userId: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        gender: true,
-        nativeLang: true,
-        countryId: true,
-        deliveryTime: true,
-        extraLangs: true,
-        bio: true,
-        whyVoices: true,
-        tagline: true,
-        toneOfVoice: true,
-        photoId: true,
-        logoId: true,
-        voiceScore: true,
-        priceUnpaid: true,
-        priceOnline: true,
-        priceIvr: true,
-        priceLiveRegie: true,
-        dropboxUrl: true,
-        status: true,
-        isPublic: true,
-        isAi: true,
-        elevenlabsId: true,
-        internalNotes: true,
-        createdAt: true,
-        updatedAt: true,
-        slug: true,
-        youtubeUrl: true,
-        menuOrder: true,
-        rates: true,
-        deliveryDaysMin: true,
-        deliveryDaysMax: true,
-        cutoffTime: true,
-        samedayDelivery: true,
-        pendingBio: true,
-        pendingTagline: true,
-        experienceLevel: true,
-        studioSpecs: true,
-        connectivity: true,
-        availability: true,
-        isManuallyEdited: true,
-        website: true,
-        clients: true,
-        linkedin: true,
-        birthYear: true,
-        location: true,
-        aiTags: true,
-        deliveryDateMin: true,
-        deliveryDateMinPriority: true,
-        // allowFreeTrial: true
-      },
-      // @ts-ignore
-      where: and(...conditions),
-      orderBy: [
-        asc(actors.menuOrder), 
-        desc(actors.deliveryDateMinPriority),
-        sql`delivery_date_min ASC NULLS LAST`, 
-        desc(actors.voiceScore), 
-        asc(actors.firstName)
-      ],
-      limit: 200,
-      with: {
-        demos: true,
-        country: true,
-        actorLanguages: {
-          with: {
-            language: true
-          }
+    
+    // 🛡️ CHRIS-PROTOCOL: Use a timeout for heavy actor queries
+    const dbResults = await Promise.race([
+      db.query.actors.findMany({
+        columns: {
+          id: true,
+          wpProductId: true,
+          userId: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          gender: true,
+          nativeLang: true,
+          countryId: true,
+          deliveryTime: true,
+          extraLangs: true,
+          bio: true,
+          whyVoices: true,
+          tagline: true,
+          toneOfVoice: true,
+          photoId: true,
+          logoId: true,
+          voiceScore: true,
+          priceUnpaid: true,
+          priceOnline: true,
+          priceIvr: true,
+          priceLiveRegie: true,
+          dropboxUrl: true,
+          status: true,
+          isPublic: true,
+          isAi: true,
+          elevenlabsId: true,
+          internalNotes: true,
+          createdAt: true,
+          updatedAt: true,
+          slug: true,
+          youtubeUrl: true,
+          menuOrder: true,
+          rates: true,
+          deliveryDaysMin: true,
+          deliveryDaysMax: true,
+          cutoffTime: true,
+          samedayDelivery: true,
+          pendingBio: true,
+          pendingTagline: true,
+          experienceLevel: true,
+          studioSpecs: true,
+          connectivity: true,
+          availability: true,
+          isManuallyEdited: true,
+          website: true,
+          clients: true,
+          linkedin: true,
+          birthYear: true,
+          location: true,
+          aiTags: true,
+          deliveryDateMin: true,
+          deliveryDateMinPriority: true,
+          // allowFreeTrial: true
         },
-        actorTones: {
-          with: {
-            tone: true
+        // @ts-ignore
+        where: and(...conditions),
+        orderBy: [
+          asc(actors.menuOrder), 
+          desc(actors.deliveryDateMinPriority),
+          sql`delivery_date_min ASC NULLS LAST`, 
+          desc(actors.voiceScore), 
+          asc(actors.firstName)
+        ],
+        limit: 200,
+        with: {
+          demos: true,
+          country: true,
+          actorLanguages: {
+            with: {
+              language: true
+            }
+          },
+          actorTones: {
+            with: {
+              tone: true
+            }
           }
         }
-      }
-    });
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 12000))
+    ]) as any[];
 
     console.log(' API: DB returned', dbResults.length, 'results');
     
@@ -832,13 +837,17 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const data = await db.select({
-        translationKey: translations.translationKey,
-        translatedText: translations.translatedText,
-        originalText: translations.originalText
-      })
-      .from(translations)
-      .where(eq(translations.lang, lang));
+      // 🛡️ CHRIS-PROTOCOL: Use a timeout for DB queries to prevent 504s
+      const data = await Promise.race([
+        db.select({
+          translationKey: translations.translationKey,
+          translatedText: translations.translatedText,
+          originalText: translations.originalText
+        })
+        .from(translations)
+        .where(eq(translations.lang, lang)),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Database timeout')), 8000))
+      ]) as any[];
       
       const translationMap: Record<string, string> = {};
       data?.forEach(row => {
