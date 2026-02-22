@@ -135,8 +135,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       try {
         let query = supabase
           .from('actors')
-          .select('*')
-          .eq('is_public', true);
+          .select('*');
           
         if (language || lang) {
           const targetLang = language || lang;
