@@ -110,6 +110,7 @@ export interface SlimmeKassaResult {
   vatRate: number;
   legalDisclaimer?: string;
   isQuoteOnly?: boolean; // If true, price is an estimate and requires manual review
+  quoteReason?: string; // Reason why manual review is needed
 }
 
 export class SlimmeKassa {
@@ -168,6 +169,7 @@ export class SlimmeKassa {
     let liveSessionSurchargeCents = 0;
     let legalDisclaimer = "";
     let isQuoteOnly = false;
+    let quoteReason = "";
     
     const isSubscription = input.usage === 'subscription';
     const isWorkshop = (input as any).journey === 'studio' || (input as any).editionId;
@@ -215,7 +217,8 @@ export class SlimmeKassa {
         return {
           base: 0, wordSurcharge: 0, mediaSurcharge: 0, musicSurcharge: 0, radioReadySurcharge: 0,
           subtotal: 0, vat: 0, total: 0, vatRate: input.isVatExempt ? 0 : activeConfig.vatRate,
-          isQuoteOnly: true
+          isQuoteOnly: true,
+          quoteReason: "Geen basis-uurtarief (BSF) gevonden voor deze acteur."
         };
       }
 
@@ -263,6 +266,7 @@ export class SlimmeKassa {
           if (feeCents === 0) {
             // console.warn(`[SlimmeKassa] No rate found for ${m} in ${country} or GLOBAL. Actor has opted out.`);
             isQuoteOnly = true;
+            quoteReason = `Geen specifiek tarief gevonden voor mediatype '${m}' in ${country}.`;
             
             // 🛡️ CHRIS-PROTOCOL: Final Recovery for common types in calculation
             // This ensures that IF an actor is already in the checkout (e.g. via direct link),
@@ -331,7 +335,8 @@ export class SlimmeKassa {
         total: this.toEuros(subtotalCents + vatCents),
         vatRate: currentVatRate,
         legalDisclaimer,
-        isQuoteOnly
+        isQuoteOnly,
+        quoteReason
       };
     }
 
@@ -352,7 +357,8 @@ export class SlimmeKassa {
         return {
           base: 0, wordSurcharge: 0, mediaSurcharge: 0, musicSurcharge: 0, radioReadySurcharge: 0,
           subtotal: 0, vat: 0, total: 0, vatRate: input.isVatExempt ? 0 : activeConfig.vatRate,
-          isQuoteOnly: true
+          isQuoteOnly: true,
+          quoteReason: "Geen basis-tarief voor telefonie gevonden."
         };
       }
 
@@ -399,7 +405,8 @@ export class SlimmeKassa {
         return {
           base: 0, wordSurcharge: 0, mediaSurcharge: 0, musicSurcharge: 0, radioReadySurcharge: 0,
           subtotal: 0, vat: 0, total: 0, vatRate: input.isVatExempt ? 0 : activeConfig.vatRate,
-          isQuoteOnly: true
+          isQuoteOnly: true,
+          quoteReason: "Geen basis-tarief voor video gevonden."
         };
       }
 
@@ -440,7 +447,8 @@ export class SlimmeKassa {
       total: this.toEuros(subtotalCents + vatCents),
       vatRate: currentVatRate,
       legalDisclaimer,
-      isQuoteOnly
+      isQuoteOnly,
+      quoteReason
     };
   }
 

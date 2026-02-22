@@ -26,6 +26,13 @@ const TELEPHONY_TEMPLATES: Record<string, any[]> = {
       text: 'Welkom bij [Bedrijf]. Voor sales, druk 1. Voor support, druk 2. Voor administratie, druk 3. Blijf aan de lijn voor al je andere vragen.'
     },
     {
+      id: 'callback',
+      title: 'Terugbelverzoek',
+      icon: Phone,
+      description: 'Vraag klanten om hun nummer',
+      text: 'Welkom bij [Bedrijf]. Al onze medewerkers zijn momenteel in gesprek. Laat je naam en telefoonnummer achter na de toon, of bel ons later terug op [Telefoon].'
+    },
+    {
       id: 'hours',
       title: 'Openingsuren',
       icon: Clock,
@@ -44,7 +51,7 @@ const TELEPHONY_TEMPLATES: Record<string, any[]> = {
       title: 'Buiten kantooruren',
       icon: Clock,
       description: 'Als de zaak even dicht is',
-      text: 'Welkom bij [Bedrijf]. Helaas zijn we nu gesloten. Je kunt ons bereiken op [Uren]. Stuur ons gerust een mailtje op [Email].'
+      text: 'Welkom bij [Bedrijf]. Helaas zijn we nu gesloten. Je kunt ons bereiken op [Uren]. Stuur ons gerust een mailtje op [Email] of bel tijdens de kantooruren naar [Telefoon].'
     }
   ],
   en: [
@@ -144,6 +151,7 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
   const { t } = useTranslation();
   const [companyName, setCompanyName] = useState(state.customer.company || '');
   const [email, setEmail] = useState(state.customer.email || '');
+  const [phone, setPhone] = useState(state.customer.phone || '');
   const [hours, setHours] = useState('maandag tot vrijdag van 9u tot 17u');
   const [selectedLang, setSelectedLang] = useState('nl');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -230,6 +238,7 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
     const processedText = templateText
       .replace(/\[Bedrijf\]/g, companyName || '[Bedrijfsnaam]')
       .replace(/\[Email\]/g, email || '[Email]')
+      .replace(/\[Telefoon\]/g, phone || '[Telefoon]')
       .replace(/\[Uren\]/g, translatedHours);
     
     const currentBriefing = state.briefing.trim();
@@ -249,10 +258,11 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
   };
 
   const renderTemplatePreview = (text: string) => {
-    const parts = text.split(/(\[Bedrijf\]|\[Email\]|\[Uren\])/g);
+    const parts = text.split(/(\[Bedrijf\]|\[Email\]|\[Telefoon\]|\[Uren\])/g);
     return parts.map((part, i) => {
       if (part === '[Bedrijf]') return <span key={i} className="font-bold text-primary">{companyName || '...'}</span>;
       if (part === '[Email]') return <span key={i} className="font-bold text-primary">{email || '...'}</span>;
+      if (part === '[Telefoon]') return <span key={i} className="font-bold text-primary">{phone || '...'}</span>;
       if (part === '[Uren]') return <span key={i} className="font-bold text-primary">{translatedHours}</span>;
       return part;
     });
@@ -329,7 +339,7 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative z-10">
         <div className="space-y-2 group/input">
           <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/20 group-focus-within/input:text-primary transition-colors">
             <MapPin size={12} strokeWidth={2.5} /> <VoiceglotText translationKey="common.company_name" defaultText="Bedrijfsnaam" />
@@ -351,6 +361,18 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
             value={email}
             onChange={(e) => { setEmail(e.target.value); updateCustomer({ email: e.target.value }); }}
             placeholder={t('common.placeholder.email', "info@bedrijf.be")}
+            className="w-full bg-va-off-white border-2 border-transparent focus:border-primary/10 focus:bg-white rounded-[15px] py-4 px-5 text-[15px] font-light transition-all outline-none"
+          />
+        </div>
+        <div className="space-y-2 group/input">
+          <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-va-black/20 group-focus-within/input:text-primary transition-colors">
+            <Phone size={12} strokeWidth={2.5} /> <VoiceglotText translationKey="common.phone" defaultText="Telefoon" />
+          </label>
+          <input
+            type="text"
+            value={phone}
+            onChange={(e) => { setPhone(e.target.value); updateCustomer({ phone: e.target.value }); }}
+            placeholder={t('common.placeholder.phone', "Bijv. 012 34 56 78")}
             className="w-full bg-va-off-white border-2 border-transparent focus:border-primary/10 focus:bg-white rounded-[15px] py-4 px-5 text-[15px] font-light transition-all outline-none"
           />
         </div>
