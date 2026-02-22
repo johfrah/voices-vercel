@@ -418,6 +418,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     */
     
     //  CHRIS-PROTOCOL: SDK Fallback for secondary data (v2.16)
+    /*
     const [reviewsRes, mediaRes] = await Promise.all([
       supabase.from('reviews')
         .select('*')
@@ -430,6 +431,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     
     const dbReviewsRaw = reviewsRes.data || [];
     const mediaResults = mediaRes.data || [];
+    */
+    const dbReviewsRaw: any[] = [];
+    const mediaResults: any[] = [];
     const translationMap: Record<string, string> = {};
 
     console.log(' API: reviewsRes count:', dbReviewsRaw.length);
