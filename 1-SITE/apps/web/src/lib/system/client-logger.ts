@@ -48,18 +48,26 @@ export class ClientLogger {
 
   static async report(level: 'info' | 'warn' | 'error', message: string, details: any = {}) {
     try {
-      // Gebruik fetch met keepalive zodat de request doorgaat zelfs als de pagina sluit
-      await fetch('/api/admin/system/logs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          level,
-          message,
-          source: 'browser',
-          details
-        }),
-        keepalive: true
+      const payload = JSON.stringify({
+        level,
+        message,
+        source: 'browser',
+        details
       });
+
+      //  CHRIS-PROTOCOL: Gebruik sendBeacon voor betrouwbaarheid bij afsluiten pagina
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon && payload.length < 64000) {
+        const blob = new Blob([payload], { type: 'application/json' });
+        navigator.sendBeacon('/api/admin/system/logs', blob);
+      } else {
+        // Gebruik fetch met keepalive zodat de request doorgaat zelfs als de pagina sluit
+        await fetch('/api/admin/system/logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true
+        });
+      }
     } catch (e) {
       // Stille fail om loops te voorkomen
     }

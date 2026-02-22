@@ -15,11 +15,12 @@ const getDb = () => {
   
     if (!(globalThis as any).dbInstance) {
     try {
-      const connectionString = process.env.DATABASE_URL!;
-      if (!connectionString) return null;
-      
-// CHRIS-PROTOCOL: Trusted Shared Pooler Handshake (v2.11) - Force Trigger Build
-// We definiëren supabaseRootCA binnen het try-block om ReferenceErrors te voorkomen.
+                  const connectionString = process.env.DATABASE_URL!;
+                  if (!connectionString) return null;
+                  
+                  // CHRIS-PROTOCOL: Pooler Bypass for Serverless Stability (v2.12)
+                  // If we are in production and the pooler is saturated, we might want to use the direct connection.
+                  // However, for now we just log it and stick to the provided URL.
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
 BQAwazELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5l
@@ -50,16 +51,16 @@ o/bKiIz+Fq8=
           ca: supabaseRootCA,
           rejectUnauthorized: false,
         },
-        connect_timeout: 30,
+        connect_timeout: 10,
         onnotice: () => {},
-        idle_timeout: 10,
-        max: 10,
-      });
+                    idle_timeout: 5,
+                    max: process.env.NODE_ENV === 'production' ? 1 : 10,
+                  });
 
       (globalThis as any).dbInstance = drizzle(client, { 
         schema
       });
-      console.log('✅ Drizzle initialized (Pool size:', 10, ')');
+      console.log('✅ Drizzle initialized (Pool size:', process.env.NODE_ENV === 'production' ? 1 : 10, ')');
     } catch (e) {
       console.error('❌ Failed to initialize Drizzle:', e);
       return null;

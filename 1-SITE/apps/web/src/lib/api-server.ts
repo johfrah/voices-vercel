@@ -314,8 +314,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         if (mediaItem) {
           const fp = mediaItem.filePath;
           if (fp && (fp.startsWith('agency/') || fp.startsWith('active/') || fp.startsWith('common/') || fp.startsWith('visuals/'))) {
-            const webpPath = fp.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-            photoUrl = `${SUPABASE_STORAGE_URL}/${webpPath}`;
+            photoUrl = `${SUPABASE_STORAGE_URL}/${fp}`;
           } else if (fp) {
             photoUrl = fp;
           }
@@ -324,10 +323,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 
       if (!photoUrl && actor.dropboxUrl) {
         if (actor.dropboxUrl.includes('supabase.co/storage/v1/object/public/voices/')) {
-          photoUrl = actor.dropboxUrl.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+          photoUrl = actor.dropboxUrl;
         } else if (actor.dropboxUrl.startsWith('visuals/') || actor.dropboxUrl.startsWith('agency/') || actor.dropboxUrl.startsWith('active/') || actor.dropboxUrl.startsWith('common/')) {
-          const webpPath = actor.dropboxUrl.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-          photoUrl = `${SUPABASE_STORAGE_URL}/${webpPath}`;
+          photoUrl = `${SUPABASE_STORAGE_URL}/${actor.dropboxUrl}`;
         } else if (actor.dropboxUrl.startsWith('/api/proxy')) {
           photoUrl = actor.dropboxUrl;
         } else {
@@ -570,8 +568,7 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
   if (actor.photoId && mediaItem) {
     const fp = mediaItem.filePath;
     if (fp && (fp.startsWith('agency/') || fp.startsWith('active/') || fp.startsWith('common/') || fp.startsWith('visuals/'))) {
-      const webpPath = fp.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-      photoUrl = `${SUPABASE_STORAGE_URL_GLOBAL}/${webpPath}`;
+      photoUrl = `${SUPABASE_STORAGE_URL_GLOBAL}/${fp}`;
     } else if (fp) {
       photoUrl = fp.startsWith('http') ? fp : `/api/proxy/?path=${encodeURIComponent(fp)}`;
     }
@@ -579,10 +576,9 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
   
   if (!photoUrl && actor.dropboxUrl) {
     if (actor.dropboxUrl.includes('supabase.co/storage/v1/object/public/voices/')) {
-      photoUrl = actor.dropboxUrl.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+      photoUrl = actor.dropboxUrl;
     } else if (actor.dropboxUrl.startsWith('visuals/') || actor.dropboxUrl.startsWith('agency/') || actor.dropboxUrl.startsWith('active/') || actor.dropboxUrl.startsWith('common/')) {
-      const webpPath = actor.dropboxUrl.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-      photoUrl = `${SUPABASE_STORAGE_URL_GLOBAL}/${webpPath}`;
+      photoUrl = `${SUPABASE_STORAGE_URL_GLOBAL}/${actor.dropboxUrl}`;
     } else if (actor.dropboxUrl.startsWith('/api/proxy')) {
       photoUrl = actor.dropboxUrl;
     } else {

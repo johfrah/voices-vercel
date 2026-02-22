@@ -79,19 +79,31 @@ export const VoicejarTracker: React.FC = () => {
 
       try {
         const body = JSON.stringify(payload);
-        //  CHRIS-PROTOCOL: Voorkom 'Failed to fetch' door payload grootte te checken voor keepalive
-        const useKeepAlive = body.length < 60000; 
-
-        await fetch('/api/voicejar/record', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body,
-          keepalive: useKeepAlive
-        });
-      } catch (e) {
+        
+        //  CHRIS-PROTOCOL: Gebruik sendBeacon voor betrouwbaarheid bij afsluiten pagina
+        // als de payload niet te groot is. Anders fetch met keepalive.
+        const canUseBeacon = body.length < 64000 && typeof navigator !== 'undefined' && navigator.sendBeacon;
+        
+        if (canUseBeacon) {
+          const blob = new Blob([body], { type: 'application/json' });
+          navigator.sendBeacon('/api/voicejar/record', blob);
+        } else {
+          const useKeepAlive = body.length < 60000; 
+          const res = await fetch('/api/voicejar/record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+            keepalive: useKeepAlive
+          });
+          
+          if (!res.ok) {
+            throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
+          }
+        }
+      } catch (e: any) {
         //  CHRIS-PROTOCOL: SILENCE IN DEV
         if (process.env.NODE_ENV !== 'development') {
-          console.error(' Voicejar Flush Error:', e);
+          console.error(' Voicejar Flush Error:', e.message || e);
         }
       }
     };
