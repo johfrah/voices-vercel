@@ -1,4 +1,5 @@
-import { DirectMailService } from '@/services/DirectMailService';
+import { DirectMailService } from '../../services/DirectMailService';
+import { MarketManagerServer } from './market-manager-server';
 
 /**
  *  FIX NOTIFIER (NUCLEAR 2026)
@@ -10,10 +11,14 @@ export class FixNotifier {
   static async notify(fixId: string, description: string, details: string) {
     try {
       const mailService = DirectMailService.getInstance();
-      const adminEmail = 'johfrah@voices.be';
+      
+      //  CHRIS-PROTOCOL: Haal admin e-mail uit ENV of MarketManager (geen hardcoding)
+      const market = await MarketManagerServer.getCurrentMarketAsync('voices.be');
+      const adminEmail = process.env.ADMIN_EMAIL || market?.email || 'johfrah@voices.be';
       
       await mailService.sendMail({
         to: adminEmail,
+        from: adminEmail,
         subject: `🛠️ Voices Fix LIVE: ${fixId}`,
         html: `
           <div style="font-family: sans-serif; padding: 40px; background: #f9f9f9; border-radius: 24px; max-width: 600px; margin: 0 auto; border: 1px solid #eee;">
