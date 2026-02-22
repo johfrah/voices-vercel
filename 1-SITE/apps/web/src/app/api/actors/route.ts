@@ -16,10 +16,9 @@ export async function GET(request: Request) {
   const lang = searchParams.get('lang') || 'nl';
   
   try {
-    const params: Record<string, string> = {};
-    searchParams.forEach((value, key) => {
-      params[key] = value;
-    });
+    console.log('🔗 SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log('🔗 SUPABASE_KEY_TYPE:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SERVICE_ROLE' : (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'ANON' : 'NONE'));
+    console.log('🔗 SUPABASE_KEY_PREFIX:', (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)?.substring(0, 5));
 
     const data = await getActors(params, lang).catch((err) => {
       console.error(' [ACTORS API] getActors failure:', err);
