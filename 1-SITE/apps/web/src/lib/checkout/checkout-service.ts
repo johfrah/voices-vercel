@@ -1,7 +1,7 @@
 import { db } from '@db';
 import { orders, orderItems } from '@db/schema';
 import { eq } from 'drizzle-orm';
-import { InvoiceService } from './commerce/invoice-service';
+import { InvoiceService } from '../commerce/invoice-service';
 
 /**
  *  ZERO-LOSS CHECKOUT SERVICE (2026)

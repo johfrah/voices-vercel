@@ -10,7 +10,7 @@ import { ContainerInstrument, ButtonInstrument, HeadingInstrument } from "@/comp
 import ConfiguratorPageClient from "@/app/checkout/configurator/ConfiguratorPageClient";
 import CheckoutPageClient from "@/app/checkout/CheckoutPageClient";
 import { MobileCheckoutSheet } from "@/components/checkout/MobileCheckoutSheet";
-import { getActor } from "@/lib/api";
+import { getActor } from "@/lib/services/api";
 
 export function JohfrahConfiguratorSPA() {
   const pathname = usePathname();

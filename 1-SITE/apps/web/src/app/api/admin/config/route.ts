@@ -2,7 +2,7 @@ import { db } from '@db';
 import { appConfigs, languages } from '@db/schema';
 import { eq, asc } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
-import { getActor, getActors, getMusicLibrary } from '@/lib/api-server';
+import { getActor, getActors, getMusicLibrary } from '@/lib/services/api-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { ConfigBridge } from '@/lib/config-bridge';
 

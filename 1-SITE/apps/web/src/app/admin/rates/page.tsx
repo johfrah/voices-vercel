@@ -13,7 +13,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { ArrowLeft, Save, Loader2, DollarSign, Info, Construction } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { SlimmeKassa, DEFAULT_KASSA_CONFIG } from '@/lib/pricing-engine';
+import { SlimmeKassa, DEFAULT_KASSA_CONFIG } from '@/lib/engines/pricing-engine';
 
 /**
  *  ADMIN RATES PAGE (SLIMME KASSA 2026)

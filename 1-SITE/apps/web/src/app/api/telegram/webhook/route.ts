@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
         //  DUAL AGENT ORCHESTRATION: Both Bob and Voicy can answer
         try {
           const { KnowledgeService } = await import('@/services/KnowledgeService');
-          const { SlimmeKassa } = await import('@/lib/pricing-engine');
+          const { SlimmeKassa } = await import('@/lib/engines/pricing-engine');
           const knowledge = KnowledgeService.getInstance();
           const coreBriefing = await knowledge.getCoreBriefing();
           const voicyBriefing = await knowledge.getFullVoicyBriefing();

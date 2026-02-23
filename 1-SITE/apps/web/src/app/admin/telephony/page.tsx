@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { DEFAULT_KASSA_CONFIG } from '@/lib/pricing-engine';
+import { DEFAULT_KASSA_CONFIG } from '@/lib/engines/pricing-engine';
 
 /**
  *  ADMIN TELEPHONY SETTINGS (NUCLEAR 2026)

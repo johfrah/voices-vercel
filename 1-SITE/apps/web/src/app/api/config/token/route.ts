@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SlimmeKassa } from '@/lib/pricing-engine';
+import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 
 /**
  *  TOKEN GENERATOR & RESOLVER (2026)

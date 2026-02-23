@@ -15,11 +15,11 @@ import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { SlimmeKassa } from '@/lib/pricing-engine';
+import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { useRouter } from 'next/navigation';
 import { calculateDeliveryDate } from '@/lib/delivery-logic';
-import { VoiceFilterEngine } from '@/lib/voice-filter-engine';
+import { VoiceFilterEngine } from '@/lib/engines/voice-filter-engine';
 
 import { RecentlyPlayedBar } from "@/components/ui/RecentlyPlayedBar";
 

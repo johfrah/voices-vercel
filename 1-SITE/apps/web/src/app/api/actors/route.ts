@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getActors } from '@/lib/api-server';
+import { getActors } from '@/lib/services/api-server';
 
 /**
  *  ACTORS API ROUTE (2026)

@@ -12,7 +12,7 @@ import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { SlimmeKassa } from '@/lib/pricing-engine';
+import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import nextDynamic from 'next/dynamic';
 
 const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });

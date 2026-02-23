@@ -45,7 +45,7 @@ import nextDynamic from 'next/dynamic';
 
 const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
-import { CommercialMediaType, SlimmeKassa } from '@/lib/pricing-engine';
+import { CommercialMediaType, SlimmeKassa } from '@/lib/engines/pricing-engine';
 
 interface StudioLaunchpadProps {
   initialActors?: any[];

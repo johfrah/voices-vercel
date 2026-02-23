@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getMusicLibrary } from '@/lib/api-server';
+import { getMusicLibrary } from '@/lib/services/api-server';
 
 export const dynamic = 'force-dynamic';
 

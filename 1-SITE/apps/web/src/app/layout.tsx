@@ -22,7 +22,7 @@ import dynamic from "next/dynamic";
 import { Toaster } from 'react-hot-toast';
 import "../styles/globals.css";
 import { Providers } from "./Providers";
-import { getTranslationsServer } from "@/lib/api-server";
+import { getTranslationsServer } from "@/lib/services/api-server";
 import { cn } from "@/lib/utils";
 
 //  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden (ssr: false) voor 100ms LCP

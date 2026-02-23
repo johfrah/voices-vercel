@@ -33,7 +33,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
       unit: 'basis tarief',
       features: [
         'Bereken tot op de euro',
-        ' 1 minuut per 155 woorden',
+        ` 1 minuut per ${SlimmeKassa.getDefaultConfig().wordsPerMinute} woorden`,
         '48kHz Studiokwaliteit',
         'Retake garantie'
       ],

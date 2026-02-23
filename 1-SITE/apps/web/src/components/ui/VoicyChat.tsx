@@ -242,7 +242,7 @@ export const VoicyChatV2: React.FC = () => {
         case 'ANALYZE_SCRIPT':
           if (params.text) {
             const words = params.text.trim().split(/\s+/).length;
-            const wordsPerMinute = 155; // Vlaamse standaard: 150-160 woorden per minuut
+            const wordsPerMinute = state.pricingConfig?.wordsPerMinute || SlimmeKassa.getDefaultConfig().wordsPerMinute || 155;
             const estSeconds = Math.round((words / wordsPerMinute) * 60);
             const target = params.targetDuration || 30;
             const diff = estSeconds - target;

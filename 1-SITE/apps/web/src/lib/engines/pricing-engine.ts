@@ -45,6 +45,7 @@ export interface SlimmeKassaConfig {
   johfraiProPrice: number; // in cents
   johfraiStudioPrice: number; // in cents
   aiDiscount?: number; // percentage
+  wordsPerMinute: number; // Vlaamse standaard: 150-160 woorden per minuut
 }
 
 export const DEFAULT_KASSA_CONFIG: SlimmeKassaConfig = {
@@ -70,6 +71,7 @@ export const DEFAULT_KASSA_CONFIG: SlimmeKassaConfig = {
   johfraiBasicPrice: 4900, // in cents
   johfraiProPrice: 9900, // in cents
   johfraiStudioPrice: 19900, // in cents
+  wordsPerMinute: 155,
 };
 
 export interface SlimmeKassaInput {

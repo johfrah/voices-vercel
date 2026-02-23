@@ -3,7 +3,7 @@
 import { useTranslation } from '@/contexts/TranslationContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
-import { SlimmeKassa } from '@/lib/pricing-engine';
+import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { Loader2, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';

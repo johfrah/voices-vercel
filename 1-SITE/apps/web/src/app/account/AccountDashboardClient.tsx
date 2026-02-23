@@ -41,7 +41,7 @@ import {
 } from 'lucide-react';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { SlimmeKassa } from '@/lib/pricing-engine';
+import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 
 export default function AccountDashboardClient() {
   const { user, isAdmin, isLoading, isAuthenticated, logout } = useAuth();

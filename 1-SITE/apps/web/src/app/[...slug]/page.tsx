@@ -10,7 +10,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from "react";
-import { getActor, getArtist, getActors } from "@/lib/api-server";
+import { getActor, getArtist, getActors } from "@/lib/services/api-server";
 import { headers } from "next/headers";
 import { VoiceDetailClient } from "@/components/legacy/VoiceDetailClient";
 import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";

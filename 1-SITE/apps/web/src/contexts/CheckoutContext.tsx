@@ -1,6 +1,6 @@
 "use client";
 
-import { PlanType, SlimmeKassa, UsageType } from '@/lib/pricing-engine';
+import { PlanType, SlimmeKassa, UsageType } from '@/lib/engines/pricing-engine';
 import { generateCartHash } from '@/lib/cart-utils';
 import { Actor } from '@/types';
 import { cn } from '@/lib/utils';

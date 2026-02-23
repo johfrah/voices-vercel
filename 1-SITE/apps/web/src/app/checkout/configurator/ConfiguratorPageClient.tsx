@@ -20,7 +20,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
-import { SlimmeKassa } from '@/lib/pricing-engine';
+import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { cn } from '@/lib/utils';
 import { animate, AnimatePresence, motion } from 'framer-motion';
@@ -507,9 +507,10 @@ export default function ConfiguratorPageClient({
   }, [wordCount, masterControlState.filters.words]);
 
   const estimatedTime = useMemo(() => {
-    const seconds = Math.round((effectiveWordCount / 160) * 60);
+    const wpm = state.pricingConfig?.wordsPerMinute || SlimmeKassa.getDefaultConfig().wordsPerMinute || 155;
+    const seconds = Math.round((effectiveWordCount / wpm) * 60);
     return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
-  }, [effectiveWordCount]);
+  }, [effectiveWordCount, state.pricingConfig]);
 
   const scriptPlaceholder = useMemo(() => {
     if (state.usage === 'telefonie') return t('configurator.placeholder.telephony', "Voer hier uw IVR of voicemail teksten in...");

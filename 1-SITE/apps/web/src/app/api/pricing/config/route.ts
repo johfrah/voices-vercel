@@ -2,7 +2,7 @@ import { db } from '@db';
 import { appConfigs } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
-import { DEFAULT_KASSA_CONFIG } from '@/lib/pricing-engine';
+import { DEFAULT_KASSA_CONFIG } from '@/lib/engines/pricing-engine';
 import { voicesConfig } from '@/lib/edge-config';
 
 export const dynamic = 'force-dynamic';

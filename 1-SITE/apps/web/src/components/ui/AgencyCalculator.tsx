@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { SlimmeKassa } from "@/lib/pricing-engine";
+import { SlimmeKassa } from "@/lib/engines/pricing-engine";
 import { useSonicDNA } from '@/lib/sonic-dna';
 
 interface AgencyCalculatorProps {
