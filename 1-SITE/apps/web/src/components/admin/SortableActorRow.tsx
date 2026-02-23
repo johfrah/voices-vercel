@@ -14,6 +14,7 @@ interface SortableActorRowProps {
   onStatusToggle: (id: number) => void;
   onPriceChange: (id: number, val: string) => void;
   onSave: (actor: any) => void;
+  onEdit: () => void;
   playClick: (type: any) => void;
 }
 
@@ -23,6 +24,7 @@ export const SortableActorRow: React.FC<SortableActorRowProps> = ({
   onStatusToggle, 
   onPriceChange,
   onSave,
+  onEdit,
   playClick
 }) => {
   const {
@@ -126,6 +128,12 @@ export const SortableActorRow: React.FC<SortableActorRowProps> = ({
 
         {/* Actions */}
         <ContainerInstrument className="flex gap-2">
+          <ButtonInstrument 
+            onClick={onEdit}
+            className="w-10 h-10 bg-va-black text-white rounded-[10px] flex items-center justify-center hover:scale-110 transition-all shadow-lg shadow-va-black/10"
+          >
+            <Settings strokeWidth={1.5} size={16} />
+          </ButtonInstrument>
           {isEditMode && (
             <ButtonInstrument 
               onClick={() => onSave(actor)}

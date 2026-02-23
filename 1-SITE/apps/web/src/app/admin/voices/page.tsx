@@ -33,6 +33,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { SortableActorRow } from '@/components/admin/SortableActorRow';
+import { ActorEditDrawer } from '@/components/admin/ActorEditDrawer';
 
 interface ActorRecord {
   id: number;
@@ -61,6 +62,7 @@ export default function VoiceManagerPage() {
   const [loading, setLoading] = useState(true);
   const [actors, setActors] = useState<ActorRecord[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
+  const [editingActorId, setEditingActorId] = useState<number | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -289,6 +291,7 @@ export default function VoiceManagerPage() {
                   onStatusToggle={handleStatusToggle}
                   onPriceChange={handlePriceChange}
                   onSave={handleSaveActor}
+                  onEdit={() => setEditingActorId(actor.id)}
                   playClick={playClick}
                 />
               ))
@@ -296,6 +299,18 @@ export default function VoiceManagerPage() {
           </ContainerInstrument>
         </SortableContext>
       </DndContext>
+
+      {/* Edit Drawer */}
+      {editingActorId && (
+        <ActorEditDrawer 
+          actorId={editingActorId} 
+          onClose={() => setEditingActorId(null)}
+          onSaveSuccess={(updated) => {
+            setActors(prev => prev.map(a => a.id === updated.id ? { ...a, ...updated } : a));
+            setEditingActorId(null);
+          }}
+        />
+      )}
 
       {/* Save Order Dock */}
       {isEditMode && hasChanges && (

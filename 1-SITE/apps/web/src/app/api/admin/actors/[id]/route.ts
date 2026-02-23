@@ -125,6 +125,11 @@ export async function PATCH(
         updatedAt: actors.updatedAt
       });
 
+    if (!result || result.length === 0) {
+      console.error(` ADMIN: Actor ${id} not found in database`);
+      return NextResponse.json({ error: 'Actor not found' }, { status: 404 });
+    }
+
     const effectiveActorId = result[0].id;
 
     //  CHRIS-PROTOCOL: Update demos if provided
@@ -268,14 +273,14 @@ export async function PATCH(
       }
     }
 
-    if (!result || result.length === 0) {
-      return NextResponse.json({ error: 'Actor not found' }, { status: 404 });
-    }
-
     return NextResponse.json({ 
       success: true, 
       actor: result[0],
       _forensic: `Actor ${id} updated successfully by admin`
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0'
+      }
     });
 
   } catch (error: any) {

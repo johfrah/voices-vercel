@@ -83,7 +83,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
-    return NextResponse.json(customerData);
+    return NextResponse.json(customerData, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0'
+      }
+    });
   } catch (error: any) {
     console.error('[API Customer 360 Error]:', error);
     if (error.message === 'Customer 360 Timeout') {

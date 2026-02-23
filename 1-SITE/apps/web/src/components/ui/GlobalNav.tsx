@@ -103,11 +103,13 @@ const HeaderIcon = ({
       <ButtonInstrument 
         variant="ghost"
         size="icon"
-        as={href && !children ? Link : 'button'}
-        href={href && !children ? href : undefined}
-        onClick={() => {
-          playClick('soft');
-          if (onClick) onClick();
+        as={href ? VoicesLink : 'button'}
+        href={href || undefined}
+        onClick={(e) => {
+          if (onClick) {
+            e.preventDefault();
+            onClick();
+          }
         }}
         className={cn(
           "w-10 h-10 !rounded-full transition-all duration-500 cursor-pointer group/icon flex items-center justify-center relative",

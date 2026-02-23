@@ -54,7 +54,7 @@ export class MarketManagerServer {
       primary_language: 'nl-BE',
       supported_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
       popular_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
-      name: 'België',
+      name: 'Voices',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices'
     },

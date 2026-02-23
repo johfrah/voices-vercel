@@ -80,7 +80,10 @@ export async function generateMetadata(): Promise<Metadata> {
   // 🛡️ VISIONARY MANDATE: Title and description exclusively from market data
   const title = market.seo_data?.title || (
     market.market_code === 'ADEMING' ? "Ademing | Kom tot rust" : 
-    (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? `${market.name} | Vlaamse Voice-over & Regisseur` : 
+    market.market_code === 'PORTFOLIO' ? "Johfrah | De stem achter het verhaal" :
+    market.market_code === 'ARTIST' ? `${market.name} | The voice of a new generation` :
+    market.market_code === 'BE' ? "Voices | Het Vriendelijkste Stemmenbureau van België" :
+    market.market_code === 'NLNL' ? "Voices | Het Vriendelijkste Stemmenbureau van Nederland" :
     `${market.name} | Het Vriendelijkste Stemmenbureau`
   );
 
