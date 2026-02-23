@@ -152,6 +152,16 @@ export async function PATCH(
 
     if (!result || result.length === 0) {
       console.error(` ADMIN: Actor ${id} not found in database`);
+      
+      // 🛡️ CHRIS-PROTOCOL: Report server-side error to Watchdog
+      const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
+      await ServerWatchdog.report({
+        error: `Actor update failed: Actor ${id} not found in database`,
+        component: 'AdminActorAPI',
+        url: request.url,
+        level: 'error'
+      });
+
       return NextResponse.json({ error: 'Actor not found' }, { status: 404 });
     }
 
@@ -343,6 +353,21 @@ export async function PATCH(
 
   } catch (error: any) {
     console.error(' ADMIN UPDATE FAILURE:', error);
+
+    // 🛡️ CHRIS-PROTOCOL: Report server-side error to Watchdog
+    try {
+      const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
+      await ServerWatchdog.report({
+        error: `Actor update crash: ${error.message}`,
+        stack: error.stack,
+        component: 'AdminActorAPI',
+        url: request.url,
+        level: 'critical'
+      });
+    } catch (reportErr) {
+      console.error(' ADMIN: Failed to report crash to Watchdog:', reportErr);
+    }
+
     return NextResponse.json({ 
       error: 'Failed to update actor', 
       details: error.message 
