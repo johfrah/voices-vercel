@@ -136,42 +136,49 @@ export async function POST(request: NextRequest) {
       console.log(' ADMIN: Media record created:', mediaId);
 
       // Background task for AI analysis
-      (async () => {
-        try {
-          console.log(' ADMIN: Starting background AI analysis...');
-          let aiMetadata = {};
-          const { GeminiService } = await import('@/lib/services/gemini-service');
-          const gemini = GeminiService.getInstance();
-          const buffer = Buffer.from(await file.arrayBuffer());
-          const analysis = await gemini.analyzeImage(buffer, file.type || 'image/webp', {
-            fileName,
-            path: filePath,
-            source: 'admin-upload'
-          });
-          
-          if (analysis) {
-            console.log(' ADMIN: AI Image Analysis complete:', analysis.vibe);
-            aiMetadata = {
-              ai_description: analysis.description,
-              ai_vibe: analysis.vibe,
-              ai_labels: analysis.labels,
-              ai_confidence: analysis.confidence,
-              suggested_alt: analysis.suggested_alt
-            };
+      if (process.env.NODE_ENV === 'production') {
+        (async () => {
+          try {
+            console.log(' ADMIN: Starting background AI analysis...');
+            let aiMetadata = {};
+            const { GeminiService } = await import('@/lib/services/gemini-service');
+            const gemini = GeminiService.getInstance();
+            const buffer = Buffer.from(await file.arrayBuffer());
+            const analysis = await gemini.analyzeImage(buffer, file.type || 'image/webp', {
+              fileName,
+              path: filePath,
+              source: 'admin-upload'
+            });
+            
+            if (analysis) {
+              console.log(' ADMIN: AI Image Analysis complete:', analysis.vibe);
+              aiMetadata = {
+                ai_description: analysis.description,
+                ai_vibe: analysis.vibe,
+                ai_labels: analysis.labels,
+                ai_confidence: analysis.confidence,
+                suggested_alt: analysis.suggested_alt
+              };
 
-            // Update the media record with AI data
-            await db.update(media)
-              .set({ 
-                altText: analysis.suggested_alt || null,
-                labels: analysis.labels || [],
-                metadata: aiMetadata 
-              })
-              .where(eq(media.id, mediaId));
+              // Update the media record with AI data
+              const { db } = await import('@/lib/sync/bridge');
+              const { media } = await import('@db/schema');
+              const { eq } = await import('drizzle-orm');
+              await db.update(media)
+                .set({ 
+                  altText: analysis.suggested_alt || null,
+                  labels: analysis.labels || [],
+                  metadata: aiMetadata 
+                })
+                .where(eq(media.id, mediaId));
+            }
+          } catch (aiError) {
+            console.error(' ADMIN: Background AI Analysis failed:', aiError);
           }
-        } catch (aiError) {
-          console.error(' ADMIN: Background AI Analysis failed:', aiError);
-        }
-      })();
+        })();
+      } else {
+        console.log(' ADMIN: Skipping AI analysis in non-production environment.');
+      }
     } catch (dbError: any) {
       console.error(' ADMIN: DB Link Failure:', dbError);
     }
