@@ -11,6 +11,7 @@ interface AudioContextType {
   playDemo: (demo: Demo, playlist?: Demo[]) => void;
   stopDemo: () => void;
   setIsPlaying: (playing: boolean) => void;
+  setActiveDemo: (demo: Demo | null) => void;
   clearHistory: () => void;
 }
 
@@ -63,7 +64,7 @@ export function GlobalAudioProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <GlobalAudioContext.Provider value={{ activeDemo, isPlaying, recentlyPlayed, playlist, playDemo, stopDemo, setIsPlaying, clearHistory }}>
+    <GlobalAudioContext.Provider value={{ activeDemo, isPlaying, recentlyPlayed, playlist, playDemo, stopDemo, setIsPlaying, setActiveDemo, clearHistory }}>
       {children}
     </GlobalAudioContext.Provider>
   );

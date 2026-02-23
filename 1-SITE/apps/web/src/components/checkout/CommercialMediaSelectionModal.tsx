@@ -50,6 +50,7 @@ export const CommercialMediaSelectionModal: React.FC<CommercialMediaSelectionMod
   initialMedia = []
 }) => {
   const { playClick } = useSonicDNA();
+  const { t } = useTranslation();
   const [selectedMedia, setSelectedMedia] = useState<string[]>(initialMedia);
 
   const toggleMedia = (id: string) => {

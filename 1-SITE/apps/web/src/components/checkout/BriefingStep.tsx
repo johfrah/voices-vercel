@@ -19,6 +19,7 @@ import { Zap, Play, Pause, Loader2 } from 'lucide-react';
 export const BriefingStep: React.FC = () => {
   const { state, updateBriefing, updatePronunciation, updateUsage, setStep } = useCheckout();
   const { playClick } = useSonicDNA();
+  const { t } = useTranslation();
   const [isGeneratingAiDraft, setIsGeneratingAiDraft] = useState(false);
   const [aiDraftUrl, setAiDraftUrl] = useState<string | null>(null);
   const [isPlayingDraft, setIsPlayingDraft] = useState(false);

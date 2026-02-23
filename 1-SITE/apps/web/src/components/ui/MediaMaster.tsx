@@ -7,8 +7,9 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Demo } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Pause, Play, Volume2, X } from 'lucide-react';
+import { Check, Edit2, Pause, Play, Save, Trash2, Volume2, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -57,7 +58,11 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
 export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const pathname = usePathname();
   const { state: voicesState } = useVoicesState();
-  const { playlist, isPlaying, setIsPlaying, playDemo } = useGlobalAudio();
+  const { playlist, isPlaying, setIsPlaying, playDemo, activeDemo, setActiveDemo } = useGlobalAudio();
+  const { isAdmin } = useAuth();
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [isDeleting, setIsDeleting] = useState<number | null>(null);
   const selectedActors = voicesState.selected_actors;
 
   //  CHRIS-PROTOCOL: Geen CastingDock op Artist, Voice of Launchpad pagina's (sync met CastingDock.tsx)
@@ -173,6 +178,64 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     }
   };
 
+  const handleRename = async (e: React.MouseEvent, p: Demo) => {
+    e.stopPropagation();
+    if (editingId === p.id) {
+      // Save
+      try {
+        const res = await fetch(`/api/admin/actors/demos/${p.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: editTitle })
+        });
+        if (res.ok) {
+          playClick('success');
+          // Update local state in playlist and activeDemo
+          p.title = editTitle;
+          if (activeDemo?.id === p.id) {
+            setActiveDemo({ ...activeDemo, title: editTitle });
+          }
+          setEditingId(null);
+        }
+      } catch (err) {
+        console.error('Failed to rename demo:', err);
+      }
+    } else {
+      setEditingId(p.id);
+      setEditTitle(p.title);
+      playClick('pro');
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, p: Demo) => {
+    e.stopPropagation();
+    if (isDeleting === p.id) {
+      try {
+        const res = await fetch(`/api/admin/actors/demos/${p.id}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          playClick('success');
+          // Als dit de actieve demo is, stop dan
+          if (activeDemo?.id === p.id) {
+            onClose?.();
+          } else {
+            // Verwijder uit playlist (dit is een hacky way om UI te updaten zonder context refresh)
+            const idx = playlist.findIndex(item => item.id === p.id);
+            if (idx > -1) playlist.splice(idx, 1);
+            setIsDeleting(null);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to delete demo:', err);
+      }
+    } else {
+      setIsDeleting(p.id);
+      playClick('warning');
+      setTimeout(() => setIsDeleting(null), 3000);
+    }
+  };
+
   return (
     <motion.div 
       initial={{ y: 100, opacity: 0 }}
@@ -236,21 +299,59 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           <div className="flex items-center gap-2 mt-1 overflow-x-auto no-scrollbar max-w-full">
             {playlist.length > 0 ? (
               playlist.map((p) => (
-                <button
+                <div
                   key={p.id}
-                  onClick={() => {
-                    playClick('pop');
-                    playDemo(p);
-                  }}
-                  className={cn(
-                    "px-2 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap",
-                    p.id === demo.id 
-                      ? "bg-primary text-white shadow-lg" 
-                      : "bg-white/5 text-white/40 hover:bg-white/10 hover:text-white"
-                  )}
+                  className="group/item relative flex items-center"
                 >
-                  {cleanDemoTitle(p.title, p.category)}
-                </button>
+                  <button
+                    onClick={() => {
+                      playClick('pop');
+                      playDemo(p);
+                    }}
+                    className={cn(
+                      "px-2 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap flex items-center gap-2",
+                      p.id === demo.id 
+                        ? "bg-primary text-white shadow-lg" 
+                        : "bg-white/5 text-white/40 hover:bg-white/10 hover:text-white"
+                    )}
+                  >
+                    {editingId === p.id ? (
+                      <input 
+                        autoFocus
+                        className="bg-transparent border-none outline-none text-white w-24"
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleRename(e as any, p);
+                          if (e.key === 'Escape') setEditingId(null);
+                        }}
+                      />
+                    ) : (
+                      cleanDemoTitle(p.title, p.category)
+                    )}
+                  </button>
+
+                  {isAdmin && (
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-va-black border border-white/10 rounded-full p-1 opacity-0 group-hover/item:opacity-100 transition-all z-50 shadow-xl">
+                      <button 
+                        onClick={(e) => handleRename(e, p)}
+                        className="p-1.5 hover:bg-white/10 rounded-full text-white/60 hover:text-white transition-colors"
+                      >
+                        {editingId === p.id ? <Save size={12} /> : <Edit2 size={12} />}
+                      </button>
+                      <button 
+                        onClick={(e) => handleDelete(e, p)}
+                        className={cn(
+                          "p-1.5 hover:bg-red-500/20 rounded-full transition-colors",
+                          isDeleting === p.id ? "text-red-500 animate-pulse" : "text-white/60 hover:text-red-500"
+                        )}
+                      >
+                        {isDeleting === p.id ? <Check size={12} /> : <Trash2 size={12} />}
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))
             ) : (
               <TextInstrument className="text-white/40 text-[12px] font-bold tracking-[0.15em] uppercase truncate">
