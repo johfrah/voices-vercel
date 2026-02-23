@@ -217,25 +217,21 @@ export class VoiceFilterEngine {
     if (!actorLang) return false;
     const al = actorLang.toLowerCase();
     
-    // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY HARDENING
-    // Als we filteren op een specifieke regio (fr-be), mag een algemene code (fr)
-    // NOOIT matchen voor de moedertaal, tenzij expliciet toegestaan via de country-check in filter().
-    // We laten de variaties hier alleen toe voor de fallback-string matching.
+    // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY HARDENING (v2.14.106)
+    // We hebben alle "behulpzame" gedeeltelijke matches verwijderd.
+    // 'fr' mag NOOIT 'fr-be' matchen via een prefix-check.
     
     // Vlaams/Nederlands cross-matching
     if (targetCode === 'nl-be' && (al === 'vlaams' || al === 'nl-be')) return true;
     if (targetCode === 'nl-nl' && (al === 'nederlands' || al === 'nl-nl')) return true;
     
-    // Frans variaties
+    // Frans variaties (Strikte matches)
     if (targetCode === 'fr-fr' && (al === 'frans' || al === 'fr-fr')) return true;
     if (targetCode === 'fr-be' && (al === 'frans (be)' || al === 'fr-be')) return true;
     
     // Engels variaties
     if (targetCode === 'en-gb' && (al === 'engels' || al === 'en-gb')) return true;
     if (targetCode === 'en-us' && (al === 'engels (us)' || al === 'en-us')) return true;
-
-    // Gedeeltelijke matches (bijv. 'nl-be' matcht met 'nl-be-accent')
-    if (al.startsWith(targetCode + '-') || targetCode.startsWith(al + '-')) return true;
 
     return false;
   }

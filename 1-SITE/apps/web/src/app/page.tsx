@@ -138,7 +138,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
       });
 
       // 🛡️ CHRIS-PROTOCOL: Forensic Console Audit (Godmode)
-      console.log('📊 [Godmode Audit] Filter Results:', {
+      console.log('📊 [Godmode Audit] Filter Results (v2.14.106):', {
         total_live_in_memory: actors.length,
         criteria: {
           journey: masterControlState.journey,
@@ -148,9 +148,9 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
           market: market
         },
         shown_count: results.length,
-        shown_names: results.map(a => `${a.display_name} (${a.native_lang || 'no-lang'})`),
+        shown_names: results.map(a => `${a.display_name} (Native: ${a.native_lang || '?'}, Country: ${a.country || '?'})`),
         hidden_count: actors.length - results.length,
-        hidden_names: actors.filter(a => !results.find(r => r.id === a.id)).map(a => `${a.display_name} (${a.native_lang || 'no-lang'})`)
+        hidden_names: actors.filter(a => !results.find(r => r.id === a.id)).map(a => `${a.display_name} (Native: ${a.native_lang || '?'})`)
       });
 
       return results;
