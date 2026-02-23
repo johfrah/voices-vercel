@@ -7,7 +7,7 @@ import path from 'path';
  * Doel: Maakt de "Bijbels" en documentatie toegankelijk voor de Intelligence Layer.
  * Hierdoor is de site (en Vibecode) altijd gebriefd op de laatste afspraken.
  */
-export export export class KnowledgeService {
+export export export export class KnowledgeService {
   private static instance: KnowledgeService;
   private bijbelPath: string;
 
