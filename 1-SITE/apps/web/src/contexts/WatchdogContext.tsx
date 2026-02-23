@@ -1,12 +1,13 @@
 "use client";
 
 import React, { createContext, useContext, useEffect } from 'react';
+import { ClientLogger } from '@/lib/system/client-logger';
 
 /**
  *  WATCHDOG PROVIDER (2026)
  * 
  * Doel: Vangt alle onbehandelde runtime errors op de client-side op
- * en stuurt deze naar de /api/admin/system/watchdog route.
+ * en stuurt deze naar de /api/admin/system/watchdog route via ClientLogger.
  */
 
 const WatchdogContext = createContext<null>(null);
@@ -19,28 +20,13 @@ export const WatchdogProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       console.error('[Watchdog] Client-side error caught:', event.error);
 
-      fetch('/api/admin/system/watchdog', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          error: event.message,
-          stack: event.error?.stack,
-          component: 'ClientRuntime',
-          url: window.location.href,
-          level: 'critical',
-          details: {
-            filename: event.filename,
-            lineno: event.lineno,
-            colno: event.colno,
-            pathname: window.location.pathname,
-            timestamp: new Date().toISOString(),
-            screen: {
-              width: window.innerWidth,
-              height: window.innerHeight
-            }
-          }
-        })
-      }).catch(err => console.error('[Watchdog] Failed to report error:', err));
+      ClientLogger.report('error', event.message, {
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        stack: event.error?.stack,
+        component: 'ClientRuntime'
+      });
     };
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
@@ -48,24 +34,12 @@ export const WatchdogProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       const error = event.reason;
       const message = error?.message || String(error);
-      const stack = error?.stack;
 
-      fetch('/api/admin/system/watchdog', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          error: `Unhandled Rejection: ${message}`,
-          stack: stack,
-          component: 'ClientPromise',
-          url: window.location.href,
-          level: 'critical',
-          details: {
-            reason: error,
-            pathname: window.location.pathname,
-            search: window.location.search
-          }
-        })
-      }).catch(err => console.error('[Watchdog] Failed to report rejection:', err));
+      ClientLogger.report('error', `Unhandled Rejection: ${message}`, {
+        stack: error?.stack,
+        reason: error,
+        component: 'ClientPromise'
+      });
     };
 
     window.addEventListener('error', handleError);

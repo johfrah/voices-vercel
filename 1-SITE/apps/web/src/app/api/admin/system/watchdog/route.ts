@@ -18,7 +18,12 @@ export async function POST(request: NextRequest) {
   console.log('[Watchdog] Incoming error report...');
   try {
     const body = await request.json();
-    const { error, stack, component, url, level = 'error', details = {} } = body;
+    const error = body.error || body.message || 'Unknown Error';
+    const stack = body.stack || body.details?.stack;
+    const component = body.component || body.source || 'Watchdog';
+    const url = body.url || body.details?.url;
+    const level = body.level || 'error';
+    const details = body.details || {};
 
     if (!error) {
       return NextResponse.json({ error: 'Error message required' }, { status: 400 });
