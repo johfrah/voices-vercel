@@ -1,5 +1,5 @@
-import { gemini-service } from '@/lib/services/gemini-service';
-import { knowledge-service } from '@/lib/services/knowledge-service';
+import { GeminiService } from '@/lib/services/gemini-service';
+import { KnowledgeService } from '@/lib/services/knowledge-service';
 import { db } from '@db';
 import { chatConversations, chatMessages, faq } from '@db/schema';
 import { desc, eq, ilike, or } from 'drizzle-orm';

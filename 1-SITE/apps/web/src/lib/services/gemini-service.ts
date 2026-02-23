@@ -19,10 +19,10 @@ export class GeminiService {
   }
 
   public static getInstance(): GeminiService {
-    if (!gemini-service.instance) {
-      gemini-service.instance = new GeminiService();
+    if (!GeminiService.instance) {
+      GeminiService.instance = new GeminiService();
     }
-    return gemini-service.instance;
+    return GeminiService.instance;
   }
 
   /**
