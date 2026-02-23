@@ -21,7 +21,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useMemo } from 'react';
-import { AdminService } from '@/lib/services/AdminService';
+import { admin-service } from '@/lib/services/admin-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 type MailboxTab = 'inbox' | 'insights' | 'faq';
@@ -91,7 +91,7 @@ export default function MailboxPage() {
   const fetchInsights = React.useCallback(async () => {
     setIsInsightsLoading(true);
     try {
-      const data = await AdminService.getInsights({
+      const data = await admin-service.getInsights({
         startDate: dateRange.start,
         endDate: dateRange.end,
         compare: compareWithPrevious
@@ -104,7 +104,7 @@ export default function MailboxPage() {
   const fetchFaqProposals = React.useCallback(async () => {
     setIsFaqLoading(true);
     try {
-      const data = await AdminService.getFaqProposals({
+      const data = await admin-service.getFaqProposals({
         startDate: dateRange.start,
         endDate: dateRange.end
       });
@@ -115,14 +115,14 @@ export default function MailboxPage() {
 
   const fetchCustomerDna = React.useCallback(async (userId: number) => {
     try {
-      const data = await AdminService.getCustomerDna(userId);
+      const data = await admin-service.getCustomerDna(userId);
       setCustomerDna(data);
     } catch (e) { console.error(e); }
   }, []);
 
   const fetchProjectDna = React.useCallback(async (projectId: string) => {
     try {
-      const data = await AdminService.getProjectDna(projectId);
+      const data = await admin-service.getProjectDna(projectId);
       setProjectDna(data);
     } catch (e) { console.error(e); }
   }, []);
@@ -148,7 +148,7 @@ export default function MailboxPage() {
       if (isOwner && mail.recipient) {
         const recipientEmail = mail.recipient.replace(/.*<(.+)>$/, '$1').toLowerCase().trim();
         try {
-          const data = await AdminService.searchCustomerDna(recipientEmail);
+          const data = await admin-service.searchCustomerDna(recipientEmail);
           setCustomerDna(data);
         } catch (e) { 
           console.error(e);
@@ -167,7 +167,7 @@ export default function MailboxPage() {
     else setProjectDna(null);
 
     try {
-      const threadData = await AdminService.getMessage(mail.id);
+      const threadData = await admin-service.getMessage(mail.id);
       setSelectedThread(threadData);
     } catch (e) { console.error(e); }
   }, [fetchCustomerDna, fetchProjectDna, activeAccount]);
@@ -185,13 +185,13 @@ export default function MailboxPage() {
     const currentOffset = reset ? 0 : offset;
     try {
       if (semanticQuery && semanticQuery.length >= 3) {
-        const data = await AdminService.search(semanticQuery, { account, folder });
+        const data = await admin-service.search(semanticQuery, { account, folder });
         setMails(data.results || []);
         setTotalCount(data.totalCount || 0);
         return;
       }
 
-      const data = await AdminService.getInbox({
+      const data = await admin-service.getInbox({
         limit: 50,
         offset: currentOffset,
         folder,
@@ -224,7 +224,7 @@ export default function MailboxPage() {
   const startFullSync = async () => {
     setIsSyncing(true);
     try {
-      await AdminService.syncAiBrain();
+      await admin-service.syncAiBrain();
       setSyncProgress({ current: 0, total: 153460 });
       const interval = setInterval(() => {
         setSyncProgress(prev => {
@@ -246,8 +246,8 @@ export default function MailboxPage() {
     if (isAdmin) {
       refreshInbox(true, true, activeFolder, activeAccount);
       
-      // Fetch all folder counts via AdminService
-      AdminService.getFolderCounts(activeAccount)
+      // Fetch all folder counts via admin-service
+      admin-service.getFolderCounts(activeAccount)
         .then(counts => setFolderCounts(counts))
         .catch(e => console.error(e));
     }
@@ -266,7 +266,7 @@ export default function MailboxPage() {
     setMails(prev => prev.filter(m => m.id !== id.toString() && m.id !== id));
     setTotalCount(prev => Math.max(0, prev - 1));
     try {
-      await AdminService.archiveMail(id);
+      await admin-service.archiveMail(id);
     } catch (e) {
       setMails(originalMails);
       setTotalCount(originalTotal);
@@ -290,7 +290,7 @@ export default function MailboxPage() {
 
   const handleSendEmail = async (data: { to: string; subject: string; body: string }) => {
     try {
-      await AdminService.sendEmail(data);
+      await admin-service.sendEmail(data);
       setIsComposing(false);
     } catch (e) { console.error(e); }
   };

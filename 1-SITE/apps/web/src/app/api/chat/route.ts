@@ -1,5 +1,5 @@
-import { GeminiService } from '@/lib/services/GeminiService';
-import { KnowledgeService } from '@/lib/services/KnowledgeService';
+import { gemini-service } from '@/lib/services/gemini-service';
+import { knowledge-service } from '@/lib/services/knowledge-service';
 import { db } from '@db';
 import { chatConversations, chatMessages, faq } from '@db/schema';
 import { desc, eq, ilike, or } from 'drizzle-orm';
@@ -182,7 +182,7 @@ async function handleSendMessage(params: any) {
       } else {
         //  KNOWLEDGE INJECTION: Brief de AI op basis van de Bijbels
         console.log('[Voicy API] Injecting knowledge...');
-        const knowledge = KnowledgeService.getInstance();
+        const knowledge = knowledge-service.getInstance();
         
         //  CHRIS-PROTOCOL: Parallel knowledge injection to save time
         const [coreBriefing, journeyBriefing, toolBriefing, fullBriefing] = await Promise.all([
@@ -193,7 +193,7 @@ async function handleSendMessage(params: any) {
         ]);
 
         console.log('[Voicy API] Requesting Gemini generation...');
-        const gemini = GeminiService.getInstance();
+        const gemini = gemini-service.getInstance();
 
         //  PRICING CONTEXT: Inject real-time pricing data from Supabase app_configs
         const { data: configs } = await (await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/app_configs?key=eq.pricing_config`, {
@@ -410,8 +410,8 @@ SLIMME KASSA REGELS:
         //  ADMIN NOTIFICATION: Stuur een mail bij elke interactie (Chris-Protocol: Real-time awareness)
         if (senderType === 'user') {
           try {
-            const { VoicesMailEngine } = await import('@/lib/services/VoicesMailEngine');
-            const mailEngine = VoicesMailEngine.getInstance();
+            const { voices-mail-engine } = await import('@/lib/services/voices-mail-engine');
+            const mailEngine = voices-mail-engine.getInstance();
             const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
             const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
             const market = MarketManager.getCurrentMarket(host);

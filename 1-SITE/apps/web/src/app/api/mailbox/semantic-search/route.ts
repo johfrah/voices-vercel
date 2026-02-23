@@ -1,5 +1,5 @@
 import { db } from '@db';
-import { VectorService } from '@/lib/services/VectorService';
+import { vector-service } from '@/lib/services/vector-service';
 import { sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing query' }, { status: 400 });
     }
 
-    const vectorService = VectorService.getInstance();
+    const vectorService = vector-service.getInstance();
     const queryVector = await vectorService.generateEmbedding(query);
 
     if (queryVector.length === 0) {

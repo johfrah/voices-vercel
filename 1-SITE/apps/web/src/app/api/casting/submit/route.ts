@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { DirectMailService } from '@/lib/services/DirectMailService';
-import { DropboxService } from '@/lib/services/DropboxService';
+import { direct-mail-service } from '@/lib/services/direct-mail-service';
+import { dropbox-service } from '@/lib/services/dropbox-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { nanoid } from 'nanoid';
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     const sessionHash = nanoid(12);
 
     // 3. Dropbox Map aanmaken (Chris-Protocol: Automatisatie)
-    const dropbox = DropboxService.getInstance();
+    const dropbox = dropbox-service.getInstance();
     const dropboxUrl = await dropbox.createCastingFolder(projectName, sessionHash);
 
     // 4. Maak Audition records aan (Status: Invited)
@@ -115,8 +115,8 @@ export async function POST(request: NextRequest) {
     }
 
     // 6. Notificatie naar Johfrah (Admin Only)
-    const { VoicesMailEngine } = await import('@/lib/services/VoicesMailEngine');
-    const mailEngine = VoicesMailEngine.getInstance();
+    const { voices-mail-engine } = await import('@/lib/services/voices-mail-engine');
+    const mailEngine = voices-mail-engine.getInstance();
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;

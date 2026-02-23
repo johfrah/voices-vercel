@@ -51,7 +51,7 @@ export interface YukiOutstandingInvoice {
   contactName: string;
 }
 
-export class YukiService {
+export class yuki-service {
   private static WSDL_SALES = 'https://api.yuki.be/ws/Sales.asmx?WSDL';
   private static WSDL_CONTACT = 'https://api.yuki.be/ws/Contact.asmx?WSDL';
   private static WSDL_ACCOUNTING_INFO = 'https://api.yuki.be/ws/AccountingInfo.asmx?WSDL';
@@ -219,10 +219,10 @@ export class YukiService {
       // CHRIS-PROTOCOL: Log failure to system events for forensic recovery
       db.insert(systemEvents).values({
         level: 'error',
-        source: 'YukiService',
+        source: 'yuki-service',
         message: `Failed to create invoice for Order-${data.orderId}`,
         details: { error: error instanceof Error ? error.message : String(error), orderId: data.orderId }
-      }).catch(e => console.warn('[YukiService] Failed to log system event:', e));
+      }).catch(e => console.warn('[yuki-service] Failed to log system event:', e));
 
       return { success: false, error: error instanceof Error ? error.message : String(error) };
     }

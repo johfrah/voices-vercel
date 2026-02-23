@@ -10,19 +10,19 @@ import { MarketManagerServer as MarketManager } from "@/lib/system/market-manage
  * Doel: Snelle, bulk-analyse van mails op sentiment, intentie en klant-DNA.
  * Gebruikt Google Gemini 1.5 Flash voor optimale snelheid/kosten ratio.
  */
-export class GeminiService {
+export class gemini-service {
   private genAI: GoogleGenerativeAI;
-  private static instance: GeminiService;
+  private static instance: gemini-service;
 
   constructor() {
     this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
   }
 
-  public static getInstance(): GeminiService {
-    if (!GeminiService.instance) {
-      GeminiService.instance = new GeminiService();
+  public static getInstance(): gemini-service {
+    if (!gemini-service.instance) {
+      gemini-service.instance = new gemini-service();
     }
-    return GeminiService.instance;
+    return gemini-service.instance;
   }
 
   /**
@@ -40,7 +40,7 @@ export class GeminiService {
       
       return dnaRecords.map(r => r.content).join("\n\n");
     } catch (e) {
-      console.error(`[GeminiService] Failed to fetch DNA for ${lang}:`, e);
+      console.error(`[gemini-service] Failed to fetch DNA for ${lang}:`, e);
       return "";
     }
   }
@@ -97,7 +97,7 @@ ${prompt}
    * Static shortcut voor generateText (compat met heal-routes).
    */
   static async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string }): Promise<string> {
-    return GeminiService.getInstance().generateText(prompt, options);
+    return gemini-service.getInstance().generateText(prompt, options);
   }
 
   /**

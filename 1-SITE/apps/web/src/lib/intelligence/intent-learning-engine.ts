@@ -1,7 +1,7 @@
 import { db } from '@db';
 import { users, visitors, systemEvents } from '@db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { GeminiService } from '@/lib/services/GeminiService';
+import { gemini-service } from '@/lib/services/gemini-service';
 
 /**
  *  INTENT LEARNING ENGINE (GOD MODE 2026)
@@ -31,7 +31,7 @@ export class IntentLearningEngine {
 
     try {
       // 1. AI Analyse van de interactie via Voicy
-      const gemini = GeminiService.getInstance();
+      const gemini = gemini-service.getInstance();
       const prompt = `
         Analyseer de volgende gebruikersinteractie op Voices.be.
         Bepaal de intentie, sector en specifieke behoeften.

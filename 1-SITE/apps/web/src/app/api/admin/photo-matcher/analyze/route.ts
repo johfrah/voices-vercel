@@ -3,7 +3,7 @@ import * as path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { requireAdmin } from '@/lib/auth/api-auth';
-import { GeminiService } from '@/lib/services/GeminiService';
+import { gemini-service } from '@/lib/services/gemini-service';
 
 const execAsync = promisify(exec);
 
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const mimeType = ext === '.png' ? 'image/png' : 'image/jpeg';
 
     // 2. Analyseer met Gemini Vision + Context
-    const gemini = GeminiService.getInstance();
+    const gemini = gemini-service.getInstance();
     const analysis = await gemini.analyzeImage(stdout, mimeType, context);
 
     return NextResponse.json(analysis);

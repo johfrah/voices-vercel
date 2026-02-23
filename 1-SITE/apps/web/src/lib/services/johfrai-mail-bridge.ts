@@ -1,5 +1,5 @@
-import { DirectMailService } from './DirectMailService';
-import { VoicesMailEngine } from './VoicesMailEngine';
+import { direct-mail-service } from './direct-mail-service';
+import { voices-mail-engine } from './voices-mail-engine';
 import fs from 'fs';
 import path from 'path';
 
@@ -10,7 +10,7 @@ import path from 'path';
  */
 
 export async function sendJohfraiAudio(to: string, audioPath: string, text: string, host?: string) {
-  const mailEngine = VoicesMailEngine.getInstance();
+  const mailEngine = voices-mail-engine.getInstance();
   
   if (!fs.existsSync(audioPath)) {
     throw new Error(`Audiobestand niet gevonden op pad: ${audioPath}`);
@@ -40,12 +40,12 @@ export async function sendJohfraiAudio(to: string, audioPath: string, text: stri
   });
 
   // Fallback voor bijlage (tot sendVoicesMail attachments ondersteunt)
-  const mailService = DirectMailService.getInstance();
+  const mailService = direct-mail-service.getInstance();
   const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
   const market = MarketManager.getCurrentMarket(host);
 
   // We hergebruiken de wrapper logica maar nu direct via mailService om attachments mee te sturen
   // Dit is een tijdelijke splinter-fix tot de MailEngine robuuster is
   
-  // TODO: Update VoicesMailEngine to support attachments
+  // TODO: Update voices-mail-engine to support attachments
 }

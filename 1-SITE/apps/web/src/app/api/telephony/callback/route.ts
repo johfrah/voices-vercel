@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TwilioService } from '@/lib/services/TwilioService';
+import { twilio-service } from '@/lib/services/twilio-service';
 
 /**
  * 📞 API ROUTE: CALLBACK REQUEST (2026)
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'Ongeldig telefoonnummer.' }, { status: 400 });
     }
 
-    const twilio = TwilioService.getInstance();
+    const twilio = twilio-service.getInstance();
     const result = await twilio.initiateCallback(cleanNumber);
 
     //  TELEGRAM NOTIFICATIE (Altijd sturen bij Twilio start, zodat Johfrah het nummer ziet)

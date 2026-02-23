@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pdf from 'pdf-parse';
-import { GeminiService } from '@/lib/services/GeminiService';
+import { gemini-service } from '@/lib/services/gemini-service';
 
 // Dynamische imports voor optionele libraries
 let XLSX: any;
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Gebruik Gemini om de tekst te interpreteren, te zuiveren en te formatteren
-    const gemini = GeminiService.getInstance();
+    const gemini = gemini-service.getInstance();
     const prompt = `
       Je bent een senior script-editor voor Voices.be. Je krijgt ruwe tekst uit een geüpload document (${file.name}).
       Elke opdracht is uniek, dus je moet de tekst EERST INTERPRETEREN voordat je deze formatteert.

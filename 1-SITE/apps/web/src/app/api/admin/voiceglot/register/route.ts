@@ -2,7 +2,7 @@ import { db } from '@db';
 import { translations, translationRegistry } from '@db/schema';
 import { eq, and } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
-import { GeminiService } from '@/lib/services/GeminiService';
+import { gemini-service } from '@/lib/services/gemini-service';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
               Vertaling:
             `;
 
-            const translatedText = await GeminiService.generateText(prompt, { lang: lang });
+            const translatedText = await gemini-service.generateText(prompt, { lang: lang });
             let cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
 
             //  CHRIS-PROTOCOL: Slop Filter

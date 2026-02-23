@@ -1,4 +1,4 @@
-import { OpenAIService } from '@/lib/services/OpenAIService';
+import { openai-service } from '@/lib/services/openai-service';
 import { db } from '@db';
 import { translations } from '@db/schema';
 import { and, eq, ilike, not, or, sql } from 'drizzle-orm';
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       `;
 
       try {
-        const improved = await OpenAIService.generateText(prompt, "gpt-4o", row.lang);
+        const improved = await openai-service.generateText(prompt, "gpt-4o", row.lang);
         const cleanImproved = improved.trim().replace(/^"|"$/g, '');
 
         //  CHRIS-FILTER: Alleen updaten als er echt een verbetering is

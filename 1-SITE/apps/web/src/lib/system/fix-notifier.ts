@@ -1,4 +1,4 @@
-import { DirectMailService } from '../../services/DirectMailService';
+import { direct-mail-service } from '../../services/direct-mail-service';
 import { MarketManagerServer } from './market-manager-server';
 import { MarketDatabaseService } from './market-manager-db';
 
@@ -11,7 +11,7 @@ import { MarketDatabaseService } from './market-manager-db';
 export class FixNotifier {
   static async notify(fixId: string, description: string, details: string) {
     try {
-      const mailService = DirectMailService.getInstance();
+      const mailService = direct-mail-service.getInstance();
       
       //  CHRIS-PROTOCOL: Haal admin e-mail uit ENV of MarketManager (geen hardcoding)
       const market = MarketManagerServer.getCurrentMarket();

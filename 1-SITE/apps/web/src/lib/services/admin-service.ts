@@ -6,7 +6,7 @@ import { MarketManagerServer as MarketManager } from "@/lib/system/market-manage
  * Centrale service voor alle admin-gerelateerde data fetches.
  * Doel: Consolidatie van API calls en afdwingen van Chris-Protocol.
  */
-export class AdminService {
+export class admin-service {
   private static BASE_URL = '/api/mailbox';
 
   /**

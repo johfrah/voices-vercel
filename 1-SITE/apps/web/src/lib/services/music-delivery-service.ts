@@ -1,7 +1,7 @@
 import { db } from '@db';
 import { media, orders, users } from '@db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { DropboxService } from '@/lib/services/DropboxService';
+import { dropbox-service } from '@/lib/services/dropbox-service';
 
 /**
  *  MUSIC DELIVERY SERVICE (2026)
@@ -9,7 +9,7 @@ import { DropboxService } from '@/lib/services/DropboxService';
  * Verantwoordelijk voor het leveren van aangekochte muziekstukken.
  * Na betaling worden de juiste formaten klaargezet in Dropbox.
  */
-export class MusicDeliveryService {
+export class music-delivery-service {
   static async deliverMusic(orderId: number) {
     console.log(` [MUSIC DELIVERY] Starting delivery for Order #${orderId}...`);
 
@@ -55,7 +55,7 @@ export class MusicDeliveryService {
       if (formats['8khz']) filesToDeliver.push(formats['8khz']);
 
       // 5. Push naar Dropbox via de Service
-      const dropbox = DropboxService.getInstance();
+      const dropbox = dropbox-service.getInstance();
       await dropbox.syncToControlFolder(
         orderId.toString(),
         `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Klant',

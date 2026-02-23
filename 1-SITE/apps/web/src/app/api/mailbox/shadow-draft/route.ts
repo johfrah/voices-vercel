@@ -1,8 +1,8 @@
 import { db } from '@db';
 import { mailContent } from '@db/schema';
 import { eq, sql, desc } from 'drizzle-orm';
-import { ShadowPersonaService } from '@/lib/services/ShadowPersonaService';
-import { VectorService } from '@/lib/services/VectorService';
+import { shadow-persona-service } from '@/lib/services/shadow-persona-service';
+import { vector-service } from '@/lib/services/vector-service';
 import { NextResponse } from 'next/server';
 
 /**
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     // 2. SEMANTIC STYLE MATCHING (RAG)
     // We zoeken in de database naar mails die Johfrah heeft VERZONDEN
     // en die semantisch lijken op de inkomende vraag.
-    const vectorService = VectorService.getInstance();
+    const vectorService = vector-service.getInstance();
     const queryVector = await vectorService.generateEmbedding((incomingMail.textBody || incomingMail.subject) || '');
     const formattedVector = `[${queryVector.join(',')}]`;
 
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     }
 
     // 4. Genereer het concept met de specifieke context
-    const personaService = ShadowPersonaService.getInstance();
+    const personaService = shadow-persona-service.getInstance();
     const conversationHistory = `KLANT: ${incomingMail.textBody}`;
     const draft = await personaService.generateDraft(conversationHistory, styleSample);
 

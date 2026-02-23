@@ -1,4 +1,4 @@
-import { DirectMailService } from '@/lib/services/DirectMailService';
+import { direct-mail-service } from '@/lib/services/direct-mail-service';
 import { VumeMagicLinkTemplate } from './templates/VumeMagicLinkTemplate';
 import { VumeStudioTemplate } from './templates/VumeStudioTemplate';
 import { VumeInvoiceReplyTemplate } from './templates/VumeInvoiceReplyTemplate';
@@ -101,7 +101,7 @@ export class VumeEngine {
         throw new Error(`Template ${template} niet gevonden in VUME.`);
     }
 
-    const mailService = DirectMailService.getInstance();
+    const mailService = direct-mail-service.getInstance();
     await mailService.sendMail({
       to,
       subject,

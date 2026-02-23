@@ -1,4 +1,4 @@
-import { YukiService } from '@/lib/services/YukiService';
+import { yuki-service } from '@/lib/services/yuki-service';
 import { db } from '@db';
 import { yukiOutstanding } from '@db/schema';
 import { NextResponse } from 'next/server';
@@ -10,7 +10,7 @@ export async function POST() {
     console.log(' Starting Yuki Finance Sync...');
 
     // 1. Fetch from Yuki
-    const outstanding = await YukiService.getOutstandingInvoices();
+    const outstanding = await yuki-service.getOutstandingInvoices();
     console.log(` Fetched ${outstanding.length} outstanding invoices from Yuki`);
 
     // 2. Refresh Database Mirror

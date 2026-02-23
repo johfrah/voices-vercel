@@ -1,7 +1,7 @@
 import { db } from '@db';
 import { translations, translationRegistry } from '@db/schema';
 import { eq } from 'drizzle-orm';
-import { GeminiService } from '@/lib/services/GeminiService';
+import { gemini-service } from '@/lib/services/gemini-service';
 import { NextResponse } from 'next/server';
 import { createClient } from "@supabase/supabase-js";
 
@@ -76,7 +76,7 @@ export async function GET() {
             Geen AI-bingo, geen em-dashes.
             Max 15 woorden.
           `;
-          const translated = await GeminiService.generateText(prompt, { lang: lang });
+          const translated = await gemini-service.generateText(prompt, { lang: lang });
           const clean = translated.trim().replace(/^"|"$/g, '');
 
           try {

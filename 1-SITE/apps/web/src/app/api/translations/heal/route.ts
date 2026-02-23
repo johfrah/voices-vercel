@@ -1,4 +1,4 @@
-import { OpenAIService } from '@/lib/services/OpenAIService';
+import { openai-service } from '@/lib/services/openai-service';
 import { MarketManagerServer } from '@/lib/system/market-manager-server';
 import { MarketDatabaseService } from '@/lib/system/market-manager-db';
 import { db } from '@db';
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         Vertaling:
       `;
 
-      cleanTranslation = await OpenAIService.generateText(prompt);
+      cleanTranslation = await openai-service.generateText(prompt);
       cleanTranslation = cleanTranslation.trim().replace(/^"|"$/g, '');
 
       //  CHRIS-PROTOCOL: Slop Filter
@@ -145,8 +145,8 @@ export async function POST(request: NextRequest) {
     try {
       //  CHRIS-PROTOCOL: Skip notification for initial load key to prevent spam
       if (key !== 'initial_load') {
-        const { DirectMailService } = await import('@/lib/services/DirectMailService');
-        const mailService = DirectMailService.getInstance();
+        const { direct-mail-service } = await import('@/lib/services/direct-mail-service');
+        const mailService = direct-mail-service.getInstance();
         await mailService.sendMail({
           to: adminEmail,
           subject: ` Voicy Self-Heal LIVE: Nieuwe vertaling [${key}]`,

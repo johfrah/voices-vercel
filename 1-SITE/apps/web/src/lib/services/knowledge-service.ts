@@ -7,8 +7,8 @@ import path from 'path';
  * Doel: Maakt de "Bijbels" en documentatie toegankelijk voor de Intelligence Layer.
  * Hierdoor is de site (en Vibecode) altijd gebriefd op de laatste afspraken.
  */
-export class KnowledgeService {
-  private static instance: KnowledgeService;
+export class knowledge-service {
+  private static instance: knowledge-service;
   private bijbelPath: string;
 
   constructor() {
@@ -16,11 +16,11 @@ export class KnowledgeService {
     this.bijbelPath = '/Users/voices/Library/CloudStorage/Dropbox/voices-headless/3-WETTEN/docs/1-BIJBEL';
   }
 
-  public static getInstance(): KnowledgeService {
-    if (!KnowledgeService.instance) {
-      KnowledgeService.instance = new KnowledgeService();
+  public static getInstance(): knowledge-service {
+    if (!knowledge-service.instance) {
+      knowledge-service.instance = new knowledge-service();
     }
-    return KnowledgeService.instance;
+    return knowledge-service.instance;
   }
 
   /**

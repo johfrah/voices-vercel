@@ -353,8 +353,8 @@ export async function POST(request: Request) {
       if (selectedGateway === 'banktransfer') {
         (async () => {
           try {
-            const { YukiService } = await import('@/lib/services/YukiService');
-            await YukiService.createInvoice({
+            const { yuki-service } = await import('@/lib/services/yuki-service');
+            await yuki-service.createInvoice({
               orderId: newOrder.id,
               customer: {
                 firstName: first_name,

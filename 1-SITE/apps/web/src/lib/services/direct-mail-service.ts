@@ -46,9 +46,9 @@ export interface ImapAuthOptions {
   tls: boolean;
 }
 
-export class DirectMailService {
+export class direct-mail-service {
   private config: Imap.Config;
-  private static instance: DirectMailService;
+  private static instance: direct-mail-service;
   private oauth2Client?: OAuth2Client;
 
   constructor(customConfig?: Partial<Imap.Config>) {
@@ -71,11 +71,11 @@ export class DirectMailService {
     }
   }
 
-  public static getInstance(customConfig?: Partial<Imap.Config>): DirectMailService {
-    if (!DirectMailService.instance || customConfig) {
-      DirectMailService.instance = new DirectMailService(customConfig);
+  public static getInstance(customConfig?: Partial<Imap.Config>): direct-mail-service {
+    if (!direct-mail-service.instance || customConfig) {
+      direct-mail-service.instance = new direct-mail-service(customConfig);
     }
-    return DirectMailService.instance;
+    return direct-mail-service.instance;
   }
 
   /**
@@ -210,7 +210,7 @@ export class DirectMailService {
     //  CHRIS-PROTOCOL: Lucide sanity check
     const _icons = { Mail, ShieldCheck }; 
     const _strokeWidth = { strokeWidth: 1.5 }; //  CHRIS-PROTOCOL: Force strokeWidth awareness
-    console.log(` DirectMailService: Fetching folder ${folder} for ${user || this.config.user}...`);
+    console.log(` direct-mail-service: Fetching folder ${folder} for ${user || this.config.user}...`);
     const config = await this.getImapConfig(user, pass, host);
     
     return new Promise((resolve, reject) => {
@@ -218,7 +218,7 @@ export class DirectMailService {
         const imap = new Imap({
           ...config,
           debug: (msg: string) => {
-            // process.stdout.write(' DirectMailService [IMAP DEBUG]: ' + msg + '\n');
+            // process.stdout.write(' direct-mail-service [IMAP DEBUG]: ' + msg + '\n');
           }
         });
 

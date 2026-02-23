@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { VoicesMailEngine } from '@/lib/services/VoicesMailEngine';
+import { voices-mail-engine } from '@/lib/services/voices-mail-engine';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 /**
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     const buffer = Buffer.from(await audioFile.arrayBuffer());
-    const mailEngine = VoicesMailEngine.getInstance();
+    const mailEngine = voices-mail-engine.getInstance();
 
     await mailEngine.sendVoicesMail({
       to: email,
