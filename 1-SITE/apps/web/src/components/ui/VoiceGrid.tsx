@@ -43,7 +43,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
         <motion.div 
           layout
           className={cn(
-            featured ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 min-w-max md:min-w-full items-stretch" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch"
+            featured ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 min-w-max md:min-w-full items-stretch" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-stretch"
           )}
         >
           <AnimatePresence mode="popLayout">

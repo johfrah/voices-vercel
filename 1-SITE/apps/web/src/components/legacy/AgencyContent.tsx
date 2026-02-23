@@ -183,9 +183,9 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
               transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
             >
               <Suspense fallback={
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch">
-                  {[...Array(8)].map((_, i) => (
-                    <div key={`skeleton-agency-${i}`} className="h-[400px] bg-va-off-white rounded-[20px] animate-pulse border border-black/[0.03]" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-stretch">
+                  {[...Array(10)].map((_, i) => (
+                    <div key={`skeleton-agency-${i}`} className="h-[350px] bg-va-off-white rounded-[20px] animate-pulse border border-black/[0.03]" />
                   ))}
                 </div>
               }>

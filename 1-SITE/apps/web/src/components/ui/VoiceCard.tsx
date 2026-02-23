@@ -691,9 +691,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
       </ContainerInstrument>
 
       <ContainerInstrument plain className="p-0 flex flex-col flex-grow">
-        <div className="flex items-start justify-between px-8 pt-8 pb-4 border-b border-black/[0.02]">
-          <div className="flex flex-col gap-2.5">
-            <div className="flex items-center gap-1.5 bg-va-off-white/50 px-2.5 py-1.5 rounded-full border border-black/[0.05] w-fit relative">
+        <div className="flex items-start justify-between px-6 pt-6 pb-3 border-b border-black/[0.02]">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-1.5 bg-va-off-white/50 px-2 py-1 rounded-full border border-black/[0.05] w-fit relative">
               <VoiceFlag lang={voice?.native_lang} size={18} />
               <TextInstrument className="text-[13px] font-light text-va-black tracking-tight">
                 <VoiceglotText 
@@ -774,16 +774,16 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
           {!compact && (
             <div className={cn(
-              "flex flex-col items-end justify-center px-3 py-1.5 rounded-xl border transition-colors duration-500",
+              "flex flex-col items-end justify-center px-2.5 py-1 rounded-xl border transition-colors duration-500",
               (deliveryInfo as any).isToday || deliveryInfo.deliveryDaysMax <= 1 
                 ? "bg-green-500/5 border-green-500/10 text-green-600" 
                 : "bg-blue-500/5 border-blue-500/10 text-blue-600"
             )}>
-              <span className="text-[9px] font-black tracking-[0.1em] uppercase leading-none mb-1 flex items-center gap-1 opacity-40">
-                <Clock size={10} strokeWidth={3} />
+              <span className="text-[8px] font-black tracking-[0.1em] uppercase leading-none mb-1 flex items-center gap-1 opacity-40">
+                <Clock size={9} strokeWidth={3} />
                 <VoiceglotText translationKey="common.delivery" defaultText="Levering" />
               </span>
-              <TextInstrument className="text-[13px] font-bold tracking-tight leading-none">
+              <TextInstrument className="text-[12px] font-bold tracking-tight leading-none">
                 <VoiceglotText 
                   translationKey={`actor.${voice.id}.delivery_info`} 
                   defaultText={deliveryInfo.formattedShort} 
@@ -793,9 +793,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           )}
         </div>
 
-        <div className="flex flex-col flex-grow px-8 pt-6 pb-8">
-          <div className="flex flex-col mb-4">
-            <HeadingInstrument level={3} className={cn("font-extralight tracking-tighter leading-none group-hover:text-primary transition-colors truncate", compact ? "text-3xl mb-2" : "text-4xl mb-2")}>
+        <div className="flex flex-col flex-grow px-6 pt-4 pb-6">
+          <div className="flex flex-col mb-3">
+            <HeadingInstrument level={3} className={cn("font-extralight tracking-tighter leading-none group-hover:text-primary transition-colors truncate", compact ? "text-2xl mb-1.5" : "text-3xl mb-1.5")}>
               <VoiceglotText  
                 translationKey={`actor.${voice?.id}.name`} 
                 defaultText={voice?.display_name} 
@@ -806,7 +806,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             {voice?.tone_of_voice && (
               <div className="flex flex-wrap gap-1 animate-in fade-in slide-in-from-bottom-1 duration-500 relative">
                 {voice.tone_of_voice.split(',').filter(Boolean).slice(0, 3).map((tone, i) => (
-              <span key={i} className="text-[9px] font-light tracking-[0.2em] uppercase px-2 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10">
+              <span key={i} className="text-[7px] font-light tracking-[0.2em] uppercase px-1.5 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10">
                 <VoiceglotText 
                   translationKey={`actor.${voice.id}.tone.${i}`} 
                   context="Voice characteristic / Tone of voice (e.g. warm, deep, professional, energetic)" 
@@ -895,8 +895,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             )}
           </div>
           
-          <div className="mb-6 h-[70px] overflow-y-auto no-scrollbar">
-            <TextInstrument className="text-va-black/60 text-[14px] font-medium leading-relaxed italic">
+          <div className="mb-4 h-[60px] overflow-y-auto no-scrollbar">
+            <TextInstrument className="text-va-black/60 text-[13px] font-medium leading-relaxed italic">
               {sectorDemo ? (
                 <>{sectorDemo}</>
               ) : (
@@ -908,15 +908,15 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             </TextInstrument>
           </div>
 
-          <div className="flex justify-between items-center mt-auto pt-6 border-t border-black/[0.03]">
+          <div className="flex justify-between items-center mt-auto pt-4 border-t border-black/[0.03]">
             <div className="flex flex-col items-start">
               {!hidePrice && displayPrice && (
                 <>
-                  <TextInstrument className="text-[10px] font-light tracking-[0.2em] text-va-black/30 uppercase leading-none mb-1">
+                  <TextInstrument className="text-[9px] font-light tracking-[0.2em] text-va-black/30 uppercase leading-none mb-1">
                     <VoiceglotText translationKey="common.starting_from" defaultText="Vanaf" instrument="pricing" />
                   </TextInstrument>
                   <div className="flex items-baseline gap-1">
-                    <TextInstrument className="text-2xl font-extralight tracking-tighter text-va-black">
+                    <TextInstrument className="text-xl font-extralight tracking-tighter text-va-black">
                       {displayPrice.price}
                     </TextInstrument>
                   </div>
@@ -930,10 +930,10 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 variant={isSelected ? "default" : "outline"}
                 size="sm"
                 className={cn(
-                  "rounded-xl font-light tracking-[0.1em] uppercase text-[13px] transition-all duration-500",
+                  "rounded-xl font-light tracking-[0.1em] uppercase text-[12px] transition-all duration-500",
                   isSelected 
-                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-5 py-5" 
-                    : "px-6 py-5 hover:bg-va-black hover:text-white hover:border-va-black",
+                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-4 py-4" 
+                    : "px-5 py-4 hover:bg-va-black hover:text-white hover:border-va-black",
                   voice.allow_free_trial === false && !onSelect && "opacity-0 pointer-events-none"
                 )}
               >
