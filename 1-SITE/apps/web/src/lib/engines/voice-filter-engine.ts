@@ -77,7 +77,21 @@ export class VoiceFilterEngine {
       result = result.filter(actor => {
         // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC
         // De taalfilter is de moedertaal. Punt.
-        return actor.native_lang_id === criteria.languageId;
+        // We matchen op de ID die vanuit de dropdown komt.
+        if (actor.native_lang_id === criteria.languageId) return true;
+
+        // 🛡️ FALLBACK: Als de ID-koppeling in de database ontbreekt (slop), 
+        // kijken we naar de native_lang string als laatste redmiddel.
+        const dbCode = MarketManager.getLanguageCode(actor.native_lang || '').toLowerCase();
+        const targetCode = Object.entries({
+          1: 'nl-be', 2: 'nl-nl', 3: 'fr-be', 4: 'fr-fr', 
+          5: 'en-gb', 6: 'en-us', 7: 'de-de', 8: 'es-es',
+          9: 'it-it', 10: 'pl-pl', 11: 'da-dk'
+        }).find(([id]) => Number(id) === criteria.languageId)?.[1];
+
+        if (targetCode && dbCode === targetCode) return true;
+
+        return false;
       });
     } else if (criteria.language && criteria.language !== 'all') {
       // CHRIS-PROTOCOL: Fallback to label matching if ID is missing (Legacy/Initial Load)
