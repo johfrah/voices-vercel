@@ -64,7 +64,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
                   mass: 1,
                   opacity: { duration: 0.2 }
                 }}
-                className={cn("flex", featured && "w-[85vw] md:w-auto snap-center")}
+                className={cn("flex w-full", featured && "w-[85vw] md:w-auto snap-center")}
               >
                 <VoiceCard 
                   voice={actor} 
