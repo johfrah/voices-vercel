@@ -26,8 +26,9 @@ export async function GET(request: Request) {
   const cacheKey = searchParams.toString() || 'default';
   const now = Date.now();
 
-  // 🛡️ CHRIS-PROTOCOL: Nuclear Cache Check
-  if (cachedActors[cacheKey] && (now - lastFetchTimes[cacheKey] < CACHE_TTL)) {
+  // 🛡️ CHRIS-PROTOCOL: Nuclear Cache Check (Bypassed for Godmode Audit)
+  const isBypassCache = searchParams.get('lang') === 'all' || searchParams.get('_v') != null;
+  if (!isBypassCache && cachedActors[cacheKey] && (now - lastFetchTimes[cacheKey] < CACHE_TTL)) {
     return NextResponse.json(cachedActors[cacheKey]);
   }
 
