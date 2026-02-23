@@ -1,6 +1,6 @@
 import { db } from '@db';
 import { actors } from '@db/schema';
-import { DbService } from '@db-service';
+import { DbService } from '@/lib/services/db-service';
 import { desc, ilike, or } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 

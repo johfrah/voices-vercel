@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AgencyDataBridge } from '@/lib/agency-bridge';
+import { AgencyDataBridge } from '@/lib/bridges/agency-bridge';
 
 export const runtime = 'nodejs';
 

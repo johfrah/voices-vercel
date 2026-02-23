@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ContentEngine } from '@/lib/content-engine';
+import { ContentEngine } from '@/lib/engines/content-engine';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

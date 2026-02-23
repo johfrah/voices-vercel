@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
     console.error('[API Voiceglot Register Error]:', error);
     
     //  CHRIS-PROTOCOL: Report server-side error to Watchdog
-    const { ServerWatchdog } = await import('@/lib/server-watchdog');
+    const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
     ServerWatchdog.report({
       error: `Register API Failure: ${error.message}`,
       stack: error.stack,

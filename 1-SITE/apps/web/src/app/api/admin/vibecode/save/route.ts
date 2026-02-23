@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 import { requireAdmin } from '@/lib/auth/api-auth';
-import { commitFileToGitHub } from '@/lib/github-api';
+import { commitFileToGitHub } from '@/lib/services/github-api';
 
 /**
  *  API: VIBECODE SAVE (NUCLEAR 2026)
