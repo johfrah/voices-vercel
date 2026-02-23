@@ -9,6 +9,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useEditMode } from "@/contexts/EditModeContext";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
+import { useVoicesRouter } from "@/components/ui/VoicesLink";
+import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
