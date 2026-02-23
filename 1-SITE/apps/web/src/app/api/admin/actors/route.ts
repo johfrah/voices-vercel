@@ -58,8 +58,8 @@ export async function GET() {
         menuOrder: a.menu_order,
         wpProductId: a.wp_product_id,
         photoId: a.photo_id,
-        voiceScore: a.voice_score,
-        priceUnpaid: a.price_unpaid,
+        voiceScore: a.voice_score || 10,
+        priceUnpaid: a.price_unpaid || 0,
         nativeLang: a.native_lang,
         photo_url: a.dropbox_url
       }));
