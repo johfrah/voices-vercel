@@ -72,6 +72,8 @@ export const VoicesLink = ({
   );
 };
 
+VoicesLink.displayName = 'VoicesLink';
+
 /**
  * 🧠 USE VOICES ROUTER HOOK
  * Voor programmatische navigatie (router.push) met taalbehoud.
