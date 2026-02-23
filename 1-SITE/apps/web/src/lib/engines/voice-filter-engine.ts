@@ -83,18 +83,25 @@ export class VoiceFilterEngine {
       result = result.filter(actor => {
         const actorNative = actor.native_lang?.toLowerCase();
         const actorNativeLabel = actor.native_lang_label?.toLowerCase();
+        const actorExtraLangs = (actor.extra_langs || '').toLowerCase().split(',').map(l => l.trim());
         
-        // 🛡️ CHRIS-PROTOCOL: NATIVE-FIRST LOGIC
+        // 🛡️ CHRIS-PROTOCOL: NATIVE OR EXTRA LOGIC
         // Als een bezoeker filtert op een specifieke taal (bijv. fr-be), 
-        // verwachten we in de eerste plaats moedertaalsprekers.
-        const isMatch = (
+        // tonen we iedereen die deze taal beheerst (Native of Extra).
+        const isNativeMatch = (
           actorNative === dbCode || 
           actorNative === lowLang || 
           actorNativeLabel === lowLang ||
           this.isLanguageVariationMatch(dbCode, actorNative)
         );
 
-        return isMatch;
+        const isExtraMatch = actorExtraLangs.some(el => 
+          el === dbCode || 
+          el === lowLang || 
+          this.isLanguageVariationMatch(dbCode, el)
+        );
+
+        return isNativeMatch || isExtraMatch;
       });
     }
 
