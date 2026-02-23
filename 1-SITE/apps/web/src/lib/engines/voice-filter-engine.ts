@@ -86,10 +86,12 @@ export class VoiceFilterEngine {
         
         // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC
         // De taalfilter is de moedertaal. Punt.
+        // We matchen op de ISO code (dbCode) of het UI label (lowLang).
         const isMatch = (
           actorNative === dbCode || 
           actorNative === lowLang || 
           actorNativeLabel === lowLang ||
+          (dbCode === 'fr-be' && (actorNative === 'frans' || actorNative === 'fr')) || // 🛡️ BE-FIX: Frans in BE is altijd FR-BE
           this.isLanguageVariationMatch(dbCode, actorNative)
         );
 
