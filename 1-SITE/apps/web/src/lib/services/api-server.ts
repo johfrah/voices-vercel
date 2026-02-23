@@ -122,14 +122,14 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           .eq('is_public', true);
           
         if (language || lang) {
-          const targetLang = language || lang;
-          if (targetLang === 'nl') {
+          const targetLang = (language || lang).toLowerCase();
+          if (targetLang === 'nl' || targetLang === 'nl-be' || targetLang === 'nl-nl') {
             query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
-          } else if (targetLang === 'en') {
+          } else if (targetLang === 'en' || targetLang === 'en-gb' || targetLang === 'en-us') {
             query = query.or('native_lang.ilike.en,native_lang.ilike.en-%,native_lang.ilike.engels');
-          } else if (targetLang === 'fr') {
-            query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%,native_lang.ilike.frans');
-          } else if (targetLang === 'de') {
+          } else if (targetLang === 'fr' || targetLang === 'fr-fr' || targetLang === 'fr-be') {
+            query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%,native_lang.ilike.frans,native_lang.ilike.frans (be),native_lang.ilike.fr-be');
+          } else if (targetLang === 'de' || targetLang === 'de-de') {
             query = query.or('native_lang.ilike.de,native_lang.ilike.de-%,native_lang.ilike.duits');
           } else {
             query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
