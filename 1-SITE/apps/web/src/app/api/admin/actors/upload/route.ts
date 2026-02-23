@@ -145,7 +145,8 @@ export async function POST(request: NextRequest) {
 
       // Background task for AI analysis
       if (process.env.NODE_ENV === 'production') {
-        (async () => {
+        // 🛡️ CHRIS-PROTOCOL: Fully detached background task to avoid blocking the main response
+        setTimeout(async () => {
           try {
             console.log(' ADMIN: Starting background AI analysis...');
             let aiMetadata = {};
@@ -180,7 +181,7 @@ export async function POST(request: NextRequest) {
           } catch (aiError) {
             console.error(' ADMIN: Background AI Analysis failed:', aiError);
           }
-        })();
+        }, 100);
       } else {
         console.log(' ADMIN: Skipping AI analysis in non-production environment.');
       }

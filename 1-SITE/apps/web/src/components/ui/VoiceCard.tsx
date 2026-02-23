@@ -243,11 +243,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     if (!voice) return;
     playClick('pro');
     
-    const currentTags = voice.tone_of_voice?.split(',').map(t => t.trim()).filter(Boolean) || [];
+    const currentTags = voice.tone_of_voice?.split(',').map(tag => tag.trim()).filter(Boolean) || [];
     let newTags: string[];
     
     if (currentTags.includes(tag)) {
-      newTags = currentTags.filter(t => t !== tag);
+      newTags = currentTags.filter(existingTag => existingTag !== tag);
     } else {
       newTags = [...currentTags, tag];
     }
@@ -676,18 +676,18 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="max-h-64 overflow-y-auto no-scrollbar">
-                      {supportedLangs.map(lang => {
-                        const isSelected = MarketManager.getLanguageCode(lang) === voice.native_lang;
+                      {supportedLangs.map(langItem => {
+                        const isSelected = MarketManager.getLanguageCode(langItem) === voice.native_lang;
                         return (
                           <button
-                            key={lang}
-                            onClick={() => handleLangChange(lang)}
+                            key={langItem}
+                            onClick={() => handleLangChange(langItem)}
                             className={cn(
                               "w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group",
                               isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
                             )}
                           >
-                            <span>{lang}</span>
+                            <span>{langItem}</span>
                             {isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}
                           </button>
                         );
@@ -809,7 +809,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
                       <div className="max-h-48 overflow-y-auto no-scrollbar flex flex-wrap gap-2">
                         {filteredAvailableTags.map(tag => {
-                          const isSelected = voice.tone_of_voice?.split(',').map(t => t.trim()).includes(tag);
+                          const isSelected = voice.tone_of_voice?.split(',').map(tag => tag.trim()).includes(tag);
                           return (
                             <button
                               key={tag}

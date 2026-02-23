@@ -214,15 +214,15 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             if (price <= 0) return false;
             
             // Check if this is the first occurrence of this configuration
-            return index === self.findIndex((t) => (
-              t.actor?.id === item.actor?.id &&
-              t.briefing === item.briefing &&
-              t.usage === item.usage &&
-              JSON.stringify(t.media) === JSON.stringify(item.media) &&
-              JSON.stringify(t.spots) === JSON.stringify(item.spots) &&
-              JSON.stringify(t.years) === JSON.stringify(item.years) &&
-              t.liveSession === item.liveSession &&
-              t.music?.trackId === item.music?.trackId
+            return index === self.findIndex((itemToCompare: any) => (
+              itemToCompare.actor?.id === item.actor?.id &&
+              itemToCompare.briefing === item.briefing &&
+              itemToCompare.usage === item.usage &&
+              JSON.stringify(itemToCompare.media) === JSON.stringify(item.media) &&
+              JSON.stringify(itemToCompare.spots) === JSON.stringify(item.spots) &&
+              JSON.stringify(itemToCompare.years) === JSON.stringify(item.years) &&
+              itemToCompare.liveSession === item.liveSession &&
+              itemToCompare.music?.trackId === item.music?.trackId
             ));
           });
 

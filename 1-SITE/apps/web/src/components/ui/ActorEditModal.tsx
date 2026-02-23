@@ -865,7 +865,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                     {/*  Smart Tone Chips */}
                     <div className="flex flex-wrap gap-2 mb-3 min-h-[80px] p-4 bg-va-off-white/50 rounded-[20px] border border-black/[0.02]">
                       {taxonomies.tones.map((tone) => {
-                        const isActive = formData.tone_of_voice.split(',').map(t => t.trim()).includes(tone.label);
+                        const isActive = formData.tone_of_voice.split(',').map(tag => tag.trim()).includes(tone.label);
                         return (
                           <button
                             key={tone.id}
@@ -976,7 +976,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                   </label>
                   
                   <div className="flex flex-wrap gap-2 mb-3 min-h-[45px] p-4 bg-va-off-white/50 rounded-[20px] border border-black/[0.02]">
-                    {formData.clients.split(',').map(t => t.trim()).filter(Boolean).map((client, i) => (
+                    {formData.clients.split(',').map(client => client.trim()).filter(Boolean).map((client, i) => (
                       <span key={i} className="px-4 py-2 bg-white rounded-full text-[12px] font-medium text-va-black/60 border border-black/5 shadow-sm animate-in fade-in zoom-in duration-300">
                         {client}
                       </span>
