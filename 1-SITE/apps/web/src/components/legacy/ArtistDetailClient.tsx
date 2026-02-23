@@ -21,8 +21,14 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
-const VideoPlayer = dynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
+const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
+  ssr: false,
+  loading: () => <div className="fixed inset-0 z-0 bg-va-black" />
+});
+const VideoPlayer = dynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-va-black flex items-center justify-center"><Loader2 className="animate-spin text-white/20" /></div>
+});
 
 export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] }: { artistData: any, isYoussef: boolean, params: { slug: string }, donors?: any[] }) {
   const { t } = useTranslation();

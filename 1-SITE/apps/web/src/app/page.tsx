@@ -26,17 +26,13 @@ const ReviewsInstrument = nextDynamic(() => import("@/components/ui/ReviewsInstr
   loading: () => <div className="h-[400px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
 });
 
-import { VoiceCard } from "@/components/ui/VoiceCard";
-import { VoicesLink, useVoicesRouter } from "@/components/ui/VoicesLink";
-import { useCheckout } from "@/contexts/CheckoutContext";
-import { useSonicDNA } from "@/lib/engines/sonic-dna";
-import { AnimatePresence, motion } from 'framer-motion';
-
 //  NUCLEAR LOADING MANDATE
 const ConfiguratorPageClient = nextDynamic(() => import('@/app/checkout/configurator/ConfiguratorPageClient'), { 
   ssr: false,
   loading: () => <div className="h-[600px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
 });
+
+import { VoiceCard } from "@/components/ui/VoiceCard";
 
 /**
  * HOME CONTENT (GOD MODE 2026 - AIRBNB STYLE)
