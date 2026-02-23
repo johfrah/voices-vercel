@@ -131,10 +131,16 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
             query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
           } else if (targetLang === 'en' || targetLang === 'en-gb' || targetLang === 'en-us') {
             query = query.or('native_lang.ilike.en,native_lang.ilike.en-%,native_lang.ilike.engels');
-          } else if (targetLang === 'fr' || targetLang === 'fr-fr' || targetLang === 'fr-be') {
-            // 🛡️ CHRIS-PROTOCOL: We filter strictly on native_lang for the specific language filter,
-            // but we ensure the query is broad enough to catch all variations of Belgian French.
-            query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%,native_lang.ilike.frans,native_lang.ilike.frans (be),native_lang.ilike.fr-be,native_lang.ilike.belgisch frans');
+          } else if (targetLang === 'fr-be' || targetLang === 'frans (be)') {
+            // 🛡️ CHRIS-PROTOCOL: STRICT NATIVE-ONLY MATCHING
+            // Als de bezoeker specifiek filtert op Frans (België), 
+            // tonen we uitsluitend stemmen met de juiste regio-code.
+            query = query.or('native_lang.ilike.fr-be,native_lang.ilike.frans (be),native_lang.ilike.belgisch frans');
+          } else if (targetLang === 'fr-fr' || targetLang === 'frans (fr)') {
+            query = query.or('native_lang.ilike.fr-fr,native_lang.ilike.frans (fr)');
+          } else if (targetLang === 'fr') {
+            // Algemene Franse filter (moedertaal)
+            query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%');
           } else if (targetLang === 'de' || targetLang === 'de-de') {
             query = query.or('native_lang.ilike.de,native_lang.ilike.de-%,native_lang.ilike.duits');
           } else if (targetLang === 'all') {
