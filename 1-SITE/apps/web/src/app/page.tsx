@@ -6,6 +6,7 @@ import { VoiceGrid } from "@/components/ui/VoiceGrid";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCheckout } from "@/contexts/CheckoutContext";
 import { useEditMode } from "@/contexts/EditModeContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
