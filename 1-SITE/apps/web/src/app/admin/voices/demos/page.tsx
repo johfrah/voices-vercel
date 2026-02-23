@@ -189,7 +189,16 @@ function SortableDemoRow({
           <select 
             value={demo.type || ''}
             onChange={(e) => {
-              onUpdate(demo.id, { type: e.target.value });
+              const newType = e.target.value;
+              const updates: Partial<DemoRecord> = { type: newType };
+              
+              // 🛡️ CHRIS-PROTOCOL: Auto-naming for primary categories (v2.14.151)
+              const primaryCategories = ['commercial', 'corporate', 'telephony'];
+              if (primaryCategories.includes(newType)) {
+                updates.name = newType.charAt(0).toUpperCase() + newType.slice(1);
+              }
+              
+              onUpdate(demo.id, updates);
               // Direct opslaan bij verandering van categorie
               setTimeout(handleInlineSave, 100);
             }}

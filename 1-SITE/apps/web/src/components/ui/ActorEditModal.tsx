@@ -2244,8 +2244,16 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                           <select 
                             value={demo.category}
                             onChange={(e) => {
+                              const newCategory = e.target.value;
                               const newDemos = [...formData.demos];
-                              newDemos[idx] = { ...newDemos[idx], category: e.target.value };
+                              let newTitle = newDemos[idx].title;
+
+                              // 🛡️ CHRIS-PROTOCOL: Auto-naming for primary categories (v2.14.151)
+                              if (newCategory === 'commercial') newTitle = 'Commercial';
+                              if (newCategory === 'video' || newCategory === 'corporate') newTitle = 'Corporate';
+                              if (newCategory === 'telephony') newTitle = 'Telefonie';
+
+                              newDemos[idx] = { ...newDemos[idx], category: newCategory, title: newTitle };
                               setFormData({ ...formData, demos: newDemos });
                             }}
                             className="text-[10px] font-bold uppercase tracking-widest bg-white border border-black/5 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-primary/10 transition-all appearance-none cursor-pointer"
