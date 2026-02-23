@@ -64,25 +64,16 @@ export async function GET(request: Request) {
 
     const result = {
       ...data,
-      _v: 'v2.14.86 (Godmode Zero)',
-      _debug_search: data.results?.filter((a: any) => a.display_name.match(/Marilyn|Beatrice|Veronique|Alicia|James|Delphine|Bernard/i)).map((a: any) => ({ 
+      _v: 'v2.14.96 (Godmode Zero)',
+      _debug_fr_be_search: data.results?.filter((a: any) => a.display_name.match(/Marilyn|Veronique|Alicia|James|Delphine|Beatrice|Bernard/i)).map((a: any) => ({ 
         name: a.display_name, 
         native: a.native_lang, 
         extra: a.extra_langs, 
         status: a.status,
         country: a.country || a.countryId,
-        is_public: a.is_public
-      })),
-      _debug_belgian_french_search: data.results?.filter((a: any) => {
-        const isBelgian = (a.country === 'BE' || a.countryId === 'BE' || a.countryId === 1);
-        const speaksFrench = (a.native_lang?.toLowerCase().includes('fr') || a.extra_langs?.toLowerCase().includes('fr'));
-        return isBelgian && speaksFrench;
-      }).map((a: any) => ({
-        name: a.display_name,
-        native: a.native_lang,
-        extra: a.extra_langs,
-        country: a.country || a.countryId,
-        is_public: a.is_public
+        is_public: a.is_public,
+        native_id: a.native_lang_id,
+        extra_ids: a.extra_lang_ids
       }))
     };
 
