@@ -51,7 +51,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
               >
                 <VoiceCard 
                   voice={actor} 
-                  onSelect={onSelect ? () => handleSelect(actor) : undefined}
+                  onSelect={onSelect ? () => onSelect(actor) : undefined}
                 />
               </motion.div>
             ))}

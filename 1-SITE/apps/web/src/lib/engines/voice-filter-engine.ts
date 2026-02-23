@@ -217,19 +217,11 @@ export class VoiceFilterEngine {
     if (!actorLang) return false;
     const al = actorLang.toLowerCase();
     
-    // 🛡️ CHRIS-PROTOCOL: EXTRA-LANG LOGIC (Bob-methode)
-    // Een extra taal is nooit landgebonden. Als iemand 'Frans' spreekt als extra taal, 
-    // matcht dat met zowel 'fr-be' als 'fr-fr'.
-    const isGeneralFrench = (al === 'frans' || al === 'fr' || al === 'french');
-    const isGeneralEnglish = (al === 'engels' || al === 'en' || al === 'english');
-    const isGeneralGerman = (al === 'duits' || al === 'de' || al === 'german');
-    const isGeneralDutch = (al === 'nederlands' || al === 'nl' || al === 'dutch');
-
-    if (targetCode.startsWith('fr-') && isGeneralFrench) return true;
-    if (targetCode.startsWith('en-') && isGeneralEnglish) return true;
-    if (targetCode.startsWith('de-') && isGeneralGerman) return true;
-    if (targetCode.startsWith('nl-') && isGeneralDutch) return true;
-
+    // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY HARDENING
+    // Als we filteren op een specifieke regio (fr-be), mag een algemene code (fr)
+    // NOOIT matchen voor de moedertaal, tenzij expliciet toegestaan via de country-check in filter().
+    // We laten de variaties hier alleen toe voor de fallback-string matching.
+    
     // Vlaams/Nederlands cross-matching
     if (targetCode === 'nl-be' && (al === 'vlaams' || al === 'nl-be')) return true;
     if (targetCode === 'nl-nl' && (al === 'nederlands' || al === 'nl-nl')) return true;
