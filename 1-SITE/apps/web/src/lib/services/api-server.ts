@@ -221,6 +221,24 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const demosRes = await supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true);
     const videosRes = await supabase.from('actor_videos').select('*').in('actor_id', actorIds).eq('is_public', true);
     
+    // 🛡️ CHRIS-PROTOCOL: Fetch actor_languages relationships (v2.14.107)
+    // We NEED the IDs to match strictly in the frontend.
+    const actorLangsRes = await supabase.from('actor_languages').select('*').in('actor_id', actorIds);
+    const actorLangsData = actorLangsRes.data || [];
+
+    // Create lookup maps for performance
+    const nativeLangMap = new Map<number, number>();
+    const extraLangsMap = new Map<number, number[]>();
+
+    actorLangsData.forEach((al: any) => {
+      if (al.is_native) {
+        nativeLangMap.set(al.actor_id, al.language_id);
+      } else {
+        const current = extraLangsMap.get(al.actor_id) || [];
+        extraLangsMap.set(al.actor_id, [...current, al.language_id]);
+      }
+    });
+    
     //  CHRIS-PROTOCOL: Fetch review stats for the correct business unit
     const statsRes = await supabase
       .from('reviews')
@@ -297,6 +315,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         tagline: (actor.tagline || '').replace(/<[^>]*>?/gm, '').trim(),
         delivery_days_min: actor.deliveryDaysMin || 1,
         delivery_days_max: actor.deliveryDaysMax || 3,
+        native_lang_id: nativeLangMap.get(actor.id) || null,
+        extra_lang_ids: extraLangsMap.get(actor.id) || [],
         demos: proxiedDemos,
         actor_videos: proxiedVideos,
         rates: actor.rates || {}
