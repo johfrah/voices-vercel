@@ -377,8 +377,8 @@ export class MarketManagerServer {
     const map: Record<string, string> = {
       'nl-be': 'Vlaams',
       'nl-nl': 'Nederlands',
-      'fr-fr': 'Frans',
-      'fr-be': 'Frans',
+      'fr-fr': 'Frans (Frankrijk)',
+      'fr-be': 'Frans (België)',
       'en-gb': 'Engels',
       'en-us': 'Engels',
       'de-de': 'Duits',
