@@ -42,6 +42,31 @@ export async function PATCH(
 
     const isSuperAdmin = true; // In development/admin context we assume super-admin for now, but logic is ready
 
+    // 🛡️ CHRIS-PROTOCOL: Map language IDs to strings if provided (v2.14.130)
+    if (body.native_lang_id || body.extra_lang_ids) {
+      try {
+        const { languages } = await import('@db/schema');
+        const { inArray } = await import('drizzle-orm');
+        
+        const langIds = [body.native_lang_id, ...(body.extra_lang_ids || [])].filter(Boolean);
+        if (langIds.length > 0) {
+          const dbLangs = await db.select().from(languages).where(inArray(languages.id, langIds));
+          
+          if (body.native_lang_id) {
+            const native = dbLangs.find(l => l.id === body.native_lang_id);
+            if (native) body.native_lang = native.code;
+          }
+          
+          if (body.extra_lang_ids) {
+            const extras = dbLangs.filter(l => body.extra_lang_ids.includes(l.id));
+            body.extra_langs = extras.map(l => l.code).join(', ');
+          }
+        }
+      } catch (langErr) {
+        console.warn(' ADMIN: Language ID mapping failed:', langErr);
+      }
+    }
+
     const updateData: any = {
       firstName: body.firstName || body.first_name,
       lastName: body.lastName || body.last_name,
