@@ -64,7 +64,7 @@ export class VoiceFilterEngine {
         // zijn uitzonderingen die de prijs updaten, niet de zichtbaarheid.
         // We loggen het wel voor admin-inzicht.
         if (!isAvailable) {
-          console.log(`[VoiceFilterEngine] Actor ${actor.display_name} would be filtered out for ${selectedMedia.join(', ')} in ${country}, but we keep them visible per USER-MANDATE.`);
+          // console.log(`[VoiceFilterEngine] Actor ${actor.display_name} would be filtered out for ${selectedMedia.join(', ')} in ${country}, but we keep them visible per USER-MANDATE.`);
         }
         return true; // Altijd beschikbaar houden
       });
