@@ -469,10 +469,10 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
   };
 
   const toggleTone = (toneLabel: string) => {
-    const currentTones = formData.tone_of_voice ? formData.tone_of_voice.split(',').map(t => t.trim()).filter(Boolean) : [];
+    const currentTones = formData.tone_of_voice ? formData.tone_of_voice.split(',').map(tagItem => tagItem.trim()).filter(Boolean) : [];
     let newTones;
     if (currentTones.includes(toneLabel)) {
-      newTones = currentTones.filter(t => t !== toneLabel);
+      newTones = currentTones.filter(tagItem => tagItem !== toneLabel);
     } else {
       newTones = [...currentTones, toneLabel];
     }
@@ -481,10 +481,10 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
   };
 
   const toggleExtraLang = (langCode: string) => {
-    const currentLangs = formData.extra_langs ? formData.extra_langs.split(',').map(t => t.trim()).filter(Boolean) : [];
+    const currentLangs = formData.extra_langs ? formData.extra_langs.split(',').map(langItem => langItem.trim()).filter(Boolean) : [];
     let newLangs;
     if (currentLangs.includes(langCode)) {
-      newLangs = currentLangs.filter(t => t !== langCode);
+      newLangs = currentLangs.filter(langItem => langItem !== langCode);
     } else {
       newLangs = [...currentLangs, langCode];
     }

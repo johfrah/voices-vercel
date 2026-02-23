@@ -85,6 +85,10 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
       const fetchDNA = async () => {
         try {
           const res = await fetch(`/api/intelligence/customer-360?email=${user.email}`);
+          if (!res.ok) {
+            console.warn(`DNA Fetch failed with status: ${res.status}`);
+            return;
+          }
           const data = await res.json();
           setCustomerDNA(data);
         } catch (err) {

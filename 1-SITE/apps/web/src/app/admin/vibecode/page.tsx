@@ -310,14 +310,14 @@ export async function onBeforeCheckout(context) {
 
           {activeTab === 'templates' && (
             <ContainerInstrument className="p-10 grid grid-cols-2 gap-6">
-              {templates.map(t => (
+              {templates.map(templateItem => (
                 <ContainerInstrument 
-                  key={t.title} 
-                  onClick={() => { setCode(t.code); setActiveTab('editor'); }} 
+                  key={templateItem.title} 
+                  onClick={() => { setCode(templateItem.code); setActiveTab('editor'); }} 
                   className="p-6 bg-white/5 border border-white/10 rounded-[20px] hover:border-primary/50 transition-all cursor-pointer group"
                 >
-                  <HeadingInstrument level={4} className="text-white font-light tracking-tight mb-2 group-hover:text-primary">{t.title}</HeadingInstrument>
-                  <TextInstrument className="text-white/40 text-[15px] font-medium">{t.description}</TextInstrument>
+                  <HeadingInstrument level={4} className="text-white font-light tracking-tight mb-2 group-hover:text-primary">{templateItem.title}</HeadingInstrument>
+                  <TextInstrument className="text-white/40 text-[15px] font-medium">{templateItem.description}</TextInstrument>
                 </ContainerInstrument>
               ))}
             </ContainerInstrument>

@@ -26,8 +26,8 @@ export async function GET() {
     const tagsSet = new Set<string>();
     allActors.forEach(a => {
       if (a.toneOfVoice) {
-        a.toneOfVoice.split(',').forEach(t => {
-          const trimmed = t.trim();
+        a.toneOfVoice.split(',').forEach(tag => {
+          const trimmed = tag.trim();
           if (trimmed) tagsSet.add(trimmed);
         });
       }

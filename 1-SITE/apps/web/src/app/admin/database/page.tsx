@@ -65,7 +65,7 @@ export default function AdminDatabasePage() {
     fetchTables();
   }, []);
 
-  const filteredTables = tables.filter(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredTables = tables.filter(tableItem => tableItem.toLowerCase().includes(searchQuery.toLowerCase()));
 
   if (loading) return (
     <ContainerInstrument className="min-h-screen flex items-center justify-center">

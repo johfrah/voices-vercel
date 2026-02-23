@@ -115,6 +115,7 @@ export async function PATCH(
       .returning({
         id: actors.id,
         wpProductId: actors.wpProductId,
+        slug: actors.slug,
         firstName: actors.firstName,
         lastName: actors.lastName,
         email: actors.email,

@@ -55,10 +55,10 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    ademingData.forEach(t => {
-      if (t.mediaId) {
-        if (!relationsMap[t.mediaId]) relationsMap[t.mediaId] = [];
-        relationsMap[t.mediaId].push({ type: 'Ademing Track', name: t.title });
+    ademingData.forEach(track => {
+      if (track.mediaId) {
+        if (!relationsMap[track.mediaId]) relationsMap[track.mediaId] = [];
+        relationsMap[track.mediaId].push({ type: 'Ademing Track', name: track.title });
       }
     });
 

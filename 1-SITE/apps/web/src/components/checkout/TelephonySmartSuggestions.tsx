@@ -231,7 +231,7 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
     if (onMinimize) onMinimize();
 
     const templates = TELEPHONY_TEMPLATES[selectedLang] || TELEPHONY_TEMPLATES['en'] || [];
-    const template = templates.find(t => t.id === id);
+    const template = templates.find(templateItem => templateItem.id === id);
     
     if (!template) return;
 

@@ -48,8 +48,9 @@ export async function POST(request: NextRequest) {
     let finalFile: File | Buffer = file;
     let finalContentType = file.type || (isAudio ? `audio/${originalExtension === 'mp3' ? 'mpeg' : originalExtension}` : `image/${originalExtension === 'png' ? 'png' : (originalExtension === 'webp' ? 'webp' : 'jpeg')}`);
 
-    //  CHRIS-PROTOCOL: Auto-convert WAV to MP3 for better web performance (Bob-methode)
-    if (isWav) {
+    //  CHRIS-PROTOCOL: Fast-Path for Photos (Bob-methode)
+    // We skip heavy FFmpeg processing for images to ensure <1s upload confirmation.
+    if (isAudio && isWav) {
       console.log(' ADMIN: WAV detected, initiating MP3 conversion...');
       try {
         const ffmpeg = (await import('fluent-ffmpeg')).default;
@@ -89,7 +90,6 @@ export async function POST(request: NextRequest) {
         finalContentType = 'audio/mpeg';
       } catch (convError) {
         console.error(' ADMIN: Conversion failed, falling back to original WAV:', convError);
-        // Fallback is automatic as finalFile remains the original file
       }
     }
 

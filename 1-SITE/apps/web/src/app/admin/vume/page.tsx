@@ -131,22 +131,22 @@ export default function VumeAdminPage() {
           {/* LEFT: TEMPLATE LIST */}
           <ContainerInstrument className="col-span-3 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
             <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40 px-2 ">Templates</TextInstrument>
-            {TEMPLATES.map((t) => (
+            {TEMPLATES.map((templateItem) => (
               <ButtonInstrument 
-                key={t.id}
-                onClick={() => loadPreview(t)}
-                className={`w-full text-left p-6 rounded-[20px] border transition-all flex flex-col gap-3 ${selectedTemplate.id === t.id ? 'bg-white shadow-aura border-primary/20' : 'bg-transparent border-black/5 hover:border-black/10'}`}
+                key={templateItem.id}
+                onClick={() => loadPreview(templateItem)}
+                className={`w-full text-left p-6 rounded-[20px] border transition-all flex flex-col gap-3 ${selectedTemplate.id === templateItem.id ? 'bg-white shadow-aura border-primary/20' : 'bg-transparent border-black/5 hover:border-black/10'}`}
               >
                 <ContainerInstrument className="flex items-center gap-3">
-                  <ContainerInstrument className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedTemplate.id === t.id ? 'bg-primary text-white' : 'bg-va-black/5 text-va-black/40'}`}>
-                    {t.icon}
+                  <ContainerInstrument className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedTemplate.id === templateItem.id ? 'bg-primary text-white' : 'bg-va-black/5 text-va-black/40'}`}>
+                    {templateItem.icon}
                   </ContainerInstrument>
                   <ContainerInstrument>
-                    <TextInstrument className="font-bold text-[15px]">{t.name}</TextInstrument>
-                    <TextInstrument className="text-[15px] opacity-40 tracking-widest font-light">{t.journey}</TextInstrument>
+                    <TextInstrument className="font-bold text-[15px]">{templateItem.name}</TextInstrument>
+                    <TextInstrument className="text-[15px] opacity-40 tracking-widest font-light">{templateItem.journey}</TextInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
-                <TextInstrument className="text-[15px] text-va-black/60 leading-relaxed font-light">{t.description}</TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/60 leading-relaxed font-light">{templateItem.description}</TextInstrument>
               </ButtonInstrument>
             ))}
           </ContainerInstrument>

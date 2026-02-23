@@ -340,12 +340,12 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                 <VoiceglotText translationKey="form.label.tones" defaultText="Kies de toonhoogtes die bij je passen (max. 5)" />
               </LabelInstrument>
               <div className="flex flex-wrap gap-3">
-                {taxonomies.tones.map(t => {
-                  const isSelected = formData.toneIds.includes(t.id);
+                {taxonomies.tones.map(toneItem => {
+                  const isSelected = formData.toneIds.includes(toneItem.id);
                   return (
                     <button
-                      key={t.id}
-                      onClick={() => toggleSelection('toneIds', t.id)}
+                      key={toneItem.id}
+                      onClick={() => toggleSelection('toneIds', toneItem.id)}
                       className={cn(
                         "px-6 py-3 rounded-full border text-[14px] font-light transition-all duration-500",
                         isSelected 
@@ -353,7 +353,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                           : "bg-white border-black/10 text-va-black/60 hover:border-primary/40"
                       )}
                     >
-                      {t.label}
+                      {toneItem.label}
                     </button>
                   );
                 })}

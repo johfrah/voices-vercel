@@ -74,9 +74,9 @@ export const MusicSelector: React.FC = () => {
   const filteredTracks = useMemo(() => {
     if (!searchQuery) return tracks;
     const lowQuery = searchQuery.toLowerCase();
-    return tracks.filter(t => 
-      t.title.toLowerCase().includes(lowQuery) || 
-      t.vibe.toLowerCase().includes(lowQuery)
+    return tracks.filter(track => 
+      track.title.toLowerCase().includes(lowQuery) || 
+      track.vibe.toLowerCase().includes(lowQuery)
     );
   }, [tracks, searchQuery]);
 

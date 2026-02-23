@@ -109,47 +109,47 @@ export class UCIService {
       let orderCount = 0;
       let lastOrderDate: Date | null = null;
       let ordersList: any[] = [];
+      let touchpoints: any[] = [];
 
+      // 🛡️ CHRIS-PROTOCOL: Parallel execution of heavy queries (Bob-methode)
       try {
-        // 🛡️ CHRIS-PROTOCOL: Fast-path order fetching without heavy joins if possible
-        ordersList = await db
-          .select()
-          .from(orders)
-          .where(eq(orders.userId, user.id))
-          .orderBy(desc(orders.createdAt))
-          .limit(50); // Limit to recent orders for performance
+        const [ordersResult, utmResult] = await Promise.all([
+          // Orders query
+          db
+            .select()
+            .from(orders)
+            .where(eq(orders.userId, user.id))
+            .orderBy(desc(orders.createdAt))
+            .limit(50)
+            .catch(async () => {
+              console.warn(' UCI Order stats Drizzle failed, falling back to SDK');
+              const { data } = await supabase.from('orders').select('*, order_items(*)').eq('user_id', user.id).order('created_at', { ascending: false });
+              return data || [];
+            }),
+          // UTM query
+          db
+            .select()
+            .from(utmTouchpoints)
+            .where(eq(utmTouchpoints.userId, user.id))
+            .orderBy(desc(utmTouchpoints.createdAt))
+            .limit(10)
+            .catch(async () => {
+              console.warn(' UCI UTM Drizzle failed, falling back to SDK');
+              const { data } = await supabase.from('utm_touchpoints').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10);
+              return data || [];
+            })
+        ]);
+
+        ordersList = ordersResult;
+        touchpoints = utmResult;
 
         totalSpent = ordersList.reduce((acc, o) => acc + Number(o.total || 0), 0);
         orderCount = ordersList.length;
         if (ordersList.length > 0) {
-          lastOrderDate = new Date(ordersList[0].createdAt);
+          lastOrderDate = new Date(ordersList[0].createdAt || ordersList[0].created_at);
         }
-      } catch (orderError) {
-        console.warn(' UCI Order stats Drizzle failed, falling back to SDK');
-        const { data: ordersData } = await supabase.from('orders').select('*, order_items(*)').eq('user_id', user.id).order('created_at', { ascending: false });
-        if (ordersData) {
-          ordersList = ordersData;
-          totalSpent = ordersData.reduce((acc, o) => acc + Number(o.total || 0), 0);
-          orderCount = ordersData.length;
-          if (ordersData.length > 0) {
-            lastOrderDate = new Date(ordersData[0].created_at);
-          }
-        }
-      }
-
-      // 3. Haal UTM touchpoints op voor DNA
-      let touchpoints: any[] = [];
-      try {
-        touchpoints = await db
-          .select()
-          .from(utmTouchpoints)
-          .where(eq(utmTouchpoints.userId, user.id))
-          .orderBy(desc(utmTouchpoints.createdAt))
-          .limit(10);
-      } catch (utmError) {
-        console.warn(' UCI UTM Drizzle failed, falling back to SDK');
-        const { data } = await supabase.from('utm_touchpoints').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10);
-        touchpoints = data || [];
+      } catch (parallelError) {
+        console.error(' UCI Parallel queries failed:', parallelError);
       }
 
       // 4. Bereken de "Lead Vibe" (Core Logic)
@@ -180,7 +180,7 @@ export class UCIService {
         },
         dna: {
           preferredLanguages: (user.preferences as any)?.languages || [],
-          topJourneys: Array.from(new Set(touchpoints.map(t => t.medium).filter(Boolean))) as string[],
+          topJourneys: Array.from(new Set(touchpoints.map(tp => tp.medium).filter(Boolean))) as string[],
           attribution: touchpoints,
         }
       };

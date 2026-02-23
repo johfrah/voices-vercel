@@ -48,11 +48,11 @@ export async function GET() {
       let existingKeys = new Set<string>();
       try {
         const existing = await db.select({ key: translations.translationKey }).from(translations).where(eq(translations.lang, lang));
-        existingKeys = new Set(existing.map(t => t.key));
+        existingKeys = new Set(existing.map(trans => trans.key));
       } catch (dbErr) {
         console.warn(` [TurboHeal API] Drizzle failed to fetch existing translations for ${lang}, falling back to SDK`);
         const { data } = await supabase.from('translations').select('translation_key').eq('lang', lang);
-        existingKeys = new Set((data || []).map(t => t.translation_key));
+        existingKeys = new Set((data || []).map(trans => trans.translation_key));
       }
 
       const missing = allStrings.filter(s => !existingKeys.has(s.stringHash));
