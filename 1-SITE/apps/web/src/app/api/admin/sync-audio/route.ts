@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { runAudioMapping } from '@/lib/audio-mapper';
+import { runAudioMapping } from '@/lib/engines/audio-mapper';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**

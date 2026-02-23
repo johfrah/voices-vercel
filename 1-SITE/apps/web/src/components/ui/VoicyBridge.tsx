@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { PredictiveRouter } from '@/lib/predictive-router';
+import { PredictiveRouter } from '@/lib/engines/predictive-router';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 

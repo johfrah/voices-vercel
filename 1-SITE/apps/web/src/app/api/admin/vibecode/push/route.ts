@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { requireAdmin } from '@/lib/auth/api-auth';
-import { triggerWorkflow } from '@/lib/github-api';
+import { triggerWorkflow } from '@/lib/services/github-api';
 
 const execAsync = promisify(exec);
 
