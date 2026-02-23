@@ -133,9 +133,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
             query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%,native_lang.ilike.frans,native_lang.ilike.frans (be),native_lang.ilike.fr-be');
           } else if (targetLang === 'de' || targetLang === 'de-de') {
             query = query.or('native_lang.ilike.de,native_lang.ilike.de-%,native_lang.ilike.duits');
-          } else if (targetLang === 'all') {
-            // 🛡️ CHRIS-PROTOCOL: 'all' means no language filter, show everything live
-            console.log(' [getActors] Language filter is "all", skipping native_lang check');
+          } else if (targetLang === 'all' || targetLang === '') {
+            // 🛡️ CHRIS-PROTOCOL: 'all' or empty means no language filter, show everything live
+            console.log(' [getActors] Language filter is disabled, fetching all live actors');
           } else {
             query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
           }

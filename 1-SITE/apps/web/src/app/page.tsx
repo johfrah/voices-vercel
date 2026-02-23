@@ -545,7 +545,7 @@ export default function Home() {
       }
     });
 
-    const fetchUrl = `/api/actors/?${cleanParams.toString()}`;
+    const fetchUrl = `/api/actors/?${cleanParams.toString()}&lang=all`;
     const controller = new AbortController();
     
     setIsLoading(true);
