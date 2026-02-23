@@ -34,18 +34,22 @@ export async function GET() {
         }
       });
     } catch (dbErr) {
-      console.warn(' [Admin Actors API] Drizzle failed, falling back to SDK');
+      console.warn(' [Admin Actors API] Drizzle failed, falling back to simplified SDK query');
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
       const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
       const supabase = createClient(supabaseUrl, supabaseKey);
       
+      // 🛡️ CHRIS-PROTOCOL: Simplified SDK query to avoid join errors
       const { data, error } = await supabase
         .from('actors')
-        .select('*, demos:actor_demos(*), actorVideos:actor_videos(*), actorLanguages:actor_languages(*)')
+        .select('*')
         .order('menu_order', { ascending: true })
         .order('first_name', { ascending: true });
         
-      if (error) throw error;
+      if (error) {
+        console.error(' [Admin Actors API] SDK query failed:', error);
+        throw error;
+      }
       
       allActors = (data || []).map(a => ({
         ...a,
@@ -63,7 +67,7 @@ export async function GET() {
 
     //  CHRIS-PROTOCOL: Map relational languages to flat ID fields for frontend compatibility
     const mappedActors = (allActors || []).map(actor => {
-      const actorLangs = (actor as any).actorLanguages || [];
+      const actorLangs = (actor as any).actorLanguages || (actor as any).actor_languages || [];
       
       const nativeLink = actorLangs.find((al: any) => al.isNative || al.is_native);
       const extraLinks = actorLangs.filter((al: any) => !al.isNative && !al.is_native);

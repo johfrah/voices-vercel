@@ -493,16 +493,27 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
             journey="agency"
             category="voicecards"
-            onUpdate={(newSrc) => {
+            onUpdate={async (newSrc) => {
               //  CHRIS-PROTOCOL: Direct DB update for actor photo
-              fetch(`/api/admin/actors/${voice.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  id: voice.id,
-                  photo_url: newSrc
-                })
-              });
+              try {
+                const res = await fetch(`/api/admin/actors/${voice.id}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    id: voice.id,
+                    photo_url: newSrc
+                  })
+                });
+                
+                if (!res.ok) throw new Error('Failed to update actor photo in database');
+                
+                // Trigger a global event to refresh all cards
+                window.dispatchEvent(new CustomEvent('voices:actor-updated', { 
+                  detail: { actor: { ...voice, photo_url: newSrc } } 
+                }));
+              } catch (err) {
+                console.error('[VoiceCard] Photo update failed:', err);
+              }
             }}
             className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-700" 
           />

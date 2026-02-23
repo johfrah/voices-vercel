@@ -1,5 +1,9 @@
 import { createAdminClient } from '@/utils/supabase/server';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
+import { requireAdmin } from '@/lib/auth/api-auth';
+import { db } from '@/lib/sync/bridge';
+import { media } from '@db/schema';
+import { eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +16,12 @@ export async function POST(request: NextRequest) {
   //  CHRIS-PROTOCOL: Build Safety
   if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
     return NextResponse.json({ success: true });
+  }
+
+  //  CHRIS-PROTOCOL: Auth Check (Nuclear 2026)
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) {
+    return auth;
   }
 
   try {
@@ -117,14 +127,12 @@ export async function POST(request: NextRequest) {
     let mediaId = 0;
     try {
       console.log(' ADMIN: Linking in media table...');
-      const { db } = await import('@/lib/sync/bridge');
-      const { media } = await import('@db/schema');
       
       const [mediaResult] = await db.insert(media).values({
         fileName: fileName,
         filePath: filePath,
-        fileType: file.type || 'image/webp',
-        fileSize: file.size,
+        fileType: finalContentType,
+        fileSize: (finalFile as any).size || (finalFile as Buffer).length,
         journey: 'agency',
         category: 'voices',
         isPublic: true,
@@ -161,9 +169,6 @@ export async function POST(request: NextRequest) {
               };
 
               // Update the media record with AI data
-              const { db } = await import('@/lib/sync/bridge');
-              const { media } = await import('@db/schema');
-              const { eq } = await import('drizzle-orm');
               await db.update(media)
                 .set({ 
                   altText: analysis.suggested_alt || null,

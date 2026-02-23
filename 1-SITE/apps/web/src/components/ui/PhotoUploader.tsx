@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 
 interface PhotoUploaderProps {
   currentPhotoUrl?: string;
-  onUploadSuccess: (newUrl: string, mediaId: number) => void;
+  onUploadSuccess: (newUrl: string, mediaId: number) => void | Promise<void>;
   actorName: string;
   compact?: boolean;
 }
@@ -99,7 +99,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
       if (!response.ok) throw new Error('Upload failed');
 
       const data = await response.json();
-      onUploadSuccess(data.url, data.mediaId || 0);
+      await onUploadSuccess(data.url, data.mediaId || 0);
       setImage(null);
     } catch (error) {
       console.error('Upload error:', error);
