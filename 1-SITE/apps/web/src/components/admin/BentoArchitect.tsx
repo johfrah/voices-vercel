@@ -85,10 +85,21 @@ export const BentoArchitect: React.FC<{ isOpen: boolean; onClose: () => void }> 
   // Simuleer analyse bij het openen van System tab
   useEffect(() => {
     if (activeTab === 'iap') {
-      // We simuleren een fetch van de huidige layout
-      const mockLayout = { sections: [] }; 
-      const result = LayoutEngine.analyzeLayout(mockLayout, iapContext);
-      setSuggestion(result);
+      const analyze = async () => {
+        try {
+          const pathname = window.location.pathname;
+          const slug = pathname.split('/').pop() || 'home';
+          const res = await fetch(`/api/admin/config?type=page&slug=${slug}`);
+          const data = await res.json();
+          
+          const currentLayout = data?.layoutJson || { sections: [] };
+          const result = LayoutEngine.analyzeLayout(currentLayout, iapContext);
+          setSuggestion(result);
+        } catch (e) {
+          console.error('Failed to analyze layout:', e);
+        }
+      };
+      analyze();
     }
   }, [activeTab, iapContext]);
 

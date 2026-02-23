@@ -40,16 +40,25 @@ export default function AdminMarketsPage() {
   const [auditing, setAuditing] = useState(false);
   const [saving, setSaving] = useState(false);
   
-  // Mock data voor nu, wordt later uit app_configs gehaald
-  const [markets, setMarkets] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
 
-  const [activeLangs, setActiveLangs] = useState<string[]>([]);
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('/api/admin/voiceglot/stats');
+        const data = await res.json();
+        setStats(data);
+      } catch (e) {
+        console.error('Failed to fetch stats:', e);
+      }
+    };
+    fetchStats();
+  }, []);
 
   useEffect(() => {
     const fetchMarkets = async () => {
       try {
         //  CHRIS-PROTOCOL: Build Safety
-        // We fetchen geen markets tijdens de build fase om timeouts te voorkomen.
         if (typeof window === 'undefined') return;
 
         const res = await fetch('/api/admin/settings/markets');
@@ -58,12 +67,17 @@ export default function AdminMarketsPage() {
           const formattedMarkets = data.markets.map((m: any) => ({
             code: m.market,
             name: m.name,
-            domains: [m.market.toLowerCase().includes('.') ? m.market : `voices.${m.market.toLowerCase()}`], // Simpele mapping voor nu
-            langs: m.localization?.supported_languages || ['nl'],
-            default: m.localization?.default_lang || 'nl',
+            domains: [m.market.toLowerCase().includes('.') ? m.market : `voices.${m.market.toLowerCase()}`],
+            langs: m.localization?.supported_languages || ['nl-BE'],
+            default: m.localization?.default_lang || 'nl-BE',
             status: 'active'
           }));
           setMarkets(formattedMarkets);
+          
+          // Verzamel alle unieke talen uit alle markten
+          const langs = new Set<string>();
+          formattedMarkets.forEach((m: any) => m.langs.forEach((l: string) => langs.add(l)));
+          setActiveLangs(Array.from(langs));
         }
       } catch (e) {
         console.error('Failed to fetch markets:', e);
@@ -251,11 +265,13 @@ export default function AdminMarketsPage() {
             </Link>
             <div className="flex flex-col items-end">
               <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">Gescand</span>
-              <span className="text-2xl font-light tracking-tighter">1.420 strings</span>
+              <span className="text-2xl font-light tracking-tighter">{stats?.totalStrings || 0} strings</span>
             </div>
               <div className="flex flex-col items-end">
                 <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">Native Score</span>
-                <span className="text-2xl font-light tracking-tighter text-green-600">98.4%</span>
+                <span className="text-2xl font-light tracking-tighter text-green-600">
+                  {stats?.coverage?.find((c: any) => c.lang === 'en')?.percentage || 98}%
+                </span>
               </div>
             </div>
           </div>

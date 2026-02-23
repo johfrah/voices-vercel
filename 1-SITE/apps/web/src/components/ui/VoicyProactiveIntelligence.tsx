@@ -3,7 +3,7 @@
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Brain, TrendingUp, X } from 'lucide-react';
+import { ArrowRight, Brain, TrendingUp, X, Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 
@@ -12,7 +12,7 @@ import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrumen
  * 
  * Een intelligent instrument dat pro-actief tips en inzichten geeft
  * op basis van de huidige context (dashboard, mailbox, etc).
- * ENKEL zichtbaar voor admins  niet voor publieke bezoekers.
+ * ENKEL zichtbaar voor admins - niet voor publieke bezoekers.
  */
 
 interface IntelligenceTip {
@@ -31,32 +31,47 @@ export const VoicyProactiveIntelligence = () => {
   const { isAdmin } = useAuth();
   const [tip, setTip] = useState<IntelligenceTip | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Mock data voor demo - in productie zou dit van een real-time stream of API komen
-  // Alleen uitvoeren voor admins
   useEffect(() => {
     if (!isAdmin) return;
-    const timer = setTimeout(() => {
-      setTip({
-        id: '1',
-        type: 'opportunity',
-        title: 'Nieuwe Markt-kans gedetecteerd',
-        description: 'Ik zie een piek in aanvragen voor "AI-stemmen met emotie". Misschien moeten we de Studio-pagina hierop aanpassen?',
-        icon: <TrendingUp strokeWidth={1.5} size={16} />,
-        cta: {
-          label: 'Bekijk Trend',
-          onClick: () => window.location.href = '/admin/mailbox?tab=insights'
-        }
-      });
-      setIsVisible(true);
-    }, 5000); // Toon na 5 seconden
 
-    return () => clearTimeout(timer);
+    const fetchInsights = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/mailbox/insights');
+        const data = await res.json();
+        
+        if (data && data.trends && data.trends.length > 0) {
+          // Kies een willekeurige trend als inzicht
+          const trend = data.trends[Math.floor(Math.random() * data.trends.length)];
+          
+          setTip({
+            id: trend.label,
+            type: trend.status === 'up' ? 'opportunity' : 'insight',
+            title: trend.label,
+            description: trend.explanation,
+            icon: <TrendingUp strokeWidth={1.5} size={16} />,
+            cta: {
+              label: 'Bekijk Insights',
+              onClick: () => window.location.href = '/admin/mailbox?tab=insights'
+            }
+          });
+          
+          // Toon na een korte vertraging voor een "natuurlijk" gevoel
+          setTimeout(() => setIsVisible(true), 3000);
+        }
+      } catch (error) {
+        console.error('Failed to fetch Voicy Intelligence:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInsights();
   }, [isAdmin]);
 
-  // ENKEL voor admins  verberg volledig voor publieke bezoekers (incl. incognito)
-  if (!isAdmin) return null;
-  if (!tip) return null;
+  if (!isAdmin || !tip) return null;
 
   return (
     <AnimatePresence>
@@ -78,7 +93,7 @@ export const VoicyProactiveIntelligence = () => {
                     <Brain strokeWidth={1.5} size={18} className="text-va-black" />
                   </ContainerInstrument>
                   <TextInstrument as="span" className="text-[15px] font-black tracking-[0.2em] text-primary">
-                    <VoiceglotText  translationKey="auto.voicyproactiveintelligence.voicy_intelligence.7a49dd" defaultText="Voicy Intelligence" />
+                    <VoiceglotText translationKey="auto.voicyproactiveintelligence.voicy_intelligence.7a49dd" defaultText="Voicy Intelligence" />
                   </TextInstrument>
                 </ContainerInstrument>
                 <button 
@@ -107,12 +122,12 @@ export const VoicyProactiveIntelligence = () => {
                     <ArrowRight strokeWidth={1.5} size={12} />
                   </ButtonInstrument>
                 )}
-                <ButtonInstrument 
+                <button 
                   onClick={() => setIsVisible(false)}
-                  className="text-[15px] font-black tracking-widest text-white/40 hover:text-white transition-colors"
+                  className="text-[15px] font-black tracking-widest text-white/40 hover:text-white transition-colors px-2"
                 >
-                  <VoiceglotText  translationKey="auto.voicyproactiveintelligence.later____.0d5296" defaultText="Later" />
-                </ButtonInstrument>
+                  <VoiceglotText translationKey="auto.voicyproactiveintelligence.later____.0d5296" defaultText="Later" />
+                </button>
               </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
