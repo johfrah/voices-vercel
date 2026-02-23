@@ -93,10 +93,15 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     return () => window.removeEventListener('voices:actor-updated', handleGlobalUpdate as EventListener);
   }, [voice.id, voice.display_name]);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const isSelected = useMemo(() => {
-    if (!voice || !state.selected_actors) return false;
+    if (!mounted || !voice || !state.selected_actors) return false;
     return state.selected_actors.some(a => a.id === voice.id);
-  }, [voice, state.selected_actors]);
+  }, [voice, state.selected_actors, mounted]);
 
   const handleAdminClick = (e: React.MouseEvent) => {
     if (!voice) return;

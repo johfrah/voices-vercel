@@ -16,7 +16,7 @@ export const EmailApprovalDashboard = () => {
   useEffect(() => {
     const fetchPending = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/v2/approval/pending');
+        const res = await fetch('/api/admin/approvals');
         const data = await res.json();
         setPendingEmails(data);
       } catch (error) {
@@ -31,7 +31,7 @@ export const EmailApprovalDashboard = () => {
 
   const handleApprove = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/v2/approval/approve/${id}`, {
+      const res = await fetch(`/api/admin/approvals/approve/${id}`, {
         method: 'POST'
       });
       

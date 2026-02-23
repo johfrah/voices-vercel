@@ -31,7 +31,9 @@ import {
     Bot,
     Music,
     Phone,
-    Euro
+    Euro,
+    ShoppingBag,
+    Loader2
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -41,15 +43,42 @@ export const dynamic = 'force-dynamic';
 
 export default function AdminDashboard() {
   const [recentHeals, setRecentHeals] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const { logAction } = useAdminTracking();
 
   useEffect(() => {
-    fetch('/api/admin/godmode/heals')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) setRecentHeals(data.heals);
-      })
-      .catch(err => console.error('Failed to fetch heals', err));
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // 1. Fetch Heals
+        const healsRes = await fetch('/api/admin/godmode/heals');
+        const healsData = await healsRes.json();
+        if (healsData.success) setRecentHeals(healsData.heals);
+
+        // 2. Fetch Live Notifications (Real Intelligence Feed)
+        // We gebruiken de algemene notificatie API maar filteren op admin-relevante zaken
+        const notifyRes = await fetch('/api/admin/system/logs'); // Of een specifieke admin-notify endpoint
+        const notifyData = await notifyRes.json();
+        
+        if (notifyData && notifyData.logs) {
+          setNotifications(notifyData.logs.slice(0, 5).map((log: any) => ({
+            id: log.id,
+            type: log.level === 'error' ? 'ai' : log.source === 'mail' ? 'mail' : 'approval',
+            title: log.message,
+            user: log.source,
+            time: new Date(log.createdAt).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }),
+            icon: log.source === 'mail' ? <Mail size={14} /> : log.level === 'error' ? <Brain size={14} /> : <Bell size={14} />
+          })));
+        }
+      } catch (err) {
+        console.error('Failed to fetch dashboard data', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   //  CHRIS-PROTOCOL: Build Safety
@@ -58,20 +87,14 @@ export default function AdminDashboard() {
   }
 
   const stats = [
-    { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '12', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },
-    { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Approval Queue" />, value: '5', icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
+    { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '...', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },
+    { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Approval Queue" />, value: '...', icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
     { label: <VoiceglotText  translationKey="admin.stats.finance" defaultText="Financieel" />, value: 'Dashboard', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: 'Journeys', color: 'text-green-500', href: '/admin/finance' },
     { label: <VoiceglotText  translationKey="admin.stats.telephony" defaultText="Telefoon" />, value: 'Live', icon: <Phone strokeWidth={1.5} size={20} />, trend: 'Spotlight', color: 'text-primary', href: '/admin/telephony' },
-    { label: <VoiceglotText  translationKey="admin.stats.workshops" defaultText="Workshops" />, value: '114', icon: <Calendar strokeWidth={1.5} size={20} />, trend: 'Studio', color: 'text-purple-500', href: '/admin/studio/workshops' },
-    { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Actieve Stemmen" />, value: '142', icon: <Mic strokeWidth={1.5} size={20} />, trend: 'Demos', color: 'text-va-black/40', href: '/admin/voices/demos' },
+    { label: <VoiceglotText  translationKey="admin.stats.workshops" defaultText="Workshops" />, value: '...', icon: <Calendar strokeWidth={1.5} size={20} />, trend: 'Studio', color: 'text-purple-500', href: '/admin/studio/workshops' },
+    { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Actieve Stemmen" />, value: '...', icon: <Mic strokeWidth={1.5} size={20} />, trend: 'Demos', color: 'text-va-black/40', href: '/admin/voices/demos' },
     { label: <VoiceglotText  translationKey="admin.stats.artists" defaultText="Music Label" />, value: 'Actief', icon: <Music strokeWidth={1.5} size={20} />, trend: 'Artists', color: 'text-pink-500', href: '/admin/artists' },
     { label: <VoiceglotText  translationKey="admin.stats.agents" defaultText="AI Agents" />, value: 'Actief', icon: <Bot strokeWidth={1.5} size={20} />, trend: 'Control', color: 'text-primary', href: '/admin/agents' },
-  ];
-
-  const notifications = [
-    { id: 1, type: 'mail', title: 'Nieuwe offerte-aanvraag', user: 'Greenpeace', time: '5 min geleden', icon: <Mail strokeWidth={1.5} size={14} /> },
-    { id: 2, type: 'approval', title: 'Factuur van Christina Van Geel', user: 'Wacht op goedkeuring', time: '12 min geleden', icon: <Bell strokeWidth={1.5} size={14} /> },
-    { id: 3, type: 'ai', title: 'Nieuwe FAQ suggestie gevonden', user: 'Voicy Intelligence', time: '1 uur geleden', icon: <Brain strokeWidth={1.5} size={14} /> },
   ];
 
   return (
@@ -88,14 +111,8 @@ export default function AdminDashboard() {
         <ContainerInstrument className="flex gap-4">
           <ButtonInstrument 
             onClick={() => {
-              const snapshot = {
-                timestamp: new Date().toISOString(),
-                stats: stats.map(s => ({ label: s.label, value: s.value })),
-                notifications: notifications.map(n => ({ title: n.title, user: n.user }))
-              };
-              console.log('Snapshot created:', snapshot);
               logAction('create_dashboard_snapshot');
-              import('react-hot-toast').then(toast => toast.default.success('Snapshot opgeslagen in console!'));
+              import('react-hot-toast').then(toast => toast.default.success('Snapshot opgeslagen!'));
             }}
             className="va-btn-nav !rounded-[10px]"
           >
@@ -144,32 +161,40 @@ export default function AdminDashboard() {
           </ContainerInstrument>
 
       <ContainerInstrument className="space-y-4">
-        {notifications.map((n) => (
-          <ContainerInstrument key={n.id} className="flex items-center justify-between p-5 bg-va-off-white rounded-[24px] border border-black/[0.02] hover:border-primary/20 transition-all group cursor-pointer">
-            <ContainerInstrument className="flex items-center gap-4">
-              <ContainerInstrument className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                n.type === 'mail' ? 'bg-blue-500/10 text-blue-500' : 
-                n.type === 'approval' ? 'bg-orange-500/10 text-orange-500' : 
-                'bg-purple-500/10 text-purple-500'
-              }`}>
-                {n.icon}
+        {loading ? (
+          <div className="p-20 text-center"><Loader2 className="animate-spin mx-auto text-primary/20" size={40} /></div>
+        ) : notifications.length > 0 ? (
+          notifications.map((n) => (
+            <ContainerInstrument key={n.id} className="flex items-center justify-between p-5 bg-va-off-white rounded-[24px] border border-black/[0.02] hover:border-primary/20 transition-all group cursor-pointer">
+              <ContainerInstrument className="flex items-center gap-4">
+                <ContainerInstrument className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  n.type === 'mail' ? 'bg-blue-500/10 text-blue-500' : 
+                  n.type === 'approval' ? 'bg-orange-500/10 text-orange-500' : 
+                  'bg-purple-500/10 text-purple-500'
+                }`}>
+                  {n.icon}
+                </ContainerInstrument>
+                <ContainerInstrument>
+                  <TextInstrument className="text-[15px] font-black text-gray-900">{n.title}</TextInstrument>
+                  <TextInstrument className="text-[15px] text-va-black/40 font-bold tracking-widest uppercase">{n.user}</TextInstrument>
+                </ContainerInstrument>
               </ContainerInstrument>
-              <ContainerInstrument>
-                <TextInstrument className="text-[15px] font-black text-gray-900"><VoiceglotText  translationKey={`admin.notification.${n.id}.title`} defaultText={n.title} noTranslate={true} /></TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/40 font-bold tracking-widest"><VoiceglotText  translationKey={`admin.notification.${n.id}.user`} defaultText={n.user} noTranslate={true} /></TextInstrument>
+              <ContainerInstrument className="flex items-center gap-4">
+                <ContainerInstrument className="flex items-center gap-1.5 text-va-black/20">
+                  <Clock strokeWidth={1.5} size={12} />
+                  <TextInstrument as="span" className="text-[15px] font-bold">{n.time}</TextInstrument>
+                </ContainerInstrument>
+                <ContainerInstrument className="w-8 h-8 rounded-full bg-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                  <ArrowRight strokeWidth={1.5} size={14} className="text-primary" />
+                </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-            <ContainerInstrument className="flex items-center gap-4">
-              <ContainerInstrument className="flex items-center gap-1.5 text-va-black/20">
-                <Clock strokeWidth={1.5} size={12} />
-                <TextInstrument as="span" className="text-[15px] font-bold">{n.time}</TextInstrument>
-              </ContainerInstrument>
-              <ContainerInstrument className="w-8 h-8 rounded-full bg-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-                <ArrowRight strokeWidth={1.5} size={14} className="text-primary" />
-              </ContainerInstrument>
-            </ContainerInstrument>
-          </ContainerInstrument>
-        ))}
+          ))
+        ) : (
+          <div className="p-20 text-center border-2 border-dashed border-black/5 rounded-[32px]">
+            <TextInstrument className="text-va-black/20 font-bold tracking-widest uppercase">Geen recente meldingen</TextInstrument>
+          </div>
+        )}
       </ContainerInstrument>
     </ContainerInstrument>
 
@@ -178,7 +203,12 @@ export default function AdminDashboard() {
             <ContainerInstrument className="w-12 h-12 bg-primary rounded-[10px] flex items-center justify-center mb-8 shadow-lg shadow-primary/20">
               <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" />
             </ContainerInstrument>
-            <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter mb-4 leading-tight text-white"><VoiceglotText  translationKey="admin.voicy_brain.title" defaultText="Voicy Brain is aan het werk" /><TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed mb-8"><VoiceglotText  translationKey="admin.voicy_brain.text" defaultText="Er zijn 3 nieuwe FAQ voorstellen en 2 trend-analyses klaar om te bekijken in de mailbox." /></TextInstrument></HeadingInstrument>
+            <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter mb-4 leading-tight text-white">
+              <VoiceglotText  translationKey="admin.voicy_brain.title" defaultText="Voicy Brain is aan het werk" />
+              <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed mb-8">
+                <VoiceglotText  translationKey="admin.voicy_brain.text" defaultText="Ik analyseer real-time trends in de mailbox om je pro-actief te adviseren." />
+              </TextInstrument>
+            </HeadingInstrument>
             
             <ContainerInstrument className="space-y-3">
               <ContainerInstrument className="flex items-center gap-3 p-3 bg-white/5 rounded-[10px] border border-white/5">
