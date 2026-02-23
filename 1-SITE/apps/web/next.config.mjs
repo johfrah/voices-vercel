@@ -66,7 +66,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false, // 🛡️ CHRIS-PROTOCOL: No more slop. Types must be valid.
   },
   experimental: {
     serverComponentsExternalPackages: ['soap', 'get-stream'],

@@ -630,7 +630,11 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Het telt de items in het mandje op, en voegt de huidige selectie toe ALLEEN als we in de briefing-stap zijn.
   const subtotal = React.useMemo(() => {
     const cartTotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
-    const currentSelectionTotal = (state.selectedActor && state.step === 'briefing') ? state.pricing.total : 0;
+    // 🛡️ KELLY-FIX: Alleen de huidige selectie optellen als we NIET in de details/payment stap zitten
+    // De screenshot toont dat de bezoeker al in het mandje kijkt (waarschijnlijk details stap), 
+    // maar het item staat ook al in de items array.
+    const isAlreadyInCart = state.selectedActor && state.items.some(item => item.actor?.id === state.selectedActor?.id);
+    const currentSelectionTotal = (state.selectedActor && state.step === 'briefing' && !isAlreadyInCart) ? state.pricing.total : 0;
     return cartTotal + currentSelectionTotal;
   }, [state.items, state.selectedActor, state.step, state.pricing.total]);
 

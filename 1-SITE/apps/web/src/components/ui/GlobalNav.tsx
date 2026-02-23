@@ -874,10 +874,24 @@ export default function GlobalNav() {
                           )}
                         </div>
                       </ContainerInstrument>
-                      <div className="text-right flex flex-col items-end gap-0.5">
-                        <TextInstrument className="text-[14px] font-medium text-va-black">
-                          €{item.pricing?.total || item.pricing?.subtotal || 0}
-                        </TextInstrument>
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2">
+                          <TextInstrument className="text-[14px] font-medium text-va-black">
+                            €{item.pricing?.total || item.pricing?.subtotal || 0}
+                          </TextInstrument>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              checkoutState.removeItem(item.id);
+                              playClick('light');
+                            }}
+                            className="p-1.5 text-va-black/20 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                            title={t('common.remove', 'Verwijderen')}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                         <TextInstrument className="text-[10px] text-va-black/20 font-light tracking-tighter">
                           <VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" />
                         </TextInstrument>
