@@ -64,7 +64,8 @@ export async function GET(request: Request) {
 
     const result = {
       ...data,
-      _v: 'v2.14.56 (Godmode Zero)'
+      _v: 'v2.14.67 (Godmode Zero)',
+      _debug_all_actors: data.results?.map((a: any) => ({ name: a.display_name, native: a.native_lang, extra: a.extra_langs }))
     };
 
     // Update cache
