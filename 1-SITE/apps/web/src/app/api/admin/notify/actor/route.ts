@@ -37,10 +37,14 @@ export async function POST(request: NextRequest) {
     // 3. Haal klant details op
     const [customer] = await db.select().from(users).where(eq(users.id, order.userId as number)).limit(1);
 
+    const host = request.headers.get('host') || 'www.voices.be';
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const market = MarketManager.getCurrentMarket(host);
+
     // 4. Verstuur de mail via VUME
     await VumeEngine.send({
       to: actor.email,
-      subject: `🎙️ Nieuwe Opdracht: #${order.displayOrderId || order.wpOrderId} - Voices.be`,
+      subject: `🎙️ Nieuwe Opdracht: #${order.displayOrderId || order.wpOrderId} - ${market.name}`,
       template: 'actor-assignment',
       context: {
         actorName: actor.firstName,
@@ -51,9 +55,9 @@ export async function POST(request: NextRequest) {
         script: itemData?.script || 'Zie bijlage/dashboard',
         briefing: itemData?.briefing,
         deliveryTime: actor.deliveryTime || 'binnen 48 uur',
-        language: 'nl' // Actors are mostly NL for now
+        language: 'nl-be' // Actors are mostly NL for now
       },
-      host: request.headers.get('host') || 'www.voices.be'
+      host: host
     });
 
     return NextResponse.json({ success: true });

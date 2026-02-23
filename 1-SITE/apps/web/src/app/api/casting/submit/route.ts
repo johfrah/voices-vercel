@@ -115,14 +115,17 @@ export async function POST(request: NextRequest) {
     }
 
     // 6. Notificatie naar Johfrah (Admin Only)
-    const mailService = DirectMailService.getInstance();
+    const { VoicesMailEngine } = await import('@/services/VoicesMailEngine');
+    const mailEngine = VoicesMailEngine.getInstance();
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
+    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
 
-    const adminHtml = `
-      <div style="font-family: 'Raleway', sans-serif; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #eee; border-radius: 30px;">
-        <h1 style="font-weight: 200; font-size: 32px; margin-bottom: 30px;">Nieuwe Castingaanvraag</h1>
-        
+    await mailEngine.sendVoicesMail({
+      to: market.email,
+      subject: `🚀 Nieuwe Casting: ${projectName} (${clientCompany})`,
+      title: 'Nieuwe Castingaanvraag',
+      body: `
         <div style="background: #fcfaf7; padding: 30px; border-radius: 20px; margin-bottom: 30px;">
           <h2 style="font-size: 18px; font-weight: 400; margin-top: 0;">Project: ${projectName}</h2>
           <p style="font-size: 15px; color: #666;">
@@ -151,23 +154,11 @@ export async function POST(request: NextRequest) {
             "${script}"
           </div>
         </div>
-
-        <a href="https://${host}/casting/session/${sessionHash}" style="display: inline-block; background: #000; color: #fff; text-decoration: none; padding: 18px 35px; border-radius: 10px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em;">
-          Open Collaborative Studio
-        </a>
-      </div>
-    `;
-
-    const adminEmail = process.env.ADMIN_EMAIL;
-
-    if (adminEmail) {
-      await mailService.sendMail({
-        to: adminEmail,
-        subject: `🚀 Nieuwe Casting: ${projectName} (${clientCompany})`,
-        html: adminHtml,
-        host: host
-      });
-    }
+      `,
+      buttonText: 'Open Collaborative Studio',
+      buttonUrl: `${siteUrl}/casting/session/${sessionHash}`,
+      host: host
+    });
 
     return NextResponse.json({ 
       success: true, 

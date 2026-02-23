@@ -46,8 +46,10 @@ export async function GET(request: Request) {
     const supabaseAdmin = createClient(url, key);
 
     const host = request.headers.get('host') || 'www.voices.be';
-    const protocol = host.includes('localhost') ? 'http' : 'https';
-    const currentBaseUrl = `${protocol}://${host}`;
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const market = MarketManager.getCurrentMarket(host);
+    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+    const currentBaseUrl = host.includes('localhost') ? `http://${host}` : siteUrl;
 
     // 4. Generate Magic Link (Action Link)
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({

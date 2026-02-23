@@ -410,26 +410,25 @@ SLIMME KASSA REGELS:
         //  ADMIN NOTIFICATION: Stuur een mail bij elke interactie (Chris-Protocol: Real-time awareness)
         if (senderType === 'user') {
           try {
-            const { DirectMailService } = await import('@/services/DirectMailService');
-            const mailService = DirectMailService.getInstance();
+            const { VoicesMailEngine } = await import('@/services/VoicesMailEngine');
+            const mailEngine = VoicesMailEngine.getInstance();
             const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
             const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
             const market = MarketManager.getCurrentMarket(host);
+            const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
             
-            await mailService.sendMail({
+            await mailEngine.sendVoicesMail({
               to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
               subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
-              html: `
-                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-                  <h2 style="color: #1a1a1a; font-weight: 200;">Nieuw bericht in de chat</h2>
-                  <p style="color: #666;"><strong>Bericht:</strong> "${message}"</p>
-                  <p style="color: #666;"><strong>Conversatie ID:</strong> ${convId}</p>
-                  <p style="color: #666;"><strong>Journey:</strong> ${journey}</p>
-                  <p style="color: #666;"><strong>Persona:</strong> ${persona}</p>
-                  <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-                  <a href="https://${host}/admin/dashboard" style="background: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 14px;">Open Dashboard</a>
-                </div>
+              title: 'Nieuw bericht in de chat',
+              body: `
+                <strong>Bericht:</strong> "${message}"<br/>
+                <strong>Conversatie ID:</strong> ${convId}<br/>
+                <strong>Journey:</strong> ${journey}<br/>
+                <strong>Persona:</strong> ${persona}
               `,
+              buttonText: 'Open Dashboard',
+              buttonUrl: `${siteUrl}/admin/dashboard`,
               host: host
             });
           } catch (mailErr) {

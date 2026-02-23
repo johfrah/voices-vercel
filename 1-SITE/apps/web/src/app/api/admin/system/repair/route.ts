@@ -25,7 +25,11 @@ export async function GET(request: NextRequest) {
   if (auth instanceof NextResponse) {
     // Als niet ingelogd, redirect naar login met return URL
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
-    const loginUrl = new URL('/account', `https://${host}`);
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const market = MarketManager.getCurrentMarket(host);
+    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+    
+    const loginUrl = new URL('/account', siteUrl);
     loginUrl.searchParams.set('returnTo', request.nextUrl.pathname + request.nextUrl.search);
     return NextResponse.redirect(loginUrl);
   }

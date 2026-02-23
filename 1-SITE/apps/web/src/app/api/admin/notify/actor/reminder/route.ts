@@ -34,10 +34,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
+    const host = request.headers.get('host') || 'www.voices.be';
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const market = MarketManager.getCurrentMarket(host);
+
     // 3. Verstuur de reminder via VUME
     await VumeEngine.send({
       to: actor.email,
-      subject: `⚠️ Reminder: Deadline voor #${order.displayOrderId || order.wpOrderId} - Voices.be`,
+      subject: `⚠️ Reminder: Deadline voor #${order.displayOrderId || order.wpOrderId} - ${market.name}`,
       template: 'actor-reminder',
       context: {
         actorName: actor.firstName,
@@ -45,9 +49,9 @@ export async function POST(request: NextRequest) {
         usageType: itemData?.usage || 'Voice-over',
         deliveryTime: actor.deliveryTime || 'binnen 48 uur',
         isOverdue: true,
-        language: 'nl'
+        language: 'nl-be'
       },
-      host: request.headers.get('host') || 'www.voices.be'
+      host: host
     });
 
     return NextResponse.json({ success: true });

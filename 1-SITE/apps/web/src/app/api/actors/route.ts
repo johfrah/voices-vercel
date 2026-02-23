@@ -42,7 +42,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       ...data,
-      _v: 'v2.13.14 (Godmode Zero)'
+      _v: 'v2.13.15 (Godmode Zero)'
     });
   } catch (error: any) {
     console.error(' ACTORS API FAILURE:', error.message);

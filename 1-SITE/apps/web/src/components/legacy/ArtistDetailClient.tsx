@@ -31,14 +31,18 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
 
   const manifesto = artistData.labelManifesto || artistData.iapContext?.manifesto;
 
+  const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+  const market = MarketManager.getCurrentMarket();
+  const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "MusicGroup",
-    "@id": `https://www.voices.be/artist/${params.slug}#artist`,
+    "@id": `${siteUrl}/artist/${params.slug}#artist`,
     "name": artistData.display_name,
     "image": artistData.photo_url || undefined,
     "description": artistData.bio,
-    "url": `https://www.voices.be/artist/${params.slug}`,
+    "url": `${siteUrl}/artist/${params.slug}`,
     "genre": artistData.iapContext?.genre || "Pop",
     "sameAs": [
         artistData.spotify_url || artistData.iapContext?.socials?.spotify,

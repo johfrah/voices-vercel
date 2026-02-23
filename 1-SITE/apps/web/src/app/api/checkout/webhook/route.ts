@@ -77,14 +77,15 @@ export async function POST(request: NextRequest) {
                   amount: order.total,
                   artistName: 'Youssef Zaki',
                   message: donationContext.message,
-                  language: 'nl'
+                  language: 'nl-be'
                 },
                 host: host
               });
               console.log(` Donation: Thank you email sent to ${donationContext.donorEmail}`);
 
               //  Notificatie naar Admin (Donatie specifiek)
-              const fetchUrl = `${process.env.NEXT_PUBLIC_BASE_URL || `https://${host}`}/api/admin/notify`;
+              const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+              const fetchUrl = `${siteUrl}/api/admin/notify`;
               await fetch(fetchUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -163,7 +164,8 @@ export async function POST(request: NextRequest) {
         //  Notificatie naar Admin (HITL)
         try {
           const isSameDay = (order.rawMeta as any)?.items?.some((i: any) => i.actor?.delivery_config?.type === 'sameday');
-          const fetchUrl = `${process.env.NEXT_PUBLIC_BASE_URL || `https://${host}`}/api/admin/notify`;
+          const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+          const fetchUrl = `${siteUrl}/api/admin/notify`;
           
           await fetch(fetchUrl, {
             method: 'POST',

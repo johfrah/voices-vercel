@@ -26,7 +26,9 @@ export async function POST(request: NextRequest) {
     const { type, data } = body;
 
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
     const market = MarketManager.getCurrentMarket(host);
+    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
     const adminEmail = market.email;
 
     const mailEngine = VoicesMailEngine.getInstance();
@@ -62,7 +64,8 @@ export async function POST(request: NextRequest) {
           </div>
         `,
         buttonText: 'Bekijk Dashboard',
-        buttonUrl: `${process.env.NEXT_PUBLIC_SITE_URL || `https://${host}`}/admin/dashboard`
+        buttonUrl: `${siteUrl}/admin/dashboard`,
+        host: host
       });
     }
 
@@ -144,7 +147,8 @@ export async function POST(request: NextRequest) {
           </div>
         `,
         buttonText: isDonation ? 'Bekijk Donaties' : isQuote ? 'Open Offerte' : 'Beheer Bestelling',
-        buttonUrl: isDonation ? `${process.env.NEXT_PUBLIC_SITE_URL || `https://${host}`}/backoffice/donations` : `${process.env.NEXT_PUBLIC_SITE_URL || `https://${host}`}/admin/orders?orderId=${orderId}`
+        buttonUrl: isDonation ? `${siteUrl}/backoffice/donations` : `${siteUrl}/admin/orders?orderId=${orderId}`,
+        host: host
       });
     }
 

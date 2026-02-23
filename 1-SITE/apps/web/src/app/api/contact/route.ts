@@ -40,38 +40,23 @@ export async function POST(request: Request) {
       ? `[Contact] ${String(subject).slice(0, 80)}`
       : `[Contact] Bericht van ${String(name).trim()}`;
 
-    const textBody = [
-      `Message received via contact form on voices.be`,
-      ``,
-      `From: ${String(name).trim()}`,
-      `E-mail: ${String(email).trim()}`,
-      `Subject: ${subject?.trim() || '(not specified)'}`,
-      ``,
-      `--- Message ---`,
-      String(message).trim()
-    ].join('\n');
+    const { VoicesMailEngine } = await import('@/services/VoicesMailEngine');
+    const mailEngine = VoicesMailEngine.getInstance();
 
-    const htmlBody = `
-      <p style="font-family:sans-serif;font-size:15px;color:#333;">
-        Message received via contact form.
-      </p>
-      <p style="font-family:sans-serif;font-size:15px;color:#666;">
-        <strong>From:</strong> ${String(name).trim()}<br>
-        <strong>E-mail:</strong> <a href="mailto:${String(email).trim()}">${String(email).trim()}</a><br>
-        <strong>Subject:</strong> ${subject?.trim() || '(not specified)'}
-      </p>
-      <hr style="border:none;border-top:1px solid #ddd;margin:16px 0;">
-      <p style="font-family:sans-serif;font-size:15px;color:#333;white-space:pre-wrap;">${String(message).trim().replace(/</g, '&lt;')}</p>
-    `.trim();
-
-    const mailService = DirectMailService.getInstance();
-    await mailService.sendMail({
+    await mailEngine.sendVoicesMail({
       to,
       subject: subjectLine,
-      text: textBody,
-      html: htmlBody,
+      title: 'Nieuw bericht via contactformulier',
+      body: `
+        <strong>Van:</strong> ${String(name).trim()}<br>
+        <strong>E-mail:</strong> <a href="mailto:${String(email).trim()}">${String(email).trim()}</a><br>
+        <strong>Onderwerp:</strong> ${subject?.trim() || '(niet opgegeven)'}<br><br>
+        <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; color: #333;">
+          ${String(message).trim().replace(/</g, '&lt;').replace(/\n/g, '<br>')}
+        </div>
+      `,
       from: market.email,
-      replyTo: String(email).trim()
+      host: host
     });
 
     return NextResponse.json({ success: true });

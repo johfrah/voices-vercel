@@ -79,7 +79,7 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
 function generateArtistSchema(artist: any, host: string = '') {
   const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
   const market = MarketManager.getCurrentMarket(host);
-  const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${host || 'www.voices.be'}`;
+  const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
   return {
     "@context": "https://schema.org",
     "@type": "MusicGroup",
@@ -159,7 +159,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const lang = headersList.get('x-voices-lang') || 'nl';
   const normalizedSlug = normalizeSlug(params.slug);
   
-  const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${host}`;
+  const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
   
   // Resolve de slug naar de originele versie
   const resolved = await resolveSlug(normalizedSlug, lang);

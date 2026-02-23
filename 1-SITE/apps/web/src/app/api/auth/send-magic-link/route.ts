@@ -73,7 +73,12 @@ export async function POST(req: Request) {
     }
 
     // ONZE BETROUWBARE LINK (Forceer https op productie)
-    const origin = new URL(req.url).origin.replace('http://', 'https://');
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const host = new URL(req.url).host;
+    const market = MarketManager.getCurrentMarket(host);
+    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+    
+    const origin = host.includes('localhost') ? `http://${host}` : siteUrl;
     const voicesLink = `${origin}/account/confirm?token=${token}&type=${type}&redirect=${redirect}`;
     
     console.log(`[Auth API] Voices link created: ${voicesLink}`);
@@ -82,11 +87,11 @@ export async function POST(req: Request) {
     const mailEngine = VoicesMailEngine.getInstance();
     
     // Detecteer taal
-    const lang = req.headers.get('accept-language')?.startsWith('fr') ? 'fr' : 
-                 req.headers.get('accept-language')?.startsWith('en') ? 'en' : 'nl';
+    const lang = req.headers.get('accept-language')?.startsWith('fr') ? 'fr-fr' : 
+                 req.headers.get('accept-language')?.startsWith('en') ? 'en-gb' : 'nl-be';
 
     try {
-      await mailEngine.sendMagicLink(email, voicesLink, lang, new URL(req.url).host);
+      await mailEngine.sendMagicLink(email, voicesLink, lang, host);
       console.log(`[Auth API] Mail successfully sent to: ${email} (lang: ${lang})`);
     } catch (mailErr) {
       console.error('[Auth API] Mail sending failed:', mailErr);
