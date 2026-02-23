@@ -181,7 +181,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   };
 
   // 0. Agency Journey SEO
-  if (firstSegment === "agency" || firstSegment === "stemmen" || firstSegment === "voix" || firstSegment === "stimmen") {
+  if (MarketManager.isAgencySegment(firstSegment)) {
     const title = await getTranslatedSEO('seo.agency.title', `Voice-over Agency | Vind de perfecte stem | ${market.name}`);
     const description = await getTranslatedSEO('seo.agency.description', `Ontdek meer dan 500+ professionele voice-over stemmen voor video, commercial en telefonie. Directe prijsberekening en 24u levering bij ${market.name}.`);
     
@@ -306,19 +306,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   }
 
   // 1.5 Agency Journey (Voice Casting)
-  if (firstSegment === "agency" || firstSegment === "stemmen" || firstSegment === "voix" || firstSegment === "stimmen") {
+  if (MarketManager.isAgencySegment(firstSegment)) {
     const filters: Record<string, string> = {};
-    let agencyJourney = "video";
     
-    //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types
-    const segment = segments[1]?.toLowerCase();
-    if (['commercial', 'advertentie', 'reclame', 'publicité', 'werbung'].includes(segment)) {
-      agencyJourney = "commercial";
-    } else if (['telephony', 'telefonie', 'telefoon', 'téléphonie', 'telefonie'].includes(segment)) {
-      agencyJourney = "telephony";
-    } else if (['video', 'corporate', 'vidéo', 'film'].includes(segment)) {
-      agencyJourney = "video";
-    }
+    //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
+    const agencyJourney = MarketManager.getJourneyFromSegment(segments[1]);
 
     if (agencyJourney === "commercial" && segments[2]) {
       filters.media = segments[2];

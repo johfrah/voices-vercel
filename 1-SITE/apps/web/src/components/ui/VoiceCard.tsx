@@ -667,9 +667,6 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               {isSelected ? (
                 <>
                   <Check size={14} className="md:w-4.5 md:h-4.5" strokeWidth={3} />
-                  <span className="text-[8px] md:text-[10px] font-black tracking-widest uppercase animate-in fade-in slide-in-from-left-2">
-                    <VoiceglotText translationKey="common.selected" defaultText="Geselecteerd" />
-                  </span>
                 </>
               ) : (
                 <>
@@ -946,7 +943,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 )}
               >
                 {isSelected ? (
-                  <Check size={14} className="md:w-4.5 md:h-4.5" strokeWidth={3} className="animate-in zoom-in duration-300" />
+                  <Check size={14} strokeWidth={3} className="md:w-4.5 md:h-4.5 animate-in zoom-in duration-300" />
                 ) : (
                   <div className="flex flex-col items-center leading-none gap-0.5 md:gap-1">
                     <VoiceglotText 

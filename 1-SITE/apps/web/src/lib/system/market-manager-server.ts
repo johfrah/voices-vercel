@@ -438,6 +438,26 @@ export class MarketManagerServer {
     };
     return orders[lang] || orders['nl'];
   }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Centralized Journey Segment Mapping
+   * Voorkomt hardcoded slop in de Smart Router.
+   */
+  static getJourneyFromSegment(segment: string): 'commercial' | 'telephony' | 'video' | 'video' {
+    const s = segment?.toLowerCase();
+    if (['commercial', 'advertentie', 'reclame', 'publicité', 'werbung', 'ads'].includes(s)) return 'commercial';
+    if (['telephony', 'telefonie', 'telefoon', 'téléphonie', 'telefonie'].includes(s)) return 'telephony';
+    if (['video', 'corporate', 'vidéo', 'film', 'bedrijfsfilm'].includes(s)) return 'video';
+    return 'video';
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Centralized Agency Segment Check
+   */
+  static isAgencySegment(segment: string): boolean {
+    const s = segment?.toLowerCase();
+    return ['agency', 'stemmen', 'voix', 'stimmen', 'voices'].includes(s);
+  }
 }
 
 // CHRIS-PROTOCOL: Alias for backward compatibility
