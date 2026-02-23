@@ -299,59 +299,61 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           <div className="flex items-center gap-2 mt-1 overflow-x-auto no-scrollbar max-w-full">
             {playlist.length > 0 ? (
               playlist.map((p) => (
-                <div
-                  key={p.id}
-                  className="group/item relative flex items-center"
-                >
-                  <button
-                    onClick={() => {
-                      playClick('pop');
-                      playDemo(p);
-                    }}
-                    className={cn(
-                      "px-2 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap flex items-center gap-2",
-                      p.id === demo.id 
-                        ? "bg-primary text-white shadow-lg" 
-                        : "bg-white/5 text-white/40 hover:bg-white/10 hover:text-white"
-                    )}
+                  <div
+                    key={p.id}
+                    className="group/item relative flex items-center gap-1 bg-white/5 rounded-md px-1"
                   >
-                    {editingId === p.id ? (
-                      <input 
-                        autoFocus
-                        className="bg-transparent border-none outline-none text-white w-24"
-                        value={editTitle}
-                        onChange={(e) => setEditTitle(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleRename(e as any, p);
-                          if (e.key === 'Escape') setEditingId(null);
-                        }}
-                      />
-                    ) : (
-                      cleanDemoTitle(p.title, p.category)
-                    )}
-                  </button>
+                    <button
+                      onClick={() => {
+                        playClick('pop');
+                        playDemo(p);
+                      }}
+                      className={cn(
+                        "px-1 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap flex items-center gap-2",
+                        p.id === demo.id 
+                          ? "text-primary" 
+                          : "text-white/40 hover:text-white"
+                      )}
+                    >
+                      {editingId === p.id ? (
+                        <input 
+                          autoFocus
+                          className="bg-transparent border-none outline-none text-white w-24"
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleRename(e as any, p);
+                            if (e.key === 'Escape') setEditingId(null);
+                          }}
+                        />
+                      ) : (
+                        cleanDemoTitle(p.title, p.category)
+                      )}
+                    </button>
 
-                  {isAdmin && (
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-va-black border border-white/10 rounded-full p-1 opacity-0 group-hover/item:opacity-100 transition-all z-50 shadow-xl">
-                      <button 
-                        onClick={(e) => handleRename(e, p)}
-                        className="p-1.5 hover:bg-white/10 rounded-full text-white/60 hover:text-white transition-colors"
-                      >
-                        {editingId === p.id ? <Save size={12} /> : <Edit2 size={12} />}
-                      </button>
-                      <button 
-                        onClick={(e) => handleDelete(e, p)}
-                        className={cn(
-                          "p-1.5 hover:bg-red-500/20 rounded-full transition-colors",
-                          isDeleting === p.id ? "text-red-500 animate-pulse" : "text-white/60 hover:text-red-500"
-                        )}
-                      >
-                        {isDeleting === p.id ? <Check size={12} /> : <Trash2 size={12} />}
-                      </button>
-                    </div>
-                  )}
-                </div>
+                    {isAdmin && (
+                      <div className="flex items-center gap-0.5 border-l border-white/10 ml-1 pl-1">
+                        <button 
+                          onClick={(e) => handleRename(e, p)}
+                          className="p-1 hover:bg-white/10 rounded-full text-white/30 hover:text-white transition-colors"
+                          title="Hernoemen"
+                        >
+                          {editingId === p.id ? <Save size={10} /> : <Edit2 size={10} />}
+                        </button>
+                        <button 
+                          onClick={(e) => handleDelete(e, p)}
+                          className={cn(
+                            "p-1 hover:bg-red-500/20 rounded-full transition-colors",
+                            isDeleting === p.id ? "text-red-500 animate-pulse" : "text-white/30 hover:text-red-500"
+                          )}
+                          title="Wissen"
+                        >
+                          {isDeleting === p.id ? <Check size={10} /> : <Trash2 size={10} />}
+                        </button>
+                      </div>
+                    )}
+                  </div>
               ))
             ) : (
               <TextInstrument className="text-white/40 text-[12px] font-bold tracking-[0.15em] uppercase truncate">
