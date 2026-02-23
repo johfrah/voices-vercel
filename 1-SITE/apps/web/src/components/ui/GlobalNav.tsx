@@ -290,21 +290,11 @@ export default function GlobalNav() {
   const cartCount = checkoutState.items?.length || 0;
   
   //  NOTIFICATION LOGIC
-  const [adminNotifications, setAdminNotifications] = useState([
-    { id: 1, title: t('nav.notification.1.title', 'Nieuwe stem beschikbaar'), message: t('nav.notification.1.message', 'Johfrah heeft een nieuwe demo gepload.'), time: t('nav.notification.1.time', '2 min geleden'), read: false, type: 'voice' },
-    { id: 2, title: t('nav.notification.2.title', 'Bestelling voltooid'), message: t('nav.notification.2.message', 'Je opname voor "Project X" is klaar.'), time: t('nav.notification.2.time', '1 uur geleden'), read: false, type: 'order' },
-    { id: 3, title: t('nav.notification.3.title', 'Voicy Tip'), message: t('nav.notification.3.message', 'Wist je dat we nu ook AI-stemmen aanbieden?'), time: t('nav.notification.3.time', '3 uur geleden'), read: false, type: 'tip' }
-  ]);
-  
-  const notifications = isAdmin ? adminNotifications : customerNotifications;
-  const notificationsCount = isAdmin ? adminNotifications.filter(n => !n.read).length : customerUnreadCount;
+  const notifications = customerNotifications;
+  const notificationsCount = customerUnreadCount;
 
   const markAsRead = (id: any) => {
-    if (isAdmin) {
-      setAdminNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-    } else {
-      markCustomerAsRead(id);
-    }
+    markCustomerAsRead(id);
   };
   
   const [navConfig, setNavConfig] = useState<NavConfig | null>(null);
@@ -938,11 +928,7 @@ export default function GlobalNav() {
                     variant="link"
                     size="none"
                     onClick={() => { 
-                      if (isAdmin) {
-                        setAdminNotifications(prev => prev.map(n => ({ ...n, read: true }))); 
-                      } else {
-                        markAllCustomerAsRead();
-                      }
+                      markAllCustomerAsRead();
                     }}
                     className="text-[11px] font-bold text-primary hover:text-primary/80 uppercase tracking-widest transition-colors"
                   >
@@ -976,12 +962,12 @@ export default function GlobalNav() {
                         <ContainerInstrument plain className="flex justify-between items-start mb-0.5">
                           <TextInstrument className="text-[13px] font-light text-va-black truncate pr-2">{n.title}</TextInstrument>
                           <TextInstrument className="text-[11px] text-va-black/30 whitespace-nowrap font-light">
-                            {isAdmin ? n.time : new Date(n.createdAt).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' })}
+                            {new Date(n.createdAt).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' })}
                           </TextInstrument>
                         </ContainerInstrument>
                         <TextInstrument className="text-[13px] text-va-black/60 leading-tight line-clamp-2 font-light">{n.message}</TextInstrument>
                       </ContainerInstrument>
-                      {!(isAdmin ? n.read : n.isRead) && (
+                      {!n.isRead && (
                         <ContainerInstrument plain className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
                       )}
                     </ButtonInstrument>
