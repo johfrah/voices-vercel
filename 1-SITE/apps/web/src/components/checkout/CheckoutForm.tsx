@@ -111,11 +111,11 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   useEffect(() => {
     if (formData.vat_number && formData.vat_number.length > 8 && formData.vat_number !== vatStatus.lastChecked) {
       const validateVat = async () => {
-        setVatStatus(prev => ({ ...prev, validating: true, valid: null, lastChecked: formData.vat_number }));
+        setVatStatus(prevVat => ({ ...prevVat, validating: true, valid: null, lastChecked: formData.vat_number }));
         try {
           const res = await fetch(`/api/vat-verify?vat=${formData.vat_number}`);
           const data = await res.json();
-          setVatStatus(prev => ({ ...prev, validating: false, valid: data.valid }));
+          setVatStatus(prevVat => ({ ...prevVat, validating: false, valid: data.valid }));
           
           if (data.valid && data.companyName) {
             playClick('pro');
@@ -124,8 +124,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
 
             //  LEX-MANDATE: Voorkom BTW-fraude door land-mismatch
             if (selectedCountry === 'BE' && vatCountry !== 'BE') {
-              setVatStatus(prev => ({ 
-                ...prev, 
+              setVatStatus(prevVat => ({ 
+                ...prevVat, 
                 validating: false, 
                 valid: false,
                 message: t('checkout.vat.error_be', 'Belgische klanten moeten een BE BTW-nummer gebruiken.') 
@@ -135,8 +135,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             }
 
             if (selectedCountry !== vatCountry) {
-              setVatStatus(prev => ({ 
-                ...prev, 
+              setVatStatus(prevVat => ({ 
+                ...prevVat, 
                 validating: false, 
                 valid: false,
                 message: t('checkout.vat.error_mismatch', `BTW-nummer matcht niet met land (${selectedCountry}).`) 
@@ -155,11 +155,11 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               updates.country = vatCountry;
             }
 
-            setFormData(prev => ({ ...prev, ...updates }));
+            setFormData(prevForm => ({ ...prevForm, ...updates }));
             updateCustomer(updates);
           }
         } catch (e) {
-          setVatStatus(prev => ({ ...prev, validating: false, valid: false }));
+          setVatStatus(prevVat => ({ ...prevVat, validating: false, valid: false }));
         }
       };
       const timer = setTimeout(validateVat, 800);
@@ -222,7 +222,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     
     //  MONKEYPROOF VALIDATION: Check required fields and scroll to first error
     const requiredFields = ['email', 'first_name', 'last_name', 'postal_code', 'city'];
-    const missingField = requiredFields.find(f => !formData[f as keyof typeof formData]);
+    const missingField = requiredFields.find(fieldItem => !formData[fieldItem as keyof typeof formData]);
     
     if (missingField) {
       playClick('error');
@@ -230,7 +230,6 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         (element as HTMLElement).focus();
-        // Add a temporary shake class if possible, or just focus
       }
       return;
     }
@@ -239,34 +238,34 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     updateIsSubmitting(true);
 
     try {
-    const res = await fetch('/api/checkout/mollie', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...state,
-        ...formData,
-        pricing: {
-          ...state.pricing,
-          total: subtotal,
-          cartHash
-        },
-        quoteMessage,
-        payment_method: state.paymentMethod,
-        country: formData.country || 'BE',
-        language: language || 'nl',
-        music: state.music,
-        metadata: {
-          ...state.metadata,
-          words: state.briefing.trim().split(/\s+/).filter(Boolean).length,
-          prompts: state.prompts
-        }
-      }),
-    });
+      const res = await fetch('/api/checkout/mollie', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...state,
+          ...formData,
+          pricing: {
+            ...state.pricing,
+            total: subtotal,
+            cartHash
+          },
+          quoteMessage,
+          payment_method: state.paymentMethod,
+          country: formData.country || 'BE',
+          language: language || 'nl',
+          music: state.music,
+          metadata: {
+            ...state.metadata,
+            words: state.briefing.trim().split(/\s+/).filter(Boolean).length,
+            prompts: state.prompts
+          }
+        }),
+      });
 
-    const data = await res.json();
-    console.log('[Checkout] API Response:', data);
+      const data = await res.json();
+      console.log('[Checkout] API Response:', data);
 
-    if (data.success) {
+      if (data.success) {
         if (formData.isQuote || data.isBankTransfer) {
           // CHRIS-PROTOCOL: Geen lelijke browser alerts. Direct doorsturen.
           setIsPreviewOpen(false);

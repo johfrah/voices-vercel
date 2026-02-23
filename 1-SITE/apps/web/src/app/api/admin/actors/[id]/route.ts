@@ -157,6 +157,39 @@ export async function PATCH(
 
     const effectiveActorId = result[0].id;
 
+    // 🛡️ CHRIS-PROTOCOL: Update actor_languages relationships (v2.14.133)
+    if (body.native_lang_id || body.extra_lang_ids) {
+      try {
+        const { actorLanguages } = await import('@db/schema');
+        
+        // 1. Verwijder bestaande relaties voor deze acteur
+        await db.delete(actorLanguages).where(eq(actorLanguages.actorId, effectiveActorId));
+        
+        // 2. Voeg nieuwe relaties toe
+        if (body.native_lang_id) {
+          await db.insert(actorLanguages).values({
+            actorId: effectiveActorId,
+            languageId: body.native_lang_id,
+            isNative: true
+          });
+        }
+        
+        if (body.extra_lang_ids && Array.isArray(body.extra_lang_ids)) {
+          for (const langId of body.extra_lang_ids) {
+            if (langId === body.native_lang_id) continue;
+            await db.insert(actorLanguages).values({
+              actorId: effectiveActorId,
+              languageId: langId,
+              isNative: false
+            }).onConflictDoNothing();
+          }
+        }
+        console.log(` ADMIN: Language relationships updated for actor ${effectiveActorId}`);
+      } catch (relErr: any) {
+        console.error(' ADMIN: Language relationship update failed:', relErr.message);
+      }
+    }
+
     //  CHRIS-PROTOCOL: Update demos if provided
     if (body.demos && Array.isArray(body.demos)) {
       const { actorDemos } = await import('@db/schema');
