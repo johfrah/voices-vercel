@@ -1,4 +1,4 @@
-import { AcademyDashboardData, Lesson } from "./api";
+import { AcademyDashboardData, Lesson } from "../services/api";
 import { db } from "@db";
 import { lessons, courseProgress, courseSubmissions } from "@db/schema";
 import { eq, sql, and, count, asc } from "drizzle-orm";

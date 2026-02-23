@@ -1,6 +1,6 @@
 import { db } from "@db";
 import { sql, eq, and, asc } from "drizzle-orm";
-import { useSonicDNA } from "./sonic-dna";
+import { useSonicDNA } from "../engines/sonic-dna";
 import { languages, voiceTones, countries } from "@db/schema";
 
 /**

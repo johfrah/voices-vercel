@@ -1,7 +1,7 @@
 import { db } from "@db";
 import { actorDemos, actors } from "@db/schema";
 import { and, eq, like, or, sql } from "drizzle-orm";
-import { Actor, SearchResults } from "./api";
+import { Actor, SearchResults } from "../services/api";
 
 //  VOICES OS: Dit bestand mag NOOIT in de browser worden geladen.
 // Het bevat directe database-toegang.

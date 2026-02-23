@@ -2,7 +2,7 @@ import { db } from "@db";
 import { orders, systemEvents } from "@db/schema";
 import { eq } from "drizzle-orm";
 import { InvoiceService } from "../commerce/invoice-service";
-import { SmartmailService } from "../system/smartmail-service";
+import { SmartmailService } from "./smartmail-service";
 
 /**
  *  CORE AUTOMATION ENGINE (2026)
