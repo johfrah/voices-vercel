@@ -128,20 +128,20 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           // We filter on the server to provide a fast initial load, but the client 
           // can still request other languages or 'all'.
           if (targetLang === 'nl' || targetLang === 'nl-be' || targetLang === 'nl-nl') {
-            query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands,extra_langs.ilike.%nl-be%,extra_langs.ilike.%vlaams%');
+            query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
           } else if (targetLang === 'en' || targetLang === 'en-gb' || targetLang === 'en-us') {
-            query = query.or('native_lang.ilike.en,native_lang.ilike.en-%,native_lang.ilike.engels,extra_langs.ilike.%en-gb%,extra_langs.ilike.%engels%');
+            query = query.or('native_lang.ilike.en,native_lang.ilike.en-%,native_lang.ilike.engels');
           } else if (targetLang === 'fr' || targetLang === 'fr-fr' || targetLang === 'fr-be') {
             // 🛡️ CHRIS-PROTOCOL: We filter strictly on native_lang for the specific language filter,
             // but we ensure the query is broad enough to catch all variations of Belgian French.
             query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%,native_lang.ilike.frans,native_lang.ilike.frans (be),native_lang.ilike.fr-be,native_lang.ilike.belgisch frans');
           } else if (targetLang === 'de' || targetLang === 'de-de') {
-            query = query.or('native_lang.ilike.de,native_lang.ilike.de-%,native_lang.ilike.duits,extra_langs.ilike.%de-de%,extra_langs.ilike.%duits%');
+            query = query.or('native_lang.ilike.de,native_lang.ilike.de-%,native_lang.ilike.duits');
           } else if (targetLang === 'all') {
             // 🛡️ CHRIS-PROTOCOL: 'all' allows the visitor to see the entire selection
             console.log(' [getActors] Fetching all live actors per request');
           } else {
-            query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%,extra_langs.ilike.%${targetLang}%`);
+            query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
           }
         }
         
