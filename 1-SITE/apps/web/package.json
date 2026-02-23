@@ -13,6 +13,7 @@
     "health-check": "npm run lint:fix && npm run type-check",
     "watch": "npm run dev & tsc --noEmit --watch",
     "bob-fix": "tsx 3-WETTEN/scripts/watchdog.ts",
+    "check:pre-vercel": "tsx ../../../3-WETTEN/scripts/pre-vercel-check.ts",
     "env:pull": "vercel env pull .env.local",
     "logs:live": "vercel logs voices-os-2026.vercel.app -f",
     "audit:forensic": "tsx 3-WETTEN/scripts/forensic-audit.ts",

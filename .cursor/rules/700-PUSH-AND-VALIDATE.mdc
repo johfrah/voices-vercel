@@ -11,18 +11,20 @@ Dit protocol garandeert dat elke wijziging niet alleen wordt gepusht, maar ook d
 
 Vóór elke afronding van een taak MOET de agent de volgende stappen doorlopen:
 
-1.  **Versiebeheer**: Verhoog de `version` in `1-SITE/apps/web/package.json`.
-2.  **Atomic Audit**: Voer de `000-ATOMIC-AUDIT.mdc` uit.
-3.  **Push**: Voer `git add . && git commit -m "vX.Y.Z: [Bericht]" && git push` uit.
-4.  **Wacht op Build**: Wacht minimaal 60-90 seconden tot Vercel de build heeft voltooid.
-5.  **Forensische Audit**: Voer het validatie-script uit om de live logs te controleren:
+1.  **Pre-Vercel Check**: Voer `npm run check:pre-vercel` uit vanuit de root of `1-SITE/apps/web`. Dit voert een volledige build uit en scant op Nuclear Law schendingen.
+2.  **Versiebeheer**: Verhoog de `version` in `1-SITE/apps/web/package.json`.
+3.  **Atomic Audit**: Voer de `000-ATOMIC-AUDIT.mdc` uit.
+4.  **Push**: Voer `git add . && git commit -m "vX.Y.Z: [Bericht]" && git push` uit.
+5.  **Wacht op Build**: Wacht minimaal 60-90 seconden tot Vercel de build heeft voltooid.
+6.  **Forensische Audit**: Voer het validatie-script uit om de live logs te controleren:
     ```bash
     npx tsx 3-WETTEN/scripts/forensic-audit.ts
     ```
-6.  **Certificering**: De taak mag pas als "COMPLETED" worden gemarkeerd als de audit een ✅ groen resultaat geeft.
+7.  **Certificering**: De taak mag pas als "COMPLETED" worden gemarkeerd als de audit een ✅ groen resultaat geeft.
 
 ## 🚫 Verboden Patronen
 
+- **GEEN** push zonder voorafgaande succesvolle `npm run check:pre-vercel`.
 - **GEEN** push zonder versie-verhoging.
 - **GEEN** taak afronden zonder de live logs te checken.
 - **GEEN** negeren van waarschuwingen in de `forensic-audit.ts`.

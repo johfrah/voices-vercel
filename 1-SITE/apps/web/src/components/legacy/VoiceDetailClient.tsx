@@ -19,7 +19,10 @@ import { useRouter } from 'next/navigation';
 import dynamic from "next/dynamic";
 
 //  NUCLEAR LOADING MANDATE
-const ReviewsInstrument = dynamic(() => import("@/components/ui/ReviewsInstrument").then(mod => mod.ReviewsInstrument), { ssr: false });
+const ReviewsInstrument = dynamic(() => import("@/components/ui/ReviewsInstrument").then(mod => mod.ReviewsInstrument), { 
+  ssr: false,
+  loading: () => <div className="h-[400px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
+});
 
 import ConfiguratorPageClient from "@/app/checkout/configurator/ConfiguratorPageClient";
 

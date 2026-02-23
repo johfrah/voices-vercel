@@ -18,7 +18,10 @@ import { useEffect, useState, Suspense } from 'react';
 import dynamic from "next/dynamic";
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
+  ssr: false,
+  loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />
+});
 
 export default function FavoritesPage() {
   const { state } = useVoicesState();

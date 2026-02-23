@@ -19,7 +19,10 @@ import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { 
+  ssr: false,
+  loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />
+});
 
 /**
  *  404: SMART RECOVERY PAGE
