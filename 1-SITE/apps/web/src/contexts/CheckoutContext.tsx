@@ -677,9 +677,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       cartHash
     }}>
       <div className="hidden"><CheckCircle2 strokeWidth={1.5} /></div>
-      <div className={cn(!isHydrated && "opacity-0 pointer-events-none")}>
-        {children}
-      </div>
+      {children}
     </CheckoutContext.Provider>
   );
 };
