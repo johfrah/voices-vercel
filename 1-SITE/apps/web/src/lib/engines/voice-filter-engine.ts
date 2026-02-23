@@ -89,6 +89,12 @@ export class VoiceFilterEngine {
           9: 'it-it', 10: 'pl-pl', 11: 'da-dk'
         }).find(([id]) => Number(id) === criteria.languageId)?.[1];
 
+        // 🛡️ BE-FIX: Voor de Belgische markt (ID 3) accepteren we ook algemene 'fr' 
+        // moedertaalsprekers die in België (BE) wonen.
+        if (criteria.languageId === 3 && (dbCode === 'fr' || dbCode === 'frans') && (actor.country === 'be' || actor.countryId === 1)) {
+          return true;
+        }
+
         if (targetCode && dbCode === targetCode) return true;
 
         return false;
