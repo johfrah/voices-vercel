@@ -29,28 +29,19 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Call Email Service
-    const emailServiceUrl = process.env.EMAIL_SERVICE_URL || 'https://voices-vercel.vercel.app';
-    
-    const response = await fetch(`${emailServiceUrl}/api/mailbox/send`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        to,
-        subject,
-        body
-      }),
+    const { VoicesMailEngine } = await import('@/services/VoicesMailEngine');
+    const mailEngine = VoicesMailEngine.getInstance();
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+
+    await mailEngine.sendVoicesMail({
+      to,
+      subject,
+      title: subject,
+      body,
+      host
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to send email via service');
-    }
-
-    const result = await response.json();
-
-    return NextResponse.json({ success: true, data: result });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('[Mailbox API] Error sending email:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
