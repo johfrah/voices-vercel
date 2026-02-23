@@ -1,10 +1,10 @@
 import { requireAdminRedirect } from '@/lib/auth/server-auth';
 import { Metadata } from 'next';
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
 export const metadata: Metadata = {
   title: 'Voices Admin | Admin',

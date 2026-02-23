@@ -13,9 +13,9 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { SlimmeKassa } from '@/lib/pricing-engine';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 
-const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
 export const dynamic = 'force-dynamic';
 

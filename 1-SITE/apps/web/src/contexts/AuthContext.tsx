@@ -215,8 +215,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isAdmin = (user as any)?.role === 'admin' ||
-                  (user as any)?.role === 'superadmin' ||
-                  process.env.NODE_ENV === 'development';
+                  (user as any)?.role === 'superadmin';
 
   return (
     <AuthContext.Provider value={{ 

@@ -395,22 +395,58 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
 }
 
 export async function getMusicLibrary(category: string = 'music'): Promise<any[]> {
-  const musicMedia = await db.select().from(media).where(eq(media.category, category)).limit(50).catch(() => []);
+  const musicMedia = await db.select().from(media).where(eq(media.category, category)).limit(50).catch((e) => {
+    const { ServerWatchdog } = require('./server-watchdog');
+    ServerWatchdog.report({
+      error: `Failed to fetch music library for category: ${category}`,
+      stack: e instanceof Error ? e.stack : String(e),
+      component: 'api-server:getMusicLibrary',
+      level: 'error'
+    });
+    return [];
+  });
   return (musicMedia || []).map(m => ({ id: m.id.toString(), title: m.fileName, preview: m.filePath }));
 }
 
 export async function getAcademyLesson(id: string): Promise<any> {
-  const results = await db.select().from(lessons).where(eq(lessons.displayOrder, parseInt(id))).limit(1).catch(() => []);
+  const results = await db.select().from(lessons).where(eq(lessons.displayOrder, parseInt(id))).limit(1).catch((e) => {
+    const { ServerWatchdog } = require('./server-watchdog');
+    ServerWatchdog.report({
+      error: `Failed to fetch academy lesson for id: ${id}`,
+      stack: e instanceof Error ? e.stack : String(e),
+      component: 'api-server:getAcademyLesson',
+      level: 'error'
+    });
+    return [];
+  });
   return results[0] || null;
 }
 
 export async function getFaqs(category: string, limit: number = 5): Promise<any[]> {
-  const data = await db.select().from(faq).where(and(eq(faq.category, category), eq(faq.isPublic, true))).limit(limit).catch(() => []);
+  const data = await db.select().from(faq).where(and(eq(faq.category, category), eq(faq.isPublic, true))).limit(limit).catch((e) => {
+    const { ServerWatchdog } = require('./server-watchdog');
+    ServerWatchdog.report({
+      error: `Failed to fetch faqs for category: ${category}`,
+      stack: e instanceof Error ? e.stack : String(e),
+      component: 'api-server:getFaqs',
+      level: 'error'
+    });
+    return [];
+  });
   return data || [];
 }
 
 export async function getWorkshops(limit: number = 50): Promise<any[]> {
-  const workshopsData = await (db.query as any).workshops?.findMany({ limit }).catch(() => []);
+  const workshopsData = await (db.query as any).workshops?.findMany({ limit }).catch((e: any) => {
+    const { ServerWatchdog } = require('./server-watchdog');
+    ServerWatchdog.report({
+      error: `Failed to fetch workshops`,
+      stack: e instanceof Error ? e.stack : String(e),
+      component: 'api-server:getWorkshops',
+      level: 'error'
+    });
+    return [];
+  });
   return workshopsData || [];
 }
 

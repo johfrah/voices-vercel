@@ -7,9 +7,9 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Settings, ArrowLeft, User, Lock, Bell, Shield, BadgeCheck } from 'lucide-react';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { ActorProfileForm } from '@/components/forms/ActorProfileForm';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 
-const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
 export const dynamic = 'force-dynamic';
 

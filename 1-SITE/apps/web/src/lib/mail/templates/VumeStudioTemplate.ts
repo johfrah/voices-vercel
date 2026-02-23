@@ -41,11 +41,11 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     headerImage,
     instructorName = 'Johfrah Lefebvre',
     instructorRole = 'Voice-over en coach',
-    instructorImage = 'https://www.voices.be/assets/common/branding/founder/johfrah.png?v=20260213',
+    instructorImage = `https://${host}/api/proxy?path=${encodeURIComponent('/assets/common/branding/founder/johfrah.png')}&v=20260213`,
     description = 'In deze workshop leer je de basis van voice-overs inspreken: van stemopwarming tot tekstbegrip en intonatie en spreken in de microfoon.',
     learningPoints = 'Tijdens deze praktijkgerichte workshop werk je intensief met tekst en microfoon. Je doet niet alleen nieuwe vaardigheden op, maar gaat ook naar huis met een hoogwaardige opname.',
     schedule = '09u45: Aankomst\n10u00: Kennismaking\n10u15: Workshop deel 1\n13u30: Lunch\n14u15: Workshop deel 2\n17u00: Einde',
-    videoThumbnail = `https://${host}/assets/studio/common/branding/VSTUDIO.webp`,
+    videoThumbnail = `https://${host}/api/proxy?path=${encodeURIComponent('/assets/studio/common/branding/VSTUDIO.webp')}`,
     videoUrl = `https://${host}/studio/`,
     aftermovieText = 'Ontdek hoe deelnemers hun stem leren inzetten om teksten echt te laten leven.',
     optOutToken,
@@ -73,7 +73,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
       ctaText: 'Bekijk je dashboard voor alle details.',
       button: 'NAAR DASHBOARD',
       footer: 'Warme groeten,<br>Bernadette en Johfrah',
-      studioLink: `www.${host}/studio/`
+      studioLink: `${host}/studio/`
     },
   }[language as 'nl'] || content.nl;
 
@@ -90,7 +90,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tr>
                 <td width="60" style="vertical-align: top;">
-                  <img src="${headerImage || `https://${host}/assets/studio/common/branding/VSTUDIO.webp`}" width="60" height="60" style="border-radius: 50%; object-fit: cover; border: 1px solid #eee; display: block;" />
+                  <img src="${headerImage || `https://${host}/api/proxy?path=${encodeURIComponent('/assets/studio/common/branding/VSTUDIO.webp')}`}" width="60" height="60" style="border-radius: 50%; object-fit: cover; border: 1px solid #eee; display: block;" />
                 </td>
                 <td style="padding-left: 15px; vertical-align: top;">
                   <div style="font-weight: 600; font-size: 16px; color: #111; margin-bottom: 4px;">${date}</div>
@@ -153,7 +153,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
       <!-- SIGNATURE -->
       <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #111;">
           ${content.footer}<br />
-          <a href="https://${host}/studio/" style="color: #111; font-weight: bold; text-decoration: underline;">www.${host}/studio/</a>
+          <a href="https://${host}/studio/" style="color: #111; font-weight: bold; text-decoration: underline;">${host}/studio/</a>
         </p>
     </div>
   `;
@@ -163,7 +163,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     previewText: workshopName,
     journey: 'studio',
     host,
-    headerImage: headerImage || `https://${host}/assets/studio/common/branding/VSTUDIO.webp`,
+    headerImage: headerImage || `https://${host}/api/proxy?path=${encodeURIComponent('/assets/studio/common/branding/VSTUDIO.webp')}`,
     optOutUrl
   });
 }

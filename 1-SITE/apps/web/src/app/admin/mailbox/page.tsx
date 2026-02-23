@@ -45,7 +45,7 @@ export default function MailboxPage() {
   
   // 🛡️ CHRIS-PROTOCOL: Fetch admin email from MarketManager (Source of Truth)
   const market = useMemo(() => MarketManager.getCurrentMarket(), []);
-  const adminEmail = market.email;
+  const adminEmail = market.email || 'johfrah@voices.be';
   
   const [activeAccount, setActiveAccount] = useState(adminEmail);
   const [activeTab, setActiveTab] = useState<MailboxTab>('inbox');

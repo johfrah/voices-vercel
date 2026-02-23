@@ -14,14 +14,14 @@ import { VoiceFilterEngine } from "@/lib/voice-filter-engine";
 import { Actor } from "@/types";
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
+const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
   ssr: false,
   loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />
 });
-const ReviewsInstrument = dynamic(() => import("@/components/ui/ReviewsInstrument").then(mod => mod.ReviewsInstrument), { 
+const ReviewsInstrument = nextDynamic(() => import("@/components/ui/ReviewsInstrument").then(mod => mod.ReviewsInstrument), { 
   ssr: false,
   loading: () => <div className="h-[400px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
 });
@@ -33,7 +33,7 @@ import { useSonicDNA } from "@/lib/sonic-dna";
 import { AnimatePresence, motion } from 'framer-motion';
 
 //  NUCLEAR LOADING MANDATE
-const ConfiguratorPageClient = dynamic(() => import('@/app/checkout/configurator/ConfiguratorPageClient'), { 
+const ConfiguratorPageClient = nextDynamic(() => import('@/app/checkout/configurator/ConfiguratorPageClient'), { 
   ssr: false,
   loading: () => <div className="h-[600px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
 });
@@ -478,8 +478,8 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": marketConfig.name,
-        "url": MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${(typeof window !== 'undefined' ? window.location.host : 'www.voices.be').replace(/^https?:\/\//, '')}`,
-        "logo": `${MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${(typeof window !== 'undefined' ? window.location.host : 'www.voices.be').replace(/^https?:\/\//, '')}`}${marketConfig.logo_url}`,
+        "url": MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${marketConfig.market_code === 'BE' ? 'www.voices.be' : 'www.voices.nl'}`,
+        "logo": `${MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${marketConfig.market_code === 'BE' ? 'www.voices.be' : 'www.voices.nl'}`}${marketConfig.logo_url}`,
         "description": marketConfig.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
         "aggregateRating": {
           "@type": "AggregateRating",

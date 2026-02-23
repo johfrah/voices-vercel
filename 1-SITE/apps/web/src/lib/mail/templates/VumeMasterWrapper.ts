@@ -55,7 +55,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const logoHtml = `
     <tr>
       <td align="center" style="padding-bottom: 40px;">
-                  <img src="${market.logo_url.startsWith('http') ? market.logo_url : `https://${host}${market.logo_url}`}" alt="${market.name}" width="140" style="display: block; border: 0;" />
+                  <img src="${market.logo_url.startsWith('http') ? market.logo_url : `https://${host}/api/proxy?path=${encodeURIComponent(market.logo_url)}`}" alt="${market.name}" width="140" style="display: block; border: 0;" />
       </td>
     </tr>
   `;
@@ -65,14 +65,14 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
       <tr>
         <td width="100" style="vertical-align: middle; text-align: center;">
           <a href="https://${host}/?utm_source=E-mail&utm_medium=be-mail" style="text-decoration: none;">
-            <img src="https://www.voices.be/assets/common/branding/founder/johfrah.png?v=20260213" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
+            <img src="https://${host}/api/proxy?path=${encodeURIComponent('/assets/common/branding/founder/johfrah.png')}&v=20260213" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
           </a>
         </td>
         <td style="vertical-align: middle; padding-left: 31px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">
           <span style="font-weight: 700; color: ${isDark ? '#FFFFFF' : '#1A1A1A'};">Johfrah Lefebvre</span><br />
           <a href="mailto:${market.email}" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">${market.email}</a><br />
           <a href="tel:${market.phone.replace(/\s+/g, '')}" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">${market.phone}</a><br />
-          <a href="https://${host}/?utm_source=E-mail&utm_medium=be-mail" style="color: #1155CC; text-decoration: none; font-weight: 500;">www.${host}</a>
+          <a href="https://${host}/?utm_source=E-mail&utm_medium=be-mail" style="color: #1155CC; text-decoration: none; font-weight: 500;">${host}</a>
         </td>
       </tr>
     </table>

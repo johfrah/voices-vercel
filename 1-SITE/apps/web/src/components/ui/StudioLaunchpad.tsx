@@ -41,9 +41,9 @@ import { useRouter } from 'next/navigation';
 import React, { useRef, useState, useEffect } from 'react';
 
 import { VoiceCard } from '@/components/ui/VoiceCard';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 
-const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
 import { CommercialMediaType, SlimmeKassa } from '@/lib/pricing-engine';
 

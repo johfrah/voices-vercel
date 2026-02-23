@@ -18,9 +18,9 @@ import { Suspense, useEffect, useState } from 'react';
 import { LoginPageClient } from './login/LoginPageClient';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 
-const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
 import { 
   Zap, 
@@ -106,7 +106,7 @@ export default function AccountDashboardClient() {
       <div className="va-home-container">
         {/*  ACCOUNT HERO */}
         <AccountHeroInstrument 
-          userEmail={user?.email || `user@${typeof window !== 'undefined' ? window.location.host : 'voices.be'}`} 
+          userEmail={user?.email || `user@${isAdmin ? 'voices.be' : (typeof window !== 'undefined' ? window.location.host : 'voices.be')}`} 
           onLogout={logout}
           isAdmin={isAdmin}
         />

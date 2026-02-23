@@ -34,6 +34,11 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   
   const { language } = useTranslation();
   
+  const market = React.useMemo(() => {
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    return MarketManager.getCurrentMarket();
+  }, []);
+
   const [formData, setFormData] = useState({
     ...state.customer,
     isQuote: state.isQuoteRequest || false
@@ -421,7 +426,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             </LabelInstrument>
             <InputInstrument
               value={formData.phone || ''}
-              placeholder={t('checkout.form.phone_placeholder', "+32...")}
+              placeholder={t('checkout.form.phone_placeholder', market.market_code === 'BE' ? "+32..." : "+31...")}
               className="w-full !rounded-[10px]"
               onChange={(e) => handleChange('phone', e.target.value)}
             />
