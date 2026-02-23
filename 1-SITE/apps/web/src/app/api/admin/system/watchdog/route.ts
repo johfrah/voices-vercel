@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   console.log('[Watchdog] Incoming error report...');
   try {
     const body = await request.json();
-    const { error, stack, component, url, level = 'error' } = body;
+    const { error, stack, component, url, level = 'error', details = {} } = body;
 
     if (!error) {
       return NextResponse.json({ error: 'Error message required' }, { status: 400 });
@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
           source: component || 'Watchdog',
           message: error,
           details: {
+            ...details,
             stack,
             url,
             userAgent: request.headers.get('user-agent'),
@@ -148,7 +149,17 @@ export async function POST(request: NextRequest) {
                 <code style="font-family: monospace; font-size: 14px; color: #000; display: block; word-break: break-all;">
                   ${error}
                 </code>
+                ${stack ? `
+                  <p style="margin: 15px 0 5px 0; font-weight: bold; color: #ff007a; font-size: 12px;">STACK TRACE:</p>
+                  <pre style="font-family: monospace; font-size: 11px; color: #666; background: #fff; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; max-height: 200px;">${stack}</pre>
+                ` : ''}
               </div>
+              ${details && Object.keys(details).length > 0 ? `
+                <div style="background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; margin: 15px 0; border-radius: 8px; font-size: 13px;">
+                  <p style="margin: 0 0 5px 0; font-weight: bold; color: #0ea5e9;">FORENSIC DETAILS:</p>
+                  <pre style="font-family: monospace; font-size: 11px; color: #444; margin: 0;">${JSON.stringify(details, null, 2)}</pre>
+                </div>
+              ` : ''}
               Klik op de onderstaande knop om de AI-Healer te activeren. Het systeem zal proberen de broncode te analyseren en een automatische fix te pushen naar GitHub.<br/><br/>
               <table style="width: 100%; font-size: 12px; color: #999;">
                 <tr>

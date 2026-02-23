@@ -27,7 +27,13 @@ export const WatchdogProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           stack: event.error?.stack,
           component: 'ClientRuntime',
           url: window.location.href,
-          level: 'error'
+          level: 'critical',
+          details: {
+            filename: event.filename,
+            lineno: event.lineno,
+            colno: event.colno,
+            pathname: window.location.pathname
+          }
         })
       }).catch(err => console.error('[Watchdog] Failed to report error:', err));
     };
@@ -35,15 +41,24 @@ export const WatchdogProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
       console.error('[Watchdog] Unhandled promise rejection:', event.reason);
 
+      const error = event.reason;
+      const message = error?.message || String(error);
+      const stack = error?.stack;
+
       fetch('/api/admin/system/watchdog', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          error: `Unhandled Rejection: ${event.reason?.message || String(event.reason)}`,
-          stack: event.reason?.stack,
+          error: `Unhandled Rejection: ${message}`,
+          stack: stack,
           component: 'ClientPromise',
           url: window.location.href,
-          level: 'error'
+          level: 'critical',
+          details: {
+            reason: error,
+            pathname: window.location.pathname,
+            search: window.location.search
+          }
         })
       }).catch(err => console.error('[Watchdog] Failed to report rejection:', err));
     };

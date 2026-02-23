@@ -31,13 +31,17 @@ export class ClientLogger {
       originalConsoleError.apply(console, args);
       
       // Voorkom oneindige lussen als de report zelf faalt
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
+      const message = args.map(arg => {
+        if (arg instanceof Error) {
+          return `${arg.name}: ${arg.message}\nStack: ${arg.stack}`;
+        }
+        return typeof arg === 'object' ? JSON.stringify(arg) : String(arg);
+      }).join(' ');
       
-      if (!message.includes('/api/admin/system/logs')) {
-        this.report('error', `Console Error: ${message.substring(0, 500)}`, {
-          full_console_output: message
+      if (!message.includes('/api/admin/system/logs') && !message.includes('/api/admin/system/watchdog')) {
+        this.report('error', `Console Error: ${message.substring(0, 1000)}`, {
+          full_console_output: message,
+          location: window.location.href
         });
       }
     };
