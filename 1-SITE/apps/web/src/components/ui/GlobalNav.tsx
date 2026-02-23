@@ -781,6 +781,16 @@ export default function GlobalNav() {
                         >
                           <Trash2 size={14} />
                         </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            checkoutState.removeItem(item.id);
+                            playClick('light');
+                          }}
+                          className="p-2 text-va-black/20 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </ContainerInstrument>
                     ))}
                   </ContainerInstrument>
