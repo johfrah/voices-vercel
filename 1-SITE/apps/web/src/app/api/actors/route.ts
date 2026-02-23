@@ -6,6 +6,8 @@ import { getActors } from '@/lib/services/api-server';
  * 
  * Serveert de stemacteurs data aan de client-side componenten.
  * Voldoet aan het Chris-Protocol: Forensische logging en rigide validatie.
+ * 
+ * @lock-file
  */
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

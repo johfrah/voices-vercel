@@ -37,9 +37,14 @@ export class ViesService {
     console.log(` VIES check voor ${cleanVat}...`);
 
     try {
-      // In een productie-omgeving doen we hier een echte fetch naar de VIES API.
-      // We gebruiken de officiële EU VIES REST API (of een bridge).
-      const response = await fetch(`https://ec.europa.eu/taxation_customs/vies/rest-api/ms/${countryCode}/vat/${vatOnly}`);
+      // 🛡️ CHRIS-PROTOCOL: 3s internal timeout for VIES API
+      const fetchPromise = fetch(`https://ec.europa.eu/taxation_customs/vies/rest-api/ms/${countryCode}/vat/${vatOnly}`);
+      
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('VIES API timeout (3s)')), 3000)
+      );
+
+      const response = await Promise.race([fetchPromise, timeoutPromise]);
       
       if (!response.ok) {
         throw new Error(`VIES API Error: ${response.statusText}`);

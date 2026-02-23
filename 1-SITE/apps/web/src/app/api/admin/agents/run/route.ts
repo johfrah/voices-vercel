@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     console.log(`   CWD: ${cwd}`);
 
     // 3. Execute Script
-    return new Promise((resolve) => {
+    return new Promise<Response>((resolve) => {
       exec(command, { cwd }, (error, stdout, stderr) => {
         if (error) {
           console.error(` Agent ${agent} failed:`, error);

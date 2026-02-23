@@ -1,5 +1,17 @@
 "use client";
 
+/**
+ *  CHECKOUT CONTEXT (NUCLEAR 2026)
+ * 
+ * Beheert de volledige checkout flow van briefing tot betaling.
+ * 
+ *  CHRIS-PROTOCOL:
+ * - Nuclear Loading: Alle zware hooks en effecten zijn geoptimaliseerd.
+ * - Antifragile: Kan omgaan met zowel ISO-codes als UI-labels.
+ * 
+ * @lock-file
+ */
+
 import { PlanType, SlimmeKassa, UsageType } from '@/lib/engines/pricing-engine';
 import { generateCartHash } from '@/lib/utils/cart-utils';
 import { Actor } from '@/types';
@@ -631,9 +643,8 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const subtotal = React.useMemo(() => {
     const cartTotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
     // 🛡️ KELLY-FIX: Alleen de huidige selectie optellen als we NIET in de details/payment stap zitten
-    // De screenshot toont dat de bezoeker al in het mandje kijkt (waarschijnlijk details stap), 
-    // maar het item staat ook al in de items array.
-    const isAlreadyInCart = state.selectedActor && state.items.some(item => item.actor?.id === state.selectedActor?.id);
+    // De bezoeker ziet het item al in de lijst (state.items), dus we mogen het niet dubbel tellen.
+    const isAlreadyInCart = state.selectedActor && state.items.some(item => (item.actor?.id === state.selectedActor?.id || item.actor?.wpProductId === state.selectedActor?.id));
     const currentSelectionTotal = (state.selectedActor && state.step === 'briefing' && !isAlreadyInCart) ? state.pricing.total : 0;
     return cartTotal + currentSelectionTotal;
   }, [state.items, state.selectedActor, state.step, state.pricing.total]);

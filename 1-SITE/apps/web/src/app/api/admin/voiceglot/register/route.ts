@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
     
     //  CHRIS-PROTOCOL: Report server-side error to Watchdog
     const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
-    ServerWatchdog.report({
+    await ServerWatchdog.report({
       error: `Register API Failure: ${error.message}`,
       stack: error.stack,
       component: 'RegisterAPI',

@@ -46,6 +46,7 @@ import { VoiceCard } from "@/components/ui/VoiceCard";
  * - CSS ZERO: Geen Tailwind classes direct in dit bestand.
  * - TEXT ZERO: Geen hardcoded strings.
  * 
+ * @lock-file
  * AIRBNB MANDATE:
  * - Directe focus op VoiceCards (VoiceGrid).
  * - Geen HowItWorks of Pricing (deze hebben eigen pagina's).

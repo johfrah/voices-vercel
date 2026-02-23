@@ -8,6 +8,8 @@
  * - Zwart-wit discipline: Een acteur is beschikbaar of niet.
  * - 100ms feedback: Geoptimaliseerd voor client-side filtering op grote datasets.
  * - Antifragile: Kan omgaan met zowel ISO-codes als UI-labels.
+ * 
+ * @lock-file
  */
 
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';

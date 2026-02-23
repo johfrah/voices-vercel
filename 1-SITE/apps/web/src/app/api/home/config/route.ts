@@ -8,6 +8,10 @@ import { createClient } from "@supabase/supabase-js";
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+/**
+ * @lock-file
+ */
+
 // 🛡️ CHRIS-PROTOCOL: Nuclear Caching (24h TTL)
 let cachedHomeConfig: any = null;
 let lastFetchTime = 0;
