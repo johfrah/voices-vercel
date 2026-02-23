@@ -91,7 +91,14 @@ export class VoiceFilterEngine {
 
         // 🛡️ BE-FIX: Voor de Belgische markt (ID 3) accepteren we ook algemene 'fr' 
         // moedertaalsprekers die in België (BE) wonen.
-        if (criteria.languageId === 3 && (dbCode === 'fr' || dbCode === 'frans') && (actor.country === 'be' || actor.countryId === 1)) {
+        // CHRIS-PROTOCOL: We checken strikt op country_id 1 (België) of country code 'be'.
+        if (criteria.languageId === 3 && (dbCode === 'fr' || dbCode === 'frans') && (actor.country_id === 1 || actor.country === 'be')) {
+          return true;
+        }
+
+        // 🛡️ FR-FIX: Voor de Franse markt (ID 4) accepteren we ook algemene 'fr'
+        // moedertaalsprekers die in Frankrijk (FR) wonen.
+        if (criteria.languageId === 4 && (dbCode === 'fr' || dbCode === 'frans') && (actor.country_id === 2 || actor.country === 'fr')) {
           return true;
         }
 
