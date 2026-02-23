@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { DirectMailService } from './DirectMailService';
+import { DirectMailService } from './direct-mail-service';
 import { db } from '@db';
 import { approvalQueue } from '@db/schema';
 import { InvoiceReceivedTemplate } from '@legacy/php-codebase/backend-services/email-service/src/templates/invoice-received';

@@ -1,5 +1,5 @@
-import { DirectMailService } from './DirectMailService';
-import { VoicesMailEngine } from './VoicesMailEngine';
+import { DirectMailService } from './direct-mail-service';
+import { VoicesMailEngine } from './voices-mail-engine';
 import fs from 'fs';
 import path from 'path';
 
