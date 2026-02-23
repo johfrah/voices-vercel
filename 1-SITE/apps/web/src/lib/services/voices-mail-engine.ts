@@ -1,4 +1,4 @@
-import { direct-mail-service } from './direct-mail-service';
+import { DirectMailService } from './direct-mail-service';
 
 /**
  * VOICES MAIL ENGINE (BOB-METHOD 2026)
@@ -6,17 +6,17 @@ import { direct-mail-service } from './direct-mail-service';
  * De centrale motor voor alle uitgaande e-mails.
  * Dwingt de Voices-stijl, taal (Voiceglot) en betrouwbare links af.
  */
-export class voices-mail-engine {
-  private static instance: voices-mail-engine;
-  private mailService: direct-mail-service;
+export class VoicesMailEngine {
+  private static instance: VoicesMailEngine;
+  private mailService: DirectMailService;
 
   private constructor() {
-    this.mailService = direct-mail-service.getInstance();
+    this.mailService = DirectMailService.getInstance();
   }
 
-  public static getInstance(): voices-mail-engine {
+  public static getInstance(): VoicesMailEngine {
     if (!voices-mail-engine.instance) {
-      voices-mail-engine.instance = new voices-mail-engine();
+      voices-mail-engine.instance = new VoicesMailEngine();
     }
     return voices-mail-engine.instance;
   }
