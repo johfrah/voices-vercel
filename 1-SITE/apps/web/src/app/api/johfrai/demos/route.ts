@@ -18,7 +18,6 @@ export async function GET(request: Request) {
     }
 
     // 2. Fetch demos for Johfrah
-    // We look for demos in actorDemos and join with media to get labels
     let query = db.select({
       id: actorDemos.id,
       name: actorDemos.name,
@@ -26,6 +25,7 @@ export async function GET(request: Request) {
       type: actorDemos.type,
       labels: media.labels,
       category: media.category,
+      metadata: media.metadata, // Haal echte metadata op
     })
     .from(actorDemos)
     .leftJoin(media, eq(actorDemos.mediaId, media.id))
@@ -33,8 +33,7 @@ export async function GET(request: Request) {
 
     const demos = await query;
 
-    // 3. Filter by sector or vibe if provided
-    // This is a client-side filter for now to be flexible, or we can do it in SQL
+    // 3. Filter by sector or vibe
     let filteredDemos = demos;
 
     if (sector) {
@@ -58,17 +57,16 @@ export async function GET(request: Request) {
         ? audioUrl
         : (audioUrl ? `/api/proxy?path=${encodeURIComponent(audioUrl)}` : '');
 
+      // Gebruik het echte script uit de metadata als het bestaat
+      const realScript = (d.metadata as any)?.script || (d.metadata as any)?.transcription;
+
       return {
         id: d.id,
         title: d.name,
         audio_url: proxiedAudio,
         category: d.type || 'demo',
         labels: d.labels || [],
-        // Mock script for "Adopt Script" functionality
-        // In a real scenario, this would come from a 'scripts' table or media metadata
-        script: d.labels?.some(l => l.toLowerCase().includes('script')) 
-          ? `(Welkomstboodschap)\nBedankt voor het bellen naar onze ${sector || 'organisatie'}. We verbinden u door met een van onze medewerkers.` 
-          : null
+        script: realScript || null
       };
     });
 
