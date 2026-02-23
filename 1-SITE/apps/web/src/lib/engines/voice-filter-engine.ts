@@ -74,7 +74,11 @@ export class VoiceFilterEngine {
 
     // 2. STRICT NATIVE LANGUAGE MATCHING (ID-First Mandate 2026)
     if (criteria.languageId != null) {
-      result = result.filter(actor => actor.native_lang_id != null && actor.native_lang_id === criteria.languageId);
+      result = result.filter(actor => {
+        // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC
+        // De taalfilter is de moedertaal. Punt.
+        return actor.native_lang_id === criteria.languageId;
+      });
     } else if (criteria.language && criteria.language !== 'all') {
       // CHRIS-PROTOCOL: Fallback to label matching if ID is missing (Legacy/Initial Load)
       const lowLang = criteria.language.toLowerCase();
@@ -83,30 +87,17 @@ export class VoiceFilterEngine {
       result = result.filter(actor => {
         const actorNative = actor.native_lang?.toLowerCase();
         const actorNativeLabel = actor.native_lang_label?.toLowerCase();
-        const actorExtraLangs = (actor.extra_langs || '').toLowerCase().split(',').map(l => l.trim());
         
-        // 🛡️ CHRIS-PROTOCOL: NATIVE OR EXTRA LOGIC (Gids-niet-Grens)
-        // Als een bezoeker filtert op een specifieke taal (bijv. fr-be), 
-        // tonen we iedereen die deze taal beheerst (Native of Extra).
-        // Dit voorkomt dat we stemmen ontzeggen die de taal wel spreken.
-        const isNativeMatch = (
+        // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC
+        // De taalfilter is de moedertaal. Punt.
+        const isMatch = (
           actorNative === dbCode || 
           actorNative === lowLang || 
           actorNativeLabel === lowLang ||
           this.isLanguageVariationMatch(dbCode, actorNative)
         );
 
-        const isExtraMatch = actorExtraLangs.some(el => 
-          el === dbCode || 
-          el === lowLang || 
-          (dbCode.startsWith('fr-') && (el === 'fr' || el === 'frans' || el === 'french')) ||
-          (dbCode.startsWith('en-') && (el === 'en' || el === 'engels' || el === 'english')) ||
-          (dbCode.startsWith('de-') && (el === 'de' || el === 'duits' || el === 'german')) ||
-          (dbCode.startsWith('nl-') && (el === 'nl' || el === 'nederlands' || el === 'dutch')) ||
-          this.isLanguageVariationMatch(dbCode, el)
-        );
-
-        return isNativeMatch || isExtraMatch;
+        return isMatch;
       });
     }
 
