@@ -41,7 +41,8 @@ export async function POST(request: NextRequest) {
       console.log('[RegisterAPI] Attempting registry insert:', { key, sourceText, context });
 
       if (key && sourceText) {
-        await db.insert(translationRegistry).values({
+        // 🛡️ CHRIS-PROTOCOL: 2s internal timeout for registry insert
+        const insertPromise = db.insert(translationRegistry).values({
           stringHash: key, 
           originalText: sourceText,
           lastSeen: new Date(),
@@ -54,12 +55,18 @@ export async function POST(request: NextRequest) {
             context: context || 'auto-registered'
           }
         });
+
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Registry insert timeout (2s)')), 2000)
+        );
+
+        await Promise.race([insertPromise, timeoutPromise]);
         console.log('[RegisterAPI] Registry insert success for key:', key);
       } else {
         console.warn('[RegisterAPI] Skipping insert: key or sourceText is missing');
       }
     } catch (dbError: any) {
-      console.error('[RegisterAPI] Registry insert failed for key:', key, 'Error:', dbError.message);
+      console.error('[RegisterAPI] Registry insert failed or timed out for key:', key, 'Error:', dbError.message);
       // We gaan door, want de registry is secundair aan de vertaling zelf
     }
 
