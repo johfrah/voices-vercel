@@ -9,7 +9,7 @@ import {
     Actor,
     SearchResults,
 } from "../types";
-import { VoiceglotBridge } from "./voiceglot-bridge";
+import { VoiceglotBridge } from "../bridges/voiceglot-bridge";
 
 //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt (DNS/Pooler issues)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
