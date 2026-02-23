@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ButtonInstrument } from '@/components/ui/LayoutInstruments';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 
 export const VoicyFaqButton = () => {
   const { playClick } = useSonicDNA();

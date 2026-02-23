@@ -1,6 +1,6 @@
 "use client";
 
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { motion } from 'framer-motion';
 import { Play, Sparkles, Star } from 'lucide-react';
 import Image from 'next/image';

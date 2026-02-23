@@ -8,7 +8,7 @@ import { VoiceglotImage } from "./VoiceglotImage";
 import { VoiceglotText } from "./VoiceglotText";
 import { cn } from "@/lib/utils";
 import { useEditMode } from "@/contexts/EditModeContext";
-import { useSonicDNA } from "@/lib/sonic-dna";
+import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import toast from "react-hot-toast";
 
 import { useTranslation } from "@/contexts/TranslationContext";

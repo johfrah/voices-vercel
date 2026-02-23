@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/LayoutInstruments";
 import { WorkshopEditionEditor } from "@/components/admin/WorkshopEditionEditor";
 import { CertificateTrigger } from "@/components/admin/CertificateTrigger";
-import { StudioDataBridge } from "@/lib/studio-bridge";
+import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
 import { ArrowLeft, CheckCircle2, DollarSign, FileAudio, Mail, Users, Settings } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";

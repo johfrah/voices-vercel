@@ -11,7 +11,7 @@ import {
   InputInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { CheckCircle2, Loader2, Send, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

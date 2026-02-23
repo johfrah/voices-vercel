@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { VoicesLink, useVoicesRouter } from '@/components/ui/VoicesLink';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { useAuth } from '@/contexts/AuthContext';

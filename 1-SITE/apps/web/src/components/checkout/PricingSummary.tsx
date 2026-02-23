@@ -11,7 +11,7 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';

@@ -3,7 +3,7 @@
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useGlobalAudio } from "@/contexts/GlobalAudioContext";
 import { ContainerInstrument, TextInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
-import { useSonicDNA } from "@/lib/sonic-dna";
+import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { Play, Pause, X, Clock, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";

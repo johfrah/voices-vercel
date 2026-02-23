@@ -1,6 +1,6 @@
 "use client";
 
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import React, { useState } from 'react';
 import { ButtonInstrument, InputInstrument, HeadingInstrument, TextInstrument } from '../ui/LayoutInstruments';
 import { motion } from 'framer-motion';

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { StudioDataBridge } from "@/lib/studio-bridge";
+import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
 
 export async function POST(req: Request) {

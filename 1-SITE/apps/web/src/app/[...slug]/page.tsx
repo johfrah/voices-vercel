@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from "react";
 import { getActor, getArtist, getActors } from "@/lib/services/api-server";
+import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { headers } from "next/headers";
 import { VoiceDetailClient } from "@/components/legacy/VoiceDetailClient";
 import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
@@ -30,7 +31,6 @@ const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalcula
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
  */
 function generateActorSchema(actor: any, marketName: string = 'Voices', host: string = '') {
-  const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
   const market = MarketManager.getCurrentMarket(host);
   const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${host || 'www.voices.be'}`;
   
@@ -77,7 +77,6 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Artists
  */
 function generateArtistSchema(artist: any, host: string = '') {
-  const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
   const market = MarketManager.getCurrentMarket(host);
   const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
   return {
@@ -154,7 +153,6 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 
   const headersList = headers();
   const host = (headersList.get('host') || 'www.voices.be').replace(/^https?:\/\//, '');
-  const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
   const market = MarketManager.getCurrentMarket(host);
   const lang = headersList.get('x-voices-lang') || 'nl';
   const normalizedSlug = normalizeSlug(params.slug);
@@ -380,7 +378,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   // 2. Pitch Link (Casting List)
   if (firstSegment === 'pitch' && journey) {
     try {
-      const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
       const host = headersList.get('host') || 'www.voices.be';
       const market = MarketManager.getCurrentMarket(host);
 

@@ -5,7 +5,7 @@ import { BentoCard } from './BentoGrid';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { CheckCircle2, AlertCircle, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 interface AssetGap {

@@ -2,7 +2,7 @@
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import {
     Briefcase,
     Car,

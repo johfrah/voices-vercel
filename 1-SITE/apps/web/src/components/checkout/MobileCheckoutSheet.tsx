@@ -3,7 +3,7 @@
 import { BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Apple, ArrowRight, CheckCircle2, ChevronUp, CreditCard, Mic } from 'lucide-react';
 import Image from 'next/image';

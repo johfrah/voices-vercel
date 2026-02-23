@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';

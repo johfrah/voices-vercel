@@ -1,6 +1,6 @@
 "use client";
 
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { AnimatePresence, motion } from 'framer-motion';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import React, { useEffect, useState } from 'react';

@@ -7,7 +7,7 @@ import {
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { StudioDataBridge } from "@/lib/studio-bridge";
+import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
 import { FixedCostsInstrument } from "@/components/admin/FixedCostsInstrument";
 import { db } from "@db";
 import { workshopEditions } from "@db/schema";

@@ -14,7 +14,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Home, ArrowLeft, Heart, Sparkles, Loader2, Compass } from 'lucide-react';
 import Link from 'next/link';
 import { JourneyCta } from '@/components/ui/JourneyCta';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 

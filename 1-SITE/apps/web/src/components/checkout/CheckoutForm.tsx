@@ -12,7 +12,7 @@ import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useTranslation } from "@/contexts/TranslationContext";
-import { useSonicDNA } from "@/lib/sonic-dna";
+import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
 import { CheckCircle2, Loader2, Clock, User, CreditCard, FileText, Send, AlertCircle, Lock, Tag, X, Mail, ArrowRight, LogIn } from 'lucide-react';

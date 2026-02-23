@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/LayoutInstruments";
 import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { StudioDataBridge } from "@/lib/studio-bridge";
+import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
 import { cn } from "@/lib/utils";
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { 

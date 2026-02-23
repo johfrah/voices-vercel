@@ -10,7 +10,7 @@ import {
   ButtonInstrument 
 } from './LayoutInstruments';
 import { cn } from '@/lib/utils';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 
 interface WorkshopEditModalProps {
   workshop: any;

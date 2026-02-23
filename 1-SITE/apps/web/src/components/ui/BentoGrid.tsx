@@ -1,7 +1,7 @@
 "use client";
 
 import { useEditMode } from '@/contexts/EditModeContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from "@/lib/utils";
 import { matTrack } from '@/lib/mat-intelligence';
 import { useSortable } from '@dnd-kit/sortable';

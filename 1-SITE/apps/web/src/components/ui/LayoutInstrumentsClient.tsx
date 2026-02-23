@@ -1,6 +1,6 @@
 "use client";
 
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import React, { ButtonHTMLAttributes, ElementType, forwardRef } from 'react';

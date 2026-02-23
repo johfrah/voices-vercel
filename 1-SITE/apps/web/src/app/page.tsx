@@ -29,7 +29,7 @@ const ReviewsInstrument = nextDynamic(() => import("@/components/ui/ReviewsInstr
 import { VoiceCard } from "@/components/ui/VoiceCard";
 import { VoicesLink, useVoicesRouter } from "@/components/ui/VoicesLink";
 import { useCheckout } from "@/contexts/CheckoutContext";
-import { useSonicDNA } from "@/lib/sonic-dna";
+import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { AnimatePresence, motion } from 'framer-motion';
 
 //  NUCLEAR LOADING MANDATE

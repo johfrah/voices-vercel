@@ -2,7 +2,7 @@ import React from 'react';
 import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { cn } from '@/lib/utils';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { Check, Clock, Mic, Scissors, Download } from 'lucide-react';
 
 export type OrderStatus = 'queued' | 'recording' | 'editing' | 'ready' | 'completed';

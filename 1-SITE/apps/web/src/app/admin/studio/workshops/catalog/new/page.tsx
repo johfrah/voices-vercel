@@ -4,7 +4,7 @@ import {
     PageWrapperInstrument, 
     TextInstrument 
 } from "@/components/ui/LayoutInstruments";
-import { StudioDataBridge } from "@/lib/studio-bridge";
+import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";

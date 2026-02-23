@@ -10,7 +10,7 @@ import { VoiceGrid } from "@/components/ui/VoiceGrid";
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';

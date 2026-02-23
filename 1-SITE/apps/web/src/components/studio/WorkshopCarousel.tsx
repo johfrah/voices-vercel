@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import { ContainerInstrument } from "@/components/ui/LayoutInstruments";
 import { WorkshopCard } from './WorkshopCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 
 interface WorkshopCarouselProps {
   workshops: any[];

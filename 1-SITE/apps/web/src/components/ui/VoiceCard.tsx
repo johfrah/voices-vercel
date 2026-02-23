@@ -9,7 +9,7 @@ import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { calculateDeliveryDate, startOfDayNative } from '@/lib/delivery-logic';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';

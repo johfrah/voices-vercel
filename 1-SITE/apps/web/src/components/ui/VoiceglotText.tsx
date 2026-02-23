@@ -2,7 +2,7 @@
 
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Lock, Sparkles } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';

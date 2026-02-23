@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { Phone, Video, Megaphone, Monitor, Radio, Globe, Mic2, Building2, BookOpen, Wind } from 'lucide-react';
 import { VoiceglotText } from './VoiceglotText';
 import { cn } from '@/lib/utils';

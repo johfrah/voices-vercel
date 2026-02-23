@@ -4,7 +4,7 @@ import { useCheckout } from "@/contexts/CheckoutContext";
 import { ButtonInstrument, TextInstrument, ContainerInstrument } from "@/components/ui/LayoutInstruments";
 import { FileText, Download, Loader2, Mail, Send, X, Check } from "lucide-react";
 import { useState } from "react";
-import { useSonicDNA } from "@/lib/sonic-dna";
+import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useTranslation } from "@/contexts/TranslationContext";
 import toast from "react-hot-toast";

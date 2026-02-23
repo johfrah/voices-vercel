@@ -1,7 +1,7 @@
 "use client";
 
 import { useCheckout } from '@/contexts/CheckoutContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import React, { useState } from 'react';
 import { TelephonySmartSuggestions } from './TelephonySmartSuggestions';
 import { 

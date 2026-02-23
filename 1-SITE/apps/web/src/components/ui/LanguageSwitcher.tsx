@@ -1,6 +1,6 @@
 "use client";
 
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronRight, Globe } from 'lucide-react';
 import Image from 'next/image';

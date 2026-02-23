@@ -4,7 +4,7 @@ slug: "radiospot-5-seconden-hook"
 genre: "Radio"
 goal: "Impact"
 timing: "15, 20 of 30 seconden"
-wpm: 160
+wpm: 155
 ---
 
 ### De Blauwdruk

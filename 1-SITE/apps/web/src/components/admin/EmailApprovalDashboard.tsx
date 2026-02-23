@@ -1,4 +1,4 @@
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useEffect, useState } from 'react';
 import { BentoCard, BentoGrid } from '../ui/BentoGrid';
 import { VoiceglotText } from '../ui/VoiceglotText';

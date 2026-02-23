@@ -1,5 +1,5 @@
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
-import { StudioDataBridge } from "@/lib/studio-bridge";
+import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
 import { redirect } from "next/navigation";
 import { PageWrapperInstrument, ContainerInstrument, HeadingInstrument } from "@/components/ui/LayoutInstruments";
 import CreateEditionForm from "./CreateEditionForm";

@@ -11,7 +11,7 @@ import {
   TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { useEditMode } from '@/contexts/EditModeContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import React, { useEffect, useState } from 'react';
 
 interface PageRendererProps {

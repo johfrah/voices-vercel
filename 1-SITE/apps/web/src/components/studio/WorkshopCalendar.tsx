@@ -1,7 +1,7 @@
 "use client";
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import React from 'react';
 import { 
   ContainerInstrument, 

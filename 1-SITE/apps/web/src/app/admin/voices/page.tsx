@@ -3,7 +3,7 @@
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument, FixedActionDockInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useEditMode } from '@/contexts/EditModeContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import {
     ArrowLeft,

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { ContainerInstrument, HeadingInstrument } from './LayoutInstruments';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 
 interface AccordionItem {
   id: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, Loader2, Mic, Square, Trash2 } from 'lucide-react';
 import React, { useRef, useState } from 'react';

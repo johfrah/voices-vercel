@@ -1,6 +1,6 @@
 "use client";
 
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { AlertCircle, Filter, TrendingUp, UserCheck, UserPlus } from 'lucide-react';
 import React from 'react';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';

@@ -13,7 +13,7 @@ import { VoiceglotText } from './VoiceglotText';
 import Image from 'next/image';
 import { Actor, Demo } from '@/types';
 import { cn } from '@/lib/utils';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { PhotoUploader } from './PhotoUploader';
 import { calculateDeliveryDate } from '@/lib/delivery-logic';
 import { formatDistanceToNow, isAfter, isBefore, startOfDay, format, parseISO } from 'date-fns';

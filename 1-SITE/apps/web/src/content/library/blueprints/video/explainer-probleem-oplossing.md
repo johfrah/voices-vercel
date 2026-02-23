@@ -4,7 +4,7 @@ slug: "explainer-probleem-oplossing"
 genre: "Explainer"
 goal: "Conversie"
 timing: "± 60-90 seconden"
-wpm: 160
+wpm: 155
 ---
 
 ### De Blauwdruk

@@ -4,7 +4,7 @@ import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/compon
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { WorkshopEditModal } from "@/components/ui/WorkshopEditModal";
 import { useEditMode } from "@/contexts/EditModeContext";
-import { useSonicDNA } from "@/lib/sonic-dna";
+import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

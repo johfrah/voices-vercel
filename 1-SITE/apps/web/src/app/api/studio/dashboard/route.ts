@@ -1,4 +1,4 @@
-import { StudioDataBridge } from '@/lib/studio-bridge';
+import { StudioDataBridge } from '@/lib/bridges/studio-bridge';
 import { NextResponse } from 'next/server';
 
 /**

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { Bell, Check, X, Edit3, ArrowLeft, Loader2, ShieldAlert, Sparkles, RefreshCw } from 'lucide-react';
 import Link from 'next/link';

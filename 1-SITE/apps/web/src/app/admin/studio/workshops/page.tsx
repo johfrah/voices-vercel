@@ -9,7 +9,7 @@ import {
 import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
-import { StudioDataBridge } from "@/lib/studio-bridge";
+import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import {
     ArrowRight,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEditMode } from '@/contexts/EditModeContext';
-import { useSonicDNA } from '@/lib/sonic-dna';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Layout, Plus, Save, Sparkles, X } from 'lucide-react';
