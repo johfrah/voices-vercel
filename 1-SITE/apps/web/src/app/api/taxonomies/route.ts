@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { DbService } from '@/lib/services/DbService';
+import { DbService } from '@/lib/services/db-service';
 
 /**
  *  TAXONOMY API (GOD MODE 2026)

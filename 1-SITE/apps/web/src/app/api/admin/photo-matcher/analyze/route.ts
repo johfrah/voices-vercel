@@ -3,7 +3,7 @@ import * as path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { requireAdmin } from '@/lib/auth/api-auth';
-import { GeminiService } from '@/lib/services/GeminiService';
+import { GeminiService } from '@/lib/services/gemini-service';
 
 const execAsync = promisify(exec);
 

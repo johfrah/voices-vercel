@@ -1,8 +1,8 @@
 import { db } from '@db';
 import { mailContent } from '@db/schema';
 import { eq, sql, desc } from 'drizzle-orm';
-import { ShadowPersonaService } from '@/lib/services/ShadowPersonaService';
-import { VectorService } from '@/lib/services/VectorService';
+import { ShadowPersonaService } from '@/lib/services/shadow-persona-service';
+import { VectorService } from '@/lib/services/vector-service';
 import { NextResponse } from 'next/server';
 
 /**

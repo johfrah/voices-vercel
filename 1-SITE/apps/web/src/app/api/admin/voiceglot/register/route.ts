@@ -2,7 +2,7 @@ import { db } from '@db';
 import { translations, translationRegistry } from '@db/schema';
 import { eq, and } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
-import { GeminiService } from '@/lib/services/GeminiService';
+import { GeminiService } from '@/lib/services/gemini-service';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**

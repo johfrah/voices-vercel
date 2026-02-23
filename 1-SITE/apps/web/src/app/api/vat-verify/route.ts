@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ViesService } from '@/lib/services/ViesService';
+import { ViesService } from '@/lib/services/vies-service';
 
 /**
  *  NUCLEAR VIES VALIDATION (2026)

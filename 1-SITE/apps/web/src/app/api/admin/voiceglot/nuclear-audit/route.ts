@@ -1,4 +1,4 @@
-import { OpenAIService } from '@/lib/services/OpenAIService';
+import { OpenAIService } from '@/lib/services/openai-service';
 import { db } from '@db';
 import { translations } from '@db/schema';
 import { and, eq, ilike, not, or, sql } from 'drizzle-orm';

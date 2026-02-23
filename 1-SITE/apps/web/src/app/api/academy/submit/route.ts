@@ -2,7 +2,7 @@ import { db } from '@db';
 import { courseSubmissions, users } from '@db/schema';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-import { DropboxService } from '@/lib/services/DropboxService';
+import { DropboxService } from '@/lib/services/dropbox-service';
 import { eq } from 'drizzle-orm';
 
 /**

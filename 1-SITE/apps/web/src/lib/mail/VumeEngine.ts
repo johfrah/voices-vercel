@@ -1,4 +1,4 @@
-import { DirectMailService } from '@/lib/services/DirectMailService';
+import { DirectMailService } from '@/lib/services/direct-mail-service';
 import { VumeMagicLinkTemplate } from './templates/VumeMagicLinkTemplate';
 import { VumeStudioTemplate } from './templates/VumeStudioTemplate';
 import { VumeInvoiceReplyTemplate } from './templates/VumeInvoiceReplyTemplate';

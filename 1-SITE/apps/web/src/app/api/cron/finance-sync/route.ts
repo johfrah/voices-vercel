@@ -1,4 +1,4 @@
-import { YukiService } from '@/lib/services/YukiService';
+import { YukiService } from '@/lib/services/yuki-service';
 import { db } from '@db';
 import { yukiOutstanding } from '@db/schema';
 import { NextResponse } from 'next/server';

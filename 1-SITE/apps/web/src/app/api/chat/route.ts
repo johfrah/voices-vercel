@@ -1,5 +1,5 @@
-import { GeminiService } from '@/lib/services/GeminiService';
-import { KnowledgeService } from '@/lib/services/KnowledgeService';
+import { GeminiService } from '@/lib/services/gemini-service';
+import { KnowledgeService } from '@/lib/services/knowledge-service';
 import { db } from '@db';
 import { chatConversations, chatMessages, faq } from '@db/schema';
 import { desc, eq, ilike, or } from 'drizzle-orm';
@@ -410,7 +410,7 @@ SLIMME KASSA REGELS:
         //  ADMIN NOTIFICATION: Stuur een mail bij elke interactie (Chris-Protocol: Real-time awareness)
         if (senderType === 'user') {
           try {
-            const { VoicesMailEngine } = await import('@/lib/services/VoicesMailEngine');
+            const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
             const mailEngine = VoicesMailEngine.getInstance();
             const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
             const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');

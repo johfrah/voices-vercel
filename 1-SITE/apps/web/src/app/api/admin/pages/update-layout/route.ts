@@ -1,6 +1,6 @@
 import { db } from '@db';
 import { pageLayouts } from '@db/schema';
-import { DbService } from '@/lib/services/DbService';
+import { DbService } from '@/lib/services/db-service';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';

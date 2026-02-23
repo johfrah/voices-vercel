@@ -1,6 +1,6 @@
-import { DirectMailService } from '@/lib/services/DirectMailService';
-import { VectorService } from '@/lib/services/VectorService';
-import { GeminiService } from '@/lib/services/GeminiService';
+import { DirectMailService } from '@/lib/services/direct-mail-service';
+import { VectorService } from '@/lib/services/vector-service';
+import { GeminiService } from '@/lib/services/gemini-service';
 import { db } from '@db';
 import { mailContent } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
