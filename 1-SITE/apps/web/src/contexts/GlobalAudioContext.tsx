@@ -7,7 +7,8 @@ interface AudioContextType {
   activeDemo: Demo | null;
   isPlaying: boolean;
   recentlyPlayed: Demo[];
-  playDemo: (demo: Demo) => void;
+  playlist: Demo[];
+  playDemo: (demo: Demo, playlist?: Demo[]) => void;
   stopDemo: () => void;
   setIsPlaying: (playing: boolean) => void;
   clearHistory: () => void;
@@ -17,6 +18,7 @@ const GlobalAudioContext = createContext<AudioContextType | undefined>(undefined
 
 export function GlobalAudioProvider({ children }: { children: ReactNode }) {
   const [activeDemo, setActiveDemo] = useState<Demo | null>(null);
+  const [playlist, setPlaylist] = useState<Demo[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [recentlyPlayed, setRecentlyPlayed] = useState<Demo[]>(() => {
     if (typeof window !== 'undefined') {
@@ -26,8 +28,11 @@ export function GlobalAudioProvider({ children }: { children: ReactNode }) {
     return [];
   });
 
-  const playDemo = (demo: Demo) => {
+  const playDemo = (demo: Demo, newPlaylist?: Demo[]) => {
     setActiveDemo(demo);
+    if (newPlaylist) {
+      setPlaylist(newPlaylist);
+    }
     setIsPlaying(true);
 
     // Update recently played
@@ -53,11 +58,12 @@ export function GlobalAudioProvider({ children }: { children: ReactNode }) {
     // CHRIS-PROTOCOL: Delay clearing activeDemo to allow for exit animations
     setTimeout(() => {
       setActiveDemo(null);
+      setPlaylist([]);
     }, 500);
   };
 
   return (
-    <GlobalAudioContext.Provider value={{ activeDemo, isPlaying, recentlyPlayed, playDemo, stopDemo, setIsPlaying, clearHistory }}>
+    <GlobalAudioContext.Provider value={{ activeDemo, isPlaying, recentlyPlayed, playlist, playDemo, stopDemo, setIsPlaying, clearHistory }}>
       {children}
     </GlobalAudioContext.Provider>
   );

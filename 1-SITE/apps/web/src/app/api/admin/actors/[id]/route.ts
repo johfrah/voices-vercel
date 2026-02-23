@@ -23,19 +23,22 @@ export async function PATCH(
   const id = parseInt(params.id);
   
   try {
+    //  CHRIS-PROTOCOL: Forensic validation
     const body = await request.json();
     
-    //  CHRIS-PROTOCOL: Forensic validation
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid actor ID' }, { status: 400 });
     }
 
     console.log(` ADMIN: Updating actor ${id}`, body);
 
-    //  CHRIS-PROTOCOL: Price Approval Logic (2026)
-    // If rates or price_live_regie are changed, we store them in pending fields
-    // instead of the live fields, unless the user is a super-admin.
-    // We check if the request is coming from a trusted admin session.
+    //  CHRIS-PROTOCOL: Auth Check (Nuclear 2026)
+    const auth = await requireAdmin();
+    if (auth instanceof NextResponse) {
+      console.warn(` ADMIN: Unauthorized update attempt for actor ${id}`);
+      return auth;
+    }
+
     const isSuperAdmin = true; // In development/admin context we assume super-admin for now, but logic is ready
 
     const updateData: any = {
@@ -49,9 +52,9 @@ export async function PATCH(
       voiceScore: body.voice_score,
       menuOrder: body.menu_order,
       status: body.status,
-      deliveryDaysMin: body.delivery_days === 0 ? 0 : body.delivery_days,
-      deliveryDaysMax: body.delivery_days,
-      samedayDelivery: body.delivery_days === 0,
+      deliveryDaysMin: body.delivery_days === 0 ? 0 : (body.delivery_days || body.delivery_days_min),
+      deliveryDaysMax: body.delivery_days || body.delivery_days_max,
+      samedayDelivery: body.delivery_days === 0 || body.delivery_days_min === 0,
       cutoffTime: body.cutoff_time,
       nativeLang: body.native_lang,
       extraLangs: body.extra_langs,
@@ -68,6 +71,7 @@ export async function PATCH(
       youtubeUrl: body.youtubeUrl || body.youtube_url,
       linkedin: body.linkedin,
       allowFreeTrial: body.allowFreeTrial ?? body.allow_free_trial,
+      isManuallyEdited: true, //  CHRIS-PROTOCOL: Lock record after manual edit
       updatedAt: new Date()
     };
 

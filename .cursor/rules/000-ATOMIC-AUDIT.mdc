@@ -8,21 +8,36 @@ alwaysApply: true
 
 Vóór elke taak, edit of push MOET de agent een "Forensische Zelf-Audit" uitvoeren tegen de 150+ common mistakes.
 
-## 🔍 De "Atomic Check" Procedure
+## 🔍 De "Atomic Check" Procedure (ROOT-CAUSE FIRST)
 
-1. **Symbol Trace**: Traceer elk symbool (markt, taal, config) terug naar de `MarketManager`.
-2. **Hardcode Hunt**: Zoek naar verboden strings (`voices.be`, `johfrah.be`, hardcoded emails/telefoons).
-3. **ISO Verify**: Controleer of taal-codes strikt ISO-5 zijn (`nl-BE`, niet `nl` of `Vlaams`).
-4. **Instrument Check**: Controleer of er rauwe HTML wordt gebruikt ipv `LayoutInstruments`.
-5. **Nuclear Lock**: Verifieer of `isManuallyEdited` velden worden gerespecteerd in sync-scripts.
+Vóór het schrijven van ook maar één regel code, MOET de agent de volgende stappen doorlopen:
+
+1.  **FORENSIC ROOT-CAUSE ANALYSIS**: 
+    - Doe een diepe scan naar de bron van het probleem (Database, API-payload, of Frontend State).
+    - Gebruik `browser-use` of rauwe SQL om de "Source of Truth" te verifiëren. Gissen is verboden.
+2.  **FOUT-UITSLUITING (Pre-emptive Strike)**:
+    - Identificeer alle mogelijke zij-effecten (bijv. "Als ik de filter strikter maak, breekt dan de zoekfunctie?").
+    - Controleer of de benodigde data (zoals IDs) wel in de API-tunnel zit.
+3.  **DRIEPUNT-OPLOSSING (The Trinity Check)**:
+    - Formuleer intern (of in de chat) 3 mogelijke oplossingen.
+    - Vergelijk ze op: Performance, Architectuur (Chris-Protocol) en Robuustheid.
+    - Kies de beste oplossing en beargumenteer *waarom* dit de Masterclass-keuze is.
+4.  **Symbol Trace**: Traceer elk symbool (markt, taal, config) terug naar de `MarketManager`.
+5.  **Hardcode Hunt**: Zoek naar verboden strings (`voices.be`, `johfrah.be`, hardcoded emails/telefoons).
+6.  **ISO Verify**: Controleer of taal-codes strikt ISO-5 zijn (`nl-BE`, niet `nl` of `Vlaams`).
+7.  **Instrument Check**: Controleer of er rauwe HTML wordt gebruikt ipv `LayoutInstruments`.
+8.  **Nuclear Lock**: Verifieer of `isManuallyEdited` velden worden gerespecteerd in sync-scripts.
 
 ## 🚫 Verboden Patronen (Zero Tolerance)
 
+- **GEEN** "behulpzame" interpretatie van filters. De taalfilter is de moedertaal (Native ID). Punt.
+- **GEEN** code schrijven zonder eerst de API-payload te hebben gezien.
 - **GEEN** `host.includes()` in UI componenten. Gebruik `market.market_code`.
 - **GEEN** hardcoded fallbacks voor contactgegevens. Gebruik `market.email` / `market.phone`.
 - **GEEN** hashtags in URLs (`#demos`). Gebruik clean routes (`/demos`).
 - **GEEN** Uppercase in koppen. Gebruik Natural Capitalization.
 - **GEEN** `any` types. Gebruik strikte interfaces.
+- **GEEN** aannames over data. Bij twijfel: draai ALTIJD een rauwe SQL query op de database om de "Source of Truth" te verifiëren.
 
 ## 🚀 De "Chris-Protocol" Veto
 Als een wijziging één van de bovenstaande regels schendt, is de code "Slop" en mag deze NIET gepusht worden. Chris eist 100% Masterclass kwaliteit.

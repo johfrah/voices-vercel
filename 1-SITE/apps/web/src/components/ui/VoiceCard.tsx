@@ -202,40 +202,6 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     return activeDemo?.actor_name === voice?.display_name && globalIsPlaying;
   }, [activeVideo, voice, isPlaying, activeDemo, globalIsPlaying]);
 
-  const cleanDemoTitle = (title: string, category?: string) => {
-    if (category) {
-      const cat = category.toLowerCase();
-      if (cat.includes('telephony') || cat.includes('iv')) return t('category.telephony', 'Telefonie');
-      if (cat.includes('corporate') || cat.includes('video')) return t('category.corporate', 'Corporate');
-      if (cat.includes('commercial') || cat.includes('advertentie')) return t('category.commercial', 'Commercial');
-    }
-
-    if (!title) return '';
-    let clean = title.replace(/\.(mp3|wav|ogg|m4a)$/i, '');
-    clean = clean.replace(/^[a-z]+-A-\d+-/i, '');
-    clean = clean.replace(/-(flemish|dutch|french|english|german|voiceover|demo|voices)/gi, ' ');
-    clean = clean.replace(/-/g, ' ');
-    clean = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
-    return clean.trim();
-  };
-
-  const handleCategoryClick = (e: React.MouseEvent, demo: Demo) => {
-    if (!voice) return;
-    e.stopPropagation();
-    playClick('pro');
-    
-    if (activeDemo?.id === demo.id) {
-      setGlobalIsPlaying(!globalIsPlaying);
-    } else {
-      playDemo({
-        ...demo,
-        actor_name: voice.display_name,
-        actor_photo: voice.photo_url,
-        actor_lang: voice.native_lang
-      });
-    }
-  };
-
   const [pricingUpdateTick, setPricingUpdateTick] = useState(0);
   const [eventData, setEventData] = useState<any>(null);
   const [isTagSelectorOpen, setIsTagSelectorOpen] = useState(false);
@@ -556,50 +522,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           plain 
           className={cn(
             "absolute inset-0 flex flex-col p-2 md:p-4 transition-opacity duration-500 z-10",
-            isCurrentlyPlaying ? "opacity-100" : "opacity-30 group-hover:opacity-100"
+            isCurrentlyPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           )}
         >
           <div className="absolute top-2 md:top-4 left-2 md:left-4 right-2 md:right-4 z-30 flex flex-wrap gap-1 md:gap-2 max-w-full overflow-hidden">
-            {voice.actor_videos?.filter(Boolean).slice(0, 2).map((video, idx) => (
-              <button
-                key={`video-${idx}`}
-                onClick={(e) => handleVideoClick(e, video)}
-                className={cn(
-                  "px-2 md:px-3 py-1 md:py-1.5 rounded-full text-[8px] md:text-[10px] font-black tracking-widest backdrop-blur-md border transition-all duration-300 flex items-center gap-1 md:gap-1.5",
-                  activeVideo?.url === video.url
-                    ? "bg-primary text-white border-primary shadow-lg scale-105"
-                    : "bg-white/20 text-white border-white/20 hover:bg-white/40"
-                )}
-              >
-                {activeVideo?.url === video.url && isPlaying ? <Pause size={8} className="md:w-2.5 md:h-2.5" fill="currentColor" /> : <Play size={8} className="md:w-2.5 md:h-2.5" fill="currentColor" />}
-                <span className="truncate max-w-[60px] md:max-w-none">{video.name || `Video ${idx + 1}`}</span>
-              </button>
-            ))}
-
-            {voice?.demos?.filter(Boolean).slice(0, 3).map((demo, idx) => (
-              <button
-                key={demo.id}
-                onClick={(e) => handleCategoryClick(e, demo)}
-                className={cn(
-                  "px-2 md:px-3 py-1 md:py-1.5 rounded-full text-[8px] md:text-[10px] font-black tracking-widest backdrop-blur-md border transition-all duration-300 flex items-center gap-1 md:gap-1.5",
-                  activeDemo?.id === demo.id
-                    ? "bg-primary text-white border-primary shadow-lg scale-105"
-                    : "bg-white/20 text-white border-white/20 hover:bg-white/40",
-                  ((masterControlState.journey === 'telephony' && (demo.category?.toLowerCase().includes('telephony') || demo.category?.toLowerCase().includes('iv'))) ||
-                   (masterControlState.journey === 'video' && (demo.category?.toLowerCase().includes('corporate') || demo.category?.toLowerCase().includes('video'))) ||
-                   (masterControlState.journey === 'commercial' && (demo.category?.toLowerCase().includes('commercial') || demo.category?.toLowerCase().includes('advertentie')))) && 
-                   activeDemo?.id !== demo.id && "border-white/60 bg-white/30"
-                )}
-              >
-                {activeDemo?.id === demo.id && globalIsPlaying ? <Pause size={8} className="md:w-2.5 md:h-2.5" fill="currentColor" /> : <Play size={8} className="md:w-2.5 md:h-2.5" fill="currentColor" />}
-                <span className="truncate max-w-[60px] md:max-w-none">
-                  <VoiceglotText 
-                    translationKey={`actor.${voice.id}.demo.${demo.id}.title`} 
-                    defaultText={cleanDemoTitle(demo.title, demo.category)} 
-                  />
-                </span>
-              </button>
-            ))}
+            {/*  CHRIS-PROTOCOL: Demos moved to MediaMaster for cleaner UI */}
           </div>
 
           <div className="flex-grow flex items-center justify-center">
@@ -626,12 +553,19 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   setGlobalIsPlaying(!globalIsPlaying);
                 } else if (voice?.demos?.[0]) {
                   // Andere acteur: switch direct naar de eerste demo van deze persoon
+                  const actorPlaylist = (voice.demos || []).map(d => ({
+                    ...d,
+                    actor_name: voice.display_name,
+                    actor_photo: voice.photo_url,
+                    actor_lang: voice.native_lang
+                  }));
+
                   playDemo({
                     ...voice.demos[0],
                     actor_name: voice.display_name,
                     actor_photo: voice.photo_url,
                     actor_lang: voice.native_lang
-                  });
+                  }, actorPlaylist);
                 }
               }}
               className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white hover:scale-110 hover:bg-white/30 transition-all duration-500 shadow-2xl group/play"

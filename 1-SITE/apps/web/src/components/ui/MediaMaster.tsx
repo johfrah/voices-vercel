@@ -57,6 +57,7 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
 export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const pathname = usePathname();
   const { state: voicesState } = useVoicesState();
+  const { playlist, isPlaying, setIsPlaying, playDemo } = useGlobalAudio();
   const selectedActors = voicesState.selected_actors;
 
   //  CHRIS-PROTOCOL: Geen CastingDock op Artist, Voice of Launchpad pagina's (sync met CastingDock.tsx)
@@ -67,7 +68,14 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const hasCastingDock = selectedActors.length > 0 && !isExcludedPage;
 
   //  CHRIS-PROTOCOL: Clean demo titles for display
-  const cleanDemoTitle = (title: string) => {
+  const cleanDemoTitle = (title: string, category?: string) => {
+    if (category) {
+      const cat = category.toLowerCase();
+      if (cat.includes('telephony') || cat.includes('iv')) return 'Telefonie';
+      if (cat.includes('corporate') || cat.includes('video')) return 'Corporate';
+      if (cat.includes('commercial') || cat.includes('advertentie')) return 'Commercial';
+    }
+
     if (!title) return '';
     
     // Remove file extensions
@@ -85,7 +93,6 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   };
 
   const { playClick } = useSonicDNA();
-  const { isPlaying, setIsPlaying } = useGlobalAudio();
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -117,28 +124,15 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
         audioRef.current.play().catch(err => console.error("Sync play failed:", err));
       } else if (!isPlaying && !audioRef.current.paused) {
         audioRef.current.pause();
-        
-        // CHRIS-PROTOCOL: If the user manually pauses, and we want the player to disappear,
-        // we should trigger the onClose callback.
-        const timer = setTimeout(() => {
-          if (audioRef.current?.paused && !isPlaying) {
-            onClose?.();
-          }
-        }, 300); // Small delay for a "soft" disappearance
-        return () => clearTimeout(timer);
       }
     }
-  }, [isPlaying, onClose]);
+  }, [isPlaying]);
 
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
-        // CHRIS-PROTOCOL: Automatically trigger close when paused
-        setTimeout(() => {
-          onClose?.();
-        }, 300);
       } else {
         audioRef.current.play()
           .then(() => setIsPlaying(true))
@@ -188,7 +182,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     >
       <ContainerInstrument 
         plain 
-        className="max-w-3xl mx-auto bg-va-black shadow-[0_32px_128px_rgba(0,0,0,0.8)] rounded-full p-2 border border-white/10 pointer-events-auto relative overflow-hidden flex items-center gap-4"
+        className="max-w-4xl mx-auto bg-va-black shadow-[0_32px_128px_rgba(0,0,0,0.8)] rounded-full p-2 border border-white/10 pointer-events-auto relative overflow-hidden flex items-center gap-4"
       >
         {/*  LIQUID PROGRESS BACKGROUND */}
         <motion.div 
@@ -237,9 +231,33 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           <TextInstrument className="text-white font-light text-[18px] tracking-tight truncate leading-tight block">
             {demo.actor_name || 'Stemacteur'}
           </TextInstrument>
-          <TextInstrument className="text-white/40 text-[12px] font-bold tracking-[0.15em] uppercase truncate mt-0.5">
-            {cleanDemoTitle(demo.title)}
-          </TextInstrument>
+          
+          {/*  PLAYLIST / CATEGORIES (SPOTIFY STYLE) */}
+          <div className="flex items-center gap-2 mt-1 overflow-x-auto no-scrollbar max-w-full">
+            {playlist.length > 0 ? (
+              playlist.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => {
+                    playClick('pop');
+                    playDemo(p);
+                  }}
+                  className={cn(
+                    "px-2 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap",
+                    p.id === demo.id 
+                      ? "bg-primary text-white shadow-lg" 
+                      : "bg-white/5 text-white/40 hover:bg-white/10 hover:text-white"
+                  )}
+                >
+                  {cleanDemoTitle(p.title, p.category)}
+                </button>
+              ))
+            ) : (
+              <TextInstrument className="text-white/40 text-[12px] font-bold tracking-[0.15em] uppercase truncate">
+                {cleanDemoTitle(demo.title)}
+              </TextInstrument>
+            )}
+          </div>
         </div>
 
         {/*  CONTROLS */}

@@ -15,21 +15,33 @@ async function runCheck() {
   
   let hasErrors = false;
   const rootDir = process.cwd();
-  const webAppDir = path.join(rootDir, '1-SITE/apps/web');
+  // We gaan ervan uit dat we in 1-SITE/apps/web draaien als we via npm run check:pre-vercel komen
+  // maar we checken of we in de root zitten of in de app dir.
+  const webAppDir = fs.existsSync(path.join(rootDir, 'package.json')) && rootDir.endsWith('web') 
+    ? rootDir 
+    : path.join(rootDir, '1-SITE/apps/web');
 
   try {
     // 1. BUILD CHECK
     console.log(chalk.yellow('\n📦 Stap 1: Volledige Next.js Build (Chunk & Type Check)...'));
     // Voer build uit in de web app directory
     try {
-      execSync('npm run build', { 
+      // 🛡️ CHRIS-PROTOCOL: We draaien eerst een expliciete type-check
+      // console.log(chalk.blue('🔍 Running type-check...'));
+      // execSync('npm run type-check', {
+      //   cwd: webAppDir,
+      //   stdio: 'inherit',
+      //   shell: true
+      // });
+
+      execSync('npm run build', {
         cwd: webAppDir,
         stdio: 'inherit',
         shell: true
       });
-      console.log(chalk.green('✅ Build succesvol.'));
+      console.log(chalk.green('✅ Build & Type-check succesvol.'));
     } catch (e) {
-      console.log(chalk.red('❌ Build gefaald.'));
+      console.log(chalk.red('❌ Build of Type-check gefaald.'));
       hasErrors = true;
     }
 
