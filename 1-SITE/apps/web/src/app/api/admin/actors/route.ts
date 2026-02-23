@@ -32,13 +32,32 @@ export async function GET() {
 
     //  CHRIS-PROTOCOL: Map relational languages to flat ID fields for frontend compatibility
     const mappedActors = (allActors || []).map(actor => {
-      const nativeLink = actor.actorLanguages?.find(al => al.isNative);
-      const extraLinks = actor.actorLanguages?.filter(al => !al.isNative) || [];
+      // Handle both camelCase (Drizzle) and snake_case (raw DB) naming
+      const actorLangs = (actor as any).actorLanguages || (actor as any).actor_languages || [];
+      
+      // Find native language - handle both naming conventions
+      const nativeLink = actorLangs.find((al: any) => 
+        al.isNative === true || al.is_native === true
+      );
+      
+      // Find extra languages - handle both naming conventions  
+      const extraLinks = actorLangs.filter((al: any) => 
+        al.isNative === false || al.is_native === false
+      );
+      
+      // Extract languageId - handle both naming conventions
+      const nativeLangId = nativeLink 
+        ? (nativeLink.languageId || nativeLink.language_id || null)
+        : null;
+        
+      const extraLangIds = extraLinks
+        .map((al: any) => al.languageId || al.language_id)
+        .filter((id: any) => id != null);
       
       return {
         ...actor,
-        native_lang_id: nativeLink?.languageId || null,
-        extra_lang_ids: extraLinks.map(al => al.languageId)
+        native_lang_id: nativeLangId,
+        extra_lang_ids: extraLangIds
       };
     });
 
