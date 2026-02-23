@@ -30,7 +30,7 @@ const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 export async function POST(request: Request) {
   try {
     const headersList = headers();
-    const host = headersList.get('host') || 'www.voices.be';
+    const host = headersList.get('host') || MarketManager.getMarketDomains()['BE'].replace('https://', '');
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const baseUrl = `${protocol}://${host}`;
     const ip = headersList.get('x-forwarded-for') || 'unknown';

@@ -68,7 +68,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
   const { state: checkoutState, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateBriefing, setStep: setCheckoutStep } = useCheckout();
 
   const [state, setState] = useState<MasterControlState>(() => {
-    const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
 
     const journey = (searchParams?.get('journey') as JourneyType) || 
@@ -504,7 +504,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
   }, [setCheckoutStep, checkoutState.selectedActor?.slug, pathname]);
 
   const resetFilters = useCallback(() => {
-    const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const defaultLang = MarketManager.getLanguageCode(market.primary_language);
     

@@ -160,7 +160,7 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
     if (typeof window !== 'undefined') {
       return MarketManager.getCurrentMarket(window.location.host);
     }
-    return MarketManager.getCurrentMarket('voices.be');
+    return MarketManager.getCurrentMarket(MarketManager.getMarketDomains()['BE'].replace('https://', ''));
   }, []);
 
   // Sherlock: Bepaal beschikbare talen op basis van geselecteerde stemmen

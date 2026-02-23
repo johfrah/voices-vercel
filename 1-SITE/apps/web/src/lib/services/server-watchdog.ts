@@ -16,7 +16,7 @@ export class ServerWatchdog {
   }) {
     try {
       // 🛡️ CHRIS-PROTOCOL: Use internal URL for server-to-server communication to avoid DNS/Vercel loops
-      const internalUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+      const internalUrl = process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'];
       
       // 🛡️ CHRIS-PROTOCOL: Direct DB logging fallback if API is unreachable
       try {

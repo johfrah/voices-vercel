@@ -96,7 +96,7 @@ export default function GlobalFooter() {
         title: t('footer.section.discover.title', 'Ontdek'),
         links: [
           { name: t('footer.link.discover.story', 'Ons verhaal'), href: '/agency/over-ons/' },
-          { name: t('footer.link.discover.ademing', 'Ademing (Rust)'), href: 'https://ademing.be' },
+          { name: t('footer.link.discover.ademing', 'Ademing (Rust)'), href: MarketManager.getMarketDomains()['ADEMING'] },
           { name: t('footer.link.discover.blog', 'Blog'), href: '/blog/' },
           { name: t('footer.link.discover.contact', 'Contact'), href: '/contact/' },
         ]

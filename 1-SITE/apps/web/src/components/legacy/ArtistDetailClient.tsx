@@ -39,7 +39,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
 
   const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
   const market = MarketManager.getCurrentMarket();
-  const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+  const siteUrl = MarketManager.getMarketDomains()[market.market_code] || MarketManager.getMarketDomains()['BE'];
 
   const jsonLd = {
     "@context": "https://schema.org",

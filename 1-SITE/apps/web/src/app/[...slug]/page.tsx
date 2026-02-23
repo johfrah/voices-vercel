@@ -32,7 +32,7 @@ const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalcula
  */
 function generateActorSchema(actor: any, marketName: string = 'Voices', host: string = '') {
   const market = MarketManager.getCurrentMarket(host);
-  const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${host || 'www.voices.be'}`;
+  const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${host || (MarketManager.getCurrentMarket().market_code === 'BE' ? 'www.voices.be' : 'www.voices.eu')}`;
   
   // Map internal delivery type to ISO 8601 duration
   const deliveryMap: Record<string, string> = {

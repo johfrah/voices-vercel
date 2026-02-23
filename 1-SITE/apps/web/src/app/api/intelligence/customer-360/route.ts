@@ -70,15 +70,25 @@ export async function GET(request: NextRequest) {
 
   try {
     const identifier = userId ? parseInt(userId) : email!;
-    const customerData = await UCIService.getCustomer360(identifier);
+    
+    //  CHRIS-PROTOCOL: Voeg een timeout toe om 504 Gateway Timeouts te voorkomen
+    const customerDataPromise = UCIService.getCustomer360(identifier);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Customer 360 Timeout')), 8000)
+    );
+
+    const customerData = await Promise.race([customerDataPromise, timeoutPromise]) as any;
 
     if (!customerData) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
     return NextResponse.json(customerData);
-  } catch (error) {
+  } catch (error: any) {
     console.error('[API Customer 360 Error]:', error);
+    if (error.message === 'Customer 360 Timeout') {
+      return NextResponse.json({ error: 'Request Timeout' }, { status: 504 });
+    }
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

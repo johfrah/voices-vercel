@@ -320,7 +320,7 @@ export default function AccountDashboardClient() {
                     <TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed">
                       <VoiceglotText 
                         translationKey="account.dashboard.customer_dna_desc" 
-                        defaultText={`Op basis van je laatste ${customerDNA.stats.orderCount} projecten zien we dat je vooral gevraagd wordt voor ${customerDNA.dna.topJourneys[0]} in het ${customerDNA.dna.preferredLanguages[0]}.`}
+                        defaultText={`Op basis van je laatste ${customerDNA?.stats?.orderCount || 0} projecten zien we dat je vooral gevraagd wordt voor ${customerDNA?.dna?.topJourneys?.[0] || 'onbekend'} in het ${customerDNA?.dna?.preferredLanguages?.[0] || 'onbekend'}.`}
                         noTranslate={true}
                       />
                     </TextInstrument>

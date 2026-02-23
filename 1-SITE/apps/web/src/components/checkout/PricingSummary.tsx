@@ -43,7 +43,7 @@ export const PricingSummary: React.FC<{
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'];
         const res = await fetch('/api/proxy?path=' + encodeURIComponent(`${baseUrl}/api/admin/actors`));
         const data = await res.json();
         if (data.reviewStats) setReviewStats(data.reviewStats);

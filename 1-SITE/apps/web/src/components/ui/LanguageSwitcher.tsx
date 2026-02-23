@@ -39,7 +39,7 @@ const LANGUAGE_MAP: Record<string, Language> = {
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
   const market = MarketManager.getCurrentMarket(host);
   const [currentLang, setCurrentLang] = useState<string>(market.language || 'nl');
   const pathname = usePathname();

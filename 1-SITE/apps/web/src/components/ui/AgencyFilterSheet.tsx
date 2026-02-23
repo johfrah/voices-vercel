@@ -42,7 +42,7 @@ export const AgencyFilterSheet: React.FC<{
   //  MARKET-BASED LANGUAGE LOGIC
   const sortedLanguages = React.useMemo(() => {
     //  MARKET-AWARE FILTERING
-    const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
+    const host = typeof window !== 'undefined' ? window.location.host : MarketManager.getMarketDomains()['BE'].replace('https://', '');
     const market = MarketManager.getCurrentMarket(host);
     
     //  CHRIS-PROTOCOL: Toon ALTIJD alle talen die in de database zitten, 

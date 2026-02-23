@@ -21,11 +21,17 @@ async function runCheck() {
     // 1. BUILD CHECK
     console.log(chalk.yellow('\n📦 Stap 1: Volledige Next.js Build (Chunk & Type Check)...'));
     // Voer build uit in de web app directory
-    execSync('npm run build', { 
-      cwd: webAppDir,
-      stdio: 'inherit' 
-    });
-    console.log(chalk.green('✅ Build succesvol.'));
+    try {
+      execSync('npm run build', { 
+        cwd: webAppDir,
+        stdio: 'inherit',
+        shell: true
+      });
+      console.log(chalk.green('✅ Build succesvol.'));
+    } catch (e) {
+      console.log(chalk.red('❌ Build gefaald.'));
+      hasErrors = true;
+    }
 
     // 2. NUCLEAR LOADING LAW SCAN
     console.log(chalk.yellow('\n⚛️ Stap 2: Nuclear Loading Law Scan...'));
@@ -43,13 +49,16 @@ async function runCheck() {
         hasErrors = true;
       }
 
-      // Check for hardcoded voices.be (behalve in config/system bestanden)
-      if (content.includes('voices.be') && !content.includes('MarketManager') && 
-          !file.includes('config.ts') && !file.includes('market-manager') && 
-          !file.includes('MarketManager')) {
-        console.log(chalk.red(`❌ ERROR: Hardcoded 'voices.be' gedetecteerd in: ${path.relative(rootDir, file)}`));
-        hasErrors = true;
-      }
+      // Check for hardcoded domains (behalve in config/system bestanden)
+      const forbiddenDomains = ['voices.be', 'johfrah.be', 'ademing.be'];
+      forbiddenDomains.forEach(domain => {
+        if (content.includes(domain) && !content.includes('MarketManager') && 
+            !file.includes('config.ts') && !file.includes('market-manager') && 
+            !file.includes('MarketManager') && !file.includes('pre-vercel-check.ts')) {
+          console.log(chalk.red(`❌ ERROR: Hardcoded '${domain}' gedetecteerd in: ${path.relative(rootDir, file)}`));
+          hasErrors = true;
+        }
+      });
     });
 
     if (!hasErrors) {

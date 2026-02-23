@@ -45,7 +45,7 @@ export const VumeNewAccountTemplate = (props: NewAccountProps) => {
     </div>
 
     <div style="text-align: center; margin-bottom: 30px;">
-      <a href="https://${host || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be')}/account" style="display: inline-block; background: #1a1a1a; color: #fff; padding: 18px 35px; text-decoration: none; border-radius: 15px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; font-size: 13px;">
+      <a href="https://${host || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''))}/account" style="display: inline-block; background: #1a1a1a; color: #fff; padding: 18px 35px; text-decoration: none; border-radius: 15px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; font-size: 13px;">
         ${isNl ? 'Naar mijn account' : 'Go to my account'}
       </a>
     </div>
