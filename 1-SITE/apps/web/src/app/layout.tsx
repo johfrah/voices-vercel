@@ -39,11 +39,17 @@ const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => 
 
 const inter = Inter({ subsets: ["latin"] });
 
-/** Veilige market-resolutie: voorkomt 500 bij onverwachte hosts (Combell proxy, etc.) */
+  /** Veilige market-resolutie: voorkomt 500 bij onverwachte hosts (Combell proxy, etc.) */
 async function getMarketSafe(host: string) {
   try {
-    return await MarketDatabaseService.getCurrentMarketAsync(host);
-  } catch {
+    //  CHRIS-PROTOCOL: Voeg een timeout toe aan de market resolution
+    const marketPromise = MarketDatabaseService.getCurrentMarketAsync(host);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Market Resolution Timeout')), 5000)
+    );
+    return await Promise.race([marketPromise, timeoutPromise]) as any;
+  } catch (err) {
+    console.error(' getMarketSafe: Failed or timed out:', err);
     return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || "voices.be");
   }
 }
@@ -171,9 +177,14 @@ export default async function RootLayout({
   //  CHRIS-PROTOCOL: Safe translation loading to prevent 500 on root layout
   let translations = {};
   try {
-    translations = await getTranslationsServer(lang);
+    //  CHRIS-PROTOCOL: Voeg een timeout toe aan de server-side translation fetch
+    const translationPromise = getTranslationsServer(lang);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Translation Timeout')), 5000)
+    );
+    translations = await Promise.race([translationPromise, timeoutPromise]) as any;
   } catch (err: any) {
-    console.error(' RootLayout: Failed to load translations:', err);
+    console.error(' RootLayout: Failed to load translations (timeout or error):', err);
   }
 
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
