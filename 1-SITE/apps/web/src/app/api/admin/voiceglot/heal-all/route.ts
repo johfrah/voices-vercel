@@ -2,7 +2,7 @@ import { db } from '@db';
 import { translations, translationRegistry } from '@db/schema';
 import { eq, and, notInArray, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
-import { gemini-service } from '@/lib/services/gemini-service';
+import { GeminiService } from '@/lib/services/gemini-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
             Vertaling:
           `;
 
-          const translatedText = await gemini-service.generateText(prompt, { lang: lang });
+          const translatedText = await GeminiService.generateText(prompt, { lang: lang });
           const cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
 
           // 3. Opslaan in de database (DIRECT LIVE - User Mandate)
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     if (totalHealed > 0) {
       try {
         const { direct-mail-service } = await import('@/lib/services/direct-mail-service');
-        const mailService = direct-mail-service.getInstance();
+        const mailService = DirectMailService.getInstance();
         await mailService.sendMail({
           to: adminEmail,
           subject: ` Nuclear Heal-All LIVE: ${totalHealed} vertalingen toegevoegd`,

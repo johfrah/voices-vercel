@@ -1,6 +1,6 @@
-import { direct-mail-service } from '@/lib/services/direct-mail-service';
-import { vector-service } from '@/lib/services/vector-service';
-import { gemini-service } from '@/lib/services/gemini-service';
+import { DirectMailService } from '@/lib/services/direct-mail-service';
+import { VectorService } from '@/lib/services/vector-service';
+import { GeminiService } from '@/lib/services/gemini-service';
 import { db } from '@db';
 import { mailContent } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
@@ -18,9 +18,9 @@ export async function POST(request: NextRequest) {
     
     console.log(` AI Sync: Start sync voor ${folder} (limit: ${limit})...`);
     
-    const mailService = direct-mail-service.getInstance();
-    const vectorService = vector-service.getInstance();
-    const geminiService = gemini-service.getInstance();
+    const mailService = DirectMailService.getInstance();
+    const vectorService = VectorService.getInstance();
+    const geminiService = GeminiService.getInstance();
     
     // 1. Haal mails op uit de map
     const mails = await mailService.fetchInbox(limit, folder);

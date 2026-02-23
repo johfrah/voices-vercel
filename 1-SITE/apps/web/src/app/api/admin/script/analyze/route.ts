@@ -1,4 +1,4 @@
-import { gemini-service } from '@/lib/services/gemini-service';
+import { GeminiService } from '@/lib/services/gemini-service';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ is_valid: true, insights: [] });
     }
 
-    const gemini = gemini-service.getInstance();
+    const gemini = GeminiService.getInstance();
     
     //  CHRIS-PROTOCOL: Fetch actor details if actorId is provided
     let actorInfo = "";
