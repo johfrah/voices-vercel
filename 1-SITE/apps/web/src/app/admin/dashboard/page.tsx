@@ -53,7 +53,7 @@ export default function AdminDashboard() {
   }, []);
 
   //  CHRIS-PROTOCOL: Build Safety
-  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL && !process.env.DATABASE_URL)) {
     return <ContainerInstrument className="p-20 text-center">Skipping dashboard render during build...</ContainerInstrument>;
   }
 

@@ -21,7 +21,7 @@ export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   //  CHRIS-PROTOCOL: Build Safety
-  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL && !process.env.DATABASE_URL)) {
     return NextResponse.json({});
   }
 
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   //  CHRIS-PROTOCOL: Build Safety
-  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL && !process.env.DATABASE_URL)) {
     return NextResponse.json({ success: true });
   }
 
