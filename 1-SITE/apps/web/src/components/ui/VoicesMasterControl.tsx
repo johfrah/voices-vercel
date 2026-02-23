@@ -360,7 +360,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               }
                             } else {
                               // Resolve label to ID if possible
-                              const langId = sortedLanguages.find(opt => typeof opt === 'object' && opt.label === lang)?.value;
+                              const langId = sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.label === lang)?.value;
                               if (typeof langId === 'number') {
                                 const currentIds = state.filters.languageIds || [state.filters.languageId].filter(Boolean) as number[];
                                 if (currentIds.includes(langId)) {
@@ -386,7 +386,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               updateFilters({ 
                                 languageId: val,
                                 languageIds: [val],
-                                language: sortedLanguages.find(opt => typeof opt === 'object' && opt.value === val)?.label || undefined
+                                language: sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.value === val)?.label || undefined
                               });
                             } else if (val && val.includes(',')) {
                               // Combination selected (Legacy support)
@@ -397,19 +397,19 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               });
                             } else {
                               // ISO Code or Label selected
-                              const opt = sortedLanguages.find(opt => typeof opt === 'object' && opt.value === val);
-                              if (opt && typeof opt.value === 'string' && opt.value.includes('-')) {
+                              const optMatch = sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.value === val);
+                              if (optMatch && typeof optMatch.value === 'string' && optMatch.value.includes('-')) {
                                 // Standard ISO Code selected
                                 updateFilters({ 
-                                  language: opt.langCode, // Store the code, not the translated label
-                                  languages: [opt.langCode],
+                                  language: optMatch.langCode, // Store the code, not the translated label
+                                  languages: [optMatch.langCode],
                                   languageId: undefined // Clear ID if switching to code-based
                                 });
-                              } else if (opt && typeof opt.value === 'number') {
+                              } else if (optMatch && typeof optMatch.value === 'number') {
                                 updateFilters({ 
-                                  languageId: opt.value,
-                                  languageIds: [opt.value],
-                                  language: opt.label
+                                  languageId: optMatch.value,
+                                  languageIds: [optMatch.value],
+                                  language: optMatch.label
                                 });
                               } else {
                                 // Fallback for labels

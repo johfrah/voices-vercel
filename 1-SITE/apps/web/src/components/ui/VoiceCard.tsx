@@ -404,12 +404,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   const sectorDemo = useMemo(() => {
     if (!voice) return null;
-    const company = getPlaceholderValue('company_name');
+    const companyNameStr = getPlaceholderValue('company_name');
     switch (state.current_sector) {
-      case 'gezondheidszorg': return t('sector.demo.healthcare', `Welkom bij ${company}. Voor dringende medische hulp, bel 112. Voor een afspraak, blijf aan de lijn.`, { company });
-      case 'bouw': return t('sector.demo.construction', `Bedankt voor het bellen naar ${company}. Wij realiseren uw droomproject van fundering tot dak.`, { company });
-      case 'it': return t('sector.demo.it', `U bent verbonden met de support desk van ${company}. Al onze consultants zijn momenteel in gesprek.`, { company });
-      case 'juridisch': return t('sector.demo.legal', `Welkom bij ${company}. Onze advocaten staan u graag bij met deskundig juridisch advies.`, { company });
+      case 'gezondheidszorg': return t('sector.demo.healthcare', `Welkom bij ${companyNameStr}. Voor dringende medische hulp, bel 112. Voor een afspraak, blijf aan de lijn.`, { company: companyNameStr });
+      case 'bouw': return t('sector.demo.construction', `Bedankt voor het bellen naar ${companyNameStr}. Wij realiseren uw droomproject van fundering tot dak.`, { company: companyNameStr });
+      case 'it': return t('sector.demo.it', `U bent verbonden met de support desk van ${companyNameStr}. Al onze consultants zijn momenteel in gesprek.`, { company: companyNameStr });
+      case 'juridisch': return t('sector.demo.legal', `Welkom bij ${companyNameStr}. Onze advocaten staan u graag bij met deskundig juridisch advies.`, { company: companyNameStr });
       default: return null;
     }
   }, [voice, state.current_sector, getPlaceholderValue, t]);
@@ -809,7 +809,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
                       <div className="max-h-48 overflow-y-auto no-scrollbar flex flex-wrap gap-2">
                         {filteredAvailableTags.map(tagItem => {
-                          const isSelectedTag = voice.tone_of_voice?.split(',').map(t => t.trim()).includes(tagItem);
+                          const isSelectedTag = voice.tone_of_voice?.split(',').map(tagToCompare => tagToCompare.trim()).includes(tagItem);
                           return (
                             <button
                               key={tagItem}

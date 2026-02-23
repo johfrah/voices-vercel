@@ -214,17 +214,17 @@ export const PricingSummary: React.FC<{
               </motion.div>
             )}
 
-            {state.items.length > 0 && state.items.map((itemItem, idx) => (
+            {state.items.length > 0 && state.items.map((itemObj, idx) => (
               <ContainerInstrument 
-                key={itemItem.id || idx} 
-                onClick={() => setSelectedItem(itemItem)}
+                key={itemObj.id || idx} 
+                onClick={() => setSelectedItem(itemObj)}
                 className="flex items-center gap-6 p-6 bg-white rounded-[20px] border border-va-black/5 shadow-aura group relative cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
               >
                 {/* Afbeelding links uitgelijnd (LAYA-MANDAAT) */}
                 <ContainerInstrument className="w-16 h-16 rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
                   <Image  
-                    src={itemItem.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice} 
-                    alt={itemItem.actor?.display_name || 'Item'} 
+                    src={itemObj.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice} 
+                    alt={itemObj.actor?.display_name || 'Item'} 
                     fill 
                     sizes="64px"
                     className="object-cover" 
@@ -235,25 +235,25 @@ export const PricingSummary: React.FC<{
                 <ContainerInstrument className="flex flex-1 items-center justify-between gap-4 min-w-0">
                   <ContainerInstrument className="min-w-0 flex-1">
                     <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
-                      {itemItem.actor?.display_name || itemItem.name || 'Stemopname'}
+                      {itemObj.actor?.display_name || itemObj.name || 'Stemopname'}
                     </HeadingInstrument>
                     <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1 line-clamp-2">
-                      {itemItem.usage === 'telefonie' ? (
+                      {itemObj.usage === 'telefonie' ? (
                         t('checkout.item.telephony_desc', 'Onbeperkt gebruik voor telefonie & IVR.')
-                      ) : itemItem.usage === 'commercial' ? (
+                      ) : itemObj.usage === 'commercial' ? (
                         <div className="flex flex-col gap-0.5">
                           <span className="font-medium text-primary/60">
-                            {Array.isArray(itemItem.media) 
-                              ? itemItem.media.map((m: string) => {
+                            {Array.isArray(itemObj.media) 
+                              ? itemObj.media.map((m: string) => {
                                   const label = mediaLabels[m] || m;
-                                  const spots = (typeof itemItem.spots === 'object' ? itemItem.spots[m] : itemItem.spots) || 1;
-                                  const years = (typeof itemItem.years === 'object' ? itemItem.years[m] : itemItem.years) || 1;
+                                  const spots = (typeof itemObj.spots === 'object' ? itemObj.spots[m] : itemObj.spots) || 1;
+                                  const years = (typeof itemObj.years === 'object' ? itemObj.years[m] : itemObj.years) || 1;
                                   return `${label} (${spots} ${spots === 1 ? t('common.spot', 'spot') : t('common.spots', 'spots')}, ${years} ${years === 1 ? t('common.year', 'jaar') : t('common.years', 'jaar')})`;
                                 }).join(' • ')
-                              : (mediaLabels[itemItem.media] || itemItem.media)}
+                              : (mediaLabels[itemObj.media] || itemObj.media)}
                           </span>
                           <span className="text-[11px] uppercase tracking-widest opacity-70">
-                            {countryLabels[itemItem.country] || itemItem.country || t('common.country.be', 'België')}
+                            {countryLabels[itemObj.country] || itemObj.country || t('common.country.be', 'België')}
                           </span>
                         </div>
                       ) : (
@@ -267,7 +267,7 @@ export const PricingSummary: React.FC<{
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
-                          setSelectedItem(itemItem);
+                          setSelectedItem(itemObj);
                         }}
                         className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-primary hover:bg-primary/5 transition-all group/view"
                         title={t('action.view_details', "Bekijk details")}
@@ -277,7 +277,7 @@ export const PricingSummary: React.FC<{
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
-                          removeItem(itemItem.id);
+                          removeItem(itemObj.id);
                         }}
                         className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-red-500 hover:bg-red-50 transition-all group/delete"
                         title={t('action.remove_item', "Verwijder item")}
@@ -288,14 +288,14 @@ export const PricingSummary: React.FC<{
                     <div className="flex flex-col items-end min-w-[120px]">
                       {state.customer.active_coupon && (
                         <TextInstrument className="text-[12px] text-va-black/20 line-through font-light">
-                          €{(itemItem.pricing?.subtotal ?? itemItem.pricing?.total ?? 0).toFixed(2)}
+                          €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
                         </TextInstrument>
                       )}
                       <TextInstrument className={cn(
                         "font-light text-2xl tracking-tight",
                         "text-va-black"
                       )}>
-                        €{(itemItem.pricing?.subtotal ?? itemItem.pricing?.total ?? 0).toFixed(2)}
+                        €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
                       </TextInstrument>
                       <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-widest mt-0.5">
                         Excl. BTW

@@ -276,18 +276,18 @@ export const ReviewsInstrument: React.FC<{
           {!hideFilters && (
             <div className="flex flex-wrap items-center gap-4 mt-8">
               <div className="flex flex-wrap gap-2">
-                {sectors.map(sectorItem => (
+                {sectors.map(sectorName => (
                   <button
-                    key={sectorItem}
-                    onClick={() => setSelectedSector(selectedSector === sectorItem ? null : sectorItem)}
+                    key={sectorName}
+                    onClick={() => setSelectedSector(selectedSector === sectorName ? null : sectorName)}
                     className={cn(
                       "px-4 py-2 rounded-xl text-[13px] font-light transition-all border",
-                      selectedSector === sectorItem 
+                      selectedSector === sectorName 
                         ? "bg-va-black text-white border-va-black shadow-lg" 
                         : "bg-white text-va-black/40 border-black/5 hover:border-primary/20 hover:text-va-black"
                     )}
                   >
-                    {sectorItem}
+                    {sectorName}
                   </button>
                 ))}
               </div>
@@ -326,13 +326,13 @@ export const ReviewsInstrument: React.FC<{
             {showDistribution && distribution && (
               <div className="absolute top-full right-0 mt-4 z-[100] w-64 bg-white rounded-[24px] border border-black/5 shadow-aura-lg p-6 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="space-y-3">
-                  {[5, 4, 3, 2, 1].map(starItem => {
-                    const count = (distribution as any)[starItem] || 0;
+                  {[5, 4, 3, 2, 1].map(starIdx => {
+                    const count = (distribution as any)[starIdx] || 0;
                     const total = Number(totalReviews) || 1;
                     const percentage = Math.round((count / total) * 100);
                     return (
-                      <div key={starItem} className="flex items-center gap-3">
-                        <span className="text-[11px] font-medium text-va-black/40 w-3">{starItem}</span>
+                      <div key={starIdx} className="flex items-center gap-3">
+                        <span className="text-[11px] font-medium text-va-black/40 w-3">{starIdx}</span>
                         <Star size={10} className="text-[#fabc05]" fill="currentColor" />
                         <div className="flex-1 h-1.5 bg-va-black/5 rounded-full overflow-hidden">
                           <div 
