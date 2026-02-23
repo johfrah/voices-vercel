@@ -305,7 +305,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         averageRating: avgRating, 
         totalCount: totalCount, 
         distribution: distribution 
-      }
+      },
+      _v: 'v2.14.56 (Godmode Zero)'
     };
 
     cache.actorsCache[cacheKey] = { data: result, timestamp: Date.now() };

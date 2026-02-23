@@ -62,7 +62,7 @@ export async function GET(request: Request) {
 
     const result = {
       ...data,
-      _v: 'v2.14.55 (Godmode Zero)'
+      _v: 'v2.14.56 (Godmode Zero)'
     };
 
     // Update cache
