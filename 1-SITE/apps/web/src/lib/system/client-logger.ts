@@ -39,9 +39,20 @@ export class ClientLogger {
       }).join(' ');
       
       if (!message.includes('/api/admin/system/logs') && !message.includes('/api/admin/system/watchdog')) {
+        // 🔬 FORENSIC UPGRADE: Capture exact context
+        const errorObj = args.find(arg => arg instanceof Error);
+        
         this.report('error', `Console Error: ${message.substring(0, 1000)}`, {
           full_console_output: message,
-          location: window.location.href
+          location: window.location.href,
+          pathname: window.location.pathname,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          stack: errorObj?.stack || new Error().stack, // Fallback stack if no Error object provided
+          memory: (performance as any)?.memory ? {
+            usedJSHeapSize: (performance as any).memory.usedJSHeapSize,
+            totalJSHeapSize: (performance as any).memory.totalJSHeapSize
+          } : undefined
         });
       }
     };

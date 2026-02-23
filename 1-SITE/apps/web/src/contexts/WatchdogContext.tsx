@@ -32,7 +32,12 @@ export const WatchdogProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             filename: event.filename,
             lineno: event.lineno,
             colno: event.colno,
-            pathname: window.location.pathname
+            pathname: window.location.pathname,
+            timestamp: new Date().toISOString(),
+            screen: {
+              width: window.innerWidth,
+              height: window.innerHeight
+            }
           }
         })
       }).catch(err => console.error('[Watchdog] Failed to report error:', err));
