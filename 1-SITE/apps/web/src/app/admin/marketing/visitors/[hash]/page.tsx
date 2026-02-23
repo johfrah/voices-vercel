@@ -128,7 +128,7 @@ export default function VisitorPlayerPage() {
               <ContainerInstrument className="w-px h-full bg-black/5" />
               <ContainerInstrument className="flex flex-col">
                 <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.pagina.265753" defaultText="Pagina" /></TextInstrument>
-                <TextInstrument className="text-[15px] font-bold max-w-[200px] truncate">{session.url?.replace('https://www.voices.be', '') || '/'}</TextInstrument>
+                <TextInstrument className="text-[15px] font-bold max-w-[200px] truncate">{session.url?.replace(MarketManager.getMarketDomains()['BE'], '') || '/'}</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             

@@ -415,7 +415,7 @@ SLIMME KASSA REGELS:
             const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
             const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
             const market = MarketManager.getCurrentMarket(host);
-            const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+            const siteUrl = MarketManager.getMarketDomains()[market.market_code] || MarketManager.getMarketDomains()['BE'];
             
             await mailEngine.sendVoicesMail({
               to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,

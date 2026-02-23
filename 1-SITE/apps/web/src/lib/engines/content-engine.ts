@@ -228,9 +228,9 @@ export class ContentEngine {
     const market = MarketManager.getCurrentMarket();
     // 🛡️ CHRIS-PROTOCOL: Use dynamic host from MarketManager lookup
     const domains = MarketManager.getMarketDomains();
-    const host = domains[market.market_code]?.replace('https://www.', '').replace('https://', '') || 'voices.be';
+    const host = domains[market.market_code]?.replace('https://www.', '').replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', '');
 
-    const defaultHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://www.', '').replace('https://', '') || 'voices.be';
+    const defaultHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://www.', '').replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', '');
     if (host !== defaultHost) {
       return text.replace(/voices\.be/gi, host);
     }
