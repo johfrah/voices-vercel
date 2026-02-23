@@ -8,7 +8,7 @@ export default function LoginPage() {
   return (
     <PageWrapperInstrument>
       <Suspense  fallback={<LoadingScreenInstrument />}>
-        <LoginPageClient strokeWidth={1.5} />
+        <LoginPageClient />
       </Suspense>
     </PageWrapperInstrument>
   );

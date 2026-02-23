@@ -6,7 +6,7 @@ export default function AccountDashboard() {
   return (
     <PageWrapperInstrument>
       <Suspense  fallback={<LoadingScreenInstrument />}>
-        <AccountDashboardClient strokeWidth={1.5} />
+        <AccountDashboardClient />
       </Suspense>
     </PageWrapperInstrument>
   );

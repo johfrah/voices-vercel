@@ -37,7 +37,7 @@ export default function FavoritesPage() {
   return (
     <>
       <Suspense fallback={null}>
-        <LiquidBackground strokeWidth={1.5} />
+        <LiquidBackground />
       </Suspense>
       
       <PageWrapperInstrument className="bg-va-off-white min-h-screen overflow-hidden">

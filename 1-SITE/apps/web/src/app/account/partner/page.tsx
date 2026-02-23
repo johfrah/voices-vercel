@@ -6,7 +6,7 @@ export default function PartnerDashboard() {
   return (
     <PageWrapperInstrument>
       <Suspense  fallback={<LoadingScreenInstrument />}>
-        <PartnerDashboardClient strokeWidth={1.5} />
+        <PartnerDashboardClient />
       </Suspense>
     </PageWrapperInstrument>
   );
