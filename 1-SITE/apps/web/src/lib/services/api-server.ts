@@ -132,7 +132,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           } else if (targetLang === 'en' || targetLang === 'en-gb' || targetLang === 'en-us') {
             query = query.or('native_lang.ilike.en,native_lang.ilike.en-%,native_lang.ilike.engels,extra_langs.ilike.%en-gb%,extra_langs.ilike.%engels%');
           } else if (targetLang === 'fr' || targetLang === 'fr-fr' || targetLang === 'fr-be') {
-            query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%,native_lang.ilike.frans,native_lang.ilike.frans (be),native_lang.ilike.fr-be,extra_langs.ilike.%fr-be%,extra_langs.ilike.%frans (be)%');
+            // 🛡️ CHRIS-PROTOCOL: We filter strictly on native_lang for the specific language filter,
+            // but we ensure the query is broad enough to catch all variations of Belgian French.
+            query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%,native_lang.ilike.frans,native_lang.ilike.frans (be),native_lang.ilike.fr-be');
           } else if (targetLang === 'de' || targetLang === 'de-de') {
             query = query.or('native_lang.ilike.de,native_lang.ilike.de-%,native_lang.ilike.duits,extra_langs.ilike.%de-de%,extra_langs.ilike.%duits%');
           } else if (targetLang === 'all') {
