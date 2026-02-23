@@ -127,13 +127,16 @@ export default function VoiceManagerPage() {
     const newStatus = actor.status === 'live' ? 'pending' : 'live';
     
     // Optimistic update
-    setActors(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
+    setActors(prev => prev.map(a => a.id === id ? { ...a, status: newStatus, isPublic: newStatus === 'live' } : a));
 
     try {
       const res = await fetch(`/api/admin/actors/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify({ 
+          status: newStatus,
+          is_public: newStatus === 'live'
+        })
       });
       if (!res.ok) throw new Error('Failed to update status');
       toast.success(`${actor.firstName} is nu ${newStatus}`);

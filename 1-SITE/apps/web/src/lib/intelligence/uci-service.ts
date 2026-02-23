@@ -111,13 +111,13 @@ export class UCIService {
       let ordersList: any[] = [];
 
       try {
-        ordersList = await db.query.orders.findMany({
-          where: eq(orders.userId, user.id),
-          orderBy: [desc(orders.createdAt)],
-          with: {
-            orderItems: true
-          }
-        });
+        // 🛡️ CHRIS-PROTOCOL: Fast-path order fetching without heavy joins if possible
+        ordersList = await db
+          .select()
+          .from(orders)
+          .where(eq(orders.userId, user.id))
+          .orderBy(desc(orders.createdAt))
+          .limit(50); // Limit to recent orders for performance
 
         totalSpent = ordersList.reduce((acc, o) => acc + Number(o.total || 0), 0);
         orderCount = ordersList.length;
