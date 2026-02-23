@@ -48,7 +48,9 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     delivery_days: actor.delivery_days_max || 1,
     cutoff_time: actor.cutoff_time || '18:00',
     native_lang: actor.native_lang || (actor as any).nativeLang || '',
+    native_lang_id: (actor as any).native_lang_id || (actor as any).nativeLangId || null,
     extra_langs: actor.extra_langs || (actor as any).extraLangs || '',
+    extra_lang_ids: (actor as any).extra_lang_ids || (actor as any).extraLangIds || [],
     native_lang_label: actor.native_lang_label || (actor as any).nativeLangLabel || (actor as any).native_lang_label || '',
     photo_url: actor.photo_url || '',
     photo_id: (actor as any).photo_id || (actor as any).photoId || null,
@@ -903,13 +905,22 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                     <div className="space-y-3">
                       <span className="text-[10px] text-va-black/30 uppercase font-bold tracking-widest px-1">Moedertaal</span>
                       <select 
-                        value={formData.native_lang}
-                        onChange={(e) => setFormData({ ...formData, native_lang: e.target.value })}
+                        value={formData.native_lang_id || ''}
+                        onChange={(e) => {
+                          const id = parseInt(e.target.value);
+                          const lang = taxonomies.languages.find(l => l.id === id);
+                          setFormData({ 
+                            ...formData, 
+                            native_lang_id: id,
+                            native_lang: lang?.code || '',
+                            native_lang_label: lang?.label || ''
+                          });
+                        }}
                         className="w-full px-6 py-4 bg-white rounded-[20px] border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px] appearance-none cursor-pointer shadow-sm"
                       >
                         <option value="">Kies taal...</option>
                         {taxonomies.languages.map(lang => (
-                          <option key={lang.id} value={lang.code}>{lang.label} ({lang.code})</option>
+                          <option key={lang.id} value={lang.id}>{lang.label} ({lang.code})</option>
                         ))}
                       </select>
                     </div>
@@ -918,15 +929,30 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                       <span className="text-[10px] text-va-black/30 uppercase font-bold tracking-widest px-1">Extra Talen</span>
                       <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-4 bg-white rounded-[20px] border border-black/5 custom-scrollbar shadow-inner">
                         {taxonomies.languages.map((lang) => {
-                          const isActive = formData.extra_langs.split(',').map(l => l.trim()).includes(lang.code);
-                          const isNative = formData.native_lang === lang.code;
+                          const isActive = (formData.extra_lang_ids || []).includes(lang.id);
+                          const isNative = formData.native_lang_id === lang.id;
                           if (isNative) return null;
 
                           return (
                             <button
                               key={lang.id}
                               type="button"
-                              onClick={() => toggleExtraLang(lang.code)}
+                              onClick={() => {
+                                const current = formData.extra_lang_ids || [];
+                                const next = current.includes(lang.id)
+                                  ? current.filter(id => id !== lang.id)
+                                  : [...current, lang.id];
+                                
+                                const nextCodes = taxonomies.languages
+                                  .filter(l => next.includes(l.id))
+                                  .map(l => l.code);
+
+                                setFormData({ 
+                                  ...formData, 
+                                  extra_lang_ids: next,
+                                  extra_langs: nextCodes.join(', ')
+                                });
+                              }}
                               className={cn(
                                 "px-4 py-2 rounded-full text-[11px] font-medium transition-all duration-300 border",
                                 isActive 

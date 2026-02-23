@@ -58,6 +58,8 @@ export async function PATCH(
       dropboxUrl: body.photo_url,
       photoId: body.photo_id !== undefined ? body.photo_id : (body.photoId !== undefined ? body.photoId : undefined),
       deliveryConfig: body.delivery_config || undefined,
+      nativeLangId: body.native_lang_id || undefined,
+      extraLangIds: body.extra_lang_ids || undefined,
       studioSpecs: body.studioSpecs || undefined,
       connectivity: body.connectivity || undefined,
       portfolioPhotos: body.portfolio_photos || body.portfolioPhotos || undefined,
