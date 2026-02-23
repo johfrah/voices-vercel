@@ -24,6 +24,25 @@ export default function Error({
   useEffect(() => {
     console.error('App error:', error);
     
+    //  CHRIS-PROTOCOL: Self-Healing for Chunk Errors (Deployment Skew)
+    // Als een chunk niet geladen kan worden, is er waarschijnlijk een nieuwe versie gepusht.
+    // We herladen de pagina geforceerd om de nieuwste assets op te halen.
+    if (error.message?.includes('Loading chunk') && error.message?.includes('failed')) {
+      console.warn('[Nuclear] Chunk error detected. Triggering self-healing reload...');
+      
+      // Voorkom oneindige reload loops
+      const lastReload = sessionStorage.getItem('voices_last_chunk_reload');
+      const now = Date.now();
+      
+      if (!lastReload || (now - parseInt(lastReload)) > 30000) {
+        sessionStorage.setItem('voices_last_chunk_reload', now.toString());
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+        return;
+      }
+    }
+
     //  WATCHDOG NOTIFICATION
     const notifyWatchdog = async () => {
       try {
