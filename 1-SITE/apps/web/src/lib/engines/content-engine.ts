@@ -6,7 +6,7 @@ import { nl, fr, de, enUS } from "date-fns/locale";
 import { db } from "@db";
 import { contentArticles, translationRegistry } from "@db/schema";
 import { eq, sql } from "drizzle-orm";
-import { VoiceglotBridge } from "./voiceglot-bridge";
+import { VoiceglotBridge } from "../bridges/voiceglot-bridge";
 import md5 from "md5";
 
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";

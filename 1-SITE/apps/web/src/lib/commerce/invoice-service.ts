@@ -1,7 +1,7 @@
 import { db } from "@db";
 import { orderItems, orders, users } from "@db/schema";
 import { eq } from "drizzle-orm";
-import { DbService } from "../DbService";
+import { DbService } from "../services/db-service";
 
 /**
  *  INVOICE SERVICE (2026)
