@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/sync/bridge';
 import { actors } from '@db/schema';
 import { asc, eq } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = 'force-dynamic';
 
@@ -21,29 +22,56 @@ export async function GET() {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const allActors = await db.query.actors.findMany({
-      orderBy: (actors, { asc }) => [asc(actors.menuOrder), asc(actors.firstName)],
-      with: {
-        demos: true,
-        actorVideos: true,
-        actorLanguages: true
-      }
-    }).catch((err) => {
-      console.error(' Drizzle findMany failed:', err);
-      return [];
-    });
+    let allActors: any[] = [];
+    
+    try {
+      allActors = await db.query.actors.findMany({
+        orderBy: (actors, { asc }) => [asc(actors.menuOrder), asc(actors.firstName)],
+        with: {
+          demos: true,
+          actorVideos: true,
+          actorLanguages: true
+        }
+      });
+    } catch (dbErr) {
+      console.warn(' [Admin Actors API] Drizzle failed, falling back to SDK');
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      const { data, error } = await supabase
+        .from('actors')
+        .select('*, demos:actor_demos(*), actorVideos:actor_videos(*), actorLanguages:actor_languages(*)')
+        .order('menu_order', { ascending: true })
+        .order('first_name', { ascending: true });
+        
+      if (error) throw error;
+      
+      allActors = (data || []).map(a => ({
+        ...a,
+        firstName: a.first_name,
+        lastName: a.last_name,
+        menuOrder: a.menu_order,
+        wpProductId: a.wp_product_id,
+        photoId: a.photo_id,
+        voiceScore: a.voice_score,
+        priceUnpaid: a.price_unpaid,
+        nativeLang: a.native_lang,
+        photo_url: a.dropbox_url
+      }));
+    }
 
     //  CHRIS-PROTOCOL: Map relational languages to flat ID fields for frontend compatibility
     const mappedActors = (allActors || []).map(actor => {
       const actorLangs = (actor as any).actorLanguages || [];
       
-      const nativeLink = actorLangs.find((al: any) => al.isNative);
-      const extraLinks = actorLangs.filter((al: any) => !al.isNative);
+      const nativeLink = actorLangs.find((al: any) => al.isNative || al.is_native);
+      const extraLinks = actorLangs.filter((al: any) => !al.isNative && !al.is_native);
       
       return {
         ...actor,
-        native_lang_id: nativeLink?.languageId || null,
-        extra_lang_ids: extraLinks.map((al: any) => al.languageId).filter(Boolean)
+        native_lang_id: nativeLink?.languageId || nativeLink?.language_id || null,
+        extra_lang_ids: extraLinks.map((al: any) => al.languageId || al.language_id).filter(Boolean)
       };
     });
 
@@ -54,6 +82,11 @@ export async function GET() {
 
   } catch (error: any) {
     console.error(' ADMIN ACTORS FETCH FAILURE:', error);
-    return NextResponse.json({ error: 'Failed to fetch actors' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch actors', details: error.message }, { status: 500 });
   }
+}
+
+export async function POST(request: NextRequest) {
+  // Placeholder for bulk actions if needed
+  return NextResponse.json({ success: true });
 }
