@@ -1,4 +1,4 @@
-import { DirectMailService } from './DirectMailService';
+import { DirectMailService } from './direct-mail-service';
 
 /**
  * VOICES MAIL ENGINE (BOB-METHOD 2026)
