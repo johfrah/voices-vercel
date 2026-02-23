@@ -23,8 +23,8 @@ export class VoiceglotBridge {
   /**
    * Vertaalt een string op basis van een key of de originele tekst
    */
-  static async t(textOrKey: string, lang: string = 'nl', isKey: boolean = false): Promise<string> {
-    if (lang === 'nl' || !textOrKey) return textOrKey;
+  static async t(textOrKey: string, lang: string = 'nl-be', isKey: boolean = false): Promise<string> {
+    if (lang === 'nl-be' || lang === 'nl' || !textOrKey) return textOrKey;
 
     const cacheKey = `${lang}:${textOrKey}`;
     if (this.cache[cacheKey]) return this.cache[cacheKey];
@@ -76,8 +76,8 @@ export class VoiceglotBridge {
   /**
    * Batch vertaling voor betere performance
    */
-  static async translateBatch(texts: string[], lang: string = 'nl'): Promise<Record<string, string>> {
-    if (lang === 'nl') {
+  static async translateBatch(texts: string[], lang: string = 'nl-be'): Promise<Record<string, string>> {
+    if (lang === 'nl-be' || lang === 'nl') {
       return texts.reduce((acc, text) => ({ ...acc, [text]: text }), {});
     }
 

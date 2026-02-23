@@ -25,7 +25,7 @@ export class VoicesMailEngine {
    * Genereert de standaard Voices HTML wrapper
    * Geoptimaliseerd voor maximale compatibiliteit (Spark, Outlook, Gmail)
    */
-  private getHtmlWrapper(content: string, lang: string = 'nl', marketName: string = 'Voices', logoUrl?: string): string {
+  private getHtmlWrapper(content: string, lang: string = 'nl-BE', marketName: string = 'Voices', logoUrl?: string): string {
     return `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="${lang}">
@@ -91,7 +91,7 @@ export class VoicesMailEngine {
     lang?: string;
     marketName?: string;
   }) {
-    const lang = options.lang || 'nl';
+    const lang = options.lang || 'nl-BE';
     const marketName = options.marketName || 'Voices';
     
     // 🛡️ CHRIS-PROTOCOL: Fetch market config for logo and branding
@@ -107,7 +107,7 @@ export class VoicesMailEngine {
           <tr>
             <td align="center" style="border-radius: 12px;" bgcolor="#1a1a1a">
               <a href="${options.buttonUrl}" target="_blank" style="font-size: 14px; font-weight: 400; color: #ffffff; text-decoration: none; padding: 20px 40px; border-radius: 12px; border: 1px solid #1a1a1a; display: inline-block; letter-spacing: 0.1em; text-transform: uppercase;">
-                ${options.buttonText || (lang === 'nl' ? 'Klik hier' : lang === 'fr' ? 'Cliquez ici' : 'Click here')}
+                ${options.buttonText || (lang.startsWith('nl') ? 'Klik hier' : lang.startsWith('fr') ? 'Cliquez ici' : 'Click here')}
               </a>
             </td>
           </tr>
@@ -133,33 +133,33 @@ export class VoicesMailEngine {
   /**
    * Specifieke helper voor de Magic Link (meertalig)
    */
-  public async sendMagicLink(email: string, link: string, lang: string = 'nl', host?: string) {
+  public async sendMagicLink(email: string, link: string, lang: string = 'nl-BE', host?: string) {
     const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
     const market = MarketManager.getCurrentMarket(host);
     const marketName = market.name || 'Voices';
 
     const templates: Record<string, any> = {
-      nl: {
+      'nl-be': {
         subject: `Inloglink voor ${marketName}`,
         title: 'Welkom terug.',
         body: 'U heeft een verzoek ingediend om in te loggen op uw account. Gebruik de onderstaande knop om direct toegang te krijgen tot uw account.',
         buttonText: 'Direct inloggen'
       },
-      en: {
+      'en-gb': {
         subject: `Login link for ${marketName}`,
         title: 'Welcome back.',
         body: 'You requested a login link for your account. Use the button below to gain direct access to your account.',
         buttonText: 'Log in now'
       },
-      fr: {
-        subject: `Lien de connexion pour ${marketName}`,
+      'fr-fr': {
+        subject: `Lien de connexion voor ${marketName}`,
         title: 'Bon retour.',
         body: 'Vous avez demandé un lien de connexion voor uw account. Utilisez le bouton ci-dessous pour accéder directement à votre account.',
         buttonText: 'Se connecter maintenant'
       }
     };
 
-    const t = templates[lang] || templates.nl;
+    const t = templates[lang.toLowerCase()] || templates['nl-be'];
 
     await this.sendVoicesMail({
       to: email,
@@ -187,17 +187,17 @@ export class VoicesMailEngine {
     host?: string;
     lang?: string;
   }) {
-    const lang = options.lang || 'nl';
+    const lang = options.lang || 'nl-BE';
     const isBurning = options.vibe === 'burning';
     
     const templates: Record<string, any> = {
-      nl: {
+      'nl-be': {
         subject: `${isBurning ? '🔥' : '🎯'} Nieuwe interesse op je portfolio`,
         title: isBurning ? 'Iemand staat in lichterlaaie.' : 'Nieuwe interesse.',
         body: `Hallo ${options.actorName}, er is zojuist een warme lead gedetecteerd op je portfolio. <strong>${options.leadName}</strong> toont veel interesse in je werk.${options.message ? `<br/><br/><em>"${options.message}"</em>` : ''}`,
         buttonText: 'Bekijk Klant DNA'
       },
-      en: {
+      'en-gb': {
         subject: `${isBurning ? '🔥' : '🎯'} New interest on your portfolio`,
         title: isBurning ? 'Someone is on fire.' : 'New interest.',
         body: `Hi ${options.actorName}, a warm lead was just detected on your portfolio. <strong>${options.leadName}</strong> is showing a lot of interest in your work.${options.message ? `<br/><br/><em>"${options.message}"</em>` : ''}`,
@@ -205,7 +205,7 @@ export class VoicesMailEngine {
       }
     };
 
-    const t = templates[lang] || templates.nl;
+    const t = templates[lang.toLowerCase()] || templates['nl-be'];
 
     await this.sendVoicesMail({
       to: options.to,

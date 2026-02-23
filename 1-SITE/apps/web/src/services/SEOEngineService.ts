@@ -1,6 +1,7 @@
 import { db } from '@db';
 import { faq, actors, workshops, contentArticles } from '@db/schema';
 import { eq, and } from 'drizzle-orm';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 /**
  *  SEO ENGINE SERVICE (2026)
@@ -22,9 +23,11 @@ export class SEOEngineService {
    * Generate meta tags for any page based on context
    */
   static async generateMetaTags(path: string, context: any = {}): Promise<MetaTags> {
+    const market = MarketManager.getCurrentMarket(context.host);
+    
     const defaultMeta: MetaTags = {
-      title: 'Voices Studio | Jouw verhaal komt binnen',
-      description: 'De fysieke plek voor directe begeleiding in het stemmenambacht. Leer van de experts.',
+      title: `${market.name} | Jouw verhaal komt binnen`,
+      description: market.seo_data?.description || 'De fysieke plek voor directe begeleiding in het stemmenambacht. Leer van de experts.',
       ogImage: '/assets/common/og-image.jpg'
     };
 
@@ -32,8 +35,8 @@ export class SEOEngineService {
     if (path === '/studio') {
       return {
         ...defaultMeta,
-        title: 'Workshops voor professionele sprekers | Voices Studio',
-        description: 'Ontdek onze workshops in de studio. Directe begeleiding van Johfrah en andere experts.'
+        title: `Workshops voor professionele sprekers | ${market.name} Studio`,
+        description: `Ontdek onze workshops in de studio. Directe begeleiding van experts bij ${market.name}.`
       };
     }
 
@@ -46,7 +49,7 @@ export class SEOEngineService {
 
       if (workshop) {
         return {
-          title: `${workshop.title} | Voices Studio Workshop`,
+          title: `${workshop.title} | ${market.name} Studio Workshop`,
           description: workshop.description?.substring(0, 160) || defaultMeta.description,
           ogImage: workshop.mediaId ? `/assets/media/${workshop.mediaId}` : defaultMeta.ogImage
         };
@@ -56,7 +59,7 @@ export class SEOEngineService {
     // 3. FAQ Pages
     if (path.startsWith('/faq')) {
       return {
-        title: 'Veelgestelde vragen over stemmen en workshops | Voices.be',
+        title: `Veelgestelde vragen over stemmen en workshops | ${market.market_code === 'BE' ? 'Voices.be' : 'Voices.nl'}`,
         description: 'Vind antwoorden op al je vragen over tarieven, levertijden en onze studio workshops.'
       };
     }
@@ -98,8 +101,7 @@ export class SEOEngineService {
     const links = [
       { keyword: 'workshop', url: '/studio' },
       { keyword: 'stemmen', url: '/agency' },
-      { keyword: 'leren', url: '/academy' },
-      { keyword: 'Johfrah', url: '/voice/johfrah' }
+      { keyword: 'leren', url: '/academy' }
     ];
 
     let linkedText = text;

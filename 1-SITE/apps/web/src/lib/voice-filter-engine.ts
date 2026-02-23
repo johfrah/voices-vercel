@@ -1,7 +1,7 @@
 /**
  * VOICE FILTER ENGINE (2026)
  * 
- * De onverwoestbare basishoeksteen van Voices.be.
+ * De onverwoestbare basishoeksteen van het Voices ecosysteem.
  * Centraliseert alle filter-logica om inconsistenties tussen frontend en backend te elimineren.
  * 
  * CHRIS-PROTOCOL: 
@@ -198,7 +198,7 @@ export class VoiceFilterEngine {
     if (targetCode === 'en-gb' && (al === 'engels' || al === 'en-gb')) return true;
     if (targetCode === 'en-us' && (al === 'engels (us)' || al === 'en-us')) return true;
 
-    // Gedeeltelijke matches (bijv. 'nl' matcht met 'nl-be')
+    // Gedeeltelijke matches (bijv. 'nl-be' matcht met 'nl-be-accent')
     if (al.startsWith(targetCode + '-') || targetCode.startsWith(al + '-')) return true;
 
     return false;

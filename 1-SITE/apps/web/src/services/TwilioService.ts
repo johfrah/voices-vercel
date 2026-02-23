@@ -1,4 +1,5 @@
 import { Twilio } from 'twilio';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 export class TwilioService {
   private static instance: TwilioService;
@@ -31,10 +32,10 @@ export class TwilioService {
    * 1. Twilio belt Johfrah (+32475...)
    * 2. Zodra Johfrah opneemt, wordt de klant gebeld
    */
-  public async initiateCallback(destination: string): Promise<{ success: boolean; message: string }> {
+  public async initiateCallback(destination: string, host?: string): Promise<{ success: boolean; message: string }> {
     try {
-      const accountSid = process.env.TWILIO_ACCOUNT_SID;
-      const authToken = process.env.TWILIO_AUTH_TOKEN;
+      const market = MarketManager.getCurrentMarket(host);
+      const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${host || 'www.voices.be'}`;
       
       //  CHRIS-PROTOCOL: Fetch current config from DB for whisper mode
       const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/app_configs?key=eq.telephony_config`, {
@@ -47,21 +48,20 @@ export class TwilioService {
       const config = configs?.[0]?.value || { whisperMode: 'robot' };
       const whisperMode = config.whisperMode;
 
-      console.log(`[TwilioService] Initiating callback. Mode: ${whisperMode}. Destination: ${destination}`);
+      console.log(`[TwilioService] Initiating callback. Mode: ${whisperMode}. Destination: ${destination} (Market: ${market.market_code})`);
 
       let twiml = '';
       
       if (whisperMode === 'audio') {
-        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
-        twiml = `<Response><Play>${baseUrl}/assets/audio/system/call-intro-johfrah.mp3</Play><Dial>${destination}</Dial></Response>`;
+        twiml = `<Response><Play>${siteUrl}/assets/audio/system/call-intro-johfrah.mp3</Play><Dial>${destination}</Dial></Response>`;
       } else if (whisperMode === 'silent') {
         twiml = `<Response><Pause length="1"/><Dial>${destination}</Dial></Response>`;
       } else {
         // Default: Robot
         const spacedNumber = destination.split('').join(' ');
         twiml = `<Response>
-          <Say voice="alice" language="nl-NL">
-            Inkomende oproep van Voices punt b e. 
+          <Say voice="alice" language="${market.market_code === 'BE' ? 'nl-BE' : 'nl-NL'}">
+            Inkomende oproep van ${market.name}. 
             Het nummer van de klant is: ${spacedNumber}. 
             We verbinden je nu.
           </Say>

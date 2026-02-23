@@ -38,12 +38,12 @@ export function generateSlug(text: string): string {
 }
 
 /**
- * Controleert of een slug een taalprefix bevat (bijv. 'fr', 'en').
+ * Controleert of een slug een taalprefix bevat (bijv. 'nl-be', 'fr-fr').
  */
 export function hasLanguagePrefix(slug: string): boolean {
   const normalized = normalizeSlug(slug);
   const firstSegment = normalized.split('/')[0];
-  const supportedLangs = ['nl', 'fr', 'en', 'de', 'es', 'pt', 'it'];
+  const supportedLangs = ['nl-be', 'fr-fr', 'en-gb', 'de-de', 'es-es', 'pt-pt', 'it-it', 'nl', 'fr', 'en', 'de', 'es', 'pt', 'it'];
   return supportedLangs.includes(firstSegment);
 }
 

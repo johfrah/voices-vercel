@@ -284,8 +284,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // 4. I18N NUCLEAR REWRITE (CLEAN URLS)
-  // Ondersteunt /fr/, /en/, /nl/, /de/, /es/, /it/, /pt/
-  const langMatch = pathname.match(/^\/(fr|en|nl|de|es|it|pt)(\/|$)/i)
+  // Ondersteunt /fr-fr/, /en-gb/, /nl-be/, /de-de/, /es-es/, /it-it/, /pt-pt/
+  // En legacy /fr/, /en/, /nl/, /de/, /es/, /it/, /pt/
+  const langMatch = pathname.match(/^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt|fr|en|nl|de|es|it|pt)(\/|$)/i)
   
   // Intelligent Stickiness: Check cookie, then Accept-Language header
   const cookieLang = request.cookies.get('voices_lang')?.value
@@ -299,29 +300,42 @@ export async function middleware(request: NextRequest) {
     if (!isRoot) {
       // Fallback 1: Browser preferences
       const acceptLang = request.headers.get('accept-language') || ''
-      if (acceptLang.startsWith('fr')) detectedLang = 'fr'
-      else if (acceptLang.startsWith('en')) detectedLang = 'en'
-      else if (acceptLang.startsWith('de')) detectedLang = 'de'
-      else if (acceptLang.startsWith('es')) detectedLang = 'es'
-      else if (acceptLang.startsWith('it')) detectedLang = 'it'
-      else if (acceptLang.startsWith('pt')) detectedLang = 'pt'
+      if (acceptLang.startsWith('fr')) detectedLang = 'fr-fr'
+      else if (acceptLang.startsWith('en')) detectedLang = 'en-gb'
+      else if (acceptLang.startsWith('de')) detectedLang = 'de-de'
+      else if (acceptLang.startsWith('es')) detectedLang = 'es-es'
+      else if (acceptLang.startsWith('it')) detectedLang = 'it-it'
+      else if (acceptLang.startsWith('pt')) detectedLang = 'pt-pt'
     }
     
     // Fallback 2: Domain-based defaults
     if (!detectedLang) {
-      if (market === 'FR') detectedLang = 'fr'
-      else if (market === 'ES') detectedLang = 'es'
-      else if (market === 'PT') detectedLang = 'pt'
-      else if (market === 'EU') detectedLang = 'en'
-      else if (market === 'DE') detectedLang = 'de'
-      else detectedLang = 'nl' // Default
+      if (market === 'FR') detectedLang = 'fr-fr'
+      else if (market === 'ES') detectedLang = 'es-es'
+      else if (market === 'PT') detectedLang = 'pt-pt'
+      else if (market === 'EU') detectedLang = 'en-gb'
+      else if (market === 'DE') detectedLang = 'de-de'
+      else detectedLang = 'nl-be' // Default
     }
   }
 
   // Als de URL een taalprefix heeft, overschrijft deze alles en zetten we de cookie
   if (langMatch) {
-    const urlLang = langMatch[1].toLowerCase()
-    const pathWithoutLocale = pathname.replace(/^\/(fr|en|nl|de|es|it|pt)/i, '') || '/'
+    let urlLang = langMatch[1].toLowerCase()
+    
+    // 🛡️ CHRIS-PROTOCOL: Map legacy 2-char codes to ISO-5
+    const legacyMap: Record<string, string> = {
+      'nl': 'nl-be',
+      'fr': 'fr-fr',
+      'en': 'en-gb',
+      'de': 'de-de',
+      'es': 'es-es',
+      'it': 'it-it',
+      'pt': 'pt-pt'
+    };
+    if (legacyMap[urlLang]) urlLang = legacyMap[urlLang];
+
+    const pathWithoutLocale = pathname.replace(/^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt|fr|en|nl|de|es|it|pt)/i, '') || '/'
     
     // Update detectedLang to match URL
     detectedLang = urlLang
@@ -350,7 +364,7 @@ export async function middleware(request: NextRequest) {
   // INTELLIGENT REDIRECT: Als de bezoeker een franstalige cookie heeft maar op de NL root zit
   // (en het is niet een expliciete taal-switch actie), stuur ze naar de juiste prefix.
   // We doen dit alleen voor de hoofd-domeinen om loops te voorkomen.
-  if (!langMatch && detectedLang && detectedLang !== 'nl' && market === 'BE' && pathname === '/') {
+  if (!langMatch && detectedLang && !detectedLang.startsWith('nl') && market === 'BE' && pathname === '/') {
     // 🛡️ CHRIS-PROTOCOL: Extra check to prevent redirect loops
     if (request.headers.get('x-middleware-rewrite')) {
        return response;

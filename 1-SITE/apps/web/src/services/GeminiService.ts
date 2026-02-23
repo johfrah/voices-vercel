@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { db } from "@db";
 import { systemKnowledge } from "@db/schema";
 import { eq, or } from "drizzle-orm";
+import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 
 /**
  *  GEMINI INTELLIGENCE SERVICE (2026)
@@ -56,7 +57,7 @@ export class GeminiService {
    * Genereert platte tekst via Gemini. Gebruikt door heal-routes, chat en Telegram-Bob.
    * NU MET AGENT-MANDAAT: Kan gestructureerde acties voorstellen.
    */
-  async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string }): Promise<string> {
+  async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string }): Promise<string> {
     try {
       const model = this.getModel();
       let finalPrompt = prompt;
@@ -95,19 +96,20 @@ ${prompt}
   /**
    * Static shortcut voor generateText (compat met heal-routes).
    */
-  static async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string }): Promise<string> {
+  static async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string }): Promise<string> {
     return GeminiService.getInstance().generateText(prompt, options);
   }
 
   /**
    * Analyseert een mail en geeft gestructureerde AI data terug.
    */
-  async analyzeMail(subject: string, body: string) {
+  async analyzeMail(subject: string, body: string, host?: string) {
     try {
       const model = this.getModel();
+      const market = MarketManager.getCurrentMarket(host);
 
       const prompt = `
-        Analyseer de volgende e-mail voor een voice-over bureau (Voices.be).
+        Analyseer de volgende e-mail voor een voice-over bureau (${market.name} - ${host || 'Voices'}).
         Geef het resultaat terug in strikt JSON formaat.
 
         Onderwerp: ${subject}
@@ -120,7 +122,7 @@ ${prompt}
           "urgency": 0-1,
           "summary": "Korte samenvatting in 1 zin",
           "customer_needs": ["behoefte 1", "behoefte 2"],
-          "suggested_action": "Wat moet Johfrah doen?"
+          "suggested_action": "Wat moet de admin doen?"
         }
       `;
 
@@ -151,6 +153,7 @@ ${prompt}
   async analyzeImage(imageBuffer: Buffer, mimeType: string, context?: any) {
     try {
       const model = this.getModel();
+      const market = MarketManager.getCurrentMarket(context?.host);
 
       const contextPrompt = context ? `
         Aanvullende context over deze afbeelding:
@@ -163,7 +166,7 @@ ${prompt}
       ` : '';
 
       const prompt = `
-        Analyseer deze afbeelding voor een high-end voice-over bureau (Voices.be).
+        Analyseer deze afbeelding voor een high-end voice-over bureau (${market.name} - ${context?.host || 'Voices'}).
         ${contextPrompt}
         
         Beschrijf wat je ziet in een menselijke, zachte tone-of-voice (Voices-vibe).

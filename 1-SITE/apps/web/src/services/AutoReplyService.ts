@@ -42,7 +42,7 @@ export class AutoReplyService {
     companyName?: string,
     host?: string
   }): Promise<void> {
-    const { to, subject, originalBody, firstName, language = 'nl', invoiceNumber, amount, host } = options;
+    const { to, subject, originalBody, firstName, language = 'nl-BE', invoiceNumber, amount, host } = options;
     
     //  Intelligence Layer: Haal markt-specifieke info op
     const market = MarketManager.getCurrentMarket(host);
@@ -78,7 +78,7 @@ export class AutoReplyService {
    * Genereert een concept-antwoord en plaatst dit in de Approval Queue.
    * (Oude methode behouden voor andere flows indien nodig)
    */
-  async prepareInvoiceConfirmation(to: string, subject: string, originalBody: string, firstName?: string, language: string = 'nl', accountId?: string, host?: string): Promise<void> {
+  async prepareInvoiceConfirmation(to: string, subject: string, originalBody: string, firstName?: string, language: string = 'nl-BE', accountId?: string, host?: string): Promise<void> {
     const market = MarketManager.getCurrentMarket(host);
     const finalAccountId = accountId || market.email;
     // ... bestaande logica ...

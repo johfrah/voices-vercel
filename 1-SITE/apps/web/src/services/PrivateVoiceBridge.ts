@@ -26,7 +26,7 @@ export const PrivateVoiceBridge = {
       const response = await axios.post(`${tunnelUrl}/generate`, {
         text,
         speaker_wav: speakerReference,
-        language: 'nl'
+        language: 'nl-be'
       }, {
         responseType: 'arraybuffer',
         timeout: 30000 // 30s timeout voor AI generatie

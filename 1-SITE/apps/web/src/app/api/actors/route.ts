@@ -28,7 +28,7 @@ export async function GET(request: Request) {
         count: 0, 
         _error: err.message,
         _stack: err.stack,
-        _v: 'v2.13.14 (Godmode Zero)',
+        _v: 'v2.13.15 (Godmode Zero)',
         _env: {
           hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
           hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
