@@ -22,13 +22,16 @@ export async function GET() {
 
   try {
     const allActors = await db.query.actors.findMany({
-      orderBy: [asc(actors.menuOrder), asc(actors.firstName)],
+      orderBy: (actors, { asc }) => [asc(actors.menuOrder), asc(actors.firstName)],
       with: {
         demos: true,
         actorVideos: true,
         actorLanguages: true
       }
-    }).catch(() => []);
+    }).catch((err) => {
+      console.error(' Drizzle findMany failed:', err);
+      return [];
+    });
 
     //  CHRIS-PROTOCOL: Map relational languages to flat ID fields for frontend compatibility
     const mappedActors = (allActors || []).map(actor => {

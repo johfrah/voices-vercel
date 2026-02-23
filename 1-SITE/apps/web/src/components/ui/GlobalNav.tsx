@@ -270,7 +270,7 @@ export default function GlobalNav() {
   const { playClick, playSwell } = useSonicDNA();
   const { isEditMode, toggleEditMode, canEdit } = useEditMode();
   const { state: voicesState, toggleActorSelection } = useVoicesState();
-  const { state: checkoutState, subtotal } = useCheckout();
+  const { state: checkoutState, subtotal, removeItem } = useCheckout();
   const { notifications: customerNotifications, unreadCount: customerUnreadCount, markAsRead: markCustomerAsRead, markAllAsRead: markAllCustomerAsRead } = useNotifications();
   const auth = useAuth();
   const isAdmin = auth.isAdmin;
@@ -875,7 +875,7 @@ export default function GlobalNav() {
                             onClick={(e) => {
                               e.stopPropagation();
                               e.preventDefault();
-                              checkoutState.removeItem(item.id);
+                              removeItem(item.id);
                               playClick('light');
                             }}
                             className="p-1.5 text-va-black/20 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
