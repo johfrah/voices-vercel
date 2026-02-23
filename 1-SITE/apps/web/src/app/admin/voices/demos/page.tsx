@@ -83,6 +83,9 @@ function SortableDemoRow({
   playingUrl: string | null;
   onTogglePlay: (url: string) => void;
 }) {
+  const [isSaving, setIsSaving] = useState(false);
+  const { playClick } = useSonicDNA();
+
   const {
     attributes,
     listeners,
@@ -100,6 +103,31 @@ function SortableDemoRow({
   };
 
   const isPlaying = playingUrl === demo.url;
+
+  const handleInlineSave = async () => {
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/admin/actors/demos/${demo.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          title: demo.name,
+          category: demo.type,
+          isPublic: demo.isPublic
+        })
+      });
+      if (res.ok) {
+        playClick('success');
+        toast.success(`"${demo.name}" opgeslagen`);
+      } else {
+        throw new Error('Opslaan mislukt');
+      }
+    } catch (err) {
+      toast.error('Fout bij opslaan');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div ref={setNodeRef} style={style} className="touch-none">
@@ -145,11 +173,14 @@ function SortableDemoRow({
         {/* Name Input */}
         <div className="flex-1">
           <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/20 mb-1">Label / Titel</TextInstrument>
-          <InputInstrument 
-            value={demo.name}
-            onChange={(e) => onUpdate(demo.id, { name: e.target.value })}
-            className="bg-va-off-white border-none rounded-xl px-4 py-2 w-full text-sm font-medium focus:ring-2 focus:ring-primary/20"
-          />
+          <div className="flex items-center gap-2">
+            <InputInstrument 
+              value={demo.name}
+              onChange={(e) => onUpdate(demo.id, { name: e.target.value })}
+              onBlur={handleInlineSave}
+              className="bg-va-off-white border-none rounded-xl px-4 py-2 w-full text-sm font-medium focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
         </div>
 
         {/* Category Select */}
@@ -157,7 +188,11 @@ function SortableDemoRow({
           <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/20 mb-1">Categorie</TextInstrument>
           <select 
             value={demo.type || ''}
-            onChange={(e) => onUpdate(demo.id, { type: e.target.value })}
+            onChange={(e) => {
+              onUpdate(demo.id, { type: e.target.value });
+              // Direct opslaan bij verandering van categorie
+              setTimeout(handleInlineSave, 100);
+            }}
             className="bg-va-off-white border-none rounded-xl px-4 py-2 w-full text-sm font-medium focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
           >
             <option value="">Geen</option>
@@ -174,12 +209,17 @@ function SortableDemoRow({
         <div className="w-24 flex flex-col items-center">
           <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/20 mb-1">Status</TextInstrument>
           <button 
-            onClick={() => onUpdate(demo.id, { isPublic: !demo.isPublic })}
+            onClick={() => {
+              const newVal = !demo.isPublic;
+              onUpdate(demo.id, { isPublic: newVal });
+              // Direct opslaan bij toggelen van status
+              setTimeout(handleInlineSave, 100);
+            }}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
               demo.isPublic ? 'bg-green-500/10 text-green-600' : 'bg-va-black/5 text-va-black/40'
             }`}
           >
-            {demo.isPublic ? <CheckCircle2 size={10} /> : <Clock size={10} />}
+            {isSaving ? <Loader2 size={10} className="animate-spin" /> : (demo.isPublic ? <CheckCircle2 size={10} /> : <Clock size={10} />)}
             {demo.isPublic ? 'Public' : 'Hidden'}
           </button>
         </div>

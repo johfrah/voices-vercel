@@ -189,9 +189,9 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       { label: MarketManager.getLanguageLabel('sv-se'), value: 'sv-se', icon: Globe, langCode: 'sv-se', popular: market.popular_languages.includes('sv-se') || market.popular_languages.includes('Zweeds') },
     ];
 
-    const mappedConfig = languageConfig.map(lang => ({
-      ...lang,
-      availableExtraLangs: state.journey === 'telephony' ? getExtraLangsFor(lang.label, lang.value) : []
+    const mappedConfig = languageConfig.map(langObj => ({
+      ...langObj,
+      availableExtraLangs: state.journey === 'telephony' ? getExtraLangsFor(langObj.label, langObj.value) : []
     }));
 
     const popularLangs = mappedConfig.filter(l => l.popular);
