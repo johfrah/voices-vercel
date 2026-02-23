@@ -46,9 +46,9 @@ export interface ImapAuthOptions {
   tls: boolean;
 }
 
-export class direct-mail-service {
+export class DirectMailService {
   private config: Imap.Config;
-  private static instance: direct-mail-service;
+  private static instance: DirectMailService;
   private oauth2Client?: OAuth2Client;
 
   constructor(customConfig?: Partial<Imap.Config>) {
@@ -71,9 +71,9 @@ export class direct-mail-service {
     }
   }
 
-  public static getInstance(customConfig?: Partial<Imap.Config>): direct-mail-service {
+  public static getInstance(customConfig?: Partial<Imap.Config>): DirectMailService {
     if (!direct-mail-service.instance || customConfig) {
-      direct-mail-service.instance = new direct-mail-service(customConfig);
+      direct-mail-service.instance = new DirectMailService(customConfig);
     }
     return direct-mail-service.instance;
   }

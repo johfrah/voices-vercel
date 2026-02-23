@@ -6,9 +6,9 @@ import OpenAI from 'openai';
  * Doel: Genereert semantische embeddings voor teksten (mails, scripts, briefings).
  * Maakt gebruik van OpenAI text-embedding-3-small (1536 dims).
  */
-export class vector-service {
+export class VectorService {
   private openai: OpenAI;
-  private static instance: vector-service;
+  private static instance: VectorService;
 
   constructor() {
     this.openai = new OpenAI({
@@ -16,9 +16,9 @@ export class vector-service {
     });
   }
 
-  public static getInstance(): vector-service {
+  public static getInstance(): VectorService {
     if (!vector-service.instance) {
-      vector-service.instance = new vector-service();
+      vector-service.instance = new VectorService();
     }
     return vector-service.instance;
   }
