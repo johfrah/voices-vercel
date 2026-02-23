@@ -317,34 +317,33 @@ export default function DemoManagerPage() {
     playClick('pro');
     
     try {
-      // We groeperen de demo's per acteur om ze via de bestaande actor API op te slaan
-      const demosByActor = demos.reduce((acc: any, demo) => {
-        if (!acc[demo.actorId]) acc[demo.actorId] = [];
-        acc[demo.actorId].push({
-          id: demo.id,
-          title: demo.name,
-          audio_url: demo.url,
-          category: demo.type,
-          menu_order: demo.menuOrder,
-          is_public: demo.isPublic
-        });
-        return acc;
-      }, {});
-
-      const promises = Object.entries(demosByActor).map(([actorId, actorDemos]) => 
-        fetch(`/api/admin/actors/${actorId}`, {
+      // CHRIS-PROTOCOL: We groeperen de demo's per acteur om ze via de bestaande actor API op te slaan
+      // Maar we kunnen nu ook de specifieke demo API gebruiken voor individuele updates
+      const updatePromises = demos.map(demo => 
+        fetch(`/api/admin/actors/demos/${demo.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ demos: actorDemos })
+          body: JSON.stringify({ 
+            title: demo.name,
+            category: demo.type,
+            isPublic: demo.isPublic
+          })
         })
       );
 
-      await Promise.all(promises);
-      toast.success('Alle wijzigingen opgeslagen!');
-      setHasChanges(false);
-      playClick('success');
-    } catch (error) {
-      toast.error('Fout bij opslaan');
+      const results = await Promise.all(updatePromises);
+      const allOk = results.every(r => r.ok);
+
+      if (allOk) {
+        toast.success('Alle wijzigingen opgeslagen!');
+        setHasChanges(false);
+        playClick('success');
+      } else {
+        throw new Error('Sommige demo\'s konden niet worden opgeslagen');
+      }
+    } catch (error: any) {
+      console.error('Save failed:', error);
+      toast.error(`Fout bij opslaan: ${error.message}`);
     } finally {
       setSaving(false);
     }

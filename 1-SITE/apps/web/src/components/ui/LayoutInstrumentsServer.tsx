@@ -68,7 +68,7 @@ export interface ContainerInstrumentProps extends HTMLAttributes<HTMLElement> {
   plain?: boolean;
 }
 
-export const ContainerInstrument = ({ 
+export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentProps>(({ 
   children, 
   className = '',
   as: Component = 'div',
@@ -77,7 +77,7 @@ export const ContainerInstrument = ({
   role,
   plain = false,
   ...props
-}: ContainerInstrumentProps) => {
+}, ref) => {
   const isStructural = Component === 'div' || Component === 'section' || Component === 'main' || Component === 'footer' || Component === 'header';
   const isListOrNav = Component === 'ul' || Component === 'li' || Component === 'nav';
   const hasManualPadding = /\bp[xy]?-\d+/.test(className) || className.includes('p-0') || className.includes('!px-0');
@@ -88,6 +88,7 @@ export const ContainerInstrument = ({
 
   return (
     <Component 
+      ref={ref}
       className={cn(
         shouldBePlain ? className : cn("va-container", className),
         noTranslate && "notranslate"
@@ -100,7 +101,8 @@ export const ContainerInstrument = ({
       {children}
     </Component>
   );
-};
+});
+ContainerInstrument.displayName = 'ContainerInstrument';
 
 /**
  * HEADING INSTRUMENT (SERVER READY)
@@ -111,18 +113,19 @@ export interface HeadingInstrumentProps extends HTMLAttributes<HTMLHeadingElemen
   ariaLabel?: string;
 }
 
-export const HeadingInstrument = ({ 
+export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumentProps>(({ 
   children, 
   level = 1,
   className = '',
   noTranslate,
   ariaLabel,
   ...props
-}: HeadingInstrumentProps) => {
+}, ref) => {
   const Tag = `h${level}` as keyof JSX.IntrinsicElements;
   
   return (
     <Tag 
+      ref={ref}
       className={cn(
         !className.includes('font-') && "font-light",
         noTranslate && "notranslate",
@@ -136,7 +139,8 @@ export const HeadingInstrument = ({
       {children}
     </Tag>
   );
-};
+});
+HeadingInstrument.displayName = 'HeadingInstrument';
 
 /**
  * TEXT INSTRUMENT (SERVER READY)
@@ -148,7 +152,7 @@ export interface TextInstrumentProps extends HTMLAttributes<HTMLElement> {
   ariaHidden?: boolean;
 }
 
-export const TextInstrument = ({ 
+export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({ 
   children, 
   as: Component = 'p',
   className = '',
@@ -156,9 +160,10 @@ export const TextInstrument = ({
   ariaLabel,
   ariaHidden,
   ...props
-}: TextInstrumentProps) => {
+}, ref) => {
   return (
     <Component 
+      ref={ref}
       className={cn(
         !className.includes('font-') && "font-light",
         noTranslate && "notranslate",
@@ -173,4 +178,5 @@ export const TextInstrument = ({
       {children}
     </Component>
   );
-};
+});
+TextInstrument.displayName = 'TextInstrument';
