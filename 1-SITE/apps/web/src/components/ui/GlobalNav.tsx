@@ -776,8 +776,10 @@ export default function GlobalNav() {
                           onClick={(e) => {
                             e.stopPropagation();
                             voicesState.toggleActorSelection(actor);
+                            playClick('light');
                           }}
                           className="p-2 text-va-black/20 hover:text-red-500 transition-colors"
+                          title={t('common.remove', 'Verwijderen')}
                         >
                           <Trash2 size={14} />
                         </button>
