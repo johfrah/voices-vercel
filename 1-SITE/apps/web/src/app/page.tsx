@@ -143,12 +143,14 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
         criteria: {
           journey: masterControlState.journey,
           language: masterControlState.filters.language,
+          languageId: masterControlState.filters.languageId,
+          country: masterControlState.filters.country,
           market: market
         },
         shown_count: results.length,
-        shown_names: results.map(a => a.display_name),
+        shown_names: results.map(a => `${a.display_name} (${a.native_lang || 'no-lang'})`),
         hidden_count: actors.length - results.length,
-        hidden_names: actors.filter(a => !results.find(r => r.id === a.id)).map(a => a.display_name)
+        hidden_names: actors.filter(a => !results.find(r => r.id === a.id)).map(a => `${a.display_name} (${a.native_lang || 'no-lang'})`)
       });
 
       return results;
