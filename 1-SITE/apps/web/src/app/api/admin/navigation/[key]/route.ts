@@ -1,4 +1,4 @@
-import { ConfigBridge } from '@/lib/utils/utils/config-bridge';
+import { ConfigBridge } from '@/lib/utils/config-bridge';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { NextRequest, NextResponse } from 'next/server';
 

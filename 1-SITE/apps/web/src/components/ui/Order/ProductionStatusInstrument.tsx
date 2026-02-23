@@ -1,7 +1,7 @@
 "use client";
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { Clock, Mic } from 'lucide-react';
 import React from 'react';
 import { BentoCard } from '../BentoGrid';

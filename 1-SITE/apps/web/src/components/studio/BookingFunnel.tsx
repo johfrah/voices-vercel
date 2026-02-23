@@ -11,7 +11,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';

@@ -13,7 +13,7 @@ import {
   HeadingInstrument,
   InputInstrument
 } from '@/components/ui/LayoutInstruments';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
 /**
  * ACADEMY RECORDER (GOD MODE 2026)

@@ -9,7 +9,7 @@ import { useNotifications } from '@/contexts/NotificationContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { AnimatePresence, motion } from 'framer-motion';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { 
   Bell, 
   Building2, 
@@ -45,7 +45,7 @@ import {
 } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
-import { NavConfig } from '@/lib/utils/utils/config-bridge';
+import { NavConfig } from '@/lib/utils/config-bridge';
 import { Plus, Trash2, Link as LinkIcon, Search as SearchIcon, X, Check, ArrowRight, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';

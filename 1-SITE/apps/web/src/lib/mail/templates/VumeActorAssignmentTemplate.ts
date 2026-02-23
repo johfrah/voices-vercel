@@ -1,5 +1,5 @@
 import { BaseTemplate } from './VumeMasterWrapper';
-import { cleanText } from '@/lib/utils/utils';
+import { cleanText } from '@/lib/utils';
 
 /**
  * 🎙️ ACTOR ASSIGNMENT TEMPLATE (2026)

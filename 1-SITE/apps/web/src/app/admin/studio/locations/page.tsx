@@ -6,7 +6,7 @@ import {
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
 import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 import { 
     MapPin, 
     Plus, 

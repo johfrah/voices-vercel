@@ -2,7 +2,7 @@
 
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { Image as ImageIcon, Loader2, Upload } from 'lucide-react';
 import Image, { ImageProps } from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';

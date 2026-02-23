@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
 interface VoiceglotHtmlProps {
   translationKey: string;

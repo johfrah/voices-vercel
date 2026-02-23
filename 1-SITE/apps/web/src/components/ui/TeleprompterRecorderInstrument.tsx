@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { Mic, Square, Play, Trash2, Download, Settings, Sliders, Check, Volume2 } from 'lucide-react';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**

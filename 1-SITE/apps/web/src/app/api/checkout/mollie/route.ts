@@ -8,7 +8,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { MollieService } from '@/lib/payments/mollie';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
-import { generateCartHash } from '@/lib/utils/utils/cart-utils';
+import { generateCartHash } from '@/lib/utils/cart-utils';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 /**

@@ -8,7 +8,7 @@ import { Upload, X, Check, Camera, Loader2, Image as ImageIcon } from 'lucide-re
 import { ButtonInstrument, ContainerInstrument, TextInstrument, HeadingInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
 interface PhotoUploaderProps {
   currentPhotoUrl?: string;

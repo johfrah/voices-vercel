@@ -39,7 +39,7 @@ import {
 import { VoiceglotText } from './VoiceglotText';
 import { VoiceglotImage } from './VoiceglotImage';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
 
 interface SortableActorItemProps {

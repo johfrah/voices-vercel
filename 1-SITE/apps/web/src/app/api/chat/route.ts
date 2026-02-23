@@ -255,7 +255,7 @@ SLIMME KASSA REGELS:
           TIJD EN STATUS (ZEER BELANGRIJK):
           - Huidige tijd (België): ${new Date().toLocaleString("nl-BE", {timeZone: "Europe/Brussels"})}
           - Studio Status: ${(() => {
-            const { isOfficeOpen } = require('@/lib/utils/utils/delivery-logic');
+            const { isOfficeOpen } = require('@/lib/utils/delivery-logic');
             const isOpen = context?.generalSettings?.opening_hours ? isOfficeOpen(context.generalSettings.opening_hours) : true;
             return isOpen ? 'OPEN' : 'GESLOTEN';
           })()}

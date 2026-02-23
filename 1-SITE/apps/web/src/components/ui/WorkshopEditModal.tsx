@@ -9,7 +9,7 @@ import {
   TextInstrument, 
   ButtonInstrument 
 } from './LayoutInstruments';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 
 interface WorkshopEditModalProps {

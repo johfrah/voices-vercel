@@ -13,7 +13,7 @@ import {
     CheckCircle2,
     AlertCircle
 } from "lucide-react";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 import { TextInstrument } from "@/components/ui/LayoutInstruments";
 
 export default function OrphanManagerClient({ initialOrphans, editions }: { initialOrphans: any[], editions: any[] }) {

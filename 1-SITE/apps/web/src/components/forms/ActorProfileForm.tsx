@@ -26,7 +26,7 @@ import {
   Clock,
   AlertCircle
 } from 'lucide-react';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
 /**
  *  CHRIS-PROTOCOL: ActorProfileForm (God Mode 2026)

@@ -5,7 +5,7 @@ import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { Phone, Video, Megaphone, Monitor, Radio, Globe, Mic2, Building2, BookOpen, Wind } from 'lucide-react';
 import { VoiceglotText } from './VoiceglotText';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
 /**
  * JOURNEY SELECTOR INSTRUMENT

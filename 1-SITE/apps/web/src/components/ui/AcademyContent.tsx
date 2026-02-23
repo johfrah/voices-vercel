@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { GlossaryTooltip } from './GlossaryTooltip';
 
 interface AcademyContentProps {

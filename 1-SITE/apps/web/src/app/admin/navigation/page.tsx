@@ -14,7 +14,7 @@ import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Save, Plus, Trash2, Globe, ShoppingBag, Bell, User, Menu, Heart, Loader2, ArrowLeft, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
 const JOURNEYS = [

@@ -15,7 +15,7 @@ import {
   InputInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
 export const VoiceStep: React.FC = () => {

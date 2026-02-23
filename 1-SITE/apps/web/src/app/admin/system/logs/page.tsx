@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { AlertCircle, AlertTriangle, Info, RefreshCw, Terminal, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { nlBE } from 'date-fns/locale';
 

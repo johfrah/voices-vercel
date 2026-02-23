@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import React from 'react';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { Check } from 'lucide-react';

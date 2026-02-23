@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from 'react';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { Play, Pause, Volume2, VolumeX, Maximize, RotateCcw } from 'lucide-react';
 
 interface SubtitleData {

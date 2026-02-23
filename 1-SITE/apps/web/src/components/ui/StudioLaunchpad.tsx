@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
     LucideArrowLeft,

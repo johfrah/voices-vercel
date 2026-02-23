@@ -2,7 +2,7 @@
 
 import { useTranslation } from '@/contexts/TranslationContext';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { ContainerInstrument } from './LayoutInstruments';

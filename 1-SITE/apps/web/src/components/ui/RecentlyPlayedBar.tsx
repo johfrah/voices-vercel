@@ -6,7 +6,7 @@ import { ContainerInstrument, TextInstrument, ButtonInstrument } from "@/compone
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { Play, Pause, X, Clock, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { VoiceglotText } from "./VoiceglotText";

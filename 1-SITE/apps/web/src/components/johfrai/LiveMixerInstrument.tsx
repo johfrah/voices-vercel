@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { Mic, Music, Pause, Play, Sliders, Trash2 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';

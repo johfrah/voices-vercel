@@ -12,7 +12,7 @@ import {
   HeadingInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Zap, Play, Pause, Loader2 } from 'lucide-react';
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { FileText, Clock, Target, ArrowRight, Lightbulb } from 'lucide-react';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
 interface Blueprint {

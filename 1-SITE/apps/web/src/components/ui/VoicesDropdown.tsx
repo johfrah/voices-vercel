@@ -2,7 +2,7 @@
 
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronDown, Globe, GripVertical, Minus, Plus, Search as SearchIcon } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';

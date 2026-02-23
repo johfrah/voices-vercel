@@ -1,5 +1,5 @@
 import { ButtonInstrument, ContainerInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 
 interface MailItem {
   id: number;

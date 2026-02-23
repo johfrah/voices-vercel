@@ -1,7 +1,7 @@
 "use client";
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { cleanText } from '@/lib/utils/utils';
+import { cleanText } from '@/lib/utils';
 import { CheckCircle2 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
