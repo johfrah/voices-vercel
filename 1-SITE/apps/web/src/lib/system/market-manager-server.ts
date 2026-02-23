@@ -52,8 +52,8 @@ export class MarketManagerServer {
       market_code: 'BE',
       language: 'nl',
       primary_language: 'nl-BE',
-      supported_languages: ['nl-BE', 'nl-NL', 'en-GB', 'fr-FR', 'de-DE'],
-      popular_languages: ['nl-BE', 'nl-NL', 'fr-FR', 'en-GB', 'de-DE'],
+      supported_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
+      popular_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'fr-FR', 'en-GB', 'de-DE'],
       name: 'België',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices'
@@ -72,8 +72,8 @@ export class MarketManagerServer {
       market_code: 'FR',
       language: 'fr',
       primary_language: 'fr-FR',
-      supported_languages: ['fr-FR', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
-      popular_languages: ['fr-FR', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
+      supported_languages: ['fr-FR', 'fr-BE', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
+      popular_languages: ['fr-FR', 'fr-BE', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
       name: 'France',
       logo_url: VOICES_CONFIG.assets.logos.fr,
       theme: 'voices'
@@ -102,8 +102,8 @@ export class MarketManagerServer {
       market_code: 'EU',
       language: 'en',
       primary_language: 'en-GB',
-      supported_languages: ['en-GB', 'de-DE', 'nl-BE', 'nl-NL', 'fr-FR'],
-      popular_languages: ['en-GB', 'de-DE', 'fr-FR', 'nl-NL', 'nl-BE'],
+      supported_languages: ['en-GB', 'de-DE', 'nl-BE', 'nl-NL', 'fr-BE', 'fr-FR'],
+      popular_languages: ['en-GB', 'de-DE', 'fr-BE', 'fr-FR', 'nl-NL', 'nl-BE'],
       name: 'Europe',
       logo_url: VOICES_CONFIG.assets.logos.eu,
       theme: 'voices'
