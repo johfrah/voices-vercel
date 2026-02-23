@@ -16,7 +16,7 @@
     "check:pre-vercel": "tsx ../../../3-WETTEN/scripts/pre-vercel-check.ts",
     "env:pull": "vercel env pull .env.local",
     "logs:live": "vercel logs voices-os-2026.vercel.app -f",
-    "audit:forensic": "tsx 3-WETTEN/scripts/forensic-audit.ts",
+    "audit:forensic": "tsx ../../../3-WETTEN/scripts/forensic-audit.ts",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:all": "npm run audit:forensic && npm run test:unit && npm run test:e2e"
