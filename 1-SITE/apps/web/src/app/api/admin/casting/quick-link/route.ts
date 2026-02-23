@@ -1,8 +1,9 @@
 import { db } from '@db';
-import { castingLists, castingListItems } from '@db/schema';
+import { castingLists, castingListItems, actors } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { nanoid } from 'nanoid';
+import { or, ilike, inArray } from 'drizzle-orm';
 
 /**
  * 🚀 ADMIN QUICK LINK API (2026)
@@ -15,10 +16,23 @@ export async function POST(request: NextRequest) {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const { actorIds, projectName = 'Admin Selectie' } = await request.json();
+    const { actorIds, rawNames, projectName = 'Admin Selectie' } = await request.json();
+    let finalActorIds = actorIds || [];
 
-    if (!actorIds || !Array.isArray(actorIds) || actorIds.length === 0) {
-      return NextResponse.json({ error: 'No actors selected' }, { status: 400 });
+    // Als er namen zijn meegegeven (vanuit dashboard widget), zoek de IDs op
+    if (rawNames && typeof rawNames === 'string') {
+      const names = rawNames.split(/[\n,]/).map(n => n.trim()).filter(Boolean);
+      if (names.length > 0) {
+        const foundActors = await db.query.actors.findMany({
+          where: or(...names.map(n => ilike(actors.firstName, `%${n}%`))),
+          columns: { id: true }
+        });
+        finalActorIds = [...new Set([...finalActorIds, ...foundActors.map(a => a.id)])];
+      }
+    }
+
+    if (!finalActorIds || !Array.isArray(finalActorIds) || finalActorIds.length === 0) {
+      return NextResponse.json({ error: 'No actors found or selected' }, { status: 400 });
     }
 
     const sessionHash = nanoid(12);
@@ -36,7 +50,7 @@ export async function POST(request: NextRequest) {
     }).returning();
 
     // 2. Koppel de stemmen
-    const items = actorIds.map((id, index) => ({
+    const items = finalActorIds.map((id: number, index: number) => ({
       listId: newList.id,
       actorId: id,
       displayOrder: index

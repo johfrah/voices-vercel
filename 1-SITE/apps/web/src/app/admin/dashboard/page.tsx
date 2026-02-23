@@ -33,11 +33,14 @@ import {
     Phone,
     Euro,
     ShoppingBag,
-    Loader2
+    Loader2,
+    Link as LinkIcon,
+    X
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,7 +48,38 @@ export default function AdminDashboard() {
   const [recentHeals, setRecentHeals] = useState<any[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [quickLinkNames, setQuickLinkNames] = useState('');
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const { logAction } = useAdminTracking();
+
+  const handleQuickLink = async () => {
+    if (!quickLinkNames.trim()) return;
+    setIsGeneratingLink(true);
+    try {
+      // We sturen de namen naar een nieuwe endpoint die acteurs zoekt op basis van namen
+      const res = await fetch('/api/admin/casting/quick-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          rawNames: quickLinkNames,
+          projectName: 'Dashboard Quick Link'
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const fullUrl = `${window.location.origin}${data.url}`;
+        await navigator.clipboard.writeText(fullUrl);
+        toast.success('Pitch link gekopieerd naar klembord!');
+        setQuickLinkNames('');
+      } else {
+        toast.error(data.error || 'Fout bij genereren link');
+      }
+    } catch (err) {
+      toast.error('Netwerkfout');
+    } finally {
+      setIsGeneratingLink(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -230,6 +264,33 @@ export default function AdminDashboard() {
 
       {/* Main Control Grid */}
       <BentoGrid strokeWidth={1.5} columns={3}>
+        {/* Quick Link Widget */}
+        <BentoCard span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between h-[400px] group hover:border-primary/20 transition-all rounded-[20px]">
+          <ContainerInstrument>
+            <LinkIcon strokeWidth={1.5} className="text-primary mb-6" size={32} />
+            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4 text-va-black">
+              Quick Pitch Link
+            </HeadingInstrument>
+            <TextInstrument className="text-va-black/40 text-[13px] font-medium leading-relaxed mb-6">
+              Plak namen van stemmen (gescheiden door komma of enter) om direct een deelbare link met tarieven te maken.
+            </TextInstrument>
+            <textarea 
+              value={quickLinkNames}
+              onChange={(e) => setQuickLinkNames(e.target.value)}
+              placeholder="Bijv: Johfrah, Eveline, ..."
+              className="w-full h-24 bg-va-off-white rounded-xl p-4 text-[13px] font-medium border-none focus:ring-1 focus:ring-primary/20 resize-none"
+            />
+          </ContainerInstrument>
+          <ButtonInstrument 
+            onClick={handleQuickLink}
+            disabled={isGeneratingLink || !quickLinkNames.trim()}
+            className="va-btn-pro !bg-va-black w-full !rounded-[10px] mt-4 flex items-center justify-center gap-2"
+          >
+            {isGeneratingLink ? <Loader2 size={16} className="animate-spin" /> : <LinkIcon size={16} />}
+            <span>Genereer & Kopieer</span>
+          </ButtonInstrument>
+        </BentoCard>
+
         {/* Database Management */}
         <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between h-[400px] group relative overflow-hidden rounded-[20px]">
           <ContainerInstrument className="relative z-10">

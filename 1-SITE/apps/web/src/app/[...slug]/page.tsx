@@ -309,9 +309,16 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   if (firstSegment === "agency" || firstSegment === "stemmen" || firstSegment === "voix" || firstSegment === "stimmen") {
     const filters: Record<string, string> = {};
     let agencyJourney = "video";
-    if (segments[1] === "commercial" || segments[1] === "advertentie" || segments[1] === "reclame" || segments[1] === "publicité") agencyJourney = "commercial";
-    else if (segments[1] === "telephony" || segments[1] === "telefonie" || segments[1] === "telefoon") agencyJourney = "telephony";
-    else if (segments[1] === "video" || segments[1] === "corporate" || segments[1] === "vidéo") agencyJourney = "video";
+    
+    //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types
+    const segment = segments[1]?.toLowerCase();
+    if (['commercial', 'advertentie', 'reclame', 'publicité', 'werbung'].includes(segment)) {
+      agencyJourney = "commercial";
+    } else if (['telephony', 'telefonie', 'telefoon', 'téléphonie', 'telefonie'].includes(segment)) {
+      agencyJourney = "telephony";
+    } else if (['video', 'corporate', 'vidéo', 'film'].includes(segment)) {
+      agencyJourney = "video";
+    }
 
     if (agencyJourney === "commercial" && segments[2]) {
       filters.media = segments[2];

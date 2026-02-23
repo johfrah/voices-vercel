@@ -493,7 +493,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             />
             <button 
               onClick={(e) => { e.stopPropagation(); setActiveVideo(null); setIsPlaying(false); }}
-              className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition-all"
+              className="absolute top-2 md:top-4 right-2 md:right-4 z-20 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition-all"
             >
               <Plus className="rotate-45" size={16} />
             </button>
@@ -524,7 +524,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             src={voice.photo_url} 
             alt={voice.display_name} 
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
             journey="agency"
             category="voicecards"
             onUpdate={(newSrc) => {
@@ -541,37 +541,38 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-700" 
           />
         ) : (
-          <ContainerInstrument className="w-full h-full bg-va-off-white flex flex-col items-center justify-center gap-4">
-            <div className="w-24 h-24 rounded-full bg-va-black/5 flex items-center justify-center border-2 border-dashed border-va-black/10">
-              <TextInstrument className="text-3xl font-light text-va-black/20 tracking-tighter">
+          <ContainerInstrument className="w-full h-full bg-va-off-white flex flex-col items-center justify-center gap-2 md:gap-4">
+            <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-va-black/5 flex items-center justify-center border-2 border-dashed border-va-black/10">
+              <TextInstrument className="text-2xl md:text-3xl font-light text-va-black/20 tracking-tighter">
                 {voice?.display_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
               </TextInstrument>
             </div>
-            <Mic strokeWidth={1.5} size={32} className="text-va-black/10" />
+            <Mic strokeWidth={1.5} size={24} className="text-va-black/10 md:hidden" />
+            <Mic strokeWidth={1.5} size={32} className="text-va-black/10 hidden md:block" />
           </ContainerInstrument>
         )}
 
         <ContainerInstrument 
           plain 
           className={cn(
-            "absolute inset-0 flex flex-col p-4 transition-opacity duration-500 z-10",
+            "absolute inset-0 flex flex-col p-2 md:p-4 transition-opacity duration-500 z-10",
             isCurrentlyPlaying ? "opacity-100" : "opacity-30 group-hover:opacity-100"
           )}
         >
-          <div className="absolute top-4 left-4 right-4 z-30 flex flex-wrap gap-2 max-w-full overflow-hidden">
+          <div className="absolute top-2 md:top-4 left-2 md:left-4 right-2 md:right-4 z-30 flex flex-wrap gap-1 md:gap-2 max-w-full overflow-hidden">
             {voice.actor_videos?.filter(Boolean).slice(0, 2).map((video, idx) => (
               <button
                 key={`video-${idx}`}
                 onClick={(e) => handleVideoClick(e, video)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-[10px] font-black tracking-widest backdrop-blur-md border transition-all duration-300 flex items-center gap-1.5",
+                  "px-2 md:px-3 py-1 md:py-1.5 rounded-full text-[8px] md:text-[10px] font-black tracking-widest backdrop-blur-md border transition-all duration-300 flex items-center gap-1 md:gap-1.5",
                   activeVideo?.url === video.url
                     ? "bg-primary text-white border-primary shadow-lg scale-105"
                     : "bg-white/20 text-white border-white/20 hover:bg-white/40"
                 )}
               >
-                {activeVideo?.url === video.url && isPlaying ? <Pause size={10} fill="currentColor" /> : <Play size={10} fill="currentColor" />}
-                {video.name || `Video ${idx + 1}`}
+                {activeVideo?.url === video.url && isPlaying ? <Pause size={8} className="md:w-2.5 md:h-2.5" fill="currentColor" /> : <Play size={8} className="md:w-2.5 md:h-2.5" fill="currentColor" />}
+                <span className="truncate max-w-[60px] md:max-w-none">{video.name || `Video ${idx + 1}`}</span>
               </button>
             ))}
 
@@ -580,7 +581,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 key={demo.id}
                 onClick={(e) => handleCategoryClick(e, demo)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-[10px] font-black tracking-widest backdrop-blur-md border transition-all duration-300 flex items-center gap-1.5",
+                  "px-2 md:px-3 py-1 md:py-1.5 rounded-full text-[8px] md:text-[10px] font-black tracking-widest backdrop-blur-md border transition-all duration-300 flex items-center gap-1 md:gap-1.5",
                   activeDemo?.id === demo.id
                     ? "bg-primary text-white border-primary shadow-lg scale-105"
                     : "bg-white/20 text-white border-white/20 hover:bg-white/40",
@@ -590,11 +591,13 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                    activeDemo?.id !== demo.id && "border-white/60 bg-white/30"
                 )}
               >
-                {activeDemo?.id === demo.id && globalIsPlaying ? <Pause size={10} fill="currentColor" /> : <Play size={10} fill="currentColor" />}
-                <VoiceglotText 
-                  translationKey={`actor.${voice.id}.demo.${demo.id}.title`} 
-                  defaultText={cleanDemoTitle(demo.title, demo.category)} 
-                />
+                {activeDemo?.id === demo.id && globalIsPlaying ? <Pause size={8} className="md:w-2.5 md:h-2.5" fill="currentColor" /> : <Play size={8} className="md:w-2.5 md:h-2.5" fill="currentColor" />}
+                <span className="truncate max-w-[60px] md:max-w-none">
+                  <VoiceglotText 
+                    translationKey={`actor.${voice.id}.demo.${demo.id}.title`} 
+                    defaultText={cleanDemoTitle(demo.title, demo.category)} 
+                  />
+                </span>
               </button>
             ))}
           </div>
@@ -631,19 +634,19 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   });
                 }
               }}
-              className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white hover:scale-110 hover:bg-white/30 transition-all duration-500 shadow-2xl group/play"
+              className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white hover:scale-110 hover:bg-white/30 transition-all duration-500 shadow-2xl group/play"
             >
               {isCurrentlyPlaying ? (
-                <Pause size={32} fill="currentColor" />
+                <Pause size={24} className="md:w-8 md:h-8" fill="currentColor" />
               ) : (
-                <Play size={32} fill="currentColor" className="ml-1 group-hover/play:scale-110 transition-transform" />
+                <Play size={24} className="md:w-8 md:h-8 ml-1 group-hover/play:scale-110 transition-transform" />
               )}
             </button>
           </div>
 
           {activeSubtitle && (
-            <div className="mt-auto pb-4 text-center animate-in fade-in slide-in-from-bottom-2">
-              <span className="px-4 py-2 rounded-lg bg-black/60 backdrop-blur-md text-white text-xs font-medium border border-white/10">
+            <div className="mt-auto pb-2 md:pb-4 text-center animate-in fade-in slide-in-from-bottom-2">
+              <span className="px-2 md:px-4 py-1 md:py-2 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] md:text-xs font-medium border border-white/10">
                 {activeSubtitle}
               </span>
             </div>
@@ -651,27 +654,27 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
         </ContainerInstrument>
 
         {!activeVideo && voice.allow_free_trial !== false && (
-          <div className="absolute bottom-4 right-4 z-40">
+          <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 z-40">
             <button 
               onClick={handleStudioToggle}
               className={cn(
-                "h-10 rounded-full backdrop-blur-md flex items-center transition-all duration-500 shadow-lg border border-white/10 group/studio overflow-hidden",
+                "h-8 md:h-10 rounded-full backdrop-blur-md flex items-center transition-all duration-500 shadow-lg border border-white/10 group/studio overflow-hidden",
                 isSelected 
-                  ? "bg-primary text-white border-primary px-3 gap-2" 
-                  : "bg-va-black/40 hover:bg-va-black/60 text-white px-3 gap-0 group-hover:gap-2 backdrop-blur-md"
+                  ? "bg-primary text-white border-primary px-2 md:px-3 gap-1 md:gap-2" 
+                  : "bg-va-black/40 hover:bg-va-black/60 text-white px-2 md:px-3 gap-0 group-hover:gap-1 md:group-hover:gap-2 backdrop-blur-md"
               )}
             >
               {isSelected ? (
                 <>
-                  <Check size={18} strokeWidth={3} />
-                  <span className="text-[10px] font-black tracking-widest uppercase animate-in fade-in slide-in-from-left-2">
+                  <Check size={14} className="md:w-4.5 md:h-4.5" strokeWidth={3} />
+                  <span className="text-[8px] md:text-[10px] font-black tracking-widest uppercase animate-in fade-in slide-in-from-left-2">
                     <VoiceglotText translationKey="common.selected" defaultText="Geselecteerd" />
                   </span>
                 </>
               ) : (
                 <>
-                  <Plus size={18} className="shrink-0 transition-transform group-hover/studio:rotate-90 duration-500" />
-                  <span className="max-w-0 group-hover:max-w-[180px] opacity-0 group-hover:opacity-100 transition-all duration-500 text-[10px] font-black tracking-widest uppercase whitespace-nowrap">
+                  <Plus size={14} className="md:w-4.5 md:h-4.5 shrink-0 transition-transform group-hover/studio:rotate-90 duration-500" />
+                  <span className="max-w-0 group-hover:max-w-[180px] opacity-0 group-hover:opacity-100 transition-all duration-500 text-[8px] md:text-[10px] font-black tracking-widest uppercase whitespace-nowrap">
                     <VoiceglotText 
                       translationKey="common.free_demo_cta" 
                       defaultText="Gratis proefopname" 
@@ -696,11 +699,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
       </ContainerInstrument>
 
       <ContainerInstrument plain className="p-0 flex flex-col flex-grow">
-        <div className="flex items-start justify-between px-6 pt-6 pb-3 border-b border-black/[0.02]">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-1.5 bg-va-off-white/50 px-2 py-1 rounded-full border border-black/[0.05] w-fit relative">
-              <VoiceFlag lang={voice?.native_lang} size={18} />
-              <TextInstrument className="text-[13px] font-light text-va-black tracking-tight">
+        <div className="flex items-start justify-between px-4 md:px-6 pt-4 md:pt-6 pb-2 md:pb-3 border-b border-black/[0.02]">
+          <div className="flex flex-col gap-1.5 md:gap-2">
+            <div className="flex items-center gap-1 bg-va-off-white/50 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full border border-black/[0.05] w-fit relative">
+              <VoiceFlag lang={voice?.native_lang} size={14} className="md:w-4.5 md:h-4.5" />
+              <TextInstrument className="text-[11px] md:text-[13px] font-light text-va-black tracking-tight">
                 <VoiceglotText 
                   translationKey={`common.language.${voice?.native_lang?.toLowerCase()}`} 
                   defaultText={voice?.native_lang_label || MarketManager.getLanguageLabel(voice?.native_lang || '')} 
@@ -779,16 +782,16 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
           {!compact && (
             <div className={cn(
-              "flex flex-col items-end justify-center px-2.5 py-1 rounded-xl border transition-colors duration-500",
+              "flex flex-col items-end justify-center px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg md:rounded-xl border transition-colors duration-500",
               (deliveryInfo as any).isToday || deliveryInfo.deliveryDaysMax <= 1 
                 ? "bg-green-500/5 border-green-500/10 text-green-600" 
                 : "bg-blue-500/5 border-blue-500/10 text-blue-600"
             )}>
-              <span className="text-[8px] font-black tracking-[0.1em] uppercase leading-none mb-1 flex items-center gap-1 opacity-40">
-                <Clock size={9} strokeWidth={3} />
+              <span className="text-[7px] md:text-[8px] font-black tracking-[0.1em] uppercase leading-none mb-0.5 md:mb-1 flex items-center gap-1 opacity-40">
+                <Clock size={8} className="md:w-2.5 md:h-2.5" strokeWidth={3} />
                 <VoiceglotText translationKey="common.delivery" defaultText="Levering" />
               </span>
-              <TextInstrument className="text-[12px] font-bold tracking-tight leading-none">
+              <TextInstrument className="text-[10px] md:text-[12px] font-bold tracking-tight leading-none">
                 <VoiceglotText 
                   translationKey={`actor.${voice.id}.delivery_info`} 
                   defaultText={deliveryInfo.formattedShort} 
@@ -900,8 +903,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             )}
           </div>
           
-          <div className="mb-3 md:mb-4 h-[50px] md:h-[60px] overflow-y-auto no-scrollbar">
-            <TextInstrument className="text-va-black/60 text-[12px] md:text-[13px] font-medium leading-relaxed italic">
+          <div className="mb-2 md:mb-4 h-[40px] md:h-[60px] overflow-y-auto no-scrollbar">
+            <TextInstrument className="text-va-black/60 text-[11px] md:text-[13px] font-medium leading-relaxed italic">
               {sectorDemo ? (
                 <>{sectorDemo}</>
               ) : (
@@ -913,15 +916,15 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             </TextInstrument>
           </div>
 
-          <div className="flex justify-between items-center mt-auto pt-3 md:pt-4 border-t border-black/[0.03]">
+          <div className="flex justify-between items-center mt-auto pt-2 md:pt-4 border-t border-black/[0.03]">
             <div className="flex flex-col items-start">
               {!hidePrice && displayPrice && (
                 <>
-                  <TextInstrument className="text-[8px] md:text-[9px] font-light tracking-[0.2em] text-va-black/30 uppercase leading-none mb-1">
+                  <TextInstrument className="text-[7px] md:text-[9px] font-light tracking-[0.2em] text-va-black/30 uppercase leading-none mb-0.5 md:mb-1">
                     <VoiceglotText translationKey="common.starting_from" defaultText="Vanaf" instrument="pricing" />
                   </TextInstrument>
-                  <div className="flex items-baseline gap-1">
-                    <TextInstrument className="text-lg md:text-xl font-extralight tracking-tighter text-va-black">
+                  <div className="flex items-baseline gap-0.5 md:gap-1">
+                    <TextInstrument className="text-base md:text-xl font-extralight tracking-tighter text-va-black">
                       {displayPrice.price}
                     </TextInstrument>
                   </div>
@@ -935,24 +938,24 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 variant={isSelected ? "default" : "outline"}
                 size="sm"
                 className={cn(
-                  "rounded-xl font-light tracking-[0.1em] uppercase text-[11px] md:text-[12px] transition-all duration-500",
+                  "rounded-lg md:rounded-xl font-light tracking-[0.1em] uppercase text-[9px] md:text-[12px] transition-all duration-500",
                   isSelected 
-                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-3 md:px-4 py-3 md:py-4" 
-                    : "px-4 md:px-5 py-3 md:py-4 hover:bg-va-black hover:text-white hover:border-va-black",
+                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-2 md:px-4 py-2 md:py-4" 
+                    : "px-3 md:px-5 py-2 md:py-4 hover:bg-va-black hover:text-white hover:border-va-black",
                   voice.allow_free_trial === false && !onSelect && "opacity-0 pointer-events-none"
                 )}
               >
                 {isSelected ? (
-                  <Check size={18} strokeWidth={3} className="animate-in zoom-in duration-300" />
+                  <Check size={14} className="md:w-4.5 md:h-4.5" strokeWidth={3} className="animate-in zoom-in duration-300" />
                 ) : (
-                  <div className="flex flex-col items-center leading-none gap-1">
+                  <div className="flex flex-col items-center leading-none gap-0.5 md:gap-1">
                     <VoiceglotText 
                       translationKey={onSelect ? "common.choose_voice" : "common.add_to_casting"} 
                       instrument="button"
                       defaultText={onSelect ? "Kies stem" : "Proefopname +"} 
                     />
                     {!onSelect && (
-                      <span className="text-[8px] font-black tracking-[0.2em] opacity-50">
+                      <span className="text-[7px] md:text-[8px] font-black tracking-[0.2em] opacity-50">
                         <VoiceglotText translationKey="common.free" defaultText="GRATIS" />
                       </span>
                     )}
