@@ -64,7 +64,8 @@ export async function GET(request: Request) {
 
     const result = {
       ...data,
-      _v: 'v2.14.70 (Godmode Zero)'
+      _v: 'v2.14.81 (Godmode Zero)',
+      _debug_fr_be_search: data.results?.filter((a: any) => a.display_name.match(/Marilyn|Veronique|Alicia|James|Delphine/i)).map((a: any) => ({ name: a.display_name, native: a.native_lang, extra: a.extra_langs, status: a.status }))
     };
 
     // Update cache
