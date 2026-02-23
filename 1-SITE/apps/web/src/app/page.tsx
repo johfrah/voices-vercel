@@ -121,12 +121,6 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
     const filteredActors = useMemo(() => {
       if (!actors || actors.length === 0) return [];
       
-      console.log(`[HomeContent] Filtering ${actors.length} actors with criteria:`, {
-        journey: masterControlState.journey,
-        language: masterControlState.filters.language,
-        media: masterControlState.filters.media,
-        country: masterControlState.filters.country
-      });
       const results = VoiceFilterEngine.filter(actors, {
         journey: masterControlState.journey,
         language: masterControlState.filters.language,
@@ -142,9 +136,23 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
         currentStep: masterControlState.currentStep,
         selectedActorId: checkoutState.selectedActor?.id
       });
-      console.log(`[HomeContent] Filtered results: ${results.length} actors`);
+
+      // 🛡️ CHRIS-PROTOCOL: Forensic Console Audit (Godmode)
+      console.log('📊 [Godmode Audit] Filter Results:', {
+        total_live_in_memory: actors.length,
+        criteria: {
+          journey: masterControlState.journey,
+          language: masterControlState.filters.language,
+          market: market
+        },
+        shown_count: results.length,
+        shown_names: results.map(a => a.display_name),
+        hidden_count: actors.length - results.length,
+        hidden_names: actors.filter(a => !results.find(r => r.id === a.id)).map(a => a.display_name)
+      });
+
       return results;
-    }, [actors, masterControlState.journey, masterControlState.filters, checkoutState.selectedActor?.id, masterControlState.currentStep]);
+    }, [actors, masterControlState.journey, masterControlState.filters, checkoutState.selectedActor?.id, masterControlState.currentStep, market]);
 
   const isTelephony = customerDNA?.intelligence?.lastIntent === 'telephony' || customerDNA?.intelligence?.detectedSector === 'it';
 
