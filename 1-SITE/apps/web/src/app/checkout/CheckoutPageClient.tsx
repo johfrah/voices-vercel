@@ -154,8 +154,8 @@ export default function CheckoutPageClient() {
 
                 <div className="pt-6 border-t border-va-black/5 flex items-center justify-between">
                   <div className="flex -space-x-3">
-                    {[1,2,3,4].map(i => (
-                      <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-va-off-white overflow-hidden relative shadow-sm">
+                    {[1,2,3,4].map(iItem => (
+                      <div key={iItem} className="w-10 h-10 rounded-full border-2 border-white bg-va-off-white overflow-hidden relative shadow-sm">
                         <Image src={`/assets/common/branding/founder/johfrah.png`} fill alt="User" className="object-cover grayscale" />
                       </div>
                     ))}

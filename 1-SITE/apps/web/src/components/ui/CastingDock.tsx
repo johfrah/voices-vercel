@@ -105,18 +105,18 @@ export const CastingDock = () => {
             {/*  ACTOR AVATARS (Liquid Stack) */}
             <div className="flex items-center pl-2 shrink-0 scale-90 md:scale-100">
               <div className="flex -space-x-4 md:-space-x-3">
-                {selectedActors.slice(0, 5).map((actor, idx) => (
+                {selectedActors.slice(0, 5).map((actorItem, idx) => (
                   <motion.div 
-                    key={actor.id}
-                    layoutId={`avatar-${actor.id}`}
+                    key={actorItem.id}
+                    layoutId={`avatar-${actorItem.id}`}
                     className="relative w-12 h-14 rounded-full overflow-hidden border-2 border-va-black bg-va-off-white shadow-xl group cursor-pointer"
-                    onClick={(e) => removeActor(e, actor)}
+                    onClick={(e) => removeActor(e, actorItem)}
                   >
-                    {(actor.photo_url && actor.photo_url !== 'NULL') || (actor.photoUrl && actor.photoUrl !== 'NULL') ? (
-                      <Image src={actor.photo_url || actor.photoUrl} alt={actor.firstName || actor.display_name} fill className="object-cover transition-transform group-hover:scale-110" />
+                    {(actorItem.photo_url && actorItem.photo_url !== 'NULL') || (actorItem.photoUrl && actorItem.photoUrl !== 'NULL') ? (
+                      <Image src={actorItem.photo_url || actorItem.photoUrl} alt={actorItem.firstName || actorItem.display_name} fill className="object-cover transition-transform group-hover:scale-110" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-va-black font-bold text-sm">
-                        {(actor.firstName || actor.display_name || 'S')[0]}
+                        {(actorItem.firstName || actorItem.display_name || 'S')[0]}
                       </div>
                     )}
                     {/* Remove Overlay on Hover */}

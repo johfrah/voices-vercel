@@ -217,29 +217,29 @@ export const ReviewsInstrument: React.FC<{
     "bestRating": "5",
     "worstRating": "1",
     "ratingCount": totalReviews,
-    "review": reviews.slice(0, 20).map((review) => ({
+    "review": reviews.slice(0, 20).map((reviewItem) => ({
       "@type": "Review",
       "author": {
         "@type": "Person",
-        "name": review.name || review.authorName,
-        "image": review.authorPhotoUrl || undefined
+        "name": reviewItem.name || reviewItem.authorName,
+        "image": reviewItem.authorPhotoUrl || undefined
       },
       "reviewRating": {
         "@type": "Rating",
-        "ratingValue": review.rating,
+        "ratingValue": reviewItem.rating,
         "bestRating": "5"
       },
-      "reviewBody": review.text || "Geweldige ervaring!",
+      "reviewBody": reviewItem.text || "Geweldige ervaring!",
       "publisher": {
         "@type": "Organization",
         "name": "Google",
         "logo": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
       },
-      "datePublished": review.rawDate || review.date,
+      "datePublished": reviewItem.rawDate || reviewItem.date,
       "inLanguage": "nl",
-      "about": review.sector && review.sector !== 'general' ? {
+      "about": reviewItem.sector && reviewItem.sector !== 'general' ? {
         "@type": "Service",
-        "name": review.sector
+        "name": reviewItem.sector
       } : undefined
     }))
   };
@@ -276,18 +276,18 @@ export const ReviewsInstrument: React.FC<{
           {!hideFilters && (
             <div className="flex flex-wrap items-center gap-4 mt-8">
               <div className="flex flex-wrap gap-2">
-                {sectors.map(sector => (
+                {sectors.map(sectorItem => (
                   <button
-                    key={sector}
-                    onClick={() => setSelectedSector(selectedSector === sector ? null : sector)}
+                    key={sectorItem}
+                    onClick={() => setSelectedSector(selectedSector === sectorItem ? null : sectorItem)}
                     className={cn(
                       "px-4 py-2 rounded-xl text-[13px] font-light transition-all border",
-                      selectedSector === sector 
+                      selectedSector === sectorItem 
                         ? "bg-va-black text-white border-va-black shadow-lg" 
                         : "bg-white text-va-black/40 border-black/5 hover:border-primary/20 hover:text-va-black"
                     )}
                   >
-                    {sector}
+                    {sectorItem}
                   </button>
                 ))}
               </div>
@@ -326,13 +326,13 @@ export const ReviewsInstrument: React.FC<{
             {showDistribution && distribution && (
               <div className="absolute top-full right-0 mt-4 z-[100] w-64 bg-white rounded-[24px] border border-black/5 shadow-aura-lg p-6 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="space-y-3">
-                  {[5, 4, 3, 2, 1].map(star => {
-                    const count = (distribution as any)[star] || 0;
+                  {[5, 4, 3, 2, 1].map(starItem => {
+                    const count = (distribution as any)[starItem] || 0;
                     const total = Number(totalReviews) || 1;
                     const percentage = Math.round((count / total) * 100);
                     return (
-                      <div key={star} className="flex items-center gap-3">
-                        <span className="text-[11px] font-medium text-va-black/40 w-3">{star}</span>
+                      <div key={starItem} className="flex items-center gap-3">
+                        <span className="text-[11px] font-medium text-va-black/40 w-3">{starItem}</span>
                         <Star size={10} className="text-[#fabc05]" fill="currentColor" />
                         <div className="flex-1 h-1.5 bg-va-black/5 rounded-full overflow-hidden">
                           <div 
@@ -438,13 +438,13 @@ export const ReviewsInstrument: React.FC<{
                 <ContainerInstrument plain className="space-y-6 relative z-10 w-full flex-1">
                   <div className="flex justify-between items-center w-full">
                     <div className="flex gap-1">
-                      {[...Array(5)].map((_, starIdx) => (
+                      {[...Array(5)].map((_, starIdxItem) => (
                         <Star 
-                          key={starIdx} 
+                          key={starIdxItem} 
                           size={12} 
                           className={cn(
                             "transition-colors duration-500",
-                            starIdx < (review.rating || 5) ? "text-[#fabc05]" : "text-va-black/5"
+                            starIdxItem < (review.rating || 5) ? "text-[#fabc05]" : "text-va-black/5"
                           )} 
                           fill="currentColor" 
                         />

@@ -243,7 +243,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     if (!voice) return;
     playClick('pro');
     
-    const currentTags = voice.tone_of_voice?.split(',').map(tag => tag.trim()).filter(Boolean) || [];
+    const currentTags = voice.tone_of_voice?.split(',').map(tagItem => tagItem.trim()).filter(Boolean) || [];
     let newTags: string[];
     
     if (currentTags.includes(tag)) {
@@ -677,18 +677,18 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   >
                     <div className="max-h-64 overflow-y-auto no-scrollbar">
                       {supportedLangs.map(langItem => {
-                        const isSelected = MarketManager.getLanguageCode(langItem) === voice.native_lang;
+                        const isSelectedLang = MarketManager.getLanguageCode(langItem) === voice.native_lang;
                         return (
                           <button
                             key={langItem}
                             onClick={() => handleLangChange(langItem)}
                             className={cn(
                               "w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group",
-                              isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
+                              isSelectedLang ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
                             )}
                           >
                             <span>{langItem}</span>
-                            {isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}
+                            {isSelectedLang && <Check size={14} strokeWidth={3} className="text-primary" />}
                           </button>
                         );
                       })}
@@ -700,8 +700,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
             {voice?.extra_langs && (
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-1 animate-in fade-in slide-in-from-left-1 duration-500">
-                {voice.extra_langs.split(',').filter(Boolean).map((l, idx) => {
-                  const trimmed = l.trim().toLowerCase();
+                {voice.extra_langs.split(',').filter(Boolean).map((lItem, idx) => {
+                  const trimmed = lItem.trim().toLowerCase();
                   const label = MarketManager.getLanguageLabel(trimmed);
 
                   return (
@@ -755,13 +755,13 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
             {voice?.tone_of_voice && (
               <div className="flex flex-wrap gap-1 animate-in fade-in slide-in-from-bottom-1 duration-500 relative">
-                {voice.tone_of_voice.split(',').filter(Boolean).slice(0, 2).map((tone, i) => (
+                {voice.tone_of_voice.split(',').filter(Boolean).slice(0, 2).map((toneItem, i) => (
               <span key={i} className="text-[7px] md:text-[8px] font-light tracking-[0.2em] uppercase px-1.5 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10">
                 <VoiceglotText 
                   translationKey={`actor.${voice.id}.tone.${i}`} 
                   context="Voice characteristic / Tone of voice (e.g. warm, deep, professional, energetic)" 
                   instrument="tag"
-                  defaultText={tone.trim()} 
+                  defaultText={toneItem.trim()} 
                 />
               </span>
                 ))}
@@ -808,20 +808,20 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                       </div>
 
                       <div className="max-h-48 overflow-y-auto no-scrollbar flex flex-wrap gap-2">
-                        {filteredAvailableTags.map(tag => {
-                          const isSelected = voice.tone_of_voice?.split(',').map(tag => tag.trim()).includes(tag);
+                        {filteredAvailableTags.map(tagItem => {
+                          const isSelectedTag = voice.tone_of_voice?.split(',').map(t => t.trim()).includes(tagItem);
                           return (
                             <button
-                              key={tag}
-                              onClick={() => handleTagToggle(tag)}
+                              key={tagItem}
+                              onClick={() => handleTagToggle(tagItem)}
                               className={cn(
                                 "px-3 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all",
-                                isSelected 
+                                isSelectedTag 
                                   ? "bg-primary text-white" 
                                   : "bg-va-off-white text-va-black/40 hover:bg-va-black/5"
                               )}
                             >
-                              {tag}
+                              {tagItem}
                             </button>
                           );
                         })}

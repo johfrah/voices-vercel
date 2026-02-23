@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import React, { useState } from 'react';
 import { ButtonInstrument, HeadingInstrument, TextInstrument } from '../ui/LayoutInstruments';

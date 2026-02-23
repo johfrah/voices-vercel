@@ -2,6 +2,7 @@
 
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { useTranslation } from '@/contexts/TranslationContext';
 import React, { useState } from 'react';
 import { TelephonySmartSuggestions } from './TelephonySmartSuggestions';
 import { 

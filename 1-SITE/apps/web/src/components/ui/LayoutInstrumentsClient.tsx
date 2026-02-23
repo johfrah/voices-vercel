@@ -55,7 +55,7 @@ export const ClientButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstru
     <Component 
       ref={ref}
       type={Component === 'button' ? type : undefined}
-      href={(Component === 'a' || Component === Link || Component.displayName === 'VoicesLink' || (Component as any).name === 'VoicesLink') ? href : undefined}
+      href={(Component === 'a' || Component === Link || (Component as any).displayName === 'VoicesLink' || (Component as any).name === 'VoicesLink' || (Component as any).name === 'Link') ? href : undefined}
       className={cn(
         "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] ease-va-bezier inline-flex items-center justify-center whitespace-nowrap cursor-pointer",
         !className.includes('font-') && "font-light",
