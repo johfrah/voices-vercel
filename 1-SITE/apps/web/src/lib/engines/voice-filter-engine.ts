@@ -99,6 +99,10 @@ export class VoiceFilterEngine {
         const isExtraMatch = actorExtraLangs.some(el => 
           el === dbCode || 
           el === lowLang || 
+          (dbCode.startsWith('fr-') && (el === 'fr' || el === 'frans' || el === 'french')) ||
+          (dbCode.startsWith('en-') && (el === 'en' || el === 'engels' || el === 'english')) ||
+          (dbCode.startsWith('de-') && (el === 'de' || el === 'duits' || el === 'german')) ||
+          (dbCode.startsWith('nl-') && (el === 'nl' || el === 'nederlands' || el === 'dutch')) ||
           this.isLanguageVariationMatch(dbCode, el)
         );
 
