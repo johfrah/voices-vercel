@@ -182,7 +182,7 @@ async function handleSendMessage(params: any) {
       } else {
         //  KNOWLEDGE INJECTION: Brief de AI op basis van de Bijbels
         console.log('[Voicy API] Injecting knowledge...');
-        const knowledge = knowledge-service.getInstance();
+        const knowledge = KnowledgeService.getInstance();
         
         //  CHRIS-PROTOCOL: Parallel knowledge injection to save time
         const [coreBriefing, journeyBriefing, toolBriefing, fullBriefing] = await Promise.all([
@@ -193,7 +193,7 @@ async function handleSendMessage(params: any) {
         ]);
 
         console.log('[Voicy API] Requesting Gemini generation...');
-        const gemini = gemini-service.getInstance();
+        const gemini = GeminiService.getInstance();
 
         //  PRICING CONTEXT: Inject real-time pricing data from Supabase app_configs
         const { data: configs } = await (await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/app_configs?key=eq.pricing_config`, {
