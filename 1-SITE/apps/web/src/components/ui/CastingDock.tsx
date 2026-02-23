@@ -10,14 +10,17 @@ import {
   ButtonInstrument, 
   TextInstrument 
 } from '@/components/ui/LayoutInstruments';
-import { LucideX, LucideChevronRight, Heart, Users } from 'lucide-react';
+import { LucideX, LucideChevronRight, Heart, Users, Link as LinkIcon, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/sonic-dna';
 import { VoicesLink, useVoicesRouter } from '@/components/ui/VoicesLink';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { useAuth } from '@/contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 /**
  * PREMIUM CASTING DOCK (GOD MODE 2026)
@@ -29,6 +32,9 @@ export const CastingDock = () => {
   const router = useVoicesRouter();
   const { state, toggleActorSelection } = useVoicesState();
   const { playClick } = useSonicDNA();
+  const { isAdmin } = useAuth();
+  const { t } = useTranslation();
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const selectedActors = state.selected_actors;
   
   const market = MarketManager.getCurrentMarket();
@@ -48,6 +54,38 @@ export const CastingDock = () => {
   const startCasting = () => {
     playClick('pro');
     router.push('/casting/launchpad/');
+  };
+
+  const generateQuickLink = async () => {
+    if (isGeneratingLink || selectedActors.length === 0) return;
+    
+    setIsGeneratingLink(true);
+    playClick('pro');
+
+    try {
+      const res = await fetch('/api/admin/casting/quick-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          actorIds: selectedActors.map(a => a.id)
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        const fullUrl = `${window.location.origin}${data.url}`;
+        await navigator.clipboard.writeText(fullUrl);
+        toast.success(t('admin.casting.link_copied', 'Pitch link gekopieerd naar klembord!'));
+        playClick('success');
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      console.error('Failed to generate quick link:', err);
+      toast.error('Fout bij genereren link.');
+    } finally {
+      setIsGeneratingLink(false);
+    }
   };
 
   return (
@@ -108,22 +146,47 @@ export const CastingDock = () => {
               </TextInstrument>
             </div>
 
-            {/*  ACTION BUTTON */}
-            <button 
-              onClick={startCasting}
-              className="bg-primary hover:bg-primary/90 text-white h-12 md:h-14 px-4 md:px-6 rounded-full flex items-center gap-2 md:gap-3 transition-all hover:scale-105 active:scale-95 shadow-xl group/btn shrink-0"
-            >
-              <Heart size={18} strokeWidth={2.5} className="group-hover:animate-pulse md:w-5 md:h-5 fill-white/20" />
-              <div className="flex flex-col items-start">
-                <span className="text-[12px] md:text-[14px] font-bold tracking-widest uppercase leading-none">
-                  <VoiceglotText translationKey="auto.castingdock.proefopname" defaultText="Gratis proefopname" />
-                </span>
-                <span className="text-[9px] md:text-[10px] font-medium opacity-70 leading-none mt-1 uppercase">
-                  <VoiceglotText translationKey="auto.castingdock.start_selectie" defaultText="Bevestig selectie" />
-                </span>
-              </div>
-              <LucideChevronRight size={16} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform md:w-5 md:h-5" />
-            </button>
+            {/*  ACTION BUTTONS */}
+            <div className="flex items-center gap-2 shrink-0">
+              {isAdmin && (
+                <button 
+                  onClick={generateQuickLink}
+                  disabled={isGeneratingLink}
+                  className="bg-white/10 hover:bg-white/20 text-white h-12 md:h-14 px-4 md:px-6 rounded-full flex items-center gap-2 transition-all hover:scale-105 active:scale-95 border border-white/5 group/admin shrink-0"
+                  title="Genereer direct een deelbare link (Admin Only)"
+                >
+                  {isGeneratingLink ? (
+                    <Loader2 size={18} className="animate-spin text-primary" />
+                  ) : (
+                    <LinkIcon size={18} strokeWidth={2.5} className="text-primary group-hover/admin:rotate-12 transition-transform" />
+                  )}
+                  <div className="flex flex-col items-start hidden md:flex">
+                    <span className="text-[12px] font-bold tracking-widest uppercase leading-none">
+                      <VoiceglotText translationKey="admin.casting.quick_link" defaultText="Admin Link" />
+                    </span>
+                    <span className="text-[9px] font-medium opacity-50 leading-none mt-1 uppercase">
+                      Direct kopiëren
+                    </span>
+                  </div>
+                </button>
+              )}
+
+              <button 
+                onClick={startCasting}
+                className="bg-primary hover:bg-primary/90 text-white h-12 md:h-14 px-4 md:px-6 rounded-full flex items-center gap-2 md:gap-3 transition-all hover:scale-105 active:scale-95 shadow-xl group/btn shrink-0"
+              >
+                <Heart size={18} strokeWidth={2.5} className="group-hover:animate-pulse md:w-5 md:h-5 fill-white/20" />
+                <div className="flex flex-col items-start">
+                  <span className="text-[12px] md:text-[14px] font-bold tracking-widest uppercase leading-none">
+                    <VoiceglotText translationKey="auto.castingdock.proefopname" defaultText="Gratis proefopname" />
+                  </span>
+                  <span className="text-[9px] md:text-[10px] font-medium opacity-70 leading-none mt-1 uppercase">
+                    <VoiceglotText translationKey="auto.castingdock.start_selectie" defaultText="Bevestig selectie" />
+                  </span>
+                </div>
+                <LucideChevronRight size={16} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform md:w-5 md:h-5" />
+              </button>
+            </div>
           </ContainerInstrument>
         </motion.div>
       )}

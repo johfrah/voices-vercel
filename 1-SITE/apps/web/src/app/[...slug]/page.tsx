@@ -391,15 +391,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         with: {
           items: {
             with: {
-              actor: {
-                with: {
-                  actorLanguages: {
-                    with: {
-                      language: true
-                    }
-                  }
-                }
-              }
+              actor: true
             },
             orderBy: (items: any, { asc }: { asc: any }) => [asc(items.displayOrder)]
           }
@@ -407,6 +399,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }).catch(() => null);
 
       if (!list) return notFound();
+
+      const listSettings = list.settings as any;
+      const showRates = listSettings?.isAdminGenerated === true;
 
       const schema = {
         '@context': 'https://schema.org',
@@ -463,12 +458,19 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                     </div>
                     <div>
                       <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.firstName}</HeadingInstrument>
-                      <TextInstrument className="text-[15px] text-va-black/40">
-                        <VoiceglotText 
-                          translationKey={`common.language.${item.actor.actorLanguages?.find((al: any) => al.isNative)?.language?.code || 'nl'}`} 
-                          defaultText={item.actor.actorLanguages?.find((al: any) => al.isNative)?.language?.label || 'Voice-over Stem'} 
-                        />
-                      </TextInstrument>
+                      <div className="flex items-center justify-between mt-1">
+                        <TextInstrument className="text-[15px] text-va-black/40">
+                          <VoiceglotText 
+                            translationKey={`common.language.${item.actor.nativeLang?.toLowerCase() || 'nl'}`} 
+                            defaultText={MarketManager.getLanguageLabel(item.actor.nativeLang || 'nl')} 
+                          />
+                        </TextInstrument>
+                        {showRates && (
+                          <TextInstrument className="text-[15px] font-bold text-primary">
+                            €{parseFloat(item.actor.priceUnpaid || '0').toFixed(2)}
+                          </TextInstrument>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="h-12 bg-va-off-white rounded-[10px] flex items-center px-4 gap-2">
