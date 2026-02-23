@@ -231,11 +231,16 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const extraLangsMap = new Map<number, number[]>();
 
     actorLangsData.forEach((al: any) => {
-      if (al.is_native) {
-        nativeLangMap.set(al.actor_id, al.language_id);
+      // 🛡️ CHRIS-PROTOCOL: Map snake_case (Supabase SDK) to camelCase (Drizzle Standard)
+      const languageId = al.language_id || al.languageId;
+      const actorId = al.actor_id || al.actorId;
+      const isNative = al.is_native === true || al.isNative === true;
+
+      if (isNative) {
+        nativeLangMap.set(actorId, languageId);
       } else {
-        const current = extraLangsMap.get(al.actor_id) || [];
-        extraLangsMap.set(al.actor_id, [...current, al.language_id]);
+        const current = extraLangsMap.get(actorId) || [];
+        extraLangsMap.set(actorId, [...current, languageId]);
       }
     });
     
