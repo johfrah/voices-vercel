@@ -2,7 +2,7 @@
 
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { Check, Mail, MapPin, Clock, Sparkles, Wand2, Type, MessageSquare, Plus, ChevronUp, X, Phone } from 'lucide-react';
 import React, { useMemo, useState } from 'react';

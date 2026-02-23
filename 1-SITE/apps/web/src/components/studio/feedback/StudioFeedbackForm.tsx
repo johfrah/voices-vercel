@@ -13,7 +13,7 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { CheckCircle2, Loader2, Send, Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 const RATINGS = [
   { id: 'relevance', label: 'Relevantie van de inhoud' },

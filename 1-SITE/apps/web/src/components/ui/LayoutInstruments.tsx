@@ -7,7 +7,7 @@
  * @lock-file
  */
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
 import React, { ButtonHTMLAttributes, ElementType, FormHTMLAttributes, forwardRef, HTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
 

@@ -9,7 +9,7 @@ import {
 import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { 
     TrendingUp, 

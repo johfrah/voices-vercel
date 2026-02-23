@@ -5,7 +5,7 @@ import {
   ContainerInstrument, 
   TextInstrument 
 } from './LayoutInstruments';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 interface GlossaryTooltipProps {
   term: string;

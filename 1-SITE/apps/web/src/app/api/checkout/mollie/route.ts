@@ -8,7 +8,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { MollieService } from '@/lib/payments/mollie';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
-import { generateCartHash } from '@/lib/utils/cart-utils';
+import { generateCartHash } from '@/lib/utils/utils/cart-utils';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 /**
@@ -353,7 +353,7 @@ export async function POST(request: Request) {
       if (selectedGateway === 'banktransfer') {
         (async () => {
           try {
-            const { YukiService } = await import('@/services/YukiService');
+            const { YukiService } = await import('@/lib/services/YukiService');
             await YukiService.createInvoice({
               orderId: newOrder.id,
               customer: {

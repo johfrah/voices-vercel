@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Save, Calendar, MapPin, User, DollarSign, Users, Clock, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 interface WorkshopEditionEditorProps {
   edition: any;

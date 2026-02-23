@@ -11,7 +11,7 @@ import {
 import Image from "next/image";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useEffect, useState, useMemo } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { 
   CheckCircle2, 
   ArrowRight, 

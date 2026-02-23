@@ -2,7 +2,7 @@
 
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { getMusicLibrary } from '@/lib/services/api';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { Check, Info, Loader2, Music, Pause, Play } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { VoiceglotText } from './VoiceglotText';

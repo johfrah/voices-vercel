@@ -2,7 +2,7 @@ import { db } from '@db';
 import { appConfigs, languages } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
-import { voicesConfig } from '@/lib/utils/edge-config';
+import { voicesConfig } from '@/lib/utils/utils/edge-config';
 import { createClient } from "@supabase/supabase-js";
 
 export const runtime = 'nodejs';

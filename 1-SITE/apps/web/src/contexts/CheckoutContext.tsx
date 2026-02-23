@@ -1,9 +1,9 @@
 "use client";
 
 import { PlanType, SlimmeKassa, UsageType } from '@/lib/engines/pricing-engine';
-import { generateCartHash } from '@/lib/utils/cart-utils';
+import { generateCartHash } from '@/lib/utils/utils/cart-utils';
 import { Actor } from '@/types';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { CheckCircle2 } from 'lucide-react';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 

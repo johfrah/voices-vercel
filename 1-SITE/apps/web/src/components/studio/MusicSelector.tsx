@@ -4,7 +4,7 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { motion } from 'framer-motion';
 import { Check, Music, Pause, Play, Search as SearchIcon, Upload, X } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';

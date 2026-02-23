@@ -1,5 +1,5 @@
-import { GeminiService } from '@/services/GeminiService';
-import { KnowledgeService } from '@/services/KnowledgeService';
+import { GeminiService } from '@/lib/services/GeminiService';
+import { KnowledgeService } from '@/lib/services/KnowledgeService';
 import { db } from '@db';
 import { chatConversations, chatMessages, faq } from '@db/schema';
 import { desc, eq, ilike, or } from 'drizzle-orm';
@@ -255,7 +255,7 @@ SLIMME KASSA REGELS:
           TIJD EN STATUS (ZEER BELANGRIJK):
           - Huidige tijd (België): ${new Date().toLocaleString("nl-BE", {timeZone: "Europe/Brussels"})}
           - Studio Status: ${(() => {
-            const { isOfficeOpen } = require('@/lib/utils/delivery-logic');
+            const { isOfficeOpen } = require('@/lib/utils/utils/delivery-logic');
             const isOpen = context?.generalSettings?.opening_hours ? isOfficeOpen(context.generalSettings.opening_hours) : true;
             return isOpen ? 'OPEN' : 'GESLOTEN';
           })()}
@@ -410,7 +410,7 @@ SLIMME KASSA REGELS:
         //  ADMIN NOTIFICATION: Stuur een mail bij elke interactie (Chris-Protocol: Real-time awareness)
         if (senderType === 'user') {
           try {
-            const { VoicesMailEngine } = await import('@/services/VoicesMailEngine');
+            const { VoicesMailEngine } = await import('@/lib/services/VoicesMailEngine');
             const mailEngine = VoicesMailEngine.getInstance();
             const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
             const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');

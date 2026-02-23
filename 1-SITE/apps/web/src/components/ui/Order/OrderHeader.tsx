@@ -1,7 +1,7 @@
 "use client";
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import React from 'react';
 import { 
   ContainerInstrument, 

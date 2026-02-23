@@ -6,7 +6,7 @@ import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { Phone, Video, Megaphone, Search as SearchIcon, ChevronDown, Filter, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { ContainerInstrument, OptionInstrument, SelectInstrument, InputInstrument, ButtonInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';

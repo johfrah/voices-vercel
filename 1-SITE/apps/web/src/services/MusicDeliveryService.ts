@@ -1,7 +1,7 @@
 import { db } from '@db';
 import { media, orders, users } from '@db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { DropboxService } from '@/services/DropboxService';
+import { DropboxService } from '@/lib/services/DropboxService';
 
 /**
  *  MUSIC DELIVERY SERVICE (2026)

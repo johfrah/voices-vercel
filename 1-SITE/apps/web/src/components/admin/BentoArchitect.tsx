@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
-import { LayoutEngine, LayoutSuggestion, SystemContext } from '@/lib/predictive-engine';
+import { LayoutEngine, LayoutSuggestion, SystemContext } from '@/lib/engines/predictive-engine';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 

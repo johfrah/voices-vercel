@@ -1,7 +1,7 @@
 import { db } from '@db';
 import { users, visitors, systemEvents } from '@db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { GeminiService } from '@/services/GeminiService';
+import { GeminiService } from '@/lib/services/GeminiService';
 
 /**
  *  INTENT LEARNING ENGINE (GOD MODE 2026)

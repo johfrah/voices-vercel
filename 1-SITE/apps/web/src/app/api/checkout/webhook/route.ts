@@ -5,7 +5,7 @@ import { eq, sql, inArray } from 'drizzle-orm';
 import { MollieService } from '@/lib/payments/mollie';
 import { UCIService } from '@/lib/intelligence/uci-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
-import { MusicDeliveryService } from '@/services/MusicDeliveryService';
+import { MusicDeliveryService } from '@/lib/services/MusicDeliveryService';
 
 /**
  *  MOLLIE WEBHOOK (NUCLEAR)

@@ -6,7 +6,7 @@ import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { CommercialMediaType, SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Clock, Globe, Megaphone, Mic2, Phone, Radio, Star, Tv, Type, User, Users, Video, Search as SearchIcon } from 'lucide-react';

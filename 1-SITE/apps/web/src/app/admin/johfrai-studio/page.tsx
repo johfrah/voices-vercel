@@ -12,7 +12,7 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { ArrowLeft, Play, Loader2, CheckCircle2, AlertCircle, Mic2, Mail } from 'lucide-react';
 import Link from 'next/link';
-import { PrivateVoiceBridge } from '@/services/PrivateVoiceBridge';
+import { PrivateVoiceBridge } from '@/lib/services/PrivateVoiceBridge';
 
 export default function JohfraiStudioPage() {
   const [text, setText] = useState("Dag Johfrah, dit is je eigen stemkloon die rechtstreeks vanaf je Mac Mini spreekt. Hoe klinkt dit voor een eerste test?");

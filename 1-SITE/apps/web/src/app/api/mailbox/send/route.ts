@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Call Email Service
-    const { VoicesMailEngine } = await import('@/services/VoicesMailEngine');
+    const { VoicesMailEngine } = await import('@/lib/services/VoicesMailEngine');
     const mailEngine = VoicesMailEngine.getInstance();
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
 

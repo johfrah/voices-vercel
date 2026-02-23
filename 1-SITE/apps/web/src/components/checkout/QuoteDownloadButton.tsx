@@ -9,7 +9,7 @@ import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useTranslation } from "@/contexts/TranslationContext";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 export function QuoteDownloadButton() {
   const { state, subtotal, updateCustomer } = useCheckout();

@@ -13,7 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { createClient } from '@/utils/supabase/client';
 import { CheckCircle2, Loader2, Clock, User, CreditCard, FileText, Send, AlertCircle, Lock, Tag, X, Mail, ArrowRight, LogIn } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

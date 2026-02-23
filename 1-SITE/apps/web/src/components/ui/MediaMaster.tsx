@@ -4,7 +4,7 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { Demo } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Pause, Play, Volume2, X } from 'lucide-react';

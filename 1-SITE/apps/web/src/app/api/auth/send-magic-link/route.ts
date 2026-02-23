@@ -1,5 +1,5 @@
 import { createAdminClient } from '@/utils/supabase/server';
-import { VoicesMailEngine } from '@/services/VoicesMailEngine';
+import { VoicesMailEngine } from '@/lib/services/VoicesMailEngine';
 import { NextResponse } from 'next/server';
 
 /**

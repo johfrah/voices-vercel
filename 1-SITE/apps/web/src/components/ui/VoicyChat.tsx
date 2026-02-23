@@ -5,7 +5,7 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
     Calendar,
@@ -33,7 +33,7 @@ import {
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
-import { isOfficeOpen, getNextOpeningTime } from '@/lib/utils/delivery-logic';
+import { isOfficeOpen, getNextOpeningTime } from '@/lib/utils/utils/delivery-logic';
 import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';

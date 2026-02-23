@@ -1,6 +1,6 @@
 import { db } from '@db';
 import { mailContent } from '@db/schema';
-import { DirectMailService } from '@/services/DirectMailService';
+import { DirectMailService } from '@/lib/services/DirectMailService';
 import { desc, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';

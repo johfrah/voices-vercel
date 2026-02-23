@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { ArrowRight, Megaphone, Mic2, Phone, Video, Zap, GraduationCap } from 'lucide-react';
 import { VoicesLink } from './VoicesLink';
 import React from 'react';

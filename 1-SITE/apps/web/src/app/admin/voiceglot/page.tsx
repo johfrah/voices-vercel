@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 /**
  *  VOICEGLOT MASTER TABLE (GOD MODE 2026)

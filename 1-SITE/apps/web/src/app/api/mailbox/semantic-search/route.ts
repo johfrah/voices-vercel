@@ -1,5 +1,5 @@
 import { db } from '@db';
-import { VectorService } from '@/services/VectorService';
+import { VectorService } from '@/lib/services/VectorService';
 import { sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 

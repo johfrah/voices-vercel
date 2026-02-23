@@ -12,10 +12,10 @@ import {
 import { VoiceglotText } from './VoiceglotText';
 import Image from 'next/image';
 import { Actor, Demo } from '@/types';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { PhotoUploader } from './PhotoUploader';
-import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
+import { calculateDeliveryDate } from '@/lib/utils/utils/delivery-logic';
 import { formatDistanceToNow, isAfter, isBefore, startOfDay, format, parseISO } from 'date-fns';
 import { nl } from 'date-fns/locale';
 

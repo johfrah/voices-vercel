@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
         try {
           console.log(' ADMIN: Starting background AI analysis...');
           let aiMetadata = {};
-          const { GeminiService } = await import('@/services/GeminiService');
+          const { GeminiService } = await import('@/lib/services/GeminiService');
           const gemini = GeminiService.getInstance();
           const buffer = Buffer.from(await file.arrayBuffer());
           const analysis = await gemini.analyzeImage(buffer, file.type || 'image/webp', {

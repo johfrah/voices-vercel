@@ -10,7 +10,7 @@ import {
   ButtonInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 /**
  *  PROFIT ENGINE WIDGET (2026)

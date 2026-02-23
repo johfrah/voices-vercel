@@ -7,7 +7,7 @@ import {
     SectionInstrument,
     TextInstrument
 } from "@/components/ui/LayoutInstruments";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import {
     Activity,
     ArrowLeft,

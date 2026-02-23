@@ -1,7 +1,7 @@
 "use client";
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 

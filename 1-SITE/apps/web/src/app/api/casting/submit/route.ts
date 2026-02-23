@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { DirectMailService } from '@/services/DirectMailService';
-import { DropboxService } from '@/services/DropboxService';
+import { DirectMailService } from '@/lib/services/DirectMailService';
+import { DropboxService } from '@/lib/services/DropboxService';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { nanoid } from 'nanoid';
 
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 6. Notificatie naar Johfrah (Admin Only)
-    const { VoicesMailEngine } = await import('@/services/VoicesMailEngine');
+    const { VoicesMailEngine } = await import('@/lib/services/VoicesMailEngine');
     const mailEngine = VoicesMailEngine.getInstance();
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);

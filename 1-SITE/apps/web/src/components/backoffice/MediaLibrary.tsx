@@ -32,7 +32,7 @@ import {
   OptionInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 interface MediaItem {
   id: number;

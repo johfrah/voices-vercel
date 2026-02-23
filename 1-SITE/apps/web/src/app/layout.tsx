@@ -23,7 +23,7 @@ import { Toaster } from 'react-hot-toast';
 import "../styles/globals.css";
 import { Providers } from "./Providers";
 import { getTranslationsServer } from "@/lib/services/api-server";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 //  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden (ssr: false) voor 100ms LCP
 const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false });

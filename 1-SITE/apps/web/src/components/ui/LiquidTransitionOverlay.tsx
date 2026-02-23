@@ -1,7 +1,7 @@
 "use client";
 
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

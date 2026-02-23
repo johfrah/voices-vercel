@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import React, { ElementType, forwardRef, HTMLAttributes, ReactNode } from 'react';
 
 /**

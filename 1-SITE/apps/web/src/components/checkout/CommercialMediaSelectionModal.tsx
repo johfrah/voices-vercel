@@ -6,7 +6,7 @@ import { ButtonInstrument, HeadingInstrument, TextInstrument } from '../ui/Layou
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Megaphone, Video, Radio, Mic, ChevronRight, Check } from 'lucide-react';
 import { VoiceglotText } from '../ui/VoiceglotText';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 interface CommercialMediaSelectionModalProps {
   isOpen: boolean;

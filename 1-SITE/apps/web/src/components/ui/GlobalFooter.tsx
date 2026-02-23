@@ -6,7 +6,7 @@ import { Star, Check, Phone, Mail, Facebook, Instagram, Linkedin, Plus, Trash2, 
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
-import { isOfficeOpen, formatOpeningHours, getNextOpeningTime } from '@/lib/utils/delivery-logic';
+import { isOfficeOpen, formatOpeningHours, getNextOpeningTime } from '@/lib/utils/utils/delivery-logic';
 import Image from 'next/image';
 import { VoicesLink } from './VoicesLink';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
@@ -20,7 +20,7 @@ import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrumen
 import { VoiceglotText } from './VoiceglotText';
 import { VoiceglotImage } from './VoiceglotImage';
 import { AnimatePresence, motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 /**
  *  GLOBAL FOOTER (NUCLEAR 2026)

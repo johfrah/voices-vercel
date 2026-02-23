@@ -1,4 +1,4 @@
-import { DirectMailService } from '@/services/DirectMailService';
+import { DirectMailService } from '@/lib/services/DirectMailService';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { NextResponse } from 'next/server';
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       ? `[Contact] ${String(subject).slice(0, 80)}`
       : `[Contact] Bericht van ${String(name).trim()}`;
 
-    const { VoicesMailEngine } = await import('@/services/VoicesMailEngine');
+    const { VoicesMailEngine } = await import('@/lib/services/VoicesMailEngine');
     const mailEngine = VoicesMailEngine.getInstance();
 
     await mailEngine.sendVoicesMail({

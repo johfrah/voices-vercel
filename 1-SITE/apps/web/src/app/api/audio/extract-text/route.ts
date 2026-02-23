@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pdf from 'pdf-parse';
-import { GeminiService } from '@/services/GeminiService';
+import { GeminiService } from '@/lib/services/GeminiService';
 
 // Dynamische imports voor optionele libraries
 let XLSX: any;

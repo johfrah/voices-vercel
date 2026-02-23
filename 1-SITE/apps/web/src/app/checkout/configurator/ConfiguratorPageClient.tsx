@@ -22,7 +22,7 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { animate, AnimatePresence, motion } from 'framer-motion';
 import {
     Check,

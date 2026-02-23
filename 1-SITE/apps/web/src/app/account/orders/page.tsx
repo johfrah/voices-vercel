@@ -5,7 +5,7 @@ import { ButtonInstrument, ContainerInstrument, HeadingInstrument, PageWrapperIn
 import { SpatialOrderTrackerInstrument } from '@/components/ui/SpatialOrderTrackerInstrument';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ExternalLink, FileText, Package, ShoppingBag, Zap } from 'lucide-react';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';

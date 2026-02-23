@@ -3,7 +3,7 @@
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { MobileBridge } from '@/lib/mobile-bridge';
+import { MobileBridge } from '@/lib/bridges/mobile-bridge';
 import { CheckCircle2, Mic, Monitor, RotateCcw, Sliders, Square } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { 
@@ -13,7 +13,7 @@ import {
   HeadingInstrument,
   InputInstrument
 } from '@/components/ui/LayoutInstruments';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 /**
  * ACADEMY RECORDER (GOD MODE 2026)

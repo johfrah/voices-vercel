@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TwilioService } from '@/services/TwilioService';
+import { TwilioService } from '@/lib/services/TwilioService';
 
 /**
  * 📞 API ROUTE: CALLBACK REQUEST (2026)

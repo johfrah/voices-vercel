@@ -9,7 +9,7 @@ import {
   ButtonInstrument,
   HeadingInstrument
 } from '@/components/ui/LayoutInstruments';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import Image from 'next/image';
 
 export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) => {

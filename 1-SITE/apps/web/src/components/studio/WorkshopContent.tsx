@@ -5,7 +5,7 @@ import { BentoCard } from "@/components/ui/BentoGrid";
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { WorkshopProgram } from "@/components/ui/Studio/WorkshopProgram";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { cleanText } from "@/lib/utils";
+import { cleanText } from "@/lib/utils/utils";
 import { Play } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from 'react';

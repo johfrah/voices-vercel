@@ -1,7 +1,7 @@
 "use client";
 
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { Actor } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import React from 'react';

@@ -21,7 +21,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useMemo } from 'react';
-import { AdminService } from '@/services/AdminService';
+import { AdminService } from '@/lib/services/AdminService';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 type MailboxTab = 'inbox' | 'insights' | 'faq';

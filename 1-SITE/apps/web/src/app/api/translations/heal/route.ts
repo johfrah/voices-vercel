@@ -1,4 +1,4 @@
-import { OpenAIService } from '@/services/OpenAIService';
+import { OpenAIService } from '@/lib/services/OpenAIService';
 import { MarketManagerServer } from '@/lib/system/market-manager-server';
 import { MarketDatabaseService } from '@/lib/system/market-manager-db';
 import { db } from '@db';
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
     try {
       //  CHRIS-PROTOCOL: Skip notification for initial load key to prevent spam
       if (key !== 'initial_load') {
-        const { DirectMailService } = await import('@/services/DirectMailService');
+        const { DirectMailService } = await import('@/lib/services/DirectMailService');
         const mailService = DirectMailService.getInstance();
         await mailService.sendMail({
           to: adminEmail,

@@ -2,7 +2,7 @@
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useEditMode } from '@/contexts/EditModeContext';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Briefcase, Copy, Heart, Pause, Play, Sparkles } from 'lucide-react';
 import React, { useEffect, useState } from 'react';

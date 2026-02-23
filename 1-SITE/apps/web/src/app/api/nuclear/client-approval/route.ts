@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@db';
 import { orderItems } from '@db/schema';
 import { eq } from 'drizzle-orm';
-import { PayoutReadinessService } from '@/services/PayoutReadinessService';
+import { PayoutReadinessService } from '@/lib/services/PayoutReadinessService';
 
 /**
  *  CLIENT APPROVAL API (NUCLEAR 2026)

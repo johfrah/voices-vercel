@@ -12,7 +12,7 @@ import {
     TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { ArrowLeft, Code2, History, Loader2, Play, RefreshCw, Save, ShieldAlert, Sparkles, X, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
