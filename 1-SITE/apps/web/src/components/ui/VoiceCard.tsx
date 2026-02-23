@@ -371,8 +371,14 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   const displayPrice = useMemo(() => {
     if (!voice) return null;
-    const wordCount = checkoutState.briefing 
-      ? checkoutState.briefing.trim().split(/\s+/).filter(Boolean).length 
+    //  CHRIS-PROTOCOL: Word count logic (Nuclear 2026)
+    // In the Agency list (voice step), we ALWAYS use the filter word count for consistency.
+    // In the Configurator (script step), we use the actual briefing word count.
+    const isConfigurator = masterControlState.currentStep === 'script';
+    const briefingWordCount = checkoutState.briefing.trim().split(/\s+/).filter(Boolean).length;
+    
+    const wordCount = isConfigurator && briefingWordCount > 0
+      ? briefingWordCount 
       : (masterControlState.filters.words || 0);
 
     const currentSpotsDetail = eventData?.spotsDetail || masterControlState.filters.spotsDetail;

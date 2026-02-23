@@ -487,6 +487,14 @@ export default function ConfiguratorPageClient({
     return words.length;
   }, [localBriefing]);
   
+  //  CHRIS-PROTOCOL: Sync MasterControl word filter with briefing word count
+  // This ensures the slider in the navigation follows the actual text length.
+  useEffect(() => {
+    if (isHydrated && wordCount > 0 && masterControlState.filters.words !== wordCount) {
+      updateFilters({ words: wordCount });
+    }
+  }, [wordCount, masterControlState.filters.words, updateFilters, isHydrated]);
+
   const promptCount = useMemo(() => {
     if (state.usage !== 'telefonie') return 0;
     const matches = localBriefing.match(/\(([^)]+)\)/g);
