@@ -16,7 +16,7 @@ interface VoiceGridProps {
 export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, onSelect }) => {
   const { playDemo } = useGlobalAudio();
   
-  // 🛡️ CHRIS-PROTOCOL: Grid-Gap Mandate (v2.14.94)
+  // 🛡️ CHRIS-PROTOCOL: Grid-Gap Mandate (v2.14.109)
   // We gebruiken een vaste grid-structuur die ALTIJD van links naar rechts vult.
   // De 'flex' op de motion.div zorgde voor gaten bij filter-wissels.
   
@@ -33,7 +33,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
               : "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-5 items-stretch auto-rows-fr"
           )}
         >
-          <AnimatePresence mode="popLayout" initial={false}>
+          <AnimatePresence initial={false}>
             {actors.filter(Boolean).map((actor) => (
               <motion.div 
                 key={actor.id}
