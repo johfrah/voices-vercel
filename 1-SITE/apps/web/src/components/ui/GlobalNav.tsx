@@ -269,7 +269,7 @@ export default function GlobalNav() {
   const { t } = useTranslation();
   const { playClick, playSwell } = useSonicDNA();
   const { isEditMode, toggleEditMode, canEdit } = useEditMode();
-  const { state: voicesState } = useVoicesState();
+  const { state: voicesState, toggleActorSelection } = useVoicesState();
   const { state: checkoutState, subtotal } = useCheckout();
   const { notifications: customerNotifications, unreadCount: customerUnreadCount, markAsRead: markCustomerAsRead, markAllAsRead: markAllCustomerAsRead } = useNotifications();
   const auth = useAuth();
@@ -775,7 +775,7 @@ export default function GlobalNav() {
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
-                            voicesState.toggleActorSelection(actor);
+                            toggleActorSelection(actor);
                             playClick('light');
                           }}
                           className="p-2 text-va-black/20 hover:text-red-500 transition-colors"

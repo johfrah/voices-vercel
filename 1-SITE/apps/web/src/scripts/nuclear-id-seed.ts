@@ -1,13 +1,7 @@
-import { db } from '../lib/sync/bridge';
-import { actors, actorLanguages, languages } from '@db/schema';
-import { eq, inArray } from "drizzle-orm";
 
-/**
- * NUCLEAR SEED: ID-FIRST SOURCE OF TRUTH (2026)
- * 
- * Dit script synchroniseert de actors tabel met de exacte IDs en taal-koppelingen
- * zoals gedicteerd door Johfrah.
- */
+import { db } from '../lib/sync/bridge';
+import { actors, actorLanguages, languages } from '../../../../packages/database/src/schema/index';
+import { eq, inArray } from 'drizzle-orm';
 
 const SOURCE_OF_TRUTH = [
   { id: 212306, name: "Béatrice", nativeId: 3, extraIds: [5], country: 'BE' },
@@ -32,7 +26,7 @@ const SOURCE_OF_TRUTH = [
   { id: 186533, name: "Serge", nativeId: 1, extraIds: [5, 3, 7], country: 'BE' },
   { id: 194245, name: "Toos", nativeId: 1, extraIds: [5], country: 'BE' },
   { id: 190797, name: "Veerle", nativeId: 1, extraIds: [7], country: 'BE' },
-  { id: 207644, name: "Birgit-K", nativeId: 7, extraIds: [5, 3, 8], country: 'DE' },
+  { id: 207644, name: "Birgit", nativeId: 7, extraIds: [5, 3, 8], country: 'DE' },
   { id: 187185, name: "Kaja", nativeId: 7, extraIds: [5, 3], country: 'DE' },
   { id: 240191, name: "Nadja", nativeId: 7, extraIds: [5], country: 'DE' },
   { id: 275258, name: "Sebastian", nativeId: 7, extraIds: [], country: 'DE' },
@@ -46,10 +40,10 @@ const SOURCE_OF_TRUTH = [
   { id: 251588, name: "Alex", nativeId: 8, extraIds: [], country: 'ES' },
   { id: 251551, name: "Aurora", nativeId: 8, extraIds: [], country: 'ES' },
   { id: 207842, name: "Joel", nativeId: 8, extraIds: [], country: 'ES' },
-  { id: 218621, name: "Maria-1", nativeId: 8, extraIds: [], country: 'ES' },
-  { id: 275373, name: "Maria-E", nativeId: 8, extraIds: [5, 3], country: 'ES' },
+  { id: 218621, name: "Maria", nativeId: 8, extraIds: [], country: 'ES' },
+  { id: 275373, name: "Maria", nativeId: 8, extraIds: [5, 3], country: 'ES' },
   { id: 218271, name: "Marina", nativeId: 8, extraIds: [], country: 'ES' },
-  { id: 240105, name: "delphine-l", nativeId: 4, extraIds: [], country: 'FR' },
+  { id: 240105, name: "delphine", nativeId: 4, extraIds: [], country: 'FR' },
   { id: 208584, name: "Estelle", nativeId: 4, extraIds: [], country: 'FR' },
   { id: 275353, name: "Julie", nativeId: 4, extraIds: [], country: 'FR' },
   { id: 182527, name: "Thomas", nativeId: 4, extraIds: [], country: 'FR' },
@@ -57,7 +51,7 @@ const SOURCE_OF_TRUTH = [
   { id: 258292, name: "Mia", nativeId: 5, extraIds: [], country: 'GB' },
   { id: 205727, name: "Mike", nativeId: 5, extraIds: [], country: 'GB' },
   { id: 194211, name: "Nicolas", nativeId: 5, extraIds: [3], country: 'GB' },
-  { id: 205174, name: "Sarah-1", nativeId: 5, extraIds: [], country: 'GB' },
+  { id: 205174, name: "Sarah", nativeId: 5, extraIds: [], country: 'GB' },
   { id: 182525, name: "Sean", nativeId: 5, extraIds: [], country: 'GB' },
   { id: 208205, name: "Andrea", nativeId: 9, extraIds: [], country: 'IT' },
   { id: 251579, name: "Barbara", nativeId: 9, extraIds: [5], country: 'IT' },
@@ -90,13 +84,13 @@ const SOURCE_OF_TRUTH = [
 ];
 
 async function seed() {
-  console.log('🚀 STARTING ID-FIRST NUCLEAR SEED...');
-
-  // 🛡️ CHRIS-PROTOCOL: Force environment variables for local script execution
+  console.log('🚀 Starting Atomic ID-First Seed...');
+  
+  // Explicitly set DATABASE_URL for local script execution
   process.env.DATABASE_URL = "postgresql://postgres.vcbxyyjsxuquytcsskpj:VoicesHeadless20267654323456@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true";
 
   try {
-    // 1. Zorg dat de talen bestaan
+    // 1. Ensure languages exist
     const langMap: Record<number, string> = {
       1: 'nl-be', 2: 'nl-nl', 3: 'fr-be', 4: 'fr-fr', 
       5: 'en-gb', 6: 'en-us', 7: 'de-de', 8: 'es-es',
@@ -106,19 +100,29 @@ async function seed() {
     for (const [id, code] of Object.entries(langMap)) {
       await db.insert(languages).values({
         id: Number(id),
-        code: code,
-        label: code, // Wordt later door Voiceglot vertaald
-        isPopular: true
+        code,
+        label: code.toUpperCase(), // Will be updated by taxonomies later if needed
+        isPopular: true,
+        updatedAt: new Date() as any
       }).onConflictDoUpdate({
-        target: [languages.id],
-        set: { code }
+        target: languages.id,
+        set: { code, updatedAt: new Date() as any }
       });
     }
-    console.log('✅ Languages synced.');
 
-    // 2. Sync Actors & Languages
+    console.log('✅ Languages verified.');
+
+    // 2. Update Actors and their Language links
     for (const entry of SOURCE_OF_TRUTH) {
-      console.log(`Processing ${entry.name} (${entry.id})...`);
+      // Find actor by wpProductId
+      const [actor] = await db.select().from(actors).where(eq(actors.wpProductId, entry.id));
+      
+      if (!actor) {
+        console.warn(`⚠️ Actor ${entry.name} (ID: ${entry.id}) not found in database. Skipping.`);
+        continue;
+      }
+
+      console.log(`📦 Syncing ${entry.name} (ID: ${actor.id})...`);
 
       // Update actor
       await db.update(actors)
@@ -132,14 +136,6 @@ async function seed() {
         })
         .where(eq(actors.wpProductId, entry.id));
 
-      // Fetch internal ID
-      const [actor] = await db.select().from(actors).where(eq(actors.wpProductId, entry.id)).limit(1);
-      
-      if (!actor) {
-        console.warn(`⚠️ Actor ${entry.name} not found in database. Skipping language links.`);
-        continue;
-      }
-
       // Clear existing language links
       await db.delete(actorLanguages).where(eq(actorLanguages.actorId, actor.id));
 
@@ -147,7 +143,8 @@ async function seed() {
       await db.insert(actorLanguages).values({
         actorId: actor.id,
         languageId: entry.nativeId,
-        isNative: true
+        isNative: true,
+        updatedAt: new Date() as any
       });
 
       // Insert Extras
@@ -155,15 +152,16 @@ async function seed() {
         await db.insert(actorLanguages).values({
           actorId: actor.id,
           languageId: extraId,
-          isNative: false
+          isNative: false,
+          updatedAt: new Date() as any
         });
       }
     }
 
-    console.log('✨ NUCLEAR SEED COMPLETE! De database is nu 100% in lijn met de Source of Truth.');
+    console.log('✅ Atomic Seed Completed Successfully!');
     process.exit(0);
-  } catch (e) {
-    console.error('❌ SEED FAILED:', e);
+  } catch (error) {
+    console.error('❌ Atomic Seed Failed:', error);
     process.exit(1);
   }
 }
