@@ -1,7 +1,7 @@
 import { db } from "@db";
 import { users, orders } from "@db/schema";
 import { eq } from "drizzle-orm";
-import { DbService } from "../db-service";
+import { DbService } from "../DbService";
 
 /**
  *  NUCLEAR VAT SERVICE (2026)

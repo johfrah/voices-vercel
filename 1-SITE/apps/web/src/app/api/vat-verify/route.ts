@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { vies-service } from '@/lib/services/vies-service';
+import { ViesService } from '@/lib/services/ViesService';
 
 /**
  *  NUCLEAR VIES VALIDATION (2026)
  * 
- * Gebruikt de vies-service voor betrouwbare validatie via de EU VIES API.
+ * Gebruikt de ViesService voor betrouwbare validatie via de EU VIES API.
  */
 
 export async function GET(request: Request) {
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const vies = vies-service.getInstance();
+    const vies = ViesService.getInstance();
     const data = await vies.validateVat(vatNumber);
 
     if (!data) {

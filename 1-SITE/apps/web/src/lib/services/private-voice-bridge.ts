@@ -10,7 +10,7 @@ import axios from 'axios';
  * totdat de validatie 100% voltooid is.
  */
 
-export const private-voice-bridge = {
+export const PrivateVoiceBridge = {
   /**
    * Stuurt een tekst naar de lokale Mac Mini Engine via de beveiligde tunnel.
    */

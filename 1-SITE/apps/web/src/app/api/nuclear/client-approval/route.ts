@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@db';
 import { orderItems } from '@db/schema';
 import { eq } from 'drizzle-orm';
-import { payout-readiness-service } from '@/lib/services/payout-readiness-service';
+import { PayoutReadinessService } from '@/lib/services/PayoutReadinessService';
 
 /**
  *  CLIENT APPROVAL API (NUCLEAR 2026)
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       .where(eq(orderItems.id, orderItemId));
 
     // 2. Trigger de Payout Readiness Service (De "Closed-Loop")
-    const isReady = await payout-readiness-service.getInstance().checkAndPreparePayout(orderItemId);
+    const isReady = await PayoutReadinessService.getInstance().checkAndPreparePayout(orderItemId);
 
     return NextResponse.json({ 
       success: true, 

@@ -1,7 +1,7 @@
 import { db } from "@db";
 import { actors } from "@db/schema";
 import { eq, sql } from "drizzle-orm";
-import { DbService } from "../db-service";
+import { DbService } from "../DbService";
 
 /**
  *  NUCLEAR AVAILABILITY SERVICE (2026)

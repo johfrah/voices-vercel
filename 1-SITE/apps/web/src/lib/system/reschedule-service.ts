@@ -1,7 +1,7 @@
 import { db } from "@db";
 import { orders, orderItems, systemEvents } from "@db/schema";
 import { eq, sql } from "drizzle-orm";
-import { DbService } from "../db-service";
+import { DbService } from "../DbService";
 import crypto from "crypto";
 
 /**

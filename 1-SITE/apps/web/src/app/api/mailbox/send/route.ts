@@ -29,8 +29,8 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Call Email Service
-    const { voices-mail-engine } = await import('@/lib/services/voices-mail-engine');
-    const mailEngine = voices-mail-engine.getInstance();
+    const { VoicesMailEngine } = await import('@/lib/services/VoicesMailEngine');
+    const mailEngine = VoicesMailEngine.getInstance();
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
 
     await mailEngine.sendVoicesMail({

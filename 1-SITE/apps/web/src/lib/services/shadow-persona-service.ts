@@ -17,10 +17,10 @@ export class ShadowPersonaService {
   }
 
   public static getInstance(): ShadowPersonaService {
-    if (!shadow-persona-service.instance) {
-      shadow-persona-service.instance = new ShadowPersonaService();
+    if (!ShadowPersonaService.instance) {
+      ShadowPersonaService.instance = new ShadowPersonaService();
     }
-    return shadow-persona-service.instance;
+    return ShadowPersonaService.instance;
   }
 
   /**

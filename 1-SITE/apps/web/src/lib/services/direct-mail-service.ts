@@ -72,10 +72,10 @@ export class DirectMailService {
   }
 
   public static getInstance(customConfig?: Partial<Imap.Config>): DirectMailService {
-    if (!direct-mail-service.instance || customConfig) {
-      direct-mail-service.instance = new DirectMailService(customConfig);
+    if (!DirectMailService.instance || customConfig) {
+      DirectMailService.instance = new DirectMailService(customConfig);
     }
-    return direct-mail-service.instance;
+    return DirectMailService.instance;
   }
 
   /**
@@ -210,7 +210,7 @@ export class DirectMailService {
     //  CHRIS-PROTOCOL: Lucide sanity check
     const _icons = { Mail, ShieldCheck }; 
     const _strokeWidth = { strokeWidth: 1.5 }; //  CHRIS-PROTOCOL: Force strokeWidth awareness
-    console.log(` direct-mail-service: Fetching folder ${folder} for ${user || this.config.user}...`);
+    console.log(` DirectMailService: Fetching folder ${folder} for ${user || this.config.user}...`);
     const config = await this.getImapConfig(user, pass, host);
     
     return new Promise((resolve, reject) => {
@@ -218,7 +218,7 @@ export class DirectMailService {
         const imap = new Imap({
           ...config,
           debug: (msg: string) => {
-            // process.stdout.write(' direct-mail-service [IMAP DEBUG]: ' + msg + '\n');
+            // process.stdout.write(' DirectMailService [IMAP DEBUG]: ' + msg + '\n');
           }
         });
 

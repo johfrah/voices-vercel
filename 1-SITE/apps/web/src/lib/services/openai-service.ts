@@ -17,10 +17,10 @@ export class OpenAIService {
   }
 
   public static getInstance(): OpenAIService {
-    if (!openai-service.instance) {
-      openai-service.instance = new OpenAIService();
+    if (!OpenAIService.instance) {
+      OpenAIService.instance = new OpenAIService();
     }
-    return openai-service.instance;
+    return OpenAIService.instance;
   }
 
   /**
@@ -46,6 +46,6 @@ export class OpenAIService {
    * Static shortcut voor generateText.
    */
   static async generateText(prompt: string): Promise<string> {
-    return openai-service.getInstance().generateText(prompt);
+    return OpenAIService.getInstance().generateText(prompt);
   }
 }

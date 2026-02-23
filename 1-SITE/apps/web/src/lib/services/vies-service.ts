@@ -20,10 +20,10 @@ export class ViesService {
   private apiBase = 'https://viesapi.eu/api'; // We gebruiken de REST bridge voor snelheid
 
   public static getInstance(): ViesService {
-    if (!vies-service.instance) {
-      vies-service.instance = new ViesService();
+    if (!ViesService.instance) {
+      ViesService.instance = new ViesService();
     }
-    return vies-service.instance;
+    return ViesService.instance;
   }
 
   /**

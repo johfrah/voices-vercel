@@ -13,10 +13,10 @@ export class PayoutReadinessService {
   private static instance: PayoutReadinessService;
 
   public static getInstance(): PayoutReadinessService {
-    if (!payout-readiness-service.instance) {
-      payout-readiness-service.instance = new PayoutReadinessService();
+    if (!PayoutReadinessService.instance) {
+      PayoutReadinessService.instance = new PayoutReadinessService();
     }
-    return payout-readiness-service.instance;
+    return PayoutReadinessService.instance;
   }
 
   /**

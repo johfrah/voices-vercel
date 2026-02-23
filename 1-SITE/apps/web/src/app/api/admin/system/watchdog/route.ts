@@ -1,7 +1,7 @@
 import { db } from '@db';
 import { systemEvents } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
-import { voices-mail-engine } from '@/lib/services/voices-mail-engine';
+import { VoicesMailEngine } from '@/lib/services/VoicesMailEngine';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { desc, gte, and, eq } from 'drizzle-orm';
 
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     //  CHRIS-PROTOCOL: Safe Mail Engine initialization
     let mailEngine;
     try {
-      mailEngine = voices-mail-engine.getInstance();
+      mailEngine = VoicesMailEngine.getInstance();
     } catch (mailInitErr: any) {
       console.error('[Watchdog] Mail engine initialization failed:', mailInitErr.message);
     }

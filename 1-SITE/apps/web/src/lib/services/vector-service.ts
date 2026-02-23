@@ -17,10 +17,10 @@ export class VectorService {
   }
 
   public static getInstance(): VectorService {
-    if (!vector-service.instance) {
-      vector-service.instance = new VectorService();
+    if (!VectorService.instance) {
+      VectorService.instance = new VectorService();
     }
-    return vector-service.instance;
+    return VectorService.instance;
   }
 
   /**

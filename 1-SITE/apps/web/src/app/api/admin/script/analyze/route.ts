@@ -1,4 +1,4 @@
-import { GeminiService } from '@/lib/services/gemini-service';
+import { GeminiService } from '@/lib/services/GeminiService';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 

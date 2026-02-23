@@ -219,10 +219,10 @@ export class YukiService {
       // CHRIS-PROTOCOL: Log failure to system events for forensic recovery
       db.insert(systemEvents).values({
         level: 'error',
-        source: 'yuki-service',
+        source: 'YukiService',
         message: `Failed to create invoice for Order-${data.orderId}`,
         details: { error: error instanceof Error ? error.message : String(error), orderId: data.orderId }
-      }).catch(e => console.warn('[yuki-service] Failed to log system event:', e));
+      }).catch(e => console.warn('[YukiService] Failed to log system event:', e));
 
       return { success: false, error: error instanceof Error ? error.message : String(error) };
     }

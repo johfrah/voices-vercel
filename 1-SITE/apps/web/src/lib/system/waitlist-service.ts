@@ -1,7 +1,7 @@
 import { db } from "@db";
 import { workshopInterest, workshops, systemEvents } from "@db/schema";
 import { eq, sql } from "drizzle-orm";
-import { DbService } from "../db-service";
+import { DbService } from "../DbService";
 
 /**
  *  NUCLEAR WAITLIST SERVICE (2026)

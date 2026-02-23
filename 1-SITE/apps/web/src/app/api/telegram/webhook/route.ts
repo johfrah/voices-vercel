@@ -23,7 +23,7 @@
  * Body: url=<BASE_URL>/api/telegram/webhook&secret_token=<TELEGRAM_WEBHOOK_SECRET>
  */
 
-import { GeminiService } from '@/lib/services/gemini-service';
+import { GeminiService } from '@/lib/services/GeminiService';
 import { NextRequest, NextResponse } from 'next/server';
 import { BOB_WELCOME_MESSAGE } from '../bob-welcome';
 import { buildVoicyTelegramPrompt } from '../voicy-telegram-prompt';
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
       } else {
         //  DUAL AGENT ORCHESTRATION: Both Bob and Voicy can answer
         try {
-          const { knowledge-service } = await import('@/lib/services/knowledge-service');
+          const { KnowledgeService } = await import('@/lib/services/KnowledgeService');
           const { SlimmeKassa } = await import('@/lib/engines/pricing-engine');
           const knowledge = KnowledgeService.getInstance();
           const coreBriefing = await knowledge.getCoreBriefing();

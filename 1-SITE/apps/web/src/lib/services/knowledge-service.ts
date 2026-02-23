@@ -17,10 +17,10 @@ export export export export export export export export export export export exp
   }
 
   public static getInstance(): KnowledgeService {
-    if (!knowledge-service.instance) {
-      knowledge-service.instance = new KnowledgeService();
+    if (!KnowledgeService.instance) {
+      KnowledgeService.instance = new KnowledgeService();
     }
-    return knowledge-service.instance;
+    return KnowledgeService.instance;
   }
 
   /**

@@ -1,4 +1,4 @@
-import { openai-service } from '@/lib/services/openai-service';
+import { OpenAIService } from '@/lib/services/OpenAIService';
 import { db } from '@db';
 import { translations } from '@db/schema';
 import { and, eq, ilike, not } from 'drizzle-orm';
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
         Verbeterde tekst:
       `;
 
-      const improved = await openai-service.generateText(prompt, "gpt-4o", row.lang);
+      const improved = await OpenAIService.generateText(prompt, "gpt-4o", row.lang);
       const cleanImproved = improved.trim().replace(/^"|"$/g, '');
 
       if (cleanImproved && cleanImproved !== row.translatedText && cleanImproved.length < 50) {

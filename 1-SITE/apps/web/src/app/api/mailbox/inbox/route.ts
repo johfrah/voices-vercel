@@ -1,6 +1,6 @@
 import { db } from '@db';
 import { mailContent } from '@db/schema';
-import { direct-mail-service } from '@/lib/services/direct-mail-service';
+import { DirectMailService } from '@/lib/services/DirectMailService';
 import { desc, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       // 1. Probeer Direct IMAP (alleen als offset 0 is, voor live data)
       if (offset === 0 && account !== 'all') {
         try {
-          const mailService = direct-mail-service.getInstance();
+          const mailService = DirectMailService.getInstance();
         } catch (directError: any) {
           console.error(' API Mailbox Inbox: Direct IMAP fetch failed:', directError.message);
         }

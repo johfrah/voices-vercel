@@ -5,7 +5,7 @@ import { eq, sql, inArray } from 'drizzle-orm';
 import { MollieService } from '@/lib/payments/mollie';
 import { UCIService } from '@/lib/intelligence/uci-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
-import { music-delivery-service } from '@/lib/services/music-delivery-service';
+import { MusicDeliveryService } from '@/lib/services/MusicDeliveryService';
 
 /**
  *  MOLLIE WEBHOOK (NUCLEAR)
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
 
         // 2. Lever muziek uit indien aanwezig in de order
         try {
-          await music-delivery-service.deliverMusic(orderId);
+          await MusicDeliveryService.deliverMusic(orderId);
         } catch (musicErr) {
           console.error(' Failed to deliver music after payment:', musicErr);
           // We gaan door, want de betaling is wel gelukt

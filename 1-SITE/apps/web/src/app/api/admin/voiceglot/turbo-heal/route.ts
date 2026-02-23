@@ -1,7 +1,7 @@
 import { db } from '@db';
 import { translations, translationRegistry } from '@db/schema';
 import { eq } from 'drizzle-orm';
-import { GeminiService } from '@/lib/services/gemini-service';
+import { GeminiService } from '@/lib/services/GeminiService';
 import { NextResponse } from 'next/server';
 import { createClient } from "@supabase/supabase-js";
 

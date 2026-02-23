@@ -2,7 +2,7 @@ import { db } from '@db';
 import { courseSubmissions, users } from '@db/schema';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-import { dropbox-service } from '@/lib/services/dropbox-service';
+import { DropboxService } from '@/lib/services/DropboxService';
 import { eq } from 'drizzle-orm';
 
 /**
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     }
 
     if (user) {
-      const dropbox = dropbox-service.getInstance();
+      const dropbox = DropboxService.getInstance();
       await dropbox.syncToControlFolder(
         `ACADEMY-${result.id}`,
         `${user.firstName || user.first_name || 'Student'} ${user.lastName || user.last_name || ''}`.trim(),

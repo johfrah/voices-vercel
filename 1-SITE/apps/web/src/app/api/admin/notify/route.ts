@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { voices-mail-engine } from '@/lib/services/voices-mail-engine';
+import { VoicesMailEngine } from '@/lib/services/VoicesMailEngine';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 export const dynamic = 'force-dynamic';
@@ -31,12 +31,12 @@ export async function POST(request: NextRequest) {
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
     const adminEmail = market.email;
 
-    const mailEngine = voices-mail-engine.getInstance();
+    const mailEngine = VoicesMailEngine.getInstance();
 
     if (type === 'add_to_cart') {
       const { actorName, price, email, usage, actorPhoto, briefing } = data;
       
-      // CHRIS-PROTOCOL: Gebruik de voices-mail-engine voor consistente styling
+      // CHRIS-PROTOCOL: Gebruik de VoicesMailEngine voor consistente styling
       await mailEngine.sendVoicesMail({
         to: adminEmail,
         subject: `🛒 Mandje: ${actorName} (€${price.toFixed(2)})`,

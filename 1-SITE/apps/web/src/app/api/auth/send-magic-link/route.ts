@@ -1,11 +1,11 @@
 import { createAdminClient } from '@/utils/supabase/server';
-import { voices-mail-engine } from '@/lib/services/voices-mail-engine';
+import { VoicesMailEngine } from '@/lib/services/VoicesMailEngine';
 import { NextResponse } from 'next/server';
 
 /**
  * CUSTOM AUTH API (BOB-METHOD 2026)
  * 
- * Verstuurt een magic link via onze eigen voices-mail-engine.
+ * Verstuurt een magic link via onze eigen VoicesMailEngine.
  * De link wijst nu DIRECT naar voices.be voor maximale betrouwbaarheid.
  */
 export async function POST(req: Request) {
@@ -83,8 +83,8 @@ export async function POST(req: Request) {
     
     console.log(`[Auth API] Voices link created: ${voicesLink}`);
 
-    // 4. Verstuur de mail via onze eigen voices-mail-engine
-    const mailEngine = voices-mail-engine.getInstance();
+    // 4. Verstuur de mail via onze eigen VoicesMailEngine
+    const mailEngine = VoicesMailEngine.getInstance();
     
     // Detecteer taal
     const lang = req.headers.get('accept-language')?.startsWith('fr') ? 'fr-fr' : 

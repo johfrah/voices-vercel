@@ -21,10 +21,10 @@ export class DropboxService {
   }
 
   public static getInstance(): DropboxService {
-    if (!dropbox-service.instance) {
-      dropbox-service.instance = new DropboxService();
+    if (!DropboxService.instance) {
+      DropboxService.instance = new DropboxService();
     }
-    return dropbox-service.instance;
+    return DropboxService.instance;
   }
 
   /**

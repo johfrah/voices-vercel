@@ -1,4 +1,4 @@
-import { DirectMailService } from './direct-mail-service';
+import { DirectMailService } from './DirectMailService';
 
 /**
  * VOICES MAIL ENGINE (BOB-METHOD 2026)
@@ -15,10 +15,10 @@ export class VoicesMailEngine {
   }
 
   public static getInstance(): VoicesMailEngine {
-    if (!voices-mail-engine.instance) {
-      voices-mail-engine.instance = new VoicesMailEngine();
+    if (!VoicesMailEngine.instance) {
+      VoicesMailEngine.instance = new VoicesMailEngine();
     }
-    return voices-mail-engine.instance;
+    return VoicesMailEngine.instance;
   }
 
   /**

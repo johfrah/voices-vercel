@@ -40,7 +40,7 @@ export export export export export export export export export export export exp
       
       return dnaRecords.map(r => r.content).join("\n\n");
     } catch (e) {
-      console.error(`[gemini-service] Failed to fetch DNA for ${lang}:`, e);
+      console.error(`[GeminiService] Failed to fetch DNA for ${lang}:`, e);
       return "";
     }
   }

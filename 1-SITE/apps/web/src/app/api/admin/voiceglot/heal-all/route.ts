@@ -2,7 +2,7 @@ import { db } from '@db';
 import { translations, translationRegistry } from '@db/schema';
 import { eq, and, notInArray, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
-import { GeminiService } from '@/lib/services/gemini-service';
+import { GeminiService } from '@/lib/services/GeminiService';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     // 4. Notificatie naar Admin na voltooiing
     if (totalHealed > 0) {
       try {
-        const { direct-mail-service } = await import('@/lib/services/direct-mail-service');
+        const { DirectMailService } = await import('@/lib/services/DirectMailService');
         const mailService = DirectMailService.getInstance();
         await mailService.sendMail({
           to: adminEmail,

@@ -1,7 +1,7 @@
 import { db } from '@db';
 import { media, orders, users } from '@db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { dropbox-service } from '@/lib/services/dropbox-service';
+import { DropboxService } from '@/lib/services/DropboxService';
 
 /**
  *  MUSIC DELIVERY SERVICE (2026)
@@ -55,7 +55,7 @@ export class MusicDeliveryService {
       if (formats['8khz']) filesToDeliver.push(formats['8khz']);
 
       // 5. Push naar Dropbox via de Service
-      const dropbox = dropbox-service.getInstance();
+      const dropbox = DropboxService.getInstance();
       await dropbox.syncToControlFolder(
         orderId.toString(),
         `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Klant',

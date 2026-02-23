@@ -14,17 +14,17 @@ export class TwilioService {
     this.myPersonalNumber = process.env.MY_PERSONAL_NUMBER || '';
 
     if (!accountSid || !authToken) {
-      console.error('[twilio-service] Missing credentials');
+      console.error('[TwilioService] Missing credentials');
     }
 
     this.client = new Twilio(accountSid, authToken);
   }
 
   public static getInstance(): TwilioService {
-    if (!twilio-service.instance) {
-      twilio-service.instance = new TwilioService();
+    if (!TwilioService.instance) {
+      TwilioService.instance = new TwilioService();
     }
-    return twilio-service.instance;
+    return TwilioService.instance;
   }
 
   /**
@@ -48,7 +48,7 @@ export class TwilioService {
       const config = configs?.[0]?.value || { whisperMode: 'robot' };
       const whisperMode = config.whisperMode;
 
-      console.log(`[twilio-service] Initiating callback. Mode: ${whisperMode}. Destination: ${destination} (Market: ${market.market_code})`);
+      console.log(`[TwilioService] Initiating callback. Mode: ${whisperMode}. Destination: ${destination} (Market: ${market.market_code})`);
 
       let twiml = '';
       
@@ -75,13 +75,13 @@ export class TwilioService {
         twiml: twiml,
       });
 
-      console.log(`[twilio-service] Call SID: ${call.sid}`);
+      console.log(`[TwilioService] Call SID: ${call.sid}`);
       return { 
         success: true, 
         message: 'Je telefoon gaat nu over. Neem op om verbonden te worden met de klant.' 
       };
     } catch (error: any) {
-      console.error('[twilio-service] Error:', error);
+      console.error('[TwilioService] Error:', error);
       return { 
         success: false, 
         message: `Twilio fout: ${error.message}` 

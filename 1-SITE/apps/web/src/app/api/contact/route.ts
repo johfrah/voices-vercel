@@ -1,10 +1,10 @@
-import { direct-mail-service } from '@/lib/services/direct-mail-service';
+import { DirectMailService } from '@/lib/services/DirectMailService';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { NextResponse } from 'next/server';
 
 /**
  *  CONTACT API (Chatty mandate)
- * Accepts contact form submissions and forwards to the team via direct-mail-service.
+ * Accepts contact form submissions and forwards to the team via DirectMailService.
  */
 export async function POST(request: Request) {
   try {
@@ -40,8 +40,8 @@ export async function POST(request: Request) {
       ? `[Contact] ${String(subject).slice(0, 80)}`
       : `[Contact] Bericht van ${String(name).trim()}`;
 
-    const { voices-mail-engine } = await import('@/lib/services/voices-mail-engine');
-    const mailEngine = voices-mail-engine.getInstance();
+    const { VoicesMailEngine } = await import('@/lib/services/VoicesMailEngine');
+    const mailEngine = VoicesMailEngine.getInstance();
 
     await mailEngine.sendVoicesMail({
       to,
