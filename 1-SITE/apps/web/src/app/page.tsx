@@ -547,7 +547,7 @@ export default function Home() {
     
     //  CHRIS-PROTOCOL: Safety timeout for skeletons (10s)
     const timeoutId = setTimeout(() => {
-      if (isLoading && !data) {
+      if (!data) {
         console.warn('[Home] Data fetch timeout reached, showing empty state');
         setData({ actors: [], reviews: [], dynamicConfig: {} });
         setIsLoading(false);
@@ -556,12 +556,21 @@ export default function Home() {
     
     // Fetch both actors and dynamic home config
     Promise.all([
-      fetch(fetchUrl, { signal: controller.signal }).then(res => res.json()),
-      fetch('/api/home/config', { signal: controller.signal }).then(res => res.json())
+      fetch(fetchUrl, { signal: controller.signal }).then(res => {
+        if (!res.ok) throw new Error(`Actors API error: ${res.status}`);
+        return res.json();
+      }),
+      fetch('/api/home/config', { signal: controller.signal }).then(res => {
+        if (!res.ok) throw new Error(`Home Config API error: ${res.status}`);
+        return res.json();
+      })
     ])
       .then(([resData, homeConfig]) => {
         clearTimeout(timeoutId);
         if (!mounted) return;
+        
+        console.log('[Home] Data received successfully');
+        
         if (!resData || !resData.results) {
           setData({ actors: [], reviews: [], dynamicConfig: homeConfig });
           return;
@@ -587,6 +596,7 @@ export default function Home() {
       })
       .catch(err => {
         if (err.name === 'AbortError') return;
+        clearTimeout(timeoutId);
         console.error('Home Data Fetch Error:', err);
         setData(prev => prev || { actors: [], reviews: [], reviewStats: { averageRating: 4.9, totalCount: 392 } });
       })
