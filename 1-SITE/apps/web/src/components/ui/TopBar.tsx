@@ -41,18 +41,6 @@ export const TopBar = () => {
     window.dispatchEvent(new CustomEvent('voicy:open', { detail: { tab: 'phone' } }));
   };
 
-  const isAdeming = market.market_code === 'ADEMING';
-  const isPortfolio = market.market_code === 'PORTFOLIO';
-  const isArtist = market.market_code === 'ARTIST';
-  const isStudioJourney = pathname.startsWith('/studio');
-  const isAcademyJourney = pathname.startsWith('/academy');
-  const isPortfolioPage = pathname.includes('/portfolio/') || 
-                          ['/demos', '/host', '/tarieven', '/bestellen', '/contact', '/over-mij', 
-                           '/demos/', '/host/', '/tarieven/', '/bestellen/', '/contact/', '/over-mij/'].includes(pathname);
-
-  // Altijd tonen tenzij onder constructie (layout.tsx regelt dit al)
-  // if (isPortfolio || isAdeming || isArtist || pathname.startsWith('/artist/') || pathname.startsWith('/voice/') || isPortfolioPage || isStudioJourney || isAcademyJourney) return null;
-
   const activeEmail = market.email;
   const activePhone = market.phone;
 

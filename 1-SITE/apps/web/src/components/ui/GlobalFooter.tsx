@@ -544,7 +544,7 @@ export default function GlobalFooter() {
 
                     <AnimatePresence>
                       {isEditingSocial === social.id && (
-                        <motion.ContainerInstrument 
+                        <motion.div 
                           ref={popoverRef}
                           initial={{ opacity: 0, scale: 0.9, y: 10 }}
                           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -577,7 +577,7 @@ export default function GlobalFooter() {
                             </button>
                           </ContainerInstrument>
                         </ContainerInstrument>
-                      </motion.ContainerInstrument>
+                      </motion.div>
                     )}
                   </AnimatePresence>
                 </ContainerInstrument>
@@ -622,7 +622,7 @@ export default function GlobalFooter() {
                 </ButtonInstrument>
                 <AnimatePresence>
                   {isEditingContact === 'phone' && (
-                    <motion.ContainerInstrument 
+                    <motion.div 
                       ref={popoverRef}
                       initial={{ opacity: 0, scale: 0.9, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -653,7 +653,7 @@ export default function GlobalFooter() {
                           </button>
                         </ContainerInstrument>
                       </ContainerInstrument>
-                    </motion.ContainerInstrument>
+                    </motion.div>
                   )}
                 </AnimatePresence>
               </ContainerInstrument>
@@ -679,7 +679,7 @@ export default function GlobalFooter() {
                 </ButtonInstrument>
                 <AnimatePresence>
                   {isEditingContact === 'email' && (
-                    <motion.ContainerInstrument 
+                    <motion.div 
                       ref={popoverRef}
                       initial={{ opacity: 0, scale: 0.9, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -710,7 +710,7 @@ export default function GlobalFooter() {
                           </button>
                         </ContainerInstrument>
                       </ContainerInstrument>
-                    </motion.ContainerInstrument>
+                    </motion.div>
                   )}
                 </AnimatePresence>
               </ContainerInstrument>
@@ -789,7 +789,7 @@ export default function GlobalFooter() {
 
                       <AnimatePresence>
                         {isEditingLink?.sectionIdx === i && isEditingLink?.linkIdx === j && (
-                          <motion.ContainerInstrument 
+                          <motion.div 
                             ref={popoverRef}
                             initial={{ opacity: 0, scale: 0.9, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -824,7 +824,7 @@ export default function GlobalFooter() {
                                 </button>
                               </ContainerInstrument>
                             </ContainerInstrument>
-                          </motion.ContainerInstrument>
+                          </motion.div>
                         )}
                       </AnimatePresence>
                     </li>

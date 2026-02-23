@@ -7,7 +7,7 @@ import { useSonicDNA } from '@/lib/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-  import {
+import {
     Calendar,
     Check,
     ChevronRight,
@@ -61,6 +61,10 @@ export const VoicyChatV2: React.FC = () => {
   const market = MarketManager.getCurrentMarket();
   const isPortfolioJourney = market.market_code === 'PORTFOLIO';
   const isArtistPage = market.market_code === 'ARTIST' || pathname?.startsWith('/voice/');
+  
+  // Determine Journey
+  const isAcademyJourney = pathname?.includes('/academy');
+  const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
   const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
 
   const activeEmail = market.email;
@@ -434,18 +438,6 @@ export const VoicyChatV2: React.FC = () => {
       setIsInitialLoading(false);
     }
   };
-
-  //  Determine Journey
-  const isAcademyJourney = pathname?.includes('/academy');
-  const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
-  
-  // 🛡️ CHRIS-PROTOCOL: Use existing definitions from top of component
-  // const isPortfolioJourney = market.market_code === 'PORTFOLIO';
-  // const isArtistPage = market.market_code === 'ARTIST' || pathname?.startsWith('/voice/');
-  // const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
-
-  // const activeEmail = market.email;
-  // const activePhone = market.phone;
 
   //  Get current language
   const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';
@@ -989,9 +981,6 @@ export const VoicyChatV2: React.FC = () => {
             );
           })}
         </ContainerInstrument>
-
-        {/* Mode & Persona Selectors removed for pure chat experience */}
-
 
         {/* Content Area */}
         <ContainerInstrument plain className="flex-1 overflow-hidden relative flex flex-col">
