@@ -56,14 +56,14 @@ CMTyZKG3XEu5Ghl1LEnI3QmEKsqaCLv12BnVjbkSeZsMnevJPs1Ye6TjjJwdik5P
 o/bKiIz+Fq8=
 -----END CERTIFICATE-----`;
 
-      const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 3 : 10);
+      const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 10 : 10);
       
       if (!(globalThis as any).postgresClient) {
         (globalThis as any).postgresClient = postgres(connectionString, { 
           prepare: false, 
           ssl: { ca: supabaseRootCA, rejectUnauthorized: false },
-          connect_timeout: 20,
-          idle_timeout: 20,
+          connect_timeout: 10,
+          idle_timeout: 10,
           max: poolSize,
         });
       }

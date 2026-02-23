@@ -73,17 +73,32 @@ export async function GET() {
       const extraLinks = actorLangs.filter((al: any) => !al.isNative && !al.is_native);
       
       //  CHRIS-PROTOCOL: Ensure frontend fields are correctly mapped from DB fields
+      const firstName = actor.firstName || actor.first_name;
+      const lastName = actor.lastName || actor.last_name;
+      const menuOrder = actor.menuOrder ?? actor.menu_order ?? 0;
+      const wpProductId = actor.wpProductId || actor.wp_product_id;
+      const photoId = actor.photoId || actor.photo_id;
+      const voiceScore = actor.voiceScore ?? actor.voice_score ?? 10;
+      const priceUnpaid = actor.priceUnpaid ?? actor.price_unpaid ?? 0;
+      const nativeLang = actor.nativeLang || actor.native_lang;
+      let photo_url = actor.photo_url || actor.dropbox_url;
+
+      //  CHRIS-PROTOCOL: Apply proxy prefix for local paths to ensure photos load in admin
+      if (photo_url && !photo_url.startsWith('http') && !photo_url.startsWith('/api/proxy') && !photo_url.startsWith('/assets')) {
+        photo_url = `/api/proxy/?path=${encodeURIComponent(photo_url)}`;
+      }
+
       return {
         ...actor,
-        firstName: actor.firstName || actor.first_name,
-        lastName: actor.lastName || actor.last_name,
-        menuOrder: actor.menuOrder || actor.menu_order,
-        wpProductId: actor.wpProductId || actor.wp_product_id,
-        photoId: actor.photoId || actor.photo_id,
-        voiceScore: actor.voiceScore || actor.voice_score,
-        priceUnpaid: actor.priceUnpaid || actor.price_unpaid,
-        nativeLang: actor.nativeLang || actor.native_lang,
-        photo_url: actor.photo_url || actor.dropbox_url,
+        firstName,
+        lastName,
+        menuOrder,
+        wpProductId,
+        photoId,
+        voiceScore,
+        priceUnpaid,
+        nativeLang,
+        photo_url,
         native_lang_id: nativeLink?.languageId || nativeLink?.language_id || null,
         extra_lang_ids: extraLinks.map((al: any) => al.languageId || al.language_id).filter(Boolean)
       };
