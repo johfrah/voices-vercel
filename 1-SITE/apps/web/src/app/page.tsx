@@ -8,6 +8,7 @@ import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useEditMode } from "@/contexts/EditModeContext";
+import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
