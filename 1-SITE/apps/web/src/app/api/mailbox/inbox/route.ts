@@ -5,6 +5,7 @@ import { desc, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
+// MarketManager is the source of truth for domains
 
 /**
  *  MAILBOX INBOX API (VOICES ENGINE 2026)

@@ -40,7 +40,8 @@ export async function GET(request: NextRequest) {
       console.log(` [HEAL] Triggering translation generation for: ${lang}`);
       // We doen dit async zodat de gebruiker niet hoeft te wachten
       // In een server context gebruiken we de interne URL
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+      const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'] || 'https://www.voices.be';
       fetch(`${baseUrl}/api/translations/heal?bob=true`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

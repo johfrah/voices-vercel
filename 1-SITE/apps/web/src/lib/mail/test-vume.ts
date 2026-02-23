@@ -2,6 +2,7 @@ import { db } from '@db';
 import { users, workshops, orders, workshopEditions, instructors } from '@db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
+// MarketManager is used for domain resolution in the mail engine
 
 /**
  *  VUME TEST SCRIPT (2026)

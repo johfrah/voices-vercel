@@ -31,7 +31,12 @@ export async function GET(request: NextRequest) {
       try {
         const url = new URL(cleanPath);
         // Als het van onze eigen domein komt, haal dan het pad eruit
-        if (url.hostname === 'www.voices.be' || url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname.includes('vercel.app')) {
+        // 🛡️ CHRIS-PROTOCOL: Use MarketManager for domain checks
+        const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+        const currentMarket = MarketManager.getCurrentMarket();
+        const marketDomains = Object.values(MarketManager.getMarketDomains());
+
+        if (marketDomains.some(d => url.hostname.includes(d.replace('https://', ''))) || url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname.includes('vercel.app')) {
           cleanPath = url.pathname + url.search;
         }
       } catch (e) {
@@ -42,8 +47,8 @@ export async function GET(request: NextRequest) {
     //  ASSET MANDATE 2026: Alle assets MOETEN in /assets/ staan.
     // We staan /wp-content/ tijdelijk nog toe voor legacy fallbacks, 
     // maar de proxy logt dit als een waarschuwing.
-    if (cleanPath.startsWith('https://www.voices.be')) {
-      cleanPath = cleanPath.replace('https://www.voices.be', '');
+    if (cleanPath.includes('voices.be')) {
+      cleanPath = cleanPath.replace(/https?:\/\/(www\.)?voices\.be/, '');
     }
 
     //  ALLOWED PATHS: /assets/, /wp-content/, or Supabase agency/ and active/ paths
@@ -70,7 +75,8 @@ export async function GET(request: NextRequest) {
     }
 
     // De backend URL (Combell PHP server of Supabase Storage)
-    const requestHost = request.headers.get('host') || 'www.voices.be';
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const requestHost = request.headers.get('host') || MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be';
     const protocol = request.headers.get('x-forwarded-proto') || 'https';
     let BACKEND_URL = process.env.BACKEND_URL || `${protocol}://${requestHost}`; 
     

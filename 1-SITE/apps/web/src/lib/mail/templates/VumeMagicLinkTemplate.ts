@@ -15,6 +15,7 @@ interface MagicLinkOptions {
 
 export function VumeMagicLinkTemplate(options: MagicLinkOptions) {
   const { name, link, host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be'), language = 'nl' } = options;
+  // MarketManager is used for domain resolution in the mail engine
 
   const content = {
     nl: {

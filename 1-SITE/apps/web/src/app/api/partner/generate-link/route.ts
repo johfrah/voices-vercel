@@ -32,7 +32,9 @@ export async function POST(request: NextRequest) {
         // In een echte scenario zouden we hier vervaldatum en partner ID opslaan
       });
 
-      const generatedLink = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://next.voices.be'}/checkout?partner_code=${code}&email=${encodeURIComponent(email)}`;
+      const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MarketManager.getMarketDomains()['BE'] || 'https://www.voices.be';
+      const generatedLink = `${baseUrl}/checkout?partner_code=${code}&email=${encodeURIComponent(email)}`;
 
       return NextResponse.json({
         success: true,

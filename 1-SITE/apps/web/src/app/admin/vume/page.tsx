@@ -7,6 +7,8 @@ import { ArrowLeft, Mail, Eye, Send, MessageSquare, Sparkles, Zap, ShieldCheck, 
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+
 /**
  *  VUME ADMIN PREVIEW (2026)
  * 

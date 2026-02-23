@@ -6,6 +6,7 @@ import { contentArticles, contentBlocks, translations, appConfigs } from '../../
 import { eq, and, ilike, or } from "drizzle-orm";
 import { db, seedInstructorBios, syncAllData } from './lib/sync/bridge';
 import { VOICES_CONFIG } from '../../../packages/config/config';
+import { MarketManagerServer as MarketManager } from './lib/system/market-manager-server';
 
 /**
  * VOICES OS - DATABASE CLI TOOL (MARK & MOBY EDITION)

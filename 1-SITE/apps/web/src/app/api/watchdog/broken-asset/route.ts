@@ -11,7 +11,8 @@ export async function POST(request: NextRequest) {
   try {
     const { path, context, host: requestHost } = await request.json();
     
-    const host = requestHost || request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
+    const host = requestHost || request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be');
     await SelfHealingService.reportBrokenAsset(path, context, host);
     
     return NextResponse.json({ success: true });

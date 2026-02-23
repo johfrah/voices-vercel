@@ -1,3 +1,5 @@
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+
 /**
  *  API AUTH HELPER (NUCLEAR 2026)
  *
@@ -24,6 +26,7 @@ const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 async function checkIsAdmin(user: User | null): Promise<boolean> {
   if (!user?.email) return false;
   const adminEmail = process.env.ADMIN_EMAIL;
+  // 🛡️ CHRIS-PROTOCOL: Admin emails are hardcoded for safety in the auth layer
   if (user.email === adminEmail || user.email === 'johfrah@voices.be' || user.email === 'bernadette@voices.be') return true;
 
   try {

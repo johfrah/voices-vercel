@@ -42,6 +42,7 @@ import {
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 export default function AccountDashboardClient() {
   const { user, isAdmin, isLoading, isAuthenticated, logout } = useAuth();
@@ -106,7 +107,7 @@ export default function AccountDashboardClient() {
       <div className="va-home-container">
         {/*  ACCOUNT HERO */}
         <AccountHeroInstrument 
-          userEmail={user?.email || `user@${isAdmin ? 'voices.be' : (typeof window !== 'undefined' ? window.location.host : 'voices.be')}`} 
+          userEmail={user?.email || `user@${isAdmin ? MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be' : (typeof window !== 'undefined' ? window.location.host : 'voices.be')}`} 
           onLogout={logout}
           isAdmin={isAdmin}
         />
@@ -155,7 +156,7 @@ export default function AccountDashboardClient() {
                 <BentoCard 
                   span="lg" 
                   className="bg-va-black text-white p-10 rounded-[32px] relative overflow-hidden group va-interactive"
-                  onClick={() => window.open(`https://${typeof window !== 'undefined' ? window.location.host : 'voices.be'}/portfolio/johfrah`, '_blank')}
+                  onClick={() => window.open(`https://${typeof window !== 'undefined' ? window.location.host : MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be'}/portfolio/johfrah`, '_blank')}
                 >
                   <div className="relative z-10 h-full flex flex-col justify-between">
                     <div>

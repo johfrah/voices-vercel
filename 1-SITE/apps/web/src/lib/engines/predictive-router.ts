@@ -13,6 +13,8 @@ export interface IntentContext {
   greeting?: string;
 }
 
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+
 export class PredictiveRouter {
   private static CAMPAIGN_MAP: Record<string, string> = {
     'telephony_promo': 'vlaamse-voicemail-stemmen',

@@ -48,6 +48,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     videoThumbnail = `https://${host}/api/proxy?path=${encodeURIComponent('/assets/studio/common/branding/VSTUDIO.webp')}`,
     videoUrl = `https://${host}/studio/`,
     aftermovieText = 'Ontdek hoe deelnemers hun stem leren inzetten om teksten echt te laten leven.',
+    // MarketManager is used for domain resolution in the mail engine
     optOutToken,
     email
   } = options;

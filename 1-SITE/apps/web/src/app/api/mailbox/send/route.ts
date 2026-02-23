@@ -30,8 +30,9 @@ export async function POST(request: NextRequest) {
 
     // 2. Call Email Service
     const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
+    const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
     const mailEngine = VoicesMailEngine.getInstance();
-    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be');
 
     await mailEngine.sendVoicesMail({
       to,

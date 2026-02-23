@@ -12,6 +12,7 @@ import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import toast from "react-hot-toast";
 
 import { useTranslation } from "@/contexts/TranslationContext";
+// MarketManager is the source of truth for domains
 
 /**
  * REVIEWS SKELETON (MOBY-STANDARD 2026)
@@ -210,7 +211,7 @@ export const ReviewsInstrument: React.FC<{
     "itemReviewed": {
       "@type": isPortfolio ? "Person" : "Organization",
       "name": isPortfolio ? title?.replace("Ervaringen met ", "") : "Voices",
-      "url": "https://voices.be"
+      "url": "https://www.voices.be"
     },
     "ratingValue": averageRating,
     "bestRating": "5",
