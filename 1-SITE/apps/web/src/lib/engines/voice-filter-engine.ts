@@ -80,6 +80,8 @@ export class VoiceFilterEngine {
       const lowLang = criteria.language.toLowerCase();
       const dbCode = MarketManager.getLanguageCode(lowLang).toLowerCase();
       
+      console.log(`[VoiceFilterEngine] Filtering by language: ${lowLang} (dbCode: ${dbCode})`);
+
       result = result.filter(actor => {
         const actorNative = actor.native_lang?.toLowerCase();
         const actorNativeLabel = actor.native_lang_label?.toLowerCase();
@@ -91,8 +93,10 @@ export class VoiceFilterEngine {
           this.isLanguageVariationMatch(dbCode, actorNative)
         );
 
-        if (!isMatch && actors.length < 10) {
-           console.log(`[VoiceFilterEngine] Actor ${actor.display_name} filtered out: native_lang ${actorNative} does not match ${dbCode}/${lowLang}`);
+        if (isMatch) {
+           console.log(`[VoiceFilterEngine] Actor ${actor.display_name} MATCHED: native_lang ${actorNative}, label ${actorNativeLabel}`);
+        } else if (actors.length < 50) { // Log more details if dataset is small
+           console.log(`[VoiceFilterEngine] Actor ${actor.display_name} filtered out: native_lang ${actorNative}, label ${actorNativeLabel} does not match ${dbCode}/${lowLang}`);
         }
 
         return isMatch;
