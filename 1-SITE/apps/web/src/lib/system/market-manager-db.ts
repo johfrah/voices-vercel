@@ -9,7 +9,7 @@ import { MarketManagerServer as MarketManager, MarketConfig } from './market-man
 import { VOICES_CONFIG } from '../../../../../packages/config/config';
 
 export class MarketDatabaseService {
-  private static CACHE_TTL = 1000 * 60 * 60; // 60 minutes
+  private static CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours (CHRIS-PROTOCOL: Nuclear Caching for SSR Performance)
 
   private static get globalCache() {
     const g = global as any;
@@ -36,59 +36,71 @@ export class MarketDatabaseService {
     const staticConfig = MarketManager.getCurrentMarket(lookupHost);
     const cacheKey = staticConfig.market_code;
 
-    // 1. Check Cache
+    // 1. Check Cache (CHRIS-PROTOCOL: Immediate return on cache hit)
     const cached = this.globalCache.marketCache[cacheKey];
     if (cached && (Date.now() - cached.timestamp) < this.CACHE_TTL) {
       return cached.data;
     }
     
     try {
-      console.log(` [MarketDatabaseService] Cache miss for ${cacheKey}, querying DB...`);
-      // 🛡️ CHRIS-PROTOCOL: Direct imports are safe here as this file is server-only
-      const { db } = await import('@db');
-      const { marketConfigs } = await import('@db/schema');
-      const { eq } = await import('drizzle-orm');
+      // 🛡️ CHRIS-PROTOCOL: Race against a 2-second timeout to prevent 504 Gateway Timeout
+      const fetchPromise = (async () => {
+        console.log(` [MarketDatabaseService] Cache miss for ${cacheKey}, querying DB...`);
+        const { db } = await import('@db');
+        const { marketConfigs } = await import('@db/schema');
+        const { eq } = await import('drizzle-orm');
 
-      const [dbConfig] = await db
-        .select()
-        .from(marketConfigs)
-        .where(eq(marketConfigs.market, staticConfig.market_code))
-        .limit(1);
+        const [dbConfig] = await db
+          .select()
+          .from(marketConfigs)
+          .where(eq(marketConfigs.market, staticConfig.market_code))
+          .limit(1);
 
-      if (dbConfig) {
-        const loc = dbConfig.localization as any;
-        const social = dbConfig.socialLinks as any;
-        
-        const finalConfig: MarketConfig = {
-          ...staticConfig,
-          name: dbConfig.name || staticConfig.name,
-          email: dbConfig.email || staticConfig.email,
-          phone: dbConfig.phone || staticConfig.phone,
-          language: loc?.default_lang || staticConfig.language,
-          supported_languages: (loc?.supported_languages || staticConfig.supported_languages || []).map((l: string) => MarketManager.getLanguageCode(l)),
-          popular_languages: (loc?.popular_languages || staticConfig.popular_languages || []).map((l: string) => MarketManager.getLanguageCode(l)),
-          currency: loc?.currency || staticConfig.currency,
-          theme: (dbConfig.theme as any) || staticConfig.theme,
-          address: dbConfig.address || staticConfig.address,
-          vat_number: dbConfig.vatNumber || staticConfig.vat_number,
-          social_links: social || staticConfig.social_links,
-          seo_data: {
-            title: dbConfig.title || undefined,
-            description: dbConfig.description || undefined,
-            og_image: dbConfig.ogImage || undefined,
-            schema_type: (dbConfig as any).schemaType || (
-              staticConfig.market_code === 'ADEMING' ? 'Organization' : 
-              (staticConfig.market_code === 'PORTFOLIO' || staticConfig.market_code === 'ARTIST') ? 'Person' : 'Organization'
-            ),
-            locale_code: loc?.locale || MarketManager.getLanguageCode(staticConfig.primary_language),
-            canonical_domain: (dbConfig as any).canonicalDomain || staticConfig.logo_url // Fallback logic
-          }
-        };
+        if (dbConfig) {
+          const loc = dbConfig.localization as any;
+          const social = dbConfig.socialLinks as any;
+          
+          const finalConfig: MarketConfig = {
+            ...staticConfig,
+            name: dbConfig.name || staticConfig.name,
+            email: dbConfig.email || staticConfig.email,
+            phone: dbConfig.phone || staticConfig.phone,
+            language: loc?.default_lang || staticConfig.language,
+            supported_languages: (loc?.supported_languages || staticConfig.supported_languages || []).map((l: string) => MarketManager.getLanguageCode(l)),
+            popular_languages: (loc?.popular_languages || staticConfig.popular_languages || []).map((l: string) => MarketManager.getLanguageCode(l)),
+            currency: loc?.currency || staticConfig.currency,
+            theme: (dbConfig.theme as any) || staticConfig.theme,
+            address: dbConfig.address || staticConfig.address,
+            vat_number: dbConfig.vatNumber || staticConfig.vat_number,
+            social_links: social || staticConfig.social_links,
+            seo_data: {
+              title: dbConfig.title || undefined,
+              description: dbConfig.description || undefined,
+              og_image: dbConfig.ogImage || undefined,
+              schema_type: (dbConfig as any).schemaType || (
+                staticConfig.market_code === 'ADEMING' ? 'Organization' : 
+                (staticConfig.market_code === 'PORTFOLIO' || staticConfig.market_code === 'ARTIST') ? 'Person' : 'Organization'
+              ),
+              locale_code: loc?.locale || MarketManager.getLanguageCode(staticConfig.primary_language),
+              canonical_domain: (dbConfig as any).canonicalDomain || staticConfig.logo_url // Fallback logic
+            }
+          };
 
-        // Update Cache
-        this.globalCache.marketCache[cacheKey] = { data: finalConfig, timestamp: Date.now() };
-        return finalConfig;
-      }
+          // Update Cache
+          this.globalCache.marketCache[cacheKey] = { data: finalConfig, timestamp: Date.now() };
+          return finalConfig;
+        }
+        return staticConfig;
+      })();
+
+      const timeoutPromise = new Promise<MarketConfig>((resolve) => 
+        setTimeout(() => {
+          console.warn(` [MarketDatabaseService] DB Timeout for ${cacheKey}, using fallback.`);
+          resolve(cached?.data || staticConfig);
+        }, 2000)
+      );
+
+      return await Promise.race([fetchPromise, timeoutPromise]);
     } catch (e) {
       console.error('[MarketDatabaseService] DB Fetch failed, checking for stale cache fallback:', e);
       if (cached) {
@@ -109,43 +121,52 @@ export class MarketDatabaseService {
       return this.globalCache.localesCache.data;
     }
 
+    const fallbackLocales = {
+      'nl-BE': 'https://www.voices.be',
+      'nl-NL': 'https://www.voices.nl',
+      'fr-FR': 'https://www.voices.fr',
+      'en-EU': 'https://www.voices.eu'
+    };
+
     try {
-      console.log(` [MarketDatabaseService] Locales cache miss, querying DB...`);
-      const { db } = await import('@db');
-      const { marketConfigs } = await import('@db/schema');
+      // 🛡️ CHRIS-PROTOCOL: Race against a 2-second timeout
+      const fetchPromise = (async () => {
+        console.log(` [MarketDatabaseService] Locales cache miss, querying DB...`);
+        const { db } = await import('@db');
+        const { marketConfigs } = await import('@db/schema');
 
-      const allMarkets = await db.select().from(marketConfigs);
-      const locales: Record<string, string> = {};
-      
-      const staticDomains = MarketManager.getMarketDomains();
+        const allMarkets = await db.select().from(marketConfigs);
+        const locales: Record<string, string> = {};
+        
+        const staticDomains = MarketManager.getMarketDomains();
 
-      allMarkets.forEach(m => {
-        const loc = m.localization as any;
-        const locale = loc?.locale || MarketManager.getLanguageCode(m.market === 'BE' ? 'nl-BE' : m.market === 'NLNL' ? 'nl-NL' : m.market === 'FR' ? 'fr-FR' : m.market === 'ES' ? 'es-ES' : m.market === 'PT' ? 'pt-PT' : m.market === 'EU' ? 'en-GB' : 'nl-BE');
-        const domain = (m as any).canonicalDomain || staticDomains[m.market] || `https://www.voices.be`;
-        if (locale) {
-          locales[locale] = domain;
-        }
-      });
+        allMarkets.forEach(m => {
+          const loc = m.localization as any;
+          const locale = loc?.locale || MarketManager.getLanguageCode(m.market === 'BE' ? 'nl-BE' : m.market === 'NLNL' ? 'nl-NL' : m.market === 'FR' ? 'fr-FR' : m.market === 'ES' ? 'es-ES' : m.market === 'PT' ? 'pt-PT' : m.market === 'EU' ? 'en-GB' : 'nl-BE');
+          const domain = (m as any).canonicalDomain || staticDomains[m.market] || `https://www.voices.be`;
+          if (locale) {
+            locales[locale] = domain;
+          }
+        });
 
-      const finalLocales = Object.keys(locales).length > 0 ? locales : {
-        'nl-BE': 'https://www.voices.be',
-        'nl-NL': 'https://www.voices.nl',
-        'fr-FR': 'https://www.voices.fr',
-        'en-EU': 'https://www.voices.eu'
-      };
+        const finalLocales = Object.keys(locales).length > 0 ? locales : fallbackLocales;
 
-      // Update Cache
-      this.globalCache.localesCache = { data: finalLocales, timestamp: Date.now() };
-      return finalLocales;
+        // Update Cache
+        this.globalCache.localesCache = { data: finalLocales, timestamp: Date.now() };
+        return finalLocales;
+      })();
+
+      const timeoutPromise = new Promise<Record<string, string>>((resolve) => 
+        setTimeout(() => {
+          console.warn(` [MarketDatabaseService] Locales DB Timeout, using fallback.`);
+          resolve(this.globalCache.localesCache?.data || fallbackLocales);
+        }, 2000)
+      );
+
+      return await Promise.race([fetchPromise, timeoutPromise]);
     } catch (e) {
       console.error('[MarketDatabaseService] Failed to fetch all locales:', e);
-      return {
-        'nl-BE': 'https://www.voices.be',
-        'nl-NL': 'https://www.voices.nl',
-        'fr-FR': 'https://www.voices.fr',
-        'en-EU': 'https://www.voices.eu'
-      };
+      return fallbackLocales;
     }
   }
 }
