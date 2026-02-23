@@ -152,7 +152,7 @@ export default function ConfiguratorPageClient({
     }
   };
 
-  const { state: masterControlState, updateJourney, updateStep } = useMasterControl();
+  const { state: masterControlState, updateJourney, updateStep, updateFilters } = useMasterControl();
   const sonicDNA = useSonicDNA();
   const playClick = sonicDNA?.playClick;
   const { t } = useTranslation();
