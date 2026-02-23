@@ -16,55 +16,38 @@ interface VoiceGridProps {
 export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, onSelect }) => {
   const { playDemo } = useGlobalAudio();
   
-  console.log(` VoiceGrid: rendering ${actors?.length || 0} actors`, { featured, actors: actors?.map(a => a.display_name) });
-
-  const handleSelect = (actor: Actor) => {
-    console.log(`[VoiceGrid] handleSelect for: ${actor.display_name}`, { hasOnSelect: !!onSelect });
-    
-    // CHRIS-PROTOCOL: In SPA mode, we NEVER navigate.
-    if (onSelect) {
-      onSelect(actor);
-      return;
-    }
-    
-    //  NAVIGATION MANDATE: Fallback for non-SPA contexts
-    if (typeof window !== 'undefined') {
-      const targetSlug = actor.slug || actor.first_name?.toLowerCase() || actor.display_name?.toLowerCase()?.split(' ')[0] || 'unknown';
-      window.location.href = `/voice/${targetSlug}`;
-    }
-  };
-
+  // 🛡️ CHRIS-PROTOCOL: Grid-Gap Mandate (v2.14.94)
+  // We gebruiken een vaste grid-structuur die ALTIJD van links naar rechts vult.
+  // De 'flex' op de motion.div zorgde voor gaten bij filter-wissels.
+  
   return (
     <>
       <div className={cn(
         "w-full",
         featured && "md:block flex overflow-x-auto pb-12 -mx-6 px-6 snap-x snap-mandatory no-scrollbar"
       )}>
-        <motion.div 
-          layout
+        <div 
           className={cn(
             featured 
               ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 min-w-max md:min-w-full items-stretch" 
               : "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-5 items-stretch auto-rows-fr"
           )}
         >
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence mode="popLayout" initial={false}>
             {actors.filter(Boolean).map((actor) => (
               <motion.div 
                 key={actor.id}
-                layoutId={`actor-${actor.id}`}
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ 
                   type: "spring",
-                  stiffness: 400,
-                  damping: 30,
-                  mass: 1,
-                  opacity: { duration: 0.2 }
+                  stiffness: 500,
+                  damping: 35,
+                  mass: 1
                 }}
-                className={cn("flex w-full", featured && "w-[85vw] md:w-auto snap-center")}
+                className={cn("w-full h-full", featured && "w-[85vw] md:w-auto snap-center")}
               >
                 <VoiceCard 
                   voice={actor} 
@@ -73,7 +56,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
       </div>
     </>
   );
