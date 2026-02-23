@@ -124,6 +124,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         if (language || lang) {
           const targetLang = (language || lang).toLowerCase();
           
+          // 🛡️ CHRIS-PROTOCOL: Pre-selection logic (Make it easier, not impossible)
+          // We filter on the server to provide a fast initial load, but the client 
+          // can still request other languages or 'all'.
           if (targetLang === 'nl' || targetLang === 'nl-be' || targetLang === 'nl-nl') {
             query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
           } else if (targetLang === 'en' || targetLang === 'en-gb' || targetLang === 'en-us') {
@@ -132,6 +135,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
             query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%,native_lang.ilike.frans,native_lang.ilike.frans (be),native_lang.ilike.fr-be');
           } else if (targetLang === 'de' || targetLang === 'de-de') {
             query = query.or('native_lang.ilike.de,native_lang.ilike.de-%,native_lang.ilike.duits');
+          } else if (targetLang === 'all') {
+            // 🛡️ CHRIS-PROTOCOL: 'all' allows the visitor to see the entire selection
+            console.log(' [getActors] Fetching all live actors per request');
           } else {
             query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
           }
