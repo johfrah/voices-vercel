@@ -68,8 +68,18 @@ export async function GET() {
       const nativeLink = actorLangs.find((al: any) => al.isNative || al.is_native);
       const extraLinks = actorLangs.filter((al: any) => !al.isNative && !al.is_native);
       
+      //  CHRIS-PROTOCOL: Ensure frontend fields are correctly mapped from DB fields
       return {
         ...actor,
+        firstName: actor.firstName || actor.first_name,
+        lastName: actor.lastName || actor.last_name,
+        menuOrder: actor.menuOrder || actor.menu_order,
+        wpProductId: actor.wpProductId || actor.wp_product_id,
+        photoId: actor.photoId || actor.photo_id,
+        voiceScore: actor.voiceScore || actor.voice_score,
+        priceUnpaid: actor.priceUnpaid || actor.price_unpaid,
+        nativeLang: actor.nativeLang || actor.native_lang,
+        photo_url: actor.photo_url || actor.dropbox_url,
         native_lang_id: nativeLink?.languageId || nativeLink?.language_id || null,
         extra_lang_ids: extraLinks.map((al: any) => al.languageId || al.language_id).filter(Boolean)
       };
