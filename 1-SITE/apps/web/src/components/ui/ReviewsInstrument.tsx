@@ -211,7 +211,7 @@ export const ReviewsInstrument: React.FC<{
     "itemReviewed": {
       "@type": isPortfolio ? "Person" : "Organization",
       "name": isPortfolio ? title?.replace("Ervaringen met ", "") : "Voices",
-      "url": "https://www.voices.be"
+      "url": MarketManager.getMarketDomains()['BE']
     },
     "ratingValue": averageRating,
     "bestRating": "5",
