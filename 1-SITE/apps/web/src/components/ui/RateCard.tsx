@@ -26,14 +26,14 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
       color: 'bg-blue-500/10 text-blue-600',
       badge: 'Meest gekozen'
     },
-    video: {
+      video: {
       title: 'Video & E-learning',
       icon: Video,
       price: '175',
       unit: 'basis tarief',
       features: [
         'Bereken tot op de euro',
-        ' 1 minuut per 160 woorden',
+        ' 1 minuut per 155 woorden',
         '48kHz Studiokwaliteit',
         'Retake garantie'
       ],
