@@ -10,7 +10,32 @@ import { useSonicDNA } from '@/lib/sonic-dna';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Bell, Building2, ChevronRight, ChevronDown, Globe, Heart, LayoutDashboard, LogOut, Mail, Menu, Mic2, Monitor, Phone, Radio, ShoppingBag, ShoppingCart, User, Info, Settings, Home, Euro, GraduationCap, Quote, Users } from 'lucide-react';
+import { 
+  Bell, 
+  Building2, 
+  ChevronRight, 
+  ChevronDown, 
+  Globe, 
+  Heart, 
+  LayoutDashboard, 
+  LogOut, 
+  Mail, 
+  Menu, 
+  Mic2, 
+  Monitor, 
+  Phone, 
+  Radio, 
+  ShoppingBag, 
+  ShoppingCart, 
+  User, 
+  Info, 
+  Settings, 
+  Home, 
+  Euro, 
+  GraduationCap, 
+  Quote, 
+  Users 
+} from 'lucide-react';
 import { VoicesLink, useVoicesRouter } from './VoicesLink';
 import { 
   ButtonInstrument, 
