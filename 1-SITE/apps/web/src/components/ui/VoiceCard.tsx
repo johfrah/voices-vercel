@@ -7,7 +7,7 @@ import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { calculateDeliveryDate, startOfDayNative } from '@/lib/delivery-logic';
+import { calculateDeliveryDate, startOfDayNative } from '@/lib/utils/delivery-logic';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';

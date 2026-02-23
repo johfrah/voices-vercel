@@ -5,7 +5,7 @@ import { db } from '@db';
 import { translations } from '@db/schema';
 import { and, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
-import { SlopFilter } from '@/lib/slop-filter';
+import { SlopFilter } from '@/lib/engines/slop-filter';
 
 /**
  *  API: SELF-HEALING TRANSLATIONS (GOD MODE 2026)

@@ -3,7 +3,7 @@
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from "@/lib/utils";
-import { matTrack } from '@/lib/mat-intelligence';
+import { matTrack } from '@/lib/intelligence/mat-intelligence';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Lock, Maximize2, Trash2 } from 'lucide-react';

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { SlopFilter } from '@/lib/slop-filter';
+import { SlopFilter } from '@/lib/engines/slop-filter';
 
 interface TranslationContextType {
   t: (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement?: boolean) => string;

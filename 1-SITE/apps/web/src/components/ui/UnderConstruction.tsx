@@ -9,7 +9,7 @@ import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 
 import Image from 'next/image';
 import { VoiceglotText } from './VoiceglotText';
-import { matTrack } from '@/lib/mat-intelligence';
+import { matTrack } from '@/lib/intelligence/mat-intelligence';
 import { useEffect } from 'react';
 
 /**

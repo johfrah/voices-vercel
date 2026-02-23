@@ -45,7 +45,7 @@ import {
 } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
-import { NavConfig } from '@/lib/config-bridge';
+import { NavConfig } from '@/lib/utils/config-bridge';
 import { Plus, Trash2, Link as LinkIcon, Search as SearchIcon, X, Check, ArrowRight, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';

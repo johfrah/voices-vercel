@@ -6,7 +6,7 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Lock, Sparkles } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { SlopFilter } from '@/lib/slop-filter';
+import { SlopFilter } from '@/lib/engines/slop-filter';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 interface VoiceglotTextProps {

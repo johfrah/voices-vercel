@@ -4,7 +4,7 @@ import { eq, asc } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { getActor, getActors, getMusicLibrary } from '@/lib/services/api-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
-import { ConfigBridge } from '@/lib/config-bridge';
+import { ConfigBridge } from '@/lib/utils/config-bridge';
 
 //  NUCLEAR CACHE BUSTER
 export const runtime = 'nodejs';

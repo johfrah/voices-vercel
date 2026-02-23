@@ -15,7 +15,7 @@ import { Actor, Demo } from '@/types';
 import { cn } from '@/lib/utils';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { PhotoUploader } from './PhotoUploader';
-import { calculateDeliveryDate } from '@/lib/delivery-logic';
+import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
 import { formatDistanceToNow, isAfter, isBefore, startOfDay, format, parseISO } from 'date-fns';
 import { nl } from 'date-fns/locale';
 
