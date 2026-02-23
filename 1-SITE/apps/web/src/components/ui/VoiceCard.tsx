@@ -930,18 +930,15 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 variant={isSelected ? "default" : "outline"}
                 size="sm"
                 className={cn(
-                  "rounded-xl px-6 py-5 font-light tracking-[0.1em] uppercase text-[13px] transition-all duration-500",
+                  "rounded-xl font-light tracking-[0.1em] uppercase text-[13px] transition-all duration-500",
                   isSelected 
-                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105" 
-                    : "hover:bg-va-black hover:text-white hover:border-va-black",
+                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-5 py-5" 
+                    : "px-6 py-5 hover:bg-va-black hover:text-white hover:border-va-black",
                   voice.allow_free_trial === false && !onSelect && "opacity-0 pointer-events-none"
                 )}
               >
                 {isSelected ? (
-                  <span className="flex items-center gap-2">
-                    <Check size={14} strokeWidth={3} />
-                    <VoiceglotText translationKey="common.selected" defaultText="Geselecteerd" />
-                  </span>
+                  <Check size={18} strokeWidth={3} className="animate-in zoom-in duration-300" />
                 ) : (
                   <div className="flex flex-col items-center leading-none gap-1">
                     <VoiceglotText 
