@@ -57,18 +57,10 @@ export async function runMasterSync() {
 
             // 2. PRICING ALIGNMENT (BIJBEL-COMMERCE-RULES)
             // We zorgen dat de tarieven in de database 100% kloppen.
-            // Als er geen tarieven zijn, zetten we de default 'Core Gold' prijzen.
+            // Als er geen tarieven zijn, markeren we dit als 'pending' voor handmatige review.
             if (!actor.rates || Object.keys(actor.rates as object).length === 0) {
-                const defaultRates = {
-                    "BE": { "online": 250, "ivr": 150, "commercial": 450 },
-                    "NL": { "online": 250, "ivr": 150, "commercial": 450 }
-                };
-                await db.update(actors).set({ 
-                    rates: defaultRates,
-                    priceOnline: "250.00",
-                    priceIvr: "150.00"
-                }).where(eq(actors.id, actor.id));
-                stats.pricesUpdated++;
+                console.log(` ⚠️ No rates found for ${actor.firstName}. Skipping price update to avoid slop.`);
+                // We zetten geen default prijzen meer (Chris-Protocol)
             }
 
             // 3. BENTO ACTIVATION

@@ -105,44 +105,44 @@ export const AgencyCalculator = ({
       sub: t('common.webvideo.sub', "Corporate & Web"),
       icon: Video,
       usage: "unpaid",
-      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 249
+      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 0
     },
     social: { 
       label: t('common.social_ad', "Social Ad"), 
       sub: t('common.social_ad.sub', "Social Ads"),
       icon: Megaphone,
       usage: "paid",
-      national: ((pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 249) + 50
+      national: ((pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 0) + 50
     },
     radio: { 
       label: t('common.radio', "Radio"), 
       sub: t('common.radio.sub', "Radio Ads"),
       icon: Radio,
       usage: "paid",
-      national: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199) + 150,
-      regional: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199)
+      national: ((pricingConfig?.basePrice / 100) || pricingConfig?.entry_price_base || 0) + 150,
+      regional: ((pricingConfig?.basePrice / 100) || pricingConfig?.entry_price_base || 0)
     },
     tv: { 
       label: t('common.tv_ad', "TV Ad"), 
       sub: t('common.tv_ad.sub', "TV Ads"),
       icon: Tv,
       usage: "paid",
-      national: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199) + 250,
-      regional: ((pricingConfig?.basePrice / 100) || (pricingConfig?.entry_price_base === 9 ? 199 : pricingConfig?.entry_price_base) || 199) + 50
+      national: ((pricingConfig?.basePrice / 100) || pricingConfig?.entry_price_base || 0) + 250,
+      regional: ((pricingConfig?.basePrice / 100) || pricingConfig?.entry_price_base || 0) + 50
     },
     podcast: { 
       label: t('common.podcast_ad', "Podcast Ad"), 
       sub: t('common.podcast_ad.sub', "Pre-roll"),
       icon: Mic2,
       usage: "paid",
-      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 249
+      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 0
     },
     ivr: { 
       label: t('common.telephony', "Telefoon"), 
       sub: t('common.telephony.sub', "Voicemail & IVR"),
       icon: Phone,
       usage: "telefonie",
-      national: (pricingConfig?.telephonyBasePrice / 100) || pricingConfig?.ivr_base || 89
+      national: (pricingConfig?.telephonyBasePrice / 100) || pricingConfig?.ivr_base || 0
     },
   };
 
@@ -180,10 +180,10 @@ export const AgencyCalculator = ({
     const config = pricingConfig || SlimmeKassa.getDefaultConfig();
     
     // CHRIS-PROTOCOL: Smart mapping between Drizzle/JSON keys and SlimmeKassaConfig
-    const telephonyBase = (config.telephonyBasePrice / 100) || config.ivr_base || 89;
-    const videoBase = (config.videoPrice / 100) || config.unpaid_base || 249;
-    const currentBsf = (config.basePrice / 100) || config.entry_price_base === 9 ? 199 : (config.entry_price_base || 199); // Handle weird 9 value
-    const liveSurcharge = (config.liveSessionSurcharge / 100) || config.live_regie || 50;
+    const telephonyBase = (config.telephonyBasePrice / 100) || config.ivr_base || 0;
+    const videoBase = (config.videoPrice / 100) || config.unpaid_base || 0;
+    const currentBsf = (config.basePrice / 100) || config.entry_price_base || 0;
+    const liveSurcharge = (config.liveSessionSurcharge / 100) || config.live_regie || 0;
 
     const lang = language;
 
@@ -688,9 +688,9 @@ export const AgencyCalculator = ({
           <div className="pt-8 border-t border-black/[0.03] space-y-6">
               <TextInstrument className="text-[11px] text-va-black/40 leading-relaxed italic">
                 {calcUsage === 'paid' ? (
-                  t('calculator.paid.footer_note', `De opnamekosten (€${(pricingConfig?.basePrice / 100) || 199}) zijn slechts één keer verrekend. De buyout is berekend per eenheid (jaar of 3 maanden).`, { price: (pricingConfig?.basePrice / 100) || 199 })
+                  t('calculator.paid.footer_note', `De opnamekosten (€${(pricingConfig?.basePrice / 100) || 0}) zijn slechts één keer verrekend. De buyout is berekend per eenheid (jaar of 3 maanden).`, { price: (pricingConfig?.basePrice / 100) || 0 })
                 ) : calcUsage === 'unpaid' ? (
-                  t('calculator.unpaid.footer_note', `Inclusief studio-opname (€${(pricingConfig?.videoBasePrice / 100) || 249}) en onbeperkt gebruiksrecht. ${calcWords > (pricingConfig?.videoWordThreshold || 200) ? `Toeslag toegepast voor de extra lengte boven ${pricingConfig?.videoWordThreshold || 200} woorden.` : ''}`, { price: (pricingConfig?.videoBasePrice / 100) || 249, threshold: pricingConfig?.videoWordThreshold || 200 })
+                  t('calculator.unpaid.footer_note', `Inclusief studio-opname (€${(pricingConfig?.videoBasePrice / 100) || 0}) en onbeperkt gebruiksrecht. ${calcWords > (pricingConfig?.videoWordThreshold || 200) ? `Toeslag toegepast voor de extra lengte boven ${pricingConfig?.videoWordThreshold || 200} woorden.` : ''}`, { price: (pricingConfig?.videoBasePrice / 100) || 0, threshold: pricingConfig?.videoWordThreshold || 200 })
                 ) : (
                   t('calculator.telephony.footer_note', `Transparante prijsberekening voor telefonie. ${calcWords > (pricingConfig?.telephonyWordThreshold || 25) ? "Inclusief eenmalige opstart- en verwerkingskosten." : ""}`, { threshold: pricingConfig?.telephonyWordThreshold || 25 })
                 )}

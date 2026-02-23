@@ -49,29 +49,29 @@ export interface SlimmeKassaConfig {
 }
 
 export const DEFAULT_KASSA_CONFIG: SlimmeKassaConfig = {
-  basePrice: 19900, // €199 in cents (BSF)
-  videoBasePrice: 24900, // €249 in cents
-  telephonyBasePrice: 8900, // €89 in cents
-  telephonySetupFee: 1995, // €19.95 in cents
-  telephonyWordPrice: 100, // €1.00 in cents
-  telephonyWordThreshold: 25, // in words
-  videoWordThreshold: 200, // in words
-  videoWordRate: 20, // €0.20 in cents
-  telephonyBulkThreshold: 750, // in words
-  telephonyBulkBasePrice: 91535, // €915.35 in cents
-  telephonyBulkWordRate: 25, // €0.25 in cents
-  telephonyFormulaAnchor: 8900, // CHRIS-PROTOCOL: Verankerde telefonie-formule integriteit
-  wordRate: 20, // in cents (default fallback)
-  vatRate: 0.21, // 21%
-  musicSurcharge: 5900, // €59 in cents
+  basePrice: 0,
+  videoBasePrice: 0,
+  telephonyBasePrice: 0,
+  telephonySetupFee: 0,
+  telephonyWordPrice: 0,
+  telephonyWordThreshold: 25, // Thresholds blijven als logische grenzen
+  videoWordThreshold: 200,
+  videoWordRate: 0,
+  telephonyBulkThreshold: 750,
+  telephonyBulkBasePrice: 0,
+  telephonyBulkWordRate: 0,
+  telephonyFormulaAnchor: 0,
+  wordRate: 0,
+  vatRate: 0.21, // BTW is een wettelijke constante, maar kan overschreven worden
+  musicSurcharge: 0,
   radioReadySurcharge: 0,
-  liveSessionSurcharge: 5000, // €50 in cents
-  academyPrice: 19900, // €199 in cents
-  workshopPrice: 29500, // €295 in cents
-  johfraiBasicPrice: 4900, // in cents
-  johfraiProPrice: 9900, // in cents
-  johfraiStudioPrice: 19900, // in cents
-  wordsPerMinute: 155,
+  liveSessionSurcharge: 0,
+  academyPrice: 0,
+  workshopPrice: 0,
+  johfraiBasicPrice: 0,
+  johfraiProPrice: 0,
+  johfraiStudioPrice: 0,
+  wordsPerMinute: 155, // Vlaamse standaard blijft behouden
 };
 
 export interface SlimmeKassaInput {

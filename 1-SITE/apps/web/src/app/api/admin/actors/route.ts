@@ -42,7 +42,12 @@ export async function GET() {
       // 🛡️ CHRIS-PROTOCOL: Simplified SDK query to avoid join errors
       const { data, error } = await supabase
         .from('actors')
-        .select('*')
+        .select(`
+          *,
+          demos:actor_demos(*),
+          actorVideos:actor_videos(*),
+          actorLanguages:actor_languages(*)
+        `)
         .order('menu_order', { ascending: true })
         .order('first_name', { ascending: true });
         
@@ -61,7 +66,10 @@ export async function GET() {
         voiceScore: a.voice_score || 10,
         priceUnpaid: a.price_unpaid || 0,
         nativeLang: a.native_lang,
-        photo_url: a.dropbox_url
+        photo_url: a.dropbox_url,
+        demos: a.demos || [],
+        actorVideos: a.actorVideos || [],
+        actorLanguages: a.actorLanguages || []
       }));
     }
 
