@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useTranslation } from "@/contexts/TranslationContext";
+import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { Heart, Instagram, Music, Play, Youtube, ShieldCheck, Loader2, Clock, Lock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -37,7 +38,6 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
 
   const manifesto = artistData.labelManifesto || artistData.iapContext?.manifesto;
 
-  const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
   const market = MarketManager.getCurrentMarket();
   const siteUrl = MarketManager.getMarketDomains()[market.market_code] || MarketManager.getMarketDomains()['BE'];
 

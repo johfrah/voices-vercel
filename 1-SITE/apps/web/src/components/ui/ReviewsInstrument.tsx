@@ -12,7 +12,7 @@ import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import toast from "react-hot-toast";
 
 import { useTranslation } from "@/contexts/TranslationContext";
-// MarketManager is the source of truth for domains
+import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 
 /**
  * REVIEWS SKELETON (MOBY-STANDARD 2026)

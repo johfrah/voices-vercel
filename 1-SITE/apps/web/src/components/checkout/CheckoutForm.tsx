@@ -19,6 +19,7 @@ import { CheckCircle2, Loader2, Clock, User, CreditCard, FileText, Send, AlertCi
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import React, { useEffect, useState } from 'react';
 import { AcademyUpsellSection } from './AcademyUpsellSection';
 import { EmailPreviewModal } from './EmailPreviewModal';
@@ -35,7 +36,6 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const { language } = useTranslation();
   
   const market = React.useMemo(() => {
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
     return MarketManager.getCurrentMarket();
   }, []);
 
