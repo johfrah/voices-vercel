@@ -51,7 +51,7 @@ export interface YukiOutstandingInvoice {
   contactName: string;
 }
 
-export class yuki-service {
+export class YukiService {
   private static WSDL_SALES = 'https://api.yuki.be/ws/Sales.asmx?WSDL';
   private static WSDL_CONTACT = 'https://api.yuki.be/ws/Contact.asmx?WSDL';
   private static WSDL_ACCOUNTING_INFO = 'https://api.yuki.be/ws/AccountingInfo.asmx?WSDL';

@@ -1,8 +1,8 @@
 import { Twilio } from 'twilio';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
-export class twilio-service {
-  private static instance: twilio-service;
+export class TwilioService {
+  private static instance: TwilioService;
   private client: Twilio;
   private fromNumber: string;
   private myPersonalNumber: string;
@@ -20,9 +20,9 @@ export class twilio-service {
     this.client = new Twilio(accountSid, authToken);
   }
 
-  public static getInstance(): twilio-service {
+  public static getInstance(): TwilioService {
     if (!twilio-service.instance) {
-      twilio-service.instance = new twilio-service();
+      twilio-service.instance = new TwilioService();
     }
     return twilio-service.instance;
   }

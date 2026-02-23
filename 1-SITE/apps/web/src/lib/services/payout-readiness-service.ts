@@ -9,12 +9,12 @@ import { approvalQueue, orderItems, vaultFiles } from '@db/schema';
  * Alleen als de klant heeft goedgekeurd én de factuur is binnen,
  * wordt de betaling klaargezet voor Ponto.
  */
-export class payout-readiness-service {
-  private static instance: payout-readiness-service;
+export class PayoutReadinessService {
+  private static instance: PayoutReadinessService;
 
-  public static getInstance(): payout-readiness-service {
+  public static getInstance(): PayoutReadinessService {
     if (!payout-readiness-service.instance) {
-      payout-readiness-service.instance = new payout-readiness-service();
+      payout-readiness-service.instance = new PayoutReadinessService();
     }
     return payout-readiness-service.instance;
   }

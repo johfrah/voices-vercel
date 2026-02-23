@@ -7,10 +7,10 @@ import { Dropbox, DropboxAuth } from 'dropbox';
  * Inclusief automatische OAuth2 Refresh logica voor ononderbroken werking.
  * Volgens Chris-Protocol: Georganiseerd, veilig en proactief.
  */
-export class dropbox-service {
+export class DropboxService {
   private dbx: Dropbox | null = null;
   private auth: DropboxAuth;
-  private static instance: dropbox-service;
+  private static instance: DropboxService;
 
   private constructor() {
     this.auth = new DropboxAuth({
@@ -20,9 +20,9 @@ export class dropbox-service {
     });
   }
 
-  public static getInstance(): dropbox-service {
+  public static getInstance(): DropboxService {
     if (!dropbox-service.instance) {
-      dropbox-service.instance = new dropbox-service();
+      dropbox-service.instance = new DropboxService();
     }
     return dropbox-service.instance;
   }

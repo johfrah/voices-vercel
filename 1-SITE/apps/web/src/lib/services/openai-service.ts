@@ -6,9 +6,9 @@ import OpenAI from "openai";
  * Doel: Betrouwbare vertalingen en analyses via GPT-4o.
  * Wordt ingezet als Gemini rate-limits raakt of voor complexere taken.
  */
-export class openai-service {
+export class OpenAIService {
   private openai: OpenAI;
-  private static instance: openai-service;
+  private static instance: OpenAIService;
 
   constructor() {
     this.openai = new OpenAI({
@@ -16,9 +16,9 @@ export class openai-service {
     });
   }
 
-  public static getInstance(): openai-service {
+  public static getInstance(): OpenAIService {
     if (!openai-service.instance) {
-      openai-service.instance = new openai-service();
+      openai-service.instance = new OpenAIService();
     }
     return openai-service.instance;
   }

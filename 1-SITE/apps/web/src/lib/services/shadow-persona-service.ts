@@ -6,9 +6,9 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
  * 
  * Doel: Leert de schrijfstijl van de gebruiker en genereert concept-antwoorden.
  */
-export class shadow-persona-service {
+export class ShadowPersonaService {
   private openai: OpenAI;
-  private static instance: shadow-persona-service;
+  private static instance: ShadowPersonaService;
 
   constructor() {
     this.openai = new OpenAI({
@@ -16,9 +16,9 @@ export class shadow-persona-service {
     });
   }
 
-  public static getInstance(): shadow-persona-service {
+  public static getInstance(): ShadowPersonaService {
     if (!shadow-persona-service.instance) {
-      shadow-persona-service.instance = new shadow-persona-service();
+      shadow-persona-service.instance = new ShadowPersonaService();
     }
     return shadow-persona-service.instance;
   }

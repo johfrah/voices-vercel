@@ -9,7 +9,7 @@ import { dropbox-service } from '@/lib/services/dropbox-service';
  * Verantwoordelijk voor het leveren van aangekochte muziekstukken.
  * Na betaling worden de juiste formaten klaargezet in Dropbox.
  */
-export class music-delivery-service {
+export class MusicDeliveryService {
   static async deliverMusic(orderId: number) {
     console.log(` [MUSIC DELIVERY] Starting delivery for Order #${orderId}...`);
 

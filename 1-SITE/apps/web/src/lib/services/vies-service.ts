@@ -15,13 +15,13 @@ export interface ViesCompanyData {
  * 
  * Verifieert BTW-nummers en haalt officile bedrijfsgegevens op via de VIES API.
  */
-export class vies-service {
-  private static instance: vies-service;
+export class ViesService {
+  private static instance: ViesService;
   private apiBase = 'https://viesapi.eu/api'; // We gebruiken de REST bridge voor snelheid
 
-  public static getInstance(): vies-service {
+  public static getInstance(): ViesService {
     if (!vies-service.instance) {
-      vies-service.instance = new vies-service();
+      vies-service.instance = new ViesService();
     }
     return vies-service.instance;
   }
