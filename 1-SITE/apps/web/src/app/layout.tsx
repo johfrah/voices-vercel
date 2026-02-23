@@ -45,7 +45,7 @@ async function getMarketSafe(host: string) {
     //  CHRIS-PROTOCOL: Voeg een timeout toe aan de market resolution
     const marketPromise = MarketDatabaseService.getCurrentMarketAsync(host);
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Market Resolution Timeout')), 5000)
+      setTimeout(() => reject(new Error('Market Resolution Timeout')), 3000)
     );
     return await Promise.race([marketPromise, timeoutPromise]) as any;
   } catch (err) {
@@ -93,9 +93,14 @@ export async function generateMetadata(): Promise<Metadata> {
   //  CHRIS-PROTOCOL: Dynamically generate alternate languages from MarketManager (Data-Driven)
   let alternateLanguages = {};
   try {
-    alternateLanguages = await MarketDatabaseService.getAllLocalesAsync();
+    //  CHRIS-PROTOCOL: Voeg een timeout toe aan de locales fetch in metadata
+    const localesPromise = MarketDatabaseService.getAllLocalesAsync();
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Locales Timeout')), 3000)
+    );
+    alternateLanguages = await Promise.race([localesPromise, timeoutPromise]) as any;
   } catch (err) {
-    console.error(' generateMetadata: Failed to load locales:', err);
+    console.error(' generateMetadata: Failed to load locales (timeout or error):', err);
     alternateLanguages = {
       'nl-BE': 'https://www.voices.be',
       'nl-NL': 'https://www.voices.nl',
@@ -180,7 +185,7 @@ export default async function RootLayout({
     //  CHRIS-PROTOCOL: Voeg een timeout toe aan de server-side translation fetch
     const translationPromise = getTranslationsServer(lang);
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Translation Timeout')), 5000)
+      setTimeout(() => reject(new Error('Translation Timeout')), 3000)
     );
     translations = await Promise.race([translationPromise, timeoutPromise]) as any;
   } catch (err: any) {
