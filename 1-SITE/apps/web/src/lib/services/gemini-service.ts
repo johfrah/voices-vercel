@@ -10,17 +10,17 @@ import { MarketManagerServer as MarketManager } from "@/lib/system/market-manage
  * Doel: Snelle, bulk-analyse van mails op sentiment, intentie en klant-DNA.
  * Gebruikt Google Gemini 1.5 Flash voor optimale snelheid/kosten ratio.
  */
-export class gemini-service {
+export class GeminiService {
   private genAI: GoogleGenerativeAI;
-  private static instance: gemini-service;
+  private static instance: GeminiService;
 
   constructor() {
     this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
   }
 
-  public static getInstance(): gemini-service {
+  public static getInstance(): GeminiService {
     if (!gemini-service.instance) {
-      gemini-service.instance = new gemini-service();
+      gemini-service.instance = new GeminiService();
     }
     return gemini-service.instance;
   }
