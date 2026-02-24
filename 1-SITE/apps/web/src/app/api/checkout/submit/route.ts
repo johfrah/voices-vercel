@@ -386,29 +386,23 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('[Checkout FATAL]:', error);
     
-    // 🛡️ CHRIS-PROTOCOL: Report fatal error to Watchdog (v2.14.270)
+    // 🛡️ CHRIS-PROTOCOL: Direct DB Reporting for Fatal Errors (v2.14.283)
+    // We bypass fetch to ensure the error is logged even if the network/API is unstable.
     try {
-      const headersList = headers();
-      const host = headersList.get('host') || 'www.voices.be';
-      const protocol = host.includes('localhost') ? 'http' : 'https';
-      const baseUrl = `${protocol}://${host}`;
-      
-      await fetch(`${baseUrl}/api/admin/system/watchdog`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          level: 'critical',
-          source: 'CheckoutAPI',
-          error: error.message || 'Unknown Checkout Error',
+      await db.insert(systemEvents).values({
+        level: 'critical',
+        source: 'CheckoutAPI',
+        message: error.message || 'Unknown Checkout Error',
+        details: {
           stack: error.stack,
-          details: {
-            message: error.message,
-            name: error.name
-          }
-        })
+          name: error.name,
+          rawBody: rawBody ? JSON.stringify(rawBody).substring(0, 1000) : 'N/A'
+        },
+        createdAt: new Date().toISOString()
       });
-    } catch (watchdogErr) {
-      console.error('[Checkout] Failed to report to Watchdog:', watchdogErr);
+      console.log('[Checkout] Fatal error logged directly to DB.');
+    } catch (dbErr: any) {
+      console.error('[Checkout] Failed to log to DB:', dbErr.message);
     }
 
     return NextResponse.json({ error: 'Checkout failed', message: error.message }, { status: 500 });

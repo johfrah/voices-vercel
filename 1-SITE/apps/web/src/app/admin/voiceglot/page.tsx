@@ -312,7 +312,7 @@ export default function VoiceglotMasterPage() {
             </div>
           )}
           {['en', 'fr', 'de', 'es', 'pt', 'it'].map((langCode) => {
-            const langStats = stats.coverage?.find((s: any) => s.lang === langCode);
+            const langStats = stats?.coverage?.find((s: any) => s.lang === langCode);
             const count = langStats ? langStats.count : 0;
             const percentage = langStats ? langStats.percentage : 0;
             
@@ -412,9 +412,9 @@ export default function VoiceglotMasterPage() {
                           {group.context}
                         </span>
                       )}
-                      {group.sourceLang !== 'nl' && (
+                      {group.sourceLang && group.sourceLang !== 'nl' && (
                         <span className="text-[10px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter animate-pulse" title="Deze tekst lijkt niet in het Nederlands te zijn ingevoerd">
-                          Source: {group.sourceLang.toUpperCase()}
+                          Source: {String(group.sourceLang).toUpperCase()}
                         </span>
                       )}
                     </div>

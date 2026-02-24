@@ -56,14 +56,34 @@ export async function GET(request: NextRequest) {
 
     // 2. Fetch Fresh Data (Ultra-Light)
     // Totaal aantal unieke strings in de registry
-    const totalStringsResult = await db.execute(sql`SELECT count(*) as count FROM translation_registry`);
-    const totalStrings = parseInt(String(totalStringsResult[0]?.count || '0'), 10);
-    console.log('📊 [Voiceglot Stats API] Total strings (raw):', totalStrings);
+    let totalStrings = 0;
+    try {
+      const totalStringsResult = await db.execute(sql`SELECT count(*) as count FROM translation_registry`);
+      totalStrings = parseInt(String(totalStringsResult[0]?.count || '0'), 10);
+      console.log('📊 [Voiceglot Stats API] Total strings (raw):', totalStrings);
+    } catch (err: any) {
+      console.error('❌ [Voiceglot Stats API] Registry Count Error:', err.message);
+      // Fallback to simple query
+      const [fallback] = await db.select({ count: sql`count(*)` }).from(translationRegistry);
+      totalStrings = parseInt(String(fallback?.count || '0'), 10);
+    }
 
     // Aantal vertalingen per taal
-    const statsByLangResult = await db.execute(sql`SELECT lang, count(*) as count FROM translations GROUP BY lang`);
-    const statsByLang = Array.isArray(statsByLangResult) ? statsByLangResult : [];
-    console.log('📊 [Voiceglot Stats API] Stats by lang (raw):', statsByLang.length, 'languages found');
+    let statsByLang: any[] = [];
+    try {
+      const statsByLangResult = await db.execute(sql`SELECT lang, count(*) as count FROM translations GROUP BY lang`);
+      statsByLang = Array.isArray(statsByLangResult) ? statsByLangResult : [];
+      console.log('📊 [Voiceglot Stats API] Stats by lang (raw):', statsByLang.length, 'languages found');
+    } catch (err: any) {
+      console.error('❌ [Voiceglot Stats API] Translations Group Error:', err.message);
+      // Fallback to Drizzle
+      statsByLang = await db.select({
+        lang: translations.lang,
+        count: sql`count(*)`
+      })
+      .from(translations)
+      .groupBy(translations.lang);
+    }
 
     // Detect non-NL sources (Godmode Detection)
     // We doen een snelle check op de laatste 100 strings om te zien of er veel non-NL tussen zit

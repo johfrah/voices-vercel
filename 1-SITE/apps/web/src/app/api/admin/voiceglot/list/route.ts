@@ -70,8 +70,8 @@ export async function GET(request: Request) {
           }))
         };
       });
-    } catch (dbErr) {
-      console.warn(' [Voiceglot List API] Drizzle failed, falling back to SDK');
+    } catch (dbErr: any) {
+      console.warn('⚠️ [Voiceglot List API] Drizzle failed, falling back to SDK:', dbErr.message);
       const { data } = await supabase
         .from('translations')
         .select('*')
@@ -79,13 +79,18 @@ export async function GET(request: Request) {
         .range(offset, offset + limit - 1);
 
       results = (data || []).map((r: any) => ({
-        ...r,
         translationKey: r.translation_key,
         originalText: r.original_text,
-        translatedText: r.translated_text,
-        isLocked: r.is_manually_edited,
-        isManuallyEdited: r.is_manually_edited,
-        updatedAt: r.updated_at
+        context: r.context,
+        sourceLang: 'nl', // Fallback assumption
+        translations: [{
+          id: r.id,
+          lang: r.lang,
+          translatedText: r.translated_text,
+          status: r.status,
+          isLocked: r.is_manually_edited,
+          updatedAt: r.updated_at
+        }]
       }));
     }
 
