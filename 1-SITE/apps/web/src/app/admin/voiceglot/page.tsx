@@ -59,15 +59,18 @@ export default function VoiceglotMasterPage() {
   const fetchStats = async () => {
     try {
       const res = await fetch('/api/admin/voiceglot/stats');
+      const data = await res.json();
+      console.log('📊 Voiceglot Stats Received:', data);
+      
       if (res.ok) {
-        const data = await res.json();
-        console.log('📊 Voiceglot Stats Received:', data);
         setStats(data);
       } else {
-        console.error('❌ Stats API returned error:', res.status);
+        console.error('❌ Stats API Error:', data.error);
+        toast.error(`Stats Error: ${data.error}`);
       }
-    } catch (e) {
-      console.error('❌ Failed to fetch stats:', e);
+    } catch (e: any) {
+      console.error('❌ Stats Fetch Failed:', e.message);
+      toast.error(`Fetch Failed: ${e.message}`);
     }
   };
 
