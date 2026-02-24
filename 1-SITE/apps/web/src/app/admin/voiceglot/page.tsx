@@ -48,6 +48,10 @@ export default function VoiceglotMasterPage() {
   useEffect(() => {
     fetchTranslations();
     fetchStats();
+    
+    // Auto-refresh stats every 10 seconds during healing
+    const interval = setInterval(fetchStats, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const [isHealingAll, setIsHealingAll] = useState(false);
@@ -57,10 +61,13 @@ export default function VoiceglotMasterPage() {
       const res = await fetch('/api/admin/voiceglot/stats');
       if (res.ok) {
         const data = await res.json();
+        console.log('📊 Voiceglot Stats Received:', data);
         setStats(data);
+      } else {
+        console.error('❌ Stats API returned error:', res.status);
       }
     } catch (e) {
-      console.error('Failed to fetch stats');
+      console.error('❌ Failed to fetch stats:', e);
     }
   };
 
