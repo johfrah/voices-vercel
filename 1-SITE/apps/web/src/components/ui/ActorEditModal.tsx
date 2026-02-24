@@ -417,22 +417,52 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     }
   }, [isOpen, actor]);
 
-  const handlePhotoUploadSuccess = (newUrl: string, mediaId: number) => {
+  const handlePhotoUploadSuccess = async (newUrl: string, mediaId: number) => {
     setFormData({ ...formData, photo_url: newUrl, photo_id: mediaId });
     playClick('success');
 
-    //  CHRIS-PROTOCOL: Optimistic UI Update (2026)
-    // We update the VoiceCard immediately after upload, even before clicking "Opslaan"
-    // to give the user that "lightning fast" feeling.
-    window.dispatchEvent(new CustomEvent('voices:actor-updated', { 
-      detail: { 
-        actor: { 
-          ...actor, 
+    //  CHRIS-PROTOCOL: Immediate Profile Sync (2026)
+    // When a photo is uploaded, we save the profile IMMEDIATELY so the user
+    // doesn't have to click "Opslaan" separately for the photo to persist.
+    try {
+      const response = await fetch(`/api/admin/actors/${actor.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          photo_id: mediaId,
           photo_url: newUrl,
-          photoId: mediaId 
+          // 🛡️ CHRIS-PROTOCOL: Explicitly include language IDs for relational update
+          native_lang_id: formData.native_lang_id,
+          extra_lang_ids: formData.extra_lang_ids
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to auto-save photo to profile');
+      
+      const data = await response.json();
+      
+      // Update global UI
+      window.dispatchEvent(new CustomEvent('voices:actor-updated', { 
+        detail: { 
+          actor: { 
+            ...actor, 
+            photo_url: newUrl,
+            photoId: mediaId 
+          } 
         } 
-      } 
-    }));
+      }));
+
+      if (onUpdate && data.actor) {
+        onUpdate(data.actor);
+      }
+      
+      setMessage({ type: 'success', text: 'Foto geüpload en profiel direct bijgewerkt!' });
+      setTimeout(() => setMessage(null), 3000);
+    } catch (err) {
+      console.error('Auto-save failed:', err);
+      setMessage({ type: 'error', text: 'Foto geüpload, maar profiel kon niet automatisch worden bijgewerkt.' });
+    }
   };
 
   const handleDemoUpload = async (e: React.ChangeEvent<HTMLInputElement>, demoIdx: number) => {
