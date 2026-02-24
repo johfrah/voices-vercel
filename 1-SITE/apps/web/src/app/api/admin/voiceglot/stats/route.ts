@@ -26,9 +26,13 @@ export async function GET(request: NextRequest) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
 
-    // Supabase Client voor absolute betrouwbaarheid
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    
+    if (!supabaseUrl) {
+      throw new Error('NEXT_PUBLIC_SUPABASE_URL is missing');
+    }
+
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // 1. Check Cache
@@ -50,10 +54,6 @@ export async function GET(request: NextRequest) {
     try {
       console.log('[Voiceglot Stats] Fetching total count from registry...');
       // CHRIS-PROTOCOL: Use Supabase SDK for stats to bypass driver mapping issues
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
       const { count: totalCount, error: totalErr } = await supabase
         .from('translation_registry')
         .select('*', { count: 'exact', head: true });

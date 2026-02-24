@@ -60,12 +60,16 @@ export default async function StudioAdminPage() {
     if (error) {
       console.error(' [StudioAdmin] SDK Error (Editions):', error.message);
       // 🛡️ CHRIS-PROTOCOL: Report to Watchdog
-      const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
-      await ServerWatchdog.report({
-        error: `Studio Admin SDK Error: ${error.message}`,
-        component: 'StudioAdminPage',
-        level: 'error'
-      });
+      try {
+        const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
+        await ServerWatchdog.report({
+          error: `Studio Admin SDK Error: ${error.message}`,
+          component: 'StudioAdminPage',
+          level: 'error'
+        });
+      } catch (watchdogErr) {
+        console.error('Failed to report to watchdog:', watchdogErr);
+      }
     }
 
     if (editions) {
