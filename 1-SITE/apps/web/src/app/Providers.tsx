@@ -33,7 +33,7 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.14.401';
+  const currentVersion = '2.14.402';
   
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
   React.useEffect(() => {
@@ -50,29 +50,29 @@ export function Providers({
   return (
     <WatchdogProvider>
       <AuthProvider>
-        <VoicesMasterControlProvider initialJourney={initialJourney} initialUsage={initialUsage}>
-          <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
-            <VersionGuard currentVersion={currentVersion} />
-            <Toaster 
-              position="top-center" 
-              reverseOrder={false} 
-              containerStyle={{
-                top: '40%',
-              }}
-            />
-            <EditModeProvider>
-              <VoicesStateProvider>
-                <GlobalAudioProvider>
-                  <CheckoutProvider>
+        <VoicesStateProvider>
+          <CheckoutProvider>
+            <VoicesMasterControlProvider initialJourney={initialJourney} initialUsage={initialUsage}>
+              <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
+                <VersionGuard currentVersion={currentVersion} />
+                <Toaster 
+                  position="top-center" 
+                  reverseOrder={false} 
+                  containerStyle={{
+                    top: '40%',
+                  }}
+                />
+                <EditModeProvider>
+                  <GlobalAudioProvider>
                     <NotificationProvider>
                       {children}
                     </NotificationProvider>
-                  </CheckoutProvider>
-                </GlobalAudioProvider>
-              </VoicesStateProvider>
-            </EditModeProvider>
-          </TranslationProvider>
-        </VoicesMasterControlProvider>
+                  </GlobalAudioProvider>
+                </EditModeProvider>
+              </TranslationProvider>
+            </VoicesMasterControlProvider>
+          </CheckoutProvider>
+        </VoicesStateProvider>
       </AuthProvider>
     </WatchdogProvider>
   );
