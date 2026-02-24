@@ -31,7 +31,7 @@ const ReviewsInstrument = nextDynamic(() => import("@/components/ui/ReviewsInstr
  */
 export default function CheckoutPageClient() {
   const { t } = useTranslation();
-  const { state, setJourney } = useCheckout();
+  const { state, setJourney, isHydrated } = useCheckout();
   const [reviews, setReviews] = React.useState<any[]>([]);
   const [reviewStats, setReviewStats] = React.useState<{ averageRating: number, totalCount: number } | null>(null);
   const [isReviewsLoading, setIsReviewsLoading] = React.useState(true);
@@ -73,7 +73,7 @@ export default function CheckoutPageClient() {
     fetchReviews();
   }, [searchParams, setJourney]);
 
-  if (isLoading) return <LoadingScreenInstrument />;
+  if (!isHydrated) return <LoadingScreenInstrument />;
 
   if (state.items.length === 0) {
     return (

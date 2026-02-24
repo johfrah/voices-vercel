@@ -30,10 +30,14 @@ export const PricingSummary: React.FC<{
   onlyTotals?: boolean;
   className?: string;
 }> = ({ onlyItems, onlyTotals, className }) => {
-  const { state, subtotal, cartHash, removeItem, restoreItem, isVatExempt, updateCustomer, updateIsSubmitting, updateAgreedToTerms } = useCheckout();
+  const { state, subtotal, cartHash, removeItem, restoreItem, isVatExempt, updateCustomer, updateIsSubmitting, updateAgreedToTerms, isHydrated } = useCheckout();
   const { updateStep } = useMasterControl();
   const { playClick } = useSonicDNA();
   const { t } = useTranslation();
+  
+  // CHRIS-PROTOCOL: Hydration Guard to prevent Error #419
+  if (!isHydrated) return null;
+
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
   const [couponCode, setCouponCode] = useState('');

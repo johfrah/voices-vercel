@@ -128,6 +128,7 @@ interface CheckoutContextType {
   isVatExempt: boolean;
   subtotal: number;
   cartHash: string;
+  isHydrated: boolean;
 }
 
 const initialState: CheckoutState = {
@@ -689,7 +690,8 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       unlockPrice,
       isVatExempt,
       subtotal,
-      cartHash
+      cartHash,
+      isHydrated
     }}>
       <div className="hidden"><CheckCircle2 strokeWidth={1.5} /></div>
       {children}

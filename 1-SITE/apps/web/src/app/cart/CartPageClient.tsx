@@ -30,10 +30,11 @@ const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgro
  */
 export default function CartPageClient() {
   const { t } = useTranslation();
-  const { state, subtotal } = useCheckout();
+  const { state, subtotal, isHydrated } = useCheckout();
   const [reviewStats, setReviewStats] = React.useState<{ averageRating: number, totalCount: number } | null>(null);
 
   useEffect(() => {
+    if (!isHydrated) return;
     const fetchStats = async () => {
       try {
         const res = await fetch('/api/actors');
@@ -43,6 +44,8 @@ export default function CartPageClient() {
     };
     fetchStats();
   }, []);
+
+  if (!isHydrated) return <LoadingScreenInstrument />;
 
   if (state.items.length === 0) {
     return (
