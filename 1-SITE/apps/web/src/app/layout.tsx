@@ -156,9 +156,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+  params
+}: {
   children: React.ReactNode;
-}>) {
+  params: { slug?: string[] };
+}) {
   const headersList = headers();
   const domains = MarketManagerServer.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
@@ -171,6 +173,21 @@ export default async function RootLayout({
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
   const market = await getMarketSafe(lookupHost);
+  
+  // 🛡️ CHRIS-PROTOCOL: Journey Detection for Provider Injection
+  // We extract the journey from the URL segments to prevent Hydration Mismatch (#419)
+  const segments = params.slug || pathname.split('/').filter(Boolean);
+  const journeySegment = segments[1]?.toLowerCase();
+  const journeyMap: Record<string, any> = {
+    'telefoon': 'telephony',
+    'telefooncentrale': 'telephony',
+    'telephony': 'telephony',
+    'video': 'video',
+    'commercial': 'commercial',
+    'reclame': 'commercial'
+  };
+  const initialJourney = journeySegment ? journeyMap[journeySegment] : undefined;
+  const initialUsage = initialJourney ? (initialJourney === 'telephony' ? 'telefonie' : (initialJourney === 'commercial' ? 'commercial' : 'unpaid')) : undefined;
   
   // 🛡️ VISIONARY MANDATE: Journey logic exclusively from market data
   const isSpecialJourney = ['ADEMING', 'PORTFOLIO', 'ARTIST'].includes(market.market_code);
@@ -247,7 +264,7 @@ export default async function RootLayout({
     return (
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
       <body className={bodyClass}>
-        <Providers lang={lang} market={market} initialTranslations={translations}>
+        <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
           <SonicDNAHandler />
           <PageWrapperInstrument>
             {children}
@@ -265,7 +282,7 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Providers lang={lang} market={market} initialTranslations={translations}>
+        <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
           <PageWrapperInstrument>
             <Suspense fallback={<LoadingScreenInstrument />}>
               {children}

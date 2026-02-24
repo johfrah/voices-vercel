@@ -62,7 +62,11 @@ export const useMasterControl = () => {
   return context;
 };
 
-export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const VoicesMasterControlProvider: React.FC<{ 
+  children: React.ReactNode,
+  initialJourney?: JourneyType,
+  initialUsage?: UsageType
+}> = ({ children, initialJourney, initialUsage }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -70,8 +74,8 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
   const { state: checkoutState, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateBriefing, setStep: setCheckoutStep } = useCheckout();
 
   const [state, setState] = useState<MasterControlState>({
-    journey: 'video',
-    usage: 'unpaid',
+    journey: initialJourney || 'video',
+    usage: initialUsage || 'unpaid',
     isMuted: false,
     filters: {
       language: 'nl-be',
@@ -79,7 +83,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       gender: null,
       style: null,
       sortBy: 'popularity',
-      words: 200,
+      words: (initialJourney === 'telephony' ? 25 : (initialJourney === 'commercial' ? 100 : 200)),
       media: ['online'],
       countries: ['BE'],
       country: 'BE',
@@ -105,7 +109,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       if (saved) savedState = JSON.parse(saved);
     } catch (e) {}
 
-    const journey = (searchParams?.get('journey') as JourneyType) || 
+    const journey = initialJourney || (searchParams?.get('journey') as JourneyType) || 
                    (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
     
     const initialLanguageParam = searchParams?.get('language');

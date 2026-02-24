@@ -20,15 +20,19 @@ export function Providers({
   children,
   lang,
   market,
-  initialTranslations = {}
+  initialTranslations = {},
+  initialJourney,
+  initialUsage
 }: { 
   children: ReactNode; 
   lang: string; 
   market: MarketConfig;
   initialTranslations?: Record<string, string>;
+  initialJourney?: any;
+  initialUsage?: any;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.14.229';
+  const currentVersion = '2.14.230';
   
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
   React.useEffect(() => {
@@ -52,7 +56,7 @@ export function Providers({
               <GlobalAudioProvider>
                 <CheckoutProvider>
                   <NotificationProvider>
-                    <VoicesMasterControlProvider>
+                    <VoicesMasterControlProvider initialJourney={initialJourney} initialUsage={initialUsage}>
                       {children}
                     </VoicesMasterControlProvider>
                   </NotificationProvider>
