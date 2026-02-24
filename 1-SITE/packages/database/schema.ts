@@ -557,6 +557,7 @@ export const utmTouchpoints = pgTable("utm_touchpoints", {
 	isLastTouch: boolean("is_last_touch").default(false),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
+	uniqueIndex("utm_touchpoints_user_id_idx").on(table.userId),
 	foreignKey({
 			columns: [table.orderId],
 			foreignColumns: [orders.id],
@@ -964,6 +965,7 @@ export const orders = pgTable("orders", {
 	quoteMessage: text("quote_message"),
 	quoteSentAt: timestamp("quote_sent_at", { mode: 'string' }),
 }, (table) => [
+	uniqueIndex("orders_user_id_idx").on(table.userId),
 	foreignKey({
 			columns: [table.userId],
 			foreignColumns: [users.id],
