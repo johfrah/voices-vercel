@@ -303,7 +303,7 @@ export default function VoiceglotMasterPage() {
       </SectionInstrument>
 
       {/* Stats & Progress Indicators */}
-      {stats && (
+      {stats && stats.coverage ? (
         <div className="grid grid-cols-1 md:grid-cols-6 gap-6 relative">
           {stats.isCached && (
             <div className="absolute -top-6 right-0 flex items-center gap-1.5 text-[10px] font-bold text-va-black/20 uppercase tracking-widest animate-pulse">
@@ -312,7 +312,7 @@ export default function VoiceglotMasterPage() {
             </div>
           )}
           {['en', 'fr', 'de', 'es', 'pt', 'it'].map((langCode) => {
-            const langStats = stats?.coverage?.find((s: any) => s.lang === langCode);
+            const langStats = stats.coverage.find((s: any) => s.lang === langCode);
             const count = langStats ? langStats.count : 0;
             const percentage = langStats ? langStats.percentage : 0;
             
@@ -338,7 +338,15 @@ export default function VoiceglotMasterPage() {
             );
           })}
         </div>
-      )}
+      ) : stats?.error ? (
+        <div className="bg-red-50 border border-red-100 p-6 rounded-[24px] flex items-center gap-4 text-red-600">
+          <AlertCircle size={24} />
+          <div>
+            <div className="text-[13px] font-bold uppercase tracking-widest">Stats Error</div>
+            <div className="text-[15px] font-medium">{stats.error}</div>
+          </div>
+        </div>
+      ) : null}
 
       {/* Filters */}
       <ContainerInstrument className="flex gap-4 items-center bg-white p-6 rounded-[24px] shadow-aura border border-black/5">
