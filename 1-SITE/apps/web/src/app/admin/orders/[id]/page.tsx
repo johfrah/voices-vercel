@@ -79,7 +79,7 @@ export default function OrderDetailPage() {
       const res = await fetch(`/api/admin/orders`); 
       if (res.ok) {
         const data = await res.json();
-        const found = data.find((o: any) => o.id.toString() === id);
+        const found = data.find((o: any) => o.id?.toString() === id);
         
         // 🎙️ DELIVERY TIME LOGIC (Anti-Hallucinatie)
         // We verrijken de order data met de specifieke delivery van de acteur indien beschikbaar
@@ -208,8 +208,8 @@ export default function OrderDetailPage() {
                       {order.status === 'quote-pending' && <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[11px] font-medium tracking-widest uppercase">Offerte</span>}
                     </div>
                   </div>
-                  <TextInstrument className="text-va-black/40 font-light tracking-tight">
-                    Geplaatst op {format(new Date(order.createdAt), 'PPPP', { locale: nl })}
+                  <TextInstrument className="text-va-black/40 font-light tracking-tight" suppressHydrationWarning>
+                    Geplaatst op {order.createdAt ? format(new Date(order.createdAt), 'PPPP', { locale: nl }) : '...'}
                   </TextInstrument>
                 </div>
                   <div className="text-right">

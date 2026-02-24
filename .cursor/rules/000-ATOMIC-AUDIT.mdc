@@ -8,7 +8,9 @@ Vóór het schrijven van ook maar één regel code, MOET de agent de volgende st
 
 1. **FORENSIC ROOT-CAUSE ANALYSIS**: 
  - Doe een diepe scan naar de bron van het probleem (Database, API-payload, of Frontend State).
- - **Proactive Diagnostic Ownership**: Wacht NOOIT op logs van de USER. Gebruik de zelf-gecreëerde Watchdog (`system_events`) en Browser-agent om de bron te vinden. Jij bent de architect én de inspecteur.
+  - **Proactive Diagnostic Ownership**: Wacht NOOIT op logs van de USER. Gebruik de zelf-gecreëerde Watchdog (`system_events`) en Browser-agent om de bron te vinden. Jij bent de architect én de inspecteur.
+ - **SDK-Direct Mandate**: Bij het gebruik van de directe Supabase SDK (buiten Drizzle om), MOET de agent eerst de rauwe kolomnamen verifiëren (`select * limit 1`). Vertrouwen op camelCase-mapping is verboden.
+ - **Large Payload Policy**: Voor velden met onvoorspelbare lengte (briefings, scripts), MOET de "Atomic Split" architectuur worden overwogen: eerst de kern-record, dan de metadata-verrijking.
  - Gebruik `browser-use` of rauwe SQL om de "Source of Truth" te verifiëren. Gissen is verboden.
 2. **THE TRINITY OF VALIDATION**:
  - Elke fix moet gevalideerd worden op drie niveaus:

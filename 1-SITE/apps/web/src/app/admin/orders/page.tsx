@@ -82,11 +82,16 @@ export default function BestellingenPage() {
   }, [fetchOrders]);
 
   const filteredOrders = orders.filter(order => {
+    if (!order) return false;
+    const searchLower = (search || '').toLowerCase();
+    
     const matchesSearch = 
-      (order.displayOrderId?.toLowerCase().includes(search.toLowerCase())) ||
-      (order.wpOrderId.toString().includes(search)) ||
-      (order.user?.email.toLowerCase().includes(search.toLowerCase())) ||
-      (order.user?.companyName?.toLowerCase().includes(search.toLowerCase()));
+      (order.displayOrderId?.toLowerCase().includes(searchLower) ?? false) ||
+      (order.wpOrderId?.toString().includes(searchLower) ?? false) ||
+      (order.user?.email?.toLowerCase().includes(searchLower) ?? false) ||
+      (order.user?.companyName?.toLowerCase().includes(searchLower) ?? false) ||
+      (order.user?.firstName?.toLowerCase().includes(searchLower) ?? false) ||
+      (order.user?.lastName?.toLowerCase().includes(searchLower) ?? false);
     
     const matchesFilter = filter === 'all' || order.status === filter;
     
@@ -197,8 +202,8 @@ export default function BestellingenPage() {
                     </div>
                   </td>
                   <td className="px-8 py-6">
-                    <span className="text-[14px] font-light text-va-black/60">
-                      {format(new Date(order.createdAt), 'dd MMM yyyy', { locale: nl })}
+                    <span className="text-[14px] font-light text-va-black/60" suppressHydrationWarning>
+                      {order.createdAt ? format(new Date(order.createdAt), 'dd MMM yyyy', { locale: nl }) : '...'}
                     </span>
                   </td>
                   <td className="px-8 py-6">

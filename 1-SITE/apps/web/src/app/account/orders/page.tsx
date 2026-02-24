@@ -29,7 +29,8 @@ export default function OrdersPage() {
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
-      fetch(`/api/intelligence/customer-360?email=${user.email}`)
+      const forceRefresh = !!highlightedOrderId;
+      fetch(`/api/intelligence/customer-360?email=${user.email}${forceRefresh ? '&forceRefresh=true' : ''}`)
         .then(res => res.json())
         .then(data => {
           setOrdersList(data.orders || []);
@@ -40,7 +41,7 @@ export default function OrdersPage() {
           setIsLoading(false);
         });
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, highlightedOrderId]);
 
   useEffect(() => {
     if (highlightedOrderId && ordersList.length > 0) {

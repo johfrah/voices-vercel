@@ -59,23 +59,24 @@ export async function GET(request: NextRequest) {
   const isAdmin = await checkIsAdmin(user?.email);
 
   const { searchParams } = new URL(request.url);
-  const email = searchParams.get('email');
-  const userId = searchParams.get('userId');
+    const email = searchParams.get('email');
+    const userId = searchParams.get('userId');
+    const forceRefresh = searchParams.get('forceRefresh') === 'true';
 
-  if (!email && !userId) {
-    return NextResponse.json({ error: 'Email or userId required' }, { status: 400 });
-  }
+    if (!email && !userId) {
+      return NextResponse.json({ error: 'Email or userId required' }, { status: 400 });
+    }
 
-  // Admin mag alles; anders alleen eigen data
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  if (!isAdmin && email && email !== user.email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  if (!isAdmin && userId && String(user.id) !== userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+    // Admin mag alles; anders alleen eigen data
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!isAdmin && email && email !== user.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!isAdmin && userId && String(user.id) !== userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     try {
     const identifier = userId ? parseInt(userId) : email!;
@@ -83,16 +84,19 @@ export async function GET(request: NextRequest) {
     // 🛡️ CHRIS-PROTOCOL: Nuclear Caching Layer (SWR)
     // We cachen de 360 data voor 5 minuten om 504 timeouts te voorkomen.
     const cacheKey = `customer_360_${identifier}`;
-    const { data: cachedData } = await sdkClient
-      .from('app_configs')
-      .select('value')
-      .eq('key', cacheKey)
-      .single();
+    
+    if (!forceRefresh) {
+      const { data: cachedData } = await sdkClient
+        .from('app_configs')
+        .select('value')
+        .eq('key', cacheKey)
+        .single();
 
-    if (cachedData && (Date.now() - new Date((cachedData.value as any).timestamp).getTime() < 300000)) {
-      return NextResponse.json((cachedData.value as any).data, {
-        headers: { 'X-Cache': 'HIT' }
-      });
+      if (cachedData && (Date.now() - new Date((cachedData.value as any).timestamp).getTime() < 300000)) {
+        return NextResponse.json((cachedData.value as any).data, {
+          headers: { 'X-Cache': 'HIT' }
+        });
+      }
     }
 
     //  CHRIS-PROTOCOL: Voeg een timeout toe om 504 Gateway Timeouts te voorkomen

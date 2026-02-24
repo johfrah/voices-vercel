@@ -115,16 +115,18 @@ export class UCIService {
       try {
         const [ordersResult, utmResult] = await Promise.all([
           // Orders query - Optimized with index-ready userId filter
-          db
-            .select()
-            .from(orders)
-            .where(eq(orders.userId, user.id))
-            .orderBy(desc(orders.createdAt))
-            .limit(50)
+          db.query.orders.findMany({
+            where: eq(orders.userId, user.id),
+            with: {
+              items: true
+            },
+            orderBy: [desc(orders.createdAt)],
+            limit: 50
+          })
             .catch(async (err) => {
               console.warn(' UCI Order stats Drizzle failed, falling back to SDK:', err.message);
               const { data } = await supabase.from('orders').select('*, order_items(*)').eq('user_id', user.id).order('created_at', { ascending: false });
-              return data || [];
+              return (data || []).map(o => ({ ...o, items: o.order_items }));
             }),
           // UTM query - Optimized with index-ready userId filter
           db
@@ -140,7 +142,10 @@ export class UCIService {
             })
         ]);
 
-        ordersList = ordersResult;
+        ordersList = ordersResult.map((o: any) => ({
+          ...o,
+          orderItems: o.items // Map 'items' from Drizzle to 'orderItems' for frontend
+        }));
         touchpoints = utmResult;
 
         totalSpent = ordersList.reduce((acc, o) => acc + Number(o.total || 0), 0);
