@@ -291,7 +291,9 @@ export async function POST(request: Request) {
     // 🛡️ CHRIS-PROTOCOL: Unieke WP Order ID op basis van timestamp om collisions te voorkomen (v2.14.290)
     const uniqueWpId = Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 1000);
 
-    const [newOrder] = await db.insert(orders).values({
+    console.log('[Checkout] 🚀 STEP 6.0: Preparing order insert payload...');
+    
+    const orderPayload: any = {
       wpOrderId: uniqueWpId,
       total: amount.toString(),
       status: isQuote ? 'quote-pending' : 'pending',
@@ -300,8 +302,7 @@ export async function POST(request: Request) {
       billingVatNumber: vat_number || null,
       isQuote: !!isQuote,
       quoteMessage: quoteMessage || null,
-      quoteSentAt: isQuote ? new Date().toISOString() : null,
-      market: market, // 🛡️ Fix: Expliciete market injectie
+      market: market,
       rawMeta: {
         usage,
         plan,
@@ -311,8 +312,15 @@ export async function POST(request: Request) {
         serverCalculated: true
       },
       ipAddress: ip
-      // 🛡️ CHRIS-PROTOCOL: createdAt has defaultNow(), don't set manually (v2.14.296)
-    } as any).returning();
+    };
+
+    // 🛡️ CHRIS-PROTOCOL: Only add quoteSentAt if it's a quote, and use a DATE object (v2.14.298)
+    if (isQuote) {
+      orderPayload.quoteSentAt = new Date();
+    }
+    
+    console.log('[Checkout] 🚀 STEP 6.1: Inserting order into database...');
+    const [newOrder] = await db.insert(orders).values(orderPayload).returning();
 
     console.log('[Checkout] ✅ STEP 6.2: Order created in DB:', { id: newOrder?.id });
 

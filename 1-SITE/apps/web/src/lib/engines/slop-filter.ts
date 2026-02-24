@@ -48,8 +48,13 @@ export class SlopFilter {
       }
     }
 
-    // 3. Lengte Check
-    // Een vertaling is zelden 3x zo lang als het origineel
+    // 3. Lengte Check (Expansion Slop)
+    // Een vertaling is zelden 3x zo lang als het origineel voor korte strings.
+    // Bijv: 'Voices.be' -> 'Voices.be: Home to exceptional voice talent...' is slop.
+    if (sourceText.length < 15 && text.length > 30 && !sourceText.includes('...')) {
+      return true;
+    }
+
     if (text.length > sourceText.length * 4 && text.length > 100) {
       return true;
     }

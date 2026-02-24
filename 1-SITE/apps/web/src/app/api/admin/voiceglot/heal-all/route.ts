@@ -166,6 +166,8 @@ export async function POST(request: NextRequest) {
             STRICT OUTPUT RULES:
             - Antwoord UITSLUITEND met de vertaalde tekst.
             - Vertaal NOOIT merknamen (Voices, Studio, Academy, Artist) of technische bestandsnamen.
+            - MINIMALIST MANDATE: Als de brontekst een enkel woord, eigennaam of merknaam is, moet de vertaling ook een enkel woord of de ongewijzigde naam zijn.
+            - NO EXPANSION: Breid korte UI-labels NOOIT uit naar volledige zinnen of marketing-slogans.
             - Geen inleiding zoals "De vertaling is:".
             - Geen herhaling van de brontekst.
             - Geen aanhalingstekens rond de vertaling.
