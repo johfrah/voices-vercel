@@ -77,9 +77,10 @@ ${prompt}
       }
       
       //  CHRIS-PROTOCOL: Voeg een timeout toe aan de Gemini call (Next.js Edge compatibel)
+      //  GEMINI 2026: Timeout verhoogd naar 45s voor zware bulk-taken
       const result = await Promise.race([
         model.generateContent(options?.jsonMode ? `${finalPrompt}\n\nANTWOORD UITSLUITEND IN STRIKT JSON FORMAAT.` : finalPrompt),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Gemini Timeout')), 25000))
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Gemini Timeout')), 45000))
       ]) as any;
 
       const text = result.response.text();

@@ -340,14 +340,12 @@ export const PricingSummary: React.FC<{
       {/* ITEM DETAIL MODAL */}
       <AnimatePresence>
         {selectedItem && (
-          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedItem(null)}
-              className="absolute inset-0 bg-va-black/95 backdrop-blur-xl"
-            />
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-va-black/95 backdrop-blur-xl"
+          >
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -359,8 +357,8 @@ export const PricingSummary: React.FC<{
                   <div className="flex items-center gap-6">
                     <div className="w-24 h-24 rounded-[32px] overflow-hidden border border-va-black/5 shadow-md shrink-0 relative bg-va-off-white">
                       <Image 
-                        src={selectedItem.actor?.photo_url || '/mic-placeholder.png'} 
-                        alt={selectedItem.actor?.display_name} 
+                        src={selectedItem.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice} 
+                        alt={selectedItem.actor?.display_name || 'Item'} 
                         fill
                         sizes="96px"
                         className="object-cover"
@@ -368,7 +366,7 @@ export const PricingSummary: React.FC<{
                     </div>
                     <div className="space-y-1.5">
                       <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-va-black">
-                        {selectedItem.actor?.display_name}
+                        {selectedItem.actor?.display_name || selectedItem.name}
                       </HeadingInstrument>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold tracking-[0.1em] uppercase text-va-black/40">
                         <span>{usageLabels[selectedItem.usage] || selectedItem.usage}</span>
@@ -473,7 +471,7 @@ export const PricingSummary: React.FC<{
                 </button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 

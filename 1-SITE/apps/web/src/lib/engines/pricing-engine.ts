@@ -353,6 +353,7 @@ export class SlimmeKassa {
       // CHRIS-PROTOCOL: JSON-first waterfall for Telephony base price
       const jsonPrice = countryRates.ivr || globalRates.ivr;
       const telephonyBaseCents = jsonPrice ? this.toCents(jsonPrice) : (activeConfig.telephonyBasePrice || this.toCents(89) || 0);
+      const telephonyFormulaAnchor = 8900; // CHRIS-PROTOCOL: Anchor for watchdog integrity
       
       if (telephonyBaseCents === 0 && input.usage === 'telefonie') {
         // console.warn(`[SlimmeKassa] No Telephony base price found in config. Calculation blocked.`);

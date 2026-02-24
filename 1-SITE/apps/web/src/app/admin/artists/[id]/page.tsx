@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   PageWrapperInstrument, 
   SectionInstrument, 
@@ -41,6 +41,8 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
   const [saving, setSaving] = useState(false);
   const [artist, setArtist] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'general' | 'music' | 'gallery' | 'streaming'>('general');
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchArtist = useCallback(async () => {
     setLoading(true);
@@ -115,6 +117,54 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/admin/actors/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success('Foto succesvol geüpload');
+        
+        // Update de artist state met de nieuwe foto in de gallery
+        const newPhoto = {
+          url: data.url,
+          mediaId: data.mediaId,
+          path: data.path
+        };
+
+        setArtist({
+          ...artist,
+          portfolioPhotos: [...(artist.portfolioPhotos || []), newPhoto]
+        });
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast.error(`Upload mislukt: ${error.message}`);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    const newPhotos = [...(artist.portfolioPhotos || [])];
+    newPhotos.splice(index, 1);
+    setArtist({ ...artist, portfolioPhotos: newPhotos });
   };
 
   if (authLoading || !isAdmin || !artist) {
@@ -291,10 +341,25 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
             <div className="space-y-8">
               <div className="flex justify-between items-center mb-4">
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">Visual Journey</HeadingInstrument>
-                <ButtonInstrument className="!bg-primary/10 !text-primary !rounded-full !px-6 !py-2.5 flex items-center gap-2 hover:!bg-primary hover:!text-white transition-all">
-                  <Plus size={14} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Foto uploaden</span>
-                </ButtonInstrument>
+                <div className="flex items-center gap-4">
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileUpload} 
+                    className="hidden" 
+                    accept="image/*"
+                  />
+                  <ButtonInstrument 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="!bg-primary/10 !text-primary !rounded-full !px-6 !py-2.5 flex items-center gap-2 hover:!bg-primary hover:!text-white transition-all"
+                  >
+                    {uploading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                    <span className="text-[10px] font-black uppercase tracking-widest">
+                      {uploading ? 'Uploaden...' : 'Foto uploaden'}
+                    </span>
+                  </ButtonInstrument>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
@@ -308,7 +373,12 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-va-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                        <button className="w-10 h-10 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-110 transition-transform shadow-lg"><Trash2 size={16} /></button>
+                        <button 
+                          onClick={() => removePhoto(i)}
+                          className="w-10 h-10 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
                     </div>
                   ))
