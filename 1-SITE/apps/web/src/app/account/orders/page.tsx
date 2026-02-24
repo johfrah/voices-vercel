@@ -1,13 +1,13 @@
 "use client";
 
 import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
-import { ButtonInstrument, ContainerInstrument, HeadingInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument, LoadingScreenInstrument } from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument, LoadingScreenInstrument, LabelInstrument } from '@/components/ui/LayoutInstruments';
 import { SpatialOrderTrackerInstrument } from '@/components/ui/SpatialOrderTrackerInstrument';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ExternalLink, FileText, Package, ShoppingBag, Zap } from 'lucide-react';
+import { ArrowLeft, ExternalLink, FileText, Package, ShoppingBag, Zap, Mic, Calendar, Clock, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -26,6 +26,11 @@ export default function OrdersPage() {
   const highlightedOrderId = searchParams?.get('orderId');
   const [ordersList, setOrdersList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [expandedOrders, setExpandedOrders] = useState<Record<number, boolean>>({});
+
+  const toggleExpand = (id: number) => {
+    setExpandedOrders(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
@@ -35,6 +40,10 @@ export default function OrdersPage() {
         .then(data => {
           setOrdersList(data.orders || []);
           setIsLoading(false);
+          // Auto-expand highlighted order
+          if (highlightedOrderId) {
+            setExpandedOrders(prev => ({ ...prev, [parseInt(highlightedOrderId)]: true }));
+          }
         })
         .catch(err => {
           console.error('Orders Fetch Error:', err);
