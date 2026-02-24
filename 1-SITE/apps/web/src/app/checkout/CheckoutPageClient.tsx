@@ -15,7 +15,7 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 
-import { Check, ChevronRight, Loader2, Star } from 'lucide-react';
+import { Check, ChevronRight, Loader2, Star, Edit2 } from 'lucide-react';
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';

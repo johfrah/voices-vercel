@@ -265,10 +265,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               ...m,
               image: {
                 ...m.image,
-                size2x: m.id === 'bancontact' ? '/assets/common/branding/payment/bancontact.svg' : 
-                        m.id === 'ideal' ? '/assets/common/branding/payment/mollie.svg' : 
-                        m.id === 'creditcard' ? '/assets/common/branding/payment/visa.svg' :
-                        m.image.size2x
+                size2x: m.image?.size2x || m.image?.size1x || '/assets/common/branding/payment/mollie.svg'
               }
             })),
             { 
