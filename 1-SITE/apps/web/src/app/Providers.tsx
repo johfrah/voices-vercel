@@ -14,6 +14,7 @@ import { usePathname } from 'next/navigation';
 import { ClientLogger } from '@/lib/system/client-logger';
 
 import { MarketConfig } from '@/lib/system/market-manager-server';
+import { VersionGuard } from '@/components/system/VersionGuard';
 
 export function Providers({ 
   children,
@@ -22,16 +23,17 @@ export function Providers({
   initialTranslations = {}
 }: { 
   children: ReactNode; 
-  lang: string;
+  lang: string; 
   market: MarketConfig;
   initialTranslations?: Record<string, string>;
 }) {
   const pathname = usePathname();
+  const currentVersion = '2.14.200';
   
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
-      React.useEffect(() => {
+  React.useEffect(() => {
     ClientLogger.init();
-    console.log('🚀 [Voices] Nuclear Version: v2.14.195 (Godmode Zero)');
+    console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);
   }, []);
   
   //  CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
@@ -44,6 +46,7 @@ export function Providers({
     <WatchdogProvider>
       <AuthProvider>
         <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
+          <VersionGuard currentVersion={currentVersion} />
           <EditModeProvider>
             <VoicesStateProvider>
               <GlobalAudioProvider>

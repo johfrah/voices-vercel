@@ -66,10 +66,16 @@ export async function GET(request: NextRequest) {
     if (type === 'general') {
       try {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1));
-        return NextResponse.json({ general_settings: config[0]?.value || {} });
+        return NextResponse.json({ 
+          general_settings: config[0]?.value || {},
+          _version: process.env.NEXT_PUBLIC_APP_VERSION || '2.14.200'
+        });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
-        return NextResponse.json({ general_settings: {} });
+        return NextResponse.json({ 
+          general_settings: {},
+          _version: process.env.NEXT_PUBLIC_APP_VERSION || '2.14.200'
+        });
       }
     }
 
