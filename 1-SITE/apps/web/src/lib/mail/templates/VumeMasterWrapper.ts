@@ -92,48 +92,48 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     </table>
   `;
 
-  return \`
+  return `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" lang="nl">
     <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>\${title}</title>
+      <title>${title}</title>
     </head>
     <body style="margin: 0; padding: 0; background-color: #FAFAFA; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
-      \${previewText ? \`<div style="display:none; max-height:0px; max-width:0px; opacity:0; overflow:hidden;">\${previewText}</div>\` : ''}
+      ${previewText ? `<div style="display:none; max-height:0px; max-width:0px; opacity:0; overflow:hidden;">${previewText}</div>` : ''}
       
       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #FAFAFA; padding-bottom: 60px;">
         <tr>
           <td align="center" style="padding: 40px 20px;">
             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
               <!-- LOGO ABOVE CARD -->
-              \${logoHtml}
+              ${logoHtml}
               
               <tr>
                 <td style="background-color: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.04);">
                   <table border="0" cellpadding="0" cellspacing="0" width="100%">
                     <!-- DYNAMIC HEADER (IMAGE OR BANNER) -->
-                    \${headerHtml}
+                    ${headerHtml}
 
                     <!-- CONTENT -->
                     <tr>
                       <td style="padding: 50px; color: #333333; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; font-weight: 400;">
-                        \${processedContent}
-                        \${signatureHtml}
+                        ${processedContent}
+                        ${signatureHtml}
                       </td>
                     </tr>
                   </table>
                 </td>
               </tr>
-              \${footerHtml}
+              ${footerHtml}
             </table>
           </td>
         </tr>
       </table>
     </body>
     </html>
-  \`;
+  `;
 }
 
 export type BaseTemplateProps = {

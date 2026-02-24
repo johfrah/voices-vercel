@@ -340,7 +340,7 @@ export default function GlobalNav() {
           // Fallback naar defaults als er geen database config is
           const defaultLinks = [
             { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
-            { name: 'Gratis Proefopname', href: '/agency/gratis-proefopname/', key: 'nav.free_demo' },
+            { name: 'Gratis Proefopname', href: '/gratis-proefopname/', key: 'nav.free_demo' },
             { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
             { name: 'Contact', href: '/contact/', key: 'nav.contact' }
           ];
@@ -351,7 +351,7 @@ export default function GlobalNav() {
         // Fallback bij error
         const defaultLinks = [
           { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
-          { name: 'Gratis Proefopname', href: '/agency/gratis-proefopname/', key: 'nav.free_demo' },
+          { name: 'Gratis Proefopname', href: '/gratis-proefopname/', key: 'nav.free_demo' },
           { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
           { name: 'Contact', href: '/contact/', key: 'nav.contact' }
         ];
