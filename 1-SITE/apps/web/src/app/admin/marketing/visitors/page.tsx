@@ -148,7 +148,7 @@ export default function LiveVisitorDashboard() {
                       <td className="p-6">
                         <ContainerInstrument className="flex items-center gap-4">
                           <ContainerInstrument className={`w-10 h-10 rounded-xl flex items-center justify-center font-light text-[15px] ${isLive ? "bg-va-black text-white" : "bg-va-black/5 text-va-black/40"}`}>
-                            {v.visitorHash.substring(0, 2).toUpperCase()}
+                            {v.visitorHash?.substring(0, 2).toUpperCase() || "??"}
                           </ContainerInstrument>
                           <ContainerInstrument>
                             <TextInstrument className="text-[15px] font-light text-va-black">
