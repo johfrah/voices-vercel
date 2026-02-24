@@ -42,6 +42,7 @@ export default function VoiceglotMasterPage() {
   const [search, setSearch] = useState('');
   const [filterLang, setFilterLang] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [hideInternal, setHideHideInternal] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -228,50 +229,25 @@ export default function VoiceglotMasterPage() {
   });
 
   // Group translations by key for the Matrix View
-  const groupedTranslations = filtered.reduce((acc: any, curr: any) => {
-    if (!acc[curr.translationKey]) {
-      acc[curr.translationKey] = {
-        key: curr.translationKey,
-        originalText: curr.originalText,
-        context: curr.context || null,
-        sourceLang: curr.sourceLang || 'nl',
-        langs: {}
+  // CHRIS-PROTOCOL: Registry-Centric handling
+  const groupedList = translations
+    .filter((item: any) => {
+      if (hideInternal && item.translationKey.startsWith('knowledge.')) return false;
+      return true;
+    })
+    .map((item: any) => {
+      const langs: Record<string, any> = {};
+      (item.translations || []).forEach((t: any) => {
+        langs[t.lang] = t;
+      });
+      return {
+        key: item.translationKey,
+        originalText: item.originalText,
+        context: item.context,
+        sourceLang: item.sourceLang,
+        langs
       };
-    }
-    acc[curr.translationKey].langs[curr.lang] = curr;
-    return acc;
-  }, {});
-
-  const groupedList = Object.values(groupedTranslations);
-
-  //  CHRIS-PROTOCOL: Async Context Hydration (Godmode 2026)
-  // DISABLED: nuclear-audit route is for AI auditing, not context fetching.
-  /*
-  useEffect(() => {
-    if (groupedList.length > 0) {
-      const keysMissingContext = groupedList
-        .filter((g: any) => !g.context)
-        .map((g: any) => g.key);
-      
-      if (keysMissingContext.length > 0) {
-        // Fetch context for these keys in small batches
-        fetch('/api/admin/voiceglot/nuclear-audit', {
-          method: 'POST',
-          body: JSON.stringify({ keys: keysMissingContext.slice(0, 50) })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.results) {
-            setTranslations(prev => prev.map(t => {
-              const match = data.results.find((r: any) => r.stringHash === t.translationKey);
-              return match ? { ...t, context: match.context } : t;
-            }));
-          }
-        });
-      }
-    }
-  }, [groupedList.length]);
-  */
+    });
 
   const isSlop = (text: string, lang: string, original: string) => {
     if (!text || lang.startsWith('nl')) return false;
@@ -399,6 +375,15 @@ export default function VoiceglotMasterPage() {
           <option value="locked">Vergrendeld (Locked)</option>
           <option value="auto">Automatisch (AI)</option>
         </select>
+        <button 
+          onClick={() => setHideHideInternal(!hideInternal)}
+          className={cn(
+            "px-6 py-4 rounded-xl text-[15px] font-medium transition-all",
+            hideInternal ? "bg-va-black text-white" : "bg-va-off-white text-va-black/40"
+          )}
+        >
+          {hideInternal ? 'Internal Verborgen' : 'Toon Internal'}
+        </button>
       </ContainerInstrument>
 
       {/* Table */}
