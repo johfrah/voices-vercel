@@ -310,8 +310,8 @@ export async function POST(request: Request) {
         items: validatedItems,
         serverCalculated: true
       },
-      ipAddress: ip,
-      createdAt: new Date().toISOString()
+      ipAddress: ip
+      // 🛡️ CHRIS-PROTOCOL: createdAt has defaultNow(), don't set manually (v2.14.296)
     } as any).returning();
 
     console.log('[Checkout] ✅ STEP 6.2: Order created in DB:', { id: newOrder?.id });
@@ -334,8 +334,8 @@ export async function POST(request: Request) {
             price: (item.pricing?.subtotal || item.pricing?.total || 0).toString(),
             tax: (item.pricing?.tax || 0).toString(),
             metaData: item.pricing || {},
-            deliveryStatus: 'waiting',
-            createdAt: new Date().toISOString()
+            deliveryStatus: 'waiting'
+            // 🛡️ CHRIS-PROTOCOL: createdAt has defaultNow(), don't set manually (v2.14.296)
           } as any;
         }));
         console.log('[Checkout] ✅ STEP 7.1: Order items saved');
@@ -411,7 +411,7 @@ export async function POST(request: Request) {
         email
       },
       redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}`,
-      webhookUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout/webhook`,
+      webhookUrl: `${baseUrl}/api/checkout/webhook`,
       metadata: { orderId: newOrder.id }
     });
 

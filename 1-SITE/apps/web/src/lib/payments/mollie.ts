@@ -54,10 +54,27 @@ export class MollieService {
   private static BASE_URL = 'https://api.mollie.com/v2';
 
   /**
+   * 🛡️ CHRIS-PROTOCOL: Validate API key at startup (v2.14.294)
+   */
+  public static validateApiKey(): void {
+    if (!this.API_KEY) {
+      console.error('[Mollie Service] ❌ FATAL: MOLLIE_API_KEY is missing in environment variables');
+      throw new Error('Mollie API Key is required but not configured');
+    }
+    if (!this.API_KEY.startsWith('test_') && !this.API_KEY.startsWith('live_')) {
+      console.warn('[Mollie Service] ⚠️ WARNING: MOLLIE_API_KEY format is invalid (should start with test_ or live_)');
+    }
+    console.log('[Mollie Service] ✅ API Key validated:', this.API_KEY.substring(0, 10) + '...');
+  }
+
+  /**
    * Voer een request uit naar de Mollie API
    */
   public static async request(method: string, endpoint: string, payload?: any) {
-    if (!this.API_KEY) throw new Error('Mollie API Key missing');
+    if (!this.API_KEY) {
+      console.error('[Mollie Service] ❌ FATAL: Attempted to make API request without valid API key');
+      throw new Error('Mollie API Key missing');
+    }
 
     const response = await fetch(`${this.BASE_URL}${endpoint}`, {
       method,

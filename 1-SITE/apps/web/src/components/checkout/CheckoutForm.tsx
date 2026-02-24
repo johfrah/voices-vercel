@@ -299,14 +299,14 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           if (data.isBankTransfer) {
             const redirectUrl = data.token 
               ? `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}`
-              : `/account/orders?orderId=${data.orderId}`;
+              : `/checkout/success?orderId=${data.orderId}`;
             window.location.href = redirectUrl;
           } else {
             // Offerte succesvol - direct naar de bestelling/offerte pagina
             if (data.orderId) {
               const redirectUrl = data.token 
                 ? `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}&type=quote`
-                : `/account/orders?orderId=${data.orderId}&type=quote`;
+                : `/checkout/success?orderId=${data.orderId}&type=quote`;
               window.location.href = redirectUrl;
             }
           }

@@ -51,8 +51,8 @@ export const CheckoutPayloadSchema = z.object({
   company: z.string().optional(),
   vat_number: z.string().optional(),
   address_street: z.string().optional(),
-  postal_code: z.string().optional(),
-  city: z.string().optional(),
+  postal_code: z.string().min(1, "Postcode is verplicht"),
+  city: z.string().min(1, "Stad is verplicht"),
   country: z.string().default('BE'),
 
   // 4. Project Context
