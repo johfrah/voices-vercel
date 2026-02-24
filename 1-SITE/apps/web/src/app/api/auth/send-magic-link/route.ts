@@ -103,7 +103,7 @@ export async function POST(req: Request) {
     }
 
     // ONZE BETROUWBARE LINK (Forceer https op productie)
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
     const host = new URL(req.url).host;
     const market = MarketManager.getCurrentMarket(host);
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;

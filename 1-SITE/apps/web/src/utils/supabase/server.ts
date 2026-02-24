@@ -2,6 +2,8 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { type SupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
+import { createClient } from '@supabase/supabase-js'
+
 function hasValidSupabaseConfig(): boolean {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -14,7 +16,7 @@ function hasValidSupabaseConfig(): boolean {
  * Maakt een Supabase-serverclient. Retourneert null wanneer env vars ontbreken 
  * voorkomt FATAL 500 bij deploy zonder Supabase-config.
  */
-export function createClient(): SupabaseClient | null {
+export function createClientSafe(): SupabaseClient | null {
   if (!hasValidSupabaseConfig()) {
     console.warn('[Voices] Supabase env vars missing  server client unavailable')
     return null
@@ -67,11 +69,14 @@ export function createAdminClient(): SupabaseClient | null {
     return null
   }
 
-  return createServerClient(url, key, {
-    cookies: {
-      get(name: string) { return '' },
-      set() {},
-      remove() {},
-    },
+  // 🛡️ CHRIS-PROTOCOL: Use standard SDK for admin client to avoid cookie overhead
+  return createClient(url, key, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
   })
 }
+
+// Alias for backward compatibility
+export { createClientSafe as createClient };

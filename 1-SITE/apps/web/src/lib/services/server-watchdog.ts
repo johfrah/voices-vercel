@@ -30,8 +30,8 @@ export class ServerWatchdog {
       
       // 🛡️ CHRIS-PROTOCOL: Direct DB logging fallback if API is unreachable
       try {
-        const { db } = await import('@db');
-        const { systemEvents } = await import('@db/schema');
+        const { db } = await import('../../../packages/database/src/index');
+        const { systemEvents } = await import('../../../packages/database/schema');
         
         await db.insert(systemEvents).values({
           level: options.level || 'error',
