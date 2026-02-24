@@ -15,10 +15,12 @@ export async function GET() {
 
     let results: any[] = [];
     try {
-      results = await db.select().from(translations).orderBy(desc(translations.updatedAt));
+      //  CHRIS-PROTOCOL: Pagination/Limit for stability (Godmode 2026)
+      // De tabel is gegroeid naar 7000+ rijen, we tonen de laatste 500 voor performance.
+      results = await db.select().from(translations).orderBy(desc(translations.updatedAt)).limit(500);
     } catch (dbErr) {
       console.warn(' [Voiceglot List API] Drizzle failed, falling back to SDK');
-      const { data } = await supabase.from('translations').select('*').order('updated_at', { ascending: false });
+      const { data } = await supabase.from('translations').select('*').order('updated_at', { ascending: false }).limit(500);
       results = (data || []).map(r => ({
         ...r,
         translationKey: r.translation_key,
