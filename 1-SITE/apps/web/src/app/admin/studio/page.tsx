@@ -86,7 +86,10 @@ export default async function StudioAdminPage() {
   
   try {
     // 🛡️ CHRIS-PROTOCOL: StudioDataBridge needs SDK migration too, but for now we try-catch
-    financeStats = await StudioDataBridge.getFinanceStats();
+    financeStats = await StudioDataBridge.getFinanceStats().catch(err => {
+      console.error('Studio Admin Stats Error (Async):', err);
+      return financeStats; // Fallback to initial empty stats
+    });
   } catch (statsError) {
     console.error('Studio Admin Stats Error:', statsError);
   }
@@ -201,7 +204,11 @@ export default async function StudioAdminPage() {
           <HeadingInstrument level={2} className="text-[15px] font-light tracking-widest text-black/30 mb-8"><VoiceglotText  translationKey="admin.studio.all_editions" defaultText="Alle Studio Edities" /></HeadingInstrument>
           
           <ContainerInstrument className="space-y-4">
-            {allEditions.map((edition) => (
+            {allEditions.length === 0 ? (
+              <ContainerInstrument className="p-20 text-center text-black/20 italic">
+                Geen edities gevonden of database verbinding instabiel.
+              </ContainerInstrument>
+            ) : allEditions.map((edition) => (
               <ContainerInstrument key={edition.id} className="p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-black/5 transition-all flex flex-col md:flex-row justify-between items-center gap-6">
                 <ContainerInstrument className="flex items-center gap-6">
                   <ContainerInstrument className="w-12 h-12 rounded-xl bg-black text-white flex flex-col items-center justify-center">
