@@ -27,8 +27,11 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
   const steps = [
     { id: 'voice', label: 'Kies Stem', key: 'order_steps.voice' },
     { id: 'script', label: 'Script', key: 'order_steps.script' },
+    { id: 'cart', label: 'Mandje', key: 'order_steps.cart' },
     { id: 'checkout', label: 'Afrekenen', key: 'order_steps.checkout' },
   ] as const;
+
+  const currentStepId = typeof window !== 'undefined' && window.location.pathname.includes('/cart') ? 'cart' : currentStep;
 
   const totalActors = checkoutState.items.length + (checkoutState.selectedActor ? 1 : 0);
 
@@ -36,8 +39,8 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
     <div className={cn("flex justify-center opacity-80 hover:opacity-100 transition-opacity duration-500", className)}>
       <div className="flex items-center gap-4 md:gap-6">
         {steps.map((step, index) => {
-          const isActive = step.id === currentStep;
-          const isPast = steps.findIndex(s => s.id === currentStep) > index;
+          const isActive = step.id === currentStepId;
+          const isPast = steps.findIndex(s => s.id === currentStepId) > index;
           const isVoiceStep = step.id === 'voice';
           
           // CHRIS-PROTOCOL: Dynamic step labels based on cart content

@@ -162,6 +162,7 @@ export const PricingSummary: React.FC<{
   };
 
   const isSubscription = state.usage === 'subscription';
+  const isCartPage = typeof window !== 'undefined' && window.location.pathname.includes('/cart');
   const hasContextData = state.items.length > 0 || state.selectedActor || state.briefing || isSubscription || state.editionId;
   
   const discountAmount = state.customer.active_coupon 
@@ -270,7 +271,11 @@ export const PricingSummary: React.FC<{
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
-                          setSelectedItem(itemObj);
+                          if (!isCartPage) {
+                            window.location.href = '/cart';
+                          } else {
+                            setSelectedItem(itemObj);
+                          }
                         }}
                         className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-primary hover:bg-primary/5 transition-all group/view"
                         title={t('action.view_details', "Bekijk details")}

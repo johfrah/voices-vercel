@@ -120,9 +120,28 @@ export default function CheckoutPageClient() {
           {/* Summary Area - On mobile we only want to see the items first */}
           <ContainerInstrument className="lg:col-span-6 lg:order-2 px-4 md:px-0 space-y-12">
             <ContainerInstrument className="lg:sticky lg:top-24">
+              <div className="flex justify-between items-center mb-6 lg:hidden">
+                <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
+                  Jouw bestelling
+                </HeadingInstrument>
+                <Link href="/cart" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">
+                  Aanpassen
+                </Link>
+              </div>
               {/* Desktop: Show everything | Mobile: Show only items at the top */}
               <PricingSummary strokeWidth={1.5} onlyItems={true} className="lg:hidden" />
-              <PricingSummary strokeWidth={1.5} className="hidden lg:block" />
+              <div className="hidden lg:block space-y-6">
+                <div className="flex justify-between items-center px-2">
+                  <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
+                    Overzicht
+                  </HeadingInstrument>
+                  <Link href="/cart" className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 hover:text-primary transition-colors flex items-center gap-1.5">
+                    <Edit2 size={12} />
+                    Aanpassen
+                  </Link>
+                </div>
+                <PricingSummary strokeWidth={1.5} />
+              </div>
             </ContainerInstrument>
 
             {/* KELLY-MANDATE: Social Proof Trust Nudge */}
