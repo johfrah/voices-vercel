@@ -16,6 +16,7 @@ export class ServerWatchdog {
     payload?: any;
     schema?: string;
   }) {
+    console.log(`🛡️ [ServerWatchdog] Reporting error: ${options.error}`);
     try {
       // 🛡️ CHRIS-PROTOCOL: Nuclear Payload Scrubbing
       // We log the data that caused the crash, but remove sensitive fields

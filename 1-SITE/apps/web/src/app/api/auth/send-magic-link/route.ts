@@ -10,12 +10,10 @@ import { ServerWatchdog } from '@/lib/services/server-watchdog';
  * De link wijst nu DIRECT naar voices.be voor maximale betrouwbaarheid.
  */
 export async function POST(req: Request) {
+  console.log('🚀 [Auth API] Magic Link request started');
   try {
     const { email, redirect: redirectPath = '/account' } = await req.json();
-
-    if (!email) {
-      return NextResponse.json({ error: 'E-mailadres is verplicht' }, { status: 400 });
-    }
+    console.log(`🚀 [Auth API] Request for: ${email}, redirect: ${redirectPath}`);
 
     const supabase = createAdminClient();
     if (!supabase) {
