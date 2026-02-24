@@ -394,7 +394,7 @@ export async function POST(request: Request) {
     // 8. Afhandeling (Mollie vs Factuur)
     console.log('[Checkout] 🚀 STEP 8: Handling payment method...', { method: payment_method });
     const secureToken = sign(
-      { orderId: newOrder.id, userId, journey: newOrder.journey, email },
+      { userId, orderId: newOrder.id, journey: newOrder.journey, email },
       process.env.JWT_SECRET || 'voices-secret-2026',
       { expiresIn: '24h' }
     );
