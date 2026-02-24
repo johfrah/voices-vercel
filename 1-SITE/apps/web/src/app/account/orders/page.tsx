@@ -184,7 +184,7 @@ export default function OrdersPage() {
                                               ? "bg-green-50 text-green-600 border-green-100" 
                                               : "bg-va-black/5 text-va-black/40 border-black/5"
                                           )}>
-                                            {item.deliveryStatus === 'waiting' && <VoiceglotText translationKey="order.item.status.waiting" defaultText="Wacht op opname" />}
+                                            {item.deliveryStatus === 'waiting' && <VoiceglotText translationKey="order.item.status.waiting" defaultText="In opname" />}
                                             {(item.deliveryStatus === 'uploaded' || item.deliveryStatus === 'ready') && <VoiceglotText translationKey="order.item.status.ready" defaultText="Klaar voor review" />}
                                             {item.deliveryStatus === 'approved' && <VoiceglotText translationKey="order.item.status.approved" defaultText="Goedgekeurd" />}
                                           </span>
