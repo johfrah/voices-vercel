@@ -50,11 +50,11 @@ export class AgencyDataBridge {
     // UITZONDERING: Voor telefonie kan het een laagdrempelige instap zijn.
     const isTelephony = params.usage === 'telefonie';
     const isStudio = params.journey === 'studio' || params.context === 'studio';
-    const isExplicitSearch = search && search.toLowerCase().includes('johfra');
+    const isExplicitSearch = search && (search.toLowerCase().includes('johfra') || search.toLowerCase().includes('johfrah'));
     
-    if (isTelephony) {
-      // Voor telefonie laten we Johfrah AI wel toe
-      console.log(' Telephony mode: Johfrah AI allowed');
+    if (isTelephony || isExplicitSearch) {
+      // Voor telefonie of expliciete zoekopdracht laten we Johfrah AI wel toe
+      console.log(' Johfrah AI allowed (Telephony or Explicit Search)');
     } else {
       // In alle andere gevallen (inclusief Studio): GEEN AI promotie van Johfrah
       conditions.push(sql`${actors.firstName} NOT ILIKE 'Johfrah%' OR ${actors.isAi} = false`);

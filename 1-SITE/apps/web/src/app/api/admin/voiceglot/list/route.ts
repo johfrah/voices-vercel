@@ -21,49 +21,42 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit;
 
     try {
-      // CHRIS-PROTOCOL: Pure Drizzle Two-Step Fetch (v2.14.385)
-      // We use the ORM for maximum reliability and type-safety in production.
+      // CHRIS-PROTOCOL: Nuclear Raw SQL with Literal Parameters (v2.14.387)
+      // We bypass parameter binding for LIMIT/OFFSET which fails in production.
       
-      // 1. Fetch Registry Items
-      const registryItems = await db
-        .select({
-          id: translationRegistry.id,
-          translationKey: translationRegistry.stringHash,
-          originalText: translationRegistry.originalText,
-          context: translationRegistry.context
-        })
-        .from(translationRegistry)
-        .orderBy(desc(translationRegistry.lastSeen))
-        .limit(limit)
-        .offset(offset);
+      console.log(`[Voiceglot List] Fetching Registry: Page ${page}, Limit ${limit}`);
 
-      console.log(`[Voiceglot List] Drizzle Registry Items: ${registryItems.length}`);
+      // 1. Fetch Registry Items using Raw SQL with literal numbers
+      const registryItems = await db.execute(sql`
+        SELECT id, string_hash as "translationKey", original_text as "originalText", context
+        FROM translation_registry
+        ORDER BY last_seen DESC
+        LIMIT ${sql.raw(limit.toString())}
+        OFFSET ${sql.raw(offset.toString())}
+      `);
+
+      console.log(`[Voiceglot List] Registry Items found: ${registryItems.length}`);
 
       if (!registryItems || registryItems.length === 0) {
         return NextResponse.json({ translations: [], page, limit, hasMore: false });
       }
 
       // 2. Fetch all translations for these keys
-      const hashes = registryItems.map(i => i.translationKey);
-      const transData = await db
-        .select()
-        .from(translations)
-        .where(inArray(translations.translationKey, hashes));
+      const hashes = registryItems.map((i: any) => i.translationKey);
+      
+      // Use a simpler query for translations
+      const transData = await db.execute(sql`
+        SELECT id, translation_key as "translationKey", lang, translated_text as "translatedText", status, 
+               (is_locked OR is_manually_edited) as "isLocked", updated_at as "updatedAt"
+        FROM translations
+        WHERE translation_key = ANY(${hashes})
+      `);
 
-      console.log(`[Voiceglot List] Drizzle Translations Data: ${transData.length}`);
+      console.log(`[Voiceglot List] Translations Data found: ${transData.length}`);
 
       // 3. Join in memory
       const mappedResults = registryItems.map((item: any) => {
-        const itemTranslations = transData
-          .filter((t: any) => t.translationKey === item.translationKey)
-          .map((t: any) => ({
-            id: t.id,
-            lang: t.lang,
-            translatedText: t.translatedText,
-            status: t.status,
-            isLocked: t.isLocked || t.isManuallyEdited || false,
-            updatedAt: t.updatedAt
-          }));
+        const itemTranslations = transData.filter((t: any) => t.translationKey === item.translationKey);
         
         // Detect source language (Simple heuristic)
         const text = (item.originalText || '').toLowerCase();
@@ -89,8 +82,9 @@ export async function GET(request: Request) {
         hasMore: mappedResults.length === limit
       });
     } catch (dbErr: any) {
-      console.error('❌ [Voiceglot List API] Drizzle Fetch failed:', dbErr.message);
-      return NextResponse.json({ error: dbErr.message, translations: [] }, { status: 500 });
+      console.error('❌ [Voiceglot List API] Nuclear Fetch failed:', dbErr.message);
+      // Fallback: return empty but with error info for debugging
+      return NextResponse.json({ error: `Nuclear Fetch failed: ${dbErr.message}`, translations: [] }, { status: 500 });
     }
   } catch (error: any) {
     console.error(' [Voiceglot List API] Fatal Error:', error);
