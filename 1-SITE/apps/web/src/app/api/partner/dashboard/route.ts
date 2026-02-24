@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@db';
 import { orders, users, partnerWidgets } from '@db/schema';
 import { eq, sql, count, sum } from 'drizzle-orm';
+import { requirePartner } from '@/lib/auth/api-auth';
 
 /**
  *  NUCLEAR PARTNER DASHBOARD (2026)
@@ -11,14 +12,14 @@ import { eq, sql, count, sum } from 'drizzle-orm';
  */
 
 export async function GET(request: NextRequest) {
-  // In een echte scenario zouden we hier de auth-sessie controleren
-  // Voor nu simuleren we de data op basis van de partner slug of user ID
-  const { searchParams } = new URL(request.url);
-  const partnerSlug = searchParams.get('partner_slug') || 'default';
+  // 🛡️ CHRIS-PROTOCOL: Strict API Protection
+  const auth = await requirePartner();
+  if (auth instanceof NextResponse) return auth;
+  const { user } = auth;
 
   try {
     // 1. Haal partner info op
-    const [partner] = await db.select().from(users).where(eq(users.role, 'partner')).limit(1).catch(() => []); // Placeholder logic
+    const [partner] = await db.select().from(users).where(eq(users.email, user.email!)).limit(1);
     
     if (!partner) {
       return NextResponse.json({ error: 'Partner not found' }, { status: 404 });

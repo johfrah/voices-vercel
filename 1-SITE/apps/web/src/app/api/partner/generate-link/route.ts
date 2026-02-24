@@ -1,6 +1,7 @@
 import { db } from '@db';
 import { vouchers } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
+import { requirePartner } from '@/lib/auth/api-auth';
 
 /**
  *  PARTNER LINK GENERATOR (2026)
@@ -10,6 +11,10 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 
 export async function POST(request: NextRequest) {
+  // 🛡️ CHRIS-PROTOCOL: Strict API Protection
+  const auth = await requirePartner();
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const { email } = await request.json();
     

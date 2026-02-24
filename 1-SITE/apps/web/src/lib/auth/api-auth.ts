@@ -46,6 +46,30 @@ async function checkIsAdmin(user: User | null): Promise<boolean> {
 }
 
 /**
+ * Bepaal of de gebruiker partner is.
+ */
+async function checkIsPartner(user: User | null): Promise<boolean> {
+  if (!user?.email) return false;
+  
+  // Admins zijn ook partners
+  if (await checkIsAdmin(user)) return true;
+
+  try {
+    const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, user.email)).limit(1);
+    return dbUser?.role === 'partner';
+  } catch (dbError) {
+    const { data, error } = await sdkClient
+      .from('users')
+      .select('role')
+      .eq('email', user.email)
+      .single();
+    
+    if (error || !data) return false;
+    return data.role === 'partner';
+  }
+}
+
+/**
  * Vereist dat de aanvrager een admin is. Gooit 401 als dat niet zo is.
  * Returnt de Supabase user bij succes.
  */
@@ -61,6 +85,27 @@ export async function requireAdmin(): Promise<{ user: User } | NextResponse> {
   const isAdmin = await checkIsAdmin(user ?? null);
 
   if (!user || !isAdmin) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  return { user };
+}
+
+/**
+ * Vereist dat de aanvrager een partner (of admin) is.
+ */
+export async function requirePartner(): Promise<{ user: User } | NextResponse> {
+  const supabase = createClient();
+  if (!supabase) {
+    return NextResponse.json({ error: 'Auth service unavailable' }, { status: 503 });
+  }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const isPartner = await checkIsPartner(user ?? null);
+
+  if (!user || !isPartner) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

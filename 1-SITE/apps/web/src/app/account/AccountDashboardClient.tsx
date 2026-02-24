@@ -107,6 +107,8 @@ export default function AccountDashboardClient() {
   // Notifications (Data-Driven)
   const activeNotifications = notifications;
 
+  const isNewCustomer = !isPartner && !isAdmin && (!customerDNA?.stats?.orderCount || customerDNA.stats.orderCount === 0);
+
   return (
     <PageWrapperInstrument>
       <LiquidBackground />
@@ -120,6 +122,47 @@ export default function AccountDashboardClient() {
         <SectionInstrument className="va-section-grid">
           <ContainerInstrument className="va-container">
             
+            {/*  WELKOM EILAND VOOR NIEUWE KLANTEN */}
+            {isNewCustomer && (
+              <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-1000">
+                <BentoCard span="full" className="bg-primary/5 border border-primary/10 p-10 rounded-[40px] relative overflow-hidden group">
+                  <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
+                    <div className="flex-1 space-y-6">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary text-white text-[10px] font-bold tracking-widest uppercase rounded-full">
+                        <Sparkles size={12} /> <VoiceglotText translationKey="account.welcome.new_badge" defaultText="Welkom bij Voices" />
+                      </div>
+                      <HeadingInstrument level={2} className="text-4xl md:text-5xl font-light tracking-tighter leading-tight">
+                        <VoiceglotText translationKey="account.welcome.title" defaultText="Klaar om je eerste project te starten?" />
+                      </HeadingInstrument>
+                      <TextInstrument className="text-va-black/60 text-lg font-light max-w-xl">
+                        <VoiceglotText translationKey="account.welcome.subtitle" defaultText="Je account is nu actief. Als klant kun je direct stemmen zoeken, favorieten opslaan en gratis proefopnames aanvragen." />
+                      </TextInstrument>
+                      <div className="flex flex-wrap gap-4 pt-2">
+                        <ButtonInstrument as={Link} href="/agency/" className="va-btn-pro !rounded-xl">
+                          <VoiceglotText translationKey="account.welcome.cta_find" defaultText="Vind de perfecte stem" />
+                          <ArrowRight size={16} className="ml-2" />
+                        </ButtonInstrument>
+                        <ButtonInstrument as={Link} href="/agency/zo-werkt-het/" variant="outline" className="!rounded-xl border-black/10">
+                          <VoiceglotText translationKey="account.welcome.cta_how" defaultText="Hoe werkt het?" />
+                        </ButtonInstrument>
+                      </div>
+                    </div>
+                    <div className="w-full md:w-64 aspect-square bg-white rounded-[32px] shadow-aura flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-700">
+                      <Image 
+                        src="/assets/common/branding/Voices-Artists-LOGO.png" 
+                        alt="Voices" 
+                        width={120} 
+                        height={120} 
+                        className="opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-[80px]" />
+                </BentoCard>
+              </div>
+            )}
+
             {/*  Winkelier Overzicht Header (Alleen voor Partners/Stemacteurs) */}
             {isPartner && performanceStats.length > 0 && (
               <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
