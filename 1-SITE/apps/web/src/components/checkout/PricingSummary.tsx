@@ -44,11 +44,13 @@ export const PricingSummary: React.FC<{
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'];
-        const res = await fetch('/api/proxy?path=' + encodeURIComponent(`${baseUrl}/api/admin/actors`));
+        //  CHRIS-PROTOCOL: Fetch stats directly from public API to avoid proxy overhead and admin auth
+        const res = await fetch('/api/actors');
         const data = await res.json();
         if (data.reviewStats) setReviewStats(data.reviewStats);
-      } catch (e) {}
+      } catch (e) {
+        console.warn('[PricingSummary] Failed to fetch review stats:', e);
+      }
     };
     fetchStats();
   }, []);
