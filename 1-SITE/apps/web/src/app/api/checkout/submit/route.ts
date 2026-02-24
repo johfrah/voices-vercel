@@ -121,7 +121,7 @@ export async function POST(request: Request) {
     ])).map(id => Number(id));
 
     const workshopIds = Array.from(new Set([
-      ...(items || []).map((i: any) => i.id).filter((id: any) => !isNaN(Number(id)) && String(id).length > 5)
+      ...(items || []).map((i: any) => i.id).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
     ])).map(id => Number(id));
 
     console.log('[Checkout] Validated IDs:', { actorIds, workshopIds });
@@ -329,20 +329,32 @@ export async function POST(request: Request) {
     const orderPayload: any = {
       wp_order_id: uniqueWpId,
       total: amount.toString(),
+      total_tax: (amount - serverCalculatedSubtotal).toString(),
       status: isQuote ? 'quote-pending' : 'pending',
       user_id: userId || null,
-      journey: isSubscription ? 'johfrai-subscription' : 'agency',
+      journey: isSubscription ? 'johfrai-subscription' : (validatedItems[0]?.journey || 'agency'),
       billing_vat_number: vat_number || null,
       is_quote: !!isQuote,
       quote_message: quoteMessage || null,
-      market: market,
+      market: marketConfig.market_code,
       raw_meta: {
         usage,
         plan,
         isSubscription,
         music,
         itemsCount: validatedItems.length,
-        serverCalculated: true
+        serverCalculated: true,
+        customer: {
+          firstName: first_name,
+          lastName: last_name,
+          email,
+          phone,
+          company,
+          address: address_street,
+          city,
+          zip: postal_code,
+          country
+        }
       },
       ip_address: ip
     };
@@ -393,16 +405,20 @@ export async function POST(request: Request) {
         // 🛡️ CHRIS-PROTOCOL: Use SDK-Direct for order items to bypass Drizzle's internal date/json handling (v2.14.309)
         const itemsToInsert = validatedItems.map((item: any) => {
           const dbActor = actorMap.get(Number(item.actor?.id));
+          const dbWorkshop = workshopMap.get(Number(item.id));
           return {
             order_id: newOrder.id,
             actor_id: dbActor?.id || null,
-            name: item.actor?.display_name ? `Stemopname: ${item.actor.display_name}` : (item.name || 'Product'),
+            name: dbActor ? (dbActor.display_name ? `Stemopname: ${dbActor.display_name}` : `Stemopname: ${dbActor.firstName}`) : (dbWorkshop?.title || item.name || 'Product'),
             quantity: 1,
             price: (item.pricing?.subtotal || item.pricing?.total || 0).toString(),
             tax: (item.pricing?.tax || 0).toString(),
             meta_data: {
               ...(item.pricing || {}),
-              briefing: item.briefing || ''
+              briefing: item.briefing || '',
+              usage: item.usage,
+              media: item.media,
+              workshopId: dbWorkshop?.id
             },
             delivery_status: 'waiting'
           };
@@ -434,6 +450,12 @@ export async function POST(request: Request) {
 
     if (isQuote || isInvoiceActual) {
       console.log('[Checkout] ✅ STEP 8.1: Quote/Invoice flow triggered');
+      
+      // 🛡️ CHRIS-PROTOCOL: Immediate status update for Bank Transfer (v2.14.350)
+      if (isInvoiceActual) {
+        await sdkClient.from('orders').update({ status: 'pending' }).eq('id', newOrder.id);
+      }
+
       // Offerte/Factuur flow (Background)
       (async () => {
         try {
@@ -447,7 +469,15 @@ export async function POST(request: Request) {
                 orderId: newOrder.id,
                 email,
                 amount: serverCalculatedSubtotal,
-                customer: { firstName: first_name, lastName: last_name }
+                company,
+                customer: { firstName: first_name, lastName: last_name, phone },
+                items: validatedItems.map((i: any) => ({
+                  actor: i.actor,
+                  name: i.name,
+                  usage: i.usage,
+                  pricing: i.pricing,
+                  briefing: i.briefing
+                }))
               }
             })
           });
@@ -498,7 +528,7 @@ export async function POST(request: Request) {
                   description: i.actor?.display_name ? `Stemopname: ${i.actor.display_name}` : (i.name || 'Product'),
                   quantity: 1,
                   price: i.pricing?.subtotal || 0,
-                  vatType: 1
+                  vatType: isVatExempt ? 2 : 1 // 1 = 21%, 2 = 0%
                 })),
                 paymentMethod: 'BankTransfer'
               });
