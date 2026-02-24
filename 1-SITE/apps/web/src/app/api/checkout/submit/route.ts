@@ -60,6 +60,18 @@ export async function POST(request: Request) {
 
     if (!validation.success) {
       console.error('[Checkout] Validation failed:', validation.error.format());
+      
+      // 🛡️ CHRIS-PROTOCOL: Log validation failure to DB for forensic analysis (v2.14.293)
+      await sdkClient.from('system_events').insert({
+        level: 'error',
+        source: 'CheckoutAPI',
+        message: 'Validation Failed',
+        details: { 
+          errors: validation.error.format(),
+          rawBody: rawBody ? JSON.stringify(rawBody).substring(0, 1000) : 'N/A'
+        }
+      });
+
       return NextResponse.json({ 
         error: 'Ongeldige bestelgegevens', 
         details: validation.error.format() 

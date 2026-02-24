@@ -62,6 +62,12 @@ export const CheckoutPayloadSchema = z.object({
   quoteMessage: z.string().nullable().optional(),
   payment_method: z.string().default('bancontact'),
   
+  music: z.object({
+    trackId: z.string().nullable().optional(),
+    asBackground: z.boolean().default(false),
+    asHoldMusic: z.boolean().default(false),
+  }).optional(),
+  
   // 5. Metadata
   metadata: z.object({
     words: z.coerce.number().default(0),
