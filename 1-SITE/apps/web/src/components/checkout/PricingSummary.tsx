@@ -136,7 +136,7 @@ export const PricingSummary: React.FC<{
         amount: payload.pricing.total 
       });
 
-      const res = await fetch('/api/checkout/mollie', {
+      const res = await fetch('/api/checkout/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

@@ -72,6 +72,12 @@ export async function POST(request: Request) {
       payment_method,
     } = validation.data;
 
+    // 🛡️ CHRIS-PROTOCOL: Extract actor IDs for validation
+    const actorIds = Array.from(new Set([
+      ...(items || []).map((i: any) => i.actor?.id).filter(Boolean),
+      ...(selectedActor?.id ? [selectedActor.id] : [])
+    ]));
+
     const isSubscription = usage === 'subscription';
     const submittedIsVatExempt = false; // Te bepalen via VatService later indien nodig
 
@@ -339,10 +345,15 @@ export async function POST(request: Request) {
       { expiresIn: '24h' }
     );
 
-    // 4. Handle Response (Mollie vs Banktransfer vs Quote)
-    const selectedGateway = payment_method || gateway;
-    if (isQuote || selectedGateway === 'banktransfer') {
-      if (selectedGateway === 'banktransfer') {
+    // 🛡️ CHRIS-PROTOCOL: Payment Logic Separation (v2.14.244)
+    const isInvoice = payment_method === 'banktransfer';
+    
+    // SCENARIO A: Offerte of Factuur (Geen Mollie nodig)
+    if (isQuote || isInvoice) {
+      console.log(`[Checkout] Processing ${isQuote ? 'Quote' : 'Invoice'} flow for Order #${newOrder.id}`);
+      
+      if (isInvoice) {
+        // Yuki Sync op de achtergrond
         (async () => {
           try {
             const { YukiService } = await import('@/lib/services/yuki-service');
@@ -357,27 +368,26 @@ export async function POST(request: Request) {
                 address: address_street,
                 city: city,
                 zipCode: postal_code,
-                countryCode: country || 'BE',
-                billing_po: billing_po,
-                financial_email: financial_email
+                countryCode: country || 'BE'
               },
               lines: [{
                 description: `Stemopname: ${usage || 'Project'}`,
                 quantity: 1,
                 price: amount,
-                vatType: isVatExempt ? 4 : 1 
+                vatType: submittedIsVatExempt ? 4 : 1 
               }],
               paymentMethod: 'banktransfer'
             });
           } catch (e) {
-            console.error('Yuki Sync failed:', e);
+            console.error('[Yuki] Sync failed:', e);
           }
         })();
       }
 
+      // Admin Notificatie
       (async () => {
         try {
-          const fetchUrl = `${process.env.NEXT_PUBLIC_BASE_URL || `https://${host}`}/api/admin/notify`;
+          const fetchUrl = `${baseUrl}/api/admin/notify`;
           await fetch(fetchUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -403,15 +413,17 @@ export async function POST(request: Request) {
         success: true,
         orderId: newOrder.id,
         token: secureToken,
-        isBankTransfer: selectedGateway === 'banktransfer',
+        isBankTransfer: isInvoice,
         isQuote: isQuote,
-        message: selectedGateway === 'banktransfer' 
+        message: isInvoice 
           ? 'Bestelling ontvangen. We sturen je de factuur voor de overschrijving.'
           : 'Offerte succesvol aangemaakt en verzonden.'
       });
     }
 
-    // 5. Initialize Mollie Order
+    // SCENARIO B: Directe betaling via Mollie
+    console.log(`[Checkout] Initializing Mollie payment for Order #${newOrder.id}`);
+    
     const mollieLines = validatedItems.map((item: any) => {
       const itemSubtotal = item.pricing?.total || item.pricing?.subtotal || 0;
       const vatAmount = Math.round(itemSubtotal * taxRate * 100) / 100;
