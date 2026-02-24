@@ -10,6 +10,7 @@ import {
     TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -59,6 +60,7 @@ interface StudioLaunchpadProps {
  */
 export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLaunchpadProps) => {
   const router = useRouter();
+  const { t } = useTranslation();
   const { state, toggleActorSelection, removeActor, campaignMessage } = useVoicesState();
   const selectedActors = state.selected_actors;
   const [currentStep, setCurrentStep] = useState(1);

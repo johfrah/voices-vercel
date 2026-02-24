@@ -710,9 +710,11 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
               </ContainerInstrument>
 
               <ContainerInstrument plain className="voices-hero-left lg:order-2">
-                <HeadingInstrument level={1} className="voices-hero-title font-light">
-                  {title}
-                </HeadingInstrument>
+                {title && (
+                  <HeadingInstrument level={1} className="voices-hero-title font-light">
+                    {title}
+                  </HeadingInstrument>
+                )}
                 <TextInstrument className="voices-hero-subtitle font-light">
                   {body.replace(/video:\s*[^\n]+/, '').replace(/poster:\s*[^\n]+/, '').replace(/subtitles:\s*[^\n]+/, '').trim()}
                 </TextInstrument>
@@ -739,7 +741,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                   {body}
                 </TextInstrument>
               </ContainerInstrument>
-              <WorkshopCarousel workshops={extraData.workshops || []} />
+              <Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
+                <WorkshopCarousel workshops={extraData.workshops || []} />
+              </Suspense>
             </ContainerInstrument>
           </section>
         );
@@ -764,7 +768,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                     <TextInstrument className="text-[15px] text-black/40 font-light leading-relaxed mb-12 max-w-md">
                       {body}
                     </TextInstrument>
-                    <WorkshopCalendar workshops={extraData.workshops || []} />
+                    <Suspense fallback={<div className="h-64 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
+                      <WorkshopCalendar workshops={extraData.workshops || []} />
+                    </Suspense>
                   </ContainerInstrument>
                 </BentoCard>
                 <BentoCard span="sm" className="bg-blue-600 p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[500px] rounded-[20px]">
@@ -792,7 +798,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
         return (
           <section key={block.id} className="py-20 bg-va-off-white">
             <ContainerInstrument className="max-w-[1140px]">
-              <JourneyCta journey={body.trim() as any || 'studio'} />
+              <Suspense fallback={<div className="h-48 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
+                <JourneyCta journey={body.trim() as any || 'studio'} />
+              </Suspense>
             </ContainerInstrument>
           </section>
         );
@@ -984,15 +992,17 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                   >
                     {videoUrl && (
                       <ContainerInstrument className="w-full bg-va-black relative">
-                        <VideoPlayer 
-                          url={videoUrl} 
-                          title={itemTitle}
-                          subtitles={subtitleUrl ? [{
-                            src: subtitleUrl,
-                            lang: currentLang,
-                            label: currentLang.toUpperCase()
-                          }] : []}
-                        />
+                        <Suspense fallback={<div className="aspect-video w-full bg-va-black/20 animate-pulse" />}>
+                          <VideoPlayer 
+                            url={videoUrl} 
+                            title={itemTitle}
+                            subtitles={subtitleUrl ? [{
+                              src: subtitleUrl,
+                              lang: currentLang,
+                              label: currentLang.toUpperCase()
+                            }] : []}
+                          />
+                        </Suspense>
                       </ContainerInstrument>
                     )}
                     <ContainerInstrument className="p-10 flex flex-col flex-grow">
@@ -1060,7 +1070,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
       case 'calculator':
         return (
           <section key={block.id} className="py-24 animate-in fade-in duration-1000 fill-mode-both">
-            <AgencyCalculator />
+            <Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
+              <AgencyCalculator />
+            </Suspense>
           </section>
         );
 

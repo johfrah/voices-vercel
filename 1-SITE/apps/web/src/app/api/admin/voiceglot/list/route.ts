@@ -35,10 +35,12 @@ export async function GET(request: Request) {
 
       // 2. Haal bijbehorende vertalingen op
       const hashes = (registryData as any).map((i: any) => i.string_hash);
+      
+      // CHRIS-PROTOCOL: Use sql.join for safe IN clause with array of strings
       const transData = await db.execute(sql`
         SELECT id, translation_key, lang, translated_text, status, is_manually_edited, updated_at
         FROM translations
-        WHERE translation_key IN (${hashes})
+        WHERE translation_key = ANY(${hashes})
       `);
 
       results = (registryData as any).map((item: any) => {
