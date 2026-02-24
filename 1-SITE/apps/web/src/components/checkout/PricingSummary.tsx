@@ -163,6 +163,7 @@ export const PricingSummary: React.FC<{
 
   const isSubscription = state.usage === 'subscription';
   const isCartPage = typeof window !== 'undefined' && window.location.pathname.includes('/cart');
+  const isCheckoutPage = typeof window !== 'undefined' && window.location.pathname.includes('/checkout');
   const hasContextData = state.items.length > 0 || state.selectedActor || state.briefing || isSubscription || state.editionId;
   
   const discountAmount = state.customer.active_coupon 
@@ -263,6 +264,15 @@ export const PricingSummary: React.FC<{
                       ) : (
                         t('checkout.item.unpaid_desc', 'Onbeperkt gebruik in de tijd zonder advertentie-budget.')
                       )}
+                      
+                      {isCartPage && (itemObj.script || itemObj.briefing) && (
+                        <div className="mt-3 p-4 bg-va-off-white/50 rounded-xl border border-va-black/[0.03] italic text-va-black/60 relative group/script-preview">
+                          <div className="absolute -top-2 -left-2 bg-white rounded-full p-1 shadow-sm border border-va-black/5">
+                            <FileText size={10} className="text-primary" />
+                          </div>
+                          &quot;{itemObj.script || itemObj.briefing}&quot;
+                        </div>
+                      )}
                     </div>
                   </ContainerInstrument>
 
@@ -317,7 +327,7 @@ export const PricingSummary: React.FC<{
         </ContainerInstrument>
       )}
 
-      {(!onlyItems) && (
+      {(!onlyItems && isCheckoutPage) && (
         <ContainerInstrument className={cn(
           "space-y-6",
           !onlyTotals && "block"
