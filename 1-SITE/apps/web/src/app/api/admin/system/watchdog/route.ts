@@ -94,17 +94,24 @@ export async function POST(request: NextRequest) {
 
     if (mailEngine) {
       // CHRIS-PROTOCOL: Skip emails if requested by user (logging to watchdog only)
-      const skipEmails = process.env.DISABLE_ADMIN_EMAILS === 'true';
+      // 🛡️ VOICES-MANDATE: DISABLE_ADMIN_EMAILS is true by default to prevent spam during development
+      const skipEmails = process.env.DISABLE_ADMIN_EMAILS !== 'false';
 
       // 🛡️ CHRIS-PROTOCOL: Filter out common noise to prevent mail spam
       const isNoise = (
+        level === 'info' ||                           // Skip info logs
         error.includes('Minified React error #419') || // Hydration mismatch (common in Next.js/Browser extensions)
         error.includes('Server Components render') || // Generic Next.js error often paired with others
         error.includes('/api/translations/heal') ||   // Network noise/aborted requests
         error.includes('Failed to fetch') ||          // Network noise
         error.includes('Load failed') ||              // Network noise
         error.includes('Self-healing failed') ||      // Noise from the healer itself
-        error.includes('504')                         // Timeout noise
+        error.includes('504') ||                      // Timeout noise
+        error.includes('503') ||                      // Service unavailable noise
+        error.includes('429') ||                      // Rate limit noise
+        error.includes('AbortError') ||               // Aborted requests
+        error.includes('TypeError: S is not a function') || // Known auth noise
+        error.includes('toggleActorSelection')        // Known UI noise
       );
 
       if (isNoise || skipEmails) {
