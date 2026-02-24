@@ -15,10 +15,15 @@ Vóór het schrijven van ook maar één regel code, MOET de agent de volgende st
 1.  **FORENSIC ROOT-CAUSE ANALYSIS**: 
     - Doe een diepe scan naar de bron van het probleem (Database, API-payload, of Frontend State).
     - Gebruik `browser-use` of rauwe SQL om de "Source of Truth" te verifiëren. Gissen is verboden.
-2.  **FOUT-UITSLUITING (Pre-emptive Strike)**:
+2.  **THE TRINITY OF VALIDATION**:
+    - Elke fix moet gevalideerd worden op drie niveaus:
+        1. **Browser**: Functionele interactie via `browser-use`.
+        2. **Watchdog**: Server-side events in de `system_events` tabel.
+        3. **Console**: Client-side errors in de browser logs.
+3.  **FOUT-UITSLUITING (Pre-emptive Strike)**:
     - Identificeer alle mogelijke zij-effecten (bijv. "Als ik de filter strikter maak, breekt dan de zoekfunctie?").
     - Controleer of de benodigde data (zoals IDs) wel in de API-tunnel zit.
-3.  **DRIEPUNT-OPLOSSING (The Trinity Check)**:
+4.  **DRIEPUNT-OPLOSSING (The Trinity Check)**:
     - Formuleer intern (of in de chat) 3 mogelijke oplossingen.
     - Vergelijk ze op: Performance, Architectuur (Chris-Protocol) en Robuustheid.
     - Kies de beste oplossing en beargumenteer *waarom* dit de Masterclass-keuze is.

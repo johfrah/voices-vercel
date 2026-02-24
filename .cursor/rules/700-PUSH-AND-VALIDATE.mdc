@@ -24,13 +24,21 @@ Vóór elke afronding van een taak MOET de agent de volgende stappen doorlopen:
     ```bash
     npx tsx 3-WETTEN/scripts/forensic-audit.ts
     ```
-7.  **Certificering**: De taak mag pas als "COMPLETED" worden gemarkeerd als de audit een ✅ groen resultaat geeft.
+7.  **Functional Browser Validation (The Final Gate)**:
+    - Gebruik de `browser-use` subagent om de wijziging *functioneel* te testen op de live site.
+    - Test niet alleen of de pagina opent, maar voer een actie uit (bijv. klik op een knop, vul een formulier in).
+    - Verifieer tegelijkertijd de **Watchdog logs** (`system_events`) en de **Browser Console** op fouten tijdens deze actie.
+8.  **Certificering**: De taak mag pas als "COMPLETED" worden gemarkeerd als:
+    - De build succesvol is.
+    - De `forensic-audit.ts` ✅ groen geeft.
+    - De browser-agent de functionaliteit heeft bevestigd zonder console/watchdog errors.
 
 ## 🚫 Verboden Patronen
 
 - **GEEN** push zonder voorafgaande succesvolle `npm run check:pre-vercel`.
 - **GEEN** push zonder versie-verhoging.
 - **GEEN** taak afronden zonder de live logs te checken.
+- **GEEN** taak afronden zonder een functionele browser-test (voor UI/API wijzigingen).
 - **GEEN** negeren van waarschuwingen in de `forensic-audit.ts`.
 
 ## 🛠️ Herstel bij Foutmeldingen
