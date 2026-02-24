@@ -3,6 +3,7 @@ import { translations, translationRegistry, appConfigs } from '@db/schema';
 import { sql, desc, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { createClient } from "@supabase/supabase-js";
 
 /**
  *  API: VOICEGLOT STATS (GODMODE CACHING 2026)
@@ -25,6 +26,11 @@ export async function GET(request: NextRequest) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
 
+    // Supabase Client voor fallback/reliability
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     // 1. Check Cache
     const cachedConfig = await db.select().from(appConfigs).where(eq(appConfigs.key, CACHE_KEY)).limit(1).catch(() => []);
     const now = new Date().getTime();
@@ -42,20 +48,51 @@ export async function GET(request: NextRequest) {
     let statsByLang: any[] = [];
 
     try {
-      // Gebruik Drizzle's select met sql count aggregate voor maximale robuustheid
-      const totalResult = await db.select({ count: sql`count(*)` }).from(translationRegistry);
-      totalStrings = parseInt(String((totalResult as any)[0]?.count || '0'), 10);
+      // CHRIS-PROTOCOL: Use Supabase SDK for absolute reliability in counting
+      const { count, error: countErr } = await supabase
+        .from('translation_registry')
+        .select('*', { count: 'exact', head: true });
       
+      if (countErr) throw countErr;
+      totalStrings = count || 0;
+
       if (totalStrings > 0) {
-        statsByLang = await db.select({
-          lang: translations.lang,
-          count: sql`count(*)`
-        })
-        .from(translations)
-        .groupBy(translations.lang);
+        // Get counts per language
+        const { data: langData, error: langErr } = await supabase
+          .rpc('get_translation_stats'); // We use a small RPC or just a raw query if RPC doesn't exist
+        
+        if (langErr) {
+          // Fallback to manual count if RPC fails
+          const { data: manualData } = await supabase
+            .from('translations')
+            .select('lang');
+          
+          const counts: Record<string, number> = {};
+          (manualData || []).forEach(t => {
+            counts[t.lang] = (counts[t.lang] || 0) + 1;
+          });
+          statsByLang = Object.entries(counts).map(([lang, count]) => ({ lang, count }));
+        } else {
+          statsByLang = langData;
+        }
       }
     } catch (dbErr: any) {
-      console.error('[Voiceglot Stats] Database query failed, using fallback:', dbErr.message);
+      console.error('[Voiceglot Stats] Supabase query failed, trying Drizzle:', dbErr.message);
+      try {
+        const [totalResult] = await db.select({ count: sql`count(*)` }).from(translationRegistry);
+        totalStrings = parseInt(String(totalResult?.count || '0'), 10);
+        
+        if (totalStrings > 0) {
+          statsByLang = await db.select({
+            lang: translations.lang,
+            count: sql`count(*)`
+          })
+          .from(translations)
+          .groupBy(translations.lang);
+        }
+      } catch (drizzleErr: any) {
+        console.error('[Voiceglot Stats] Drizzle also failed:', drizzleErr.message);
+      }
     }
 
     // Bereken percentages

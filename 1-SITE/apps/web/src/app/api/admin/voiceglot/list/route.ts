@@ -27,7 +27,59 @@ export async function GET(request: Request) {
 
     let results: any[] = [];
     try {
-      // 1. Haal items uit de registry
+      // 1. Haal items uit de registry via SDK (Bulletproof)
+      const { data: registryData, error: regErr } = await supabase
+        .from('translation_registry')
+        .select('*')
+        .order('last_seen', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      if (regErr) throw regErr;
+
+      if (!registryData || registryData.length === 0) {
+        return NextResponse.json({ translations: [], page, limit, hasMore: false });
+      }
+
+      // 2. Haal bijbehorende vertalingen op
+      const hashes = registryData.map(i => i.string_hash);
+      const { data: transData, error: transErr } = await supabase
+        .from('translations')
+        .select('*')
+        .in('translation_key', hashes);
+
+      if (transErr) throw transErr;
+
+      results = registryData.map((item: any) => {
+        const itemTranslations = (transData || []).filter((t: any) => t.translation_key === item.string_hash);
+        
+        // Detect source language
+        const text = (item.original_text || '').toLowerCase();
+        const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ');
+        const isEn = text.includes(' the ') || text.includes(' and ');
+        const isNl = text.includes(' de ') || text.includes(' het ') || text.includes(' en ');
+        
+        let detectedLang = 'nl';
+        if (isFr && !isNl) detectedLang = 'fr';
+        else if (isEn && !isNl) detectedLang = 'en';
+
+        return {
+          translationKey: item.string_hash,
+          originalText: item.original_text,
+          context: item.context,
+          sourceLang: detectedLang,
+          translations: itemTranslations.map((t: any) => ({
+            id: t.id,
+            lang: t.lang,
+            translatedText: t.translated_text || '',
+            status: t.status,
+            isLocked: t.is_manually_edited || false,
+            updatedAt: t.updated_at
+          }))
+        };
+      });
+    } catch (dbErr: any) {
+      console.warn('⚠️ [Voiceglot List API] SDK failed, trying Drizzle:', dbErr.message);
+      // Drizzle fallback logic...
       const registryItems = await db
         .select({
           stringHash: translationRegistry.stringHash,
@@ -44,7 +96,6 @@ export async function GET(request: Request) {
         return NextResponse.json({ translations: [], page, limit, hasMore: false });
       }
 
-      // 2. Haal bijbehorende vertalingen op
       const hashes = registryItems.map(i => i.stringHash);
       const batchTranslations = await db
         .select()
@@ -53,67 +104,19 @@ export async function GET(request: Request) {
         .catch(() => []);
 
       results = registryItems.map(item => {
-        // CHRIS-PROTOCOL: Robust field mapping for both Drizzle and raw SQL/SDK results
-        const itemTranslations = batchTranslations.filter((t: any) => 
-          (t.translationKey === item.stringHash || t.translation_key === item.stringHash)
-        );
-        
-        // Detect source language
-        const text = (item.originalText || '').toLowerCase();
-        const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ');
-        const isEn = text.includes(' the ') || text.includes(' and ');
-        const isNl = text.includes(' de ') || text.includes(' het ') || text.includes(' en ');
-        
-        let detectedLang = 'nl';
-        if (isFr && !isNl) detectedLang = 'fr';
-        else if (isEn && !isNl) detectedLang = 'en';
-
+        const itemTranslations = batchTranslations.filter((t: any) => t.translationKey === item.stringHash || t.translation_key === item.stringHash);
         return {
           translationKey: item.stringHash,
           originalText: item.originalText,
-          context: item.context,
-          sourceLang: detectedLang,
-          translations: itemTranslations.map((t: any) => ({
-            id: t.id,
-            lang: t.lang,
-            // Support both camelCase and snake_case from DB
-            translatedText: t.translatedText || t.translated_text || '',
-            status: t.status,
-            isLocked: t.isManuallyEdited || t.is_manually_edited || false,
-            updatedAt: t.updatedAt || t.updated_at
-          }))
-        };
-      });
-    } catch (dbErr: any) {
-      console.warn('⚠️ [Voiceglot List API] Drizzle failed, falling back to SDK:', dbErr.message);
-      const { data: registryData } = await supabase
-        .from('translation_registry')
-        .select('*')
-        .order('last_seen', { ascending: false })
-        .range(offset, offset + limit - 1);
-
-      if (!registryData) return NextResponse.json({ translations: [], page, limit, hasMore: false });
-
-      const hashes = registryData.map(i => i.string_hash);
-      const { data: transData } = await supabase
-        .from('translations')
-        .select('*')
-        .in('translation_key', hashes);
-
-      results = registryData.map((item: any) => {
-        const itemTranslations = (transData || []).filter((t: any) => t.translation_key === item.string_hash);
-        return {
-          translationKey: item.string_hash,
-          originalText: item.original_text,
           context: item.context,
           sourceLang: 'nl',
           translations: itemTranslations.map((t: any) => ({
             id: t.id,
             lang: t.lang,
-            translatedText: t.translated_text,
+            translatedText: t.translatedText || t.translated_text || '',
             status: t.status,
-            isLocked: t.is_manually_edited,
-            updatedAt: t.updated_at
+            isLocked: t.isManuallyEdited || t.is_manually_edited || false,
+            updatedAt: t.updatedAt || t.updated_at
           }))
         };
       });
