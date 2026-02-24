@@ -44,6 +44,16 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     isQuote: state.isQuoteRequest || false
   });
 
+  // 🛡️ CHRIS-PROTOCOL: Sync local formData with global state after hydration (v2.14.323)
+  useEffect(() => {
+    if (state.customer) {
+      setFormData(prev => ({
+        ...prev,
+        ...state.customer
+      }));
+    }
+  }, [state.customer]);
+
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   
   // Modal Login States

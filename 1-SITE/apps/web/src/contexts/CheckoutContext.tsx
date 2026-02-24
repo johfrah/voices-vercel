@@ -312,7 +312,11 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         country: state.country,
         pricing: state.pricing,
         journey: state.journey,
-        step: state.step
+        step: state.step,
+        // 🛡️ CHRIS-PROTOCOL: Also persist detailed address fields (v2.14.323)
+        address_street: state.customer.address_street,
+        postal_code: state.customer.postal_code,
+        city: state.customer.city
       }));
     }
   }, [state.items, state.customer, state.selectedActor, state.briefing, state.usage, state.media, state.country, state.pricing, state.journey, state.step, isHydrated]);
