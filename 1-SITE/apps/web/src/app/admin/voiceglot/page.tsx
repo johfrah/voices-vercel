@@ -177,6 +177,7 @@ export default function VoiceglotMasterPage() {
       acc[curr.translationKey] = {
         key: curr.translationKey,
         originalText: curr.originalText,
+        context: curr.context,
         langs: {}
       };
     }
@@ -312,7 +313,14 @@ export default function VoiceglotMasterPage() {
               <tr key={group.key} className="group hover:bg-va-off-white/30 transition-colors">
                 <td className="px-8 py-6 align-top">
                   <div className="flex flex-col gap-2">
-                    <span className="text-[12px] font-mono text-primary font-bold">{group.key}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[12px] font-mono text-primary font-bold">{group.key}</span>
+                      {group.context && (
+                        <span className="text-[10px] font-bold bg-va-black text-white px-2 py-0.5 rounded-full uppercase tracking-tighter" title="Oorsprong van deze tekst">
+                          {group.context}
+                        </span>
+                      )}
+                    </div>
                     <TextInstrument className="text-[14px] text-va-black/80 font-medium leading-relaxed">
                       {group.originalText}
                     </TextInstrument>

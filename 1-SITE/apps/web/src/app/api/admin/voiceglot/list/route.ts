@@ -1,6 +1,6 @@
 import { db } from '@db';
-import { translations } from '@db/schema';
-import { desc } from 'drizzle-orm';
+import { translations, translationRegistry } from '@db/schema';
+import { desc, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { createClient } from "@supabase/supabase-js";
 
@@ -15,21 +15,39 @@ export async function GET() {
 
     let results: any[] = [];
     try {
-      //  CHRIS-PROTOCOL: Pagination/Limit for stability (Godmode 2026)
-      // De tabel is gegroeid naar 7000+ rijen, we tonen de laatste 500 voor performance.
-      results = await db.select().from(translations).orderBy(desc(translations.updatedAt)).limit(500);
+      //  CHRIS-PROTOCOL: Join with Registry for Context (Godmode 2026)
+      // We halen de context (bijv. de naam van de acteur) direct op uit de registry.
+      const rawResults = await db
+        .select({
+          id: translations.id,
+          translationKey: translations.translationKey,
+          lang: translations.lang,
+          originalText: translations.originalText,
+          translatedText: translations.translatedText,
+          isLocked: translations.isManuallyEdited,
+          isManuallyEdited: translations.isManuallyEdited,
+          updatedAt: translations.updatedAt,
+          lastAuditedAt: translations.updatedAt,
+          context: translationRegistry.context
+        })
+        .from(translations)
+        .leftJoin(translationRegistry, eq(translations.translationKey, translationRegistry.stringHash))
+        .orderBy(desc(translations.updatedAt))
+        .limit(500);
+      
+      results = rawResults;
     } catch (dbErr) {
       console.warn(' [Voiceglot List API] Drizzle failed, falling back to SDK');
-      const { data } = await supabase.from('translations').select('*').order('updated_at', { ascending: false }).limit(500);
-      results = (data || []).map(r => ({
+      const { data } = await supabase.from('translations').select('*, translation_registry(context)').order('updated_at', { ascending: false }).limit(500);
+      results = (data || []).map((r: any) => ({
         ...r,
         translationKey: r.translation_key,
         originalText: r.original_text,
         translatedText: r.translated_text,
-        isLocked: r.is_locked,
+        isLocked: r.is_manually_edited,
         isManuallyEdited: r.is_manually_edited,
         updatedAt: r.updated_at,
-        lastAuditedAt: r.last_audited_at
+        context: r.translation_registry?.context
       }));
     }
 
