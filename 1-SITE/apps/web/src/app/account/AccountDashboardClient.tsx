@@ -115,8 +115,6 @@ export default function AccountDashboardClient() {
         <AccountHeroInstrument 
           userEmail={user?.email || `user@${isAdmin ? MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be' : (typeof window !== 'undefined' ? window.location.host : 'voices.be')}`} 
           onLogout={logout}
-          isAdmin={isAdmin}
-          isPartner={isPartner}
         />
 
         <SectionInstrument className="va-section-grid">

@@ -4,14 +4,13 @@ import React from 'react';
 import Image from 'next/image';
 import { LogOut } from 'lucide-react';
 import { VoiceglotText } from './VoiceglotText';
+import { useAuth } from '@/contexts/AuthContext';
 
 import { useTranslation } from '@/contexts/TranslationContext';
 
 interface AccountHeroInstrumentProps {
   userEmail?: string;
   onLogout: () => void;
-  isAdmin?: boolean;
-  isPartner?: boolean;
 }
 
 /**
@@ -24,11 +23,10 @@ interface AccountHeroInstrumentProps {
  */
 export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({ 
   userEmail, 
-  onLogout,
-  isAdmin = false,
-  isPartner = false
+  onLogout
 }) => {
   const { t } = useTranslation();
+  const auth = useAuth();
   const userName = userEmail?.split('@')[0] || 'User';
 
   //  BOB-METHODE: Toon het dashboard pas als de sessie echt geland is
@@ -69,12 +67,12 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
           <div className="px-3 py-1 bg-va-black/5 border border-black/5 rounded-full text-[10px] font-bold tracking-widest uppercase text-va-black/40">
             <VoiceglotText translationKey="nav.access.customer" defaultText="Klant Account" />
           </div>
-          {isAdmin && (
+          {auth.isAdmin && (
             <div className="px-3 py-1 bg-primary/10 border border-primary/10 rounded-full text-[10px] font-bold tracking-widest uppercase text-primary">
               <VoiceglotText translationKey="nav.access.admin" defaultText="Administrator" />
             </div>
           )}
-          {isPartner && (
+          {(auth.user as any)?.role === 'partner' && (
             <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/10 rounded-full text-[10px] font-bold tracking-widest uppercase text-blue-500">
               <VoiceglotText translationKey="nav.access.partner" defaultText="Partner Toegang" />
             </div>

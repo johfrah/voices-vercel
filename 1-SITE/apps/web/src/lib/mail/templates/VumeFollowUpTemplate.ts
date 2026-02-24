@@ -41,10 +41,10 @@ export const VumeFollowUpTemplate = (props: FollowUpProps) => {
         ${isNl ? 'Was alles naar wens?' : 'Was everything to your satisfaction?'}
       </p>
       <div style="display: flex; justify-content: center; gap: 15px;">
-        <a href="https://${host || 'www.voices.be'}/account/feedback?orderId=${orderId}&vibe=good" style="background: #ff4f00; color: #fff; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: bold; font-size: 14px;">
+        <a href="https://{{host}}/account/feedback?orderId=${orderId}&vibe=good" style="background: #ff4f00; color: #fff; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: bold; font-size: 14px;">
           ${isNl ? 'Ja, top!' : 'Yes, great!'}
         </a>
-        <a href="https://${host || 'www.voices.be'}/account/feedback?orderId=${orderId}&vibe=bad" style="background: #fff; color: #999; padding: 12px 25px; border-radius: 12px; text-decoration: none; border: 1px solid #eee; font-size: 14px;">
+        <a href="https://{{host}}/account/feedback?orderId=${orderId}&vibe=bad" style="background: #fff; color: #999; padding: 12px 25px; border-radius: 12px; text-decoration: none; border: 1px solid #eee; font-size: 14px;">
           ${isNl ? 'Kan beter' : 'Could be better'}
         </a>
       </div>

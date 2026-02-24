@@ -60,32 +60,39 @@ export default function SettingsPage() {
                 <div className="w-32 h-32 bg-va-off-white rounded-[32px] flex items-center justify-center text-va-black/20 overflow-hidden border border-black/[0.05]">
                   <User size={64} strokeWidth={1} />
                 </div>
-                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg border-4 border-white">
-                  <BadgeCheck size={20} strokeWidth={1.5} />
-                </div>
+                {((auth.user as any)?.role === 'partner' || auth.isAdmin) && (
+                  <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg border-4 border-white">
+                    <BadgeCheck size={20} strokeWidth={1.5} />
+                  </div>
+                )}
               </div>
               <div>
                 <HeadingInstrument level={3} className="text-2xl tracking-tight font-medium">
                   {auth.user?.firstName} {auth.user?.lastName}
                 </HeadingInstrument>
                 <TextInstrument className="text-va-black/40 text-[13px] tracking-widest uppercase">
-                  <VoiceglotText translationKey="account.settings.role_actor" defaultText="Pro Voice Actor" />
+                  <VoiceglotText 
+                    translationKey={(auth.user as any)?.role === 'partner' ? "account.settings.role_actor" : "account.settings.role_customer"} 
+                    defaultText={(auth.user as any)?.role === 'partner' ? "Pro Voice Actor" : "Voices Customer"} 
+                  />
                 </TextInstrument>
               </div>
-              <div className="pt-6 border-t border-black/[0.03] flex justify-center gap-8">
-                <div className="text-center">
-                  <TextInstrument className="text-xl font-medium leading-none">12</TextInstrument>
-                  <TextInstrument className="text-[10px] text-va-black/40 uppercase tracking-tighter">
-                    <VoiceglotText translationKey="account.settings.projects" defaultText="Projecten" />
-                  </TextInstrument>
+              {((auth.user as any)?.role === 'partner' || auth.isAdmin) && (
+                <div className="pt-6 border-t border-black/[0.03] flex justify-center gap-8">
+                  <div className="text-center">
+                    <TextInstrument className="text-xl font-medium leading-none">12</TextInstrument>
+                    <TextInstrument className="text-[10px] text-va-black/40 uppercase tracking-tighter">
+                      <VoiceglotText translationKey="account.settings.projects" defaultText="Projecten" />
+                    </TextInstrument>
+                  </div>
+                  <div className="text-center">
+                    <TextInstrument className="text-xl font-medium leading-none">4.9</TextInstrument>
+                    <TextInstrument className="text-[10px] text-va-black/40 uppercase tracking-tighter">
+                      <VoiceglotText translationKey="account.settings.rating" defaultText="Rating" />
+                    </TextInstrument>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <TextInstrument className="text-xl font-medium leading-none">4.9</TextInstrument>
-                  <TextInstrument className="text-[10px] text-va-black/40 uppercase tracking-tighter">
-                    <VoiceglotText translationKey="account.settings.rating" defaultText="Rating" />
-                  </TextInstrument>
-                </div>
-              </div>
+              )}
             </div>
 
             <div className="bg-va-black text-white p-8 rounded-[40px] shadow-aura space-y-6 group">
@@ -139,7 +146,52 @@ export default function SettingsPage() {
 
           {/*  Rechts: De Inhoud (8 kolommen) */}
           <div className="lg:col-span-8">
-            <ActorProfileForm mode="settings" onSave={handleSave} />
+            {((auth.user as any)?.role === 'partner' || auth.isAdmin) ? (
+              <ActorProfileForm mode="settings" onSave={handleSave} />
+            ) : (
+              <div className="bg-white p-12 rounded-[40px] shadow-aura border border-black/[0.02] space-y-8">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                    <User size={24} strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <HeadingInstrument level={2} className="text-3xl tracking-tighter">
+                      <VoiceglotText translationKey="account.settings.customer_profile.title" defaultText="Klant Profiel" />
+                    </HeadingInstrument>
+                    <TextInstrument className="text-va-black/40">
+                      <VoiceglotText translationKey="account.settings.customer_profile.subtitle" defaultText="Beheer je persoonlijke gegevens." />
+                    </TextInstrument>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <LabelInstrument>
+                      <VoiceglotText translationKey="form.label.first_name" defaultText="Voornaam" />
+                    </LabelInstrument>
+                    <InputInstrument 
+                      value={auth.user?.firstName || ''}
+                      readOnly
+                      className="bg-va-off-white/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <LabelInstrument>
+                      <VoiceglotText translationKey="form.label.last_name" defaultText="Achternaam" />
+                    </LabelInstrument>
+                    <InputInstrument 
+                      value={auth.user?.lastName || ''}
+                      readOnly
+                      className="bg-va-off-white/50"
+                    />
+                  </div>
+                </div>
+                <div className="p-6 bg-primary/5 rounded-2xl border border-primary/10">
+                  <TextInstrument className="text-[13px] text-primary font-medium leading-relaxed">
+                    <VoiceglotText translationKey="account.settings.customer_note" defaultText="Als klant account heb je beperkte toegang tot artistieke instellingen. Wil je zelf stemacteur worden? Neem contact op met support." />
+                  </TextInstrument>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
