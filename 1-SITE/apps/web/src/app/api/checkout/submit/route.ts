@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     const baseUrl = `${protocol}://${host}`;
     const ip = headersList.get('x-forwarded-for') || 'unknown';
 
-    // 🛡️ CHRIS-PROTOCOL: Structural Validation with Coercion (v2.14.256)
+    // 1. Validatie van de payload
     const rawBody = await request.json();
     
     // Deep Trace Logging: Log types before validation
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
     const data = validation.data;
 
-    // Deep Trace Logging: Log types after validation (should be coerced to numbers)
+    // Deep Trace Logging: Log types after validation
     console.log('[Checkout] ✅ TRACE (Post-Validation):', {
       totalType: typeof data.pricing.total,
       actorIdType: typeof data.selectedActor?.id,
@@ -85,76 +85,88 @@ export async function POST(request: Request) {
       payment_method,
     } = data;
 
-    // 2. Voorbereiding van data
+    // 🛡️ CHRIS-PROTOCOL: Extract actor & workshop IDs for validation (v2.14.269)
     const actorIds = Array.from(new Set([
       ...(items || []).map((i: any) => i.actor?.id).filter(Boolean),
       ...(selectedActor?.id ? [selectedActor.id] : [])
-    ]));
+    ])).map(id => Number(id));
 
-    const isSubscription = usage === 'subscription';
-    const isVatExempt = false; // TODO: Implement real VAT check
-    const taxRate = isVatExempt ? 0 : 0.21;
+    const workshopIds = Array.from(new Set([
+      ...(items || []).map((i: any) => i.id).filter((id: any) => !isNaN(Number(id)) && String(id).length > 5)
+    ])).map(id => Number(id));
 
-    // 3. Fetch Actor Data voor prijsvalidatie
+    console.log('[Checkout] Validated IDs:', { actorIds, workshopIds });
+
+    // 3. Fetch Data voor prijsvalidatie (Masterclass SDK-Direct)
     let dbActors: any[] = [];
-    if (actorIds.length > 0) {
-      try {
-        console.log('[Checkout] 🔍 DB Fetch Actors (Masterclass):', actorIds);
-        
-        // 🛡️ CHRIS-PROTOCOL: Structural Integrity (v2.14.268)
-        // We gebruiken de SDK direct om schema-mismatches in Drizzle te omzeilen.
-        const { data, error: sdkErr } = await sdkClient
-          .from('actors')
-          .select('*')
-          .in('id', actorIds);
+    let dbWorkshops: any[] = [];
 
-        if (sdkErr) throw sdkErr;
-        
+    try {
+      if (actorIds.length > 0) {
+        const { data } = await sdkClient.from('actors').select('*').in('id', actorIds);
         dbActors = (data || []).map(a => ({
           ...a,
           wpProductId: a.wp_product_id,
           firstName: a.first_name,
           lastName: a.last_name,
           nativeLang: a.native_lang,
-          priceUnpaid: a.price_unpaid,
-          priceOnline: a.price_online,
-          priceIvr: a.price_ivr,
-          priceLiveRegie: a.price_live_regie,
           rates_raw: a.rates || {}
         }));
-
-        console.log('[Checkout] ✅ DB Fetch Success, count:', dbActors.length);
-      } catch (dbErr: any) {
-        console.error('[Checkout] ❌ Actor fetch fatal:', dbErr.message);
-        throw new Error(`Database connection error: ${dbErr.message}`);
       }
+
+      if (workshopIds.length > 0) {
+        const { data } = await sdkClient.from('workshops').select('*').in('id', workshopIds);
+        dbWorkshops = data || [];
+      }
+    } catch (dbErr: any) {
+      console.error('[Checkout] DB Fetch fatal:', dbErr.message);
+      throw new Error(`Database connection error: ${dbErr.message}`);
     }
+
     const actorMap = new Map(dbActors.map(a => [a.id, a]));
+    const workshopMap = new Map(dbWorkshops.map(w => [Number(w.id), w]));
+
+    const isSubscription = usage === 'subscription';
+    const isVatExempt = false; 
+    const taxRate = isVatExempt ? 0 : 0.21;
 
     // 4. Prijs Validatie (Server-Side)
     let serverCalculatedSubtotal = 0;
     let isQuoteOnly = false;
 
     const validatedItems = (items || []).map((item: any) => {
-      const dbActor = actorMap.get(item.actor?.id);
-      if (!dbActor) return item;
+      // Scenario A: Voice Over
+      if (item.type === 'voice_over') {
+        const dbActor = actorMap.get(Number(item.actor?.id));
+        if (!dbActor) return item;
 
-      const result = SlimmeKassa.calculate({
-        usage: item.usage,
-        words: item.briefing?.trim().split(/\s+/).filter(Boolean).length || 0,
-        mediaTypes: item.media,
-        country: item.country,
-        spots: item.spots,
-        years: item.years,
-        liveSession: item.liveSession,
-        actorRates: dbActor as any,
-        music: item.music,
-        isVatExempt
-      });
+        const result = SlimmeKassa.calculate({
+          usage: item.usage,
+          words: item.briefing?.trim().split(/\s+/).filter(Boolean).length || 0,
+          mediaTypes: item.media,
+          country: item.country,
+          spots: item.spots,
+          years: item.years,
+          liveSession: item.liveSession,
+          actorRates: dbActor as any,
+          music: item.music,
+          isVatExempt
+        });
 
-      if (result.isQuoteOnly) isQuoteOnly = true;
-      serverCalculatedSubtotal += result.subtotal;
-      return { ...item, pricing: result };
+        if (result.isQuoteOnly) isQuoteOnly = true;
+        serverCalculatedSubtotal += result.subtotal;
+        return { ...item, pricing: result };
+      }
+
+      // Scenario B: Workshop
+      if (item.type === 'workshop_edition') {
+        const dbWorkshop = workshopMap.get(Number(item.id));
+        const price = dbWorkshop ? Number(dbWorkshop.price) : 0;
+        serverCalculatedSubtotal += price;
+        return { ...item, pricing: { total: price, subtotal: price, tax: price * taxRate } };
+      }
+
+      return item;
     });
 
     if (selectedActor && step === 'briefing') {

@@ -265,7 +265,13 @@ export default function VoiceglotMasterPage() {
 
       {/* Stats & Progress Indicators */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-6 relative">
+          {stats.isCached && (
+            <div className="absolute -top-6 right-0 flex items-center gap-1.5 text-[10px] font-bold text-va-black/20 uppercase tracking-widest animate-pulse">
+              <History size={10} />
+              Cached Data ({new Date(stats.updatedAt).toLocaleTimeString()})
+            </div>
+          )}
           {['en', 'fr', 'de', 'es', 'pt', 'it'].map((langCode) => {
             const langStats = stats.coverage?.find((s: any) => s.lang === langCode);
             const count = langStats ? langStats.count : 0;
