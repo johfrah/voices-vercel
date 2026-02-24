@@ -3,6 +3,7 @@ import { translations, translationRegistry, appConfigs } from '@db/schema';
 import { sql, desc, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { createClient } from "@supabase/supabase-js";
 
 /**
  *  API: VOICEGLOT STATS (GODMODE CACHING 2026)
@@ -25,6 +26,11 @@ export async function GET(request: NextRequest) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
 
+    // Supabase Client voor absolute betrouwbaarheid
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     // 1. Check Cache
     const cachedConfig = await db.select().from(appConfigs).where(eq(appConfigs.key, CACHE_KEY)).limit(1).catch(() => []);
     const now = new Date().getTime();
@@ -43,24 +49,52 @@ export async function GET(request: NextRequest) {
 
     try {
       console.log('[Voiceglot Stats] Fetching total count from registry...');
-      // CHRIS-PROTOCOL: Use direct db.execute for absolute reliability and to bypass RLS/mapping issues
-      const totalResult = await db.execute(sql`SELECT count(*) as count FROM translation_registry`);
-      totalStrings = parseInt(String((totalResult as any)[0]?.count || '0'), 10);
+      // CHRIS-PROTOCOL: Use Supabase SDK for stats to bypass driver mapping issues
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      const { count: totalCount, error: totalErr } = await supabase
+        .from('translation_registry')
+        .select('*', { count: 'exact', head: true });
+
+      if (totalErr) throw totalErr;
+      totalStrings = totalCount || 0;
       console.log(`[Voiceglot Stats] Total strings found: ${totalStrings}`);
       
       if (totalStrings > 0) {
         console.log('[Voiceglot Stats] Fetching counts per language...');
-        const langResult = await db.execute(sql`
-          SELECT lang, count(*) as count 
-          FROM translations 
-          GROUP BY lang
-        `);
-        statsByLang = (langResult as any) || [];
+        // Direct grouping via SDK is not supported, so we use a raw query fallback or RPC
+        const { data: langData, error: langErr } = await supabase
+          .from('translations')
+          .select('lang');
+        
+        if (langErr) throw langErr;
+
+        const counts: Record<string, number> = {};
+        (langData || []).forEach((t: any) => {
+          counts[t.lang] = (counts[t.lang] || 0) + 1;
+        });
+        statsByLang = Object.entries(counts).map(([lang, count]) => ({ lang, count }));
         console.log(`[Voiceglot Stats] Stats by lang result:`, statsByLang);
       }
     } catch (dbErr: any) {
-      console.error('[Voiceglot Stats] Raw SQL query failed:', dbErr.message);
-      throw dbErr; // Re-throw to be caught by the outer try-catch
+      console.error('[Voiceglot Stats] Supabase SDK query failed, trying Drizzle backup:', dbErr.message);
+      try {
+        const totalResult = await db.execute(sql`SELECT count(*) as count FROM translation_registry`);
+        totalStrings = parseInt(String((totalResult as any)[0]?.count || '0'), 10);
+        
+        if (totalStrings > 0) {
+          const langResult = await db.execute(sql`
+            SELECT lang, count(*) as count 
+            FROM translations 
+            GROUP BY lang
+          `);
+          statsByLang = (langResult as any) || [];
+        }
+      } catch (drizzleErr: any) {
+        console.error('[Voiceglot Stats] Drizzle backup also failed:', drizzleErr.message);
+      }
     }
 
     // Bereken percentages

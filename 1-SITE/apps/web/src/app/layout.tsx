@@ -24,6 +24,7 @@ import "../styles/globals.css";
 import { Providers } from "./Providers";
 import { getTranslationsServer } from "@/lib/services/api-server";
 import { cn } from "@/lib/utils";
+import { SafeErrorGuard } from "@/components/ui/SafeErrorGuard";
 
 //  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden (ssr: false) voor 100ms LCP
 const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false, loading: () => null });
@@ -283,50 +284,52 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
-          <PageWrapperInstrument>
-            <Suspense fallback={<LoadingScreenInstrument />}>
-              {children}
-            </Suspense>
-          </PageWrapperInstrument>
-          <EditModeOverlay>
-            <GhostModeBar />
-            <LiquidTransitionOverlay />
-            <CodyPreviewBanner />
-            <Suspense fallback={null}>
-              <VoicejarTracker />
-            </Suspense>
-            <div className="fixed top-0 left-0 right-0 z-[200]">
-              <Suspense fallback={<div className="h-10 bg-va-off-white/50 animate-pulse" />}>
-                {showTopBar && <TopBar />}
-                {showGlobalNav && <GlobalNav />}
+          <SafeErrorGuard>
+            <PageWrapperInstrument>
+              <Suspense fallback={<LoadingScreenInstrument />}>
+                {children}
               </Suspense>
-            </div>
-            <Analytics />
-            {process.env.NODE_ENV === 'development' && <VercelToolbar />}
-            <CommandPalette />
-            <SpotlightDashboard />
-            <Toaster position="bottom-right" />
-            <GlobalModalManager />
-            {!isArtistJourney && market.market_code !== 'ARTIST' && (
+            </PageWrapperInstrument>
+            <EditModeOverlay>
+              <GhostModeBar />
+              <LiquidTransitionOverlay />
+              <CodyPreviewBanner />
               <Suspense fallback={null}>
-                {market.market_code === 'PORTFOLIO' && <JohfrahActionDock />}
-                {market.market_code === 'PORTFOLIO' && <JohfrahConfiguratorSPA />}
-                {market.market_code === 'BE' && <CastingDock />}
+                <VoicejarTracker />
               </Suspense>
-            )}
-            <Suspense fallback={null}>
-              <SonicDNAHandler />
-              <GlobalAudioOrchestrator />
-            </Suspense>
-            {showVoicy && (
+              <div className="fixed top-0 left-0 right-0 z-[200]">
+                <Suspense fallback={<div className="h-10 bg-va-off-white/50 animate-pulse" />}>
+                  {showTopBar && <TopBar />}
+                  {showGlobalNav && <GlobalNav />}
+                </Suspense>
+              </div>
+              <Analytics />
+              {process.env.NODE_ENV === 'development' && <VercelToolbar />}
+              <CommandPalette />
+              <SpotlightDashboard />
+              <Toaster position="bottom-right" />
+              <GlobalModalManager />
+              {!isArtistJourney && market.market_code !== 'ARTIST' && (
+                <Suspense fallback={null}>
+                  {market.market_code === 'PORTFOLIO' && <JohfrahActionDock />}
+                  {market.market_code === 'PORTFOLIO' && <JohfrahConfiguratorSPA />}
+                  {market.market_code === 'BE' && <CastingDock />}
+                </Suspense>
+              )}
               <Suspense fallback={null}>
-                <VoicyBridge />
-                <VoicyChat />
+                <SonicDNAHandler />
+                <GlobalAudioOrchestrator />
               </Suspense>
-            )}
-            <CookieBanner />
-            <FooterWrapper />
-          </EditModeOverlay>
+              {showVoicy && (
+                <Suspense fallback={null}>
+                  <VoicyBridge />
+                  <VoicyChat />
+                </Suspense>
+              )}
+              <CookieBanner />
+              <FooterWrapper />
+            </EditModeOverlay>
+          </SafeErrorGuard>
         </Providers>
       </body>
     </html>

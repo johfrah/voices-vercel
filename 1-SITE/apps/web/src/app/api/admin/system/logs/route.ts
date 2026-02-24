@@ -83,6 +83,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true, status: 'consolidated' });
       }
 
+      const nowIso = new Date().toISOString();
       await db.insert(systemEvents).values({
         level,
         source,
@@ -91,9 +92,9 @@ export async function POST(request: Request) {
           ...details,
           url: request.headers.get('referer'),
           userAgent: request.headers.get('user-agent'),
-          timestamp: new Date().toISOString()
+          timestamp: nowIso
         },
-        createdAt: sql`now()`
+        createdAt: nowIso
       });
     } catch (dbError) {
       console.warn('[Logs Reporting] Drizzle failed, falling back to Supabase SDK:', dbError);
