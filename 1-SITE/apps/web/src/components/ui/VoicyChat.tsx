@@ -269,18 +269,32 @@ export const VoicyChatV2: React.FC = () => {
             
             //  KELLY-MANDATE: Bereid de order voor via de Mollie API
             setIsTyping(true);
-            fetch('/api/checkout/mollie', {
+            fetch('/api/checkout/submit', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                customer: { ...state.customer, email: params.email },
-                pricing: state.pricing,
+                email: params.email,
+                first_name: state.customer.first_name || 'Klant',
+                last_name: state.customer.last_name || '(via Chat)',
+                pricing: {
+                  ...state.pricing,
+                  total: state.pricing.total,
+                },
                 items: state.items.length > 0 ? state.items : [{
+                  id: `voice-${state.selectedActor?.id || 'unknown'}-${Date.now()}`,
                   type: 'voice_over',
                   actor: state.selectedActor,
                   briefing: params.briefing || state.briefing,
                   pricing: state.pricing
-                }]
+                }],
+                selectedActor: state.selectedActor,
+                briefing: params.briefing || state.briefing,
+                usage: state.usage,
+                payment_method: 'bancontact',
+                metadata: {
+                  words: (params.briefing || state.briefing || '').trim().split(/\s+/).filter(Boolean).length,
+                  prompts: state.prompts
+                }
               })
             })
             .then(res => res.json())

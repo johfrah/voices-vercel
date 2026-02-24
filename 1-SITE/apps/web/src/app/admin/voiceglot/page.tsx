@@ -75,6 +75,19 @@ export default function VoiceglotMasterPage() {
     }
   };
 
+  //  CHRIS-PROTOCOL: Live Polling (Godmode 2026)
+  // We verversen de data elke 5 seconden als er healing bezig is
+  useEffect(() => {
+    const hasHealing = translations.some(t => t.status === 'healing');
+    if (hasHealing || isHealingAll) {
+      const timer = setTimeout(() => {
+        fetchStats();
+        fetchTranslations();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [translations, isHealingAll]);
+
   const handleHealAll = async () => {
     if (!confirm('Weet je zeker dat je alle ontbrekende vertalingen wilt genereren via AI? Dit kan even duren.')) return;
     
@@ -272,10 +285,13 @@ export default function VoiceglotMasterPage() {
         <ButtonInstrument 
           onClick={handleHealAll}
           disabled={isHealingAll}
-          className="va-btn-pro !bg-primary flex items-center gap-2"
+          className={cn(
+            "va-btn-pro flex items-center gap-2 transition-all duration-500",
+            isHealingAll ? "!bg-amber-500 !text-white animate-pulse" : "!bg-primary"
+          )}
         >
           {isHealingAll ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}
-          {isHealingAll ? 'Vertaalwerk bezig...' : 'Vertaal Alles (AI)'}
+          {isHealingAll ? 'Healing Bezig...' : stats?.coverage?.some((c: any) => c.percentage < 100) ? 'Hervat Healing' : 'Vertaal Alles (AI)'}
         </ButtonInstrument>
       </SectionInstrument>
 
@@ -434,14 +450,28 @@ export default function VoiceglotMasterPage() {
                               </TextInstrument>
                               <div className="flex items-center justify-between mt-auto pt-2">
                                 <div className="flex items-center gap-1.5">
-                                  {trans.isLocked ? (
-                                    <Lock size={8} className="text-va-black/40" />
+                                  {trans.status === 'healing' ? (
+                                    <>
+                                      <Loader2 size={8} className="animate-spin text-amber-500" />
+                                      <span className="text-[9px] font-black uppercase tracking-tighter text-amber-500">Healing</span>
+                                    </>
+                                  ) : trans.status === 'healing_failed' ? (
+                                    <>
+                                      <AlertCircle size={8} className="text-red-500" />
+                                      <span className="text-[9px] font-black uppercase tracking-tighter text-red-500">Failed</span>
+                                    </>
                                   ) : (
-                                    <Sparkles size={8} className={cn(slopDetected ? "text-red-400" : "text-blue-400")} />
+                                    <>
+                                      {trans.isLocked ? (
+                                        <Lock size={8} className="text-va-black/40" />
+                                      ) : (
+                                        <Sparkles size={8} className={cn(slopDetected ? "text-red-400" : "text-blue-400")} />
+                                      )}
+                                      <span className="text-[9px] font-black uppercase tracking-tighter text-va-black/20">
+                                        {trans.isLocked ? 'Locked' : slopDetected ? 'Slop' : 'Auto'}
+                                      </span>
+                                    </>
                                   )}
-                                  <span className="text-[9px] font-black uppercase tracking-tighter text-va-black/20">
-                                    {trans.isLocked ? 'Locked' : slopDetected ? 'Slop' : 'Auto'}
-                                  </span>
                                 </div>
                                 <button 
                                   onClick={() => toggleLock(trans.id, trans.isLocked)}
@@ -455,8 +485,7 @@ export default function VoiceglotMasterPage() {
                         </div>
                       ) : (
                         <div className="flex items-center gap-2 text-va-black/10">
-                          <Loader2 size={10} className="animate-spin" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest">Healing...</span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest italic">Missing</span>
                         </div>
                       )}
                     </td>

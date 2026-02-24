@@ -230,6 +230,12 @@ export async function POST(request: Request) {
     }
 
     // 6. Bestelling aanmaken
+    // 🛡️ CHRIS-PROTOCOL: Minimum amount check (v2.14.271)
+    if (amount <= 0 && !isQuote && !isInvoice) {
+      console.warn('[Checkout] Amount is 0 or negative for a paid order. Forcing quote mode.');
+      isQuoteOnly = true;
+    }
+
     const isQuote = isQuoteOnly || (rawBody as any).isQuote;
     const [newOrder] = await db.insert(orders).values({
       wpOrderId: Math.floor(Math.random() * 100000),

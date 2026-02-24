@@ -243,28 +243,49 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     updateIsSubmitting(true);
 
     try {
-      const res = await fetch('/api/checkout/mollie', {
+      const safeBriefing = state.briefing || '';
+      const wordCount = safeBriefing.trim().split(/\s+/).filter(Boolean).length;
+
+      const payload = {
+        pricing: {
+          total: subtotal,
+          cartHash: cartHash,
+          base: state.pricing.base,
+          wordSurcharge: state.pricing.wordSurcharge,
+          mediaSurcharge: state.pricing.mediaSurcharge,
+          musicSurcharge: state.pricing.musicSurcharge,
+        },
+        items: state.items || [],
+        selectedActor: state.selectedActor,
+        step: state.step,
+        email: formData.email,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        phone: formData.phone,
+        company: formData.company,
+        vat_number: formData.vat_number,
+        address_street: formData.address_street,
+        postal_code: formData.postal_code,
+        city: formData.city,
+        country: formData.country || 'BE',
+        usage: state.usage,
+        plan: state.plan,
+        briefing: safeBriefing,
+        quoteMessage: quoteMessage || null,
+        payment_method: state.paymentMethod,
+        metadata: {
+          words: wordCount,
+          prompts: state.prompts || 0,
+          userId: (state as any).metadata?.userId
+        }
+      };
+
+      console.log('[CheckoutForm] 📦 SUBMITTING PAYLOAD:', payload);
+
+      const res = await fetch('/api/checkout/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...state,
-          ...formData,
-          pricing: {
-            ...state.pricing,
-            total: subtotal,
-            cartHash
-          },
-          quoteMessage,
-          payment_method: state.paymentMethod,
-          country: formData.country || 'BE',
-          language: language || 'nl',
-          music: state.music,
-          metadata: {
-            ...state.metadata,
-            words: state.briefing.trim().split(/\s+/).filter(Boolean).length,
-            prompts: state.prompts
-          }
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();

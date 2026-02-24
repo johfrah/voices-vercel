@@ -43,9 +43,11 @@ export async function POST(request: NextRequest) {
       dnaCache[lang] = await GeminiService.getInstance().getMarketDNA(lang);
     }
 
+    //  CHRIS-PROTOCOL: Resume-First Batching
+    // We filteren eerst de items die ECHT healing nodig hebben
+    const itemsToHeal = [];
     for (const item of registryItems) {
       for (const lang of targetLanguages) {
-        // Check of deze vertaling al bestaat
         const [existing] = await db
           .select()
           .from(translations)
@@ -58,9 +60,31 @@ export async function POST(request: NextRequest) {
           .limit(1)
           .catch(() => []);
 
-        if (!existing || !existing.translatedText || existing.translatedText === 'Initial Load') {
-          // 3. Vertaal via OpenAI (GPT-4o mini) met volledige context
-          const dna = dnaCache[lang] || '';
+        if (!existing || !existing.translatedText || existing.translatedText === 'Initial Load' || existing.status === 'healing_failed') {
+          itemsToHeal.push({ item, lang });
+        }
+      }
+    }
+
+    console.log(`🚀 Starting Healing for ${itemsToHeal.length} items...`);
+
+    for (const { item, lang } of itemsToHeal) {
+      try {
+        // Markeer als 'healing' in de DB zodat de UI dit live kan tonen
+        await db.insert(translations).values({
+          translationKey: item.stringHash,
+          lang: lang,
+          originalText: item.originalText,
+          translatedText: '...',
+          status: 'healing',
+          updatedAt: new Date()
+        }).onConflictDoUpdate({
+          target: [translations.translationKey, translations.lang],
+          set: { status: 'healing', updatedAt: new Date() }
+        });
+
+        // 3. Vertaal via OpenAI (GPT-4o mini) met volledige context
+        const dna = dnaCache[lang] || '';
           
           //  CHRIS-PROTOCOL: Intelligent Context Enhancement
           //  CHRIS-PROTOCOL: Intelligent Context Enhancement
@@ -73,6 +97,8 @@ export async function POST(request: NextRequest) {
             contextHint = `Dit is tekst voor de prijscalculator. Wees precies met getallen en eenheden. Context: ${contextHint}`;
           } else if (item.stringHash.startsWith('checkout.')) {
             contextHint = `Dit is tekst voor het afrekenproces. Vertrouwen en duidelijkheid zijn hier cruciaal. Context: ${contextHint}`;
+          } else if (item.stringHash.startsWith('media.') && (item.stringHash.endsWith('.alt_text') || item.stringHash.endsWith('.file_name'))) {
+            contextHint = `Dit is een bestandsnaam of alt-tekst voor media. Vertaal NOOIT merknamen of technische bestandsnamen (zoals 'Bigger', 'Voices', etc). Als de tekst een eigennaam lijkt, laat deze dan ongewijzigd. Context: ${contextHint}`;
           } else if (item.originalText.length < 20) {
             contextHint = `Dit is een kort UI label of menu-item. Context: ${contextHint}`;
           }
@@ -92,6 +118,7 @@ export async function POST(request: NextRequest) {
             
             STRICT OUTPUT RULES:
             - Antwoord UITSLUITEND met de vertaalde tekst.
+            - Vertaal NOOIT merknamen (Voices, Studio, Academy, Artist) of technische bestandsnamen.
             - Geen inleiding zoals "De vertaling is:".
             - Geen herhaling van de brontekst.
             - Geen aanhalingstekens rond de vertaling.
@@ -125,12 +152,17 @@ export async function POST(request: NextRequest) {
             target: [translations.translationKey, translations.lang],
             set: {
               translatedText: cleanTranslation,
+              status: 'active',
               updatedAt: new Date()
             }
           });
 
           totalHealed++;
-        }
+      } catch (err) {
+        console.error(`❌ Healing failed for ${item.stringHash} (${lang}):`, err);
+        await db.update(translations)
+          .set({ status: 'healing_failed', updatedAt: new Date() })
+          .where(and(eq(translations.translationKey, item.stringHash), eq(translations.lang, lang)));
       }
     }
 
