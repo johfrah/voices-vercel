@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     console.log('📊 [Voiceglot Stats API] Total strings:', totalStrings);
 
     // Aantal vertalingen per taal
-    const statsByLang = await db.select({
+    const statsByLang = totalStrings > 0 ? await db.select({
       lang: translations.lang,
       count: sql<number>`count(*)`
     })
@@ -73,12 +73,12 @@ export async function GET(request: NextRequest) {
     .catch((err) => {
       console.error('❌ [Voiceglot Stats API] Translations Query Error:', err);
       return [];
-    });
+    }) : [];
     console.log('📊 [Voiceglot Stats API] Stats by lang:', statsByLang.length, 'languages found');
 
     // Detect non-NL sources (Godmode Detection)
     // We doen een snelle check op de laatste 100 strings om te zien of er veel non-NL tussen zit
-    const sampleStrings = await db.select().from(translationRegistry).orderBy(desc(translationRegistry.lastSeen)).limit(100).catch(() => []);
+    const sampleStrings = totalStrings > 0 ? await db.select().from(translationRegistry).orderBy(desc(translationRegistry.lastSeen)).limit(100).catch(() => []) : [];
     const nonNlCount = sampleStrings.filter(s => {
       const text = s.originalText.toLowerCase();
       // Simpele heuristiek voor demo: bevat Franse of Engelse lidwoorden maar geen NL
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    const recentStrings = await db.select().from(translationRegistry).orderBy(desc(translationRegistry.lastSeen)).limit(5).catch(() => []);
+    const recentStrings = totalStrings > 0 ? await db.select().from(translationRegistry).orderBy(desc(translationRegistry.lastSeen)).limit(5).catch(() => []) : [];
 
     const freshData = {
       totalStrings,
