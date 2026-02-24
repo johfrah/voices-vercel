@@ -128,7 +128,8 @@ export async function PATCH(
     }
 
     cleanUpdateData.isManuallyEdited = true;
-    cleanUpdateData.updatedAt = new Date().toISOString();
+    // 🛡️ CHRIS-PROTOCOL: Removed manual updatedAt to let DB handle it via defaultNow()
+    // This prevents "e.toISOString is not a function" errors.
 
     // 🛡️ CHRIS-PROTOCOL: Map language IDs to strings if provided
     if (body.native_lang_id || body.extra_lang_ids) {
@@ -181,8 +182,7 @@ export async function PATCH(
             fileType: 'image/webp',
             journey: 'agency',
             category: 'voices',
-            isPublic: true,
-            updatedAt: new Date().toISOString()
+            isPublic: true
           }).returning({ id: media.id });
           
           effectivePhotoId = newMedia.id;
