@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from 'next/dynamic';
-import { ContainerInstrument, Loader2 } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument } from "@/components/ui/LayoutInstruments";
+import { Loader2 } from "lucide-react";
 
 //  NUCLEAR LOADING LAW: Load heavy dashboard content only on client to prevent hydration mismatch
 const AdminDashboardContent = dynamic(
