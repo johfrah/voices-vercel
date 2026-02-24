@@ -1,37 +1,14 @@
 "use client";
 
-import React, { useRef, useState, useEffect, forwardRef, HTMLAttributes, ElementType } from 'react';
-/**
- * CLIENT-SIDE LAYOUT INSTRUMENTS
- * To avoid server component boundary issues in StudioLaunchpad
- */
-const SectionInstrument = ({ children, className = '', ...props }: React.HTMLAttributes<HTMLElement>) => (
-  <section className={cn("va-section", className)} {...props}>{children}</section>
-);
-
-interface ContainerInstrumentProps extends React.HTMLAttributes<HTMLElement> {
-  as?: React.ElementType;
-  plain?: boolean;
-}
-const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentProps>(({ 
-  children, className = '', as: Component = 'div', plain = false, ...props 
-}, ref) => (
-  <Component ref={ref} className={cn(plain ? className : cn("va-container", className))} {...props}>{children}</Component>
-));
-
-const HeadingInstrument = ({ children, level = 2, className = '', ...props }: any) => {
-  const Tag = `h${level}` as any;
-  return <Tag className={cn("va-heading", className)} {...props}>{children}</Tag>;
-};
-
-const TextInstrument = ({ children, className = '', ...props }: React.HTMLAttributes<HTMLElement>) => (
-  <p className={cn("va-text", className)} {...props}>{children}</p>
-);
-
+import React, { useRef, useState, useEffect } from 'react';
 import {
     ButtonInstrument,
     InputInstrument,
     LabelInstrument,
+    SectionInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
@@ -492,5 +469,6 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
           </motion.div>
         </AnimatePresence>
       </SectionInstrument>
+    </SectionInstrument>
   );
 };
