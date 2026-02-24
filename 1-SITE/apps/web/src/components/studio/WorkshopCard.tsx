@@ -232,7 +232,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
                   {/* Datum */}
                   <ContainerInstrument plain className="flex items-center gap-2">
                     <Image src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 
-                    <TextInstrument className={`text-[15px] tracking-widest ${index === 0 ? 'font-medium text-va-black' : 'font-light text-va-black/30'}`}>
+                    <TextInstrument className={`text-[15px] tracking-widest ${index === 0 ? 'font-medium text-va-black' : 'font-light text-va-black/30'}`} suppressHydrationWarning>
                       <VoiceglotText 
                         translationKey={`studio.workshop.${workshop.id}.edition.${edition.id}.date`} 
                         defaultText={new Date(edition.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' })} 
@@ -242,7 +242,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
                   
                   {/* Tijd & Locatie */}
                   <ContainerInstrument plain className="flex items-center gap-4">
-                    <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest">
+                    <TextInstrument className="text-[15px] font-light text-va-black/30 tracking-widest" suppressHydrationWarning>
                       <VoiceglotText 
                         translationKey={`studio.workshop.${workshop.id}.edition.${edition.id}.time`} 
                         defaultText={new Date(edition.date).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })} 

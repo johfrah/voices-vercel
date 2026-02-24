@@ -609,8 +609,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             try {
               const workshops = await getWorkshops();
               workshops.sort((a, b) => {
-                const nextA = a.editions?.[0]?.date;
-                const nextB = b.editions?.[0]?.date;
+                const nextA = a.editions && a.editions.length > 0 ? a.editions[0].date : null;
+                const nextB = b.editions && b.editions.length > 0 ? b.editions[0].date : null;
                 if (nextA && nextB) return new Date(nextA).getTime() - new Date(nextB).getTime();
                 if (nextA) return -1;
                 if (nextB) return 1;
@@ -673,7 +673,8 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
     return <Info strokeWidth={1.5} className="text-primary/40" size={40} />;
   };
 
-  const extractTitle = (content: string) => {
+  const extractTitle = (content: string = '') => {
+    if (!content) return { title: null, body: '' };
     const match = content.match(/^(?:###|#####)\s+(.+)$/m);
     return {
       title: match ? match[1] : null,
@@ -1109,7 +1110,7 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
           <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">
             Projecttype
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black"><VoiceglotText  translationKey={`page.${page.slug}.title`} defaultText={page.title} /></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning><VoiceglotText  translationKey={`page.${page.slug}.title`} defaultText={page.title} /></HeadingInstrument>
           <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
         </header>
         <ContainerInstrument className="space-y-24">
