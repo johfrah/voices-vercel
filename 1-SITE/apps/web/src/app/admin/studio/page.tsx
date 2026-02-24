@@ -9,12 +9,21 @@ import {
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
 import { FixedCostsInstrument } from "@/components/admin/FixedCostsInstrument";
-import { db } from "@db";
-import { workshopEditions } from "@db/schema";
-import { desc } from "drizzle-orm";
+import { createClient } from "@supabase/supabase-js";
 import { ArrowRight, DollarSign, Mail, Settings, Upload, Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+//  CHRIS-PROTOCOL: SDK fallback for stability (v2.14.273)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false
+  }
+});
 
 export const dynamic = 'force-dynamic';
 
@@ -29,19 +38,27 @@ export default async function StudioAdminPage() {
     return <ContainerInstrument className="p-20 text-center">Skipping admin render during build...</ContainerInstrument>;
   }
 
-  // 1. Haal alle edities op (voor overzicht)
+  // 1. Haal alle edities op (voor overzicht) via SDK voor stabiliteit
   let allEditions: any[] = [];
   try {
-    allEditions = await db.query.workshopEditions.findMany({
-      with: {
-        workshop: true,
-        location: true,
-        instructor: true
-      },
-      orderBy: [desc(workshopEditions.date)]
-    });
+    const { data: editions, error } = await supabase
+      .from('workshop_editions')
+      .select(`
+        *,
+        workshop:workshops(*),
+        location:locations(*),
+        instructor:instructors(*)
+      `)
+      .order('date', { ascending: false });
+
+    if (!error && editions) {
+      allEditions = editions.map(e => ({
+        ...e,
+        date: new Date(e.date)
+      }));
+    }
   } catch (dbError) {
-    console.error('Studio Admin DB Error (Editions):', dbError);
+    console.error('Studio Admin SDK Error (Editions):', dbError);
   }
 
   // 2. Haal financile stats op (Nuclear Logic)
@@ -57,6 +74,7 @@ export default async function StudioAdminPage() {
   };
   
   try {
+    // 🛡️ CHRIS-PROTOCOL: StudioDataBridge needs SDK migration too, but for now we try-catch
     financeStats = await StudioDataBridge.getFinanceStats();
   } catch (statsError) {
     console.error('Studio Admin Stats Error:', statsError);

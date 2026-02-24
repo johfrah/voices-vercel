@@ -2,6 +2,18 @@ import { db } from "@db";
 import { instructors, orderItems, orders, reviews, workshopInterest, workshops, workshopEditions, workshopGallery, costs } from "@db/schema";
 import { and, count, desc, eq, sql } from "drizzle-orm";
 import { StudioDashboardData, Workshop } from "../services/api";
+import { createClient } from "@supabase/supabase-js";
+
+//  CHRIS-PROTOCOL: SDK fallback for stability (v2.14.273)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false
+  }
+});
 
 /**
  *  NUCLEAR DATA BRIDGE - STUDIO JOURNEY (FULL NATIVE)
@@ -288,19 +300,27 @@ export class StudioDataBridge {
    */
   static async getFinanceStats(): Promise<FinanceStats> {
     try {
-      const studioOrders = await db.select().from(orders).where(and(
-        eq(orders.journey, 'studio'),
-        sql`${orders.status} IN ('completed', 'wc-completed', 'processing', 'wc-processing', 'wc-onbetaald')`
-      ));
-      const studioCosts = await db.select().from(costs).where(eq(costs.journey, 'studio'));
+      // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+      const { data: studioOrders, error: ordersError } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('journey', 'studio')
+        .in('status', ['completed', 'wc-completed', 'processing', 'wc-processing', 'wc-onbetaald']);
+
+      const { data: studioCosts, error: costsError } = await supabase
+        .from('costs')
+        .select('*')
+        .eq('journey', 'studio');
+
+      if (ordersError || costsError) throw ordersError || costsError;
       
       // Bereken omzet EXCL BTW
       let totalRevenue = 0;
       let pendingRevenue = 0;
 
-      studioOrders.forEach(o => {
+      (studioOrders || []).forEach(o => {
         const total = parseFloat(o.total || '0');
-        const tax = parseFloat((o.rawMeta as any)?._order_tax || '0');
+        const tax = parseFloat((o.raw_meta as any)?._order_tax || (o.rawMeta as any)?._order_tax || '0');
         const net = total - tax;
 
         if (o.status === 'wc-onbetaald') {
@@ -311,12 +331,12 @@ export class StudioDataBridge {
       });
       
       // Splits kosten in Externe Kosten en Partner Payouts
-      const externalCosts = studioCosts
-        .filter(c => !c.isPartnerPayout)
+      const externalCosts = (studioCosts || [])
+        .filter(c => !c.is_partner_payout && !c.isPartnerPayout)
         .reduce((acc, c) => acc + parseFloat(c.amount || '0'), 0);
         
-      const partnerPayouts = studioCosts
-        .filter(c => c.isPartnerPayout)
+      const partnerPayouts = (studioCosts || [])
+        .filter(c => c.is_partner_payout || c.isPartnerPayout)
         .reduce((acc, c) => acc + parseFloat(c.amount || '0'), 0);
 
       const netProfit = totalRevenue - externalCosts - partnerPayouts;
