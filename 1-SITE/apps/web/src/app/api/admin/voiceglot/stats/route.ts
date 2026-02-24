@@ -21,7 +21,10 @@ export async function GET(request: NextRequest) {
 
   try {
     // 1. Totaal aantal unieke strings in de registry
-    const totalStringsResult = await db.select({ count: sql<number>`count(*)` }).from(translationRegistry).catch(() => [{ count: 0 }]);
+    const totalStringsResult = await db.select({ count: sql<number>`count(*)` }).from(translationRegistry).catch((err) => {
+      console.error('Registry Query Error:', err);
+      return [{ count: 0 }];
+    });
     const totalStrings = Number(totalStringsResult[0]?.count || 0);
 
     // 2. Aantal vertalingen per taal
@@ -31,7 +34,10 @@ export async function GET(request: NextRequest) {
     })
     .from(translations)
     .groupBy(translations.lang)
-    .catch(() => []);
+    .catch((err) => {
+      console.error('Translations Query Error:', err);
+      return [];
+    });
 
     // 3. Bereken percentages (we gaan uit van NL, EN, FR, DE als doeltalen)
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it', 'en-gb', 'fr-fr', 'de-de', 'es-es', 'pt-pt'];

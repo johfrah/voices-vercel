@@ -66,11 +66,11 @@ export default function VoiceglotMasterPage() {
         setStats(data);
       } else {
         console.error('❌ Stats API Error:', data.error);
-        toast.error(`Stats Error: ${data.error}`);
+        // toast.error(`Stats Error: ${data.error}`);
       }
     } catch (e: any) {
       console.error('❌ Stats Fetch Failed:', e.message);
-      toast.error(`Fetch Failed: ${e.message}`);
+      // toast.error(`Fetch Failed: ${e.message}`);
     }
   };
 
@@ -187,7 +187,7 @@ export default function VoiceglotMasterPage() {
       acc[curr.translationKey] = {
         key: curr.translationKey,
         originalText: curr.originalText,
-        context: curr.context,
+        context: curr.context || null,
         langs: {}
       };
     }
@@ -196,6 +196,33 @@ export default function VoiceglotMasterPage() {
   }, {});
 
   const groupedList = Object.values(groupedTranslations);
+
+  //  CHRIS-PROTOCOL: Async Context Hydration (Godmode 2026)
+  // We halen de context (namen) pas op nadat de tabel er staat.
+  useEffect(() => {
+    if (groupedList.length > 0) {
+      const keysMissingContext = groupedList
+        .filter((g: any) => !g.context)
+        .map((g: any) => g.key);
+      
+      if (keysMissingContext.length > 0) {
+        // Fetch context for these keys in small batches
+        fetch('/api/admin/voiceglot/nuclear-audit', {
+          method: 'POST',
+          body: JSON.stringify({ keys: keysMissingContext.slice(0, 50) })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.results) {
+            setTranslations(prev => prev.map(t => {
+              const match = data.results.find((r: any) => r.stringHash === t.translationKey);
+              return match ? { ...t, context: match.context } : t;
+            }));
+          }
+        });
+      }
+    }
+  }, [groupedList.length]);
 
   const isSlop = (text: string, lang: string, original: string) => {
     if (!text || lang.startsWith('nl')) return false;

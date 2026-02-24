@@ -15,8 +15,8 @@ export async function GET() {
 
     let results: any[] = [];
     try {
-      //  CHRIS-PROTOCOL: Join with Registry for Context (Godmode 2026)
-      // We halen de context (bijv. de naam van de acteur) direct op uit de registry.
+      //  CHRIS-PROTOCOL: Ultra-Light Query for stability (Godmode 2026)
+      // We halen alleen de pure vertalingen op zonder joins om timeouts te voorkomen.
       const rawResults = await db
         .select({
           id: translations.id,
@@ -26,19 +26,16 @@ export async function GET() {
           translatedText: translations.translatedText,
           isLocked: translations.isManuallyEdited,
           isManuallyEdited: translations.isManuallyEdited,
-          updatedAt: translations.updatedAt,
-          lastAuditedAt: translations.updatedAt,
-          context: translationRegistry.context
+          updatedAt: translations.updatedAt
         })
         .from(translations)
-        .leftJoin(translationRegistry, eq(translations.translationKey, translationRegistry.stringHash))
         .orderBy(desc(translations.updatedAt))
         .limit(500);
       
       results = rawResults;
     } catch (dbErr) {
       console.warn(' [Voiceglot List API] Drizzle failed, falling back to SDK');
-      const { data } = await supabase.from('translations').select('*, translation_registry(context)').order('updated_at', { ascending: false }).limit(500);
+      const { data } = await supabase.from('translations').select('*').order('updated_at', { ascending: false }).limit(500);
       results = (data || []).map((r: any) => ({
         ...r,
         translationKey: r.translation_key,
@@ -46,8 +43,7 @@ export async function GET() {
         translatedText: r.translated_text,
         isLocked: r.is_manually_edited,
         isManuallyEdited: r.is_manually_edited,
-        updatedAt: r.updated_at,
-        context: r.translation_registry?.context
+        updatedAt: r.updated_at
       }));
     }
 
