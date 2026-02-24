@@ -332,6 +332,7 @@ export const PricingSummary: React.FC<{
             handleSubmit={handleSubmit}
             setIsPreviewOpen={setIsPreviewOpen}
             setIsTermsOpen={setIsTermsOpen}
+            reviewStats={reviewStats}
           />
         </ContainerInstrument>
       )}
@@ -629,7 +630,7 @@ const TotalsSection: React.FC<any> = ({
   );
 };
 
-const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsOpen }) => {
+const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsOpen, reviewStats }) => {
   const { t } = useTranslation();
   const { state, updateAgreedToTerms } = useCheckout();
   const { playClick } = useSonicDNA();
