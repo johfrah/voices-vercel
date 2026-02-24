@@ -19,7 +19,7 @@ import { AgencyContent } from "@/components/legacy/AgencyContent";
 import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
 import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
-import { normalizeSlug } from '@/lib/system/slug';
+import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -561,6 +561,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // 2. Check voor CMS Artikel (alleen als er maar 1 segment is)
     if (segments.length === 1) {
       try {
+        console.log(` [SmartRouter] Fetching CMS article: ${firstSegment}`);
         // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
         const { data: page, error } = await supabase
           .from('content_articles')
@@ -568,18 +569,27 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           .eq('slug', firstSegment)
           .single();
 
-        if (page && !error) {
+        if (error) {
+          console.warn(` [SmartRouter] CMS Article not found or SDK error: ${firstSegment}`, error.message);
+        }
+
+        if (page) {
           // Fetch blocks via SDK
-          const { data: blocks } = await supabase
+          const { data: blocks, error: blocksError } = await supabase
             .from('content_blocks')
             .select('*')
             .eq('article_id', page.id)
             .order('display_order', { ascending: true });
 
+          if (blocksError) {
+            console.error(` [SmartRouter] Error fetching blocks for ${firstSegment}:`, blocksError.message);
+          }
+
+          console.log(` [SmartRouter] Successfully loaded CMS page: ${firstSegment} with ${blocks?.length || 0} blocks.`);
           return <CmsPageContent page={{ ...page, blocks: blocks || [] }} slug={firstSegment} />;
         }
-      } catch (e) {
-        console.error("[SmartRouter] CMS check failed:", e);
+      } catch (e: any) {
+        console.error("[SmartRouter] CMS check failed:", e.message);
       }
     }
 
