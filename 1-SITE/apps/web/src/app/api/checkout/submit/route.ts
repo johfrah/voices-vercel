@@ -448,6 +448,62 @@ export async function POST(request: Request) {
             })
           });
           console.log('[Checkout] 📡 Background: Admin notification sent, status:', notifyRes.status);
+
+          // 🛡️ CHRIS-PROTOCOL: AUTOMATED CUSTOMER CONFIRMATION FOR QUOTES/INVOICES (v2.14.328)
+          try {
+            await VumeEngine.send({
+              to: email,
+              subject: isQuote ? `Offerte-aanvraag ontvangen: #${newOrder.id}` : `Bestelling ontvangen: #${newOrder.id}`,
+              template: 'order-confirmation',
+              context: {
+                userName: first_name || 'Klant',
+                orderId: newOrder.id.toString(),
+                total: amount,
+                items: validatedItems.map((i: any) => ({
+                  name: i.actor?.display_name ? `Stemopname: ${i.actor.display_name}` : (i.name || 'Product'),
+                  price: i.pricing?.total || 0,
+                  deliveryTime: i.actor?.delivery_time
+                })),
+                paymentMethod: isQuote ? 'Offerte' : 'Factuur',
+                language: 'nl'
+              },
+              host: host
+            });
+            console.log(`[Automation] Customer confirmation sent for ${isQuote ? 'quote' : 'invoice'}`);
+          } catch (customerConfErr) {
+            console.warn(`[Automation] Failed to send customer confirmation:`, customerConfErr);
+          }
+
+          // 🛡️ CHRIS-PROTOCOL: AUTOMATED YUKI INVOICE FOR BANK TRANSFERS (v2.14.328)
+          if (isInvoiceActual) {
+            try {
+              await YukiService.createInvoice({
+                orderId: newOrder.id,
+                customer: {
+                  firstName: first_name || 'Klant',
+                  lastName: last_name || '',
+                  email: email,
+                  companyName: company || undefined,
+                  vatNumber: vat_number || undefined,
+                  address: address_street || undefined,
+                  city: city || undefined,
+                  zipCode: postal_code || undefined,
+                  countryCode: country || 'BE'
+                },
+                lines: validatedItems.map((i: any) => ({
+                  description: i.actor?.display_name ? `Stemopname: ${i.actor.display_name}` : (i.name || 'Product'),
+                  quantity: 1,
+                  price: i.pricing?.subtotal || 0,
+                  vatType: 1
+                })),
+                paymentMethod: 'BankTransfer'
+              });
+              console.log(`[Automation] Yuki invoice triggered for Invoice Order #${newOrder.id}`);
+            } catch (yukiErr) {
+              console.warn(`[Automation] Yuki sync failed for Invoice Order #${newOrder.id}:`, yukiErr);
+            }
+          }
+
         } catch (e: any) {
           console.warn('[Checkout] ⚠️ Background notification failed:', e.message);
         }

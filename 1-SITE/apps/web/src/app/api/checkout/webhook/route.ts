@@ -6,6 +6,8 @@ import { MollieService } from '@/lib/payments/mollie';
 import { UCIService } from '@/lib/intelligence/uci-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { MusicDeliveryService } from '@/lib/services/music-delivery-service';
+import { YukiService } from '@/lib/services/yuki-service';
+import { VumeEngine } from '@/lib/mail/VumeEngine';
 
 /**
  *  MOLLIE WEBHOOK (NUCLEAR)
@@ -62,7 +64,7 @@ export async function POST(request: NextRequest) {
       
       //  Als betaald: Check of het een "Music Only" of "Donation" order is
       if (newStatus === 'paid' && order) {
-        const hasVoice = (order.rawMeta as any)?.actorId || (order.rawMeta as any)?.voiceId;
+        const hasVoice = (order.rawMeta as any)?.actorId || (order.rawMeta as any)?.voiceId || (order.rawMeta as any)?.itemsCount > 0;
         const hasMusic = (order.rawMeta as any)?.music?.trackId;
         const isDonation = order.journey === 'artist_donation';
         
@@ -70,6 +72,9 @@ export async function POST(request: NextRequest) {
         if (hasMusic && !hasVoice) {
           finalStatus = 'completed';
           console.log(` Order #${orderId} is Music Only. Setting status to 'completed'.`);
+        } else if (hasVoice) {
+          // 🛡️ CHRIS-PROTOCOL: Als er een stemacteur bij zit, zetten we de order op 'in_productie' (v2.14.328)
+          finalStatus = 'in_productie';
         }
 
         //  ARTIST DONATION FLOW: Trigger bedankmail
@@ -77,7 +82,6 @@ export async function POST(request: NextRequest) {
           const donationContext = order.iapContext as any;
           if (donationContext?.donorEmail) {
             try {
-              const { VumeEngine } = await import('@/lib/mail/VumeEngine');
               await VumeEngine.send({
                 to: donationContext.donorEmail,
                 subject: `Bedankt voor je support aan Youssef Zaki!`,
@@ -125,15 +129,15 @@ export async function POST(request: NextRequest) {
       // Log Note
       await tx.insert(orderNotes).values({
         orderId: orderId,
-        note: `Mollie Status Update: ${newStatus}${finalStatus === 'completed' ? ' (Auto-completed: Music Only)' : ''} (Payment ID: ${paymentId})`,
+        note: `Mollie Status Update: ${newStatus}${finalStatus === 'in_productie' ? ' (Auto-status: In Productie)' : finalStatus === 'completed' ? ' (Auto-completed: Music Only)' : ''} (Payment ID: ${paymentId})`,
         isCustomerNote: false
       });
 
-      //  Als betaald: Lever muziek en update DNA + Sales
+      //  Als betaald: Lever muziek en update DNA + Sales + Yuki + Actor Notification
       if (newStatus === 'paid') {
         // 1. Verhoog total_sales voor de betrokken acteurs
         try {
-          const items = await tx.select({ actorId: orderItems.actorId })
+          const items = await tx.select({ actorId: orderItems.actorId, name: orderItems.name, price: orderItems.price, metaData: orderItems.metaData })
             .from(orderItems)
             .where(eq(orderItems.orderId, orderId));
           
@@ -145,6 +149,59 @@ export async function POST(request: NextRequest) {
               .where(inArray(actors.id, actorIds));
             console.log(` Sales: total_sales incremented for actors: ${actorIds.join(', ')}`);
           }
+
+          // 🛡️ CHRIS-PROTOCOL: AUTOMATED ACTOR NOTIFICATION (v2.14.328)
+          // We sturen direct een opdrachtbevestiging naar alle betrokken acteurs
+          (async () => {
+            const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+            for (const item of items) {
+              if (item.actorId) {
+                try {
+                  await fetch(`${siteUrl}/api/admin/notify/actor`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ actorId: item.actorId, orderId, itemData: item.metaData })
+                  });
+                  console.log(`[Automation] Actor ${item.actorId} notified for Order #${orderId}`);
+                } catch (actorNotifyErr) {
+                  console.warn(`[Automation] Failed to notify actor ${item.actorId}:`, actorNotifyErr);
+                }
+              }
+            }
+          })();
+
+          // 🛡️ CHRIS-PROTOCOL: AUTOMATED CUSTOMER CONFIRMATION (v2.14.328)
+          if (order) {
+            const [user] = await tx.select().from(users).where(eq(users.id, order.userId as number)).limit(1);
+            if (user) {
+              (async () => {
+                try {
+                  await VumeEngine.send({
+                    to: user.email,
+                    subject: `Bestelling Bevestigd: #${orderId} - Voices.be`,
+                    template: 'order-confirmation',
+                    context: {
+                      userName: user.firstName || 'Klant',
+                      orderId: orderId.toString(),
+                      total: parseFloat(order.total || '0'),
+                      items: items.map(i => ({
+                        name: i.name,
+                        price: parseFloat(i.price || '0'),
+                        deliveryTime: (i.metaData as any)?.deliveryTime
+                      })),
+                      paymentMethod: payment.method || 'Online',
+                      language: 'nl'
+                    },
+                    host: host
+                  });
+                  console.log(`[Automation] Customer confirmation sent to ${user.email}`);
+                } catch (customerConfErr) {
+                  console.warn(`[Automation] Failed to send customer confirmation:`, customerConfErr);
+                }
+              })();
+            }
+          }
+
         } catch (salesErr) {
           console.error(' Failed to update actor sales:', salesErr);
         }
@@ -155,6 +212,43 @@ export async function POST(request: NextRequest) {
         } catch (musicErr) {
           console.error(' Failed to deliver music after payment:', musicErr);
           // We gaan door, want de betaling is wel gelukt
+        }
+
+        // 3. AUTOMATED YUKI INVOICING (v2.14.328)
+        if (order) {
+          const [user] = await tx.select().from(users).where(eq(users.id, order.userId as number)).limit(1);
+          if (user) {
+            (async () => {
+              try {
+                const items = await tx.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+                await YukiService.createInvoice({
+                  orderId,
+                  paymentId,
+                  customer: {
+                    firstName: user.firstName || 'Klant',
+                    lastName: user.lastName || '',
+                    email: user.email,
+                    companyName: user.companyName || undefined,
+                    vatNumber: user.vatNumber || undefined,
+                    address: user.addressStreet || undefined,
+                    city: user.addressCity || undefined,
+                    zipCode: user.addressZip || undefined,
+                    countryCode: user.addressCountry || 'BE'
+                  },
+                  lines: items.map(i => ({
+                    description: i.name,
+                    quantity: i.quantity || 1,
+                    price: parseFloat(i.price || '0'),
+                    vatType: 1 // 21%
+                  })),
+                  paymentMethod: payment.method || 'Online'
+                });
+                console.log(`[Automation] Yuki invoice triggered for Order #${orderId}`);
+              } catch (yukiErr) {
+                console.warn(`[Automation] Yuki sync failed for Order #${orderId}:`, yukiErr);
+              }
+            })();
+          }
         }
 
         if (payment.metadata.userId) {
