@@ -7,13 +7,14 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ExternalLink, FileText, Package, ShoppingBag, Zap, Mic, Calendar, Clock, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, ExternalLink, FileText, Package, ShoppingBag, Zap, Mic, Calendar, Clock, CheckCircle2, ChevronDown, ChevronUp, Download, CreditCard } from 'lucide-react';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import nextDynamic from 'next/dynamic';
+import { AnimatePresence } from 'framer-motion';
 
 const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
@@ -177,6 +178,16 @@ export default function OrdersPage() {
                                               {m}
                                             </span>
                                           ))}
+                                          <span className={cn(
+                                            "px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest rounded-md border",
+                                            item.deliveryStatus === 'ready' || item.deliveryStatus === 'uploaded' || item.deliveryStatus === 'approved' 
+                                              ? "bg-green-50 text-green-600 border-green-100" 
+                                              : "bg-va-black/5 text-va-black/40 border-black/5"
+                                          )}>
+                                            {item.deliveryStatus === 'waiting' && <VoiceglotText translationKey="order.item.status.waiting" defaultText="Wacht op opname" />}
+                                            {(item.deliveryStatus === 'uploaded' || item.deliveryStatus === 'ready') && <VoiceglotText translationKey="order.item.status.ready" defaultText="Klaar voor review" />}
+                                            {item.deliveryStatus === 'approved' && <VoiceglotText translationKey="order.item.status.approved" defaultText="Goedgekeurd" />}
+                                          </span>
                                         </div>
                                       </div>
                                     </div>
@@ -192,6 +203,21 @@ export default function OrdersPage() {
                                       <div className="bg-white p-6 rounded-[15px] border border-black/[0.02] shadow-inner italic text-va-black/70 leading-relaxed font-light text-[15px] whitespace-pre-wrap">
                                         "{item.metaData.script || item.metaData.briefing}"
                                       </div>
+                                    </div>
+                                  )}
+
+                                  {/* 📥 DOWNLOAD SECTION (If ready) */}
+                                  {(item.deliveryFileUrl && (item.deliveryStatus === 'ready' || item.deliveryStatus === 'approved')) && (
+                                    <div className="mt-6 pt-6 border-t border-black/[0.03]">
+                                      <ButtonInstrument 
+                                        as="a" 
+                                        href={item.deliveryFileUrl} 
+                                        target="_blank"
+                                        className="w-full va-btn-pro flex items-center justify-center gap-3 py-4"
+                                      >
+                                        <Download size={18} />
+                                        <VoiceglotText translationKey="order.item.download" defaultText="Download Audio" />
+                                      </ButtonInstrument>
                                     </div>
                                   )}
                                 </div>
