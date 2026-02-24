@@ -21,35 +21,34 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit;
 
     try {
-      // CHRIS-PROTOCOL: Use Atomic Raw SQL Join for absolute reliability
-      // We use explicit parameter binding ($1, $2) to prevent driver issues with large offsets.
-      const results = await db.execute(sql`
-        SELECT 
-          r.id,
-          r.string_hash as "translationKey",
-          r.original_text as "originalText",
-          r.context,
-          (
-            SELECT json_agg(t_inner)
-            FROM (
-              SELECT 
-                t.id, 
-                t.lang, 
-                t.translated_text as "translatedText", 
-                t.status, 
-                (t.is_locked OR t.is_manually_edited) as "isLocked",
-                t.updated_at as "updatedAt"
-              FROM translations t
-              WHERE t.translation_key = r.string_hash
-            ) t_inner
-          ) as translations
-        FROM translation_registry r
-        ORDER BY r.last_seen DESC
-        LIMIT ${sql` ${limit} `}
-        OFFSET ${sql` ${offset} `}
+      // CHRIS-PROTOCOL: Two-Step Fetch & Join Mandate (v2.14.384)
+      // We avoid complex json_agg subqueries that fail in production.
+      // 1. Fetch Registry Items
+      const registryItems = await db.execute(sql`
+        SELECT id, string_hash as "translationKey", original_text as "originalText", context
+        FROM translation_registry
+        ORDER BY last_seen DESC
+        LIMIT ${limit}
+        OFFSET ${offset}
       `);
 
-      const mappedResults = (results as any).map((item: any) => {
+      if (!registryItems || registryItems.length === 0) {
+        return NextResponse.json({ translations: [], page, limit, hasMore: false });
+      }
+
+      // 2. Fetch all translations for these keys
+      const hashes = (registryItems as any).map((i: any) => i.translationKey);
+      const transData = await db.execute(sql`
+        SELECT id, translation_key as "translationKey", lang, translated_text as "translatedText", status, 
+               (is_locked OR is_manually_edited) as "isLocked", updated_at as "updatedAt"
+        FROM translations
+        WHERE translation_key = ANY(${hashes})
+      `);
+
+      // 3. Join in memory
+      const mappedResults = (registryItems as any).map((item: any) => {
+        const itemTranslations = (transData as any).filter((t: any) => t.translationKey === item.translationKey);
+        
         // Detect source language
         const text = (item.originalText || '').toLowerCase();
         const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ');
@@ -63,7 +62,7 @@ export async function GET(request: Request) {
         return {
           ...item,
           sourceLang: detectedLang,
-          translations: item.translations || []
+          translations: itemTranslations
         };
       });
 
@@ -74,7 +73,7 @@ export async function GET(request: Request) {
         hasMore: mappedResults.length === limit
       });
     } catch (dbErr: any) {
-      console.error('❌ [Voiceglot List API] Atomic SQL failed:', dbErr.message);
+      console.error('❌ [Voiceglot List API] Two-Step Fetch failed:', dbErr.message);
       return NextResponse.json({ error: dbErr.message, translations: [] }, { status: 500 });
     }
   } catch (error: any) {
