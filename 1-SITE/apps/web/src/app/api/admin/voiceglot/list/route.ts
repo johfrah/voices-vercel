@@ -82,9 +82,14 @@ export async function GET(request: Request) {
         hasMore: mappedResults.length === limit
       });
     } catch (dbErr: any) {
-      console.error('❌ [Voiceglot List API] Nuclear Fetch failed:', dbErr.message);
+      console.error('❌ [Voiceglot List API] Nuclear Fetch failed:', dbErr);
       // Fallback: return empty but with error info for debugging
-      return NextResponse.json({ error: `Nuclear Fetch failed: ${dbErr.message}`, translations: [] }, { status: 500 });
+      return NextResponse.json({ 
+        error: `Nuclear Fetch failed: ${dbErr.message}`, 
+        details: dbErr.details || 'No details',
+        hint: dbErr.hint || 'No hint',
+        translations: [] 
+      }, { status: 500 });
     }
   } catch (error: any) {
     console.error(' [Voiceglot List API] Fatal Error:', error);
