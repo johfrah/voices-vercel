@@ -36,18 +36,14 @@ export async function GET(request: NextRequest) {
     });
 
     //  SELF-HEALING: Als er geen vertalingen zijn voor deze taal, trigger een 'Heal' event
-    if (results.length === 0 && lang !== 'nl') {
+    //  DISABLED: Voorkomt onnodige healing triggers bij het openen van de site.
+    //  CHRIS-PROTOCOL: We triggeren NOOIT healing voor de basistalen (nl-BE, nl-NL) omdat dit de bron-talen zijn.
+    /*
+    if (results.length === 0 && !lang.startsWith('nl')) {
       console.log(` [HEAL] Triggering translation generation for: ${lang}`);
-      // We doen dit async zodat de gebruiker niet hoeft te wachten
-      // In een server context gebruiken we de interne URL
-      const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'] || 'https://www.voices.be';
-      fetch(`${baseUrl}/api/translations/heal?bob=true`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentLang: lang, key: 'initial_load', originalText: 'Welkom bij Voices' })
-      }).catch(err => console.error('Failed to trigger translation healing:', err));
+      // ...
     }
+    */
 
     //  CHRIS-PROTOCOL: Forceer de status 200 en de correcte headers voor de lancering
     const response = NextResponse.json({
