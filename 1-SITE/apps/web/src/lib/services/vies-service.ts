@@ -37,27 +37,36 @@ export class ViesService {
     console.log(` VIES check voor ${cleanVat}...`);
 
     try {
-      // 🛡️ CHRIS-PROTOCOL: 3s internal timeout for VIES API
-      const fetchPromise = fetch(`https://ec.europa.eu/taxation_customs/vies/rest-api/ms/${countryCode}/vat/${vatOnly}`);
+      // 🛡️ CHRIS-PROTOCOL: 5s internal timeout for VIES API (Nuclear 2026 upgrade)
+      console.log(`[ViesService] Fetching: https://ec.europa.eu/taxation_customs/vies/rest-api/ms/${countryCode}/vat/${vatOnly}`);
+      const fetchPromise = fetch(`https://ec.europa.eu/taxation_customs/vies/rest-api/ms/${countryCode}/vat/${vatOnly}`, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'Voices-Core-2026-VAT-Validator'
+        }
+      });
       
       const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('VIES API timeout (3s)')), 3000)
+        setTimeout(() => reject(new Error('VIES API timeout (5s)')), 5000)
       );
 
       const response = await Promise.race([fetchPromise, timeoutPromise]);
       
       if (!response.ok) {
-        throw new Error(`VIES API Error: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error(`[ViesService] API Error (${response.status}):`, errorText);
+        throw new Error(`VIES API Error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log(`[ViesService] API Response for ${cleanVat}:`, data);
       
       return {
-        name: data.name || '',
+        name: data.name || data.user_name || '',
         address: data.address || '',
         countryCode: data.countryCode || countryCode,
         vatNumber: data.vatNumber || vatOnly,
-        isValid: data.isValid || false
+        isValid: data.isValid === true || data.valid === true
       };
 
     } catch (error) {

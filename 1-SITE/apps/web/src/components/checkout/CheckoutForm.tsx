@@ -113,9 +113,13 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       const validateVat = async () => {
         setVatStatus(prevVat => ({ ...prevVat, validating: true, valid: null, lastChecked: formData.vat_number }));
         try {
-          const res = await fetch(`/api/vat-verify?vat=${formData.vat_number}`);
+          //  CHRIS-PROTOCOL: Forensic validation logging
+          console.log(`[CheckoutForm] Initiating VAT validation for: ${formData.vat_number}`);
+          const res = await fetch(`/api/vat-verify?vat=${encodeURIComponent(formData.vat_number)}`);
           const data = await res.json();
-          setVatStatus(prevVat => ({ ...prevVat, validating: false, valid: data.valid }));
+          
+          console.log(`[CheckoutForm] VAT API Result:`, data);
+          setVatStatus(prevVat => ({ ...prevVat, validating: false, valid: data.valid, message: data.message }));
           
           if (data.valid && data.companyName) {
             playClick('pro');
