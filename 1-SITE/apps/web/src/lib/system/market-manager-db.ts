@@ -97,7 +97,7 @@ export class MarketDatabaseService {
         setTimeout(() => {
           console.warn(` [MarketDatabaseService] DB Timeout for ${cacheKey}, using fallback.`);
           resolve(cached?.data || staticConfig);
-        }, 2000)
+        }, 5000)
       );
 
       return await Promise.race([fetchPromise, timeoutPromise]);
@@ -160,7 +160,7 @@ export class MarketDatabaseService {
         setTimeout(() => {
           console.warn(` [MarketDatabaseService] Locales DB Timeout, using fallback.`);
           resolve(this.globalCache.localesCache?.data || fallbackLocales);
-        }, 2000)
+        }, 5000)
       );
 
       return await Promise.race([fetchPromise, timeoutPromise]);

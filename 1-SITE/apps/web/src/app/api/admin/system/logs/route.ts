@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     }
 
     // 🛡️ CHRIS-PROTOCOL: Spam preventie (max 1x per 10 min voor identieke client-fouten)
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
     
     try {
       const recent = await db.select().from(systemEvents)

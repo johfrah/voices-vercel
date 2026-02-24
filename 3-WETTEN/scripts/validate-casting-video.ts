@@ -46,8 +46,12 @@ async function validateCastingVideo() {
   try {
     // Step 1: Navigate to page
     console.log(`📍 Navigating to ${TARGET_URL}...`);
-    await page.goto(TARGET_URL, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000);
+    await page.goto(TARGET_URL, { 
+      waitUntil: 'domcontentloaded',
+      timeout: 60000 
+    });
+    console.log('✅ Page loaded, waiting for hydration...');
+    await page.waitForTimeout(5000);
     
     // Step 2: Check for ReferenceError
     console.log('\n🔍 Checking for ReferenceError: t is not defined...');
