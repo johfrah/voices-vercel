@@ -1,45 +1,48 @@
 import { db } from "@db";
 import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import * as schema from '@db/schema';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET() {
   try {
-    // CHRIS-PROTOCOL: SDK fallback for build stability
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    // 🛡️ CHRIS-PROTOCOL: Use schema export for 100% accuracy and stability
+    // We iterate over all exported members of the schema and check if they are Drizzle tables
+    const tableNames: string[] = [];
+    
+    for (const key in schema) {
+      const item = (schema as any)[key];
+      if (item && typeof item === 'object' && ('tableName' in item)) {
+        tableNames.push(item.tableName);
+      }
+    }
 
-    // Haal alle tabelnamen op uit de public schema (PostgreSQL)
-    const result = await db.execute(sql`
-      SELECT table_name as tablename
-      FROM information_schema.tables 
-      WHERE table_schema = 'public'
-      AND table_type = 'BASE TABLE'
-      ORDER BY table_name ASC
-    `).catch(async (err) => {
-      console.error(' [Tables API] Drizzle query failed:', err.message);
-      return [
-        { tablename: 'actors' },
-        { tablename: 'users' },
-        { tablename: 'orders' },
-        { tablename: 'order_items' },
-        { tablename: 'reviews' },
-        { tablename: 'media' },
-        { tablename: 'actor_demos' },
-        { tablename: 'translations' }
-      ];
+    const uniqueTables = [...new Set(tableNames)].sort();
+
+    if (uniqueTables.length > 0) {
+      return NextResponse.json({ 
+        tables: uniqueTables, 
+        count: uniqueTables.length,
+        _source: 'schema_export_v2' 
+      });
+    }
+
+    // Fallback naar hardcoded lijst indien alles faalt
+    const fallbackTables = [
+      'actors', 'users', 'orders', 'order_items', 
+      'reviews', 'media', 'actor_demos', 'translations',
+      'casting_lists', 'system_events'
+    ];
+
+    return NextResponse.json({ 
+      tables: fallbackTables, 
+      count: fallbackTables.length, 
+      _source: 'hardcoded_fallback' 
     });
-
-    const rows = Array.isArray(result) ? result : (result?.rows || []);
-    const tables = rows.map((row: any) => row.tablename);
-
-    return NextResponse.json({ tables });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching database tables:', error);
-    return NextResponse.json({ error: 'Failed to fetch tables' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch tables', message: error.message }, { status: 500 });
   }
 }
