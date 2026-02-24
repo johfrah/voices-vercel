@@ -52,9 +52,7 @@ export async function PATCH(
       return auth;
     }
 
-    const isSuperAdmin = true; // In development/admin context we assume super-admin for now, but logic is ready
-
-    // 🛡️ CHRIS-PROTOCOL: Nuclear Force Fix (v2.14.187)
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Force Fix (v2.14.190)
     // We bypass ALL non-essential field validation to ensure the profile SAVES.
     // We strictly map incoming fields to the database schema.
     const cleanUpdateData: any = {};
@@ -64,12 +62,26 @@ export async function PATCH(
     if (body.lastName || body.last_name) cleanUpdateData.lastName = body.lastName || body.last_name;
     if (body.email) cleanUpdateData.email = body.email;
     if (body.gender) cleanUpdateData.gender = body.gender;
-    if (body.experienceLevel || body.experience_level) cleanUpdateData.experienceLevel = body.experienceLevel || body.experience_level;
+    
+    // 🛡️ CHRIS-PROTOCOL: Strict Enum Casting for Experience Level
+    const rawExp = body.experienceLevel || body.experience_level;
+    if (rawExp) {
+      const validExps = ['junior', 'pro', 'senior', 'legend'];
+      cleanUpdateData.experienceLevel = validExps.includes(rawExp.toLowerCase()) ? rawExp.toLowerCase() : 'pro';
+    }
+
     if (body.tone_of_voice || body.toneOfVoice) cleanUpdateData.toneOfVoice = body.tone_of_voice || body.toneOfVoice;
     if (body.clients) cleanUpdateData.clients = body.clients;
     if (body.voice_score || body.voiceScore) cleanUpdateData.voiceScore = parseInt(body.voice_score || body.voiceScore);
     if (body.menu_order || body.menuOrder) cleanUpdateData.menuOrder = parseInt(body.menu_order || body.menuOrder);
-    if (body.status) cleanUpdateData.status = body.status;
+    
+    // 🛡️ CHRIS-PROTOCOL: Strict Enum Casting for Status
+    const rawStatus = body.status;
+    if (rawStatus) {
+      const validStatuses = ['pending', 'approved', 'active', 'live', 'publish', 'rejected', 'cancelled'];
+      cleanUpdateData.status = validStatuses.includes(rawStatus.toLowerCase()) ? rawStatus.toLowerCase() : 'pending';
+    }
+
     if (body.is_public !== undefined) cleanUpdateData.isPublic = body.is_public;
     
     // Delivery logic
@@ -137,6 +149,49 @@ export async function PATCH(
         }
       } catch (langErr: any) {
         console.warn(' ADMIN: Language ID mapping failed:', langErr.message);
+      }
+    }
+
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Asset Reconciliation (v2.14.186)
+    // If we have a photo_url but no valid photoId, we try to find or create the media record.
+    // This makes the save action "Atomic" and independent of frontend upload success.
+    let effectivePhotoId = cleanUpdateData.photoId;
+    
+    if (!effectivePhotoId && cleanPhotoUrl) {
+      try {
+        const { media } = await import('@db/schema');
+        // Strip proxy prefix if present to get the raw path
+        const rawPath = cleanPhotoUrl.includes('/api/proxy/?path=') 
+          ? decodeURIComponent(cleanPhotoUrl.split('/api/proxy/?path=')[1])
+          : cleanPhotoUrl;
+
+        console.log(` [Nuclear] Reconciling asset for path: ${rawPath}`);
+        
+        // 1. Check if media record already exists
+        const existingMedia = await db.select().from(media).where(eq(media.filePath, rawPath)).limit(1);
+        
+        if (existingMedia.length > 0) {
+          effectivePhotoId = existingMedia[0].id;
+          console.log(` [Nuclear] Found existing media record: ${effectivePhotoId}`);
+        } else {
+          // 2. Create media record on the fly
+          const [newMedia] = await db.insert(media).values({
+            fileName: rawPath.split('/').pop() || 'photo.webp',
+            filePath: rawPath,
+            fileType: 'image/webp',
+            journey: 'agency',
+            category: 'voices',
+            isPublic: true,
+            updatedAt: new Date().toISOString()
+          }).returning({ id: media.id });
+          
+          effectivePhotoId = newMedia.id;
+          console.log(` [Nuclear] Created new media record on the fly: ${effectivePhotoId}`);
+        }
+        cleanUpdateData.photoId = effectivePhotoId;
+      } catch (reconErr: any) {
+        console.warn(` [Nuclear] Asset reconciliation failed: ${reconErr.message}`);
+        // We don't crash, we just continue without the ID to ensure profile save
       }
     }
 
