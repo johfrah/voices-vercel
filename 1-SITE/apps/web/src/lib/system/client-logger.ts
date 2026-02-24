@@ -74,11 +74,15 @@ export class ClientLogger {
 
         this.addBreadcrumb(level, message.substring(0, 500));
 
-        if (level === 'error') {
+        // 🛡️ CHRIS-PROTOCOL: Full Visibility Mode (v2.14.241)
+        // We loggen nu ALLES direct naar de server voor maximale debug-kracht.
+        const isVoicesLog = message.includes('[Voices]') || message.includes('[CheckoutContext]') || message.includes('[Watchdog]');
+        
+        if (level === 'error' || level === 'warn' || isVoicesLog) {
           const errorObj = args.find(arg => arg instanceof Error);
-          this.report('error', `Console Error: ${message.substring(0, 500)}`, {
+          this.report(level as any, `${level.toUpperCase()}: ${message.substring(0, 500)}`, {
             full_console_output: message,
-            stack: errorObj?.stack || new Error().stack,
+            stack: errorObj?.stack || (level === 'error' ? new Error().stack : undefined),
             args: args.map(arg => this.serialize(arg))
           });
         }
@@ -158,15 +162,40 @@ export class ClientLogger {
       if (target) {
         const label = target.innerText?.substring(0, 30) || target.getAttribute('aria-label') || target.id || target.tagName;
         this.addBreadcrumb('click', `User clicked: ${label}`);
+        
+        // 🛡️ CHRIS-PROTOCOL: Real-time interaction logging for debugging
+        if (label.toLowerCase().includes('bestel') || label.toLowerCase().includes('order') || target.closest('button')) {
+          this.report('info', `Interaction: ${label}`, { 
+            type: 'click', 
+            element: target.tagName,
+            classes: target.className 
+          });
+        }
       }
     }, true);
 
     // Navigation tracking
     let lastPath = window.location.pathname;
+    
+    // 🛡️ CHRIS-PROTOCOL: Log initial pageview
+    this.report('info', `Pageview: ${lastPath}`, { 
+      type: 'navigation', 
+      url: window.location.href 
+    });
+
     setInterval(() => {
       if (window.location.pathname !== lastPath) {
+        const oldPath = lastPath;
         lastPath = window.location.pathname;
         this.addBreadcrumb('navigation', `Navigated to: ${lastPath}${window.location.search}`);
+        
+        // 🛡️ CHRIS-PROTOCOL: Log route changes as info events
+        this.report('info', `Navigation: ${oldPath} -> ${lastPath}`, {
+          type: 'navigation',
+          from: oldPath,
+          to: lastPath,
+          search: window.location.search
+        });
       }
     }, 1000);
   }

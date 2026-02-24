@@ -62,6 +62,21 @@ export async function POST(request: NextRequest) {
           // 3. Vertaal via OpenAI (GPT-4o mini) met volledige context
           const dna = dnaCache[lang] || '';
           
+          //  CHRIS-PROTOCOL: Intelligent Context Enhancement
+          //  CHRIS-PROTOCOL: Intelligent Context Enhancement
+          let contextHint = item.context || 'Algemene website tekst';
+          if (item.stringHash.startsWith('cta.') || item.stringHash.includes('.btn') || item.stringHash.includes('.button')) {
+            contextHint = `Dit is een interactieve knop (CTA). Houd de vertaling kort, krachtig en actiegericht. Context: ${contextHint}`;
+          } else if (item.stringHash.startsWith('seo.')) {
+            contextHint = `Dit is SEO metadata. Gebruik relevante zoekwoorden voor de ${lang} markt. Context: ${contextHint}`;
+          } else if (item.stringHash.startsWith('calculator.')) {
+            contextHint = `Dit is tekst voor de prijscalculator. Wees precies met getallen en eenheden. Context: ${contextHint}`;
+          } else if (item.stringHash.startsWith('checkout.')) {
+            contextHint = `Dit is tekst voor het afrekenproces. Vertrouwen en duidelijkheid zijn hier cruciaal. Context: ${contextHint}`;
+          } else if (item.originalText.length < 20) {
+            contextHint = `Dit is een kort UI label of menu-item. Context: ${contextHint}`;
+          }
+
           const prompt = `
             Je bent de senior vertaler voor Voices.be, een high-end castingbureau voor stemmen.
             Vertaal de volgende tekst van het Nederlands naar het ${lang}.
@@ -70,7 +85,7 @@ export async function POST(request: NextRequest) {
             ${dna}
             
             CONTEXT:
-            ${item.context || 'Algemene website tekst'}
+            ${contextHint}
             
             TONE OF VOICE:
             Warm, gelijkwaardig, vakmanschap, nuchter. Geen AI-bingo woorden (zoals 'ontdek', 'passie', 'ervaar').
