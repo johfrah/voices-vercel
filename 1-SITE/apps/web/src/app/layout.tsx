@@ -307,7 +307,6 @@ export default async function RootLayout({
               {process.env.NODE_ENV === 'development' && <VercelToolbar />}
               <CommandPalette />
               <SpotlightDashboard />
-              <Toaster position="bottom-right" />
               <GlobalModalManager />
               {!isArtistJourney && market.market_code !== 'ARTIST' && (
                 <Suspense fallback={null}>

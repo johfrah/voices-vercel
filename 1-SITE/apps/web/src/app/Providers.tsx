@@ -33,7 +33,7 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.14.379';
+  const currentVersion = '2.14.381';
   
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
   React.useEffect(() => {
@@ -52,7 +52,13 @@ export function Providers({
       <AuthProvider>
         <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
           <VersionGuard currentVersion={currentVersion} />
-          <Toaster position="top-center" reverseOrder={false} />
+          <Toaster 
+            position="top-center" 
+            reverseOrder={false} 
+            containerStyle={{
+              top: '40%',
+            }}
+          />
           <EditModeProvider>
             <VoicesStateProvider>
               <GlobalAudioProvider>

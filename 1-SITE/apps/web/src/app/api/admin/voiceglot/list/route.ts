@@ -20,47 +20,38 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '100');
     const offset = (page - 1) * limit;
 
-    let results: any[] = [];
     try {
-      // CHRIS-PROTOCOL: Use Supabase SDK with Service Role for absolute reliability
-      // This bypasses the DB driver issues we saw with db.execute
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-      
-      if (!supabaseKey) {
-        throw new Error('SUPABASE_SERVICE_ROLE_KEY is missing from environment');
-      }
+      // CHRIS-PROTOCOL: Use Atomic Raw SQL Join for absolute reliability
+      // We let PostgreSQL do the work to ensure registry and translations are perfectly synced.
+      const results = await db.execute(sql`
+        SELECT 
+          r.id,
+          r.string_hash as "translationKey",
+          r.original_text as "originalText",
+          r.context,
+          (
+            SELECT json_agg(t_inner)
+            FROM (
+              SELECT 
+                t.id, 
+                t.lang, 
+                t.translated_text as "translatedText", 
+                t.status, 
+                (t.is_locked OR t.is_manually_edited) as "isLocked",
+                t.updated_at as "updatedAt"
+              FROM translations t
+              WHERE t.translation_key = r.string_hash
+            ) t_inner
+          ) as translations
+        FROM translation_registry r
+        ORDER BY r.last_seen DESC
+        LIMIT ${limit}
+        OFFSET ${offset}
+      `);
 
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
-      console.log(`[Voiceglot List] Fetching page ${page} via SDK Tunnel...`);
-      
-      // 1. Haal items uit de registry
-      const { data: registryData, error: regErr } = await supabase
-        .from('translation_registry')
-        .select('*')
-        .order('last_seen', { ascending: false })
-        .range(offset, offset + limit - 1);
-
-      if (regErr) throw regErr;
-      if (!registryData || registryData.length === 0) {
-        return NextResponse.json({ translations: [], page, limit, hasMore: false });
-      }
-
-      // 2. Haal bijbehorende vertalingen op
-      const hashes = registryData.map(i => i.string_hash);
-      const { data: transData, error: transErr } = await supabase
-        .from('translations')
-        .select('*')
-        .in('translation_key', hashes);
-
-      if (transErr) throw transErr;
-
-      results = registryData.map((item: any) => {
-        const itemTranslations = (transData || []).filter((t: any) => t.translation_key === item.string_hash);
-        
+      const mappedResults = (results as any).map((item: any) => {
         // Detect source language
-        const text = (item.original_text || '').toLowerCase();
+        const text = (item.originalText || '').toLowerCase();
         const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ');
         const isEn = text.includes(' the ') || text.includes(' and ');
         const isNl = text.includes(' de ') || text.includes(' het ') || text.includes(' en ');
@@ -69,35 +60,23 @@ export async function GET(request: Request) {
         if (isFr && !isNl) detectedLang = 'fr';
         else if (isEn && !isNl) detectedLang = 'en';
 
-        console.log(`[Voiceglot List] Mapping item: ${item.string_hash}, translations found: ${itemTranslations.length}`);
-
         return {
-          id: item.id, // Voeg ID toe voor React keys
-          translationKey: item.string_hash,
-          originalText: item.original_text,
-          context: item.context,
+          ...item,
           sourceLang: detectedLang,
-          translations: itemTranslations.map((t: any) => ({
-            id: t.id,
-            lang: t.lang,
-            translatedText: t.translated_text || '',
-            status: t.status,
-            isLocked: t.is_locked || t.is_manually_edited || false, // Check beide velden
-            updatedAt: t.updated_at
-          }))
+          translations: item.translations || []
         };
       });
+
+      return NextResponse.json({ 
+        translations: mappedResults,
+        page,
+        limit,
+        hasMore: mappedResults.length === limit
+      });
     } catch (dbErr: any) {
-      console.error('❌ [Voiceglot List API] SDK Tunnel failed:', dbErr.message);
+      console.error('❌ [Voiceglot List API] Atomic SQL failed:', dbErr.message);
       return NextResponse.json({ error: dbErr.message, translations: [] }, { status: 500 });
     }
-
-    return NextResponse.json({ 
-      translations: results,
-      page,
-      limit,
-      hasMore: results.length === limit
-    });
   } catch (error: any) {
     console.error(' [Voiceglot List API] Fatal Error:', error);
     return NextResponse.json({ error: error.message, translations: [] }, { status: 500 });
