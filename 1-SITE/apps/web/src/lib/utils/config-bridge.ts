@@ -45,39 +45,70 @@ export interface NavConfig {
   };
 }
 
-export class ConfigBridge {
+  //  CHRIS-PROTOCOL: In-memory cache for 0ms navigation loading (2026)
+  private static navCache = new Map<string, { data: NavConfig, timestamp: number }>();
+  private static CACHE_TTL = 1000 * 60 * 5; // 5 minuten cache
+
   /**
    * Haalt de navigatie-configuratie op voor een specifieke journey
    */
   static async getNavConfig(key: string): Promise<NavConfig | null> {
-    try {
-      //  CHRIS-PROTOCOL: Drizzle with SDK fallback
-      let menu: any = null;
-      try {
-        menu = await db.query.navMenus.findFirst({
-          where: eq(navMenus.key, `nav_${key}`)
-        });
-      } catch (dbError) {
-        console.warn(` ConfigBridge Drizzle failed for ${key}, falling back to SDK`);
-        const { data, error } = await sdkClient
-          .from('nav_menus')
-          .select('*')
-          .eq('key', `nav_${key}`)
-          .single();
-        
-        if (error) throw error;
-        menu = {
-          ...data,
-          updatedAt: data.updated_at
-        };
+    // 1. Check Cache (0ms response)
+    const cached = this.navCache.get(key);
+    const now = Date.now();
+    
+    if (cached && (now - cached.timestamp < this.CACHE_TTL)) {
+      // Background revalidation if cache is getting old
+      if (now - cached.timestamp > this.CACHE_TTL / 2) {
+        this.revalidateCache(key).catch(() => {});
       }
+      return cached.data;
+    }
 
-      if (!menu) return null;
-      return menu.items as unknown as NavConfig;
+    try {
+      // 2. Fetch from DB with SDK fallback
+      const data = await this.fetchFromSource(key);
+      if (data) {
+        this.navCache.set(key, { data, timestamp: now });
+      }
+      return data;
     } catch (error) {
       console.error(`[ConfigBridge] Error fetching nav config for ${key}:`, error);
-      return null;
+      // Return stale data if available on error
+      return cached?.data || null;
     }
+  }
+
+  private static async revalidateCache(key: string) {
+    const data = await this.fetchFromSource(key);
+    if (data) {
+      this.navCache.set(key, { data, timestamp: Date.now() });
+    }
+  }
+
+  private static async fetchFromSource(key: string): Promise<NavConfig | null> {
+    let menu: any = null;
+    try {
+      menu = await db.query.navMenus.findFirst({
+        where: eq(navMenus.key, `nav_${key}`)
+      });
+    } catch (dbError) {
+      console.warn(` ConfigBridge Drizzle failed for ${key}, falling back to SDK`);
+      const { data, error } = await sdkClient
+        .from('nav_menus')
+        .select('*')
+        .eq('key', `nav_${key}`)
+        .single();
+      
+      if (error) throw error;
+      menu = {
+        ...data,
+        updatedAt: data.updated_at
+      };
+    }
+
+    if (!menu) return null;
+    return menu.items as unknown as NavConfig;
   }
 
   /**

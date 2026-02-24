@@ -99,7 +99,7 @@ export function LoginPageClient() {
       
       // NUCLEAR SAFETY: Voeg een controller toe voor een harde timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconden timeout
+      const timeoutId = setTimeout(() => controller.abort(), 20000); // Verhoogd naar 20 seconden voor mailserver stabiliteit
 
       const response = await fetch('/api/auth/send-magic-link/', {
         method: 'POST',
@@ -226,7 +226,12 @@ export function LoginPageClient() {
                 className="va-btn-pro w-full flex flex-col items-center justify-center gap-1 group !py-8 !rounded-2xl shadow-lg hover:shadow-primary/10 transition-all"
               >
                 {isLoading ? (
-                  <Loader2 strokeWidth={1.5} className="animate-spin" size={24} />
+                  <ContainerInstrument className="flex flex-col items-center gap-2">
+                    <Loader2 strokeWidth={1.5} className="animate-spin" size={24} />
+                    <span className="text-[11px] font-bold tracking-widest uppercase opacity-40">
+                      <VoiceglotText translationKey="auth.login.sending" defaultText="Mail versturen..." />
+                    </span>
+                  </ContainerInstrument>
                 ) : (
                   <>
                     <ContainerInstrument className="flex items-center gap-3">
