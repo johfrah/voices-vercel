@@ -68,11 +68,16 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
 
   //  CHRIS-PROTOCOL: Avoid hydration mismatch by setting market after mount
   useEffect(() => {
-    setMarket(MarketManager.getCurrentMarket().market_code);
+    if (typeof window !== 'undefined') {
+      setMarket(MarketManager.getCurrentMarket().market_code);
+    }
   }, []);
 
   const marketConfig = useMemo(() => {
-    return MarketManager.getCurrentMarket(typeof window !== 'undefined' ? window.location.host : 'voices.be');
+    //  CHRIS-PROTOCOL: Use a safe default for SSR to prevent hydration error #419
+    const defaultHost = 'voices.be';
+    const currentHost = typeof window !== 'undefined' ? window.location.host : defaultHost;
+    return MarketManager.getCurrentMarket(currentHost);
   }, []);
 
   //  CHRIS-PROTOCOL: Sync local state with initial props
