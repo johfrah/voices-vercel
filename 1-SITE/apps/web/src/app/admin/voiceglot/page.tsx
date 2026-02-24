@@ -38,6 +38,7 @@ export default function VoiceglotMasterPage() {
   const { playClick } = useSonicDNA();
   const [loading, setLoading] = useState(true);
   const [translations, setTranslations] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
   const [search, setSearch] = useState('');
   const [filterLang, setFilterLang] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -46,9 +47,22 @@ export default function VoiceglotMasterPage() {
 
   useEffect(() => {
     fetchTranslations();
+    fetchStats();
   }, []);
 
   const [isHealingAll, setIsHealingAll] = useState(false);
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch('/api/admin/voiceglot/stats');
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data);
+      }
+    } catch (e) {
+      console.error('Failed to fetch stats');
+    }
+  };
 
   const handleHealAll = async () => {
     if (!confirm('Weet je zeker dat je alle ontbrekende vertalingen wilt genereren via AI? Dit kan even duren.')) return;
@@ -61,6 +75,7 @@ export default function VoiceglotMasterPage() {
       if (res.ok) {
         toast.success(`${data.healedCount} vertalingen gegenereerd!`);
         fetchTranslations();
+        fetchStats();
         playClick('success');
       }
     } catch (e) {
@@ -185,6 +200,39 @@ export default function VoiceglotMasterPage() {
           {isHealingAll ? 'Vertaalwerk bezig...' : 'Vertaal Alles (AI)'}
         </ButtonInstrument>
       </SectionInstrument>
+
+      {/* Stats & Progress Indicators */}
+      {stats && (
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+          {['en-gb', 'fr-fr', 'de-de', 'es-es', 'pt-pt'].map((langCode) => {
+            const shortLang = langCode.split('-')[0];
+            const langStats = stats.coverage?.find((s: any) => s.lang === shortLang || s.lang === langCode);
+            const count = langStats ? langStats.count : 0;
+            const percentage = langStats ? langStats.percentage : 0;
+            
+            return (
+              <div key={langCode} className="bg-white p-6 rounded-[24px] shadow-aura border border-black/5 space-y-4">
+                <div className="flex justify-between items-end">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-black uppercase tracking-widest text-va-black/20">{langCode}</span>
+                    <span className="text-2xl font-light tracking-tighter">{shortLang.toUpperCase()}</span>
+                  </div>
+                  <span className="text-[13px] font-bold text-primary">{percentage}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-va-off-white rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-1000" 
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+                <div className="text-[11px] font-medium text-va-black/40">
+                  {count} / {stats.totalStrings} teksten live
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Filters */}
       <ContainerInstrument className="flex gap-4 items-center bg-white p-6 rounded-[24px] shadow-aura border border-black/5">
