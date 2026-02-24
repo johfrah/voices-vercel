@@ -224,8 +224,11 @@ export const PricingSummary: React.FC<{
             {state.items.length > 0 && state.items.map((itemObj, idx) => (
               <ContainerInstrument 
                 key={itemObj.id || idx} 
-                onClick={() => setSelectedItem(itemObj)}
-                className="flex items-center gap-6 p-6 bg-white rounded-[20px] border border-va-black/5 shadow-aura group relative cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                onClick={() => !isCartPage && setSelectedItem(itemObj)}
+                className={cn(
+                  "flex items-start gap-6 p-8 bg-white rounded-[32px] border border-va-black/5 shadow-aura group relative transition-all",
+                  !isCartPage && "cursor-pointer hover:border-primary/20 active:scale-[0.98]"
+                )}
               >
                 {/* Afbeelding links uitgelijnd (LAYA-MANDAAT) */}
                 <ContainerInstrument className="w-16 h-16 rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
@@ -285,11 +288,47 @@ export const PricingSummary: React.FC<{
                               availability: itemObj.actor?.availability || []
                             });
                             return (
-                              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/5 border border-green-500/10 rounded-lg">
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-[11px] font-bold text-green-600/80 uppercase tracking-wider">
-                                  Verwachte levering: {delivery.formatted}
-                                </span>
+                              <div className="flex flex-col gap-4">
+                                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/5 border border-green-500/10 rounded-lg w-fit">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                  <span className="text-[11px] font-bold text-green-600/80 uppercase tracking-wider">
+                                    Verwachte levering: {delivery.formatted}
+                                  </span>
+                                </div>
+
+                                {/* INLINE PRICE BREAKDOWN (NUCLEAR 2026) */}
+                                {itemObj.pricing && (
+                                  <div className="pt-4 border-t border-va-black/[0.03] space-y-2">
+                                    <div className="flex justify-between text-[11px] uppercase tracking-widest text-va-black/30 font-bold">
+                                      <span>Prijsopbouw</span>
+                                      <span>Bedrag</span>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <div className="flex justify-between text-[13px] text-va-black/60">
+                                        <span>Basistarief</span>
+                                        <span>€ {(itemObj.pricing.base ?? 0).toFixed(2)}</span>
+                                      </div>
+                                      {(itemObj.pricing.wordSurcharge ?? 0) > 0 && (
+                                        <div className="flex justify-between text-[13px] text-va-black/60">
+                                          <span>Extra woorden/verwerking</span>
+                                          <span>+ € {(itemObj.pricing.wordSurcharge ?? 0).toFixed(2)}</span>
+                                        </div>
+                                      )}
+                                      {(itemObj.pricing.mediaSurcharge ?? 0) > 0 && (
+                                        <div className="flex justify-between text-[13px] text-va-black/60">
+                                          <span>Licenties & Buyouts</span>
+                                          <span>+ € {(itemObj.pricing.mediaSurcharge ?? 0).toFixed(2)}</span>
+                                        </div>
+                                      )}
+                                      {(itemObj.pricing.musicSurcharge ?? 0) > 0 && (
+                                        <div className="flex justify-between text-[13px] text-va-black/60">
+                                          <span>Muziek & Mixage</span>
+                                          <span>+ € {(itemObj.pricing.musicSurcharge ?? 0).toFixed(2)}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             );
                           })()}
@@ -306,13 +345,14 @@ export const PricingSummary: React.FC<{
                           if (!isCartPage) {
                             window.location.href = '/cart';
                           } else {
-                            setSelectedItem(itemObj);
+                            restoreItem(itemObj);
+                            updateStep('script');
                           }
                         }}
-                        className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-primary hover:bg-primary/5 transition-all group/view"
-                        title={t('action.view_details', "Bekijk details")}
+                        className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-primary hover:bg-primary/5 transition-all group/edit"
+                        title={isCartPage ? t('action.edit_item', "Bewerk item") : t('action.view_details', "Bekijk details")}
                       >
-                        <Eye size={18} strokeWidth={1.5} className="group-hover/view:scale-110 transition-transform" />
+                        {isCartPage ? <Edit2 size={18} strokeWidth={1.5} className="group-hover/edit:scale-110 transition-transform" /> : <Eye size={18} strokeWidth={1.5} className="group-hover/edit:scale-110 transition-transform" />}
                       </button>
                       <button 
                         onClick={(e) => {
