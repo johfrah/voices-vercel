@@ -228,7 +228,8 @@ export async function POST(request: Request) {
     const amount = Math.round(serverCalculatedSubtotal * (1 + taxRate) * 100) / 100;
 
     // 5. User Management (Lookup/Upsert)
-    let userId = metadata?.userId;
+    let authenticatedUserId = metadata?.userId;
+    let userId = authenticatedUserId;
     let isNewUser = false;
     let isExistingUnauthenticatedUser = false;
 
@@ -242,11 +243,16 @@ export async function POST(request: Request) {
           .single();
 
         if (existingUser) {
-          // Gebruiker bestaat al. Als we niet ingelogd zijn als DEZE gebruiker, is het een risico.
-          if (!userId || userId !== existingUser.id) {
+          // Gebruiker bestaat al. 
+          // 🛡️ CHRIS-PROTOCOL: Als we al ingelogd zijn, behouden we de ingelogde gebruiker als eigenaar (v2.14.316)
+          // Dit voorkomt dat orders "verdwijnen" naar een ander account.
+          if (authenticatedUserId) {
+            userId = authenticatedUserId;
+          } else {
+            // Niet ingelogd, maar e-mail bestaat al -> Verificatie nodig
             isExistingUnauthenticatedUser = true;
+            userId = existingUser.id;
           }
-          userId = existingUser.id;
         } else {
           isNewUser = true;
         }
