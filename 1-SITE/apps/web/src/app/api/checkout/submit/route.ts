@@ -294,16 +294,16 @@ export async function POST(request: Request) {
     console.log('[Checkout] 🚀 STEP 6.0: Preparing order insert payload...');
     
     const orderPayload: any = {
-      wpOrderId: uniqueWpId,
+      wp_order_id: uniqueWpId,
       total: amount.toString(),
       status: isQuote ? 'quote-pending' : 'pending',
-      userId: userId || null,
+      user_id: userId || null,
       journey: isSubscription ? 'johfrai-subscription' : 'agency',
-      billingVatNumber: vat_number || null,
-      isQuote: !!isQuote,
-      quoteMessage: quoteMessage || null,
+      billing_vat_number: vat_number || null,
+      is_quote: !!isQuote,
+      quote_message: quoteMessage || null,
       market: market,
-      rawMeta: {
+      raw_meta: {
         usage,
         plan,
         isSubscription,
@@ -311,17 +311,16 @@ export async function POST(request: Request) {
         itemsCount: validatedItems.length,
         serverCalculated: true
       },
-      ipAddress: ip
+      ip_address: ip
     };
 
-    // 🛡️ CHRIS-PROTOCOL: Only add quoteSentAt if it's a quote, and use a DATE object (v2.14.298)
+    // 🛡️ CHRIS-PROTOCOL: Only add quote_sent_at if it's a quote (v2.14.307)
     if (isQuote) {
-      orderPayload.quoteSentAt = new Date();
+      orderPayload.quote_sent_at = new Date();
     }
     
     console.log('[Checkout] 🚀 STEP 6.1: Inserting order into database...');
-    // 🛡️ CHRIS-PROTOCOL: Use SDK-Direct for the main order insert to bypass Drizzle's internal date/json handling (v2.14.305)
-    // 🛡️ CHRIS-PROTOCOL: Stage 1 - Create base order (v2.14.306)
+    // 🛡️ CHRIS-PROTOCOL: Use SDK-Direct with snake_case for PostgREST (v2.14.307)
     const { data: sdkOrder, error: sdkErr } = await sdkClient
       .from('orders')
       .insert({
@@ -339,11 +338,10 @@ export async function POST(request: Request) {
     const newOrder = sdkOrder;
     console.log('[Checkout] ✅ STEP 6.2: Order created in DB via SDK:', { id: newOrder?.id });
 
-    // 🛡️ CHRIS-PROTOCOL: Stage 2 - Update with full metadata (v2.14.306)
-    // We do this separately to ensure the order exists even if JSON update fails
+    // 🛡️ CHRIS-PROTOCOL: Stage 2 - Update with full metadata (v2.14.307)
     const { error: updateErr } = await sdkClient
       .from('orders')
-      .update({ raw_meta: orderPayload.rawMeta })
+      .update({ raw_meta: orderPayload.raw_meta })
       .eq('id', newOrder.id);
 
     if (updateErr) {
