@@ -357,24 +357,34 @@ export async function POST(request: Request) {
     console.log('[Checkout] 🚀 STEP 7: Saving order items...', { count: validatedItems.length });
     if (validatedItems.length > 0) {
       try {
-        await db.insert(orderItems).values(validatedItems.map((item: any) => {
+        // 🛡️ CHRIS-PROTOCOL: Use SDK-Direct for order items to bypass Drizzle's internal date/json handling (v2.14.309)
+        const itemsToInsert = validatedItems.map((item: any) => {
           const dbActor = actorMap.get(Number(item.actor?.id));
           return {
-            orderId: newOrder.id,
-            actorId: dbActor?.id || null, // 🛡️ Gebruik ALTIJD de serial ID uit de DB
+            order_id: newOrder.id,
+            actor_id: dbActor?.id || null,
             name: item.actor?.display_name ? `Stemopname: ${item.actor.display_name}` : (item.name || 'Product'),
             quantity: 1,
             price: (item.pricing?.subtotal || item.pricing?.total || 0).toString(),
             tax: (item.pricing?.tax || 0).toString(),
-            metaData: {
+            meta_data: {
               ...(item.pricing || {}),
-              briefing: item.briefing || '' // 🛡️ Store briefing here (v2.14.304)
+              briefing: item.briefing || ''
             },
-            deliveryStatus: 'waiting'
-            // 🛡️ CHRIS-PROTOCOL: createdAt has defaultNow(), don't set manually (v2.14.296)
-          } as any;
-        }));
-        console.log('[Checkout] ✅ STEP 7.1: Order items saved');
+            delivery_status: 'waiting'
+          };
+        });
+
+        const { error: itemsErr } = await sdkClient
+          .from('order_items')
+          .insert(itemsToInsert);
+
+        if (itemsErr) {
+          console.error('[Checkout] ❌ STEP 7 SDK ERROR:', itemsErr.message);
+          throw new Error(`Failed to save order items via SDK: ${itemsErr.message}`);
+        }
+        
+        console.log('[Checkout] ✅ STEP 7.1: Order items saved via SDK');
       } catch (e: any) {
         console.error('[Checkout] ❌ STEP 7 ERROR:', e.message);
         throw new Error(`Failed to save order items: ${e.message}`);
