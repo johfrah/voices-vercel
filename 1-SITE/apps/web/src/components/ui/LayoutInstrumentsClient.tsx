@@ -65,6 +65,7 @@ export const ClientButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstru
         className,
         noTranslate && "notranslate"
       )}
+      style={{ cursor: 'pointer' }}
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
       onClick={(e: any) => {
