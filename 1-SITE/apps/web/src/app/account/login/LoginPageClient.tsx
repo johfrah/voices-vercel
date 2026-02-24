@@ -4,6 +4,7 @@ import { BentoCard } from '@/components/ui/BentoGrid';
 import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, TextInstrument, LabelInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { createClient } from '@/utils/supabase/client';
 import { ArrowRight, Loader2, Lock, Mail, ShieldCheck, Star } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -24,7 +25,8 @@ export function LoginPageClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const { resetPassword, t } = useAuth();
+  const { resetPassword } = useAuth();
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
