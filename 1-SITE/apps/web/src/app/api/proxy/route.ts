@@ -27,11 +27,15 @@ export async function GET(request: NextRequest) {
     // MAAR: Behoud de volledige URL voor Supabase Storage direct fetch
     let isSupabaseUrl = cleanPath.includes('supabase.co/storage/v1/object/public/voices/');
     
-    // 🛡️ CHRIS-PROTOCOL: Forensic double-proxy strip (v2.14.179)
+    // 🛡️ CHRIS-PROTOCOL: Forensic double-proxy strip (v2.14.189)
     // If the path already contains /api/proxy/, strip it to get the raw path.
     if (cleanPath.includes('/api/proxy/?path=')) {
       console.log(`[Proxy Forensic] Stripping nested proxy prefix from: ${cleanPath}`);
       cleanPath = decodeURIComponent(cleanPath.split('/api/proxy/?path=')[1]);
+      // If it's still a proxied URL (triple encoding), keep stripping until we get a raw path
+      while (cleanPath.includes('/api/proxy/?path=')) {
+        cleanPath = decodeURIComponent(cleanPath.split('/api/proxy/?path=')[1]);
+      }
       isSupabaseUrl = cleanPath.includes('supabase.co/storage/v1/object/public/voices/');
     }
     
