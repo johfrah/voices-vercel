@@ -1,27 +1,24 @@
-import { db } from '@db';
-import { translations, translationRegistry } from '@db/schema';
-import { eq, and, sql, inArray } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenAIService } from '@/lib/services/openai-service';
 import { GeminiService } from '@/lib/services/gemini-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { SlopFilter } from '@/lib/engines/slop-filter';
+import { createClient } from "@supabase/supabase-js";
 import OpenAI from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /**
- *  API: VOICEGLOT HEAL-ALL (NUCLEAR 2026)
+ *  API: VOICEGLOT HEAL-ALL (NUCLEAR SDK 2026)
  * 
- * Doel: Scant de hele registry op ontbrekende vertalingen en vult deze aan
- * met maximale intelligentie (Market DNA + Context Aware).
+ * CHRIS-PROTOCOL: We bypass Drizzle/postgres-js for this long-running 
+ * batch process to avoid production driver instability.
  */
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
-  // ... (build safety check blijft gelijk)
   if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
     return NextResponse.json({ success: true, healedCount: 0, message: 'Skipping heal-all during build' });
   }
@@ -33,233 +30,146 @@ export async function POST(request: NextRequest) {
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];
     let totalHealed = 0;
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
 
-    // 1. Haal alle unieke strings uit de registry
-    const registryItems = await db.select().from(translationRegistry).catch(() => []);
+    // 1. Fetch Registry Items via SDK
+    const { data: registryItems, error: regErr } = await supabase
+      .from('translation_registry')
+      .select('*');
 
-    // 2. Cache Market DNA per taal voor snelheid
-    const dnaCache: Record<string, string> = {};
-    for (const lang of targetLanguages) {
-      dnaCache[lang] = await GeminiService.getInstance().getMarketDNA(lang);
-    }
+    if (regErr) throw regErr;
+    if (!registryItems) return NextResponse.json({ success: true, healedCount: 0 });
 
-    //  CHRIS-PROTOCOL: Resume-First Batching (Optimized)
-    const itemsToHeal = [];
-    
-    // 1. Haal alle bestaande vertalingen in één keer op voor de target talen
-    console.log(`[Heal-All] Pre-fetching existing translations for ${targetLanguages.join(', ')}...`);
-    const existingTranslations = await db
-      .select({
-        key: translations.translationKey,
-        lang: translations.lang,
-        text: translations.translatedText,
-        status: translations.status
-      })
-      .from(translations)
-      .where(inArray(translations.lang, targetLanguages))
-      .catch(() => []);
+    // 2. Fetch Existing Translations via SDK
+    const { data: existingTranslations, error: transErr } = await supabase
+      .from('translations')
+      .select('translation_key, lang, translated_text, status')
+      .in('lang', targetLanguages);
 
-    // Maak een snelle lookup map
+    if (transErr) throw transErr;
+
     const transMap = new Map();
-    existingTranslations.forEach(t => {
-      transMap.set(`${t.key}:${t.lang}`, t);
+    (existingTranslations || []).forEach(t => {
+      transMap.set(`${t.translation_key}:${t.lang}`, t);
     });
 
+    const itemsToHeal = [];
     for (const item of registryItems) {
       for (const lang of targetLanguages) {
-        const existing = transMap.get(`${item.stringHash}:${lang}`);
-
-        if (!existing || !existing.text || existing.text === 'Initial Load' || existing.status === 'healing_failed') {
+        const existing = transMap.get(`${item.string_hash}:${lang}`);
+        if (!existing || !existing.translated_text || existing.translated_text === 'Initial Load' || existing.status === 'healing_failed') {
           itemsToHeal.push({ item, lang });
         }
       }
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Batching Mandate
-    // We verwerken maximaal 50 items per keer om timeouts te voorkomen
-    const BATCH_SIZE = 50;
+    // 🛡️ CHRIS-PROTOCOL: Batching Mandate (Reduced to 30 for Edge stability)
+    const BATCH_SIZE = 30;
     const itemsToProcess = itemsToHeal.slice(0, BATCH_SIZE);
 
-    console.log(`🚀 Starting Healing for ${itemsToProcess.length} items (Total queue: ${itemsToHeal.length})...`);
+    console.log(`🚀 [Heal-All SDK] Processing ${itemsToProcess.length} items...`);
+
+    // 3. Cache Market DNA
+    const dnaCache: Record<string, string> = {};
+    for (const lang of targetLanguages) {
+      dnaCache[lang] = await GeminiService.getInstance().getMarketDNA(lang);
+    }
 
     for (const { item, lang } of itemsToProcess) {
       try {
-        // Markeer als 'healing'
-        await db.insert(translations).values({
-          translationKey: item.stringHash,
+        // Mark as healing via SDK
+        await supabase.from('translations').upsert({
+          translation_key: item.string_hash,
           lang: lang,
-          originalText: item.originalText,
-          translatedText: '...',
+          original_text: item.original_text,
+          translated_text: '...',
           status: 'healing',
-          updatedAt: new Date()
-        }).onConflictDoUpdate({
-          target: [translations.translationKey, translations.lang],
-          set: { status: 'healing', updatedAt: new Date() }
-        });
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'translation_key, lang' });
 
-        // --- NIEUW: Source Healing Logic ---
-        // Als we een bio/tagline verwerken, checken we eerst de taal van de bron.
-        let sourceText = item.originalText;
-        if (item.stringHash.includes('.bio') || item.stringHash.includes('.tagline')) {
+        let sourceText = item.original_text;
+        
+        // Source Language Detection for Bios/Taglines
+        if (item.string_hash.includes('.bio') || item.string_hash.includes('.tagline')) {
           const detectionResponse = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
               { role: "system", content: "Detect language. If not Dutch (NL), translate to Dutch. Return JSON: { \"detected_lang\": \"iso\", \"is_dutch\": bool, \"dutch_version\": \"str\" }" },
-              { role: "user", content: item.originalText }
+              { role: "user", content: item.original_text }
             ],
             response_format: { type: "json_object" }
           });
           const detection = JSON.parse(detectionResponse.choices[0].message.content || '{}');
           
           if (!detection.is_dutch && detection.detected_lang !== 'nl') {
-            console.log(`♻️ SOURCE HEALING: Detected ${detection.detected_lang} for ${item.stringHash}`);
-            // 1. Update de registry met de NL versie
-            await db.update(translationRegistry)
-              .set({ originalText: detection.dutch_version })
-              .where(eq(translationRegistry.stringHash, item.stringHash));
+            await supabase.from('translation_registry')
+              .update({ original_text: detection.dutch_version })
+              .eq('string_hash', item.string_hash);
             
-            // 2. Sla de originele tekst op als de vertaling voor zijn eigen taal
-            await db.insert(translations).values({
-              translationKey: item.stringHash,
+            await supabase.from('translations').upsert({
+              translation_key: item.string_hash,
               lang: detection.detected_lang,
-              originalText: detection.dutch_version,
-              translatedText: item.originalText,
+              original_text: detection.dutch_version,
+              translated_text: item.original_text,
               status: 'active',
-              isManuallyEdited: true,
-              updatedAt: new Date()
-            }).onConflictDoUpdate({
-              target: [translations.translationKey, translations.lang],
-              set: { translatedText: item.originalText, status: 'active', updatedAt: new Date() }
-            });
+              is_manually_edited: true,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'translation_key, lang' });
             
-            // Gebruik de nieuwe NL versie als bron voor de verdere vertalingen
             sourceText = detection.dutch_version;
           }
         }
 
         const dna = dnaCache[lang] || '';
-          
-          //  CHRIS-PROTOCOL: Intelligent Context Enhancement
-          //  CHRIS-PROTOCOL: Intelligent Context Enhancement
-          let contextHint = item.context || 'Algemene website tekst';
-          if (item.stringHash.startsWith('cta.') || item.stringHash.includes('.btn') || item.stringHash.includes('.button')) {
-            contextHint = `Dit is een interactieve knop (CTA). Houd de vertaling kort, krachtig en actiegericht. Context: ${contextHint}`;
-          } else if (item.stringHash.startsWith('seo.')) {
-            contextHint = `Dit is SEO metadata. Gebruik relevante zoekwoorden voor de ${lang} markt. Context: ${contextHint}`;
-          } else if (item.stringHash.startsWith('calculator.')) {
-            contextHint = `Dit is tekst voor de prijscalculator. Wees precies met getallen en eenheden. Context: ${contextHint}`;
-          } else if (item.stringHash.startsWith('checkout.')) {
-            contextHint = `Dit is tekst voor het afrekenproces. Vertrouwen en duidelijkheid zijn hier cruciaal. Context: ${contextHint}`;
-          } else if (item.stringHash.startsWith('media.') && (item.stringHash.endsWith('.alt_text') || item.stringHash.endsWith('.file_name'))) {
-            contextHint = `Dit is een bestandsnaam of alt-tekst voor media. Vertaal NOOIT merknamen of technische bestandsnamen (zoals 'Bigger', 'Voices', etc). Als de tekst een eigennaam lijkt, laat deze dan ongewijzigd. Context: ${contextHint}`;
-          } else if (item.originalText.length < 20) {
-            contextHint = `Dit is een kort UI label of menu-item. Context: ${contextHint}`;
-          }
+        const prompt = `
+          Senior translator for Voices.be. Translate from NL to ${lang}.
+          MARKET DNA: ${dna}
+          CONTEXT: ${item.context || 'General UI'}
+          TEKST: "${sourceText}"
+          OUTPUT: Translated text only. No quotes. No expansion.
+        `;
 
-          const prompt = `
-            Je bent de senior vertaler voor Voices.be, een high-end castingbureau voor stemmen.
-            Vertaal de volgende tekst van het Nederlands naar het ${lang}.
-            
-            MARKET DNA & RULES:
-            ${dna}
-            
-            CONTEXT:
-            ${contextHint}
-            
-            TONE OF VOICE:
-            Warm, gelijkwaardig, vakmanschap, nuchter. Geen AI-bingo woorden (zoals 'ontdek', 'passie', 'ervaar').
-            
-            STRICT OUTPUT RULES:
-            - Antwoord UITSLUITEND met de vertaalde tekst.
-            - Vertaal NOOIT merknamen (Voices, Studio, Academy, Artist) of technische bestandsnamen.
-            - MINIMALIST MANDATE: Als de brontekst een enkel woord, eigennaam of merknaam is, moet de vertaling ook een enkel woord of de ongewijzigde naam zijn.
-            - NO EXPANSION: Breid korte UI-labels NOOIT uit naar volledige zinnen of marketing-slogans.
-            - Geen inleiding zoals "De vertaling is:".
-            - Geen herhaling van de brontekst.
-            - Geen aanhalingstekens rond de vertaling.
-            - Behoud de betekenis en de Voices-vibe.
-            
-            TEKST:
-            "${sourceText}"
-            
-            VERTALING:
-          `;
+        const translatedText = await OpenAIService.generateText(prompt);
+        const cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
 
-          const translatedText = await OpenAIService.generateText(prompt);
-          const cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
+        if (SlopFilter.isSlop(cleanTranslation, lang, sourceText)) {
+          console.warn(`[Heal-All SDK] Slop detected for ${item.string_hash} (${lang})`);
+          continue;
+        }
 
-          // 4. Slop Filter (Chris-Protocol)
-          if (SlopFilter.isSlop(cleanTranslation, lang, sourceText)) {
-            console.warn(`[Heal-All] Slop detected for ${item.stringHash} (${lang}), skipping.`);
-            continue;
-          }
+        // Save translation via SDK
+        await supabase.from('translations').upsert({
+          translation_key: item.string_hash,
+          lang: lang,
+          original_text: sourceText,
+          translated_text: cleanTranslation,
+          status: 'active',
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'translation_key, lang' });
 
-          // 5. Opslaan in de database
-          await db.insert(translations).values({
-            translationKey: item.stringHash,
-            lang: lang,
-            originalText: sourceText,
-            translatedText: cleanTranslation,
-            status: 'active',
-            isManuallyEdited: false,
-            updatedAt: new Date()
-          }).onConflictDoUpdate({
-            target: [translations.translationKey, translations.lang],
-            set: {
-              translatedText: cleanTranslation,
-              status: 'active',
-              updatedAt: new Date()
-            }
-          });
-
-          totalHealed++;
+        totalHealed++;
       } catch (err) {
-        console.error(`❌ Healing failed for ${item.stringHash} (${lang}):`, err);
-        await db.update(translations)
-          .set({ status: 'healing_failed', updatedAt: new Date() })
-          .where(and(eq(translations.translationKey, item.stringHash), eq(translations.lang, lang)));
-      }
-    }
-
-    // 4. Notificatie naar Admin na voltooiing
-    if (totalHealed > 0) {
-      try {
-        const { DirectMailService } = await import('@/lib/services/direct-mail-service');
-        const mailService = DirectMailService.getInstance();
-        await mailService.sendMail({
-          to: adminEmail,
-          subject: ` Nuclear Heal-All LIVE: ${totalHealed} vertalingen toegevoegd`,
-          html: `
-            <div style="font-family: sans-serif; padding: 40px; background: #000; color: #fff; border-radius: 24px;">
-              <h2 style="letter-spacing: -0.02em; color: #ff4f00;"> Nuclear Heal-All Live</h2>
-              <p>De Freedom Machine heeft een volledige scan uitgevoerd en alle vertalingen direct geactiveerd.</p>
-              <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;" />
-              <p style="font-size: 24px; font-weight: bold;">${totalHealed} strings zijn nu live.</p>
-              <p>Alle ontbrekende vertalingen voor EN, FR, DE, ES en PT zijn verwerkt.</p>
-              <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;" />
-              <div style="margin-top: 30px;">
-                <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/voiceglot" style="background: #ff4f00; color: white; padding: 12px 24px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 14px; display: inline-block;">BEKIJK STATISTIEKEN</a>
-              </div>
-              <p style="font-size: 10px; color: #666; margin-top: 40px;">Gegenereerd door de Voices Engine - Zero Touch Operations 2026</p>
-            </div>
-          `
-        });
-      } catch (mailErr) {
-        console.error(' Failed to send completion notification:', mailErr);
+        console.error(`❌ [Heal-All SDK] Failed for ${item.string_hash} (${lang}):`, err);
+        await supabase.from('translations')
+          .update({ status: 'healing_failed', updated_at: new Date().toISOString() })
+          .match({ translation_key: item.string_hash, lang: lang });
       }
     }
 
     return NextResponse.json({ 
       success: true, 
       healedCount: totalHealed,
-      message: `Nuclear Healing voltooid voor ${totalHealed} strings.`
+      message: `Nuclear Healing (SDK) voltooid voor ${totalHealed} strings.`
     });
 
-  } catch (error) {
-    console.error('[API Voiceglot Heal-All Error]:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API Voiceglot Heal-All SDK Error]:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

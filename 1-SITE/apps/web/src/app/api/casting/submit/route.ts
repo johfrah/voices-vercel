@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       sessionHash: sessionHash,
-      redirectUrl: `/casting/session/${sessionHash}`
+      redirectUrl: `/pitch/${sessionHash}`
     });
 
   } catch (error: any) {

@@ -179,7 +179,7 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
         localStorage.removeItem('voices_proefopname_draft');
         if (typeof window !== 'undefined') {
           setTimeout(() => {
-            window.location.href = `/pitch/${data.sessionHash}`;
+            router.push(`/pitch/${data.sessionHash}`);
           }, 2000);
         }
       } else {
