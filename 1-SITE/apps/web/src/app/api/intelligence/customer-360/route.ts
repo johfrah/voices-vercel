@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
     const identifier = userId ? parseInt(userId) : email!;
     
     // 🛡️ CHRIS-PROTOCOL: Nuclear Caching Layer (SWR)
-    // We cachen de 360 data voor 5 minuten om 504 timeouts te voorkomen.
+    // We cachen de 360 data voor 1 minuut om 504 timeouts te voorkomen (v2.14.347)
     const cacheKey = `customer_360_${identifier}`;
     
     if (!forceRefresh) {
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
         .eq('key', cacheKey)
         .single();
 
-      if (cachedData && (Date.now() - new Date((cachedData.value as any).timestamp).getTime() < 300000)) {
+      if (cachedData && (Date.now() - new Date((cachedData.value as any).timestamp).getTime() < 60000)) {
         return NextResponse.json((cachedData.value as any).data, {
           headers: { 'X-Cache': 'HIT' }
         });
@@ -129,11 +129,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
-    // Background update cache (don't await)
-    sdkClient.from('app_configs').upsert({
+    // 🛡️ CHRIS-PROTOCOL: Await cache update to ensure consistency (v2.14.347)
+    await sdkClient.from('app_configs').upsert({
       key: cacheKey,
       value: { data: customerData, timestamp: new Date().toISOString() }
-    }).then(() => {});
+    });
 
     return NextResponse.json(customerData, {
       headers: {

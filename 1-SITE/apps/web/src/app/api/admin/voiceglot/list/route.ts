@@ -22,6 +22,7 @@ export async function GET(request: Request) {
     let results: any[] = [];
     try {
       // 1. Haal items uit de registry via direct SQL (Bulletproof)
+      console.log(`[Voiceglot List] Fetching page ${page} (limit ${limit}, offset ${offset})`);
       const registryData = await db.execute(sql`
         SELECT string_hash, original_text, context, last_seen
         FROM translation_registry
@@ -30,11 +31,13 @@ export async function GET(request: Request) {
       `);
 
       if (!registryData || (registryData as any).length === 0) {
+        console.log('[Voiceglot List] No registry items found');
         return NextResponse.json({ translations: [], page, limit, hasMore: false });
       }
 
       // 2. Haal bijbehorende vertalingen op
       const hashes = (registryData as any).map((i: any) => i.string_hash);
+      console.log(`[Voiceglot List] Fetching translations for ${hashes.length} hashes`);
       
       // CHRIS-PROTOCOL: Use ANY with explicit array casting for PostgreSQL compatibility
       const transData = await db.execute(sql`
@@ -42,6 +45,8 @@ export async function GET(request: Request) {
         FROM translations
         WHERE translation_key = ANY(${hashes}::text[])
       `);
+      
+      console.log(`[Voiceglot List] Found ${transData.length} translations`);
 
       results = (registryData as any).map((item: any) => {
         const itemTranslations = (transData as any || []).filter((t: any) => t.translation_key === item.string_hash);

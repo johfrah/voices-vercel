@@ -1,6 +1,6 @@
 import { db } from "@db";
 import { systemEvents } from "@db/schema/index";
-import { desc, eq, and, gte } from "drizzle-orm";
+import { desc, eq, and, gte, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
@@ -92,7 +92,8 @@ export async function POST(request: Request) {
           url: request.headers.get('referer'),
           userAgent: request.headers.get('user-agent'),
           timestamp: new Date().toISOString()
-        }
+        },
+        createdAt: sql`now()`
       });
     } catch (dbError) {
       console.warn('[Logs Reporting] Drizzle failed, falling back to Supabase SDK:', dbError);

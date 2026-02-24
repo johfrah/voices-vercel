@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
 import { TelegramService } from '@/lib/services/telegram-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
-import { desc, gte, and, eq } from 'drizzle-orm';
+import { desc, gte, and, eq, sql } from 'drizzle-orm';
 
 /**
  *  API: SYSTEM WATCHDOG (SELF-HEALING 2026)
@@ -52,7 +52,6 @@ export async function POST(request: NextRequest) {
     let eventId = 0;
     try {
       if (db && systemEvents) {
-        const now = new Date().toISOString();
         const [event] = await db.insert(systemEvents).values({
           level,
           source: component || 'Watchdog',
@@ -62,9 +61,9 @@ export async function POST(request: NextRequest) {
             stack,
             url,
             userAgent: request.headers.get('user-agent'),
-            timestamp: now
+            timestamp: new Date().toISOString()
           },
-          createdAt: now
+          createdAt: sql`now()`
         }).returning({ id: systemEvents.id });
         eventId = event.id;
         console.log(`[Watchdog] Event logged to DB: #${eventId}`);
@@ -153,7 +152,7 @@ export async function POST(request: NextRequest) {
           level: 'info',
           source: 'WatchdogMail',
           message: `Watchdog summary mail sent: ${error.substring(0, 50)}`,
-          createdAt: new Date().toISOString()
+          createdAt: sql`now()`
         });
       } catch (e) {
         console.error('[Watchdog] Failed to log mail event:', e);

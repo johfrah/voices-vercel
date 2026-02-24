@@ -42,20 +42,25 @@ export async function GET(request: NextRequest) {
     let statsByLang: any[] = [];
 
     try {
+      console.log('[Voiceglot Stats] Fetching total count from registry...');
       // CHRIS-PROTOCOL: Use direct db.execute for absolute reliability and to bypass RLS/mapping issues
       const totalResult = await db.execute(sql`SELECT count(*) as count FROM translation_registry`);
       totalStrings = parseInt(String((totalResult as any)[0]?.count || '0'), 10);
+      console.log(`[Voiceglot Stats] Total strings found: ${totalStrings}`);
       
       if (totalStrings > 0) {
+        console.log('[Voiceglot Stats] Fetching counts per language...');
         const langResult = await db.execute(sql`
           SELECT lang, count(*) as count 
           FROM translations 
           GROUP BY lang
         `);
         statsByLang = (langResult as any) || [];
+        console.log(`[Voiceglot Stats] Stats by lang result:`, statsByLang);
       }
     } catch (dbErr: any) {
       console.error('[Voiceglot Stats] Raw SQL query failed:', dbErr.message);
+      throw dbErr; // Re-throw to be caught by the outer try-catch
     }
 
     // Bereken percentages

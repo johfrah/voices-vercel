@@ -41,7 +41,7 @@ export async function GET(request: Request) {
     // 🛡️ CHRIS-PROTOCOL: 3s internal timeout for actors
     const fetchPromise = getActors(params, lang);
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Actors fetch timeout (3s)')), 3000)
+      setTimeout(() => reject(new Error('Actors fetch timeout (10s)')), 10000)
     );
 
     let data;

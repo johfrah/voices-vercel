@@ -8,6 +8,7 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
 import { MusicDeliveryService } from '@/lib/services/music-delivery-service';
 import { YukiService } from '@/lib/services/yuki-service';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 /**
  *  MOLLIE WEBHOOK (NUCLEAR)
@@ -15,6 +16,10 @@ import { VumeEngine } from '@/lib/mail/VumeEngine';
  * Doel: Real-time status updates van Mollie verwerken.
  * Bij succes: Order op 'paid' zetten en Customer DNA updaten.
  */
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: NextRequest) {
   try {
@@ -211,6 +216,17 @@ export async function POST(request: NextRequest) {
             .where(eq(users.id, userId));
             
           console.log(` Intelligence: DNA updated for user ${userId} after successful payment.`);
+        }
+
+        // 🛡️ CHRIS-PROTOCOL: Invalidate Customer 360 Cache (v2.14.347)
+        try {
+          const cacheKey = `customer_360_${payment.metadata.email || order.users?.email}`;
+          if (cacheKey) {
+            await sdkClient.from('app_configs').delete().eq('key', cacheKey);
+            console.log(`[Automation] UCI Cache invalidated for ${payment.metadata.email || order.users?.email}`);
+          }
+        } catch (cacheErr) {
+          console.warn('[Automation] Failed to invalidate UCI cache in webhook:', cacheErr);
         }
 
         //  Notificatie naar Admin (HITL)

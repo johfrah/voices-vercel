@@ -504,6 +504,16 @@ export async function POST(request: Request) {
             }
           }
 
+          // 🛡️ CHRIS-PROTOCOL: Invalidate Customer 360 Cache (v2.14.347)
+          // This ensures the new order is immediately visible in the dashboard
+          try {
+            const cacheKey = `customer_360_${email}`;
+            await sdkClient.from('app_configs').delete().eq('key', cacheKey);
+            console.log(`[Automation] UCI Cache invalidated for ${email}`);
+          } catch (cacheErr) {
+            console.warn('[Automation] Failed to invalidate UCI cache:', cacheErr);
+          }
+
         } catch (e: any) {
           console.warn('[Checkout] ⚠️ Background notification failed:', e.message);
         }

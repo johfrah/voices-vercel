@@ -63,6 +63,7 @@ export default function VoiceglotMasterPage() {
   const fetchStats = async () => {
     console.log('📡 [Voiceglot Page] Fetching stats...');
     try {
+      console.log('📡 [Voiceglot Page] Fetching stats...');
       const res = await fetch('/api/admin/voiceglot/stats');
       const data = await res.json();
       console.log('📊 [Voiceglot Page] Stats Received:', data);
@@ -70,10 +71,12 @@ export default function VoiceglotMasterPage() {
       if (res.ok) {
         setStats(data);
       } else {
-        console.error('❌ [Voiceglot Page] Stats API Error:', data.error);
+        console.error('❌ [Voiceglot Page] Stats API Error:', data.error || 'Unknown error');
+        toast.error(`Stats Error: ${data.error || '500'}`);
       }
     } catch (e: any) {
       console.error('❌ [Voiceglot Page] Stats Fetch Failed:', e.message);
+      toast.error(`Netwerkfout bij ophalen stats: ${e.message}`);
     }
   };
 
@@ -119,6 +122,11 @@ export default function VoiceglotMasterPage() {
     try {
       const res = await fetch(`/api/admin/voiceglot/list?page=${pageNum}&limit=100`);
       const data = await res.json();
+      console.log(`📋 [Voiceglot Page] List Received (Page ${pageNum}):`, data);
+      
+      if (!res.ok) {
+        throw new Error(data.error || `Server error ${res.status}`);
+      }
       
       if (isInitial) {
         setTranslations(data.translations || []);
