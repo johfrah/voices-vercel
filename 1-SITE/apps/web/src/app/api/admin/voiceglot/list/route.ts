@@ -21,25 +21,22 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit;
 
     try {
-      // CHRIS-PROTOCOL: Ultra-Stable Single Fetch (v2.14.391)
-      // We test if a basic fetch works at all.
-      console.log(`[Voiceglot List] Ultra-Stable Fetch: Page ${page}, Limit ${limit}`);
+      // CHRIS-PROTOCOL: Supabase SDK Direct Fetch (v2.14.393)
+      // We bypass Drizzle/postgres-js entirely for this critical list to avoid production driver issues.
+      console.log(`[Voiceglot List] SDK Fetch: Page ${page}, Limit ${limit}`);
 
-      // 1. Fetch Registry Items using the most basic Drizzle pattern
-      // We use a simpler select to avoid any potential schema issues
-      const registryItems = await db
-        .select({
-          id: translationRegistry.id,
-          stringHash: translationRegistry.stringHash,
-          originalText: translationRegistry.originalText,
-          context: translationRegistry.context,
-          lastSeen: translationRegistry.lastSeen
-        })
-        .from(translationRegistry)
-        .orderBy(desc(translationRegistry.lastSeen))
-        .limit(limit)
-        .offset(offset);
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
 
+      // 1. Fetch Registry Items
+      const { data: registryItems, error: regErr } = await supabase
+        .from('translation_registry')
+        .select('id, string_hash, original_text, context, last_seen')
+        .order('last_seen', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      if (regErr) throw regErr;
       console.log(`[Voiceglot List] Registry Items found: ${registryItems?.length || 0}`);
 
       if (!registryItems || registryItems.length === 0) {
@@ -47,29 +44,21 @@ export async function GET(request: Request) {
       }
 
       // 2. Fetch translations for these keys
-      const hashes = registryItems.map(i => i.stringHash);
-      const transData = await db
-        .select({
-          id: translations.id,
-          translationKey: translations.translationKey,
-          lang: translations.lang,
-          translatedText: translations.translatedText,
-          status: translations.status,
-          isLocked: translations.isLocked,
-          isManuallyEdited: translations.isManuallyEdited,
-          updatedAt: translations.updatedAt
-        })
-        .from(translations)
-        .where(inArray(translations.translationKey, hashes));
+      const hashes = registryItems.map(i => i.string_hash);
+      const { data: transData, error: transErr } = await supabase
+        .from('translations')
+        .select('id, translation_key, lang, translated_text, status, is_locked, is_manually_edited, updated_at')
+        .in('translation_key', hashes);
 
+      if (transErr) throw transErr;
       console.log(`[Voiceglot List] Translations found: ${transData?.length || 0}`);
 
       // 3. Join in memory
       const mappedResults = registryItems.map((item: any) => {
-        const itemTranslations = transData.filter((t: any) => t.translationKey === item.stringHash);
+        const itemTranslations = (transData || []).filter((t: any) => t.translation_key === item.string_hash);
         
         // Detect source language
-        const text = (item.originalText || '').toLowerCase();
+        const text = (item.original_text || '').toLowerCase();
         const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ');
         const isEn = text.includes(' the ') || text.includes(' and ');
         const isNl = text.includes(' de ') || text.includes(' het ') || text.includes(' en ');
@@ -80,17 +69,17 @@ export async function GET(request: Request) {
 
         return {
           id: item.id,
-          translationKey: item.stringHash,
-          originalText: item.originalText,
+          translationKey: item.string_hash,
+          originalText: item.original_text,
           context: item.context,
           sourceLang: detectedLang,
           translations: itemTranslations.map((t: any) => ({
             id: t.id,
             lang: t.lang,
-            translatedText: t.translatedText,
+            translatedText: t.translated_text,
             status: t.status,
-            isLocked: t.isLocked || t.isManuallyEdited || false,
-            updatedAt: t.updatedAt
+            isLocked: t.is_locked || t.is_manually_edited || false,
+            updatedAt: t.updated_at
           }))
         };
       });
@@ -102,9 +91,9 @@ export async function GET(request: Request) {
         hasMore: mappedResults.length === limit
       });
     } catch (dbErr: any) {
-      console.error('❌ [Voiceglot List API] Ultra-Stable Fetch failed:', dbErr);
+      console.error('❌ [Voiceglot List API] SDK Fetch failed:', dbErr);
       return NextResponse.json({ 
-        error: `Ultra-Stable Fetch failed: ${dbErr.message}`, 
+        error: `SDK Fetch failed: ${dbErr.message}`, 
         translations: [] 
       }, { status: 500 });
     }

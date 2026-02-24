@@ -275,8 +275,9 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
         <AnimatePresence mode="wait">
           <motion.div key={currentStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}>
             {currentStep === 1 && (
-              <div className="space-y-8">
-                <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura space-y-12">
+              <ContainerInstrument className="max-w-6xl mx-auto">
+                <div className="space-y-8">
+                  <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura space-y-12">
                   
                   {/* 1. Journey Selector (Pill Mandaat) */}
                   <div className="flex justify-center">
@@ -447,8 +448,8 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
             )}
 
             {currentStep === 3 && (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-8 space-y-8">
+              <ContainerInstrument className="max-w-6xl mx-auto">
+                <div className="flex flex-col gap-8">
                   <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
                     <div className="flex items-center justify-between mb-8"><HeadingInstrument level={3} className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step3.title" defaultText="Het Script" /></HeadingInstrument><button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 text-primary text-[15px] font-light hover:opacity-80 transition-opacity tracking-widest uppercase">{isMatching ? <Loader2 size={16} className="animate-spin" /> : <LucideUpload size={16} strokeWidth={1.5} />}<VoiceglotText translationKey="launchpad.upload" defaultText={isMatching ? "Bezig..." : "Upload bestand"} /></button><input type="file" ref={fileInputRef} className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) console.log('File uploaded:', file.name); }} accept=".pdf,.doc,.docx,.txt" /></div>
                     <div className={cn("relative min-h-[320px] rounded-[20px] transition-all duration-500 overflow-hidden", isDragging ? "bg-primary/5 ring-2 ring-primary ring-inset scale-[0.99]" : "bg-va-off-white")} onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleFileDrop}>
@@ -463,7 +464,7 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
                     </div>
                   </ContainerInstrument>
                 </div>
-              </div>
+              </ContainerInstrument>
             )}
           </motion.div>
         </AnimatePresence>
