@@ -99,13 +99,18 @@ export async function POST(request: Request) {
     let dbActors: any[] = [];
     if (actorIds.length > 0) {
       try {
+        console.log('[Checkout] 🔍 DB Fetch Actors:', actorIds);
         dbActors = await db.select().from(actors).where(inArray(actors.id, actorIds)).catch(async (err: any) => {
-          console.warn('[Checkout] Drizzle fetch failed, using SDK:', err.message);
-          const { data } = await sdkClient.from('actors').select('*').in('id', actorIds);
+          console.warn('[Checkout] ⚠️ Drizzle fetch failed, using SDK:', err.message);
+          const { data, error: sdkErr } = await sdkClient.from('actors').select('*').in('id', actorIds);
+          if (sdkErr) throw sdkErr;
           return data || [];
         });
-      } catch (dbErr) {
-        console.error('[Checkout] Actor fetch fatal:', dbErr);
+        console.log('[Checkout] ✅ DB Fetch Success, count:', dbActors.length);
+      } catch (dbErr: any) {
+        console.error('[Checkout] ❌ Actor fetch fatal:', dbErr.message);
+        // We gooien de error door om de 500 te debuggen
+        throw new Error(`Database fetch failed for actors: ${dbErr.message}`);
       }
     }
     const actorMap = new Map(dbActors.map(a => [a.id, a]));
