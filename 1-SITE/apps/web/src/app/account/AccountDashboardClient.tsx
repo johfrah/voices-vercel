@@ -156,6 +156,7 @@ export default function AccountDashboardClient() {
                         alt="Voices" 
                         width={120} 
                         height={120} 
+                        sizes="120px"
                         className="opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
