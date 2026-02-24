@@ -253,11 +253,32 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     
     if (missingField) {
       playClick('error');
-      const element = document.getElementsByName(missingField)[0] || document.querySelector(`[placeholder*="${missingField}"]`);
+      
+      // 🛡️ CHRIS-PROTOCOL: User-friendly validation (v2.14.317)
+      // We scroll to the missing field and show a clear indicator
+      const fieldLabels: Record<string, string> = {
+        email: 'E-mailadres',
+        first_name: 'Voornaam',
+        last_name: 'Achternaam',
+        postal_code: 'Postcode',
+        city: 'Stad'
+      };
+      
+      const element = document.getElementsByName(missingField)[0] || 
+                      document.querySelector(`input[value="${formData[missingField as keyof typeof formData] || ''}"]`) ||
+                      document.querySelector(`[placeholder*="${fieldLabels[missingField] || missingField}"]`);
+      
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         (element as HTMLElement).focus();
+        // Add a temporary shake or highlight effect if possible
+        (element as HTMLElement).classList.add('animate-shake', 'border-red-500');
+        setTimeout(() => {
+          (element as HTMLElement).classList.remove('animate-shake', 'border-red-500');
+        }, 2000);
       }
+      
+      alert(t('checkout.validation.missing', `Het veld '${fieldLabels[missingField] || missingField}' is verplicht.`));
       return;
     }
 
