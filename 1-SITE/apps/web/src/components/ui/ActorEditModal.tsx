@@ -521,7 +521,10 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
       connectivity: formData.connectivity,
       portfolio_photos: formData.portfolio_photos,
       portfolioTier: formData.portfolio_tier,
-      reviews: formData.reviews
+      reviews: formData.reviews,
+      // 🛡️ CHRIS-PROTOCOL: Explicitly include language IDs for relational update (v2.14.161)
+      native_lang_id: formData.native_lang_id,
+      extra_lang_ids: formData.extra_lang_ids
     };
 
     try {

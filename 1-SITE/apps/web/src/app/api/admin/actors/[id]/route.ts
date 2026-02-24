@@ -50,16 +50,16 @@ export async function PATCH(
         
         const langIds = [body.native_lang_id, ...(body.extra_lang_ids || [])].filter(Boolean);
         if (langIds.length > 0) {
-          const dbLangs = await db.select().from(languages).where(inArray(languages.id, langIds));
+          const dbLangs = await db.select().from(languages).where(inArray(languages.id, langIds as number[]));
           
           if (body.native_lang_id) {
-            const native = dbLangs.find(l => l.id === body.native_lang_id);
+            const native = dbLangs.find((l: any) => l.id === body.native_lang_id);
             if (native) body.native_lang = native.code;
           }
           
           if (body.extra_lang_ids) {
-            const extras = dbLangs.filter(l => body.extra_lang_ids.includes(l.id));
-            body.extra_langs = extras.map(l => l.code).join(', ');
+            const extras = dbLangs.filter((l: any) => body.extra_lang_ids.includes(l.id));
+            body.extra_langs = extras.map((l: any) => l.code).join(', ');
           }
         }
       } catch (langErr) {
@@ -84,6 +84,7 @@ export async function PATCH(
       samedayDelivery: body.delivery_days === 0 || body.delivery_days_min === 0,
       cutoffTime: body.cutoff_time,
       nativeLang: body.native_lang,
+      nativeLangId: body.native_lang_id,
       extraLangs: body.extra_langs,
       dropboxUrl: body.photo_url,
       photoId: body.photo_id !== undefined ? body.photo_id : (body.photoId !== undefined ? body.photoId : undefined),
@@ -133,22 +134,23 @@ export async function PATCH(
       }
     }
 
-    // Update the actor in the database
-    const result = await db.update(actors)
-    .set(updateData)
-      .where(or(eq(actors.id, id), eq(actors.wpProductId, id)))
-      .returning({
-        id: actors.id,
-        wpProductId: actors.wpProductId,
-        slug: actors.slug,
-        firstName: actors.firstName,
-        lastName: actors.lastName,
-        email: actors.email,
-        status: actors.status,
-        photoId: actors.photoId,
-        photo_url: actors.dropboxUrl, // Return the latest photo_url/dropboxUrl
-        updatedAt: actors.updatedAt
-      });
+      // Update the actor in the database
+      const result = await db.update(actors)
+      .set(updateData)
+        .where(or(eq(actors.id, id), eq(actors.wpProductId, id)))
+        .returning({
+          id: actors.id,
+          wpProductId: actors.wpProductId,
+          slug: actors.slug,
+          firstName: actors.firstName,
+          lastName: actors.lastName,
+          email: actors.email,
+          status: actors.status,
+          photoId: actors.photoId,
+          photo_url: actors.dropboxUrl, // Return the latest photo_url/dropboxUrl
+          native_lang: actors.nativeLang,
+          updatedAt: actors.updatedAt
+        });
 
     if (!result || result.length === 0) {
       console.error(` ADMIN: Actor ${id} not found in database`);
@@ -222,7 +224,7 @@ export async function PATCH(
         const demoId = demo.id ? parseInt(demo.id) : null;
         const isRealId = demoId && demoId < 1000000000;
         
-        if (isRealId && existingDemos.find(d => d.id === demoId)) {
+        if (isRealId && existingDemos.find((d: any) => d.id === demoId)) {
           // Update (keep existing status unless super-admin)
           await db.update(actorDemos)
             .set({ 
@@ -268,7 +270,7 @@ export async function PATCH(
         const videoId = video.id ? parseInt(video.id) : null;
         const isRealId = videoId && videoId < 1000000000; 
 
-        if (isRealId && existingVideos.find(v => v.id === videoId)) {
+        if (isRealId && existingVideos.find((v: any) => v.id === videoId)) {
           // Update
           await db.update(actorVideos)
             .set({ 
@@ -316,7 +318,7 @@ export async function PATCH(
           const reviewId = review.id ? parseInt(review.id) : null;
           const isRealId = reviewId && reviewId < 1000000000;
 
-          if (isRealId && existingReviews.find(r => r.id === reviewId)) {
+          if (isRealId && existingReviews.find((r: any) => r.id === reviewId)) {
             // Update
             await db.update(reviews)
               .set({ 

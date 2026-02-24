@@ -89,6 +89,7 @@ export async function GET() {
       const voiceScore = actor.voiceScore ?? actor.voice_score ?? 10;
       const priceUnpaid = actor.priceUnpaid ?? actor.price_unpaid ?? 0;
       const nativeLang = actor.nativeLang || actor.native_lang;
+      const nativeLangId = actor.nativeLangId || actor.native_lang_id || nativeLink?.languageId || nativeLink?.language_id || null;
       let photo_url = actor.photo_url || actor.dropbox_url;
 
       //  CHRIS-PROTOCOL: Apply proxy prefix for local paths to ensure photos load in admin
@@ -107,7 +108,7 @@ export async function GET() {
         priceUnpaid,
         nativeLang,
         photo_url,
-        native_lang_id: nativeLink?.languageId || nativeLink?.language_id || null,
+        native_lang_id: nativeLangId,
         extra_lang_ids: extraLinks.map((al: any) => al.languageId || al.language_id).filter(Boolean)
       };
     });
