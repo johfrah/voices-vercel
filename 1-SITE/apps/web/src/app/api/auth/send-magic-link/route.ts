@@ -141,11 +141,13 @@ export async function POST(req: Request) {
 
       if (fallbackError) {
         console.error('[Auth API] Fallback Supabase mail also failed:', fallbackError.message, fallbackError.status);
+        const isRateLimit = fallbackError.message.includes('rate limit') || fallbackError.message.includes('security purposes');
+        
         await ServerWatchdog.report({
           error: `Magic link failed (Custom & Fallback): ${fallbackError.message} (Status: ${fallbackError.status})`,
           component: 'AuthAPI',
           url: req.url,
-          level: 'critical',
+          level: isRateLimit ? 'info' : 'critical',
           payload: { 
             email, 
             customError: mailErr.message, 
@@ -154,7 +156,10 @@ export async function POST(req: Request) {
             fallbackCode: (fallbackError as any).code
           }
         });
-        return NextResponse.json({ error: `Inloglink kon niet worden verzonden: ${fallbackError.message}` }, { status: 500 });
+        return NextResponse.json(
+          { error: `Inloglink kon niet worden verzonden: ${fallbackError.message}` }, 
+          { status: isRateLimit ? 429 : 500 }
+        );
       }
 
       console.log(`[Auth API] Fallback magic link sent successfully to: ${email}`);
