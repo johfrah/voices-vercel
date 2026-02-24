@@ -3,6 +3,9 @@ import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
 import { NextResponse } from 'next/server';
 import { ServerWatchdog } from '@/lib/services/server-watchdog';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 /**
  * CUSTOM AUTH API (BOB-METHOD 2026)
  * 
