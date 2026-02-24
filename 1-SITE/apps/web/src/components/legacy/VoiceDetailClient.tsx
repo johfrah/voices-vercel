@@ -12,7 +12,6 @@ import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
 import { VoiceCard } from "@/components/ui/VoiceCard";
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, Suspense } from 'react';
@@ -138,108 +137,55 @@ export function VoiceDetailClient({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: (() => {
-            const market = MarketManager.getCurrentMarket();
-            const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
-            
-            return JSON.stringify([
-              {
-                "@context": "https://schema.org",
-                "@type": "Person",
-                "@id": `${siteUrl}/voice/${actor.slug}#person`,
-                "name": actor.display_name,
-                "description": actor.bio || actor.description,
-                "image": actor.photo_url || undefined,
-                "jobTitle": t('common.job_title.voice_actor', "Voice-over Artist"),
-                "gender": actor.gender,
-                "url": `${siteUrl}/voice/${actor.slug}`,
-                "mainEntityOfPage": {
-                  "@type": "WebPage",
-                  "@id": `${siteUrl}/voice/${actor.slug}`
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "Person",
+              "@id": `/voice/${actor.slug}#person`,
+              "name": actor.display_name,
+              "description": actor.bio || actor.description,
+              "image": actor.photo_url || undefined,
+              "jobTitle": t('common.job_title.voice_actor', "Voice-over Artist"),
+              "gender": actor.gender,
+              "url": `/voice/${actor.slug}`,
+              "knowsAbout": actor.languages?.map((l: any) => l.name) || actor.native_lang ? [actor.native_lang] : [t('common.language.dutch', "Nederlands")],
+              "aggregateRating": actor.voice_score ? {
+                "@type": "AggregateRating",
+                "ratingValue": actor.voice_score,
+                "bestRating": "5",
+                "worstRating": "1",
+                "ratingCount": String(actor.reviews?.length ?? 10)
+              } : undefined,
+              "workExample": actor.demos?.length ? actor.demos.slice(0, 5).map((d: any) => ({
+                "@type": "CreativeWork",
+                "name": d.title || d.name
+              })) : undefined
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "/"
                 },
-                "knowsAbout": actor.languages?.map((l: any) => l.name) || actor.native_lang ? [actor.native_lang] : [t('common.language.dutch', "Nederlands")],
-                "memberOf": {
-                  "@type": "Organization",
-                  "name": market.company_name,
-                  "url": siteUrl
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Agency",
+                  "item": "/agency"
                 },
-                "worksFor": {
-                  "@type": "Organization",
-                  "name": market.company_name,
-                  "url": siteUrl
-                },
-                "sameAs": [
-                  actor.website,
-                  actor.website_url,
-                  actor.linkedin,
-                  actor.linkedin_url,
-                  actor.instagram_url
-                ].filter(Boolean),
-                "aggregateRating": actor.voice_score ? {
-                  "@type": "AggregateRating",
-                  "ratingValue": actor.voice_score,
-                  "bestRating": "5",
-                  "worstRating": "1",
-                  "ratingCount": String(actor.reviews?.length ?? 10)
-                } : undefined,
-                "offers": (() => {
-                  const hasOffers = actor.starting_price || actor.price_ivr || actor.price_online || actor.price_unpaid;
-                  if (!hasOffers) return undefined;
-                  const offers: any[] = [];
-                  const basePrice = parseFloat(String(actor.starting_price || actor.price_unpaid || 0));
-                  if (basePrice > 0) {
-                    offers.push({
-                      "@type": "Offer",
-                      "priceCurrency": "EUR",
-                      "price": basePrice,
-                      "availability": "https://schema.org/InStock",
-                      "seller": { "@type": "Organization", "name": market.company_name, "url": siteUrl }
-                    });
-                  }
-                  const ivr = parseFloat(String(actor.price_ivr || 0));
-                  if (ivr > 0) {
-                    offers.push({
-                      "@type": "Offer",
-                      "itemOffered": { "@type": "Service", "name": "IVR / Telefonie voice-over" },
-                      "priceCurrency": "EUR",
-                      "price": ivr,
-                      "availability": "https://schema.org/InStock",
-                      "seller": { "@type": "Organization", "name": market.company_name, "url": siteUrl }
-                    });
-                  }
-                  return offers.length > 0 ? offers : undefined;
-                })(),
-                "workExample": actor.demos?.length ? actor.demos.slice(0, 5).map((d: any) => ({
-                  "@type": "CreativeWork",
-                  "name": d.title || d.name
-                })) : undefined
-              },
-              {
-                "@context": "https://schema.org",
-                "@type": "BreadcrumbList",
-                "itemListElement": [
-                  {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": siteUrl
-                  },
-                  {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "Agency",
-                    "item": `${siteUrl}/agency`
-                  },
-                  {
-                    "@type": "ListItem",
-                    "position": 3,
-                    "name": actor.display_name,
-                    "item": `${siteUrl}/voice/${actor.slug}`
-                  }
-                ]
-              }
-            ]);
-          })()
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": actor.display_name,
+                  "item": `/voice/${actor.slug}`
+                }
+              ]
+            }
+          ])
         }}
       />
       {/*  HET MAAKPROCES: Direct naar de 3-koloms configurator */}
