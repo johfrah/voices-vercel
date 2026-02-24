@@ -42,11 +42,14 @@ export default function VoiceglotMasterPage() {
   const [search, setSearch] = useState('');
   const [filterLang, setFilterLang] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    fetchTranslations();
+    fetchTranslations(1, true);
     fetchStats();
     
     // Auto-refresh stats every 10 seconds during healing
@@ -67,11 +70,9 @@ export default function VoiceglotMasterPage() {
         setStats(data);
       } else {
         console.error('❌ [Voiceglot Page] Stats API Error:', data.error);
-        // toast.error(`Stats Error: ${data.error}`);
       }
     } catch (e: any) {
       console.error('❌ [Voiceglot Page] Stats Fetch Failed:', e.message);
-      // toast.error(`Fetch Failed: ${e.message}`);
     }
   };
 
@@ -82,11 +83,12 @@ export default function VoiceglotMasterPage() {
     if (hasHealing || isHealingAll) {
       const timer = setTimeout(() => {
         fetchStats();
-        fetchTranslations();
+        // We verversen alleen de huidige pagina
+        fetchTranslations(page, false);
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [translations, isHealingAll]);
+  }, [translations, isHealingAll, page]);
 
   const handleHealAll = async () => {
     if (!confirm('Weet je zeker dat je alle ontbrekende vertalingen wilt genereren via AI? Dit kan even duren.')) return;
@@ -98,7 +100,7 @@ export default function VoiceglotMasterPage() {
       const data = await res.json();
       if (res.ok) {
         toast.success(`${data.healedCount} vertalingen gegenereerd!`);
-        fetchTranslations();
+        fetchTranslations(1, true);
         fetchStats();
         playClick('success');
       }
@@ -109,19 +111,46 @@ export default function VoiceglotMasterPage() {
     }
   };
 
-  const fetchTranslations = async () => {
-    console.log('📡 [Voiceglot Page] Fetching translations...');
-    setLoading(true);
+  const fetchTranslations = async (pageNum: number, isInitial: boolean = false) => {
+    if (isInitial) setLoading(true);
+    else setIsFetchingMore(true);
+
     try {
-      const res = await fetch('/api/admin/voiceglot/list');
+      const res = await fetch(`/api/admin/voiceglot/list?page=${pageNum}&limit=100`);
       const data = await res.json();
-      console.log('📋 [Voiceglot Page] Translations Received:', data.translations?.length || 0, 'items');
-      setTranslations(data.translations || []);
+      
+      if (isInitial) {
+        setTranslations(data.translations || []);
+      } else {
+        // Alleen toevoegen als ze er nog niet in zitten (voorkom dubbelen bij polling)
+        setTranslations(prev => {
+          const existingIds = new Set(prev.map(t => t.id));
+          const newItems = (data.translations || []).filter((t: any) => !existingIds.has(t.id));
+          // Als we polling doen (isInitial=false maar pageNum=page), willen we de bestaande items updaten
+          if (pageNum === page && !isFetchingMore) {
+            return prev.map(item => {
+              const updated = (data.translations || []).find((t: any) => t.id === item.id);
+              return updated ? updated : item;
+            });
+          }
+          return [...prev, ...newItems];
+        });
+      }
+      
+      setHasMore(data.hasMore);
+      setPage(pageNum);
     } catch (e) {
       console.error('❌ [Voiceglot Page] Translations Fetch Failed:', e);
       toast.error('Kon vertalingen niet laden.');
     } finally {
       setLoading(false);
+      setIsFetchingMore(false);
+    }
+  };
+
+  const loadMore = () => {
+    if (!isFetchingMore && hasMore) {
+      fetchTranslations(page + 1);
     }
   };
 
@@ -373,6 +402,7 @@ export default function VoiceglotMasterPage() {
       {/* Table */}
       <div className="bg-white rounded-[32px] shadow-aura border border-black/5 overflow-hidden">
         <table className="w-full text-left border-collapse">
+          {/* ... (thead blijft gelijk) */}
           <thead>
             <tr className="bg-va-off-white/50 border-b border-black/5">
               <th className="px-8 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase w-1/4">Key & Bron (NL)</th>
@@ -385,6 +415,7 @@ export default function VoiceglotMasterPage() {
           <tbody className="divide-y divide-black/[0.03]">
             {groupedList.map((group: any) => (
               <tr key={group.key} className="group hover:bg-va-off-white/30 transition-colors">
+                {/* ... (td's blijven gelijk) */}
                 <td className="px-8 py-6 align-top">
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
@@ -503,6 +534,19 @@ export default function VoiceglotMasterPage() {
             ))}
           </tbody>
         </table>
+        
+        {hasMore && (
+          <div className="p-12 flex justify-center border-t border-black/5 bg-va-off-white/20">
+            <ButtonInstrument 
+              onClick={loadMore}
+              disabled={isFetchingMore}
+              className="va-btn-pro !bg-white !text-va-black border border-black/10 flex items-center gap-2"
+            >
+              {isFetchingMore ? <Loader2 className="animate-spin" size={16} /> : <Filter size={16} />}
+              {isFetchingMore ? 'Laden...' : 'Laad meer vertalingen'}
+            </ButtonInstrument>
+          </div>
+        )}
       </div>
     </PageWrapperInstrument>
   );

@@ -261,6 +261,10 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString()
     }).returning();
 
+    if (!newOrder) {
+      throw new Error('Failed to create order in database');
+    }
+
     // 7. Order Items opslaan
     if (validatedItems.length > 0) {
       try {
