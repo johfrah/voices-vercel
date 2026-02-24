@@ -105,7 +105,8 @@ function getGlobalCache() {
 const ACTORS_CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
-  const { language, search, gender, style, market } = params;
+  const { language, search, gender, style, market: marketParam } = params;
+  const market = marketParam || 'BE'; // Default to BE if not provided
   const cache = getGlobalCache();
   const cacheKey = JSON.stringify({ params, lang });
   const cached = cache.actorsCache[cacheKey];

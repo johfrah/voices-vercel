@@ -274,283 +274,296 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
 }
 
 async function SmartRouteContent({ segments }: { segments: string[] }) {
-  const headersList = headers();
-  const lang = headersList.get('x-voices-lang') || 'nl';
-  const normalizedSlug = normalizeSlug(segments);
-  
-  // Resolve de slug naar de originele versie
-  const resolved = await resolveSlug(normalizedSlug, lang);
-  const firstSegment = resolved ? resolved.originalSlug : segments[0];
-  const journey = segments[1];
-  const medium = segments[2];
-
-  // 1. Artist Journey (Youssef Mandate)
   try {
-    const artist = await getArtist(firstSegment, lang).catch(() => null);
-    if (artist) {
-      const isYoussef = firstSegment === 'youssef' || firstSegment === 'youssef-zaki';
-      return (
-        <PageWrapperInstrument>
-          <ArtistDetailClient 
-            artistData={artist} 
-            isYoussef={isYoussef} 
-            params={{ slug: firstSegment }} 
-          />
-        </PageWrapperInstrument>
-      );
-    }
-  } catch (e) {
-    console.error("[SmartRouter] Artist check failed:", e);
-  }
-
-  // 1.5 Agency Journey (Voice Casting)
-  if (MarketManager.isAgencySegment(firstSegment)) {
-    const filters: Record<string, string> = {};
+    const headersList = headers();
+    const lang = headersList.get('x-voices-lang') || 'nl';
+    const normalizedSlug = normalizeSlug(segments);
     
-    //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
-    const agencyJourney = MarketManager.getJourneyFromSegment(segments[1]);
+    // Resolve de slug naar de originele versie
+    const resolved = await resolveSlug(normalizedSlug, lang);
+    const firstSegment = resolved ? resolved.originalSlug : segments[0];
+    const journey = segments[1];
+    const medium = segments[2];
 
-    if (agencyJourney === "commercial" && segments[2]) {
-      filters.media = segments[2];
+    // 1. Artist Journey (Youssef Mandate)
+    try {
+      const artist = await getArtist(firstSegment, lang).catch(() => null);
+      if (artist) {
+        const isYoussef = firstSegment === 'youssef' || firstSegment === 'youssef-zaki';
+        return (
+          <PageWrapperInstrument>
+            <ArtistDetailClient 
+              artistData={artist} 
+              isYoussef={isYoussef} 
+              params={{ slug: firstSegment }} 
+            />
+          </PageWrapperInstrument>
+        );
+      }
+    } catch (e) {
+      console.error("[SmartRouter] Artist check failed:", e);
     }
 
-    let searchResults;
-    try {
-      searchResults = await getActors(filters, lang);
-    } catch (error) {
-      console.error("[SmartRouter] getActors failed:", error);
-      searchResults = { results: [], filters: { genders: [], languages: [], styles: [] }, reviews: [], reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } };
-    }
-    const actors = searchResults?.results || [];
+    // 1.5 Agency Journey (Voice Casting)
+    if (MarketManager.isAgencySegment(firstSegment)) {
+      const filters: Record<string, string> = {};
+      
+      //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
+      const agencyJourney = MarketManager.getJourneyFromSegment(segments[1]);
 
-    const mappedActors = actors.map((actor: any) => ({
-      id: actor.id,
-      display_name: actor.display_name,
-      first_name: actor.first_name || actor.firstName,
-      last_name: actor.last_name || actor.lastName,
-      firstName: actor.firstName || actor.first_name,
-      lastName: actor.lastName || actor.last_name,
-      email: actor.email,
-      photo_url: actor.photo_url,
-      voice_score: actor.voice_score,
-      native_lang: actor.native_lang,
-      gender: actor.gender,
-      starting_price: actor.starting_price,
-      delivery_days_min: actor.delivery_days_min || 1,
-      delivery_days_max: actor.delivery_days_max || 2,
-      extra_langs: actor.extra_langs,
-      tone_of_voice: actor.tone_of_voice,
-      clients: actor.clients,
-      cutoff_time: actor.cutoff_time || "18:00",
-      availability: actor.availability || [],
-      tagline: actor.tagline,
-      ai_tags: actor.ai_tags || [],
-      slug: actor.slug,
-      demos: actor.demos || [],
-      bio: actor.bio,
-      price_ivr: actor.price_ivr,
-      price_unpaid: actor.price_unpaid,
-      price_online: actor.price_online,
-      holiday_from: actor.holiday_from,
-      holiday_till: actor.holiday_till,
-      rates_raw: actor.rates_raw || {}
-    }));
+      if (agencyJourney === "commercial" && segments[2]) {
+        filters.media = segments[2];
+      }
 
-    const market = headersList.get("x-voices-market") || "BE";
+      let searchResults;
+      try {
+        searchResults = await getActors(filters, lang);
+      } catch (error) {
+        console.error("[SmartRouter] getActors failed:", error);
+        searchResults = { results: [], filters: { genders: [], languages: [], styles: [] }, reviews: [], reviewStats: { averageRating: 4.9, totalCount: 0, distribution: {} } };
+      }
+      const actors = searchResults?.results || [];
 
-    return (
-      <>
-        <Suspense fallback={null}>
-          <LiquidBackground />
-        </Suspense>
-        <AgencyHeroInstrument 
-          filters={searchResults?.filters || { genders: [], languages: [], styles: [] }}
-          market={market}
-          searchParams={filters}
-        />
-        <div className="!pt-0 -mt-24 relative z-40">
-          <AgencyContent mappedActors={mappedActors} filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} />
-        </div>
-      </>
-    );
-  }
+      const mappedActors = actors.map((actor: any) => ({
+        id: actor.id,
+        display_name: actor.display_name,
+        first_name: actor.first_name || actor.firstName,
+        last_name: actor.last_name || actor.lastName,
+        firstName: actor.firstName || actor.first_name,
+        lastName: actor.lastName || actor.last_name,
+        email: actor.email,
+        photo_url: actor.photo_url,
+        voice_score: actor.voice_score,
+        native_lang: actor.native_lang,
+        gender: actor.gender,
+        starting_price: actor.starting_price,
+        delivery_days_min: actor.delivery_days_min || 1,
+        delivery_days_max: actor.delivery_days_max || 2,
+        extra_langs: actor.extra_langs,
+        tone_of_voice: actor.tone_of_voice,
+        clients: actor.clients,
+        cutoff_time: actor.cutoff_time || "18:00",
+        availability: actor.availability || [],
+        tagline: actor.tagline,
+        ai_tags: actor.ai_tags || [],
+        slug: actor.slug,
+        demos: actor.demos || [],
+        bio: actor.bio,
+        price_ivr: actor.price_ivr,
+        price_unpaid: actor.price_unpaid,
+        price_online: actor.price_online,
+        holiday_from: actor.holiday_from,
+        holiday_till: actor.holiday_till,
+        rates_raw: actor.rates_raw || {}
+      }));
 
-  // 2. Pitch Link (Casting List)
-  if (firstSegment === 'pitch' && journey) {
-    try {
-      const host = headersList.get('host') || 'www.voices.be';
-      const market = MarketManager.getCurrentMarket(host);
-
-      //  CHRIS-PROTOCOL: Fetch real casting list from DB
-      const list = await db.query.castingLists.findFirst({
-        where: eq(castingLists.hash, journey),
-        with: {
-          items: {
-            with: {
-              actor: true
-            },
-            orderBy: (items: any, { asc }: { asc: any }) => [asc(items.displayOrder)]
-          }
-        }
-      }).catch(() => null);
-
-      if (!list) return notFound();
-
-      const listSettings = list.settings as any;
-      const showRates = listSettings?.isAdminGenerated === true;
-
-      const schema = {
-        '@context': 'https://schema.org',
-        '@type': 'ItemList',
-        'name': list.name,
-        'numberOfItems': list.items.length,
-        'itemListElement': list.items.map((item: any, i: number) => ({
-          '@type': 'ListItem',
-          'position': i + 1,
-          'item': {
-            '@type': 'Service',
-            'name': item.actor.firstName,
-            'provider': {
-              '@type': 'LocalBusiness',
-              'name': market.name
-            }
-          }
-        }))
-      };
+      const market = headersList.get("x-voices-market") || "BE";
 
       return (
-        <PageWrapperInstrument className="bg-va-off-white">
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-          />
+        <>
           <Suspense fallback={null}>
             <LiquidBackground />
           </Suspense>
-          <ContainerInstrument className="py-48 max-w-5xl mx-auto">
-            <header className="mb-20 text-center">
-              <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-6 block uppercase">
-                <VoiceglotText translationKey="casting.selection_title" defaultText="Casting Selectie" />
-              </TextInstrument>
-              <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-8 text-va-black">
-                {list.name}
-              </HeadingInstrument>
-              <ContainerInstrument className="w-24 h-1 bg-primary/20 rounded-full mx-auto" />
-            </header>
+          <AgencyHeroInstrument 
+            filters={searchResults?.filters || { genders: [], languages: [], styles: [] }}
+            market={market}
+            searchParams={filters}
+          />
+          <div className="!pt-0 -mt-24 relative z-40">
+            <AgencyContent mappedActors={mappedActors} filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} />
+          </div>
+        </>
+      );
+    }
 
-            <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {list.items.map((item: any, i: number) => (
-                <ContainerInstrument key={i} className="bg-white p-8 rounded-[20px] shadow-aura border border-black/5 flex flex-col gap-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden relative">
-                      {item.actor.photoId ? (
-                        <Image 
-                          src={`/api/proxy/?path=${encodeURIComponent(item.actor.dropboxUrl || '')}`} 
-                          alt={item.actor.firstName}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : item.actor.firstName[0]}
-                    </div>
-                    <div>
-                      <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.firstName}</HeadingInstrument>
-                      <div className="flex items-center justify-between mt-1">
-                        <TextInstrument className="text-[15px] text-va-black/40">
-                          <VoiceglotText 
-                            translationKey={`common.language.${item.actor.nativeLang?.toLowerCase() || 'nl'}`} 
-                            defaultText={MarketManager.getLanguageLabel(item.actor.nativeLang || 'nl')} 
+    // 2. Pitch Link (Casting List)
+    if (firstSegment === 'pitch' && journey) {
+      try {
+        const host = headersList.get('host') || 'www.voices.be';
+        const market = MarketManager.getCurrentMarket(host);
+
+        //  CHRIS-PROTOCOL: Fetch real casting list from DB
+        const list = await db.query.castingLists.findFirst({
+          where: eq(castingLists.hash, journey),
+          with: {
+            items: {
+              with: {
+                actor: true
+              },
+              orderBy: (items: any, { asc }: { asc: any }) => [asc(items.displayOrder)]
+            }
+          }
+        }).catch(() => null);
+
+        if (!list) return notFound();
+
+        const listSettings = list.settings as any;
+        const showRates = listSettings?.isAdminGenerated === true;
+
+        const schema = {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          'name': list.name,
+          'numberOfItems': list.items.length,
+          'itemListElement': list.items.map((item: any, i: number) => ({
+            '@type': 'ListItem',
+            'position': i + 1,
+            'item': {
+              '@type': 'Service',
+              'name': item.actor.firstName,
+              'provider': {
+                '@type': 'LocalBusiness',
+                'name': market.name
+              }
+            }
+          }))
+        };
+
+        return (
+          <PageWrapperInstrument className="bg-va-off-white">
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+            />
+            <Suspense fallback={null}>
+              <LiquidBackground />
+            </Suspense>
+            <ContainerInstrument className="py-48 max-w-5xl mx-auto">
+              <header className="mb-20 text-center">
+                <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-6 block uppercase">
+                  <VoiceglotText translationKey="casting.selection_title" defaultText="Casting Selectie" />
+                </TextInstrument>
+                <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-8 text-va-black">
+                  {list.name}
+                </HeadingInstrument>
+                <ContainerInstrument className="w-24 h-1 bg-primary/20 rounded-full mx-auto" />
+              </header>
+
+              <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {list.items.map((item: any, i: number) => (
+                  <ContainerInstrument key={i} className="bg-white p-8 rounded-[20px] shadow-aura border border-black/5 flex flex-col gap-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden relative">
+                        {item.actor.photoId ? (
+                          <Image 
+                            src={`/api/proxy/?path=${encodeURIComponent(item.actor.dropboxUrl || '')}`} 
+                            alt={item.actor.firstName}
+                            fill
+                            className="object-cover"
                           />
-                        </TextInstrument>
-                        {showRates && (
-                          <TextInstrument className="text-[15px] font-bold text-primary">
-                            €{parseFloat(item.actor.priceUnpaid || '0').toFixed(2)}
+                        ) : item.actor.firstName[0]}
+                      </div>
+                      <div>
+                        <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.firstName}</HeadingInstrument>
+                        <div className="flex items-center justify-between mt-1">
+                          <TextInstrument className="text-[15px] text-va-black/40">
+                            <VoiceglotText 
+                              translationKey={`common.language.${item.actor.nativeLang?.toLowerCase() || 'nl'}`} 
+                              defaultText={MarketManager.getLanguageLabel(item.actor.nativeLang || 'nl')} 
+                            />
                           </TextInstrument>
-                        )}
+                          {showRates && (
+                            <TextInstrument className="text-[15px] font-bold text-primary">
+                              €{parseFloat(item.actor.priceUnpaid || '0').toFixed(2)}
+                            </TextInstrument>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="h-12 bg-va-off-white rounded-[10px] flex items-center px-4 gap-2">
-                    <div className="w-8 h-8 bg-va-black rounded-full flex items-center justify-center text-white">
-                      <ArrowRight size={14} />
+                    <div className="h-12 bg-va-off-white rounded-[10px] flex items-center px-4 gap-2">
+                      <div className="w-8 h-8 bg-va-black rounded-full flex items-center justify-center text-white">
+                        <ArrowRight size={14} />
+                      </div>
+                      <TextInstrument className="text-[13px] font-medium tracking-widest text-va-black/40 uppercase">
+                        <VoiceglotText translationKey="action.view_profile" defaultText="Bekijk Profiel" />
+                      </TextInstrument>
                     </div>
-                    <TextInstrument className="text-[13px] font-medium tracking-widest text-va-black/40 uppercase">
-                      <VoiceglotText translationKey="action.view_profile" defaultText="Bekijk Profiel" />
-                    </TextInstrument>
-                  </div>
-                  <VoicesLink 
-                    href={`/${item.actor.slug}`}
-                    className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
-                  >
-                    <VoiceglotText translationKey="action.select_voice" defaultText="Selecteer deze stem" />
+                    <VoicesLink 
+                      href={`/${item.actor.slug}`}
+                      className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
+                    >
+                      <VoiceglotText translationKey="action.select_voice" defaultText="Selecteer deze stem" />
+                    </VoicesLink>
+                  </ContainerInstrument>
+                ))}
+              </ContainerInstrument>
+
+              <footer className="mt-32 text-center">
+                <ContainerInstrument className="bg-va-black text-white p-16 rounded-[20px] shadow-aura-lg">
+                  <HeadingInstrument level={2} className="text-4xl font-light mb-8">
+                    <VoiceglotText translationKey="casting.no_match_title" defaultText="Niet de juiste match?" />
+                  </HeadingInstrument>
+                  <VoicesLink href="/agency" className="va-btn-pro inline-flex items-center gap-2">
+                    <VoiceglotText translationKey="action.view_all_voices" defaultText="Bekijk alle stemmen" /> <ArrowRight size={18} />
                   </VoicesLink>
                 </ContainerInstrument>
-              ))}
+              </footer>
             </ContainerInstrument>
-
-            <footer className="mt-32 text-center">
-              <ContainerInstrument className="bg-va-black text-white p-16 rounded-[20px] shadow-aura-lg">
-                <HeadingInstrument level={2} className="text-4xl font-light mb-8">
-                  <VoiceglotText translationKey="casting.no_match_title" defaultText="Niet de juiste match?" />
-                </HeadingInstrument>
-                <VoicesLink href="/agency" className="va-btn-pro inline-flex items-center gap-2">
-                  <VoiceglotText translationKey="action.view_all_voices" defaultText="Bekijk alle stemmen" /> <ArrowRight size={18} />
-                </VoicesLink>
-              </ContainerInstrument>
-            </footer>
-          </ContainerInstrument>
-        </PageWrapperInstrument>
-      );
-    } catch (e) {
-      console.error("Pitch Link Error:", e);
+          </PageWrapperInstrument>
+        );
+      } catch (e) {
+        console.error("Pitch Link Error:", e);
+      }
     }
-  }
 
-  // 2. Check voor Stem
-  try {
-    const actor = await getActor(firstSegment, lang).catch(() => null);
-    if (actor) {
-      //  CHRIS-PROTOCOL: Map journey slug to internal journey type
-      const journeyMap: Record<string, JourneyType> = {
-        'telefoon': 'telephony',
-        'telefooncentrale': 'telephony',
-        'telephony': 'telephony',
-        'video': 'video',
-        'commercial': 'commercial',
-        'reclame': 'commercial'
-      };
-      const mappedJourney = journey ? journeyMap[journey.toLowerCase()] : undefined;
-
-      return (
-        <PageWrapperInstrument>
-          <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
-        </PageWrapperInstrument>
-      );
-    }
-  } catch (e) {
-    console.error("[SmartRouter] Actor check failed:", e);
-  }
-
-  // 2. Check voor CMS Artikel (alleen als er maar 1 segment is)
-  if (segments.length === 1) {
+    // 2. Check voor Stem
     try {
-      const page = await db.query.contentArticles.findFirst({
-        where: eq(contentArticles.slug, firstSegment),
-        with: {
-          blocks: {
-            orderBy: (blocks: any, { asc }: { asc: any }) => [asc(blocks.displayOrder)],
-          },
-        },
-      }).catch(() => null);
+      const actor = await getActor(firstSegment, lang).catch(() => null);
+      if (actor) {
+        //  CHRIS-PROTOCOL: Map journey slug to internal journey type
+        const journeyMap: Record<string, JourneyType> = {
+          'telefoon': 'telephony',
+          'telefooncentrale': 'telephony',
+          'telephony': 'telephony',
+          'video': 'video',
+          'commercial': 'commercial',
+          'reclame': 'commercial'
+        };
+        const mappedJourney = journey ? journeyMap[journey.toLowerCase()] : undefined;
 
-      if (page) {
-        return <CmsPageContent page={page} slug={firstSegment} />;
+        return (
+          <PageWrapperInstrument>
+            <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
+          </PageWrapperInstrument>
+        );
       }
     } catch (e) {
-      console.error("[SmartRouter] CMS check failed:", e);
+      console.error("[SmartRouter] Actor check failed:", e);
     }
-  }
 
-  return notFound();
+    // 2. Check voor CMS Artikel (alleen als er maar 1 segment is)
+    if (segments.length === 1) {
+      try {
+        const page = await db.query.contentArticles.findFirst({
+          where: eq(contentArticles.slug, firstSegment),
+          with: {
+            blocks: {
+              orderBy: (blocks: any, { asc }: { asc: any }) => [asc(blocks.displayOrder)],
+            },
+          },
+        }).catch(() => null);
+
+        if (page) {
+          return <CmsPageContent page={page} slug={firstSegment} />;
+        }
+      } catch (e) {
+        console.error("[SmartRouter] CMS check failed:", e);
+      }
+    }
+
+    return notFound();
+  } catch (err: any) {
+    console.error("[SmartRouter] FATAL ERROR:", err);
+    const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
+    await ServerWatchdog.report({
+      error: `SmartRouter Fatal Error: ${err.message}`,
+      stack: err.stack,
+      component: 'SmartRouter',
+      url: segments.join('/'),
+      level: 'critical'
+    });
+    throw err;
+  }
 }
 
 /**
