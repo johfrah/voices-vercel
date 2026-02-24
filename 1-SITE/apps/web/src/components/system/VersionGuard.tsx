@@ -11,7 +11,7 @@ import { usePathname } from 'next/navigation';
  */
 export function VersionGuard({ currentVersion }: { currentVersion: string }) {
   const pathname = usePathname();
-  const lastCheck = useRef<number>(Date.now());
+  const lastCheck = useRef<number>(0); // Start at 0 to force check on mount
 
   useEffect(() => {
     // 🛡️ CHRIS-PROTOCOL: Alleen checken op client-side
@@ -27,24 +27,31 @@ export function VersionGuard({ currentVersion }: { currentVersion: string }) {
         
         if (!res.ok) return;
         
-        // Vercel stuurt vaak een 'x-vercel-id' of we kunnen onze eigen header gebruiken
-        // Voor nu checken we of de server een andere versie rapporteert in de response
         const data = await res.json();
-        const serverVersion = data._version || process.env.NEXT_PUBLIC_APP_VERSION;
+        // 🛡️ CHRIS-PROTOCOL: Use server-provided version with fallback
+        const serverVersion = data._version;
 
         // Als de server versie verschilt van de browser versie -> HARD RELOAD
         if (serverVersion && serverVersion !== currentVersion) {
-          console.warn(`🚀 [VersionGuard] New version detected: ${serverVersion}. Reloading...`);
-          window.location.reload();
+          console.warn(`🚀 [VersionGuard] New version detected: ${serverVersion} (current: ${currentVersion}). Reloading...`);
+          
+          // Voorkom oneindige reload loops
+          if (window.location.search.includes('reloaded=true')) {
+            console.error('🚀 [VersionGuard] Already reloaded once, stopping to prevent loop.');
+            return;
+          }
+
+          const separator = window.location.href.includes('?') ? '&' : '?';
+          window.location.href = `${window.location.href}${separator}reloaded=true`;
         }
       } catch (e) {
         // Silent fail om de user niet te storen
       }
     };
 
-    // Check bij elke route-verandering, maar max 1x per minuut
+    // Check bij mount en route-verandering, maar max 1x per 30 seconden
     const now = Date.now();
-    if (now - lastCheck.current > 60000) {
+    if (now - lastCheck.current > 30000) {
       lastCheck.current = now;
       checkVersion();
     }
