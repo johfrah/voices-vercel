@@ -23,6 +23,8 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
 import { EmailPreviewModal } from './EmailPreviewModal';
 import { TermsModal } from './TermsModal';
 
+import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
+
 export const PricingSummary: React.FC<{ 
   onlyItems?: boolean; 
   onlyTotals?: boolean;
@@ -266,11 +268,31 @@ export const PricingSummary: React.FC<{
                       )}
                       
                       {isCartPage && (itemObj.script || itemObj.briefing) && (
-                        <div className="mt-3 p-4 bg-va-off-white/50 rounded-xl border border-va-black/[0.03] italic text-va-black/60 relative group/script-preview">
-                          <div className="absolute -top-2 -left-2 bg-white rounded-full p-1 shadow-sm border border-va-black/5">
-                            <FileText size={10} className="text-primary" />
+                        <div className="mt-3 space-y-3">
+                          <div className="p-4 bg-va-off-white/50 rounded-xl border border-va-black/[0.03] italic text-va-black/60 relative group/script-preview">
+                            <div className="absolute -top-2 -left-2 bg-white rounded-full p-1 shadow-sm border border-va-black/5">
+                              <FileText size={10} className="text-primary" />
+                            </div>
+                            &quot;{itemObj.script || itemObj.briefing}&quot;
                           </div>
-                          &quot;{itemObj.script || itemObj.briefing}&quot;
+                          
+                          {/* Delivery Date Badge */}
+                          {(() => {
+                            const delivery = calculateDeliveryDate({
+                              deliveryDaysMin: itemObj.actor?.delivery_days_min || 1,
+                              deliveryDaysMax: itemObj.actor?.delivery_days_max || 3,
+                              cutoffTime: itemObj.actor?.cutoff_time || '18:00',
+                              availability: itemObj.actor?.availability || []
+                            });
+                            return (
+                              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/5 border border-green-500/10 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                <span className="text-[11px] font-bold text-green-600/80 uppercase tracking-wider">
+                                  Verwachte levering: {delivery.formatted}
+                                </span>
+                              </div>
+                            );
+                          })()}
                         </div>
                       )}
                     </div>
