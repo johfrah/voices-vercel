@@ -301,42 +301,53 @@ export class StudioDataBridge {
   static async getFinanceStats(): Promise<FinanceStats> {
     try {
       // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+      console.log(' [StudioBridge] Fetching finance stats via SDK...');
       const { data: studioOrders, error: ordersError } = await supabase
         .from('orders')
-        .select('*')
+        .select('total, raw_meta, status')
         .eq('journey', 'studio')
         .in('status', ['completed', 'wc-completed', 'processing', 'wc-processing', 'wc-onbetaald']);
 
       const { data: studioCosts, error: costsError } = await supabase
         .from('costs')
-        .select('*')
+        .select('amount, is_partner_payout')
         .eq('journey', 'studio');
 
-      if (ordersError || costsError) throw ordersError || costsError;
+      if (ordersError) {
+        console.error(' [StudioBridge] Orders SDK Error:', ordersError.message);
+      }
+      if (costsError) {
+        console.error(' [StudioBridge] Costs SDK Error:', costsError.message);
+      }
       
       // Bereken omzet EXCL BTW
       let totalRevenue = 0;
       let pendingRevenue = 0;
 
       (studioOrders || []).forEach(o => {
-        const total = parseFloat(o.total || '0');
-        const tax = parseFloat((o.raw_meta as any)?._order_tax || (o.rawMeta as any)?._order_tax || '0');
-        const net = total - tax;
+        try {
+          const total = parseFloat(o.total || '0');
+          const meta = o.raw_meta || {};
+          const tax = parseFloat(meta._order_tax || '0');
+          const net = total - tax;
 
-        if (o.status === 'wc-onbetaald') {
-          pendingRevenue += net;
-        } else {
-          totalRevenue += net;
+          if (o.status === 'wc-onbetaald') {
+            pendingRevenue += net;
+          } else {
+            totalRevenue += net;
+          }
+        } catch (e) {
+          console.warn(' [StudioBridge] Error parsing order:', o.id);
         }
       });
       
       // Splits kosten in Externe Kosten en Partner Payouts
       const externalCosts = (studioCosts || [])
-        .filter(c => !c.is_partner_payout && !c.isPartnerPayout)
+        .filter(c => !c.is_partner_payout)
         .reduce((acc, c) => acc + parseFloat(c.amount || '0'), 0);
         
       const partnerPayouts = (studioCosts || [])
-        .filter(c => c.is_partner_payout || c.isPartnerPayout)
+        .filter(c => c.is_partner_payout)
         .reduce((acc, c) => acc + parseFloat(c.amount || '0'), 0);
 
       const netProfit = totalRevenue - externalCosts - partnerPayouts;
@@ -347,10 +358,11 @@ export class StudioDataBridge {
       
       const marginPercentage = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
 
+      console.log(' [StudioBridge] Finance stats calculated successfully.');
       return { totalRevenue, pendingRevenue, externalCosts, partnerPayouts, netProfit, partnerShare, forecastProfit, marginPercentage };
-    } catch (error) {
-      console.error("Core Logic Error (Finance):", error);
-      return { totalRevenue: 0, pendingRevenue: 0, externalCosts: 0, partnerPayouts: 0, netProfit: 0, marginPercentage: 0 };
+    } catch (error: any) {
+      console.error(" [StudioBridge] Core Logic Error (Finance):", error.message);
+      return { totalRevenue: 0, pendingRevenue: 0, externalCosts: 0, partnerPayouts: 0, netProfit: 0, partnerShare: 0, marginPercentage: 0 };
     }
   }
 

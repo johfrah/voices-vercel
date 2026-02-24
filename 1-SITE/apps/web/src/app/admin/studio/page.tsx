@@ -41,18 +41,24 @@ export default async function StudioAdminPage() {
   // 1. Haal alle edities op (voor overzicht) via SDK voor stabiliteit
   let allEditions: any[] = [];
   try {
+    console.log(' [StudioAdmin] Fetching editions via SDK...');
     const { data: editions, error } = await supabase
       .from('workshop_editions')
       .select(`
-        *,
-        workshop:workshops(*),
-        location:locations(*),
-        instructor:instructors(*)
+        id,
+        date,
+        status,
+        workshop_id,
+        location_id,
+        instructor_id,
+        workshop:workshops(id, title),
+        location:locations(id, name),
+        instructor:instructors(id, name)
       `)
       .order('date', { ascending: false });
 
     if (error) {
-      console.error('Studio Admin SDK Error (Editions):', error);
+      console.error(' [StudioAdmin] SDK Error (Editions):', error.message);
       // 🛡️ CHRIS-PROTOCOL: Report to Watchdog
       const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
       await ServerWatchdog.report({
@@ -63,13 +69,21 @@ export default async function StudioAdminPage() {
     }
 
     if (editions) {
-      allEditions = editions.map(e => ({
-        ...e,
-        date: e.date ? new Date(e.date) : new Date()
-      }));
+      console.log(` [StudioAdmin] Found ${editions.length} editions.`);
+      allEditions = editions.map(e => {
+        const d = e.date ? new Date(e.date) : new Date();
+        // Check if date is valid, fallback to now if not
+        return {
+          ...e,
+          date: isNaN(d.getTime()) ? new Date() : d,
+          workshop: Array.isArray(e.workshop) ? e.workshop[0] : e.workshop,
+          location: Array.isArray(e.location) ? e.location[0] : e.location,
+          instructor: Array.isArray(e.instructor) ? e.instructor[0] : e.instructor
+        };
+      });
     }
   } catch (dbError: any) {
-    console.error('Studio Admin Fatal Error (Editions):', dbError);
+    console.error(' [StudioAdmin] Fatal Error (Editions):', dbError.message);
   }
 
   // 2. Haal financile stats op (Nuclear Logic)
