@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
     try {
       console.log(' ADMIN: Linking in media table...');
       
-      const [mediaResult] = await db.insert(media).values({
+      const mediaData = {
         fileName: fileName,
         filePath: filePath,
         fileType: finalContentType,
@@ -137,7 +137,9 @@ export async function POST(request: NextRequest) {
         category: 'voices',
         isPublic: true,
         updatedAt: new Date().toISOString()
-      }).returning({ id: media.id });
+      };
+      console.log(' ADMIN: Media data to insert:', JSON.stringify(mediaData, null, 2));
+      const [mediaResult] = await db.insert(media).values(mediaData).returning({ id: media.id });
       
       if (mediaResult) {
         mediaId = mediaResult.id;
@@ -187,7 +189,8 @@ export async function POST(request: NextRequest) {
         console.log(' ADMIN: Skipping AI analysis in non-production environment.');
       }
     } catch (dbError: any) {
-      console.error(' ADMIN: DB Link Failure:', dbError);
+      console.error(' ADMIN: DB Link Failure (CRITICAL):', dbError.message);
+      console.error(' ADMIN: DB Link Error Stack:', dbError.stack);
     }
 
     return NextResponse.json({ 

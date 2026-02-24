@@ -434,7 +434,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         extra_lang_ids: formData.extra_lang_ids
       };
 
-      console.log(' ADMIN: Auto-saving profile with new photo...', { actorId: actor.id, mediaId });
+      console.log(` ADMIN: Auto-saving profile with new photo...`, { actorId: actor.id, mediaId });
 
       const response = await fetch(`/api/admin/actors/${actor.id}`, {
         method: 'PATCH',
