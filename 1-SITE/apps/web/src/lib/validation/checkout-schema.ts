@@ -4,23 +4,43 @@ import { z } from 'zod';
  * 🛡️ NUCLEAR CHECKOUT CONTRACT (2026)
  * 
  * Dit contract definieert de exacte structuur van een bestelling.
- * Elke afwijking wordt aan de poort (API) geweigerd.
+ * Elke afwijking wordt aan de poort (API) geweigerd of gecorrigeerd.
+ * 
+ * CHRIS-PROTOCOL: Gebruik .coerce voor automatische type-correctie (Anti-Pleister).
  */
 
 export const CheckoutPayloadSchema = z.object({
   // 1. Prijs & Validatie
   pricing: z.object({
-    total: z.number().positive(),
+    total: z.coerce.number().positive(),
     cartHash: z.string().optional(),
-    base: z.number().optional(),
-    wordSurcharge: z.number().optional(),
-    mediaSurcharge: z.number().optional(),
-    musicSurcharge: z.number().optional(),
+    base: z.coerce.number().optional(),
+    wordSurcharge: z.coerce.number().optional(),
+    mediaSurcharge: z.coerce.number().optional(),
+    musicSurcharge: z.coerce.number().optional(),
   }),
 
   // 2. Items in mandje
-  items: z.array(z.any()).default([]),
-  selectedActor: z.any().nullable().optional(),
+  items: z.array(z.object({
+    id: z.string(),
+    type: z.string(),
+    actor: z.object({
+      id: z.coerce.number(),
+      display_name: z.string().optional(),
+    }).optional(),
+    usage: z.string().optional(),
+    briefing: z.string().optional(),
+    pricing: z.object({
+      total: z.coerce.number(),
+      tax: z.coerce.number().optional(),
+    }).optional(),
+  })).default([]),
+
+  selectedActor: z.object({
+    id: z.coerce.number(),
+    display_name: z.string().optional(),
+  }).nullable().optional(),
+
   step: z.string().optional(),
 
   // 3. Klantgegevens
@@ -44,9 +64,9 @@ export const CheckoutPayloadSchema = z.object({
   
   // 5. Metadata
   metadata: z.object({
-    words: z.number().default(0),
-    prompts: z.number().default(0),
-    userId: z.string().optional(),
+    words: z.coerce.number().default(0),
+    prompts: z.coerce.number().default(0),
+    userId: z.coerce.number().optional(),
   }).optional(),
 });
 

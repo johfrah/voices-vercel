@@ -33,8 +33,16 @@ export async function POST(request: Request) {
     const baseUrl = `${protocol}://${host}`;
     const ip = headersList.get('x-forwarded-for') || 'unknown';
 
-    // 1. Validatie van de payload
+    // 🛡️ CHRIS-PROTOCOL: Structural Validation with Coercion (v2.14.256)
     const rawBody = await request.json();
+    
+    // Deep Trace Logging: Log types before validation
+    console.log('[Checkout] 🔍 TRACE (Pre-Validation):', {
+      totalType: typeof rawBody.pricing?.total,
+      actorIdType: typeof rawBody.selectedActor?.id,
+      itemsCount: rawBody.items?.length
+    });
+
     const validation = CheckoutPayloadSchema.safeParse(rawBody);
 
     if (!validation.success) {
@@ -44,6 +52,15 @@ export async function POST(request: Request) {
         details: validation.error.format() 
       }, { status: 400 });
     }
+
+    const data = validation.data;
+
+    // Deep Trace Logging: Log types after validation (should be coerced to numbers)
+    console.log('[Checkout] ✅ TRACE (Post-Validation):', {
+      totalType: typeof data.pricing.total,
+      actorIdType: typeof data.selectedActor?.id,
+      totalValue: data.pricing.total
+    });
 
     const { 
       pricing, 
@@ -66,13 +83,13 @@ export async function POST(request: Request) {
       music,
       country,
       payment_method,
-    } = validation.data;
+    } = data;
 
     // 2. Voorbereiding van data
     const actorIds = Array.from(new Set([
       ...(items || []).map((i: any) => i.actor?.id).filter(Boolean),
       ...(selectedActor?.id ? [selectedActor.id] : [])
-    ])).map(id => Number(id));
+    ]));
 
     const isSubscription = usage === 'subscription';
     const isVatExempt = false; // TODO: Implement real VAT check
