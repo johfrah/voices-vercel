@@ -287,7 +287,7 @@ export async function POST(request: Request) {
       },
       ipAddress: ip,
       createdAt: new Date().toISOString()
-    }).returning();
+    } as any).returning();
 
     console.log('[Checkout] ✅ STEP 6.2: Order created in DB:', { id: newOrder?.id });
 
@@ -309,8 +309,9 @@ export async function POST(request: Request) {
             price: (item.pricing?.subtotal || item.pricing?.total || 0).toString(),
             tax: (item.pricing?.tax || 0).toString(),
             metaData: item.pricing || {},
-            deliveryStatus: 'waiting'
-          };
+            deliveryStatus: 'waiting',
+            createdAt: new Date().toISOString()
+          } as any;
         }));
         console.log('[Checkout] ✅ STEP 7.1: Order items saved');
       } catch (e: any) {
