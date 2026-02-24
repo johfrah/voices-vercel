@@ -46,6 +46,15 @@ export async function GET(request: NextRequest) {
   if (!supabase) {
     return NextResponse.json({ error: 'Auth service unavailable' }, { status: 503 });
   }
+
+  // 🛡️ CHRIS-PROTOCOL: Pre-flight database check to avoid 500 crashes
+  try {
+    if (!db) throw new Error('Database connection unavailable');
+  } catch (dbErr) {
+    console.error('[API Customer 360] Database pre-flight failed:', dbErr);
+    return NextResponse.json({ error: 'Database service unavailable' }, { status: 503 });
+  }
+
   const { data: { user } } = await supabase.auth.getUser();
   const isAdmin = await checkIsAdmin(user?.email);
 

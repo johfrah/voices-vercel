@@ -42,34 +42,6 @@ export async function PATCH(
 
     const isSuperAdmin = true; // In development/admin context we assume super-admin for now, but logic is ready
 
-    // 🛡️ CHRIS-PROTOCOL: Map language IDs to strings if provided (v2.14.130)
-    if (body.native_lang_id || body.extra_lang_ids) {
-      try {
-        const { languages } = await import('@db/schema');
-        const { inArray } = await import('drizzle-orm');
-        
-        const langIds = [body.native_lang_id, ...(body.extra_lang_ids || [])].filter(Boolean);
-        if (langIds.length > 0) {
-          // Check if db is available
-          if (!db) throw new Error('Database connection unavailable');
-          
-          const dbLangs = await db.select().from(languages).where(inArray(languages.id, langIds as number[]));
-          
-          if (body.native_lang_id) {
-            const native = dbLangs.find((l: any) => l.id === body.native_lang_id);
-            if (native) body.native_lang = native.code;
-          }
-          
-          if (body.extra_lang_ids) {
-            const extras = dbLangs.filter((l: any) => body.extra_lang_ids.includes(l.id));
-            body.extra_langs = extras.map((l: any) => l.code).join(', ');
-          }
-        }
-      } catch (langErr: any) {
-        console.warn(' ADMIN: Language ID mapping failed:', langErr.message);
-      }
-    }
-
     // 🛡️ CHRIS-PROTOCOL: Forensic sanitization of photo URL (v2.14.162)
     // We must ensure the proxy prefix is stripped before saving to the database
     // to maintain asset-path integrity.
@@ -104,7 +76,7 @@ export async function PATCH(
       youtubeUrl: body.youtubeUrl || body.youtube_url,
       linkedin: body.linkedin,
       allowFreeTrial: body.allowFreeTrial ?? body.allow_free_trial,
-      isManuallyEdited: true, //  CHRIS-PROTOCOL: Lock record after manual edit
+      isManuallyEdited: true, 
       updatedAt: new Date()
     };
 
@@ -144,6 +116,37 @@ export async function PATCH(
       }
     }
 
+    // 🛡️ CHRIS-PROTOCOL: Map language IDs to strings if provided (v2.14.130)
+    if (body.native_lang_id || body.extra_lang_ids) {
+      try {
+        const { languages } = await import('@db/schema');
+        const { inArray } = await import('drizzle-orm');
+        
+        const langIds = [body.native_lang_id, ...(body.extra_lang_ids || [])].filter(Boolean);
+        if (langIds.length > 0) {
+          // Check if db is available
+          if (!db) throw new Error('Database connection unavailable');
+          
+          const dbLangs = await db.select().from(languages).where(inArray(languages.id, langIds as number[]));
+          
+          if (body.native_lang_id) {
+            const native = dbLangs.find((l: any) => l.id === body.native_lang_id);
+            if (native) {
+              updateData.nativeLang = native.code;
+            }
+          }
+          
+          if (body.extra_lang_ids) {
+            const extras = dbLangs.filter((l: any) => body.extra_lang_ids.includes(l.id));
+            updateData.extraLangs = extras.map((l: any) => l.code).join(', ');
+          }
+        }
+      } catch (langErr: any) {
+        console.warn(' ADMIN: Language ID mapping failed:', langErr.message);
+      }
+    }
+
+    console.log(` ADMIN: Update data for actor ${id}:`, updateData);
       // Update the actor in the database
       const result = await db.update(actors)
       .set(updateData)

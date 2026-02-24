@@ -25,6 +25,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({});
   }
 
+  // 🛡️ CHRIS-PROTOCOL: Pre-flight database check to avoid 500 crashes
+  try {
+    if (!db) throw new Error('Database connection unavailable');
+  } catch (dbErr) {
+    console.error('[Admin Config GET] Database pre-flight failed:', dbErr);
+    return NextResponse.json({ error: 'Database service unavailable' }, { status: 503 });
+  }
+
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type');
 

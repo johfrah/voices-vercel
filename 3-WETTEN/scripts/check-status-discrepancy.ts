@@ -4,7 +4,16 @@ import * as fs from 'fs';
 const sqlPath = '/Users/voices/Library/CloudStorage/Dropbox/voices-headless/4-KELDER/ID348299_voices (2).sql';
 
 function parseSqlLine(line) {
-  const content = line.trim().replace(/[,;]$/, '').substring(1, line.length - 1);
+  let content = line.trim();
+  // Remove trailing semicolon
+  if (content.endsWith(';')) content = content.slice(0, -1);
+  // Remove trailing comma if it's there
+  if (content.endsWith(',')) content = content.slice(0, -1);
+  // Remove outer parentheses
+  if (content.startsWith('(') && content.endsWith(')')) {
+    content = content.substring(1, content.length - 1);
+  }
+  
   const fields = [];
   let currentField = "";
   let inQuotes = false;
@@ -20,7 +29,10 @@ function parseSqlLine(line) {
     }
   }
   fields.push(currentField.trim());
-  return fields.map(f => f.replace(/^'|'$/g, ''));
+  return fields.map(f => {
+    if (f === 'NULL') return null;
+    return f.replace(/^'|'$/g, '');
+  });
 }
 
 async function main() {
@@ -60,6 +72,7 @@ async function main() {
     }
   }
   console.log(`✅ Found ${emailToWpMap.size} email-to-WP mappings.`);
+  console.log("Sample mappings:", Array.from(emailToWpMap.entries()).slice(0, 5));
 
   // Get post_status from wp_posts
   console.log("📂 Extracting post_status from wp_posts...");
@@ -94,10 +107,12 @@ async function main() {
   for (const actor of actors) {
     const wpId = emailToWpMap.get(actor.email);
     if (!wpId) {
+      if (noWpMatch < 5) console.log(`❌ No mapping for ${actor.firstName} (${actor.email})`);
       noWpMatch++;
       continue;
     }
     const postStatus = postStatusMap.get(wpId);
+    if (noWpMatch < 5) console.log(`✅ Found mapping for ${actor.firstName} (${actor.email}) -> ${wpId} (Status: ${postStatus})`);
     if (postStatus === 'publish') publishCount++;
     else if (postStatus === 'private') privateCount++;
     else if (postStatus === 'trash') trashCount++;

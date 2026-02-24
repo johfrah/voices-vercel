@@ -111,30 +111,30 @@ export class UCIService {
       let ordersList: any[] = [];
       let touchpoints: any[] = [];
 
-      // 🛡️ CHRIS-PROTOCOL: Parallel execution of heavy queries (Bob-methode)
+    // 🛡️ CHRIS-PROTOCOL: Parallel execution of heavy queries (Bob-methode)
       try {
         const [ordersResult, utmResult] = await Promise.all([
-          // Orders query
+          // Orders query - Optimized with index-ready userId filter
           db
             .select()
             .from(orders)
             .where(eq(orders.userId, user.id))
             .orderBy(desc(orders.createdAt))
             .limit(50)
-            .catch(async () => {
-              console.warn(' UCI Order stats Drizzle failed, falling back to SDK');
+            .catch(async (err) => {
+              console.warn(' UCI Order stats Drizzle failed, falling back to SDK:', err.message);
               const { data } = await supabase.from('orders').select('*, order_items(*)').eq('user_id', user.id).order('created_at', { ascending: false });
               return data || [];
             }),
-          // UTM query
+          // UTM query - Optimized with index-ready userId filter
           db
             .select()
             .from(utmTouchpoints)
             .where(eq(utmTouchpoints.userId, user.id))
             .orderBy(desc(utmTouchpoints.createdAt))
             .limit(10)
-            .catch(async () => {
-              console.warn(' UCI UTM Drizzle failed, falling back to SDK');
+            .catch(async (err) => {
+              console.warn(' UCI UTM Drizzle failed, falling back to SDK:', err.message);
               const { data } = await supabase.from('utm_touchpoints').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10);
               return data || [];
             })
