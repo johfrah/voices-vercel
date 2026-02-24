@@ -140,7 +140,7 @@ export default function CartPageClient() {
 
               {/* Security Nudge */}
               <div className="flex items-center justify-center gap-4 text-va-black/20">
-                <Image src="/assets/common/branding/payment/mollie.svg" width={60} height={20} alt="Mollie" className="grayscale opacity-50" />
+                <Image src="/assets/common/branding/payment/mollie.svg" width={60} height={20} alt="Mollie" className="grayscale opacity-50" priority />
                 <div className="w-px h-4 bg-va-black/10" />
                 <TextInstrument className="text-[10px] font-bold uppercase tracking-widest">
                   Veilig betalen via SSL
