@@ -1520,7 +1520,7 @@ export const VoicyChatV2: React.FC = () => {
               {[
                 { q: "Wat zijn de tarieven?", key: "chat.faq.q1" },
                 { q: "Hoe snel wordt er geleverd?", key: "chat.faq.q2" },
-                { q: "Kan ik een gratis proefopname krijgen?", key: "chat.faq.q3" },
+                ...(state.usage !== 'telefonie' ? [{ q: "Kan ik een gratis proefopname krijgen?", key: "chat.faq.q3" }] : []),
                 { q: "Welke talen bieden jullie aan?", key: "chat.faq.q4" }
               ].map((faq, i) => (
                     <ButtonInstrument

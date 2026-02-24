@@ -820,10 +820,16 @@ export default function GlobalNav() {
                     href="/casting/launchpad/"
                     variant="default"
                     className="w-full py-3 bg-primary text-white rounded-xl text-[15px] font-bold tracking-widest hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg"
+                    disabled={masterState.journey === 'telephony'}
                   >
                     <VoiceglotText translationKey="nav.favorites_cta" defaultText="Gratis proefopname" />
                     <ArrowRight size={16} strokeWidth={2} />
                   </ButtonInstrument>
+                  {masterState.journey === 'telephony' && (
+                    <TextInstrument className="text-[10px] text-va-black/40 text-center mt-2 font-light">
+                      <VoiceglotText translationKey="nav.favorites.telephony_restriction" defaultText="Proefopnames zijn niet beschikbaar voor telefonie." />
+                    </TextInstrument>
+                  )}
                 </ContainerInstrument>
               )}
             </ContainerInstrument>

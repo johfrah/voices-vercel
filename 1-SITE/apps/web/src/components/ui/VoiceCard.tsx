@@ -600,7 +600,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           )}
         </ContainerInstrument>
 
-        {!activeVideo && voice.allow_free_trial !== false && (
+        {!activeVideo && voice.allow_free_trial !== false && masterControlState.journey !== 'telephony' && (
           <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 z-40">
             <button 
               onClick={handleStudioToggle}
@@ -886,7 +886,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   isSelected 
                     ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-2 md:px-4 py-2 md:py-4" 
                     : "px-3 md:px-5 py-2 md:py-4 hover:bg-va-black hover:text-white hover:border-va-black",
-                  voice.allow_free_trial === false && !onSelect && "opacity-0 pointer-events-none"
+                  (voice.allow_free_trial === false || masterControlState.journey === 'telephony') && !onSelect && "opacity-0 pointer-events-none"
                 )}
               >
                 {isSelected ? (

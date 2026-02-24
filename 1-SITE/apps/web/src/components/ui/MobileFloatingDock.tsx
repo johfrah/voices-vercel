@@ -52,13 +52,14 @@ export function MobileFloatingDock() {
   ];
 
   const hasSelection = state.selected_actors.length > 0;
+  const isTelephony = pathname.includes('/telephony') || pathname.includes('/telefoon');
 
   return (
     <div className="fixed bottom-8 left-0 right-0 z-[300] px-6 md:hidden pointer-events-none">
       <div className="relative mx-auto max-w-sm">
         {/*  CHRIS-PROTOCOL: Casting Action Trigger (Floating above dock when selection exists) */}
         <AnimatePresence>
-          {hasSelection && (
+          {hasSelection && !isTelephony && (
             <motion.div
               initial={{ y: 20, opacity: 0, scale: 0.8 }}
               animate={{ y: -12, opacity: 1, scale: 1 }}
