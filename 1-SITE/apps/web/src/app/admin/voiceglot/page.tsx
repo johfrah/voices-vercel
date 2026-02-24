@@ -57,19 +57,20 @@ export default function VoiceglotMasterPage() {
   const [isHealingAll, setIsHealingAll] = useState(false);
 
   const fetchStats = async () => {
+    console.log('📡 [Voiceglot Page] Fetching stats...');
     try {
       const res = await fetch('/api/admin/voiceglot/stats');
       const data = await res.json();
-      console.log('📊 Voiceglot Stats Received:', data);
+      console.log('📊 [Voiceglot Page] Stats Received:', data);
       
       if (res.ok) {
         setStats(data);
       } else {
-        console.error('❌ Stats API Error:', data.error);
+        console.error('❌ [Voiceglot Page] Stats API Error:', data.error);
         // toast.error(`Stats Error: ${data.error}`);
       }
     } catch (e: any) {
-      console.error('❌ Stats Fetch Failed:', e.message);
+      console.error('❌ [Voiceglot Page] Stats Fetch Failed:', e.message);
       // toast.error(`Fetch Failed: ${e.message}`);
     }
   };
@@ -96,12 +97,15 @@ export default function VoiceglotMasterPage() {
   };
 
   const fetchTranslations = async () => {
+    console.log('📡 [Voiceglot Page] Fetching translations...');
     setLoading(true);
     try {
       const res = await fetch('/api/admin/voiceglot/list');
       const data = await res.json();
+      console.log('📋 [Voiceglot Page] Translations Received:', data.translations?.length || 0, 'items');
       setTranslations(data.translations || []);
     } catch (e) {
+      console.error('❌ [Voiceglot Page] Translations Fetch Failed:', e);
       toast.error('Kon vertalingen niet laden.');
     } finally {
       setLoading(false);

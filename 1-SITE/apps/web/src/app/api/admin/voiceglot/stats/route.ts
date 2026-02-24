@@ -16,17 +16,27 @@ const CACHE_KEY = 'voiceglot_stats_cache';
 const CACHE_TTL = 60 * 1000; // 1 minuut cache voor stats
 
 export async function GET(request: NextRequest) {
+  console.log('🔍 [Voiceglot Stats API] Request received');
+  
   //  CHRIS-PROTOCOL: Build Safety
   if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+    console.log('⚠️ [Voiceglot Stats API] Build phase detected, returning empty');
     return NextResponse.json({ totalStrings: 0, coverage: [] });
   }
 
   const auth = await requireAdmin();
-  if (auth instanceof NextResponse) return auth;
+  if (auth instanceof NextResponse) {
+    console.log('🚫 [Voiceglot Stats API] Auth failed');
+    return auth;
+  }
 
   try {
+    console.log('📦 [Voiceglot Stats API] Checking cache...');
     // 1. Check Cache in app_configs
-    const cachedConfig = await db.select().from(appConfigs).where(eq(appConfigs.key, CACHE_KEY)).limit(1).catch(() => []);
+    const cachedConfig = await db.select().from(appConfigs).where(eq(appConfigs.key, CACHE_KEY)).limit(1).catch((err) => {
+      console.error('❌ [Voiceglot Stats API] Cache Query Error:', err);
+      return [];
+    });
     const now = new Date().getTime();
     
     if (cachedConfig.length > 0) {
@@ -34,20 +44,24 @@ export async function GET(request: NextRequest) {
       const cacheAge = now - new Date(cachedConfig[0].updatedAt || 0).getTime();
       
       if (cacheAge < CACHE_TTL) {
-        console.log('🚀 [Voiceglot Stats] Serving from Cache (Age:', Math.round(cacheAge/1000), 's)');
+        console.log('🚀 [Voiceglot Stats API] Serving from Cache (Age:', Math.round(cacheAge/1000), 's)');
         return NextResponse.json({ ...cacheData, isCached: true });
       }
+      console.log('⏳ [Voiceglot Stats API] Cache expired (Age:', Math.round(cacheAge/1000), 's)');
+    } else {
+      console.log('🆕 [Voiceglot Stats API] No cache found');
     }
 
-    console.log('⚡ [Voiceglot Stats] Cache expired or missing, fetching fresh data...');
+    console.log('⚡ [Voiceglot Stats API] Fetching fresh data from DB...');
 
     // 2. Fetch Fresh Data (Ultra-Light)
     // Totaal aantal unieke strings in de registry
     const totalStringsResult = await db.select({ count: sql<number>`count(*)` }).from(translationRegistry).catch((err) => {
-      console.error('Registry Query Error:', err);
+      console.error('❌ [Voiceglot Stats API] Registry Query Error:', err);
       return [{ count: 0 }];
     });
     const totalStrings = Number(totalStringsResult[0]?.count || 0);
+    console.log('📊 [Voiceglot Stats API] Total strings:', totalStrings);
 
     // Aantal vertalingen per taal
     const statsByLang = await db.select({
@@ -57,9 +71,10 @@ export async function GET(request: NextRequest) {
     .from(translations)
     .groupBy(translations.lang)
     .catch((err) => {
-      console.error('Translations Query Error:', err);
+      console.error('❌ [Voiceglot Stats API] Translations Query Error:', err);
       return [];
     });
+    console.log('📊 [Voiceglot Stats API] Stats by lang:', statsByLang.length, 'languages found');
 
     // Bereken percentages
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it'];
