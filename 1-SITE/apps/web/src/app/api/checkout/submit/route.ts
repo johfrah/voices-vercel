@@ -81,11 +81,15 @@ export async function POST(request: Request) {
     // 3. Fetch Actor Data voor prijsvalidatie
     let dbActors: any[] = [];
     if (actorIds.length > 0) {
-      dbActors = await db.select().from(actors).where(inArray(actors.id, actorIds)).catch(async (err: any) => {
-        console.warn('[Checkout] Drizzle fetch failed, using SDK:', err.message);
-        const { data } = await sdkClient.from('actors').select('*').in('id', actorIds);
-        return data || [];
-      });
+      try {
+        dbActors = await db.select().from(actors).where(inArray(actors.id, actorIds)).catch(async (err: any) => {
+          console.warn('[Checkout] Drizzle fetch failed, using SDK:', err.message);
+          const { data } = await sdkClient.from('actors').select('*').in('id', actorIds);
+          return data || [];
+        });
+      } catch (dbErr) {
+        console.error('[Checkout] Actor fetch fatal:', dbErr);
+      }
     }
     const actorMap = new Map(dbActors.map(a => [a.id, a]));
 
