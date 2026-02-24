@@ -1,9 +1,3 @@
----
-description: Master audit rule to prevent 150+ common mistakes in Project Atomic
-globs: **/*
-alwaysApply: true
----
-
 # 🛡️ Atomic Audit Mandate
 
 Vóór elke taak, edit of push MOET de agent een "Forensische Zelf-Audit" uitvoeren tegen de 150+ common mistakes.
@@ -12,31 +6,42 @@ Vóór elke taak, edit of push MOET de agent een "Forensische Zelf-Audit" uitvoe
 
 Vóór het schrijven van ook maar één regel code, MOET de agent de volgende stappen doorlopen:
 
-1.  **FORENSIC ROOT-CAUSE ANALYSIS**: 
-    - Doe een diepe scan naar de bron van het probleem (Database, API-payload, of Frontend State).
-    - **Proactive Diagnostic Ownership**: Wacht NOOIT op logs van de USER. Gebruik de zelf-gecreëerde Watchdog (`system_events`) en Browser-agent om de bron te vinden. Jij bent de architect én de inspecteur.
-    - Gebruik `browser-use` of rauwe SQL om de "Source of Truth" te verifiëren. Gissen is verboden.
-2.  **THE TRINITY OF VALIDATION**:
-    - Elke fix moet gevalideerd worden op drie niveaus:
-        1. **Browser**: Functionele interactie via `browser-use`.
-        2. **Watchdog**: Server-side events in de `system_events` tabel.
-        3. **Console**: Client-side errors in de browser logs.
-3.  **FOUT-UITSLUITING (Pre-emptive Strike)**:
-    - Identificeer alle mogelijke zij-effecten (bijv. "Als ik de filter strikter maak, breekt dan de zoekfunctie?").
-    - Controleer of de benodigde data (zoals IDs) wel in de API-tunnel zit.
-4.  **DRIEPUNT-OPLOSSING (The Trinity Check)**:
-    - Formuleer intern (of in de chat) 3 mogelijke oplossingen.
-    - Vergelijk ze op: Performance, Architectuur (Chris-Protocol) en Robuustheid.
-    - Kies de beste oplossing en beargumenteer *waarom* dit de Masterclass-keuze is.
-4.  **Symbol Trace**: Traceer elk symbool (markt, taal, config) terug naar de `MarketManager`.
-5.  **Hardcode Hunt**: Zoek naar verboden strings (`voices.be`, `johfrah.be`, hardcoded emails/telefoons).
-6.  **ISO Verify**: Controleer of taal-codes strikt ISO-5 zijn (`nl-BE`, niet `nl` of `Vlaams`).
-7.  **Instrument Check**: Controleer of er rauwe HTML wordt gebruikt ipv `LayoutInstruments`.
-8.  **Nuclear Lock**: Verifieer of `isManuallyEdited` velden worden gerespecteerd in sync-scripts.
-9.  **API Hardening**: Kritieke API routes (Auth, Admin, Checkout) MOETEN `export const dynamic = 'force-dynamic'` hebben en gedetailleerde foutmeldingen teruggeven bij falen (geen generieke 500's).
+1. **FORENSIC ROOT-CAUSE ANALYSIS**: 
+ - Doe een diepe scan naar de bron van het probleem (Database, API-payload, of Frontend State).
+ - **Proactive Diagnostic Ownership**: Wacht NOOIT op logs van de USER. Gebruik de zelf-gecreëerde Watchdog (`system_events`) en Browser-agent om de bron te vinden. Jij bent de architect én de inspecteur.
+ - Gebruik `browser-use` of rauwe SQL om de "Source of Truth" te verifiëren. Gissen is verboden.
+2. **THE TRINITY OF VALIDATION**:
+ - Elke fix moet gevalideerd worden op drie niveaus:
+ 1. **Browser**: Functionele interactie via `browser-use`.
+ 2. **Watchdog**: Server-side events in de `system_events` tabel.
+ 3. **Console**: Client-side errors in de browser logs.
+3. **DEEP CONTENT MANDATE (Volledigheid)**:
+ - Bij taken die over "teksten", "vertalingen" of "data" gaan, MOET de agent proactief de volgende lagen scannen:
+   - **Zichtbaar**: UI, artikelen, bio's, FAQ.
+   - **Onzichtbaar**: SEO metadata, Alt-teksten, Navigatie-labels.
+   - **AI-Brein**: System Knowledge, prompt-templates, Voicy-kennis.
+ - "Alles" betekent bij Voices ook echt ALLES in de database.
+4. **FOUT-UITSLUITING (Pre-emptive Strike)**:
+ - Identificeer alle mogelijke zij-effecten (bijv. "Als ik de filter strikter maak, breekt dan de zoekfunctie?").
+ - Controleer of de benodigde data (zoals IDs) wel in de API-tunnel zit.
+5. **DRIEPUNT-OPLOSSING (The Trinity Check)**:
+ - Formuleer intern (of in de chat) 3 mogelijke oplossingen.
+ - Vergelijk ze op: Performance, Architectuur (Chris-Protocol) en Robuustheid.
+ - Kies de beste oplossing en beargumenteer *waarom* dit de Masterclass-keuze is.
+6. **Symbol Trace**: Traceer elk symbool (markt, taal, config) terug naar de `MarketManager`.
+7. **Hardcode Hunt**: Zoek naar verboden strings (`voices.be`, `johfrah.be`, hardcoded emails/telefoons).
+8. **ISO Verify**: Controleer of taal-codes strikt ISO-5 zijn (`nl-BE`, niet `nl` of `Vlaams`).
+9. **Instrument Check**: Controleer of er rauwe HTML wordt gebruikt ipv `LayoutInstruments`.
+10. **Nuclear Lock**: Verifieer of `isManuallyEdited` velden worden gerespecteerd in sync-scripts.
+11. **API Hardening**: Kritieke API routes (Auth, Admin, Checkout) MOETEN `export const dynamic = 'force-dynamic'` hebben en gedetailleerde foutmeldingen teruggeven bij falen (geen generieke 500's).
+12. **ANTI-PLEISTER MANDATE (Structural Integrity)**:
+ - Defensieve "guards" (zoals `if (!data) return null`) zijn uitsluitend toegestaan als secundair vangnet.
+ - De primaire fix MOET structureel zijn: herstel de bron van de data, definieer een strikt TypeScript Contract (Interface), of implementeer een Zod-schema voor validatie.
+ - Als een fix niet de *oorzaak* aanpakt waarom data ontbrak of corrupt was, is het een "pleister" en dus "Slop".
 
 ## 🚫 Verboden Patronen (Zero Tolerance)
 
+- **GEEN** pleisters: Defensief coderen zonder onderliggende structurele fix is verboden.
 - **GEEN** relatieve imports naar andere packages (`../../packages`). Gebruik `@db` of `@database/schema`.
 - **GEEN** generieke foutmeldingen in API's. De browser moet weten *waarom* het faalt.
 - **GEEN** "behulpzame" interpretatie van filters. De taalfilter is de moedertaal (Native ID). Punt.

@@ -13,7 +13,8 @@ Vóór elke afronding van een taak MOET de agent de volgende stappen doorlopen:
 
 1.  **Pre-Vercel Check**: Voer `npm run check:pre-vercel` uit vanuit de root of `1-SITE/apps/web`. Dit voert een volledige build uit en scant op Nuclear Law schendingen.
 2.  **Versiebeheer (Version Sync Mandate)**: 
-    - Verhoog de `version` in `1-SITE/apps/web/package.json`.
+    - **Check Remote First**: Voer ALTIJD eerst `git fetch origin main` uit en controleer de laatste commit message/versie in de remote repository voordat je een nieuwe versie bepaalt.
+    - Verhoog de `version` in `1-SITE/apps/web/package.json` op basis van de HOOGSTE bekende versie (lokaal of remote).
     - Synchroniseer deze versie EXACT in `1-SITE/apps/web/src/app/Providers.tsx` (`currentVersion`).
     - Synchroniseer deze versie EXACT in `1-SITE/apps/web/src/app/api/admin/config/route.ts` (`_version`).
     - Dit is cruciaal voor de `VersionGuard` om browser-reloads te forceren.
