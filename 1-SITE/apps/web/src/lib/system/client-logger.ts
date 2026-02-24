@@ -89,17 +89,43 @@ export class ClientLogger {
   private static interceptFetch() {
     const originalFetch = window.fetch;
     window.fetch = async (...args) => {
-      const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request).url;
-      const method = (args[1]?.method || 'GET').toUpperCase();
+      // 🛡️ CHRIS-PROTOCOL: Robust URL extraction (v2.14.236)
+      // fetch(input) can take string, Request, or URL object.
+      let url = '';
+      try {
+        const input = args[0];
+        if (typeof input === 'string') {
+          url = input;
+        } else if (input instanceof URL) {
+          url = input.toString();
+        } else if (input && typeof input === 'object') {
+          // Request object or other object with url property
+          url = (input as any).url || String(input);
+        } else {
+          url = String(input || '');
+        }
+      } catch (e) {
+        url = '[Unknown URL]';
+      }
+
+      // 🛡️ CHRIS-PROTOCOL: Guarded method extraction
+      let method = 'GET';
+      try {
+        method = (args[1]?.method || (args[0] as any)?.method || 'GET').toUpperCase();
+      } catch (e) {}
       
-      this.addBreadcrumb('fetch', `${method} ${url}`);
+      // 🛡️ CHRIS-PROTOCOL: Safe includes check
+      const isSystemApi = typeof url === 'string' && url.includes('/api/admin/system/');
+      
+      if (url && !isSystemApi) {
+        this.addBreadcrumb('fetch', `${method} ${url}`);
+      }
 
       try {
         const response = await originalFetch(...args);
         
-        if (!response.ok && !url.includes('/api/admin/system/')) {
+        if (!response.ok && url && !isSystemApi) {
           this.addBreadcrumb('error', `Fetch Failed: ${response.status} ${url}`);
-          // We clonen de response om de body te kunnen lezen zonder de originele stream te breken
           const clone = response.clone();
           clone.text().then(body => {
             this.report('error', `API Failure: ${response.status} ${url}`, {
@@ -113,7 +139,7 @@ export class ClientLogger {
         
         return response;
       } catch (error: any) {
-        if (!url.includes('/api/admin/system/')) {
+        if (url && !isSystemApi) {
           this.addBreadcrumb('error', `Fetch Network Error: ${url}`);
           this.report('error', `Network Error: ${url}`, {
             url,
