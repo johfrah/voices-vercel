@@ -38,7 +38,7 @@ export function generateSlug(text: string): string {
 }
 
 /**
- * Controleert of een slug een taalprefix bevat (bijv. 'nl-be', 'fr-fr').
+ * Controleert of een slug een taalprefix bevat (bijv. 'nl', 'fr', 'nl-be').
  */
 export function hasLanguagePrefix(slug: string): boolean {
   const normalized = normalizeSlug(slug);

@@ -285,10 +285,22 @@ export async function middleware(request: NextRequest) {
   }
 
   // 4. I18N NUCLEAR REWRITE (CLEAN URLS)
-  // Ondersteunt /fr-fr/, /en-gb/, /nl-be/, /de-de/, /es-es/, /it-it/, /pt-pt/
-  // En legacy /fr/, /en/, /nl/, /de/, /es/, /it/, /pt/
-  const langMatch = pathname.match(/^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt|fr|en|nl|de|es|it|pt)(\/|$)/i)
+  // 🛡️ CHRIS-PROTOCOL: Public URLs MUST use 2-char language codes (nl, fr, en, etc.)
+  // ISO-5 codes (nl-be, en-gb) are strictly for internal logic and database.
+  const langMatch = pathname.match(/^\/(fr|en|nl|de|es|it|pt)(\/|$)/i)
+  const isoMatch = pathname.match(/^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt)(\/|$)/i)
   
+  // 🛡️ CHRIS-PROTOCOL: Force Redirect ISO-5 to 2-char for public URLs
+  if (isoMatch) {
+    const isoLang = isoMatch[1].toLowerCase()
+    const shortLang = isoLang.split('-')[0]
+    const newPathname = pathname.replace(/^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt)/i, `/${shortLang}`)
+    const redirectUrl = url.clone()
+    redirectUrl.pathname = newPathname
+    console.log(` NUCLEAR REDIRECT: ISO-5 [${isoLang}] to Short [${shortLang}] at ${pathname}`)
+    return NextResponse.redirect(redirectUrl, 301)
+  }
+
   // Intelligent Stickiness: Check cookie, then Accept-Language header
   const cookieLang = request.cookies.get('voices_lang')?.value
   let detectedLang = cookieLang
@@ -322,10 +334,10 @@ export async function middleware(request: NextRequest) {
 
   // Als de URL een taalprefix heeft, overschrijft deze alles en zetten we de cookie
   if (langMatch) {
-    let urlLang = langMatch[1].toLowerCase()
+    const urlLangShort = langMatch[1].toLowerCase()
     
-    // 🛡️ CHRIS-PROTOCOL: Map legacy 2-char codes to ISO-5
-    const legacyMap: Record<string, string> = {
+    // 🛡️ CHRIS-PROTOCOL: Internal mapping of Short to ISO-5
+    const internalMap: Record<string, string> = {
       'nl': 'nl-be',
       'fr': 'fr-fr',
       'en': 'en-gb',
@@ -334,12 +346,10 @@ export async function middleware(request: NextRequest) {
       'it': 'it-it',
       'pt': 'pt-pt'
     };
-    if (legacyMap[urlLang]) urlLang = legacyMap[urlLang];
-
-    const pathWithoutLocale = pathname.replace(/^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt|fr|en|nl|de|es|it|pt)/i, '') || '/'
     
-    // Update detectedLang to match URL
-    detectedLang = urlLang
+    detectedLang = internalMap[urlLangShort] || urlLangShort;
+
+    const pathWithoutLocale = pathname.replace(/^\/(fr|en|nl|de|es|it|pt)/i, '') || '/'
     
     // 🛡️ CHRIS-PROTOCOL: Prevent rewrite loops by checking if we are already at the target path
     if (pathname === pathWithoutLocale) {
@@ -368,10 +378,12 @@ export async function middleware(request: NextRequest) {
   if (!langMatch && detectedLang && !detectedLang.startsWith('nl') && market === 'BE' && pathname === '/') {
     // 🛡️ CHRIS-PROTOCOL: Extra check to prevent redirect loops
     if (request.headers.get('x-middleware-rewrite')) {
-       return response;
+      return response;
     }
     const redirectUrl = url.clone()
-    redirectUrl.pathname = `/${detectedLang}${pathname}`.replace(/\/+$/, '/')
+    // 🛡️ CHRIS-PROTOCOL: Use 2-char code for public redirect
+    const publicLang = detectedLang.split('-')[0]
+    redirectUrl.pathname = `/${publicLang}${pathname}`.replace(/\/+$/, '/')
     return NextResponse.redirect(redirectUrl)
   }
 

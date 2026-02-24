@@ -45,13 +45,15 @@ export const VoicesLink = ({
     const normalized = normalizeSlug(rawHref);
     
     // Als we in NL zitten (default), voegen we geen prefix toe (Bob-methode)
-    if (language === 'nl') {
+    if (language.startsWith('nl')) {
       return normalized.startsWith('/') ? normalized : `/${normalized}`;
     }
 
     // Voor andere talen: voeg de prefix toe als die er nog niet staat
-    const prefix = `/${language}`;
-    if (normalized.startsWith(language + '/') || normalized === language) {
+    // 🛡️ CHRIS-PROTOCOL: Public URLs MUST use 2-char language codes
+    const shortLang = language.split('-')[0];
+    const prefix = `/${shortLang}`;
+    if (normalized.startsWith(shortLang + '/') || normalized === shortLang) {
       return normalized.startsWith('/') ? normalized : `/${normalized}`;
     }
 
@@ -89,7 +91,8 @@ export const useVoicesRouter = () => {
     }
 
     const normalized = normalizeSlug(href);
-    const prefix = language === 'nl' ? '' : `/${language}`;
+    const shortLang = language.split('-')[0];
+    const prefix = shortLang === 'nl' ? '' : `/${shortLang}`;
     const finalPath = normalized.startsWith('/') ? normalized : `/${normalized}`;
     const localizedHref = `${prefix}${finalPath === '/' ? '' : finalPath}`;
     
@@ -103,7 +106,8 @@ export const useVoicesRouter = () => {
     }
 
     const normalized = normalizeSlug(href);
-    const prefix = language === 'nl' ? '' : `/${language}`;
+    const shortLang = language.split('-')[0];
+    const prefix = shortLang === 'nl' ? '' : `/${shortLang}`;
     const finalPath = normalized.startsWith('/') ? normalized : `/${normalized}`;
     const localizedHref = `${prefix}${finalPath === '/' ? '' : finalPath}`;
     
