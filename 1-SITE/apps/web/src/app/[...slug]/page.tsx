@@ -407,20 +407,17 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         const host = headersList.get('host') || 'www.voices.be';
         const market = MarketManager.getCurrentMarket(host);
 
-        //  CHRIS-PROTOCOL: Fetch real casting list from DB
-        const list = await db.query.castingLists.findFirst({
-          where: eq(castingLists.hash, journey),
-          with: {
-            items: {
-              with: {
-                actor: true
-              },
-              orderBy: (items: any, { asc }: { asc: any }) => [asc(items.displayOrder)]
-            }
-          }
-        }).catch(() => null);
+        // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+        const { data: list, error: listError } = await supabase
+          .from('casting_lists')
+          .select('*, items:casting_list_items(*, actor:actors(*))')
+          .eq('hash', journey)
+          .single();
 
-        if (!list) return notFound();
+        if (listError || !list) return notFound();
+
+        // Sort items by displayOrder manually since SDK join sorting is complex
+        const sortedItems = (list.items || []).sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0));
 
         const listSettings = list.settings as any;
         const showRates = listSettings?.isAdminGenerated === true;
@@ -429,13 +426,13 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           '@context': 'https://schema.org',
           '@type': 'ItemList',
           'name': list.name,
-          'numberOfItems': list.items.length,
-          'itemListElement': list.items.map((item: any, i: number) => ({
+          'numberOfItems': sortedItems.length,
+          'itemListElement': sortedItems.map((item: any, i: number) => ({
             '@type': 'ListItem',
             'position': i + 1,
             'item': {
               '@type': 'Service',
-              'name': item.actor.firstName,
+              'name': item.actor.first_name || item.actor.firstName,
               'provider': {
                 '@type': 'LocalBusiness',
                 'name': market.name
@@ -465,31 +462,31 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
               </header>
 
               <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {list.items.map((item: any, i: number) => (
+                {sortedItems.map((item: any, i: number) => (
                   <ContainerInstrument key={i} className="bg-white p-8 rounded-[20px] shadow-aura border border-black/5 flex flex-col gap-6">
                     <div className="flex items-center gap-4">
                       <div className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden relative">
-                        {item.actor.photoId ? (
+                        {item.actor.photo_id ? (
                           <Image 
-                            src={`/api/proxy/?path=${encodeURIComponent(item.actor.dropboxUrl || '')}`} 
-                            alt={item.actor.firstName}
+                            src={`/api/proxy/?path=${encodeURIComponent(item.actor.dropbox_url || '')}`} 
+                            alt={item.actor.first_name || item.actor.firstName}
                             fill
                             className="object-cover"
                           />
-                        ) : item.actor.firstName[0]}
+                        ) : (item.actor.first_name || item.actor.firstName)[0]}
                       </div>
                       <div>
-                        <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.firstName}</HeadingInstrument>
+                        <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.first_name || item.actor.firstName}</HeadingInstrument>
                         <div className="flex items-center justify-between mt-1">
                           <TextInstrument className="text-[15px] text-va-black/40">
                             <VoiceglotText 
-                              translationKey={`common.language.${item.actor.nativeLang?.toLowerCase() || 'nl'}`} 
-                              defaultText={MarketManager.getLanguageLabel(item.actor.nativeLang || 'nl')} 
+                              translationKey={`common.language.${(item.actor.native_lang || item.actor.nativeLang)?.toLowerCase() || 'nl'}`} 
+                              defaultText={MarketManager.getLanguageLabel(item.actor.native_lang || item.actor.nativeLang || 'nl')} 
                             />
                           </TextInstrument>
                           {showRates && (
                             <TextInstrument className="text-[15px] font-bold text-primary">
-                              €{parseFloat(item.actor.priceUnpaid || '0').toFixed(2)}
+                              €{parseFloat(item.actor.price_unpaid || item.actor.priceUnpaid || '0').toFixed(2)}
                             </TextInstrument>
                           )}
                         </div>
