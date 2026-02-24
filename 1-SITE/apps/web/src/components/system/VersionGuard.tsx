@@ -33,14 +33,17 @@ export function VersionGuard({ currentVersion }: { currentVersion: string }) {
 
         // Als de server versie verschilt van de browser versie -> HARD RELOAD
         if (serverVersion && serverVersion !== currentVersion) {
-          console.warn(`🚀 [VersionGuard] New version detected: ${serverVersion} (current: ${currentVersion}). Reloading...`);
+          // 🛡️ CHRIS-PROTOCOL: Prevent infinite reload loops
+          // If we already have a reloaded flag, don't reload again even if versions mismatch
+          const hasReloaded = window.location.search.includes('reloaded=true');
           
-          // Voorkom oneindige reload loops
-          if (window.location.search.includes('reloaded=true')) {
-            console.error('🚀 [VersionGuard] Already reloaded once, stopping to prevent loop.');
+          if (hasReloaded) {
+            console.error(`🚀 [VersionGuard] Version mismatch persists after reload (Server: ${serverVersion}, Local: ${currentVersion}). Stopping loop.`);
             return;
           }
 
+          console.warn(`🚀 [VersionGuard] New version detected: ${serverVersion} (current: ${currentVersion}). Reloading...`);
+          
           const separator = window.location.href.includes('?') ? '&' : '?';
           window.location.href = `${window.location.href}${separator}reloaded=true`;
         }
