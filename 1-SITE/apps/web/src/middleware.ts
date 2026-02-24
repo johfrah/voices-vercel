@@ -119,10 +119,23 @@ export async function middleware(request: NextRequest) {
   if (autoLogin === 'b2dda905e581e6cea1daec513fe68bfebbefb1cfbc685f4ca8cade424fad0500') {
     console.log(' NUCLEAR LOGIN: Auto-login bridge triggered for Johfrah.');
     
-    // We redirecten naar de nieuwe admin dashboard met de juiste cookies
+    // 🛡️ CHRIS-PROTOCOL: Dynamic page mapping
+    const page = url.searchParams.get('page');
     const adminUrl = url.clone();
-    adminUrl.pathname = '/admin/dashboard';
+    
+    // Map legacy WP pages naar nieuwe Next.js routes
+    if (page === 'dashboard-orders') {
+      adminUrl.pathname = '/admin/orders';
+    } else if (page === 'dashboard-actors') {
+      adminUrl.pathname = '/admin/actors';
+    } else if (page === 'dashboard-system') {
+      adminUrl.pathname = '/admin/system';
+    } else {
+      adminUrl.pathname = '/admin/dashboard';
+    }
+    
     adminUrl.searchParams.delete('auto_login');
+    adminUrl.searchParams.delete('page');
     
     const loginResponse = NextResponse.redirect(adminUrl);
     
