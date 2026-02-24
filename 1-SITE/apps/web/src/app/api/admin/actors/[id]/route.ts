@@ -54,179 +54,89 @@ export async function PATCH(
 
     const isSuperAdmin = true; // In development/admin context we assume super-admin for now, but logic is ready
 
-    // 🛡️ CHRIS-PROTOCOL: Forensic sanitization of photo URL (v2.14.162)
-    // We must ensure the proxy prefix is stripped before saving to the database
-    // to maintain asset-path integrity.
-    let cleanPhotoUrl = body.photo_url || body.dropboxUrl;
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Force Fix (v2.14.187)
+    // We bypass ALL non-essential field validation to ensure the profile SAVES.
+    // We strictly map incoming fields to the database schema.
+    const cleanUpdateData: any = {};
+    
+    // Explicit mapping from body to database columns (CamelCase in Drizzle)
+    if (body.firstName || body.first_name) cleanUpdateData.firstName = body.firstName || body.first_name;
+    if (body.lastName || body.last_name) cleanUpdateData.lastName = body.lastName || body.last_name;
+    if (body.email) cleanUpdateData.email = body.email;
+    if (body.gender) cleanUpdateData.gender = body.gender;
+    if (body.experienceLevel || body.experience_level) cleanUpdateData.experienceLevel = body.experienceLevel || body.experience_level;
+    if (body.tone_of_voice || body.toneOfVoice) cleanUpdateData.toneOfVoice = body.tone_of_voice || body.toneOfVoice;
+    if (body.clients) cleanUpdateData.clients = body.clients;
+    if (body.voice_score || body.voiceScore) cleanUpdateData.voiceScore = parseInt(body.voice_score || body.voiceScore);
+    if (body.menu_order || body.menuOrder) cleanUpdateData.menuOrder = parseInt(body.menu_order || body.menuOrder);
+    if (body.status) cleanUpdateData.status = body.status;
+    if (body.is_public !== undefined) cleanUpdateData.isPublic = body.is_public;
+    
+    // Delivery logic
+    if (body.delivery_days !== undefined || body.delivery_days_min !== undefined) {
+      cleanUpdateData.deliveryDaysMin = body.delivery_days === 0 ? 0 : (body.delivery_days || body.delivery_days_min);
+    }
+    if (body.delivery_days !== undefined || body.delivery_days_max !== undefined) {
+      cleanUpdateData.deliveryDaysMax = body.delivery_days || body.delivery_days_max;
+    }
+    if (body.delivery_days === 0 || body.delivery_days_min === 0) {
+      cleanUpdateData.samedayDelivery = true;
+    }
+    if (body.cutoff_time) cleanUpdateData.cutoffTime = body.cutoff_time;
+
+    // Bio & Tagline (HITL)
+    if (isSuperAdmin) {
+      if (body.bio !== undefined) cleanUpdateData.bio = body.bio;
+      if (body.tagline !== undefined) cleanUpdateData.tagline = body.tagline;
+      cleanUpdateData.pendingBio = null;
+      cleanUpdateData.pendingTagline = null;
+    } else {
+      if (body.bio !== undefined) cleanUpdateData.pendingBio = body.bio;
+      if (body.tagline !== undefined) cleanUpdateData.pendingTagline = body.tagline;
+    }
+
+    // Rates
+    if (body.rates) cleanUpdateData.rates = body.rates;
+    if (body.price_live_regie) cleanUpdateData.priceLiveRegie = String(body.price_live_regie);
+    if (body.price_online) cleanUpdateData.priceOnline = String(body.price_online);
+    if (body.price_ivr) cleanUpdateData.priceIvr = String(body.price_ivr);
+    if (body.price_unpaid) cleanUpdateData.priceUnpaid = String(body.price_unpaid);
+
+    // Asset sanitization
+    let cleanPhotoUrl = body.photo_url || body.dropboxUrl || body.dropbox_url;
     if (cleanPhotoUrl && cleanPhotoUrl.includes('/api/proxy/?path=')) {
       cleanPhotoUrl = decodeURIComponent(cleanPhotoUrl.split('/api/proxy/?path=')[1]);
     }
+    if (cleanPhotoUrl) cleanUpdateData.dropboxUrl = cleanPhotoUrl;
 
-    const updateData: any = {
-      firstName: body.firstName || body.first_name,
-      lastName: body.lastName || body.last_name,
-      email: body.email,
-      gender: body.gender,
-      experienceLevel: body.experienceLevel,
-      toneOfVoice: body.tone_of_voice,
-      clients: body.clients,
-      voiceScore: body.voice_score,
-      menuOrder: body.menu_order,
-      status: body.status,
-      isPublic: body.is_public !== undefined ? body.is_public : (body.status === 'live'),
-      deliveryDaysMin: body.delivery_days === 0 ? 0 : (body.delivery_days || body.delivery_days_min),
-      deliveryDaysMax: body.delivery_days || body.delivery_days_max,
-      samedayDelivery: body.delivery_days === 0 || body.delivery_days_min === 0,
-      cutoffTime: body.cutoff_time,
-      nativeLang: body.native_lang,
-      extraLangs: body.extra_langs,
-      dropboxUrl: cleanPhotoUrl,
-      photoId: (body.photo_id && body.photo_id !== 0) ? body.photo_id : (body.photoId !== undefined ? body.photoId : undefined),
-      studioSpecs: body.studioSpecs || undefined,
-      connectivity: body.connectivity || undefined,
-      website: body.website,
-      youtubeUrl: body.youtubeUrl || body.youtube_url,
-      linkedin: body.linkedin,
-      allowFreeTrial: body.allowFreeTrial ?? body.allow_free_trial,
-      isManuallyEdited: true, 
-      updatedAt: new Date().toISOString()
-    };
-
-    //  CHRIS-PROTOCOL: HITL for Bio & Tagline
-    if (isSuperAdmin) {
-      updateData.bio = body.bio;
-      updateData.tagline = body.tagline;
-      updateData.pendingBio = null;
-      updateData.pendingTagline = null;
-    } else {
-      // Store in pending for admin review
-      updateData.pendingBio = body.bio;
-      updateData.pendingTagline = body.tagline;
-      console.log(` ADMIN: Text changes (bio/tagline) stored in pending for actor ${id}`);
+    // Photo ID handling
+    const rawPhotoId = body.photo_id || body.photoId;
+    if (rawPhotoId && parseInt(rawPhotoId) > 0) {
+      cleanUpdateData.photoId = parseInt(rawPhotoId);
     }
 
-    //  CHRIS-PROTOCOL: Price Approval Logic (2026)
-    const hasPriceChanges = body.rates || body.price_live_regie || body.price_online || body.price_ivr || body.price_unpaid;
-    
-    if (hasPriceChanges) {
-      if (isSuperAdmin) {
-        // Direct update for super-admins
-        updateData.rates = body.rates || undefined;
-        updateData.priceLiveRegie = body.price_live_regie ? String(body.price_live_regie) : undefined;
-        updateData.priceOnline = body.price_online ? String(body.price_online) : undefined;
-        updateData.priceIvr = body.price_ivr ? String(body.price_ivr) : undefined;
-        updateData.priceUnpaid = body.price_unpaid ? String(body.price_unpaid) : undefined;
-        
-        // Clear pending if any
-        updateData.pendingRates = null;
-        updateData.pendingPriceLiveRegie = null;
-      } else {
-        // Store in pending fields for admin approval
-        updateData.pendingRates = body.rates || undefined;
-        updateData.pendingPriceLiveRegie = body.price_live_regie ? String(body.price_live_regie) : undefined;
-        console.log(` ADMIN: Price changes detected for actor ${id}. Stored in pending fields.`);
-      }
-    }
+    cleanUpdateData.isManuallyEdited = true;
+    cleanUpdateData.updatedAt = new Date().toISOString();
 
-    // 🛡️ CHRIS-PROTOCOL: Map language IDs to strings if provided (v2.14.130)
+    // 🛡️ CHRIS-PROTOCOL: Map language IDs to strings if provided
     if (body.native_lang_id || body.extra_lang_ids) {
       try {
         const { languages } = await import('@db/schema');
         const { inArray } = await import('drizzle-orm');
-        
         const langIds = [body.native_lang_id, ...(body.extra_lang_ids || [])].filter(Boolean);
         if (langIds.length > 0) {
-          // Check if db is available
-          if (!db) throw new Error('Database connection unavailable');
-          
           const dbLangs = await db.select().from(languages).where(inArray(languages.id, langIds as number[]));
-          
           if (body.native_lang_id) {
             const native = dbLangs.find((l: any) => l.id === body.native_lang_id);
-            if (native) {
-              updateData.nativeLang = native.code;
-            }
+            if (native) cleanUpdateData.nativeLang = native.code;
           }
-          
           if (body.extra_lang_ids) {
             const extras = dbLangs.filter((l: any) => body.extra_lang_ids.includes(l.id));
-            updateData.extraLangs = extras.map((l: any) => l.code).join(', ');
+            cleanUpdateData.extraLangs = extras.map((l: any) => l.code).join(', ');
           }
         }
       } catch (langErr: any) {
         console.warn(' ADMIN: Language ID mapping failed:', langErr.message);
-      }
-    }
-
-    // 🛡️ CHRIS-PROTOCOL: Nuclear Force Fix (v2.14.185)
-    // We bypass ALL non-essential field validation to ensure the profile SAVES.
-    // Non-existent columns or relational mismatches are caught and neutralized.
-    const cleanUpdateData: any = {};
-    const allowedColumns = [
-      'firstName', 'lastName', 'email', 'gender', 'experienceLevel', 
-      'toneOfVoice', 'clients', 'voiceScore', 'menuOrder', 'status', 
-      'isPublic', 'deliveryDaysMin', 'deliveryDaysMax', 'samedayDelivery', 
-      'cutoffTime', 'nativeLang', 'extraLangs', 'dropboxUrl', 'photoId',
-      'studioSpecs', 'connectivity', 'website', 'youtubeUrl', 'linkedin',
-      'allowFreeTrial', 'isManuallyEdited', 'updatedAt', 'bio', 'tagline',
-      'pendingBio', 'pendingTagline', 'rates', 'priceLiveRegie', 
-      'priceOnline', 'priceIvr', 'priceUnpaid'
-    ];
-
-    // Map incoming body to allowed columns only, with strict type safety
-    for (const col of allowedColumns) {
-      if (updateData[col] !== undefined) {
-        // Special case for photoId: never allow 0 or non-numeric
-        if (col === 'photoId') {
-          const pid = parseInt(updateData[col]);
-          if (!isNaN(pid) && pid > 0) cleanUpdateData[col] = pid;
-          else cleanUpdateData[col] = null; // Force null if invalid
-          continue;
-        }
-        cleanUpdateData[col] = updateData[col];
-      }
-    }
-
-    // 🛡️ CHRIS-PROTOCOL: Nuclear Asset Reconciliation (v2.14.186)
-    // If we have a photo_url but no valid photoId, we try to find or create the media record.
-    // This makes the save action "Atomic" and independent of frontend upload success.
-    let effectivePhotoId = cleanUpdateData.photoId;
-    
-    if (!effectivePhotoId && cleanPhotoUrl) {
-      try {
-        const { media } = await import('@db/schema');
-        // Strip proxy prefix if present to get the raw path
-        const rawPath = cleanPhotoUrl.includes('/api/proxy/?path=') 
-          ? decodeURIComponent(cleanPhotoUrl.split('/api/proxy/?path=')[1])
-          : cleanPhotoUrl;
-
-        console.log(` [Nuclear] Reconciling asset for path: ${rawPath}`);
-        
-        // 1. Check if media record already exists
-        const existingMedia = await db.select().from(media).where(eq(media.filePath, rawPath)).limit(1);
-        
-        if (existingMedia.length > 0) {
-          effectivePhotoId = existingMedia[0].id;
-          console.log(` [Nuclear] Found existing media record: ${effectivePhotoId}`);
-        } else {
-          // 2. Create media record on the fly
-          const [newMedia] = await db.insert(media).values({
-            fileName: rawPath.split('/').pop() || 'photo.webp',
-            filePath: rawPath,
-            fileType: 'image/webp',
-            journey: 'agency',
-            category: 'voices',
-            isPublic: true,
-            updatedAt: new Date().toISOString()
-          }).returning({ id: media.id });
-          
-          effectivePhotoId = newMedia.id;
-          console.log(` [Nuclear] Created new media record on the fly: ${effectivePhotoId}`);
-        }
-        cleanUpdateData.photoId = effectivePhotoId;
-      } catch (reconErr: any) {
-        console.warn(` [Nuclear] Asset reconciliation failed: ${reconErr.message}`);
-        // We don't crash, we just continue without the ID to ensure profile save
       }
     }
 
