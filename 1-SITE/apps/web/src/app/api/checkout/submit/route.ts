@@ -286,8 +286,6 @@ export async function POST(request: Request) {
       { expiresIn: '24h' }
     );
 
-    const isInvoiceActual = payment_method === 'banktransfer';
-
     if (isQuote || isInvoiceActual) {
       // Offerte/Factuur flow (Background)
       (async () => {

@@ -33,14 +33,15 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 export async function getArtist(slug: string, lang: string = 'nl'): Promise<any> {
   console.log(' API: Querying artist from the artists table:', slug);
   
-  //  CHRIS-PROTOCOL: Youssef is een Artist, geen Actor.
-  // We gebruiken geen hardcoded fallbacks meer. Alles moet via de database komen.
-  const artist = await (db.query as any).artists.findFirst({
-    where: (fields: any, { eq }: any) => eq(fields.slug, slug),
-  }).catch(() => null);
+  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+  const { data: artist, error } = await supabase
+    .from('artists')
+    .select('*')
+    .eq('slug', slug)
+    .single();
 
-  if (!artist) {
-    console.warn(`[api-server] Artist not found for slug: ${slug}`);
+  if (error || !artist) {
+    console.warn(`[api-server] Artist not found for slug: ${slug}`, error);
     return null;
   }
 
@@ -50,15 +51,15 @@ export async function getArtist(slug: string, lang: string = 'nl'): Promise<any>
   // Map to unified Artist object for UI
   return {
     ...artist,
-    display_name: artist.displayName || artist.firstName,
-    photo_url: artist.photoUrl,
+    display_name: artist.display_name || artist.first_name || artist.displayName || artist.firstName,
+    photo_url: artist.photo_url || artist.photoUrl,
     bio: translatedBio.replace(/<[^>]*>?/gm, '').trim(),
-    donation_goal: artist.donationGoal || 0,
-    donation_current: artist.donationCurrent || 0,
-    spotify_url: artist.spotifyUrl || '',
+    donation_goal: artist.donation_goal || artist.donationGoal || 0,
+    donation_current: artist.donation_current || artist.donationCurrent || 0,
+    spotify_url: artist.spotify_url || artist.spotifyUrl || '',
     youtube_url: artist.youtube_url || '',
-    instagram_url: artist.instagramUrl || '',
-    tiktok_url: artist.tiktokUrl || '',
+    instagram_url: artist.instagram_url || artist.instagramUrl || '',
+    tiktok_url: artist.tiktok_url || artist.tiktokUrl || '',
     demos: [] // Artist portfolio items could be mapped here if needed
   };
 }

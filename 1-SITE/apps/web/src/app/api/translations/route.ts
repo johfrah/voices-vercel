@@ -1,7 +1,16 @@
-import { db } from '@db';
-import { translations } from '@db/schema';
-import { eq } from 'drizzle-orm';
+import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+
+//  CHRIS-PROTOCOL: SDK fallback for stability (v2.14.273)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false
+  }
+});
 
 /**
  *  API: TRANSLATIONS (2026)
@@ -11,7 +20,6 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 
 export const dynamic = 'force-dynamic';
-// export const runtime = 'edge'; // Drizzle with postgres-js requires Node.js runtime
 
 export async function GET(request: NextRequest) {
   //  CHRIS-PROTOCOL: Build Safety
@@ -23,27 +31,21 @@ export async function GET(request: NextRequest) {
   const lang = searchParams.get('lang') || 'nl';
 
   try {
-    const results = await db
-      .select()
-      .from(translations)
-      .where(eq(translations.lang, lang));
+    // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+    const { data: results, error } = await supabase
+      .from('translations')
+      .select('translation_key, translated_text, original_text')
+      .eq('lang', lang);
+
+    if (error) throw error;
 
     const translationMap: Record<string, string> = {};
-    results.forEach(row => {
-      if (row.translationKey) {
-        translationMap[row.translationKey] = row.translatedText || row.originalText || '';
+    results?.forEach(row => {
+      const key = row.translation_key || row.translationKey;
+      if (key) {
+        translationMap[key] = row.translated_text || row.translatedText || row.original_text || row.originalText || '';
       }
     });
-
-    //  SELF-HEALING: Als er geen vertalingen zijn voor deze taal, trigger een 'Heal' event
-    //  DISABLED: Voorkomt onnodige healing triggers bij het openen van de site.
-    //  CHRIS-PROTOCOL: We triggeren NOOIT healing voor de basistalen (nl-BE, nl-NL) omdat dit de bron-talen zijn.
-    /*
-    if (results.length === 0 && !lang.startsWith('nl')) {
-      console.log(` [HEAL] Triggering translation generation for: ${lang}`);
-      // ...
-    }
-    */
 
     //  CHRIS-PROTOCOL: Forceer de status 200 en de correcte headers voor de lancering
     const response = NextResponse.json({
@@ -51,7 +53,7 @@ export async function GET(request: NextRequest) {
       lang,
       translations: translationMap,
       _nuclear: true,
-      _source: 'supabase'
+      _source: 'supabase-sdk'
     });
 
     response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
