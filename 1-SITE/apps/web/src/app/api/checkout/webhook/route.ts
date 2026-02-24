@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
         isCustomerNote: false
       });
 
-      //  Als betaald: Lever muziek en update DNA + Sales + Yuki + Actor Notification
+      //  Als betaald: Lever muziek en update DNA + Sales
       if (newStatus === 'paid') {
         // 1. Verhoog total_sales voor de betrokken acteurs
         try {
@@ -147,25 +147,9 @@ export async function POST(request: NextRequest) {
             console.log(` Sales: total_sales incremented for actors: ${actorIds.join(', ')}`);
           }
 
-          // 🛡️ CHRIS-PROTOCOL: AUTOMATED ACTOR NOTIFICATION (v2.14.328)
-          // We sturen direct een opdrachtbevestiging naar alle betrokken acteurs
-          (async () => {
-            const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
-            for (const item of items) {
-              if (item.actorId) {
-                try {
-                  await fetch(`${siteUrl}/api/admin/notify/actor`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ actorId: item.actorId, orderId, itemData: item.metaData })
-                  });
-                  console.log(`[Automation] Actor ${item.actorId} notified for Order #${orderId}`);
-                } catch (actorNotifyErr) {
-                  console.warn(`[Automation] Failed to notify actor ${item.actorId}:`, actorNotifyErr);
-                }
-              }
-            }
-          })();
+          // 🛡️ CHRIS-PROTOCOL: HITL MANDATE (v2.14.332)
+          // We sturen GEEN automatische opdrachtbevestiging meer naar acteurs.
+          // De admin (Johfrah) moet de briefing valideren in het dashboard.
 
           // 🛡️ CHRIS-PROTOCOL: AUTOMATED CUSTOMER CONFIRMATION (v2.14.328)
           if (order) {
@@ -211,42 +195,9 @@ export async function POST(request: NextRequest) {
           // We gaan door, want de betaling is wel gelukt
         }
 
-        // 3. AUTOMATED YUKI INVOICING (v2.14.328)
-        if (order) {
-          const [user] = await tx.select().from(users).where(eq(users.id, order.userId as number)).limit(1);
-          if (user) {
-            (async () => {
-              try {
-                const items = await tx.select().from(orderItems).where(eq(orderItems.orderId, orderId));
-                await YukiService.createInvoice({
-                  orderId,
-                  paymentId,
-                  customer: {
-                    firstName: user.firstName || 'Klant',
-                    lastName: user.lastName || '',
-                    email: user.email,
-                    companyName: user.companyName || undefined,
-                    vatNumber: user.vatNumber || undefined,
-                    address: user.addressStreet || undefined,
-                    city: user.addressCity || undefined,
-                    zipCode: user.addressZip || undefined,
-                    countryCode: user.addressCountry || 'BE'
-                  },
-                  lines: items.map(i => ({
-                    description: i.name,
-                    quantity: i.quantity || 1,
-                    price: parseFloat(i.price || '0'),
-                    vatType: 1 // 21%
-                  })),
-                  paymentMethod: payment.method || 'Online'
-                });
-                console.log(`[Automation] Yuki invoice triggered for Order #${orderId}`);
-              } catch (yukiErr) {
-                console.warn(`[Automation] Yuki sync failed for Order #${orderId}:`, yukiErr);
-              }
-            })();
-          }
-        }
+        // 🛡️ CHRIS-PROTOCOL: HITL MANDATE (v2.14.332)
+        // We maken GEEN automatische Yuki factuur meer aan.
+        // De admin triggert dit handmatig na controle.
 
         if (payment.metadata.userId) {
           const userId = parseInt(payment.metadata.userId);
