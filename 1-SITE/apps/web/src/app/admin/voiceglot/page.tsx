@@ -110,19 +110,41 @@ export default function VoiceglotMasterPage() {
     
     setIsHealingAll(true);
     playClick('pro');
+    
+    let totalHealedOverall = 0;
+    let keepGoing = true;
+
     try {
-      const res = await fetch('/api/admin/voiceglot/heal-all', { method: 'POST' });
-      const data = await res.json();
-      if (res.ok) {
-        toast.success(`${data.healedCount} vertalingen gegenereerd!`);
-        fetchTranslations(1, true);
-        fetchStats();
-        playClick('success');
+      while (keepGoing) {
+        const res = await fetch('/api/admin/voiceglot/heal-all', { method: 'POST' });
+        const data = await res.json();
+        
+        if (res.ok) {
+          totalHealedOverall += data.healedCount;
+          
+          // Als er 0 geheald zijn, betekent dit dat de queue leeg is
+          if (data.healedCount === 0) {
+            keepGoing = false;
+            toast.success(`Healing voltooid! Totaal ${totalHealedOverall} vertalingen gegenereerd.`);
+          } else {
+            // Update UI tussentijds
+            fetchTranslations(1, false);
+            fetchStats();
+            // Korte pauze om de server te ontlasten
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        } else {
+          throw new Error(data.error || 'Batch healing mislukt');
+        }
       }
-    } catch (e) {
-      toast.error('Healing mislukt.');
+    } catch (e: any) {
+      console.error('❌ [Voiceglot Page] Auto-Healing Error:', e);
+      toast.error(`Healing gestopt: ${e.message}`);
     } finally {
       setIsHealingAll(false);
+      fetchTranslations(1, true);
+      fetchStats();
+      playClick('success');
     }
   };
 
