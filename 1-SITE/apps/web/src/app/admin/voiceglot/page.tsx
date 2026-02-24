@@ -260,21 +260,24 @@ export default function VoiceglotMasterPage() {
 
     // Group translations by key for the Matrix View
     // CHRIS-PROTOCOL: Registry-Centric handling
-    const groupedList = translations
+    const groupedList = (translations || [])
       .filter((item: any) => {
+        if (!item || !item.translationKey) return false;
         if (hideInternal && item.translationKey.startsWith('knowledge.')) return false;
         return true;
       })
       .map((item: any) => {
         const langs: Record<string, any> = {};
         (item.translations || []).forEach((t: any) => {
-          langs[t.lang] = t;
+          if (t && t.lang) {
+            langs[t.lang] = t;
+          }
         });
         return {
           key: item.translationKey,
-          originalText: item.originalText,
-          context: item.context,
-          sourceLang: item.sourceLang,
+          originalText: item.originalText || '',
+          context: item.context || '',
+          sourceLang: item.sourceLang || 'nl',
           langs
         };
       });
