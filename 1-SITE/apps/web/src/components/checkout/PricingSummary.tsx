@@ -30,7 +30,7 @@ export const PricingSummary: React.FC<{
   onlyTotals?: boolean;
   className?: string;
 }> = ({ onlyItems, onlyTotals, className }) => {
-  const { state, subtotal, cartHash, removeItem, restoreItem, isVatExempt, updateCustomer, updateIsSubmitting, updateAgreedToTerms, isHydrated } = useCheckout();
+  const { state, subtotal, cartHash, removeItem, clearCart, restoreItem, isVatExempt, updateCustomer, updateIsSubmitting, updateAgreedToTerms, isHydrated } = useCheckout();
   const { updateStep } = useMasterControl();
   const { playClick } = useSonicDNA();
   const { t } = useTranslation();
@@ -154,6 +154,9 @@ export const PricingSummary: React.FC<{
       }
 
       if (data.success) {
+        // 🛡️ CHRIS-PROTOCOL: Clear cart after successful order (v2.14.325)
+        clearCart();
+
         if (state.isQuoteRequest || data.isBankTransfer || !data.checkoutUrl) {
           setIsPreviewOpen(false);
           updateIsSubmitting(false);

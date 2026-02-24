@@ -117,6 +117,7 @@ interface CheckoutContextType {
   updateAgreedToTerms: (agreed: boolean) => void;
   updateIsSubmitting: (submitting: boolean) => void;
   addItem: (item: any) => void;
+  clearCart: () => void;
   removeItem: (itemId: string) => void;
   restoreItem: (item: any) => void;
   resetSelection: () => void;
@@ -434,6 +435,28 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
   }), []);
 
+  const clearCart = useCallback(() => {
+    console.log('[CheckoutContext] Clearing cart items and resetting selection');
+    setState(prev => ({
+      ...prev,
+      items: [],
+      selectedActor: null,
+      briefing: '',
+      pronunciation: '',
+      pricing: {
+        base: 0,
+        wordSurcharge: 0,
+        mediaSurcharge: 0,
+        musicSurcharge: 0,
+        radioReadySurcharge: 0,
+        total: 0,
+      }
+    }));
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('voices_checkout_state');
+    }
+  }, []);
+
   const removeItem = useCallback((itemId: string) => setState(prev => {
     const newItems = prev.items.filter((i: { id?: string }) => i.id !== itemId);
     console.log(`[CheckoutContext] Removing item: ${itemId}. Remaining items: ${newItems.length}`);
@@ -691,6 +714,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       updateAgreedToTerms,
       updateIsSubmitting,
       addItem,
+      clearCart,
       removeItem,
       restoreItem,
       resetSelection,
