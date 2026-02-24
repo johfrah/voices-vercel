@@ -186,13 +186,15 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   //  CHRIS-PROTOCOL: Helper voor meertalige SEO via Voiceglot
   const getTranslatedSEO = async (key: string, defaultText: string) => {
     try {
-      const mapping = await db.query.translations.findFirst({
-        where: and(
-          eq(translations.lang, lang),
-          eq(translations.translationKey, key)
-        )
-      });
-      return mapping?.translatedText || defaultText;
+      // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+      const { data: mapping } = await supabase
+        .from('translations')
+        .select('translated_text')
+        .eq('lang', lang)
+        .eq('translation_key', key)
+        .single();
+
+      return mapping?.translated_text || mapping?.translatedText || defaultText;
     } catch (e) {
       return defaultText;
     }
@@ -216,7 +218,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
     try {
       const artist = await getArtist(firstSegment, lang);
       if (artist) {
-        const title = await getTranslatedSEO(`seo.artist.${artist.id}.title`, `${artist.displayName} | ${market.name} Artist`);
+        const title = await getTranslatedSEO(`seo.artist.${artist.id}.title`, `${artist.display_name || artist.displayName} | ${market.name} Artist`);
         const description = await getTranslatedSEO(`seo.artist.${artist.id}.description`, artist.bio);
 
         return {
@@ -233,8 +235,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   try {
     const actor = await getActor(firstSegment, lang);
     if (actor) {
-      const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.firstName} - Voice-over Stem | ${market.name}`);
-      const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.firstName} op ${market.name}.`);
+      const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.first_name || actor.firstName} - Voice-over Stem | ${market.name}`);
+      const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.first_name || actor.firstName} op ${market.name}.`);
       const schema = generateActorSchema(actor, market.name, host);
 
       return {
@@ -254,9 +256,12 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 
   // 3. Probeer een CMS Artikel te vinden
   try {
-    const page = await db.query.contentArticles.findFirst({
-      where: eq(contentArticles.slug, firstSegment),
-    }).catch(() => null);
+    // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+    const { data: page } = await supabase
+      .from('content_articles')
+      .select('*')
+      .eq('slug', firstSegment)
+      .single();
 
     if (page) {
       const title = await getTranslatedSEO(`seo.page.${page.slug}.title`, `${page.title} | ${market.name}`);
