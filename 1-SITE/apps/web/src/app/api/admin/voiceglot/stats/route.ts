@@ -38,17 +38,17 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Fetch Fresh Data (Ultra-Light)
-    // We gebruiken een rauwe SQL query voor maximale snelheid en om Drizzle issues te omzeilen
-    const totalResult = await db.execute(sql`SELECT count(*) FROM translation_registry`);
-    const totalStrings = parseInt(String((totalResult as any)[0]?.count || '0'), 10);
+    // We gebruiken Drizzle's count helper voor maximale compatibiliteit
+    // CHRIS-PROTOCOL: Gebruik expliciete aliassen om mapping issues te voorkomen
+    const [totalResult] = await db.select({ count: sql`count(*)` }).from(translationRegistry);
+    const totalStrings = parseInt(String(totalResult?.count || '0'), 10);
 
-    const statsByLangResult = totalStrings > 0 ? await db.execute(sql`
-      SELECT lang, count(*) as count 
-      FROM translations 
-      GROUP BY lang
-    `) : [];
-    
-    const statsByLang = (statsByLangResult as any) || [];
+    const statsByLang = totalStrings > 0 ? await db.select({
+      lang: translations.lang,
+      count: sql`count(*)`
+    })
+    .from(translations)
+    .groupBy(translations.lang) : [];
 
     // Bereken percentages
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it'];
@@ -70,14 +70,22 @@ export async function GET(request: NextRequest) {
     };
 
     // 3. Update Cache
-    await db.insert(appConfigs)
-      .values({ key: CACHE_KEY, value: freshData, updatedAt: new Date() })
-      .onConflictDoUpdate({ target: appConfigs.key, set: { value: freshData, updatedAt: new Date() }})
-      .catch(() => {});
+    try {
+      await db.insert(appConfigs)
+        .values({ key: CACHE_KEY, value: freshData, updatedAt: new Date() })
+        .onConflictDoUpdate({ target: appConfigs.key, set: { value: freshData, updatedAt: new Date() }});
+    } catch (cacheErr) {
+      console.error('Cache update failed:', cacheErr);
+    }
 
     return NextResponse.json({ ...freshData, isCached: false });
   } catch (error: any) {
     console.error('[Voiceglot Stats Error]:', error);
-    return NextResponse.json({ error: error.message || 'Failed to fetch stats' }, { status: 500 });
+    // CHRIS-PROTOCOL: Altijd een geldig object teruggeven, zelfs bij error
+    return NextResponse.json({ 
+      totalStrings: 0, 
+      coverage: [], 
+      error: error.message || 'Failed to fetch stats' 
+    }, { status: 200 }); // We geven 200 terug om frontend crash te voorkomen
   }
 }

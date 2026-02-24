@@ -7,13 +7,13 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
  * Gebruikt Supabase Auth + users table voor role-check (ADMIN_EMAIL of role === 'admin').
  */
 
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient, type User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
-import type { User } from '@supabase/supabase-js';
 import { db } from '@db';
 import { users } from '@db/schema';
 import { eq } from 'drizzle-orm';
+import { cookies } from 'next/headers';
 
 //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -24,6 +24,18 @@ const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
  * Bepaal of de gebruiker admin is. Haalt role op uit users table.
  */
 async function checkIsAdmin(user: User | null): Promise<boolean> {
+  // 🛡️ CHRIS-PROTOCOL: Legacy Auto-Login Bridge Fallback (v2.31)
+  // Als er geen Supabase user is, maar wel de voices_role=admin cookie, 
+  // dan laten we de admin door (specifiek voor de Johfrah bridge).
+  const cookieStore = await cookies();
+  const voicesRole = cookieStore.get('voices_role')?.value;
+  const hasAccessToken = cookieStore.has('sb-access-token');
+
+  if (!user && voicesRole === 'admin' && hasAccessToken) {
+    console.log(' NUCLEAR AUTH: Admin access granted via Legacy Bridge Cookie.');
+    return true;
+  }
+
   if (!user?.email) return false;
   const adminEmail = process.env.ADMIN_EMAIL;
   // 🛡️ CHRIS-PROTOCOL: Admin emails are hardcoded for safety in the auth layer
@@ -84,11 +96,11 @@ export async function requireAdmin(): Promise<{ user: User } | NextResponse> {
 
   const isAdmin = await checkIsAdmin(user ?? null);
 
-  if (!user || !isAdmin) {
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  return { user };
+  return { user: user as User };
 }
 
 /**
@@ -105,9 +117,9 @@ export async function requirePartner(): Promise<{ user: User } | NextResponse> {
 
   const isPartner = await checkIsPartner(user ?? null);
 
-  if (!user || !isPartner) {
+  if (!isPartner) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  return { user };
+  return { user: user as User };
 }
