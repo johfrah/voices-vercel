@@ -181,7 +181,7 @@ export default function OrdersPage() {
                                           <span className={cn(
                                             "px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest rounded-md border",
                                             item.deliveryStatus === 'ready' || item.deliveryStatus === 'uploaded' || item.deliveryStatus === 'approved' 
-                                              ? "bg-green-50 text-green-600 border-green-100" 
+                                              ? "bg-green-500 text-white border-green-600 shadow-sm" 
                                               : "bg-va-black/5 text-va-black/40 border-black/5"
                                           )}>
                                             {item.deliveryStatus === 'waiting' && <VoiceglotText translationKey="order.item.status.waiting" defaultText="In opname" />}

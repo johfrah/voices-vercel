@@ -25,14 +25,20 @@ Vóór elke afronding van een taak MOET de agent de volgende stappen doorlopen:
     ```bash
     npx tsx 3-WETTEN/scripts/forensic-audit.ts
     ```
-7.  **Functional Browser Validation (The Final Gate)**:
+28. **Functional Browser Validation (The Final Gate)**:
     - Gebruik de `browser-use` subagent om de wijziging *functioneel* te testen op de live site.
-    - Test niet alleen of de pagina opent, maar voer een actie uit (bijv. klik op een knop, vul een formulier in).
-    - Verifieer tegelijkertijd de **Watchdog logs** (`system_events`) en de **Browser Console** op fouten tijdens deze actie.
-8.  **Certificering**: De taak mag pas als "COMPLETED" worden gemarkeerd als:
+    - **Incognito & Hard Refresh**: Test de live URL incognito. Voer een hard-refresh uit om caching te omzeilen.
+    - **Version Match Mandate**: De browser-agent MOET de versie in de UI of `/api/admin/config` verifiëren tegen de zojuist gepushte versie in `package.json`. Geen match = herhaal check na 30s.
+    - **Cross-Market Validation**: Indien de wijziging marktspecifiek is, test op minimaal twee domeinen (bijv. .be en .nl).
+    - **Console & Watchdog Audit**: Verifieer dat de console 100% schoon is en er geen nieuwe `system_events` errors zijn in de database.
+    - **Data Visibility & Proof**: Bevestig expliciet dat de verwachte data zichtbaar is. Noem een specifiek detail dat je ziet (bijv. "Ik zie de nieuwe knop 'Boek Nu' met kleur #000").
+    - **Regression Check**: Bevestig dat de hoofdnavigatie en de 'Slimme Kassa' nog steeds functioneren na de fix.
+29. **Certificering**: De taak mag pas als "COMPLETED" worden gemarkeerd als:
     - De build succesvol is.
     - De `forensic-audit.ts` ✅ groen geeft.
-    - De browser-agent de functionaliteit heeft bevestigd zonder console/watchdog errors.
+    - De browser-agent de functionaliteit heeft bevestigd op de PRODUCTIE URL zonder console/watchdog errors.
+    - **GEEN INSTRUCTIES AAN DE GEBRUIKER**: Geef geen instructies om zelf te testen. Bevestig dat JIJ het hebt gezien.
+    - **EVIDENCE MANDATE**: Lever een korte 'Proof of Life' (bijv. "Getest op voices.be, versie v1.0.8 is live, knop reageert binnen 50ms").
 
 ## 🚫 Verboden Patronen
 
