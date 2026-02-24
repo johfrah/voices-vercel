@@ -187,6 +187,49 @@ export async function PATCH(
       }
     }
 
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Asset Reconciliation (v2.14.186)
+    // If we have a photo_url but no valid photoId, we try to find or create the media record.
+    // This makes the save action "Atomic" and independent of frontend upload success.
+    let effectivePhotoId = cleanUpdateData.photoId;
+    
+    if (!effectivePhotoId && cleanPhotoUrl) {
+      try {
+        const { media } = await import('@db/schema');
+        // Strip proxy prefix if present to get the raw path
+        const rawPath = cleanPhotoUrl.includes('/api/proxy/?path=') 
+          ? decodeURIComponent(cleanPhotoUrl.split('/api/proxy/?path=')[1])
+          : cleanPhotoUrl;
+
+        console.log(` [Nuclear] Reconciling asset for path: ${rawPath}`);
+        
+        // 1. Check if media record already exists
+        const existingMedia = await db.select().from(media).where(eq(media.filePath, rawPath)).limit(1);
+        
+        if (existingMedia.length > 0) {
+          effectivePhotoId = existingMedia[0].id;
+          console.log(` [Nuclear] Found existing media record: ${effectivePhotoId}`);
+        } else {
+          // 2. Create media record on the fly
+          const [newMedia] = await db.insert(media).values({
+            fileName: rawPath.split('/').pop() || 'photo.webp',
+            filePath: rawPath,
+            fileType: 'image/webp',
+            journey: 'agency',
+            category: 'voices',
+            isPublic: true,
+            updatedAt: new Date().toISOString()
+          }).returning({ id: media.id });
+          
+          effectivePhotoId = newMedia.id;
+          console.log(` [Nuclear] Created new media record on the fly: ${effectivePhotoId}`);
+        }
+        cleanUpdateData.photoId = effectivePhotoId;
+      } catch (reconErr: any) {
+        console.warn(` [Nuclear] Asset reconciliation failed: ${reconErr.message}`);
+        // We don't crash, we just continue without the ID to ensure profile save
+      }
+    }
+
     console.log(` ADMIN: Executing Nuclear Update for actor ${id}:`, JSON.stringify(cleanUpdateData, null, 2));
 
     // Update the actor in the database
