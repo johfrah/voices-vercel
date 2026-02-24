@@ -471,8 +471,7 @@ export class MarketManagerServer {
    */
   static isAgencySegment(segment: string): boolean {
     const s = segment?.toLowerCase();
-    // 🛡️ CHRIS-PROTOCOL: Portfolio names on the main domain are also Agency entry points
-    return ['agency', 'stemmen', 'voix', 'stimmen', 'voices', 'johfrah'].includes(s);
+    return ['agency', 'stemmen', 'voix', 'stimmen', 'voices'].includes(s);
   }
 }
 
