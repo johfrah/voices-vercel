@@ -140,15 +140,21 @@ export async function POST(req: Request) {
       });
 
       if (fallbackError) {
-        console.error('[Auth API] Fallback Supabase mail also failed:', fallbackError);
+        console.error('[Auth API] Fallback Supabase mail also failed:', fallbackError.message, fallbackError.status);
         await ServerWatchdog.report({
-          error: `Magic link failed (Custom & Fallback): ${fallbackError.message}`,
+          error: `Magic link failed (Custom & Fallback): ${fallbackError.message} (Status: ${fallbackError.status})`,
           component: 'AuthAPI',
           url: req.url,
           level: 'critical',
-          payload: { email, customError: mailErr.message, fallbackError: fallbackError.message }
+          payload: { 
+            email, 
+            customError: mailErr.message, 
+            fallbackError: fallbackError.message,
+            fallbackStatus: fallbackError.status,
+            fallbackCode: (fallbackError as any).code
+          }
         });
-        return NextResponse.json({ error: 'Inloglink kon niet worden verzonden. Probeer het later opnieuw.' }, { status: 500 });
+        return NextResponse.json({ error: `Inloglink kon niet worden verzonden: ${fallbackError.message}` }, { status: 500 });
       }
 
       console.log(`[Auth API] Fallback magic link sent successfully to: ${email}`);
