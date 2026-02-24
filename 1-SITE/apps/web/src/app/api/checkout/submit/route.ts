@@ -321,9 +321,13 @@ export async function POST(request: Request) {
     
     console.log('[Checkout] 🚀 STEP 6.1: Inserting order into database...');
     // 🛡️ CHRIS-PROTOCOL: Use SDK-Direct for the main order insert to bypass Drizzle's internal date/json handling (v2.14.305)
+    // 🛡️ CHRIS-PROTOCOL: Stage 1 - Create base order (v2.14.306)
     const { data: sdkOrder, error: sdkErr } = await sdkClient
       .from('orders')
-      .insert(orderPayload)
+      .insert({
+        ...orderPayload,
+        raw_meta: { status: 'base_created' } // Minimal metadata for stage 1
+      })
       .select()
       .single();
 
@@ -334,6 +338,18 @@ export async function POST(request: Request) {
 
     const newOrder = sdkOrder;
     console.log('[Checkout] ✅ STEP 6.2: Order created in DB via SDK:', { id: newOrder?.id });
+
+    // 🛡️ CHRIS-PROTOCOL: Stage 2 - Update with full metadata (v2.14.306)
+    // We do this separately to ensure the order exists even if JSON update fails
+    const { error: updateErr } = await sdkClient
+      .from('orders')
+      .update({ raw_meta: orderPayload.rawMeta })
+      .eq('id', newOrder.id);
+
+    if (updateErr) {
+      console.warn('[Checkout] ⚠️ STEP 6.3 Metadata update failed:', updateErr.message);
+      // We don't throw here, the order is already created!
+    }
 
     if (!newOrder) {
       throw new Error('Failed to create order in database (returned empty)');
