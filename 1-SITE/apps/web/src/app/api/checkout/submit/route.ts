@@ -39,6 +39,15 @@ export async function POST(request: Request) {
     const baseUrl = MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${host}`;
     const ip = headersList.get('x-forwarded-for') || 'unknown';
 
+    // 🛡️ CHRIS-PROTOCOL: Force ISO-First locale for Mollie (v2.14.437)
+    // Mollie expects locales like 'nl_BE', 'fr_FR', etc.
+    const mollieLocale = marketConfig.primary_language.replace('-', '_');
+    console.log('[Checkout] 🌍 Market Locale:', { 
+      market: marketConfig.market_code, 
+      primary: marketConfig.primary_language,
+      mollie: mollieLocale 
+    });
+
     // 1. Validatie van de payload
     try {
       rawBody = await request.json();
@@ -589,6 +598,7 @@ export async function POST(request: Request) {
       },
       redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}`,
       webhookUrl: `${baseUrl}/api/checkout/webhook`,
+      locale: mollieLocale as any,
       metadata: { orderId: newOrder.id }
     });
 
