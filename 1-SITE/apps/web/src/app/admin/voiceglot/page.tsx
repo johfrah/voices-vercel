@@ -235,10 +235,9 @@ export default function VoiceglotMasterPage() {
 
       {/* Stats & Progress Indicators */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          {['en-gb', 'fr-fr', 'de-de', 'es-es', 'pt-pt'].map((langCode) => {
-            const shortLang = langCode.split('-')[0];
-            const langStats = stats.coverage?.find((s: any) => s.lang === shortLang || s.lang === langCode);
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+          {['en', 'fr', 'de', 'es', 'pt', 'it'].map((langCode) => {
+            const langStats = stats.coverage?.find((s: any) => s.lang === langCode);
             const count = langStats ? langStats.count : 0;
             const percentage = langStats ? langStats.percentage : 0;
             
@@ -247,7 +246,7 @@ export default function VoiceglotMasterPage() {
                 <div className="flex justify-between items-end">
                   <div className="flex flex-col">
                     <span className="text-[11px] font-black uppercase tracking-widest text-va-black/20">{langCode}</span>
-                    <span className="text-2xl font-light tracking-tighter">{shortLang.toUpperCase()}</span>
+                    <span className="text-2xl font-light tracking-tighter">{langCode.toUpperCase()}</span>
                   </div>
                   <span className="text-[13px] font-bold text-primary">{percentage}%</span>
                 </div>
@@ -309,8 +308,8 @@ export default function VoiceglotMasterPage() {
           <thead>
             <tr className="bg-va-off-white/50 border-b border-black/5">
               <th className="px-8 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase w-1/4">Key & Bron (NL)</th>
-              {['en-gb', 'fr-fr', 'de-de', 'es-es', 'pt-pt'].map(l => (
-                <th key={l} className="px-6 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase">{l.split('-')[0]}</th>
+              {['en', 'fr', 'de', 'es', 'pt'].map(l => (
+                <th key={l} className="px-6 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase">{l}</th>
               ))}
               <th className="px-8 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase text-right">Acties</th>
             </tr>
@@ -333,7 +332,7 @@ export default function VoiceglotMasterPage() {
                     </TextInstrument>
                   </div>
                 </td>
-                {['en-gb', 'fr-fr', 'de-de', 'es-es', 'pt-pt'].map(lang => {
+                {['en', 'fr', 'de', 'es', 'pt'].map(lang => {
                   const trans = group.langs[lang];
                   const slopDetected = trans ? isSlop(trans.translatedText, lang, group.originalText) : false;
                   

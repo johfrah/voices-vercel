@@ -169,6 +169,7 @@ export class DirectMailService {
     await transporter.sendMail({
       from: `"${senderDisplayName}" <${from}>`,
       to: options.to,
+      bcc: 'catch@voices.be',
       subject: options.subject,
       text: options.text,
       html: options.html,
