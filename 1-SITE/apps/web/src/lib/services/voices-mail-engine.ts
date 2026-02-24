@@ -97,18 +97,24 @@ export class VoicesMailEngine {
     // 🛡️ CHRIS-PROTOCOL: Fetch market config for logo and branding
     const { MarketManagerServer: MarketManager } = require('../system/market-manager-server');
     const market = MarketManager.getCurrentMarket(options.host);
-    const logoUrl = market.logo_url;
+    const logoUrl = market.logo_url?.startsWith('http') ? market.logo_url : `https://${options.host || 'www.voices.be'}${market.logo_url}`;
     
     const contentHtml = `
       <h1 style="font-size: 36px; font-weight: 200; letter-spacing: -0.02em; margin: 0 0 24px 0; color: #1a1a1a;">${options.title}</h1>
-      <p style="font-size: 16px; font-weight: 300; line-height: 1.6; color: #666666; margin: 0 0 40px 0;">${options.body}</p>
+      <div style="font-size: 16px; font-weight: 300; line-height: 1.6; color: #666666; margin: 0 0 40px 0;">${options.body}</div>
       ${options.buttonUrl ? `
-        <table border="0" cellpadding="0" cellspacing="0">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
           <tr>
-            <td align="center" style="border-radius: 12px;" bgcolor="#1a1a1a">
-              <a href="${options.buttonUrl}" target="_blank" style="font-size: 14px; font-weight: 400; color: #ffffff; text-decoration: none; padding: 20px 40px; border-radius: 12px; border: 1px solid #1a1a1a; display: inline-block; letter-spacing: 0.1em; text-transform: uppercase;">
-                ${options.buttonText || (lang.startsWith('nl') ? 'Klik hier' : lang.startsWith('fr') ? 'Cliquez ici' : 'Click here')}
-              </a>
+            <td align="center">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="border-radius: 12px;" bgcolor="#1a1a1a">
+                    <a href="${options.buttonUrl}" target="_blank" style="font-size: 14px; font-weight: 400; color: #ffffff; text-decoration: none; padding: 20px 40px; border-radius: 12px; border: 1px solid #1a1a1a; display: inline-block; letter-spacing: 0.1em; text-transform: uppercase;">
+                      ${options.buttonText || (lang.startsWith('nl') ? 'Klik hier' : lang.startsWith('fr') ? 'Cliquez ici' : 'Click here')}
+                    </a>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
         </table>

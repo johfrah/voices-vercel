@@ -26,12 +26,20 @@ export async function POST(request: NextRequest) {
       clientEmail, 
       script, 
       selectedActors,
-      selectedVibe 
+      selectedVibe,
+      selectedMedia,
+      spots,
+      years,
+      words
     } = body;
 
     if (!projectName || !clientEmail || !selectedActors?.length) {
       return NextResponse.json({ success: false, error: 'Incomplete data' }, { status: 400 });
     }
+
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Data Normalization
+    const finalClientName = clientName || clientEmail.split('@')[0];
+    const finalClientCompany = clientCompany || 'Particulier';
 
     // 1. Zoek of maak gebruiker aan (Lead)
     let { data: user } = await supabase
@@ -45,8 +53,8 @@ export async function POST(request: NextRequest) {
         .from('users')
         .insert({
           email: clientEmail,
-          first_name: clientName,
-          company_name: clientCompany,
+          first_name: finalClientName,
+          company_name: finalClientCompany,
           role: 'guest',
           journey_state: 'casting_lead'
         })
@@ -87,11 +95,15 @@ export async function POST(request: NextRequest) {
         hash: sessionHash,
         is_public: false, // Privacy-first
         settings: {
-          client_name: clientName,
-          client_company: clientCompany,
+          client_name: finalClientName,
+          client_company: finalClientCompany,
           vibe: selectedVibe,
           script: script,
-          dropbox_url: dropboxUrl // Sla de dropbox link op
+          dropbox_url: dropboxUrl,
+          selected_media: selectedMedia,
+          spots: spots,
+          years: years,
+          words: words
         }
       })
       .select()
@@ -123,15 +135,17 @@ export async function POST(request: NextRequest) {
 
     await mailEngine.sendVoicesMail({
       to: market.email,
-      subject: `🚀 Nieuwe Casting: ${projectName} (${clientCompany})`,
+      subject: `🚀 Nieuwe Casting: ${projectName} (${finalClientCompany})`,
       title: 'Nieuwe Castingaanvraag',
       body: `
         <div style="background: #fcfaf7; padding: 30px; border-radius: 20px; margin-bottom: 30px;">
           <h2 style="font-size: 18px; font-weight: 400; margin-top: 0;">Project: ${projectName}</h2>
           <p style="font-size: 15px; color: #666;">
-            <strong>Klant:</strong> ${clientName} (${clientCompany})<br>
+            <strong>Klant:</strong> ${finalClientName} (${finalClientCompany})<br>
             <strong>Email:</strong> ${clientEmail}<br>
-            <strong>Vibe:</strong> ${selectedVibe || 'Standaard'}
+            <strong>Vibe:</strong> ${selectedVibe || 'Standaard'}<br>
+            ${words ? `<strong>Aantal woorden:</strong> ${words}<br>` : ''}
+            ${selectedMedia && selectedMedia.length > 0 ? `<strong>Kanalen:</strong> ${selectedMedia.join(', ')}` : ''}
           </p>
         </div>
 
@@ -156,7 +170,7 @@ export async function POST(request: NextRequest) {
         </div>
       `,
       buttonText: 'Open Collaborative Studio',
-      buttonUrl: `${siteUrl}/casting/session/${sessionHash}`,
+      buttonUrl: `${siteUrl}/pitch/${sessionHash}`,
       host: host
     });
 
