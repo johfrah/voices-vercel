@@ -58,20 +58,25 @@ export class ViesService {
         throw new Error(`VIES API Error: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
-      console.log(`[ViesService] API Response for ${cleanVat}:`, data);
-      
-      // 🛡️ CHRIS-PROTOCOL: Robust boolean check for VIES API (Godmode 2026)
-      // The API returns 'isValid' or 'valid'. We check both and handle potential string values.
-      const isValid = data.isValid === true || data.valid === true || String(data.isValid).toLowerCase() === 'true' || String(data.valid).toLowerCase() === 'true';
-      
-      return {
-        name: data.name || data.user_name || '',
-        address: data.address || '',
-        countryCode: data.countryCode || countryCode,
-        vatNumber: data.vatNumber || vatOnly,
-        isValid: isValid
-      };
+    const data = await response.json();
+    console.log(`[ViesService] API Response for ${cleanVat}:`, data);
+    
+    // 🛡️ CHRIS-PROTOCOL: Robust boolean check for VIES API (Godmode 2026)
+    // The API returns 'isValid' or 'valid'. We check both and handle potential string values.
+    // Some responses might wrap data in a nested object depending on the REST bridge used.
+    const rootData = data.data || data;
+    const isValid = rootData.isValid === true || 
+                    rootData.valid === true || 
+                    String(rootData.isValid).toLowerCase() === 'true' || 
+                    String(rootData.valid).toLowerCase() === 'true';
+    
+    return {
+      name: rootData.name || rootData.user_name || '',
+      address: rootData.address || '',
+      countryCode: rootData.countryCode || countryCode,
+      vatNumber: rootData.vatNumber || vatOnly,
+      isValid: isValid
+    };
 
     } catch (error) {
       console.error(' VIES API Error:', error);
