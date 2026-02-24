@@ -1,6 +1,5 @@
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument, LoadingScreenInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { useTranslation } from '@/contexts/TranslationContext';
 import { VoicesLink } from '@/components/ui/VoicesLink';
 import { db } from '@db';
 import { contentArticles, actors, translations, castingLists } from '@db/schema';
