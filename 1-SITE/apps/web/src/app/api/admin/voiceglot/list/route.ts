@@ -53,7 +53,7 @@ export async function GET(request: Request) {
         .catch(() => []);
 
       results = registryItems.map(item => {
-        const itemTranslations = batchTranslations.filter((t: any) => t.translationKey === item.stringHash);
+        const itemTranslations = batchTranslations.filter((t: any) => t.translationKey === item.stringHash || t.translation_key === item.stringHash);
         
         // Detect source language
         const text = (item.originalText || '').toLowerCase();
@@ -73,10 +73,10 @@ export async function GET(request: Request) {
           translations: itemTranslations.map((t: any) => ({
             id: t.id,
             lang: t.lang,
-            translatedText: t.translated_text || t.translatedText,
+            translatedText: t.translatedText || t.translated_text,
             status: t.status,
-            isLocked: t.isManuallyEdited,
-            updatedAt: t.updatedAt
+            isLocked: t.isManuallyEdited || t.is_manually_edited,
+            updatedAt: t.updatedAt || t.updated_at
           }))
         };
       });

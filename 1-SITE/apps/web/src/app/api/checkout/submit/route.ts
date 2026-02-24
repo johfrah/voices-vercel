@@ -163,7 +163,9 @@ export async function POST(request: Request) {
     const workshopMap = new Map(dbWorkshops.map(w => [Number(w.id), w]));
 
     const isSubscription = usage === 'subscription';
-    const isVatExempt = false; 
+    // 🛡️ CHRIS-PROTOCOL: Dynamic VAT exemption check (v2.14.324)
+    // Non-Belgian EU companies with a valid VAT number are exempt (Reverse Charge).
+    const isVatExempt = !!vat_number && vat_number.length > 2 && !vat_number.startsWith('BE'); 
     const taxRate = isVatExempt ? 0 : 0.21;
 
     // 4. Prijs Validatie (Server-Side)
@@ -473,8 +475,8 @@ export async function POST(request: Request) {
         quantity: 1,
         unitPrice: { currency: 'EUR', value: (item.pricing?.total || 0).toFixed(2) },
         totalAmount: { currency: 'EUR', value: (item.pricing?.total || 0).toFixed(2) },
-        vatRate: '21',
-        vatAmount: { currency: 'EUR', value: (item.pricing?.tax || 0).toFixed(2) }
+        vatRate: isVatExempt ? '0' : '21',
+        vatAmount: { currency: 'EUR', value: (item.pricing?.vat || item.pricing?.tax || 0).toFixed(2) }
       })),
       billingAddress: {
         streetAndNumber: address_street || 'N/A',
