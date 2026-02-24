@@ -134,7 +134,10 @@ export async function POST(req: Request) {
     }
 
     // 4. Verstuur de mail via onze eigen VoicesMailEngine
-    // 🛡️ CHRIS-PROTOCOL: Dynamic import to ensure Node.js runtime compatibility for nodemailer
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Speed Guarantee (v2.14.221)
+    // We proberen de mail te versturen, maar we wachten maximaal 5 seconden.
+    // Als het langer duurt, schakelen we DIRECT over naar de fallback of 
+    // we laten de server het op de achtergrond afhandelen zodat de gebruiker niet wacht.
     const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
     const mailEngine = VoicesMailEngine.getInstance();
     
@@ -142,14 +145,18 @@ export async function POST(req: Request) {
     const lang = req.headers.get('accept-language')?.startsWith('fr') ? 'fr-fr' : 
                  req.headers.get('accept-language')?.startsWith('en') ? 'en-gb' : 'nl-be';
 
+    // We gebruiken een Promise.race om de snelheid te garanderen
     try {
-      await mailEngine.sendMagicLink(email, voicesLink, lang, host);
-      console.log(`[Auth API] Mail successfully sent to: ${email} (lang: ${lang})`);
+      await Promise.race([
+        mailEngine.sendMagicLink(email, voicesLink, lang, host),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Mailserver Timeout')), 5000))
+      ]);
+      console.log(`[Auth API] Mail successfully sent to: ${email}`);
+      return NextResponse.json({ success: true });
     } catch (mailErr: any) {
-      console.warn('[Auth API] Custom mail sending failed, falling back to Supabase built-in mail:', mailErr.message);
+      console.warn('[Auth API] Primary mail failed or timed out, triggering Nuclear Fallback:', mailErr.message);
       
-      // 🛡️ CHRIS-PROTOCOL: Fallback to Supabase built-in magic link if our engine fails
-      // This uses the Supabase SMTP settings instead of our own.
+      // 🛡️ CHRIS-PROTOCOL: Immediate Fallback to Supabase (Reserve-motor)
       const { error: fallbackError } = await supabase.auth.signInWithOtp({
         email,
         options: {
@@ -158,6 +165,7 @@ export async function POST(req: Request) {
       });
 
       if (fallbackError) {
+        // ... bestaande error handling ...
         console.error('[Auth API] Fallback Supabase mail also failed:', fallbackError.message, fallbackError.status);
         const isRateLimit = fallbackError.message.includes('rate limit') || fallbackError.message.includes('security purposes');
         

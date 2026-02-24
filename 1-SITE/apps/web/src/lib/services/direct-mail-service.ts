@@ -157,7 +157,10 @@ export class DirectMailService {
       auth: {
         user: smtpUser,
         pass: smtpPass
-      }
+      },
+      connectionTimeout: 5000, // 5 seconden timeout voor verbinding
+      greetingTimeout: 5000,   // 5 seconden timeout voor begroeting
+      socketTimeout: 5000      // 5 seconden timeout voor data
     });
 
     // 🛡️ CHRIS-PROTOCOL: Forceer de market name als afzender voor professionele uitstraling

@@ -45,6 +45,7 @@ export interface NavConfig {
   };
 }
 
+export class ConfigBridge {
   //  CHRIS-PROTOCOL: In-memory cache for 0ms navigation loading (2026)
   private static navCache = new Map<string, { data: NavConfig, timestamp: number }>();
   private static CACHE_TTL = 1000 * 60 * 5; // 5 minuten cache
@@ -135,6 +136,10 @@ export interface NavConfig {
             market: 'ALL'
           });
       }
+      
+      // Clear cache on save
+      this.navCache.delete(key);
+      
       return { success: true };
     } catch (error) {
       console.error(`[ConfigBridge] Error saving nav config for ${key}:`, error);
