@@ -368,7 +368,7 @@ export async function PATCH(
       }
     });
 
-  } catch (error: any) {
+    } catch (error: any) {
     console.error(' ADMIN UPDATE FAILURE:', error);
 
     // 🛡️ CHRIS-PROTOCOL: Report server-side error to Watchdog
@@ -379,7 +379,9 @@ export async function PATCH(
         stack: error.stack,
         component: 'AdminActorAPI',
         url: request.url,
-        level: 'critical'
+        level: 'critical',
+        payload: body,
+        schema: 'actors'
       });
     } catch (reportErr) {
       console.error(' ADMIN: Failed to report crash to Watchdog:', reportErr);

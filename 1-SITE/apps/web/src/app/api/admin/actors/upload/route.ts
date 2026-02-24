@@ -202,8 +202,24 @@ export async function POST(request: NextRequest) {
       _forensic: `Photo uploaded and linked successfully to ${filePath}. AI analysis in background.`
     });
 
-  } catch (error: any) {
+    } catch (error: any) {
     console.error(' UPLOAD FAILURE:', error);
+    
+    // 🛡️ CHRIS-PROTOCOL: Report server-side error to Watchdog
+    try {
+      const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
+      await ServerWatchdog.report({
+        error: `Photo upload crash: ${error.message}`,
+        stack: error.stack,
+        component: 'AdminPhotoUploadAPI',
+        url: request.url,
+        level: 'critical',
+        schema: 'media'
+      });
+    } catch (reportErr) {
+      console.error(' ADMIN: Failed to report upload crash to Watchdog:', reportErr);
+    }
+
     return NextResponse.json({ 
       error: 'Upload failed', 
       details: error.message 

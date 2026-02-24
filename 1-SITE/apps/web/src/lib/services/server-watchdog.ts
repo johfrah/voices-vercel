@@ -13,8 +13,17 @@ export class ServerWatchdog {
     component: string;
     url?: string;
     level?: 'info' | 'error' | 'critical';
+    payload?: any;
+    schema?: string;
   }) {
     try {
+      // 🛡️ CHRIS-PROTOCOL: Nuclear Payload Scrubbing
+      // We log the data that caused the crash, but remove sensitive fields
+      const scrubbedPayload = options.payload ? { ...options.payload } : undefined;
+      if (scrubbedPayload) {
+        ['password', 'token', 'secret', 'key'].forEach(k => delete scrubbedPayload[k]);
+      }
+
       // 🛡️ CHRIS-PROTOCOL: Use internal URL for server-to-server communication to avoid DNS/Vercel loops
       const internalUrl = process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'];
       
@@ -30,6 +39,8 @@ export class ServerWatchdog {
           details: {
             stack: options.stack,
             url: options.url || 'Server-Side',
+            payload: scrubbedPayload,
+            schema: options.schema,
             timestamp: new Date().toISOString()
           },
           createdAt: new Date().toISOString()
@@ -46,7 +57,9 @@ export class ServerWatchdog {
           stack: options.stack,
           component: options.component,
           url: options.url || 'Server-Side',
-          level: options.level || 'error'
+          level: options.level || 'error',
+          payload: scrubbedPayload,
+          schema: options.schema
         })
       }).catch(err => console.error('[ServerWatchdog] Failed to post to watchdog API:', err));
       
