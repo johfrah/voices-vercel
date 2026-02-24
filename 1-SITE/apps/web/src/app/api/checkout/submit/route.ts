@@ -229,8 +229,28 @@ export async function POST(request: Request) {
 
     // 5. User Management (Lookup/Upsert)
     let userId = metadata?.userId;
+    let isNewUser = false;
+    let isExistingUnauthenticatedUser = false;
+
     if (email) {
       try {
+        // 🛡️ CHRIS-PROTOCOL: Check if user already exists BEFORE upserting (v2.14.313)
+        const { data: existingUser } = await sdkClient
+          .from('users')
+          .select('id')
+          .eq('email', email)
+          .single();
+
+        if (existingUser) {
+          // Gebruiker bestaat al. Als we niet ingelogd zijn als DEZE gebruiker, is het een risico.
+          if (!userId || userId !== existingUser.id) {
+            isExistingUnauthenticatedUser = true;
+          }
+          userId = existingUser.id;
+        } else {
+          isNewUser = true;
+        }
+
         const [user] = await db.insert(users).values({
           email,
           firstName: first_name,
@@ -259,7 +279,8 @@ export async function POST(request: Request) {
             // 🛡️ CHRIS-PROTOCOL: lastActive has defaultNow(), don't set manually (v2.14.296)
           }
         }).returning();
-        userId = user.id;
+        
+        if (!userId) userId = user.id;
       } catch (e: any) {
         console.error('[Checkout] User upsert failed:', e.message);
       }
@@ -268,7 +289,7 @@ export async function POST(request: Request) {
     // 6. Bestelling aanmaken
     const market = MarketManager.getCurrentMarket(host).market_code;
     const isInvoiceActual = payment_method === 'banktransfer';
-    console.log('[Checkout] 🚀 STEP 6: Creating order...', { amount, isInvoiceActual, market });
+    console.log('[Checkout] 🚀 STEP 6: Creating order...', { amount, isInvoiceActual, market, isNewUser, isExistingUnauthenticatedUser });
 
     // 🛡️ CHRIS-PROTOCOL: Heartbeat Logging (v2.14.291)
     await sdkClient.from('system_events').insert({
@@ -427,7 +448,8 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: true,
         orderId: newOrder.id,
-        token: secureToken,
+        token: isExistingUnauthenticatedUser ? null : secureToken, // 🛡️ Veiligheid: Geen auto-login voor bestaande accounts (v2.14.313)
+        requiresVerification: isExistingUnauthenticatedUser,
         isBankTransfer: isInvoiceActual,
         isQuote,
         message: isInvoiceActual ? 'Bestelling ontvangen.' : 'Offerte aangemaakt.'

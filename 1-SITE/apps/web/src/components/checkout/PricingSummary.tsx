@@ -158,6 +158,13 @@ export const PricingSummary: React.FC<{
           setIsPreviewOpen(false);
           updateIsSubmitting(false);
           
+          // 🛡️ CHRIS-PROTOCOL: Smart Redirect (v2.14.313)
+          // Als we verificatie nodig hebben, tonen we een speciale succes-pagina
+          if (data.requiresVerification) {
+            window.location.href = `/checkout/success?orderId=${data.orderId}&verify=true&email=${encodeURIComponent(payload.email)}`;
+            return;
+          }
+
           const redirectUrl = data.token 
             ? `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}`
             : `/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}`;
