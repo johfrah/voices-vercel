@@ -254,8 +254,9 @@ export async function POST(request: Request) {
     }
 
     // 6. Bestelling aanmaken
+    const market = MarketManager.getMarketCode(host);
     const isInvoiceActual = payment_method === 'banktransfer';
-    console.log('[Checkout] 🚀 STEP 6: Creating order...', { amount, isInvoiceActual });
+    console.log('[Checkout] 🚀 STEP 6: Creating order...', { amount, isInvoiceActual, market });
 
     // 🛡️ CHRIS-PROTOCOL: Minimum amount check (v2.14.271)
     if (amount <= 0 && !isQuoteOnly && !isInvoiceActual) {
@@ -267,8 +268,11 @@ export async function POST(request: Request) {
     
     console.log('[Checkout] 🚀 STEP 6.1: DB Insert payload prepared');
     
+    // 🛡️ CHRIS-PROTOCOL: Unieke WP Order ID op basis van timestamp om collisions te voorkomen (v2.14.290)
+    const uniqueWpId = Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 1000);
+
     const [newOrder] = await db.insert(orders).values({
-      wpOrderId: Math.floor(Math.random() * 1000000), // Verhoogde range om collisions te voorkomen
+      wpOrderId: uniqueWpId,
       total: amount.toString(),
       status: isQuote ? 'quote-pending' : 'pending',
       userId: userId || null,
@@ -277,6 +281,7 @@ export async function POST(request: Request) {
       isQuote: !!isQuote,
       quoteMessage: quoteMessage || null,
       quoteSentAt: isQuote ? new Date().toISOString() : null,
+      market: market, // 🛡️ Fix: Expliciete market injectie
       rawMeta: {
         usage,
         plan,
