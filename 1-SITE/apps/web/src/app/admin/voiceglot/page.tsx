@@ -247,23 +247,44 @@ export default function VoiceglotMasterPage() {
     }
   };
 
-  const filtered = translations.filter(trans => {
-    const matchesSearch = trans.translationKey.toLowerCase().includes(search.toLowerCase()) || 
-                         trans.originalText.toLowerCase().includes(search.toLowerCase()) ||
-                         trans.translatedText.toLowerCase().includes(search.toLowerCase());
-    const matchesLang = filterLang === 'all' || trans.lang === filterLang;
-    const matchesStatus = filterStatus === 'all' || 
-                         (filterStatus === 'locked' && trans.isLocked) ||
-                         (filterStatus === 'auto' && !trans.isLocked && !trans.isManuallyEdited);
-    return matchesSearch && matchesLang && matchesStatus;
-  });
+  const filtered: any[] = []; // Deprecated in favor of groupedList filter logic
 
-    // Group translations by key for the Matrix View
-    // CHRIS-PROTOCOL: Registry-Centric handling
     const groupedList = (translations || [])
       .filter((item: any) => {
         if (!item || !item.translationKey) return false;
         if (hideInternal && item.translationKey.startsWith('knowledge.')) return false;
+        
+        // CHRIS-PROTOCOL: Ultra-Robust Search (Case-Insensitive)
+        if (search) {
+          const s = search.toLowerCase();
+          const keyMatch = item.translationKey.toLowerCase().includes(s);
+          const originalMatch = (item.originalText || '').toLowerCase().includes(s);
+          
+          // Check if any translation matches the search
+          const transMatch = (item.translations || []).some((t: any) => 
+            (t.translatedText || '').toLowerCase().includes(s)
+          );
+          
+          if (!keyMatch && !originalMatch && !transMatch) return false;
+        }
+
+        // Language filter
+        if (filterLang !== 'all') {
+          const hasLang = (item.translations || []).some((t: any) => t.lang === filterLang);
+          if (!hasLang) return false;
+        }
+
+        // Status filter
+        if (filterStatus !== 'all') {
+          const transInLang = (item.translations || []).find((t: any) => 
+            filterLang === 'all' ? true : t.lang === filterLang
+          );
+          if (!transInLang) return false;
+          
+          if (filterStatus === 'locked' && !transInLang.isLocked) return false;
+          if (filterStatus === 'auto' && transInLang.isLocked) return false;
+        }
+
         return true;
       })
       .map((item: any) => {

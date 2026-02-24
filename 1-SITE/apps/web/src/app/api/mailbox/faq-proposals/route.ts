@@ -1,9 +1,12 @@
-import { db } from '@db';
-import { mailContent } from '@db/schema';
-import { sql, desc } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { createClient } from "@supabase/supabase-js";
+
+//  CHRIS-PROTOCOL: SDK fallback for production stability (v2.14.416)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || '',
@@ -12,10 +15,9 @@ const openai = new OpenAI({
 export const dynamic = 'force-dynamic';
 
 /**
- *  REAL FAQ PROPOSAL API (2026)
+ *  REAL FAQ PROPOSAL API (NUCLEAR SDK 2026)
  * 
- * Doel: Scant de mailbox op patronen van vragen en antwoorden.
- * Gebruikt AI om uit de echte mail-content FAQ suggesties te extraheren.
+ * Doel: Scant de mailbox op patronen van vragen en antwoorden via SDK.
  */
 export async function GET(request: Request) {
   const auth = await requireAdmin();
@@ -26,20 +28,23 @@ export async function GET(request: Request) {
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
 
-    let whereClause = sql`${mailContent.textBody} IS NOT NULL AND ${mailContent.textBody} LIKE '%\?%'`;
+    let query = supabase
+      .from('mail_content')
+      .select('id, subject, text_body, sender, date')
+      .not('text_body', 'is', null)
+      .like('text_body', '%?%');
     
     if (startDate && endDate) {
-      whereClause = sql`${whereClause} AND ${mailContent.date} >= ${new Date(startDate)} AND ${mailContent.date} <= ${new Date(endDate)}`;
+      query = query.gte('date', startDate).lte('date', endDate);
     }
 
-    // 1. Haal de meest recente mails op die mogelijk vragen bevatten
-    const recentMails = await db.query.mailContent.findMany({
-      where: whereClause,
-      orderBy: [desc(mailContent.date)],
-      limit: 50
-    });
+    const { data: recentMails, error } = await query
+      .order('date', { ascending: false })
+      .limit(50);
 
-    if (recentMails.length === 0) {
+    if (error) throw error;
+
+    if (!recentMails || recentMails.length === 0) {
       return NextResponse.json([]);
     }
 
@@ -47,42 +52,49 @@ export async function GET(request: Request) {
     const mailContext = recentMails.map(m => ({
       id: m.id,
       subject: m.subject,
-      body: m.textBody?.substring(0, 500), // Limiteer per mail voor context window
+      body: m.text_body?.substring(0, 500),
       sender: m.sender
     }));
 
     // 3. AI Analyse met GPT-4o-mini voor efficintie
-    const response = await (openai.chat.completions as any).create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `Je bent een AI die e-mails analyseert voor een voice-over bureau (Voices.be). 
-          Je taak is om veelvoorkomende vragen van klanten te identificeren en daarvoor FAQ-voorstellen te doen.
-          
-          Geef je antwoord in een JSON array van objecten met deze structuur:
+    let proposals = [];
+    try {
+      const response = await (openai.chat.completions as any).create({
+        model: "gpt-4o-mini",
+        messages: [
           {
-            "question": "De veelgestelde vraag",
-            "suggestedAnswer": "Een beknopt, professioneel antwoord gebaseerd op de context",
-            "frequency": aantal keer dat dit ongeveer voorkomt (schatting op basis van context),
-            "confidence": 0.0 tot 1.0 (hoe zeker ben je van dit voorstel),
-            "sourceThreadId": "id van een relevante mail"
-          }`
-        },
-        {
-          role: "user",
-          content: `Analyseer de volgende recente e-mails en extraheer de belangrijkste FAQ voorstellen:\n\n${JSON.stringify(mailContext)}`
-        }
-      ],
-      response_format: { type: "json_object" }
-    });
+            role: "system",
+            content: `Je bent een AI die e-mails analyseert voor een voice-over bureau (Voices.be). 
+            Je taak is om veelvoorkomende vragen van klanten te identificeren en daarvoor FAQ-voorstellen te doen.
+            
+            Geef je antwoord in een JSON array van objecten met deze structuur:
+            {
+              "question": "De veelgestelde vraag",
+              "suggestedAnswer": "Een beknopt, professioneel antwoord gebaseerd op de context",
+              "frequency": aantal keer dat dit ongeveer voorkomt (schatting op basis van context),
+              "confidence": 0.0 tot 1.0 (hoe zeker ben je van dit voorstel),
+              "sourceThreadId": "id van een relevante mail"
+            }`
+          },
+          {
+            role: "user",
+            content: `Analyseer de volgende recente e-mails en extraheer de belangrijkste FAQ voorstellen:\n\n${JSON.stringify(mailContext)}`
+          }
+        ],
+        response_format: { type: "json_object" },
+        timeout: 10000 // 10s timeout
+      });
 
-    const content = response.choices[0].message.content;
-    if (!content) throw new Error("No content from OpenAI");
-    
-    const result = JSON.parse(content);
-    // De AI geeft soms een object met een key 'proposals' of direct de array
-    const proposals = Array.isArray(result) ? result : (result.proposals || result.faq_proposals || Object.values(result)[0]);
+      const content = response.choices[0].message.content;
+      if (!content) throw new Error("No content from OpenAI");
+      
+      const result = JSON.parse(content);
+      // De AI geeft soms een object met een key 'proposals' of direct de array
+      proposals = Array.isArray(result) ? result : (result.proposals || result.faq_proposals || Object.values(result)[0]);
+    } catch (aiError: any) {
+      console.error(' AI FAQ Proposal Generation Failed:', aiError.message);
+      return NextResponse.json([]);
+    }
 
     return NextResponse.json(Array.isArray(proposals) ? proposals : []);
   } catch (error) {
