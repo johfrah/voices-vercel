@@ -76,16 +76,16 @@ export async function POST(request: Request) {
     const actorIds = Array.from(new Set([
       ...(items || []).map((i: any) => i.actor?.id).filter(Boolean),
       ...(selectedActor?.id ? [selectedActor.id] : [])
-    ]));
+    ])).map(id => Number(id));
 
     console.log('[Checkout] Validated Payload:', { email, amount: pricing.total, itemsCount: items.length, actorIds });
 
     let dbActors: any[] = [];
     if (actorIds.length > 0) {
       try {
-        dbActors = await db.select().from(actors).where(inArray(actors.id, actorIds as number[])).catch(async (err: any) => {
+        dbActors = await db.select().from(actors).where(inArray(actors.id, actorIds)).catch(async (err: any) => {
           console.warn(' [Checkout] Drizzle actor fetch failed, falling back to SDK:', err.message);
-          const { data } = await sdkClient.from('actors').select('*').in('id', actorIds as number[]);
+          const { data } = await sdkClient.from('actors').select('*').in('id', actorIds);
           return (data || []).map(a => ({
             ...a,
             wpProductId: a.wp_product_id,
@@ -231,7 +231,7 @@ export async function POST(request: Request) {
         serverCalculated: true
       },
       ipAddress: ip,
-      createdAt: new Date()
+      createdAt: new Date().toISOString()
     }).returning();
 
     // 🛡️ CHRIS-PROTOCOL: Secure Order Items storage
