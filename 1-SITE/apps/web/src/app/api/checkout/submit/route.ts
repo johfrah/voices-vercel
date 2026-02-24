@@ -133,6 +133,9 @@ export async function POST(request: Request) {
     
     const actorMap = new Map(dbActors.map(a => [a.id, a]));
 
+    const isSubscription = usage === 'subscription';
+    const submittedIsVatExempt = false; // Te bepalen via VatService later indien nodig
+
     // Re-calculate each item
     const validatedItems = items.map((item: any) => {
       const dbActor = actorMap.get(item.actor?.id);
