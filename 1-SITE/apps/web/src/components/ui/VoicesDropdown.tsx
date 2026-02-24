@@ -69,9 +69,11 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
   const { isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchSearchQuery] = useState('');
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const containerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
@@ -174,6 +176,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
   };
 
   const displayValue = () => {
+    if (!mounted) return placeholder;
     if (!value || (Array.isArray(value) && value.length === 0)) return placeholder;
     
     if (stepperMode) {

@@ -39,16 +39,21 @@ const LANGUAGE_MAP: Record<string, Language> = {
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
-    const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
+  const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
   const market = MarketManager.getCurrentMarket(host);
   const [currentLang, setCurrentLang] = useState<string>(market.language || 'nl');
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLElement>(null);
   const timeoutRef = useRef<any>(null);
   const { playClick, playSwell } = useSonicDNA();
 
   const { user, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const languages = React.useMemo(() => {
     const allLangs = Object.values(LANGUAGE_MAP);
@@ -129,9 +134,30 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     setIsOpen(false);
   };
 
+  if (!mounted) {
+    return (
+      <ButtonInstrument
+        variant="plain"
+        size="none"
+        className={className || `relative p-1 rounded-full transition-all duration-500 group flex items-center justify-center min-w-[32px] h-[32px] ${
+          market.market_code === 'ARTIST' ? 'text-white' : 'text-va-black'
+        }`}
+      >
+        <Globe strokeWidth={1.5} size={20} />
+        <TextInstrument 
+          as="span"
+          className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
+        >
+          {currentLang}
+        </TextInstrument>
+      </ButtonInstrument>
+    );
+  }
+
   return (
     <ContainerInstrument 
       plain
+      as="div"
       className="relative z-[210]" 
       ref={dropdownRef}
       onMouseEnter={handleMouseEnter}

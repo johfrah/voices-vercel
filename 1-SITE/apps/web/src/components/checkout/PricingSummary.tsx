@@ -14,7 +14,7 @@ import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
-import { VOICES_CONFIG } from '../../../../packages/config/config';
+import { VOICES_CONFIG } from '@/../../packages/config/config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Loader2, Trash2, Edit2, X, ChevronRight, Info, Star, CreditCard, FileText, Tag, Eye, Lock, AlertCircle, Send, ArrowRight, Check } from 'lucide-react';
 import Image from 'next/image';
@@ -498,6 +498,7 @@ const TotalsSection: React.FC<any> = ({
   subtotal, discountAmount, subtotalAfterDiscount, tax, total, isVatExempt,
   couponCode, setCouponCode, applyCoupon, isApplyingCoupon, couponError
 }) => {
+  const { t } = useTranslation();
   const { state, updateCustomer } = useCheckout();
   const { playClick } = useSonicDNA();
   
@@ -629,6 +630,7 @@ const TotalsSection: React.FC<any> = ({
 };
 
 const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsOpen }) => {
+  const { t } = useTranslation();
   const { state, updateAgreedToTerms } = useCheckout();
   const { playClick } = useSonicDNA();
 
