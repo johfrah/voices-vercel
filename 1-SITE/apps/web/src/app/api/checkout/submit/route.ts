@@ -308,8 +308,6 @@ export async function POST(request: Request) {
         plan,
         isSubscription,
         music,
-        // 🛡️ CHRIS-PROTOCOL: Don't store full items with long briefings in orders.rawMeta (v2.14.304)
-        // This prevents Postgres JSONB payload limits. Briefing is stored in order_items.
         itemsCount: validatedItems.length,
         serverCalculated: true
       },
@@ -322,9 +320,20 @@ export async function POST(request: Request) {
     }
     
     console.log('[Checkout] 🚀 STEP 6.1: Inserting order into database...');
-    const [newOrder] = await db.insert(orders).values(orderPayload).returning();
+    // 🛡️ CHRIS-PROTOCOL: Use SDK-Direct for the main order insert to bypass Drizzle's internal date/json handling (v2.14.305)
+    const { data: sdkOrder, error: sdkErr } = await sdkClient
+      .from('orders')
+      .insert(orderPayload)
+      .select()
+      .single();
 
-    console.log('[Checkout] ✅ STEP 6.2: Order created in DB:', { id: newOrder?.id });
+    if (sdkErr) {
+      console.error('[Checkout] ❌ STEP 6.1 SDK ERROR:', sdkErr.message);
+      throw new Error(`Failed to create order via SDK: ${sdkErr.message}`);
+    }
+
+    const newOrder = sdkOrder;
+    console.log('[Checkout] ✅ STEP 6.2: Order created in DB via SDK:', { id: newOrder?.id });
 
     if (!newOrder) {
       throw new Error('Failed to create order in database (returned empty)');
