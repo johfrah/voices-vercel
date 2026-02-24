@@ -170,11 +170,15 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const lang = headersList.get('x-voices-lang') || 'nl';
   const normalizedSlug = normalizeSlug(params.slug);
   
+  // 🛡️ CHRIS-PROTOCOL: Strip language prefix for metadata resolution
+  const cleanSlug = stripLanguagePrefix(normalizedSlug);
+  const cleanSegments = cleanSlug.split('/').filter(Boolean);
+
   const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
   
   // Resolve de slug naar de originele versie
-  const resolved = await resolveSlug(normalizedSlug, lang);
-  const firstSegment = resolved ? resolved.originalSlug : normalizedSlug.split('/')[0];
+  const resolved = await resolveSlug(cleanSlug, lang);
+  const firstSegment = resolved ? resolved.originalSlug : (cleanSegments[0] || normalizedSlug.split('/')[0]);
 
   //  CHRIS-PROTOCOL: Helper voor meertalige SEO via Voiceglot
   const getTranslatedSEO = async (key: string, defaultText: string) => {
@@ -292,11 +296,16 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     const lang = headersList.get('x-voices-lang') || 'nl';
     const normalizedSlug = normalizeSlug(segments);
     
+    // 🛡️ CHRIS-PROTOCOL: Strip language prefix if present (e.g. /nl/johfrah -> johfrah)
+    // The middleware might have rewritten the URL, but segments still contain the full path.
+    const cleanSlug = stripLanguagePrefix(normalizedSlug);
+    const cleanSegments = cleanSlug.split('/').filter(Boolean);
+
     // Resolve de slug naar de originele versie
-    const resolved = await resolveSlug(normalizedSlug, lang);
-    const firstSegment = resolved ? resolved.originalSlug : segments[0];
-    const journey = segments[1];
-    const medium = segments[2];
+    const resolved = await resolveSlug(cleanSlug, lang);
+    const firstSegment = resolved ? resolved.originalSlug : (cleanSegments[0] || segments[0]);
+    const journey = cleanSegments[1] || segments[1];
+    const medium = cleanSegments[2] || segments[2];
 
     // 1. Artist Journey (Youssef Mandate)
     try {

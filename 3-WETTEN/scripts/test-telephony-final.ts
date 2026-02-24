@@ -18,25 +18,50 @@ async function testTelephonyFinal() {
   const page = await context.newPage();
   
   try {
-    // Step 1: Navigate
-    console.log('Step 1: Navigating...');
-    await page.goto('https://www.voices.be/johfrah/telephony', {
-      waitUntil: 'domcontentloaded',
-      timeout: 30000
-    });
-    await page.waitForTimeout(5000);
+    // Step 1 & 2: Navigate and handle errors
+    console.log('Step 1-2: Navigating and checking...');
     
-    // Step 2: Verify no error
-    console.log('Step 2: Checking for errors...');
-    const errorHeading = await page.locator('h1:has-text("Oeps")').isVisible().catch(() => false);
+    let pageLoaded = false;
+    let attempts = 0;
+    const maxAttempts = 3;
     
-    if (errorHeading) {
-      console.log('\n❌ GEFAALD: Pagina toont "Oeps" foutmelding - Server Components render error');
+    while (!pageLoaded && attempts < maxAttempts) {
+      attempts++;
+      console.log(`Attempt ${attempts}/${maxAttempts}...`);
+      
+      await page.goto('https://www.voices.be/johfrah/telephony', {
+        waitUntil: 'domcontentloaded',
+        timeout: 30000
+      }).catch(() => console.log('Navigation timeout, continuing...'));
+      
+      await page.waitForTimeout(5000);
+      
+      // Check for errors
+      const errorHeading = await page.locator('h1:has-text("Oeps")').isVisible().catch(() => false);
+      const versionGuard = await page.locator('text=/version|reload|refresh/i').isVisible().catch(() => false);
+      
+      if (errorHeading || versionGuard) {
+        console.log('Error detected, refreshing...');
+        await page.reload({ waitUntil: 'domcontentloaded' }).catch(() => {});
+        await page.waitForTimeout(5000);
+        continue;
+      }
+      
+      // Check if form loaded
+      const textarea = await page.locator('textarea').isVisible().catch(() => false);
+      if (textarea) {
+        pageLoaded = true;
+        console.log('✅ Page loaded successfully');
+      } else {
+        console.log('Form not visible, retrying...');
+      }
+    }
+    
+    if (!pageLoaded) {
+      console.log('\n❌ GEFAALD: Pagina laadt niet correct na 3 pogingen');
       await browser.close();
       return;
     }
-    
-    console.log('✅ No error message');
     
     // Step 3: Fill script
     console.log('Step 3: Filling script...');
