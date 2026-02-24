@@ -99,18 +99,34 @@ export async function POST(request: Request) {
     let dbActors: any[] = [];
     if (actorIds.length > 0) {
       try {
-        console.log('[Checkout] 🔍 DB Fetch Actors:', actorIds);
-        dbActors = await db.select().from(actors).where(inArray(actors.id, actorIds)).catch(async (err: any) => {
-          console.warn('[Checkout] ⚠️ Drizzle fetch failed, using SDK:', err.message);
-          const { data, error: sdkErr } = await sdkClient.from('actors').select('*').in('id', actorIds);
-          if (sdkErr) throw sdkErr;
-          return data || [];
-        });
+        console.log('[Checkout] 🔍 DB Fetch Actors (Masterclass):', actorIds);
+        
+        // 🛡️ CHRIS-PROTOCOL: Structural Integrity (v2.14.268)
+        // We gebruiken de SDK direct om schema-mismatches in Drizzle te omzeilen.
+        const { data, error: sdkErr } = await sdkClient
+          .from('actors')
+          .select('*')
+          .in('id', actorIds);
+
+        if (sdkErr) throw sdkErr;
+        
+        dbActors = (data || []).map(a => ({
+          ...a,
+          wpProductId: a.wp_product_id,
+          firstName: a.first_name,
+          lastName: a.last_name,
+          nativeLang: a.native_lang,
+          priceUnpaid: a.price_unpaid,
+          priceOnline: a.price_online,
+          priceIvr: a.price_ivr,
+          priceLiveRegie: a.price_live_regie,
+          rates_raw: a.rates || {}
+        }));
+
         console.log('[Checkout] ✅ DB Fetch Success, count:', dbActors.length);
       } catch (dbErr: any) {
         console.error('[Checkout] ❌ Actor fetch fatal:', dbErr.message);
-        // We gooien de error door om de 500 te debuggen
-        throw new Error(`Database fetch failed for actors: ${dbErr.message}`);
+        throw new Error(`Database connection error: ${dbErr.message}`);
       }
     }
     const actorMap = new Map(dbActors.map(a => [a.id, a]));
