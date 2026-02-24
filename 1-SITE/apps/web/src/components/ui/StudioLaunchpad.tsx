@@ -195,10 +195,12 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
       if (data.success) {
         toast.success(t('launchpad.success.submit', 'Je aanvraag is succesvol verzonden!'));
         localStorage.removeItem('voices_proefopname_draft');
+        
+        // 🛡️ CHRIS-PROTOCOL: Redirect to the Pitch session (Confirmation & Collaboration)
         if (typeof window !== 'undefined') {
           setTimeout(() => {
-            window.location.href = `/casting/session/${data.sessionHash}`;
-          }, 1500);
+            window.location.href = `/pitch/${data.sessionHash}`;
+          }, 2000);
         }
       } else {
         throw new Error(data.error || 'Fout bij het indienen');

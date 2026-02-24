@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 
     try {
       // CHRIS-PROTOCOL: Use Atomic Raw SQL Join for absolute reliability
-      // We let PostgreSQL do the work to ensure registry and translations are perfectly synced.
+      // We use explicit parameter binding ($1, $2) to prevent driver issues with large offsets.
       const results = await db.execute(sql`
         SELECT 
           r.id,
@@ -45,8 +45,8 @@ export async function GET(request: Request) {
           ) as translations
         FROM translation_registry r
         ORDER BY r.last_seen DESC
-        LIMIT ${limit}
-        OFFSET ${offset}
+        LIMIT ${sql` ${limit} `}
+        OFFSET ${sql` ${offset} `}
       `);
 
       const mappedResults = (results as any).map((item: any) => {
