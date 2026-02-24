@@ -2,6 +2,7 @@ import { db } from '@db';
 import { systemEvents } from '@db/schema';
 import { NextRequest, NextResponse } from 'next/server';
 import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
+import { TelegramService } from '@/lib/services/telegram-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { desc, gte, and, eq } from 'drizzle-orm';
 
@@ -24,12 +25,28 @@ export async function POST(request: NextRequest) {
     const url = body.url || body.details?.url;
     const level = body.level || 'error';
     const details = body.details || {};
+    const payload = body.payload || details.payload;
 
     if (!error) {
       return NextResponse.json({ error: 'Error message required' }, { status: 400 });
     }
 
     console.log(`[Watchdog] Error detected: ${error.substring(0, 100)}`);
+
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Telegram Alert for Critical Errors
+    if (level === 'critical' || level === 'error') {
+      try {
+        await TelegramService.reportCriticalError({
+          error,
+          component,
+          url,
+          payload
+        });
+        console.log('[Watchdog] 🚀 Telegram alert sent.');
+      } catch (tgErr: any) {
+        console.error('[Watchdog] Telegram alert failed:', tgErr.message);
+      }
+    }
 
     // 1. Log het event in de database - EXTRA SAFE
     let eventId = 0;

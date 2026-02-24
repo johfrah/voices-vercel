@@ -438,7 +438,10 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
 
       const response = await fetch(`/api/admin/actors/${actor.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Voices-Version': '2.14.184'
+        },
         body: JSON.stringify(payload)
       });
 
@@ -567,7 +570,10 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     try {
       const response = await fetch(`/api/admin/actors/${actor.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Voices-Version': '2.14.184'
+        },
         body: JSON.stringify(payload)
       });
 
