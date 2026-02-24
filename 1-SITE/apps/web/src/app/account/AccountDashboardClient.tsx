@@ -50,7 +50,13 @@ export default function AccountDashboardClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [customerDNA, setCustomerDNA] = useState<any>(null);
-  const [isPartner, setIsPartner] = useState(true); // In productie checken we dit via user roles
+  const [isPartner, setIsPartner] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setIsPartner((user as any)?.role === 'partner');
+    }
+  }, [user]);
   const [notifications, setNotifications] = useState<any[]>([]);
 
   useEffect(() => {
@@ -110,6 +116,7 @@ export default function AccountDashboardClient() {
           userEmail={user?.email || `user@${isAdmin ? MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be' : (typeof window !== 'undefined' ? window.location.host : 'voices.be')}`} 
           onLogout={logout}
           isAdmin={isAdmin}
+          isPartner={isPartner}
         />
 
         <SectionInstrument className="va-section-grid">

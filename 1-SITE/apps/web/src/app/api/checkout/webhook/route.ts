@@ -72,9 +72,6 @@ export async function POST(request: NextRequest) {
         if (hasMusic && !hasVoice) {
           finalStatus = 'completed';
           console.log(` Order #${orderId} is Music Only. Setting status to 'completed'.`);
-        } else if (hasVoice) {
-          // 🛡️ CHRIS-PROTOCOL: Als er een stemacteur bij zit, zetten we de order op 'in_productie' (v2.14.328)
-          finalStatus = 'in_productie';
         }
 
         //  ARTIST DONATION FLOW: Trigger bedankmail

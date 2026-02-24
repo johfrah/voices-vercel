@@ -11,6 +11,7 @@ interface AccountHeroInstrumentProps {
   userEmail?: string;
   onLogout: () => void;
   isAdmin?: boolean;
+  isPartner?: boolean;
 }
 
 /**
@@ -24,11 +25,11 @@ interface AccountHeroInstrumentProps {
 export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({ 
   userEmail, 
   onLogout,
-  isAdmin = false
+  isAdmin = false,
+  isPartner = false
 }) => {
   const { t } = useTranslation();
   const userName = userEmail?.split('@')[0] || 'User';
-  const isPartner = userEmail?.includes('voices.') || isAdmin;
 
   //  BOB-METHODE: Toon het dashboard pas als de sessie echt geland is
   if (!userEmail) return null;
