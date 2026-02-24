@@ -448,6 +448,13 @@ export default function VoiceglotMasterPage() {
         >
           {hideInternal ? 'Internal Verborgen' : 'Toon Internal'}
         </button>
+        <button 
+          onClick={() => fetchTranslations(1, true)}
+          className="p-4 bg-va-off-white text-va-black/40 hover:text-primary rounded-xl transition-all"
+          title="Ververs data"
+        >
+          <ArrowRightLeft size={20} className={cn(loading && "animate-spin")} />
+        </button>
       </ContainerInstrument>
 
       {/* Table */}
