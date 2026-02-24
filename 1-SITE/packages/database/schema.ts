@@ -1017,6 +1017,7 @@ export const orders = pgTable("orders", {
 	displayOrderId: text("display_order_id"),
 	expectedDeliveryDate: timestamp("expected_delivery_date", { withTimezone: true, mode: 'string' }),
 	isManuallyEdited: boolean("is_manually_edited").default(false),
+	market: text().default('BE'),
 	viesValidatedAt: timestamp("vies_validated_at", { mode: 'string' }),
 	viesCountryCode: text("vies_country_code"),
 	ipAddress: text("ip_address"),

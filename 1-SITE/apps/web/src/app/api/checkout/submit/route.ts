@@ -1,7 +1,7 @@
 import { VatService } from '@/lib/compliance/vat-service';
 import { LexCheck } from '@/lib/compliance/lex-check';
 import { db } from '@db';
-import { orders, users, centralLeads, actors, notifications, orderItems } from '@db/schema';
+import { orders, users, centralLeads, actors, notifications, orderItems, systemEvents } from '@db/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { sign } from 'jsonwebtoken';
 import { headers } from 'next/headers';
@@ -26,7 +26,9 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PU
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: Request) {
+  let rawBody: any = null;
   try {
+    console.log('[Checkout] 🚀 NUCLEAR ZERO-POINT: API Call started');
     const headersList = headers();
     const host = headersList.get('host') || 'www.voices.be';
     const protocol = host.includes('localhost') ? 'http' : 'https';
@@ -34,7 +36,18 @@ export async function POST(request: Request) {
     const ip = headersList.get('x-forwarded-for') || 'unknown';
 
     // 1. Validatie van de payload
-    const rawBody = await request.json();
+    try {
+      rawBody = await request.json();
+    } catch (e: any) {
+      console.error('[Checkout] JSON Parse Error:', e.message);
+      await sdkClient.from('system_events').insert({
+        level: 'critical',
+        source: 'CheckoutAPI',
+        message: 'JSON Parse Error',
+        details: { error: e.message, ip }
+      });
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
     
     // Deep Trace Logging: Log types before validation
     console.log('[Checkout] 🔍 TRACE (Pre-Validation):', {
@@ -386,23 +399,31 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('[Checkout FATAL]:', error);
     
-    // 🛡️ CHRIS-PROTOCOL: Direct DB Reporting for Fatal Errors (v2.14.283)
-    // We bypass fetch to ensure the error is logged even if the network/API is unstable.
+    // 🛡️ CHRIS-PROTOCOL: Dual-Path Reporting for Fatal Errors (v2.14.288)
+    // We try Drizzle first, then fallback to SDK Client for maximum reliability.
+    const errorPayload = {
+      level: 'critical',
+      source: 'CheckoutAPI',
+      message: error.message || 'Unknown Checkout Error',
+      details: {
+        stack: error.stack,
+        name: error.name,
+        rawBody: rawBody ? JSON.stringify(rawBody).substring(0, 1000) : 'N/A'
+      },
+      created_at: new Date().toISOString()
+    };
+
     try {
-      await db.insert(systemEvents).values({
-        level: 'critical',
-        source: 'CheckoutAPI',
-        message: error.message || 'Unknown Checkout Error',
-        details: {
-          stack: error.stack,
-          name: error.name,
-          rawBody: rawBody ? JSON.stringify(rawBody).substring(0, 1000) : 'N/A'
-        },
-        createdAt: new Date().toISOString()
-      });
-      console.log('[Checkout] Fatal error logged directly to DB.');
+      await db.insert(systemEvents).values(errorPayload as any);
+      console.log('[Checkout] Fatal error logged via Drizzle.');
     } catch (dbErr: any) {
-      console.error('[Checkout] Failed to log to DB:', dbErr.message);
+      console.error('[Checkout] Drizzle logging failed, falling back to SDK:', dbErr.message);
+      try {
+        await sdkClient.from('system_events').insert(errorPayload);
+        console.log('[Checkout] Fatal error logged via SDK Client.');
+      } catch (sdkErr: any) {
+        console.error('[Checkout] SDK logging also failed:', sdkErr.message);
+      }
     }
 
     return NextResponse.json({ error: 'Checkout failed', message: error.message }, { status: 500 });
