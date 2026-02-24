@@ -303,14 +303,14 @@ export async function POST(request: Request) {
       isQuote: !!isQuote,
       quoteMessage: quoteMessage || null,
       market: market,
-      rawMeta: {
+      rawMeta: JSON.stringify({
         usage,
         plan,
         isSubscription,
         music,
         items: validatedItems,
         serverCalculated: true
-      },
+      }),
       ipAddress: ip
     };
 
