@@ -1,15 +1,39 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, forwardRef, HTMLAttributes, ElementType } from 'react';
 import {
     ButtonInstrument,
-    ContainerInstrument,
-    HeadingInstrument,
     InputInstrument,
     LabelInstrument,
-    SectionInstrument,
-    TextInstrument
 } from '@/components/ui/LayoutInstruments';
+
+/**
+ * CLIENT-SIDE LAYOUT INSTRUMENTS
+ * To avoid server component boundary issues in StudioLaunchpad
+ */
+const SectionInstrument = ({ children, className = '', ...props }: HTMLAttributes<HTMLElement>) => (
+  <section className={cn("va-section", className)} {...props}>{children}</section>
+);
+
+interface ContainerInstrumentProps extends HTMLAttributes<HTMLElement> {
+  as?: ElementType;
+  plain?: boolean;
+}
+const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentProps>(({ 
+  children, className = '', as: Component = 'div', plain = false, ...props 
+}, ref) => (
+  <Component ref={ref} className={cn(plain ? className : cn("va-container", className))} {...props}>{children}</Component>
+));
+
+const HeadingInstrument = ({ children, level = 2, className = '', ...props }: any) => {
+  const Tag = `h${level}` as any;
+  return <Tag className={cn("va-heading", className)} {...props}>{children}</Tag>;
+};
+
+const TextInstrument = ({ children, className = '', ...props }: HTMLAttributes<HTMLElement>) => (
+  <p className={cn("va-text", className)} {...props}>{children}</p>
+);
+
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
