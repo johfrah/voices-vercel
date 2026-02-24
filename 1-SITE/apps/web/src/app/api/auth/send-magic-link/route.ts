@@ -125,15 +125,31 @@ export async function POST(req: Request) {
       await mailEngine.sendMagicLink(email, voicesLink, lang, host);
       console.log(`[Auth API] Mail successfully sent to: ${email} (lang: ${lang})`);
     } catch (mailErr: any) {
-      console.error('[Auth API] Mail sending failed:', mailErr);
-      await ServerWatchdog.report({
-        error: `Mail sending failed: ${mailErr.message}`,
-        component: 'AuthAPI',
-        url: req.url,
-        level: 'error',
-        payload: { email, voicesLink, lang }
+      console.warn('[Auth API] Custom mail sending failed, falling back to Supabase built-in mail:', mailErr.message);
+      
+      // 🛡️ CHRIS-PROTOCOL: Fallback to Supabase built-in magic link if our engine fails
+      // This uses the Supabase SMTP settings instead of our own.
+      const { error: fallbackError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: finalRedirect,
+        }
       });
-      return NextResponse.json({ error: 'Mail kon niet worden verzonden via onze server' }, { status: 500 });
+
+      if (fallbackError) {
+        console.error('[Auth API] Fallback Supabase mail also failed:', fallbackError);
+        await ServerWatchdog.report({
+          error: `Magic link failed (Custom & Fallback): ${fallbackError.message}`,
+          component: 'AuthAPI',
+          url: req.url,
+          level: 'critical',
+          payload: { email, customError: mailErr.message, fallbackError: fallbackError.message }
+        });
+        return NextResponse.json({ error: 'Inloglink kon niet worden verzonden. Probeer het later opnieuw.' }, { status: 500 });
+      }
+
+      console.log(`[Auth API] Fallback magic link sent successfully to: ${email}`);
+      return NextResponse.json({ success: true, fallback: true });
     }
 
     return NextResponse.json({ success: true });

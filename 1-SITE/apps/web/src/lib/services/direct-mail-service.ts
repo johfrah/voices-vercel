@@ -148,6 +148,7 @@ export class DirectMailService {
     }
 
     // console.log(`[SMTP Debug] Host: ${smtpHost}, User: ${smtpUser}, Pass: ${smtpPass ? '********' : 'MISSING'}`);
+    console.log(`🚀 [DirectMailService] Preparing SMTP: host=${smtpHost}, user=${smtpUser}, from=${from}`);
 
     const transporter = nodemailer.createTransport({
       host: smtpHost,

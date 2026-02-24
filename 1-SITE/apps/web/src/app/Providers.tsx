@@ -28,7 +28,7 @@ export function Providers({
   initialTranslations?: Record<string, string>;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.14.205';
+  const currentVersion = '2.14.206';
   
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
   React.useEffect(() => {
