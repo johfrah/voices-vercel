@@ -12,6 +12,7 @@ export type JourneyType = 'telephony' | 'video' | 'commercial';
 interface MasterControlState {
   journey: JourneyType;
   usage: UsageType;
+  isMuted: boolean;
   filters: {
     language: string | null;
     languageId?: number | null;
@@ -42,6 +43,7 @@ interface VoicesMasterControlContextType {
   updateFilters: (filters: Partial<MasterControlState['filters']>) => void;
   updateStep: (step: MasterControlState['currentStep']) => void;
   resetFilters: () => void;
+  toggleMute: () => void;
 }
 
 const JOURNEY_USAGE_MAP: Record<JourneyType, UsageType> = {
@@ -112,11 +114,12 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       if (mr) initialMediaRegion = JSON.parse(decodeURIComponent(mr));
     } catch (e) {}
 
-    const isRootInitial = typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname === '/agency/' || window.location.pathname.startsWith('/voice/'));
+    const isRootInitial = (pathname === '/' || pathname === '/agency/' || pathname.startsWith('/voice/'));
     
     return {
       journey,
       usage: JOURNEY_USAGE_MAP[journey],
+      isMuted: false,
       filters: {
         language: initialLanguage,
         languages: initialLanguages as string[],
@@ -249,6 +252,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
             ...prev,
             journey,
             usage: JOURNEY_USAGE_MAP[journey],
+            isMuted: savedState.isMuted ?? prev.isMuted,
             filters: {
               ...prev.filters,
               ...savedState.filters,
@@ -316,7 +320,8 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       localStorage.setItem('voices_master_control', JSON.stringify({
         journey: state.journey,
         filters: state.filters,
-        currentStep: state.currentStep
+        currentStep: state.currentStep,
+        isMuted: state.isMuted
       }));
     }
   }, [state]);
@@ -518,8 +523,12 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     setState(prev => ({ ...prev, filters: { ...prev.filters, ...defaultFilters } as MasterControlState['filters'] }));
   }, [state.journey]);
 
+  const toggleMute = useCallback(() => {
+    setState(prev => ({ ...prev, isMuted: !prev.isMuted }));
+  }, []);
+
   return (
-    <VoicesMasterControlContext.Provider value={{ state, updateJourney, updateFilters, updateStep, resetFilters }}>
+    <VoicesMasterControlContext.Provider value={{ state, updateJourney, updateFilters, updateStep, resetFilters, toggleMute }}>
       {children}
     </VoicesMasterControlContext.Provider>
   );

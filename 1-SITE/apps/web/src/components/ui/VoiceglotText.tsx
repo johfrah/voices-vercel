@@ -41,7 +41,12 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   const { playClick, playSwell } = useSonicDNA();
   const { t, language } = useTranslation();
   
-  const [content, setContent] = useState<string>(defaultText);
+  const [content, setContent] = useState<string>(() => {
+    if (noTranslate) return defaultText;
+    // 🛡️ CHRIS-PROTOCOL: Use the translation function even during initial state calculation
+    // to ensure SSR and Client initial render match.
+    return t(translationKey, defaultText, values, !!components);
+  });
   const [mounted, setMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isHealing, setIsHealing] = useState(false);

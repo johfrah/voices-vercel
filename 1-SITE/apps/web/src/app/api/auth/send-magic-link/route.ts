@@ -10,7 +10,7 @@ import { NextResponse } from 'next/server';
  */
 export async function POST(req: Request) {
   try {
-    const { email, redirect = '/account' } = await req.json();
+    const { email, redirect: redirectPath = '/account' } = await req.json();
 
     if (!email) {
       return NextResponse.json({ error: 'E-mailadres is verplicht' }, { status: 400 });
@@ -23,13 +23,17 @@ export async function POST(req: Request) {
 
     console.log(`[Auth API] Processing request for: ${email}`);
 
+    // 🛡️ CHRIS-PROTOCOL: Force absolute URL for redirect to avoid relative path issues in Supabase
+    const originUrl = new URL(req.url).origin;
+    const finalRedirect = redirectPath.startsWith('http') ? redirectPath : `${originUrl}${redirectPath}`;
+
     // 1. Probeer een magiclink te genereren
     // Als de gebruiker niet bestaat, zal dit een error geven
     let { data, error } = await supabase.auth.admin.generateLink({
       type: 'magiclink',
       email: email,
       options: {
-        redirectTo: `${new URL(req.url).origin}/account/callback?redirect=${redirect}`,
+        redirectTo: `${originUrl}/account/confirm?redirect=${encodeURIComponent(finalRedirect)}`,
       }
     });
 
@@ -37,14 +41,11 @@ export async function POST(req: Request) {
     if (error && (error.message.includes('User not found') || error.status === 422)) {
       console.log(`[Auth API] User not found or signup needed, creating user: ${email}`);
       
-      // We gebruiken 'signup' type link generatie om de gebruiker aan te maken 
-      // OF we maken de gebruiker handmatig aan.
-      // De veiligste weg is 'signup' link genereren als de gebruiker niet bestaat.
       const { data: signupData, error: signupError } = await supabase.auth.admin.generateLink({
         type: 'signup',
         email: email,
         options: {
-          redirectTo: `${new URL(req.url).origin}/account/callback?redirect=${redirect}`,
+          redirectTo: `${originUrl}/account/confirm?redirect=${encodeURIComponent(finalRedirect)}`,
         }
       });
 
@@ -79,7 +80,7 @@ export async function POST(req: Request) {
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
     
     const origin = host.includes('localhost') ? `http://${host}` : siteUrl;
-    const voicesLink = `${origin}/account/confirm?token=${token}&type=${type}&redirect=${redirect}`;
+    const voicesLink = `${origin}/account/confirm?token=${token}&type=${type}&redirect=${encodeURIComponent(redirectPath)}`;
     
     console.log(`[Auth API] Voices link created: ${voicesLink}`);
 

@@ -54,6 +54,8 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 
 import { LanguageSwitcher } from './LanguageSwitcher';
 
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
+
 /**
  *  HEADER ICON INSTRUMENT
  * Focus: High-End Interactie & Duidelijkheid
@@ -74,19 +76,22 @@ const HeaderIcon = ({
   alt: string, 
   badge?: number, 
   children?: React.ReactNode,
-  onClick?: () => void,
-  href?: string,
-  isActive?: boolean,
+  onClick?: () => void, 
+  href?: string, 
+  isActive?: boolean, 
   badgeText?: string
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const timeoutRef = useRef<any>(null);
   const { playClick, playSwell } = useSonicDNA();
+  const { state: masterState } = useMasterControl();
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsOpen(true);
-    playSwell();
+    if (!masterState.isMuted) {
+      playSwell();
+    }
   };
 
   const handleMouseLeave = () => {
@@ -270,6 +275,7 @@ export default function GlobalNav() {
   const pathname = usePathname();
   const { t } = useTranslation();
   const { playClick, playSwell } = useSonicDNA();
+  const { state: masterState } = useMasterControl();
   const { isEditMode, toggleEditMode, canEdit } = useEditMode();
   const { state: voicesState, toggleActorSelection } = useVoicesState();
   const { state: checkoutState, subtotal, removeItem } = useCheckout();
@@ -554,7 +560,11 @@ export default function GlobalNav() {
           size="none"
           className="flex items-center gap-2 md:gap-3 group"
           onClick={() => { playClick('soft'); }}
-          onMouseEnter={() => { playSwell(); }}
+          onMouseEnter={() => { 
+            if (!masterState.isMuted) {
+              playSwell(); 
+            }
+          }}
         >
         {navConfig?.logo?.src ? (
           <div className="relative group/logo">
@@ -610,7 +620,11 @@ export default function GlobalNav() {
                 }
                 playClick('soft');
               }}
-              onMouseEnter={() => { playSwell(); }}
+              onMouseEnter={() => { 
+                if (!masterState.isMuted) {
+                  playSwell(); 
+                }
+              }}
               className={`relative text-[15px] font-light tracking-widest transition-all duration-500 flex items-center gap-1 py-3 ${
                 isActive ? 'text-primary' : 'text-va-black/40 hover:text-va-black'
               }`}

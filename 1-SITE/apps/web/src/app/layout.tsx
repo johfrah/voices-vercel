@@ -245,21 +245,21 @@ export default async function RootLayout({
   // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
   if (isUnderConstruction) {
     return (
-      <html lang={lang} className={htmlClass} data-build-id={Date.now()} suppressHydrationWarning>
-        <body className={bodyClass}>
-          <Providers lang={lang} market={market} initialTranslations={translations}>
-            <SonicDNAHandler />
-            <PageWrapperInstrument>
-              {children}
-            </PageWrapperInstrument>
-          </Providers>
-        </body>
-      </html>
+      <html lang={lang} className={htmlClass} suppressHydrationWarning>
+      <body className={bodyClass}>
+        <Providers lang={lang} market={market} initialTranslations={translations}>
+          <SonicDNAHandler />
+          <PageWrapperInstrument>
+            {children}
+          </PageWrapperInstrument>
+        </Providers>
+      </body>
+    </html>
     );
   }
 
   return (
-    <html lang={lang} className={htmlClass} data-build-id={Date.now()} suppressHydrationWarning>
+    <html lang={lang} className={htmlClass} suppressHydrationWarning>
       <body className={bodyClass}>
         <script
           type="application/ld+json"

@@ -28,31 +28,41 @@ export async function PATCH(
     //  CHRIS-PROTOCOL: Forensic validation
     const body = await request.json();
     
-    // 🛡️ CHRIS-PROTOCOL: Nuclear Version Guard (v2.14.188)
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Version Guard (v2.14.192)
     // Detect version mismatch from headers or payload to prevent "cache slop"
     const clientVersion = request.headers.get('X-Voices-Version') || body._version;
-    const serverVersion = '2.14.188';
+    const serverVersion = '2.14.192';
     
     if (clientVersion && clientVersion !== serverVersion) {
       console.warn(` [Version Guard] Mismatch detected: Client ${clientVersion} vs Server ${serverVersion}`);
-      // We don't block yet, but we log it for forensic analysis
     }
 
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid actor ID' }, { status: 400 });
     }
 
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Entity Mapping (v2.14.192)
+    // Fetch all statuses and experience levels to map strings to IDs
+    const { actorStatuses, experienceLevels } = await import('@db/schema');
+    const [dbStatuses, dbLevels] = await Promise.all([
+      db.select().from(actorStatuses),
+      db.select().from(experienceLevels)
+    ]);
+
     console.log(` ADMIN: Updating actor ${id}`, body);
     console.log(` ADMIN: Full request body for actor ${id}:`, JSON.stringify(body, null, 2));
 
-    //  CHRIS-PROTOCOL: Auth Check (Nuclear 2026)
+    // 🛡️ CHRIS-PROTOCOL: Auth Check (Nuclear 2026)
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) {
       console.warn(` ADMIN: Unauthorized update attempt for actor ${id}`);
       return auth;
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Nuclear Force Fix (v2.14.190)
+    const userEmail = (auth as any).user?.email;
+    const isSuperAdmin = userEmail === 'johfrah@voices.be' || userEmail === 'bernadette@voices.be' || userEmail === process.env.ADMIN_EMAIL;
+
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Force Fix (v2.14.192)
     // We bypass ALL non-essential field validation to ensure the profile SAVES.
     // We strictly map incoming fields to the database schema.
     const cleanUpdateData: any = {};
@@ -63,11 +73,15 @@ export async function PATCH(
     if (body.email) cleanUpdateData.email = body.email;
     if (body.gender) cleanUpdateData.gender = body.gender;
     
-    // 🛡️ CHRIS-PROTOCOL: Strict Enum Casting for Experience Level
+    // 🛡️ CHRIS-PROTOCOL: Strict Enum Casting & Relational Mapping for Experience Level
     const rawExp = body.experienceLevel || body.experience_level;
     if (rawExp) {
       const validExps = ['junior', 'pro', 'senior', 'legend'];
-      cleanUpdateData.experienceLevel = validExps.includes(rawExp.toLowerCase()) ? rawExp.toLowerCase() : 'pro';
+      const code = validExps.includes(rawExp.toLowerCase()) ? rawExp.toLowerCase() : 'pro';
+      cleanUpdateData.experienceLevel = code;
+      
+      const levelRel = dbLevels.find(l => l.code === code);
+      if (levelRel) cleanUpdateData.experienceLevelId = levelRel.id;
     }
 
     if (body.tone_of_voice || body.toneOfVoice) cleanUpdateData.toneOfVoice = body.tone_of_voice || body.toneOfVoice;
@@ -75,11 +89,15 @@ export async function PATCH(
     if (body.voice_score || body.voiceScore) cleanUpdateData.voiceScore = parseInt(body.voice_score || body.voiceScore);
     if (body.menu_order || body.menuOrder) cleanUpdateData.menuOrder = parseInt(body.menu_order || body.menuOrder);
     
-    // 🛡️ CHRIS-PROTOCOL: Strict Enum Casting for Status
+    // 🛡️ CHRIS-PROTOCOL: Strict Enum Casting & Relational Mapping for Status
     const rawStatus = body.status;
     if (rawStatus) {
       const validStatuses = ['pending', 'approved', 'active', 'live', 'publish', 'rejected', 'cancelled'];
-      cleanUpdateData.status = validStatuses.includes(rawStatus.toLowerCase()) ? rawStatus.toLowerCase() : 'pending';
+      const code = validStatuses.includes(rawStatus.toLowerCase()) ? rawStatus.toLowerCase() : 'pending';
+      cleanUpdateData.status = code;
+      
+      const statusRel = dbStatuses.find(s => s.code === code);
+      if (statusRel) cleanUpdateData.statusId = statusRel.id;
     }
 
     if (body.is_public !== undefined) cleanUpdateData.isPublic = body.is_public;
@@ -298,7 +316,6 @@ export async function PATCH(
             .where(eq(actorDemos.id, demoId));
         } else {
           // Insert new (HITL: default to 'pending' for actors, 'approved' for super-admin)
-          const isSuperAdmin = true; // Temporary for dev
           await db.insert(actorDemos).values({
             actorId: effectiveActorId,
             name: demo.title,
@@ -344,7 +361,6 @@ export async function PATCH(
             .where(eq(actorVideos.id, videoId));
         } else {
           // Insert new (HITL: default to 'pending' for actors, 'approved' for super-admin)
-          const isSuperAdmin = true; // Temporary for dev
           await db.insert(actorVideos).values({
             actorId: effectiveActorId,
             name: video.name,

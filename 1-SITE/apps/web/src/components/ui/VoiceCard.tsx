@@ -139,7 +139,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   };
 
   const handleMouseEnter = () => {
-    playSwell();
+    if (!masterControlState.isMuted) {
+      playSwell();
+    }
   };
 
   const videoRef = useRef<HTMLVideoElement>(null);

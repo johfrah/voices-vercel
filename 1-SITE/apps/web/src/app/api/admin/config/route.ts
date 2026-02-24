@@ -94,8 +94,13 @@ export async function GET(request: NextRequest) {
 
     if (type === 'navigation') {
       const journey = searchParams.get('journey') || 'agency';
-      const config = await ConfigBridge.getNavConfig(journey);
-      return NextResponse.json(config || { links: [], icons: {} });
+      try {
+        const config = await ConfigBridge.getNavConfig(journey);
+        return NextResponse.json(config || { links: [], icons: {} });
+      } catch (navErr) {
+        console.error(`[Admin Config GET] Navigation fetch failed for ${journey}:`, navErr);
+        return NextResponse.json({ links: [], icons: {} });
+      }
     }
 
     // Default: Return all app configs

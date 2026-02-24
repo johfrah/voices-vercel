@@ -30,7 +30,9 @@ export async function GET() {
         with: {
           demos: true,
           actorVideos: true,
-          actorLanguages: true
+          actorLanguages: true,
+          statusRel: true,
+          experienceLevelRel: true
         }
       });
     } catch (dbErr) {
@@ -109,7 +111,10 @@ export async function GET() {
         nativeLang,
         photo_url,
         native_lang_id: nativeLangId,
-        extra_lang_ids: extraLinks.map((al: any) => al.languageId || al.language_id).filter(Boolean)
+        extra_lang_ids: extraLinks.map((al: any) => al.languageId || al.language_id).filter(Boolean),
+        status_rel: actor.statusRel,
+        experience_level_rel: actor.experienceLevelRel,
+        attributes: (actor.attributes || []).map((a: any) => a.attribute)
       };
     });
 

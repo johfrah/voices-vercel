@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from 'react';
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 
 /**
  *  SONIC DNA ENGINE - 2026 EDITION
@@ -11,8 +12,14 @@ import { useCallback } from 'react';
 
 class SonicDNA {
   private ctx: AudioContext | null = null;
+  private isMuted: boolean = false;
+
+  setMuted(muted: boolean) {
+    this.isMuted = muted;
+  }
 
   private init() {
+    if (this.isMuted) return null;
     if (!this.ctx && typeof window !== 'undefined') {
       const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
       if (AudioContextClass) {
@@ -26,6 +33,7 @@ class SonicDNA {
    * De 'Signature Click' - Gebruikt voor knoppen en selecties.
    */
   async playClick(type: 'soft' | 'pro' | 'pop' | 'success' | 'lock' | 'unlock' = 'soft') {
+    if (this.isMuted) return;
     const ctx = this.init();
     if (!ctx) return;
 
@@ -92,8 +100,12 @@ class SonicDNA {
 
   /**
    * De 'Liquid Swell' - Gebruikt voor hover effecten.
+   * CHRIS-PROTOCOL: Uitgeschakeld op verzoek van gebruiker (te veel geluidjes).
    */
   async playSwell() {
+    return; // Hover sounds are now disabled globally
+    /*
+    if (this.isMuted) return;
     const ctx = this.init();
     if (!ctx) return;
     
@@ -123,14 +135,24 @@ class SonicDNA {
     
     osc.start();
     osc.stop(ctx.currentTime + 0.3);
+    */
   }
 }
 
 export const sonicDNA = new SonicDNA();
 
 export const useSonicDNA = () => {
-  const playClick = useCallback((type?: any) => sonicDNA.playClick(type), []);
-  const playSwell = useCallback(() => sonicDNA.playSwell(), []);
+  const { state } = useMasterControl();
+  
+  const playClick = useCallback((type?: any) => {
+    sonicDNA.setMuted(state.isMuted);
+    return sonicDNA.playClick(type);
+  }, [state.isMuted]);
+
+  const playSwell = useCallback(() => {
+    sonicDNA.setMuted(state.isMuted);
+    return sonicDNA.playSwell();
+  }, [state.isMuted]);
   
   return {
     playClick,

@@ -80,6 +80,9 @@ export function useSonicDNA() {
       osc.start(now);
       osc.stop(now + 0.3);
     } else if (type === 'swell') {
+      //  CHRIS-PROTOCOL: Uitgeschakeld op verzoek van gebruiker (te veel geluidjes).
+      return; 
+      /*
       //  NUCLEAR SWELL: Airy hover effect
       osc.type = 'sine';
       osc.frequency.setValueAtTime(880, now);
@@ -88,6 +91,7 @@ export function useSonicDNA() {
       gain.gain.linearRampToValueAtTime(0, now + 0.3);
       osc.start(now);
       osc.stop(now + 0.3);
+      */
     } else if (type === 'startup') {
       //  STARTUP CHIME: Bright, welcoming rising sequence
       const osc2 = audioCtx.current.createOscillator();

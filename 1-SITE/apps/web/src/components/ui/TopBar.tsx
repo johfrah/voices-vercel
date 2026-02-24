@@ -2,12 +2,13 @@
 
 import { usePathname } from 'next/navigation';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { Mail, Phone, UserCircle, Zap } from 'lucide-react';
+import { Mail, Phone, UserCircle, Zap, Volume2, VolumeX } from 'lucide-react';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { ContainerInstrument, TextInstrument, ButtonInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
@@ -18,6 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export const TopBar = () => {
   const pathname = usePathname();
   const { playClick } = useSonicDNA();
+  const { state: masterState, toggleMute } = useMasterControl();
   const market = MarketManager.getCurrentMarket();
   const { t } = useTranslation();
   const { campaignMessage } = useVoicesState();
@@ -71,6 +73,24 @@ export const TopBar = () => {
 
       {/* Rechterkant: Contact & Acties */}
       <div className="flex items-center gap-6">
+        {/* Mute Toggle (Bob-methode: UX-controle) */}
+        <ButtonInstrument
+          variant="plain"
+          size="none"
+          onClick={toggleMute}
+          className="flex items-center gap-2 group"
+          title={masterState.isMuted ? "Geluid aanzetten" : "Geluid dempen"}
+        >
+          {masterState.isMuted ? (
+            <VolumeX size={12} strokeWidth={2.5} className="text-red-500/60 group-hover:text-red-500 transition-colors" />
+          ) : (
+            <Volume2 size={12} strokeWidth={2.5} className="text-va-black/20 group-hover:text-primary transition-colors" />
+          )}
+          <TextInstrument className="text-[11px] font-light tracking-[0.1em] text-va-black/40 group-hover:text-va-black transition-colors">
+            {masterState.isMuted ? "Muted" : "Audio"}
+          </TextInstrument>
+        </ButtonInstrument>
+
         {/* Medewerker spreken (Nu in TopBar) */}
         <ButtonInstrument
           variant="plain"
