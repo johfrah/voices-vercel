@@ -258,6 +258,14 @@ export async function POST(request: Request) {
     const isInvoiceActual = payment_method === 'banktransfer';
     console.log('[Checkout] 🚀 STEP 6: Creating order...', { amount, isInvoiceActual, market });
 
+    // 🛡️ CHRIS-PROTOCOL: Heartbeat Logging (v2.14.291)
+    await sdkClient.from('system_events').insert({
+      level: 'info',
+      source: 'CheckoutAPI',
+      message: 'Processing Order Creation',
+      details: { amount, market, email, itemsCount: validatedItems.length }
+    });
+
     // 🛡️ CHRIS-PROTOCOL: Minimum amount check (v2.14.271)
     if (amount <= 0 && !isQuoteOnly && !isInvoiceActual) {
       console.warn('[Checkout] Amount is 0 or negative for a paid order. Forcing quote mode.');
@@ -405,7 +413,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('[Checkout FATAL]:', error);
     
-    // 🛡️ CHRIS-PROTOCOL: Dual-Path Reporting for Fatal Errors (v2.14.288)
+    // 🛡️ CHRIS-PROTOCOL: Dual-Path Reporting for Fatal Errors (v2.14.291)
     // We try Drizzle first, then fallback to SDK Client for maximum reliability.
     const errorPayload = {
       level: 'critical',
@@ -414,22 +422,19 @@ export async function POST(request: Request) {
       details: {
         stack: error.stack,
         name: error.name,
-        rawBody: rawBody ? JSON.stringify(rawBody).substring(0, 1000) : 'N/A'
+        rawBody: rawBody ? JSON.stringify(rawBody).substring(0, 1000) : 'N/A',
+        stage: 'FATAL_CATCH'
       },
       created_at: new Date().toISOString()
     };
 
     try {
-      await db.insert(systemEvents).values(errorPayload as any);
-      console.log('[Checkout] Fatal error logged via Drizzle.');
-    } catch (dbErr: any) {
-      console.error('[Checkout] Drizzle logging failed, falling back to SDK:', dbErr.message);
-      try {
-        await sdkClient.from('system_events').insert(errorPayload);
-        console.log('[Checkout] Fatal error logged via SDK Client.');
-      } catch (sdkErr: any) {
-        console.error('[Checkout] SDK logging also failed:', sdkErr.message);
-      }
+      // 🛡️ CHRIS-PROTOCOL: Use SDK directly for the catch block to avoid Drizzle driver issues
+      const { error: sdkErr } = await sdkClient.from('system_events').insert(errorPayload);
+      if (sdkErr) console.error('[Checkout] SDK logging failed:', sdkErr.message);
+      else console.log('[Checkout] Fatal error logged via SDK Client.');
+    } catch (finalErr: any) {
+      console.error('[Checkout] All logging failed:', finalErr.message);
     }
 
     return NextResponse.json({ error: 'Checkout failed', message: error.message }, { status: 500 });
