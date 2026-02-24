@@ -10,12 +10,24 @@ export class TelegramService {
   private static readonly ADMIN_IDS = (process.env.TELEGRAM_ALLOWED_USER_IDS || '').split(',').filter(Boolean);
 
   /**
-   * Stuurt een alert naar alle geautoriseerde admins
+   * Stuurt een alert naar alle geautoriseerde admins met rate-limiting
    */
-  static async sendAlert(message: string, options: { parse_mode?: 'HTML' | 'MarkdownV2' } = {}) {
+  static async sendAlert(message: string, options: { parse_mode?: 'HTML' | 'MarkdownV2'; force?: boolean } = {}) {
     if (!this.BOT_TOKEN || this.ADMIN_IDS.length === 0) {
       console.warn('[TelegramService] Bot token or Admin IDs missing, skipping alert.');
       return;
+    }
+
+    // 🛡️ CHRIS-PROTOCOL: Rate limiting om "Nuclear Alert Fatigue" te voorkomen
+    // We laten maximaal 1 bericht per 30 seconden door, tenzij 'force' is true.
+    if (!options.force) {
+      const now = Date.now();
+      const lastSent = (global as any)._lastTelegramAlertSent || 0;
+      if (now - lastSent < 30000) {
+        console.log('[TelegramService] 🤫 Rate-limited. Alert suppressed to prevent spam.');
+        return;
+      }
+      (global as any)._lastTelegramAlertSent = now;
     }
 
     const promises = this.ADMIN_IDS.map(chatId => 
@@ -55,7 +67,7 @@ export class TelegramService {
       payloadMsg = `\n\n<b>PAYLOAD:</b>\n<code>${json.substring(0, 500)}${json.length > 500 ? '...' : ''}</code>`;
     }
 
-    const message = `${title}\n\n${errorMsg}${urlMsg}${payloadMsg}\n\n<i>-- Chris / Autist</i>`;
+    const message = `${title}\n\n${errorMsg}${urlMsg}${payloadMsg}\n\n<i>-- Chris / Autist</i>\n\n<small>💡 Deze fout is gelogd in de Watchdog en ik ben al op zoek naar een fix.</small>`;
     
     await this.sendAlert(message);
   }

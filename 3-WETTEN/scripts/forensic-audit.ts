@@ -10,7 +10,9 @@ import chalk from 'chalk';
  */
 
 const ROOT_DIR = process.cwd();
-const WEB_APP_DIR = path.join(ROOT_DIR, '1-SITE/apps/web/src');
+const WEB_APP_DIR = fs.existsSync(path.join(ROOT_DIR, 'src')) 
+  ? path.join(ROOT_DIR, 'src')
+  : path.join(ROOT_DIR, '1-SITE/apps/web/src');
 
 interface AuditIssue {
   file: string;
