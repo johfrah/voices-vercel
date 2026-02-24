@@ -303,14 +303,16 @@ export async function POST(request: Request) {
       isQuote: !!isQuote,
       quoteMessage: quoteMessage || null,
       market: market,
-      rawMeta: JSON.stringify({
+      rawMeta: {
         usage,
         plan,
         isSubscription,
         music,
-        items: validatedItems,
+        // 🛡️ CHRIS-PROTOCOL: Don't store full items with long briefings in orders.rawMeta (v2.14.304)
+        // This prevents Postgres JSONB payload limits. Briefing is stored in order_items.
+        itemsCount: validatedItems.length,
         serverCalculated: true
-      }),
+      },
       ipAddress: ip
     };
 
@@ -341,7 +343,10 @@ export async function POST(request: Request) {
             quantity: 1,
             price: (item.pricing?.subtotal || item.pricing?.total || 0).toString(),
             tax: (item.pricing?.tax || 0).toString(),
-            metaData: item.pricing || {},
+            metaData: {
+              ...(item.pricing || {}),
+              briefing: item.briefing || '' // 🛡️ Store briefing here (v2.14.304)
+            },
             deliveryStatus: 'waiting'
             // 🛡️ CHRIS-PROTOCOL: createdAt has defaultNow(), don't set manually (v2.14.296)
           } as any;
