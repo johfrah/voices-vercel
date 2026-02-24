@@ -430,7 +430,7 @@ export const VoicesMasterControlProvider: React.FC<{
     params.delete('languages');
 
     const cleanPath = pathname.replace(/^\/(nl|fr|en|de|es|it|pt)/, '') || '/';
-    const isAgencyFilterPage = (cleanPath.startsWith('/agency/') || cleanPath === '/agency') && 
+    const isAgencyFilterPage = (cleanPath.startsWith('/agency/') || cleanPath === '/agency' || MarketManager.isAgencySegment(pathSegments[0])) && 
                                !['/agency/tarieven', '/agency/over-ons', '/agency/privacy', '/agency/cookies', '/agency/voorwaarden', '/tarieven', '/price', '/contact'].includes(cleanPath);
     
     const pathSegments = cleanPath.split('/').filter(Boolean);

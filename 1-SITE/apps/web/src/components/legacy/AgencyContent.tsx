@@ -119,7 +119,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
         //  CHRIS-PROTOCOL: Only replace if different to avoid redundant history entries
         if (typeof window !== 'undefined') window.history.replaceState(null, '', targetPath + window.location.search);
       }
-    } else if (state.currentStep === 'voice' && (typeof window !== 'undefined' ? !window.location.pathname.startsWith('/agency') : false)) {
+    } else if (state.currentStep === 'voice' && (typeof window !== 'undefined' ? (!window.location.pathname.startsWith('/agency') && !MarketManager.isAgencySegment(window.location.pathname.split('/').filter(Boolean)[0])) : false)) {
       // Terug naar agency overzicht in de URL als we terug gaan naar casting
       const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
       if (typeof window !== 'undefined' && !currentPath.startsWith('/agency') && !currentPath.startsWith('/voice/')) {
