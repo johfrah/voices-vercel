@@ -261,6 +261,8 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString()
     }).returning();
 
+    console.log('[Checkout] Order created:', { id: newOrder?.id, total: amount });
+
     if (!newOrder) {
       throw new Error('Failed to create order in database');
     }
