@@ -330,6 +330,7 @@ export class MarketManagerServer {
       'frans': 'fr-fr',
       'frans (be)': 'fr-be',
       'frans (fr)': 'fr-fr',
+      'belgisch frans': 'fr-be',
       'engels': 'en-gb',
       'engels (uk)': 'en-gb',
       'engels (us)': 'en-us',
@@ -360,7 +361,14 @@ export class MarketManagerServer {
       'pl-pl': 'pl-pl',
       'da-dk': 'da-dk',
       'pt-pt': 'pt-pt',
-      'sv-se': 'sv-se'
+      'sv-se': 'sv-se',
+      'en': 'en-gb',
+      'fr': 'fr-fr',
+      'nl': 'nl-be',
+      'de': 'de-de',
+      'es': 'es-es',
+      'pt': 'pt-pt',
+      'it': 'it-it'
     };
     return map[lowLabel] || lowLabel;
   }

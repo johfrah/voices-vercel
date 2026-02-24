@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-  "version": "2.14.214",
+  "version": "2.14.215",
   "private": true,
   "scripts": {
     "dev": "PORT=3000 next dev",

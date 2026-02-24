@@ -108,6 +108,8 @@ export async function POST(req: Request) {
     // ONZE BETROUWBARE LINK (Forceer https op productie)
     const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
     const host = new URL(req.url).host;
+    
+    // 🛡️ CHRIS-PROTOCOL: Use MarketManagerServer directly for static config to avoid DB timeout in Auth flow
     const market = MarketManager.getCurrentMarket(host);
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
     
@@ -118,6 +120,8 @@ export async function POST(req: Request) {
     console.log(`[Auth API] Voices link created: ${voicesLink}`);
 
     // 4. Verstuur de mail via onze eigen VoicesMailEngine
+    // 🛡️ CHRIS-PROTOCOL: Dynamic import to ensure Node.js runtime compatibility for nodemailer
+    const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
     const mailEngine = VoicesMailEngine.getInstance();
     
     // Detecteer taal
