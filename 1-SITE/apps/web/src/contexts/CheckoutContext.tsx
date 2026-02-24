@@ -226,17 +226,19 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             ));
           });
 
+          // 🛡️ CHRIS-PROTOCOL: Use functional update to ensure we don't overwrite concurrent changes
           setState(prev => ({
-            ...initialState,
+            ...prev, // Use prev instead of initialState to preserve any early state changes
             ...parsed,
             items: cleanItems,
-            customer: { ...initialState.customer, ...parsed.customer },
+            customer: { ...prev.customer, ...parsed.customer },
             paymentMethods: prev.paymentMethods // Keep default methods until API loads
           }));
         } catch (e) {
           console.error('Failed to parse checkout state from localStorage', e);
         }
       }
+      // 🛡️ CHRIS-PROTOCOL: Set hydrated flag AFTER state restoration to prevent mismatch
       setIsHydrated(true);
     }
   }, []);

@@ -244,7 +244,7 @@ export default async function RootLayout({
     return (
       <html lang={lang} className={htmlClass} data-build-id={Date.now()} suppressHydrationWarning>
         <body className={bodyClass}>
-          <Providers lang={lang} initialTranslations={translations}>
+          <Providers lang={lang} market={market} initialTranslations={translations}>
             <SonicDNAHandler />
             <PageWrapperInstrument>
               {children}
@@ -262,7 +262,7 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Providers lang={lang} initialTranslations={translations}>
+        <Providers lang={lang} market={market} initialTranslations={translations}>
           <PageWrapperInstrument>
             <Suspense fallback={<LoadingScreenInstrument />}>
               {children}

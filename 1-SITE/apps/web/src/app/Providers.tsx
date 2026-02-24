@@ -13,13 +13,17 @@ import { WatchdogProvider } from '@/contexts/WatchdogContext';
 import { usePathname } from 'next/navigation';
 import { ClientLogger } from '@/lib/system/client-logger';
 
+import { MarketConfig } from '@/lib/system/market-manager-server';
+
 export function Providers({ 
   children,
   lang,
+  market,
   initialTranslations = {}
 }: { 
-  children: ReactNode;
+  children: ReactNode; 
   lang: string;
+  market: MarketConfig;
   initialTranslations?: Record<string, string>;
 }) {
   const pathname = usePathname();
@@ -44,7 +48,7 @@ export function Providers({
   return (
     <WatchdogProvider>
       <AuthProvider>
-        <TranslationProvider lang={activeLang} initialTranslations={initialTranslations}>
+        <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
           <EditModeProvider>
             <VoicesStateProvider>
               <GlobalAudioProvider>

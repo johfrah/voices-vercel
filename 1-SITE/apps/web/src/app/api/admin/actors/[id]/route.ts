@@ -67,6 +67,14 @@ export async function PATCH(
       }
     }
 
+    // 🛡️ CHRIS-PROTOCOL: Forensic sanitization of photo URL (v2.14.162)
+    // We must ensure the proxy prefix is stripped before saving to the database
+    // to maintain asset-path integrity.
+    let cleanPhotoUrl = body.photo_url || body.dropboxUrl;
+    if (cleanPhotoUrl && cleanPhotoUrl.includes('/api/proxy/?path=')) {
+      cleanPhotoUrl = decodeURIComponent(cleanPhotoUrl.split('/api/proxy/?path=')[1]);
+    }
+
     const updateData: any = {
       firstName: body.firstName || body.first_name,
       lastName: body.lastName || body.last_name,
@@ -86,7 +94,7 @@ export async function PATCH(
       nativeLang: body.native_lang,
       nativeLangId: body.native_lang_id,
       extraLangs: body.extra_langs,
-      dropboxUrl: body.photo_url,
+      dropboxUrl: cleanPhotoUrl,
       photoId: body.photo_id !== undefined ? body.photo_id : (body.photoId !== undefined ? body.photoId : undefined),
       studioSpecs: body.studioSpecs || undefined,
       connectivity: body.connectivity || undefined,

@@ -2,10 +2,12 @@
 
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { SlopFilter } from '@/lib/engines/slop-filter';
+import { MarketConfig } from '@/lib/system/market-manager-server';
 
 interface TranslationContextType {
   t: (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement?: boolean) => string;
   language: string;
+  market: MarketConfig;
   loading: boolean;
 }
 
@@ -14,8 +16,9 @@ const TranslationContext = createContext<TranslationContextType | undefined>(und
 export const TranslationProvider: React.FC<{ 
   children: ReactNode; 
   lang?: string;
+  market: MarketConfig;
   initialTranslations?: Record<string, string>;
-}> = ({ children, lang = 'nl', initialTranslations = {} }) => {
+}> = ({ children, lang = 'nl', market, initialTranslations = {} }) => {
   const [translations, setTranslations] = useState<Record<string, string>>(initialTranslations);
   const [loading, setLoading] = useState(Object.keys(initialTranslations).length === 0 && lang !== 'nl');
   const healingKeys = React.useRef<Set<string>>(new Set());
@@ -53,22 +56,6 @@ export const TranslationProvider: React.FC<{
       //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren
       if (!translation || translation.trim() === '' || SlopFilter.isSlop(translation, lang, defaultText)) {
         //  SELF-HEALING TRIGGER (Disabled temporarily for stability)
-        /*
-        if (typeof window !== 'undefined' && !healingKeys.current.has(key)) {
-          healingKeys.current.add(key);
-          fetch('/api/translations/heal', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key, originalText: defaultText, currentLang: lang })
-          }).catch(() => {
-            // STABILITEIT: Bij een fout wachten we 30 seconden voordat we het opnieuw proberen
-            // om request-floods te voorkomen bij server-side issues.
-            setTimeout(() => {
-              healingKeys.current.delete(key);
-            }, 30000);
-          }); 
-        }
-        */
       } else {
         text = translation;
       }
@@ -85,7 +72,7 @@ export const TranslationProvider: React.FC<{
   };
 
   return (
-    <TranslationContext.Provider value={{ t, language: lang, loading }}>
+    <TranslationContext.Provider value={{ t, language: lang, market, loading }}>
       {children}
     </TranslationContext.Provider>
   );
